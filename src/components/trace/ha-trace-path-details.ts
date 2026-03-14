@@ -1,14 +1,16 @@
+import { consume } from "@lit/context";
 import { dump } from "js-yaml";
-import { consume } from "@lit-labs/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import "../ha-code-editor";
-import "../ha-icon-button";
-import "./hat-logbook-note";
+import { describeCondition, describeTrigger } from "../../data/automation_i18n";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { LogbookEntry } from "../../data/logbook";
+import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   ChooseActionTraceStep,
@@ -16,12 +18,14 @@ import type {
 } from "../../data/trace";
 import { getDataFromPath } from "../../data/trace";
 import "../../panels/logbook/ha-logbook-renderer";
-import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
-import { describeCondition } from "../../data/automation_i18n";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import { fullEntitiesContext } from "../../data/context";
+import { traceTabStyles } from "./trace-tab-styles";
+import type { Trigger } from "../../data/automation";
+import { migrateAutomationTrigger } from "../../data/automation";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -50,7 +54,11 @@ export class HaTracePathDetails extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  _labelReg!: LabelRegistryEntry[];
 
   protected render(): TemplateResult {
     return html`
@@ -151,11 +159,46 @@ export class HaTracePathDetails extends LitElement {
             )}`;
           }
 
+          const selectedType = this.selected.type;
+
           return html`
             ${curPath === this.selected.path
               ? currentDetail.alias
                 ? html`<h2>${currentDetail.alias}</h2>`
-                : nothing
+                : selectedType === "trigger"
+                  ? html`<h2>
+                      ${describeTrigger(
+                        migrateAutomationTrigger({
+                          ...currentDetail,
+                        }) as Trigger,
+                        this.hass,
+                        this._entityReg
+                      )}
+                    </h2>`
+                  : selectedType === "condition"
+                    ? html`<h2>
+                        ${describeCondition(
+                          currentDetail,
+                          this.hass,
+                          this._entityReg
+                        )}
+                      </h2>`
+                    : selectedType === "action"
+                      ? html`<h2>
+                          ${describeAction(
+                            this.hass,
+                            this._entityReg,
+                            currentDetail
+                          )}
+                        </h2>`
+                      : selectedType === "chooseOption"
+                        ? html`<h2>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.actions.type.choose.option",
+                              { number: pathParts[pathParts.length - 1] }
+                            )}
+                          </h2>`
+                        : nothing
               : html`<h2>
                   ${curPath.substring(this.selected.path.length + 1)}
                 </h2>`}
@@ -228,6 +271,7 @@ export class HaTracePathDetails extends LitElement {
     return config
       ? html`<ha-code-editor
           .value=${dump(config).trimEnd()}
+          .hass=${this.hass}
           read-only
           dir="ltr"
         ></ha-code-editor>`

@@ -1,14 +1,13 @@
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
-import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-dialog";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -26,6 +25,7 @@ import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
+@customElement("dialog-system-log-detail")
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -33,13 +33,20 @@ class DialogSystemLogDetail extends LitElement {
 
   @state() private _manifest?: IntegrationManifest;
 
+  @state() private _open = false;
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -76,23 +83,20 @@ class DialogSystemLogDetail extends LitElement {
     });
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">${title}</span>
-          <ha-icon-button
-            id="copy"
-            @click=${this._copyLog}
-            slot="actionItems"
-            .label=${this.hass.localize("ui.panel.config.logs.copy")}
-            .path=${mdiContentCopy}
-          ></ha-icon-button>
-        </ha-dialog-header>
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        @closed=${this._dialogClosed}
+      >
+        <span slot="headerTitle">${title}</span>
+        <ha-icon-button
+          id="copy"
+          @click=${this._copyLog}
+          slot="headerActionItems"
+          .label=${this.hass.localize("ui.panel.config.logs.copy")}
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
         ${this.isCustomIntegration
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
@@ -100,7 +104,7 @@ class DialogSystemLogDetail extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        <div class="contents" tabindex="-1" dialogInitialFocus>
+        <div class="contents" tabindex="-1" autofocus>
           <p>
             ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
             ${item.name}<br />
@@ -159,9 +163,11 @@ class DialogSystemLogDetail extends LitElement {
                     this.hass!.locale,
                     this.hass!.config
                   )}
-                  (${item.count}
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.occurrences"
+                  (${this.hass.localize(
+                    "ui.panel.config.logs.detail.number_of_occurrences",
+                    {
+                      count: item.count,
+                    }
                   )}) <br />
                 `
               : ""}
@@ -237,7 +243,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
-          font-family: var(--code-font-family, monospace);
+          font-family: var(--ha-font-family-code);
         }
         ha-alert {
           display: block;
@@ -254,12 +260,6 @@ class DialogSystemLogDetail extends LitElement {
         .warning {
           color: var(--warning-color);
         }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
-        }
       `,
     ];
   }
@@ -270,5 +270,3 @@ declare global {
     "dialog-system-log-detail": DialogSystemLogDetail;
   }
 }
-
-customElements.define("dialog-system-log-detail", DialogSystemLogDetail);

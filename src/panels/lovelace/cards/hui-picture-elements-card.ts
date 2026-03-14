@@ -11,7 +11,10 @@ import { findEntities } from "../common/find-entities";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-import type { PictureElementsCardConfig } from "./types";
+import {
+  PREVIEW_CLICK_CALLBACK,
+  type PictureElementsCardConfig,
+} from "./types";
 import type { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
@@ -22,6 +25,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _elements?: LovelaceElement[];
 
@@ -98,6 +103,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       }
     }
 
+    if (this._elements && changedProps.has("preview")) {
+      for (const element of this._elements) {
+        element.preview = this.preview;
+      }
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | PictureElementsCardConfig
@@ -118,7 +129,16 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let image: string | undefined = this._config.image;
+    let image: string | undefined =
+      (typeof this._config?.image === "object" &&
+        this._config.image.media_content_id) ||
+      (this._config.image as string | undefined);
+
+    const darkModeImage: string | undefined =
+      (typeof this._config?.dark_mode_image === "object" &&
+        this._config.dark_mode_image.media_content_id) ||
+      (this._config.dark_mode_image as string | undefined);
+
     if (this._config.image_entity) {
       const stateObj: ImageEntity | PersonEntity | undefined =
         this.hass.states[this._config.image_entity];
@@ -148,7 +168,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
-            .darkModeImage=${this._config.dark_mode_image}
+            .darkModeImage=${darkModeImage}
+            @click=${this._handleImageClick}
           ></hui-image>
           ${this._elements}
         </div>
@@ -180,6 +201,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     if (this.hass) {
       element.hass = this.hass;
     }
+    element.preview = this.preview;
     element.addEventListener(
       "ll-rebuild",
       (ev) => {
@@ -202,6 +224,19 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._elements = this._elements!.map((curCardEl) =>
       curCardEl === elToReplace ? newCardEl : curCardEl
     );
+  }
+
+  private _handleImageClick(ev: MouseEvent): void {
+    if (!this.preview || !this._config?.[PREVIEW_CLICK_CALLBACK]) {
+      return;
+    }
+
+    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((ev.clientX - rect.left) / rect.width) * 100;
+    const y = ((ev.clientY - rect.top) / rect.height) * 100;
+
+    // only the edited card has this callback
+    this._config[PREVIEW_CLICK_CALLBACK](x, y);
   }
 }
 

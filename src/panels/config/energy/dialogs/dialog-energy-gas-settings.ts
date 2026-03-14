@@ -1,14 +1,15 @@
-import "@material/mwc-button/mwc-button";
-import { mdiFire } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-button";
+import "../../../../components/ha-markdown";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -24,11 +25,12 @@ import {
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];
+const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
@@ -38,6 +40,8 @@ export class DialogEnergyGasSettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsGasDialogParams;
+
+  @state() private _open = false;
 
   @state() private _source?: GasSourceTypeEnergyPreference;
 
@@ -49,9 +53,13 @@ export class DialogEnergyGasSettings
 
   @state() private _gas_units?: string[];
 
+  @state() private _flow_rate_units?: string[];
+
   @state() private _error?: string;
 
   private _excludeList?: string[];
+
+  private _excludeListFlowRate?: string[];
 
   public async showDialog(
     params: EnergySettingsGasDialogParams
@@ -78,19 +86,32 @@ export class DialogEnergyGasSettings
     this._gas_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "gas")
     ).units;
+    this._flow_rate_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate")
+    ).units;
     this._excludeList = this._params.gas_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
+    this._excludeListFlowRate = this._params.gas_sources
+      .map((entry) => entry.stat_rate)
+      .filter((id) => id && id !== this._source?.stat_rate) as string[];
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
     this._pickedDisplayUnit = undefined;
     this._error = undefined;
     this._excludeList = undefined;
+    this._excludeListFlowRate = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -109,30 +130,33 @@ export class DialogEnergyGasSettings
       ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
       : undefined;
 
+    const pickedUnitClass =
+      this._pickedDisplayUnit &&
+      this._energy_units?.includes(this._pickedDisplayUnit)
+        ? "energy"
+        : this._pickedDisplayUnit &&
+            this._gas_units?.includes(this._pickedDisplayUnit)
+          ? "volume"
+          : undefined;
+
     const externalSource =
       this._source.stat_energy_from &&
       isExternalStatistic(this._source.stat_energy_from);
 
     return html`
       <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiFire}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.gas.dialog.header")}`}
-        @closed=${this.closeDialog}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.gas.dialog.header"
+        )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
         <div>
           <p>
             ${this.hass.localize("ui.panel.config.energy.gas.dialog.paragraph")}
-          </p>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.energy.gas.dialog.entity_para",
-              { unit: pickableUnit }
-            )}
           </p>
           <p>
             ${this.hass.localize("ui.panel.config.energy.gas.dialog.note_para")}
@@ -151,7 +175,26 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
-          dialogInitialFocus
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.entity_para",
+            { unit: pickableUnit }
+          )}
+          autofocus
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitClass=${flowRateUnitClasses}
+          .value=${this._source.stat_rate}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.gas_flow_rate"
+          )}
+          .excludeStatistics=${this._excludeListFlowRate}
+          @value-changed=${this._flowRateStatisticChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.flow_rate_para",
+            { unit: this._flow_rate_units?.join(", ") || "" }
+          )}
         ></ha-statistic-picker>
 
         <p>
@@ -213,9 +256,33 @@ export class DialogEnergyGasSettings
               .hass=${this.hass}
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
-              .label=${`${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.energy.gas.dialog.cost_entity_input"
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+              )}
+              .helper=${pickedUnitClass
+                ? html`<ha-markdown
+                    .content=${this.hass.localize(
+                      "ui.panel.config.energy.gas.dialog.cost_entity_helper",
+                      pickedUnitClass === "energy"
+                        ? {
+                            currency: this.hass.config.currency,
+                            class: this.hass.localize(
+                              "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
+                            ),
+                            unit1: "kWh",
+                            unit2: "Wh",
+                          }
+                        : {
+                            currency: this.hass.config.currency,
+                            class: this.hass.localize(
+                              "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
+                            ),
+                            unit1: "m³",
+                            unit2: "ft³",
+                          }
+                    )}
+                  ></ha-markdown>`
+                : nothing}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
@@ -247,16 +314,22 @@ export class DialogEnergyGasSettings
             </ha-textfield>`
           : ""}
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
-          @click=${this._save}
-          .disabled=${!this._source.stat_energy_from}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._source.stat_energy_from}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -293,7 +366,14 @@ export class DialogEnergyGasSettings
     };
   }
 
-  private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      stat_rate: ev.detail.value || undefined,
+    };
+  }
+
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
       const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
       this._pickedDisplayUnit = getDisplayUnit(
@@ -301,11 +381,11 @@ export class DialogEnergyGasSettings
         ev.detail.value,
         metadata[0]
       );
+      if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
+        this._costs = "no-costs";
+      }
     } else {
       this._pickedDisplayUnit = undefined;
-    }
-    if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
-      this._costs = "no-costs";
     }
     this._source = {
       ...this._source!,
@@ -332,8 +412,9 @@ export class DialogEnergyGasSettings
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
+        ha-statistic-picker {
+          display: block;
+          margin-bottom: var(--ha-space-4);
         }
         ha-formfield {
           display: block;

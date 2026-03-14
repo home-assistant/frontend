@@ -4,23 +4,30 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
-import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
+import {
+  getSupervisorUpdateConfig,
+  updateSupervisorUpdateConfig,
+  type SupervisorUpdateConfig,
+} from "../../../data/supervisor/update";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
+import "./components/config/ha-backup-config-addon";
 import "./components/config/ha-backup-config-agents";
 import "./components/config/ha-backup-config-data";
 import type { BackupConfigData } from "./components/config/ha-backup-config-data";
@@ -28,13 +35,13 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
-import { documentationUrl } from "../../../util/documentation-url";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -44,10 +51,18 @@ class HaConfigBackupSettings extends LitElement {
 
   @state() private _config?: BackupConfig;
 
+  @state() private _supervisorUpdateConfig?: SupervisorUpdateConfig;
+
+  @state() private _supervisorUpdateConfigError?: string;
+
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
       this._config = this.config;
+    }
+
+    if (!this.hasUpdated && isComponentLoaded(this.hass, "hassio")) {
+      this._getSupervisorUpdateConfig();
     }
   }
 
@@ -58,6 +73,21 @@ class HaConfigBackupSettings extends LitElement {
     this._config = this.config;
   }
 
+  private async _getSupervisorUpdateConfig() {
+    try {
+      this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._supervisorUpdateConfigError = this.hass.localize(
+        "ui.panel.config.backup.settings.app_update_backup.error_load",
+        {
+          error: err?.message || err,
+        }
+      );
+    }
+  }
+
   private async _scrollToSection() {
     const hash = window.location.hash.substring(1);
     if (
@@ -66,12 +96,12 @@ class HaConfigBackupSettings extends LitElement {
       !this._config?.create_backup.include_all_addons &&
       this._config?.create_backup.include_addons?.length
     ) {
-      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
+      // Wait for the apps to be loaded before scrolling because the height can change and location section is below apps.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
         this._scrolltoHash();
       });
-      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      // Clear hash to cancel the scroll after 500ms if apps doesn't load
       setTimeout(() => {
         this._clearHash();
       }, 500);
@@ -110,25 +140,22 @@ class HaConfigBackupSettings extends LitElement {
       >
         ${supervisor
           ? html`
-              <ha-button-menu slot="toolbar-icon">
+              <ha-dropdown
+                slot="toolbar-icon"
+                @wa-select=${this._handleDropdownSelect}
+              >
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
-                <ha-list-item
-                  graphic="icon"
-                  @request-selected=${this._changeLocalLocation}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiHarddisk}
-                  ></ha-svg-icon>
+                <ha-dropdown-item value="change_local_location">
+                  <ha-svg-icon slot="icon" .path=${mdiHarddisk}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.backup.settings.menu.change_default_location"
                   )}
-                </ha-list-item>
-              </ha-button-menu>
+                </ha-dropdown-item>
+              </ha-dropdown>
             `
           : nothing}
 
@@ -145,9 +172,17 @@ class HaConfigBackupSettings extends LitElement {
                   "ui.panel.config.backup.settings.schedule.description"
                 )}
               </p>
+              ${this._supervisorUpdateConfigError
+                ? html`<ha-alert alert-type="error">
+                    ${this._supervisorUpdateConfigError}
+                  </ha-alert>`
+                : nothing}
               <ha-backup-config-schedule
                 .hass=${this.hass}
                 .value=${this._config}
+                .supervisor=${supervisor}
+                .supervisorUpdateConfig=${this._supervisorUpdateConfig}
+                @update-config-changed=${this._supervisorUpdateConfigChanged}
                 @value-changed=${this._scheduleConfigChanged}
               ></ha-backup-config-schedule>
             </div>
@@ -206,30 +241,113 @@ class HaConfigBackupSettings extends LitElement {
                   `
                 : nothing}
             </div>
+            ${!this.cloudStatus?.logged_in &&
+            isComponentLoaded(this.hass, "cloud")
+              ? html`<ha-card class="cloud-info">
+                  <div class="cloud-header">
+                    <img
+                      .src=${brandsUrl(
+                        {
+                          domain: "cloud",
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      alt="Nabu Casa logo"
+                      slot="start"
+                    />
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.backup.settings.locations.ha_cloud_backup",
+                        {
+                          home_assistant_cloud: "Home Assistant Cloud",
+                        }
+                      )}</span
+                    >
+                  </div>
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.locations.ha_cloud_description"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <ha-button appearance="plain" href="/config/cloud/login">
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                      )}
+                    </ha-button>
+                    <ha-button
+                      href="/config/cloud/register"
+                      appearance="filled"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                      )}
+                    </ha-button>
+                  </div>
+                </ha-card>`
+              : nothing}
             <div class="card-actions">
-              <a
+              <ha-button
+                size="small"
                 href=${documentationUrl(this.hass, "/integrations/#backup")}
                 target="_blank"
                 rel="noreferrer"
+                appearance="plain"
               >
-                <ha-button>
-                  <ha-svg-icon slot="icon" .path=${mdiOpenInNew}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.settings.locations.more_locations"
-                  )}
-                </ha-button>
-              </a>
+                <ha-svg-icon slot="start" .path=${mdiOpenInNew}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.backup.settings.locations.more_locations"
+                )}
+              </ha-button>
               ${supervisor
-                ? html`<a href="/config/storage">
-                    <ha-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.settings.locations.manage_network_storage"
-                      )}
-                    </ha-button>
-                  </a>`
+                ? html`<ha-button
+                    size="small"
+                    appearance="plain"
+                    href="/config/storage"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.locations.manage_network_storage"
+                    )}
+                  </ha-button>`
                 : nothing}
             </div>
           </ha-card>
+          ${supervisor
+            ? html`<ha-card>
+                <div class="card-header">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.settings.app_update_backup.title"
+                  )}
+                </div>
+                <div class="card-content">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.app_update_backup.description"
+                    )}
+                  </p>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.app_update_backup.local_only"
+                    )}
+                  </p>
+                  ${this._supervisorUpdateConfigError
+                    ? html`<ha-alert alert-type="error">
+                        ${this._supervisorUpdateConfigError}
+                      </ha-alert>`
+                    : nothing}
+                  <ha-backup-config-addon
+                    .hass=${this.hass}
+                    .supervisorUpdateConfig=${this._supervisorUpdateConfig}
+                    @update-config-changed=${this
+                      ._supervisorUpdateConfigChanged}
+                  ></ha-backup-config-addon>
+                </div>
+              </ha-card>`
+            : nothing}
           <ha-card>
             <div class="card-header">
               ${this.hass.localize(
@@ -254,12 +372,17 @@ class HaConfigBackupSettings extends LitElement {
     `;
   }
 
-  private async _changeLocalLocation(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _changeLocalLocation = () => {
     showLocalBackupLocationDialog(this, {});
+  };
+
+  private async _supervisorUpdateConfigChanged(ev) {
+    const config = ev.detail.value as SupervisorUpdateConfig;
+    this._supervisorUpdateConfig = {
+      ...this._supervisorUpdateConfig!,
+      ...config,
+    };
+    this._debounceSaveSupervisorUpdateConfig();
   }
 
   private _scheduleConfigChanged(ev) {
@@ -328,6 +451,32 @@ class HaConfigBackupSettings extends LitElement {
     this._debounceSave();
   }
 
+  private _debounceSaveSupervisorUpdateConfig = debounce(
+    () => this._saveSupervisorUpdateConfig(),
+    500
+  );
+
+  private async _saveSupervisorUpdateConfig() {
+    if (!this._supervisorUpdateConfig) {
+      return;
+    }
+    try {
+      await updateSupervisorUpdateConfig(
+        this.hass,
+        this._supervisorUpdateConfig
+      );
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._supervisorUpdateConfigError = this.hass.localize(
+        "ui.panel.config.backup.settings.app_update_backup.error_save",
+        {
+          error: err?.message || err?.toString(),
+        }
+      );
+    }
+  }
+
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
@@ -346,15 +495,29 @@ class HaConfigBackupSettings extends LitElement {
     fireEvent(this, "ha-refresh-backup-config");
   }
 
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "change_local_location") {
+      this._changeLocalLocation();
+    }
+  }
+
   static styles = css`
     ha-card {
       scroll-margin-top: 16px;
+    }
+    p {
+      color: var(--secondary-text-color);
+    }
+    p.error {
+      color: var(--error-color);
     }
     .content {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: flex;
       flex-direction: column;
       margin-bottom: 24px;
@@ -370,6 +533,30 @@ class HaConfigBackupSettings extends LitElement {
     }
     a {
       text-decoration: none;
+    }
+    .cloud-info {
+      margin: 0 16px 16px;
+    }
+    .cloud-info .cloud-header {
+      display: flex;
+      gap: var(--ha-space-4);
+      font-size: var(--ha-font-size-xl);
+      align-items: center;
+      padding: 16px;
+    }
+    .cloud-info .cloud-header img {
+      width: 48px;
+    }
+    .cloud-info .card-content {
+      padding-bottom: 16px;
+    }
+    .cloud-info .card-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    ha-button[size="small"] ha-svg-icon {
+      --mdc-icon-size: 16px;
     }
   `;
 }

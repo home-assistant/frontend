@@ -16,10 +16,11 @@ import {
   fetchConfigFlowInProgress,
   handleConfigFlowStep,
 } from "../../data/config_flow";
+import { listAgents } from "../../data/conversation";
 import {
   type ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import {
   fetchHassioAddonsInfo,
   installHassioAddon,
@@ -32,7 +33,6 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { listAgents } from "../../data/conversation";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {
@@ -80,7 +80,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
               ${this._detailState || "Installation can take several minutes"}
             </p>`
         : this._state === "ERROR"
-          ? html` <img
+          ? html`<img
                 src="/static/images/voice-assistant/error.png"
                 alt="Casita Home Assistant error logo"
               />
@@ -95,24 +95,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
                 )}
               </p>
-              <ha-button @click=${this._prevStep}
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._prevStep}
                 >${this.hass.localize("ui.common.back")}</ha-button
               >
-              <a
+              <ha-button
                 href=${documentationUrl(
                   this.hass,
                   "/voice_control/voice_remote_local_assistant/"
                 )}
                 target="_blank"
                 rel="noreferrer noopener"
+                size="small"
+                appearance="plain"
               >
-                <ha-button>
-                  <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.common.learn_more"
-                  )}</ha-button
-                >
-              </a>`
+                <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.common.learn_more"
+                )}</ha-button
+              >`
           : this._state === "NOT_SUPPORTED"
             ? html`<img
                   src="/static/images/voice-assistant/error.png"
@@ -128,27 +131,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                     "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
                   )}
                 </p>
-                <ha-button @click=${this._prevStep}
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._prevStep}
                   >${this.hass.localize("ui.common.back")}</ha-button
                 >
-                <a
+                <ha-button
                   href=${documentationUrl(
                     this.hass,
                     "/voice_control/voice_remote_local_assistant/"
                   )}
                   target="_blank"
                   rel="noreferrer noopener"
+                  appearance="plain"
+                  size="small"
                 >
-                  <ha-button>
-                    <ha-svg-icon
-                      .path=${mdiOpenInNew}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.common.learn_more"
-                    )}</ha-button
-                  >
-                </a>`
+                  <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.common.learn_more"
+                  )}</ha-button
+                >`
             : nothing}
     </div>`;
   }
@@ -346,7 +349,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     });
     if (step.type !== "create_entry") {
       throw new Error(
-        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
       );
     }
   }

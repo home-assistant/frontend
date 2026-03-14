@@ -2,13 +2,10 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import { checkConditionsMet } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
 import type { LovelaceHeadingBadgeConfig } from "./types";
@@ -21,7 +18,9 @@ declare global {
 }
 
 @customElement("hui-heading-badge")
-export class HuiHeadingBadge extends ReactiveElement {
+export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceHeadingBadgeConfig;
@@ -39,24 +38,20 @@ export class HuiHeadingBadge extends ReactiveElement {
 
   private _element?: LovelaceHeadingBadge;
 
-  private _listeners: MediaQueriesListener[] = [];
-
   protected createRenderRoot() {
     return this;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceHeadingBadgeConfig) {
+  protected _updateElement(config: LovelaceHeadingBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -137,31 +132,7 @@ export class HuiHeadingBadge extends ReactiveElement {
     }
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this.config?.visibility) {
-      return;
-    }
-    const conditions = this.config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
-
-    this._listeners = attachConditionMediaQueriesListeners(
-      this.config.visibility,
-      (matches) => {
-        this._updateVisibility(hasOnlyMediaQuery && matches);
-      }
-    );
-  }
-
-  private _updateVisibility(forceVisible?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -171,11 +142,20 @@ export class HuiHeadingBadge extends ReactiveElement {
       return;
     }
 
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

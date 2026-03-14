@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { NavigateOptions } from "../../common/navigate";
 import { navigate } from "../../common/navigate";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -22,6 +22,7 @@ declare global {
   }
 }
 
+@customElement("ha-panel-custom")
 export class HaPanelCustom extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -50,6 +51,7 @@ export class HaPanelCustom extends ReactiveElement {
       route: this.route,
     });
     this._setProperties = setProperties;
+    this.querySelector("iframe")?.classList.add("loaded");
   }
 
   public disconnectedCallback() {
@@ -90,6 +92,8 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
+    this.style.backgroundColor = "var(--primary-background-color)";
+
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
 
@@ -146,11 +150,17 @@ export class HaPanelCustom extends ReactiveElement {
     this.innerHTML = `
       <style>
         iframe {
-          border: 0;
+          border: none;
           width: 100%;
-          height: 100%;
+          height: 100vh;
+          height: 100dvh;
           display: block;
           background-color: var(--primary-background-color);
+          opacity: 0;
+          transition: opacity var(--ha-animation-duration-normal) ease;
+        }
+        iframe.loaded {
+          opacity: 1;
         }
       </style>
       <iframe ${titleAttr}></iframe>`.trim();
@@ -162,5 +172,3 @@ export class HaPanelCustom extends ReactiveElement {
     iframeDoc.close();
   }
 }
-
-customElements.define("ha-panel-custom", HaPanelCustom);

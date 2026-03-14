@@ -6,100 +6,161 @@ import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
 import { MediaPlayerEntityFeature } from "../../../../src/data/media-player";
 import { VacuumEntityFeature } from "../../../../src/data/vacuum";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
+import { FanEntityFeature } from "../../../../src/data/fan";
 
 const ENTITIES = [
-  getEntity("switch", "tv_outlet", "on", {
-    friendly_name: "TV outlet",
-    device_class: "outlet",
-  }),
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-    supported_color_modes: [LightColorMode.HS, LightColorMode.COLOR_TEMP],
-  }),
-  getEntity("light", "unavailable", "unavailable", {
-    friendly_name: "Unavailable entity",
-  }),
-  getEntity("lock", "front_door", "locked", {
-    friendly_name: "Front Door Lock",
-    device_class: "lock",
-    supported_features: LockEntityFeature.OPEN,
-  }),
-  getEntity("media_player", "living_room", "playing", {
-    friendly_name: "Living room speaker",
-    supported_features: MediaPlayerEntityFeature.VOLUME_SET,
-  }),
-  getEntity("climate", "thermostat", "heat", {
-    current_temperature: 73,
-    min_temp: 45,
-    max_temp: 95,
-    temperature: 80,
-    hvac_modes: ["heat", "cool", "auto", "off"],
-    friendly_name: "Thermostat",
-    hvac_action: "heating",
-  }),
-  getEntity("person", "paulus", "home", {
-    friendly_name: "Paulus",
-  }),
-  getEntity("vacuum", "first_floor_vacuum", "docked", {
-    friendly_name: "First floor vacuum",
-    supported_features:
-      VacuumEntityFeature.START +
-      VacuumEntityFeature.STOP +
-      VacuumEntityFeature.RETURN_HOME,
-  }),
-  getEntity("cover", "kitchen_shutter", "open", {
-    friendly_name: "Kitchen shutter",
-    device_class: "shutter",
-    supported_features:
-      CoverEntityFeature.CLOSE +
-      CoverEntityFeature.OPEN +
-      CoverEntityFeature.STOP,
-  }),
-  getEntity("cover", "pergola_roof", "open", {
-    friendly_name: "Pergola Roof",
-    supported_features:
-      CoverEntityFeature.CLOSE_TILT +
-      CoverEntityFeature.OPEN_TILT +
-      CoverEntityFeature.STOP_TILT,
-  }),
-  getEntity("input_number", "counter", "1.0", {
-    friendly_name: "Counter",
-    initial: 0,
-    min: 0,
-    max: 100,
-    step: 1,
-    mode: "slider",
-  }),
-  getEntity("climate", "dual_thermostat", "heat/cool", {
-    friendly_name: "Dual thermostat",
-    hvac_modes: ["off", "cool", "heat_cool", "auto", "dry", "fan_only"],
-    min_temp: 7,
-    max_temp: 35,
-    fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
-    preset_modes: ["home", "eco", "away"],
-    swing_modes: ["auto", "1", "2", "3", "off"],
-    switch_horizontal_modes: ["auto", "4", "5", "6", "off"],
-    current_temperature: 23,
-    target_temp_high: 24,
-    target_temp_low: 21,
-    fan_mode: "auto_low",
-    preset_mode: "home",
-    swing_mode: "auto",
-    swing_horizontal_mode: "off",
-    supported_features:
-      ClimateEntityFeature.TURN_ON +
-      ClimateEntityFeature.TURN_OFF +
-      ClimateEntityFeature.SWING_MODE +
-      ClimateEntityFeature.SWING_HORIZONTAL_MODE +
-      ClimateEntityFeature.PRESET_MODE +
-      ClimateEntityFeature.FAN_MODE +
-      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
-  }),
+  {
+    entity_id: "switch.tv_outlet",
+    state: "on",
+    attributes: {
+      friendly_name: "TV outlet",
+      device_class: "outlet",
+    },
+  },
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+      supported_color_modes: [LightColorMode.HS, LightColorMode.COLOR_TEMP],
+    },
+  },
+  {
+    entity_id: "light.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Unavailable entity",
+    },
+  },
+  {
+    entity_id: "lock.front_door",
+    state: "locked",
+    attributes: {
+      friendly_name: "Front Door Lock",
+      device_class: "lock",
+      supported_features: LockEntityFeature.OPEN,
+    },
+  },
+  {
+    entity_id: "media_player.living_room",
+    state: "playing",
+    attributes: {
+      friendly_name: "Living room speaker",
+      supported_features: MediaPlayerEntityFeature.VOLUME_SET,
+    },
+  },
+  {
+    entity_id: "climate.thermostat",
+    state: "heat",
+    attributes: {
+      current_temperature: 73,
+      min_temp: 45,
+      max_temp: 95,
+      temperature: 80,
+      hvac_modes: ["heat", "cool", "auto", "off"],
+      friendly_name: "Thermostat",
+      hvac_action: "heating",
+    },
+  },
+  {
+    entity_id: "person.paulus",
+    state: "home",
+    attributes: {
+      friendly_name: "Paulus",
+    },
+  },
+  {
+    entity_id: "vacuum.first_floor_vacuum",
+    state: "docked",
+    attributes: {
+      friendly_name: "First floor vacuum",
+      supported_features:
+        VacuumEntityFeature.START +
+        VacuumEntityFeature.STOP +
+        VacuumEntityFeature.RETURN_HOME,
+    },
+  },
+  {
+    entity_id: "cover.kitchen_shutter",
+    state: "open",
+    attributes: {
+      friendly_name: "Kitchen shutter",
+      device_class: "shutter",
+      supported_features:
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP,
+    },
+  },
+  {
+    entity_id: "cover.pergola_roof",
+    state: "open",
+    attributes: {
+      friendly_name: "Pergola Roof",
+      supported_features:
+        CoverEntityFeature.CLOSE_TILT +
+        CoverEntityFeature.OPEN_TILT +
+        CoverEntityFeature.STOP_TILT,
+    },
+  },
+  {
+    entity_id: "input_number.counter",
+    state: "1.0",
+    attributes: {
+      friendly_name: "Counter",
+      initial: 0,
+      min: 0,
+      max: 100,
+      step: 1,
+      mode: "slider",
+    },
+  },
+  {
+    entity_id: "climate.dual_thermostat",
+    state: "heat/cool",
+    attributes: {
+      friendly_name: "Dual thermostat",
+      hvac_modes: ["off", "cool", "heat_cool", "auto", "dry", "fan_only"],
+      min_temp: 7,
+      max_temp: 35,
+      fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
+      preset_modes: ["home", "eco", "away"],
+      swing_modes: ["auto", "1", "2", "3", "off"],
+      switch_horizontal_modes: ["auto", "4", "5", "6", "off"],
+      current_temperature: 23,
+      target_temp_high: 24,
+      target_temp_low: 21,
+      fan_mode: "auto_low",
+      preset_mode: "home",
+      swing_mode: "auto",
+      swing_horizontal_mode: "off",
+      supported_features:
+        ClimateEntityFeature.TURN_ON +
+        ClimateEntityFeature.TURN_OFF +
+        ClimateEntityFeature.SWING_MODE +
+        ClimateEntityFeature.SWING_HORIZONTAL_MODE +
+        ClimateEntityFeature.PRESET_MODE +
+        ClimateEntityFeature.FAN_MODE +
+        ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
+    },
+  },
+  {
+    entity_id: "fan.fan_demo",
+    state: "on",
+    attributes: {
+      friendly_name: "Ceiling fan",
+      device_class: "fan",
+      direction: "reverse",
+      supported_features:
+        FanEntityFeature.DIRECTION +
+        FanEntityFeature.SET_SPEED +
+        FanEntityFeature.OSCILLATE,
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -259,6 +320,33 @@ const CONFIGS = [
   entity: climate.dual_thermostat
   features:
   - type: target-temperature
+    `,
+  },
+  {
+    heading: "Fan direction feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-direction
+    `,
+  },
+  {
+    heading: "Fan speed feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-speed
+    `,
+  },
+  {
+    heading: "Fan oscillate feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-oscillate
     `,
   },
 ];

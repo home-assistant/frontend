@@ -1,6 +1,8 @@
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
+import { STATE_RUNNING } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -32,6 +34,10 @@ export class HaCameraStream extends LitElement {
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
+
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
 
@@ -53,12 +59,22 @@ export class HaCameraStream extends LitElement {
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
   public willUpdate(changedProps: PropertyValues): void {
-    if (
+    const entityChanged =
       changedProps.has("stateObj") &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id
-    ) {
+        this.stateObj.entity_id;
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const backendStarted =
+      changedProps.has("hass") &&
+      this.hass &&
+      this.stateObj &&
+      oldHass &&
+      this.hass.config.state === STATE_RUNNING &&
+      oldHass.config?.state !== STATE_RUNNING;
+
+    if (entityChanged || backendStarted) {
       this._getCapabilities();
       this._getPosterUrl();
     }
@@ -81,7 +97,8 @@ export class HaCameraStream extends LitElement {
     const streams = this._streams(
       this._capabilities?.frontend_stream_types,
       this._hlsStreams,
-      this._webRtcStreams
+      this._webRtcStreams,
+      this.muted
     );
     return html`${repeat(
       streams,
@@ -101,6 +118,10 @@ export class HaCameraStream extends LitElement {
           : this._connected
             ? computeMJPEGStreamUrl(this.stateObj)
             : this._posterUrl || ""}
+        style=${styleMap({
+          aspectRatio: this.aspectRatio,
+          objectFit: this.fitMode,
+        })}
         alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
@@ -117,6 +138,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-hls-player>`;
     }
 
@@ -131,6 +154,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-web-rtc-player>`;
     }
 
@@ -177,7 +202,8 @@ export class HaCameraStream extends LitElement {
     (
       supportedTypes?: StreamType[],
       hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
-      webRtcStreams?: { hasAudio: boolean; hasVideo: boolean }
+      webRtcStreams?: { hasAudio: boolean; hasVideo: boolean },
+      muted?: boolean
     ): Stream[] => {
       if (__DEMO__) {
         return [{ type: MJPEG_STREAM, visible: true }];
@@ -207,9 +233,10 @@ export class HaCameraStream extends LitElement {
         if (
           hlsStreams.hasVideo &&
           hlsStreams.hasAudio &&
-          !webRtcStreams.hasAudio
+          !webRtcStreams.hasAudio &&
+          !muted
         ) {
-          // webRTC stream is missing audio, use HLS
+          // webRTC stream is missing audio and audio is not muted, use HLS
           return [{ type: STREAM_TYPE_HLS, visible: true }];
         }
         if (webRtcStreams.hasVideo) {
@@ -257,6 +284,16 @@ export class HaCameraStream extends LitElement {
 
     img {
       width: 100%;
+    }
+
+    ha-web-rtc-player {
+      width: 100%;
+      height: 100%;
+    }
+
+    ha-hls-player {
+      width: 100%;
+      height: 100%;
     }
 
     .hidden {

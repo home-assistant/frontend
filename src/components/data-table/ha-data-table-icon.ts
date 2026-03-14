@@ -12,9 +12,8 @@ class HaDataTableIcon extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-tooltip .content=${this.tooltip}>
-        <ha-svg-icon .path=${this.path}></ha-svg-icon>
-      </ha-tooltip>
+      <ha-tooltip for="svg-icon">${this.tooltip}</ha-tooltip>
+      <ha-svg-icon id="svg-icon" .path=${this.path}></ha-svg-icon>
     `;
   }
 

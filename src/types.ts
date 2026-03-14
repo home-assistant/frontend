@@ -9,12 +9,19 @@ import type {
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
+import type {
+  EntityNameItem,
+  EntityNameOptions,
+} from "./common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./common/translations/localize";
-import type { AreaRegistryEntry } from "./data/area_registry";
-import type { DeviceRegistryEntry } from "./data/device_registry";
-import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import type { AreaRegistryEntry } from "./data/area/area_registry";
+import type { DeviceRegistryEntry } from "./data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "./data/entity/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
-import type { CoreFrontendUserData } from "./data/frontend";
+import type {
+  CoreFrontendSystemData,
+  CoreFrontendUserData,
+} from "./data/frontend";
 import type {
   FrontendLocaleData,
   getHassTranslations,
@@ -23,16 +30,15 @@ import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var, @typescript-eslint/naming-convention */
+  /* eslint-disable @typescript-eslint/naming-convention */
   var __DEV__: boolean;
   var __DEMO__: boolean;
   var __BUILD__: "modern" | "legacy";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
-  var __SUPERVISOR__: boolean;
   var __HASS_URL__: string;
-  /* eslint-enable no-var, @typescript-eslint/naming-convention */
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   interface Window {
     // Custom panel entry point url
@@ -134,6 +140,9 @@ export interface PanelInfo<T = Record<string, any> | null> {
   title: string | null;
   url_path: string;
   config_panel_domain?: string;
+  default_visible?: boolean;
+  require_admin?: boolean;
+  show_in_sidebar?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
@@ -198,9 +207,14 @@ export interface Context {
   user_id?: string | null;
 }
 
-export interface ServiceCallResponse {
+export interface ValuePart {
+  type: "value" | "literal" | "unit";
+  value: string;
+}
+
+export interface ServiceCallResponse<T = any> {
   context: Context;
-  response?: any;
+  response?: T;
 }
 
 export interface ServiceCallRequest {
@@ -242,20 +256,21 @@ export interface HomeAssistant {
   enableShortcuts: boolean;
   vibrate: boolean;
   debugConnection: boolean;
+  kioskMode: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
-  defaultPanel: string;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
-  userData?: CoreFrontendUserData | null;
+  userData?: CoreFrontendUserData;
+  systemData?: CoreFrontendSystemData;
   hassUrl(path?): string;
-  callService(
+  callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
     target?: ServiceCallRequest["target"],
     notifyOnError?: boolean,
     returnResponse?: boolean
-  ): Promise<ServiceCallResponse>;
+  ): Promise<ServiceCallResponse<T>>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
@@ -279,12 +294,23 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeValueToParts(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
+  formatEntityName(
+    stateObj: HassEntity,
+    type: EntityNameItem | EntityNameItem[],
+    separator?: EntityNameOptions
+  ): string;
 }
 
 export interface Route {

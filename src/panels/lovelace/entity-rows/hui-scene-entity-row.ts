@@ -1,16 +1,16 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
-import { UNAVAILABLE } from "../../../data/entity";
+import "../../../components/ha-button";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { activateScene } from "../../../data/scene";
 import type { HomeAssistant } from "../../../types";
+import { confirmAction } from "../common/confirm-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { ActionRowConfig, LovelaceRow } from "./types";
-import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -38,7 +38,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -46,20 +46,22 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <mwc-button
+        <ha-button
+          appearance="plain"
+          size="small"
           @click=${this._callService}
           .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
           ${this._config.action_name ||
           this.hass!.localize("ui.card.scene.activate")}
-        </mwc-button>
+        </ha-button>
       </hui-generic-entity-row>
     `;
   }
 
   static styles = css`
-    mwc-button {
+    ha-button {
       margin-right: -0.57em;
       margin-inline-end: -0.57em;
       margin-inline-start: initial;

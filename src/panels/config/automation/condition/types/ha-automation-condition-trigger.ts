@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";

@@ -26,7 +26,7 @@ export class HaTileBadge extends LitElement {
       line-height: 0;
       width: 16px;
       height: 16px;
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       background-color: var(--tile-badge-background-color);
       transition: background-color 280ms ease-in-out;
     }

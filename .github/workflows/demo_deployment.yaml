@@ -22,12 +22,12 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: dev
 
       - name: Setup Node
-        uses: actions/setup-node@v4.3.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -42,9 +42,8 @@ jobs:
 
       - name: Deploy to Netlify
         id: deploy
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=demo/dist --prod
+        run: |
+          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
@@ -58,12 +57,12 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: master
 
       - name: Setup Node
-        uses: actions/setup-node@v4.3.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -78,9 +77,8 @@ jobs:
 
       - name: Deploy to Netlify
         id: deploy
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=demo/dist --prod
+        run: |
+          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_SITE_ID }}

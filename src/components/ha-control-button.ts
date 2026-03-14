@@ -32,7 +32,8 @@ export class HaControlButton extends LitElement {
       --control-button-icon-color: var(--primary-text-color);
       --control-button-background-color: var(--disabled-color);
       --control-button-background-opacity: 0.2;
-      --control-button-border-radius: 10px;
+      --control-button-border-radius: var(--ha-border-radius-md);
+      --control-button-font-weight: var(--ha-font-weight-medium);
       --control-button-padding: 8px;
       --mdc-icon-size: 20px;
       --ha-ripple-color: var(--secondary-text-color);
@@ -58,8 +59,8 @@ export class HaControlButton extends LitElement {
       padding: var(--control-button-padding);
       box-sizing: border-box;
       line-height: inherit;
-      font-family: Roboto;
-      font-weight: 500;
+      font-family: var(--ha-font-family-body);
+      font-weight: var(--control-button-font-weight);
       outline: none;
       overflow: hidden;
       background: none;

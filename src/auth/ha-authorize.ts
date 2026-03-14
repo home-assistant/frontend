@@ -1,4 +1,5 @@
 /* eslint-disable lit/prefer-static-styles */
+import { mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +7,8 @@ import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
+import "../components/ha-button";
+import "../components/ha-svg-icon";
 import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
@@ -93,8 +96,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           background-color: var(--primary-background-color, #fafafa);
         }
         p {
-          font-size: 14px;
-          line-height: 20px;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-normal);
         }
         .card-content {
           background: var(
@@ -103,7 +106,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           );
           box-shadow: var(--ha-card-box-shadow, none);
           box-sizing: border-box;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           border-width: var(--ha-card-border-width, 1px);
           border-style: solid;
           border-color: var(
@@ -130,29 +136,12 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           justify-content: space-between;
           align-items: center;
         }
-        ha-language-picker {
-          width: 200px;
-          border-radius: 4px;
-          overflow: hidden;
-          --ha-select-height: 40px;
-          --mdc-select-fill-color: none;
-          --mdc-select-label-ink-color: var(--primary-text-color, #212121);
-          --mdc-select-ink-color: var(--primary-text-color, #212121);
-          --mdc-select-idle-line-color: transparent;
-          --mdc-select-hover-line-color: transparent;
-          --mdc-select-dropdown-icon-color: var(--primary-text-color, #212121);
-          --mdc-shape-small: 0;
-        }
-        .footer a {
-          text-decoration: none;
-          color: var(--primary-text-color);
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
+        .footer ha-svg-icon {
+          --mdc-icon-size: var(--ha-space-5);
         }
         h1 {
-          font-size: 28px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-normal);
           margin-top: 16px;
           margin-bottom: 16px;
         }
@@ -202,16 +191,20 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
+          button-style
           native-name
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
-        <a
+        <ha-button
+          appearance="plain"
+          variant="neutral"
           href="https://www.home-assistant.io/docs/authentication/"
           target="_blank"
           rel="noreferrer noopener"
-          >${this.localize("ui.panel.page-authorize.help")}</a
         >
+          ${this.localize("ui.panel.page-authorize.help")}
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-button>
       </div>
     `;
   }
@@ -265,7 +258,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       );
     }
 
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
 

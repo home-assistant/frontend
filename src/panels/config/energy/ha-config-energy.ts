@@ -1,7 +1,10 @@
 import "../../../layouts/hass-error-screen";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { mdiDownload, mdiFire, mdiLightningBolt, mdiWater } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+import { navigate } from "../../../common/navigate";
 import type {
   EnergyPreferencesValidation,
   EnergyInfo,
@@ -16,21 +19,46 @@ import {
 import type { StatisticsMetaData } from "../../../data/recorder";
 import { getStatisticMetadata } from "../../../data/recorder";
 import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
 import "./components/ha-energy-device-settings";
+import "./components/ha-energy-device-settings-water";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
+import { fileDownload } from "../../../util/file_download";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
+  device_consumption_water: [],
 };
+
+const TABS: PageNavigation[] = [
+  {
+    path: "/config/energy/electricity",
+    translationKey: "ui.panel.config.energy.tabs.electricity",
+    iconPath: mdiLightningBolt,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/gas",
+    translationKey: "ui.panel.config.energy.tabs.gas",
+    iconPath: mdiFire,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/water",
+    translationKey: "ui.panel.config.energy.tabs.water",
+    iconPath: mdiWater,
+    iconColor: "#F1C447",
+  },
+];
 
 @customElement("ha-config-energy")
 class HaConfigEnergy extends LitElement {
@@ -56,6 +84,19 @@ class HaConfigEnergy extends LitElement {
 
   @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
 
+  private get _currTab(): string {
+    return this.route.path.substring(1) || "electricity";
+  }
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("route")) {
+      const tab = this.route.path.substring(1);
+      if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
+        navigate(`${this.route.prefix}/electricity`, { replace: true });
+      }
+    }
+  }
+
   protected firstUpdated() {
     this._fetchConfig();
   }
@@ -77,18 +118,35 @@ class HaConfigEnergy extends LitElement {
     }
 
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config/lovelace/dashboards"}
-        .header=${this.hass.localize("ui.panel.config.energy.caption")}
+        .route=${this.route}
+        .tabs=${TABS}
       >
+        <ha-icon-button
+          slot="toolbar-icon"
+          .path=${mdiDownload}
+          .label=${this.hass.localize(
+            "ui.panel.config.devices.download_diagnostics"
+          )}
+          @click=${this._downloadDiagnostics}
+        ></ha-icon-button>
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
-        <div class="container">
+        <div class="content">${cache(this._renderTabContent())}</div>
+      </hass-tabs-subpage>
+    `;
+  }
+
+  private _renderTabContent(): TemplateResult | typeof nothing {
+    switch (this._currTab) {
+      case "electricity":
+        return html`
           <ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -111,20 +169,6 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>
-          <ha-energy-gas-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences!}
-            .statsMetadata=${this._statsMetadata}
-            .validationResult=${this._validationResult}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-gas-settings>
-          <ha-energy-water-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences!}
-            .statsMetadata=${this._statsMetadata}
-            .validationResult=${this._validationResult}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-water-settings>
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -132,9 +176,37 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
-        </div>
-      </hass-subpage>
-    `;
+        `;
+      case "gas":
+        return html`
+          <ha-energy-gas-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-gas-settings>
+        `;
+      case "water":
+        return html`
+          <ha-energy-water-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-water-settings>
+          <ha-energy-device-settings-water
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-device-settings-water>
+        `;
+      default:
+        return nothing;
+    }
   }
 
   private async _fetchConfig() {
@@ -185,19 +257,59 @@ class HaConfigEnergy extends LitElement {
     this._statsMetadata = statsMetadata;
   }
 
+  private async _downloadDiagnostics() {
+    const data = {
+      version: this.hass.config.version,
+      info: this._info,
+      preferences: this._preferences,
+      metadata: this._statsMetadata,
+      entities: Object.fromEntries(
+        Object.keys(this._statsMetadata || {}).map((key) => [
+          key,
+          this.hass.entities[key],
+        ])
+      ),
+      states: Object.fromEntries(
+        Object.keys(this._statsMetadata || {}).map((key) => [
+          key,
+          this.hass.states[key],
+        ])
+      ),
+      issues: this._validationResult,
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    fileDownload(url, "energy_diagnostics.json");
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        .content {
+          padding: 0 var(--ha-space-5);
+          max-width: 1040px;
+          margin: 0 auto;
+        }
+
         ha-alert {
           display: block;
-          margin: 8px;
+          margin: 12px auto;
+          max-width: 600px;
         }
-        .container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          grid-gap: 8px 8px;
-          margin: 8px;
+
+        ha-energy-grid-settings,
+        ha-energy-solar-settings,
+        ha-energy-battery-settings,
+        ha-energy-gas-settings,
+        ha-energy-water-settings,
+        ha-energy-device-settings,
+        ha-energy-device-settings-water {
+          display: block;
+          max-width: 600px;
+          margin: 0 auto 12px;
         }
       `,
     ];

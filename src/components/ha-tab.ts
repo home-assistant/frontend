@@ -21,7 +21,7 @@ export class HaTab extends LitElement {
         aria-label=${ifDefined(this.name)}
         @keydown=${this._handleKeyDown}
       >
-        ${this.narrow ? html`<slot name="icon"></slot>` : ""}
+        <slot name="icon"></slot>
         <span class="name">${this.name}</span>
         <ha-ripple></ha-ripple>
       </div>
@@ -50,6 +50,11 @@ export class HaTab extends LitElement {
       outline: none;
     }
 
+    :host(:not([narrow])) div {
+      flex-direction: row;
+      gap: var(--ha-space-2);
+    }
+
     .name {
       white-space: nowrap;
       overflow: hidden;
@@ -74,6 +79,14 @@ export class HaTab extends LitElement {
 
     :host([narrow]) div {
       padding: 0 4px;
+    }
+
+    ::slotted([slot="icon"]) {
+      margin-bottom: var(--ha-space-1);
+    }
+
+    :host(:not([narrow])) ::slotted([slot="icon"]) {
+      margin-bottom: 0;
     }
 
     div:focus-visible:before {

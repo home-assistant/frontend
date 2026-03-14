@@ -2,18 +2,15 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
-import { createErrorCardConfig } from "../create-element/create-element-base";
+import { checkConditionsMet } from "../common/validate-condition";
+import { tryCreateCardElement } from "../create-element/create-card-element";
+import { createErrorCardElement } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
@@ -24,7 +21,9 @@ declare global {
 }
 
 @customElement("hui-card")
-export class HuiCard extends ReactiveElement {
+export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceCardConfig;
@@ -44,20 +43,16 @@ export class HuiCard extends ReactiveElement {
 
   private _element?: LovelaceCard;
 
-  private _listeners: MediaQueriesListener[] = [];
-
   protected createRenderRoot() {
     return this;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
     this._updateVisibility();
   }
 
@@ -72,10 +67,28 @@ export class HuiCard extends ReactiveElement {
   public getGridOptions(): LovelaceGridOptions {
     const elementOptions = this.getElementGridOptions();
     const configOptions = this.getConfigGridOptions();
-    return {
+    const mergedConfig = {
       ...elementOptions,
       ...configOptions,
     };
+
+    // If the element has fixed rows or columns, we use the values from the element
+    // unless the user has already configured their own
+    if (elementOptions.fixed_rows) {
+      if (configOptions.rows === undefined) {
+        mergedConfig.rows = elementOptions.rows;
+      }
+      delete mergedConfig.min_rows;
+      delete mergedConfig.max_rows;
+    }
+    if (elementOptions.fixed_columns) {
+      if (configOptions.columns === undefined) {
+        mergedConfig.columns = elementOptions.columns;
+      }
+      delete mergedConfig.min_columns;
+      delete mergedConfig.max_columns;
+    }
+    return mergedConfig;
   }
 
   // options provided by the element
@@ -83,7 +96,9 @@ export class HuiCard extends ReactiveElement {
     if (!this._element) return {};
 
     if (this._element.getGridOptions) {
-      return this._element.getGridOptions();
+      const options = this._element.getGridOptions();
+      // Some custom cards might return undefined, so we ensure we return an object
+      return options || {};
     }
     if (this._element.getLayoutOptions) {
       // Disabled for now to avoid spamming the console, need to be re-enabled when hui-card performance are fixed
@@ -110,7 +125,7 @@ export class HuiCard extends ReactiveElement {
     return {};
   }
 
-  private _updateElement(config: LovelaceCardConfig) {
+  protected _updateElement(config: LovelaceCardConfig) {
     if (!this._element) {
       return;
     }
@@ -120,7 +135,15 @@ export class HuiCard extends ReactiveElement {
   }
 
   private _loadElement(config: LovelaceCardConfig) {
-    this._element = createCardElement(config);
+    try {
+      this._element = tryCreateCardElement(config);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : undefined;
+      this._element = createErrorCardElement({
+        type: "error",
+        message: errorMessage,
+      });
+    }
     this._elementConfig = config;
     if (this.hass) {
       this._element.hass = this.hass;
@@ -191,7 +214,9 @@ export class HuiCard extends ReactiveElement {
             this._element.hass = this.hass;
           }
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("preview")) {
@@ -199,8 +224,13 @@ export class HuiCard extends ReactiveElement {
           this._element.preview = this.preview;
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
+          if (this.hasUpdated) {
+            fireEvent(this, "card-updated");
+          }
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("layout")) {
@@ -209,7 +239,9 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).isPanel = this.layout === "panel";
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
     }
@@ -219,31 +251,7 @@ export class HuiCard extends ReactiveElement {
     }
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this.config?.visibility) {
-      return;
-    }
-    const conditions = this.config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
-
-    this._listeners = attachConditionMediaQueriesListeners(
-      this.config.visibility,
-      (matches) => {
-        this._updateVisibility(hasOnlyMediaQuery && matches);
-      }
-    );
-  }
-
-  private _updateVisibility(forceVisible?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -253,11 +261,20 @@ export class HuiCard extends ReactiveElement {
       return;
     }
 
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

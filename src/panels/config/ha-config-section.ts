@@ -38,6 +38,7 @@ export class HaConfigSection extends LitElement {
     :host {
       display: block;
     }
+
     .content {
       padding: 28px 20px 0;
       max-width: 1040px;
@@ -61,14 +62,12 @@ export class HaConfigSection extends LitElement {
     }
 
     .header {
-      font-family: var(--paper-font-headline_-_font-family);
-      -webkit-font-smoothing: var(
-        --paper-font-headline_-_-webkit-font-smoothing
-      );
-      font-size: var(--paper-font-headline_-_font-size);
-      font-weight: var(--paper-font-headline_-_font-weight);
-      letter-spacing: var(--paper-font-headline_-_letter-spacing);
-      line-height: var(--paper-font-headline_-_line-height);
+      font-family: var(--ha-font-family-body);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      font-size: var(--ha-font-size-2xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       opacity: var(--dark-primary-opacity);
     }
 
@@ -77,15 +76,14 @@ export class HaConfigSection extends LitElement {
     }
 
     .intro {
-      font-family: var(--paper-font-subhead_-_font-family);
-      -webkit-font-smoothing: var(
-        --paper-font-subhead_-_-webkit-font-smoothing
-      );
-      font-weight: var(--paper-font-subhead_-_font-weight);
-      line-height: var(--paper-font-subhead_-_line-height);
+      font-family: var(--ha-font-family-body);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       width: 100%;
       opacity: var(--dark-primary-opacity);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       padding-bottom: 20px;
     }
 

@@ -23,6 +23,10 @@ class BluetoothConfigDashboardRouter extends HassRouterPage {
         tag: "bluetooth-config-dashboard",
         load: () => import("./bluetooth-config-dashboard"),
       },
+      "adapter-info": {
+        tag: "bluetooth-adapter-info-page",
+        load: () => import("./bluetooth-adapter-info-page"),
+      },
       "advertisement-monitor": {
         tag: "bluetooth-advertisement-monitor",
         load: () => import("./bluetooth-advertisement-monitor"),
@@ -30,6 +34,10 @@ class BluetoothConfigDashboardRouter extends HassRouterPage {
       "connection-monitor": {
         tag: "bluetooth-connection-monitor",
         load: () => import("./bluetooth-connection-monitor"),
+      },
+      visualization: {
+        tag: "bluetooth-network-visualization",
+        load: () => import("./bluetooth-network-visualization"),
       },
     },
   };

@@ -5,12 +5,11 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   CallServiceActionConfig,
@@ -19,6 +18,7 @@ import type {
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -186,7 +186,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     .entity:focus {
       outline: none;
       background: var(--divider-color);
-      border-radius: 14px;
+      border-radius: var(--ha-border-radius-lg);
       padding: 4px;
       margin-top: -4px;
       margin-bottom: 8px;
@@ -199,7 +199,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       text-overflow: ellipsis;
     }
     .name {
-      min-height: var(--paper-font-body1_-_line-height, 20px);
+      min-height: var(--ha-line-height-normal);
     }
     .warning {
       cursor: default;
@@ -217,7 +217,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       background-color: var(--warning-color);
     }
     state-badge {
@@ -252,7 +252,11 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       </div>`;
     }
 
-    const name = entityConf.name ?? computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      entityConf.name
+    );
 
     return html`
       <div

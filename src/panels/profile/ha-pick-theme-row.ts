@@ -1,32 +1,54 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
 import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
-  DEFAULT_ACCENT_COLOR,
-  DEFAULT_PRIMARY_COLOR,
-} from "../../resources/styles-data";
-import type { HomeAssistant } from "../../types";
+  saveThemePreferences,
+  subscribeThemePreferences,
+} from "../../data/theme";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import {
+  DefaultAccentColor,
+  DefaultPrimaryColor,
+} from "../../resources/theme/color/color.globals";
+import type { HomeAssistant, ThemeSettings } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { clearSelectedThemeState } from "../../util/ha-pref-storage";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
 
 @customElement("ha-pick-theme-row")
-export class HaPickThemeRow extends LitElement {
+export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
   @state() _themeNames: string[] = [];
+
+  @state() private _userTheme?: ThemeSettings | null;
+
+  @state() private _migrating = false;
+
+  protected hassSubscribe() {
+    return [
+      subscribeThemePreferences(this.hass, ({ value }) => {
+        this._userTheme = value;
+      }).catch(() => {
+        this._userTheme = undefined;
+        return () => undefined;
+      }),
+    ];
+  }
 
   protected render(): TemplateResult {
     const hasThemes =
@@ -40,6 +62,11 @@ export class HaPickThemeRow extends LitElement {
         : this.hass.themes.default_theme;
 
     const themeSettings = this.hass.selectedTheme;
+    const localTheme = this._getLocalTheme();
+    const showMigration =
+      this._userTheme !== undefined &&
+      this._userTheme === null &&
+      localTheme !== null;
 
     return html`
       <ha-settings-row .narrow=${this.narrow}>
@@ -66,19 +93,18 @@ export class HaPickThemeRow extends LitElement {
           .disabled=${!hasThemes}
           .value=${this.hass.selectedTheme?.theme || USE_DEFAULT_THEME}
           @selected=${this._handleThemeSelection}
-          naturalMenuWidth
+          .options=${[
+            {
+              value: USE_DEFAULT_THEME,
+              label: this.hass.localize("ui.panel.profile.themes.use_default"),
+            },
+            { value: HOME_ASSISTANT_THEME, label: "Home Assistant" },
+            ...this._themeNames.map((theme) => ({
+              value: theme,
+              label: theme,
+            })),
+          ]}
         >
-          <mwc-list-item .value=${USE_DEFAULT_THEME}>
-            ${this.hass.localize("ui.panel.profile.themes.use_default")}
-          </mwc-list-item>
-          <mwc-list-item .value=${HOME_ASSISTANT_THEME}>
-            Home Assistant
-          </mwc-list-item>
-          ${this._themeNames.map(
-            (theme) => html`
-              <mwc-list-item .value=${theme}>${theme}</mwc-list-item>
-            `
-          )}
         </ha-select>
       </ha-settings-row>
       ${curTheme === HOME_ASSISTANT_THEME ||
@@ -128,8 +154,7 @@ export class HaPickThemeRow extends LitElement {
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-textfield
-                    .value=${themeSettings?.primaryColor ||
-                    DEFAULT_PRIMARY_COLOR}
+                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
@@ -138,7 +163,7 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   <ha-textfield
-                    .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
+                    .value=${themeSettings?.accentColor || DefaultAccentColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
@@ -147,13 +172,39 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
-                    ? html` <mwc-button @click=${this._resetColors}>
+                    ? html` <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._resetColors}
+                      >
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
-                      </mwc-button>`
+                      </ha-button>`
                     : ""}
                 </div>`
               : ""}
           </div>`
+        : ""}
+      ${showMigration
+        ? html`
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.profile.themes.migrate_header")}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.themes.migrate_description"
+                )}
+              </span>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .disabled=${this._migrating}
+                @click=${this._migrateThemePreferences}
+              >
+                ${this.hass.localize("ui.panel.profile.themes.migrate_button")}
+              </ha-button>
+            </ha-settings-row>
+          `
         : ""}
     `;
   }
@@ -171,6 +222,12 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
+
+    // normalize primary color if needed for contrast
+    if (target.name === "primaryColor") {
+      target.value = normalizeLuminance(target.value);
+    }
+
     fireEvent(this, "settheme", { [target.name]: target.value });
   }
 
@@ -182,10 +239,12 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
-    if (!(themeName in this.hass.themes.themes)) {
+    const theme = this.hass.themes.themes[themeName];
+    if (!theme) {
       return false; // User's theme no longer exists
     }
-    return "modes" in this.hass.themes.themes[themeName];
+
+    return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
 
   private _handleDarkMode(ev: CustomEvent) {
@@ -201,8 +260,8 @@ export class HaPickThemeRow extends LitElement {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev) {
-    const theme = ev.target.value;
+  private _handleThemeSelection(ev: HaSelectSelectEvent) {
+    const theme = ev.detail.value;
     if (theme === this.hass.selectedTheme?.theme) {
       return;
     }
@@ -222,6 +281,31 @@ export class HaPickThemeRow extends LitElement {
       primaryColor: undefined,
       accentColor: undefined,
     });
+  }
+
+  private _getLocalTheme(): ThemeSettings | null {
+    return this.hass.selectedTheme ?? null;
+  }
+
+  private async _migrateThemePreferences() {
+    const localTheme = this._getLocalTheme();
+    if (!localTheme) {
+      return;
+    }
+    this._migrating = true;
+    try {
+      await saveThemePreferences(this.hass, localTheme);
+      clearSelectedThemeState();
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize("ui.panel.profile.themes.migrate_success"),
+      });
+    } catch (_err: any) {
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize("ui.panel.profile.themes.migrate_failed"),
+      });
+    } finally {
+      this._migrating = false;
+    }
   }
 
   static styles = css`
@@ -244,10 +328,18 @@ export class HaPickThemeRow extends LitElement {
       flex-grow: 1;
     }
     ha-textfield {
-      --text-field-padding: 8px;
+      --text-field-padding-top: 8px;
+      --text-field-padding-bottom: 8px;
+      --text-field-padding-start: 8px;
+      --text-field-padding-end: 8px;
       min-width: 75px;
       flex-grow: 1;
       margin: 0 4px;
+    }
+
+    ha-select {
+      display: block;
+      width: 100%;
     }
   `;
 }

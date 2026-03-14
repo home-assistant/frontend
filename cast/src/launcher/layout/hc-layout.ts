@@ -86,19 +86,20 @@ class HcLayout extends LitElement {
     .card-header {
       color: var(--ha-card-header-color, var(--primary-text-color));
       font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, 24px);
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: 32px;
+      line-height: var(--ha-line-height-condensed);
       padding: 24px 16px 16px;
       display: block;
       margin: 0;
     }
 
     .hero {
-      border-radius: 4px 4px 0 0;
+      border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm)
+        var(--ha-border-radius-square) var(--ha-border-radius-square);
     }
     .subtitle {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--secondary-text-color);
       line-height: initial;
     }
@@ -113,7 +114,7 @@ class HcLayout extends LitElement {
     }
 
     :host ::slotted(.section-header) {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       padding: 4px 16px;
       text-transform: uppercase;
     }
@@ -135,7 +136,7 @@ class HcLayout extends LitElement {
 
     .footer {
       text-align: center;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       padding: 8px 0 24px;
       color: var(--secondary-text-color);
     }

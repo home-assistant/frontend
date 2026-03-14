@@ -1,12 +1,13 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { Action, ParallelAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
+import type HaAutomationAction from "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-parallel")
@@ -15,7 +16,14 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: ParallelAction;
+
+  @property({ type: Boolean }) public indent = false;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
 
   public static get defaultConfig(): ParallelAction {
     return {
@@ -29,9 +37,11 @@ export class HaParallelAction extends LitElement implements ActionElement {
     return html`
       <ha-automation-action
         .actions=${action.parallel}
+        .narrow=${this.narrow}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
     `;
   }
@@ -45,6 +55,14 @@ export class HaParallelAction extends LitElement implements ActionElement {
         parallel: value,
       },
     });
+  }
+
+  public expandAll() {
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._actionElement?.collapseAll();
   }
 
   static get styles(): CSSResultGroup {

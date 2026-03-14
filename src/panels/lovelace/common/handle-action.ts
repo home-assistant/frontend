@@ -53,7 +53,7 @@ export const handleAction = async (
         (e) => e.user === hass!.user?.id
       ))
   ) {
-    forwardHaptic("warning");
+    forwardHaptic(node, "warning");
 
     let serviceName;
     if (
@@ -67,7 +67,10 @@ export const handleAction = async (
         await hass.loadBackendTranslation("title");
         const localize = await hass.loadBackendTranslation("services");
         serviceName = `${domainToName(localize, domain)}: ${
-          localize(`component.${domain}.services.${serviceName}.name`) ||
+          localize(
+            `component.${domain}.services.${service}.name`,
+            hass.services[domain][service].description_placeholders
+          ) ||
           serviceDomains[domain][service].name ||
           service
         }`;
@@ -86,6 +89,9 @@ export const handleAction = async (
               ) ||
               actionConfig.action,
           }),
+        title: actionConfig.confirmation.title,
+        dismissText: actionConfig.confirmation.dismiss_text,
+        confirmText: actionConfig.confirmation.confirm_text,
       }))
     ) {
       return;
@@ -107,7 +113,7 @@ export const handleAction = async (
             "ui.panel.lovelace.cards.actions.no_entity_more_info"
           ),
         });
-        forwardHaptic("failure");
+        forwardHaptic(node, "failure");
       }
       break;
     }
@@ -122,7 +128,7 @@ export const handleAction = async (
             "ui.panel.lovelace.cards.actions.no_navigation_path"
           ),
         });
-        forwardHaptic("failure");
+        forwardHaptic(node, "failure");
       }
       break;
     case "url": {
@@ -132,21 +138,21 @@ export const handleAction = async (
         showToast(node, {
           message: hass.localize("ui.panel.lovelace.cards.actions.no_url"),
         });
-        forwardHaptic("failure");
+        forwardHaptic(node, "failure");
       }
       break;
     }
     case "toggle": {
       if (config.entity) {
         toggleEntity(hass, config.entity!);
-        forwardHaptic("light");
+        forwardHaptic(node, "light");
       } else {
         showToast(node, {
           message: hass.localize(
             "ui.panel.lovelace.cards.actions.no_entity_toggle"
           ),
         });
-        forwardHaptic("failure");
+        forwardHaptic(node, "failure");
       }
       break;
     }
@@ -156,7 +162,7 @@ export const handleAction = async (
         showToast(node, {
           message: hass.localize("ui.panel.lovelace.cards.actions.no_action"),
         });
-        forwardHaptic("failure");
+        forwardHaptic(node, "failure");
         return;
       }
       const [domain, service] = (actionConfig.perform_action ||
@@ -167,7 +173,7 @@ export const handleAction = async (
         actionConfig.data ?? actionConfig.service_data,
         actionConfig.target
       );
-      forwardHaptic("light");
+      forwardHaptic(node, "light");
       break;
     }
     case "assist": {

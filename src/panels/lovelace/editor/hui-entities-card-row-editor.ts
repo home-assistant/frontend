@@ -1,4 +1,4 @@
-import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -59,7 +59,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             (entityConf, index) => html`
               <div class="entity">
                 <div class="handle">
-                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                 </div>
                 ${entityConf.type
                   ? html`
@@ -80,7 +80,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                     `
                   : html`
                       <ha-entity-picker
-                        allow-custom-entity
                         hide-clear-icon
                         .hass=${this.hass}
                         .value=${(entityConf as EntityConfig).entity}
@@ -115,6 +114,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
+        add-button
       ></ha-entity-picker>
     `;
   }
@@ -181,10 +181,14 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   static styles = css`
     ha-entity-picker {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
+    }
+    ha-sortable ha-entity-picker {
+      margin-top: 0;
     }
     .add-entity {
       display: block;
+      margin-bottom: var(--ha-space-1);
       margin-left: 31px;
       margin-right: 71px;
       margin-inline-start: 31px;
@@ -194,6 +198,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     .entity {
       display: flex;
       align-items: center;
+      margin-top: var(--ha-space-2);
     }
 
     .entity .handle {
@@ -210,11 +215,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .entity ha-entity-picker {
       flex-grow: 1;
+      min-width: 0;
     }
 
     .special-row {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -228,12 +234,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
   `;

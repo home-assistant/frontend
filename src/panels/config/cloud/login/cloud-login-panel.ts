@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -7,9 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
-import "../../../../components/ha-button-menu";
+import "../../../../components/ha-svg-icon";
 import { removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -19,9 +21,10 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "./cloud-login";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
+import "./cloud-login";
 import type { CloudLogin } from "./cloud-login";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {
@@ -44,26 +47,26 @@ export class CloudLoginPanel extends LitElement {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="reset">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.reset_cloud_data"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="download">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.download_support_package"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -123,7 +126,7 @@ export class CloudLoginPanel extends LitElement {
             ></cloud-login>
 
             <ha-card outlined>
-              <mwc-list>
+              <ha-list>
                 <ha-list-item @click=${this._handleRegister} twoline hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.login.start_trial"
@@ -135,7 +138,7 @@ export class CloudLoginPanel extends LitElement {
                   </span>
                   <ha-icon-next slot="meta"></ha-icon-next>
                 </ha-list-item>
-              </mwc-list>
+              </ha-list>
             </ha-card>
           </ha-config-section>
         </div>
@@ -164,13 +167,15 @@ export class CloudLoginPanel extends LitElement {
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
-  private _handleMenuAction(ev) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "reset":
         this._deleteCloudData();
         break;
-      case 1:
+      case "download":
         this._downloadSupportPackage();
+        break;
     }
   }
 

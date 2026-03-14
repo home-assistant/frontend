@@ -8,6 +8,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { IconElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const iconElementConfigStruct = object({
@@ -38,21 +39,32 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "",
         type: "optional_actions",
         flatten: true,
-        schema: (["hold_action", "double_tap_action"] as const).map(
-          (action) => ({
-            name: action,
+        schema: [
+          {
+            name: "double_tap_action",
             selector: {
               ui_action: {
-                default_action: "none" as const,
+                default_action: "none",
               },
             },
-          })
-        ),
+            context: ACTION_RELATED_CONTEXT,
+          },
+        ],
       },
     ],
   },

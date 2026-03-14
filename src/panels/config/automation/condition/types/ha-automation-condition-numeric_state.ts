@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   boolean,
@@ -11,12 +12,12 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateCondition } from "../../../../../data/automation";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
 
 const numericStateConditionStruct = object({
@@ -85,72 +86,7 @@ export default class HaNumericStateCondition extends LitElement {
           name: "attribute",
           selector: {
             attribute: {
-              hide_attributes: [
-                "access_token",
-                "auto_update",
-                "available_modes",
-                "away_mode",
-                "changed_by",
-                "code_format",
-                "color_modes",
-                "current_activity",
-                "device_class",
-                "editable",
-                "effect_list",
-                "effect",
-                "entity_picture",
-                "event_type",
-                "event_types",
-                "fan_mode",
-                "fan_modes",
-                "fan_speed_list",
-                "forecast",
-                "friendly_name",
-                "frontend_stream_type",
-                "has_date",
-                "has_time",
-                "hs_color",
-                "hvac_mode",
-                "hvac_modes",
-                "icon",
-                "media_album_name",
-                "media_artist",
-                "media_content_type",
-                "media_position_updated_at",
-                "media_title",
-                "next_dawn",
-                "next_dusk",
-                "next_midnight",
-                "next_noon",
-                "next_rising",
-                "next_setting",
-                "operation_list",
-                "operation_mode",
-                "options",
-                "preset_mode",
-                "preset_modes",
-                "release_notes",
-                "release_summary",
-                "release_url",
-                "restored",
-                "rgb_color",
-                "rgbw_color",
-                "shuffle",
-                "sound_mode_list",
-                "sound_mode",
-                "source_list",
-                "source_type",
-                "source",
-                "state_class",
-                "supported_features",
-                "swing_mode",
-                "swing_mode",
-                "swing_modes",
-                "title",
-                "token",
-                "unit_of_measurement",
-                "xy_color",
-              ],
+              hide_attributes: NON_NUMERIC_ATTRIBUTES,
             },
           },
           context: {

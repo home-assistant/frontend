@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAbTesting,
   mdiGestureTap,
@@ -10,22 +9,23 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-dialog";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
   DeviceAction,
   DeviceCondition,
   DeviceTrigger,
-} from "../../../../data/device_automation";
+} from "../../../../data/device/device_automation";
 import {
   fetchDeviceActions,
   fetchDeviceConditions,
   fetchDeviceTriggers,
   sortDeviceAutomations,
-} from "../../../../data/device_automation";
+} from "../../../../data/device/device_automation";
 import type { ScriptConfig } from "../../../../data/script";
 import { showScriptEditor } from "../../../../data/script";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -44,12 +44,19 @@ export class DialogDeviceAutomation extends LitElement {
 
   @state() private _params?: DeviceAutomationDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -137,17 +144,17 @@ export class DialogDeviceAutomation extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, title)}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
-        <mwc-list
+        <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel="Create new automation"
           rootTabbable
-          dialogInitialFocus
+          autofocus
         >
           ${this._triggers.length
             ? html`
@@ -244,7 +251,7 @@ export class DialogDeviceAutomation extends LitElement {
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
-        </mwc-list>
+        </ha-list>
       </ha-dialog>
     `;
   }

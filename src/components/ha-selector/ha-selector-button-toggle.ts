@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -90,7 +89,7 @@ export class HaButtonToggleSelector extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: var(--ha-space-2);
       align-items: center;
     }
     @media all and (max-width: 600px) {

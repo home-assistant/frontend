@@ -29,6 +29,10 @@ export class HaDateTimeSelector extends LitElement {
 
   @query("ha-time-input") private _timeInput!: HaTimeInput;
 
+  public reportValidity(): boolean {
+    return this._dateInput.reportValidity() && this._timeInput.reportValidity();
+  }
+
   protected render() {
     const values =
       typeof this.value === "string" ? this.value.split(" ") : undefined;
@@ -54,7 +58,9 @@ export class HaDateTimeSelector extends LitElement {
         ></ha-time-input>
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""}
     `;
   }

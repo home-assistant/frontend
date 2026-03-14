@@ -1,17 +1,16 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
 
 import {
   AUTOMATION_DEFAULT_MAX,
@@ -28,16 +27,16 @@ import type { AutomationModeDialog } from "./show-dialog-automation-mode";
 class DialogAutomationMode extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
-  private _params!: AutomationModeDialog;
+  @state() private _params?: AutomationModeDialog;
 
   @state() private _newMode: (typeof MODES)[number] = AUTOMATION_DEFAULT_MODE;
 
   @state() private _newMax?: number;
 
   public showDialog(params: AutomationModeDialog): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
     this._newMode = params.config.mode || AUTOMATION_DEFAULT_MODE;
     this._newMax = isMaxMode(this._newMode)
@@ -45,18 +44,21 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       : undefined;
   }
 
-  public closeDialog() {
-    this._params.onClose();
-
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
+  public closeDialog(): boolean {
+    this._open = false;
     return true;
   }
 
+  private _dialogClosed() {
+    if (this._params?.onClose) {
+      this._params.onClose();
+    }
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -66,33 +68,21 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        @closed=${this.closeDialog}
-        .heading=${title}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <div slot="title">${title}</div>
-          <a
-            href=${documentationUrl(this.hass, "/docs/automation/modes/")}
-            slot="actionItems"
-            target="_blank"
-            rel="noopener noreferer"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.modes.learn_more"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
-        </ha-dialog-header>
+        <ha-icon-button
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.modes.learn_more"
+          )}
+          .path=${mdiHelpCircleOutline}
+          href=${documentationUrl(this.hass, "/docs/automation/modes/")}
+          slot="headerActionItems"
+          target="_blank"
+          rel="noopener noreferrer"
+        ></ha-icon-button>
         <ha-md-list
           role="listbox"
           tabindex="0"
@@ -158,12 +148,20 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             `
           : nothing}
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button @click=${this._save} slot="primaryAction">
-          ${this.hass.localize("ui.panel.config.automation.editor.change_mode")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._save}>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.change_mode"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -187,6 +185,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
   }
 
   private _save(): void {
+    if (!this._params) {
+      return;
+    }
     this._params.updateConfig({
       ...this._params.config,
       mode: this._newMode,
@@ -209,8 +210,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
         .options {
           padding: 0 24px 24px 24px;
         }
-        ha-dialog-header a {
-          color: inherit;
+        ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];

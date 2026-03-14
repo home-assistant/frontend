@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -25,8 +25,9 @@ export class HaHelpTooltip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-tooltip .placement=${this.position} .content=${this.label}>
-        <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+      <ha-svg-icon id="svg-icon" .path=${mdiHelpCircleOutline}></ha-svg-icon>
+      <ha-tooltip for="svg-icon" .placement=${this.position}>
+        ${this.label}
       </ha-tooltip>
     `;
   }

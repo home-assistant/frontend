@@ -1,7 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
+import "../ha-expansion-panel";
 import "./ha-form";
+import type { HaForm } from "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -10,7 +12,7 @@ import type {
 } from "./types";
 
 @customElement("ha-form-expandable")
-export class HaFormExpendable extends LitElement implements HaFormElement {
+export class HaFormExpandable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
@@ -33,6 +35,12 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public localizeValue?: (
     key: string
   ) => string;
+
+  @query("ha-form", true) private _form?: HaForm;
+
+  public reportValidity(): boolean {
+    return this._form?.reportValidity() ?? true;
+  }
 
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
@@ -119,8 +127,8 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     ha-expansion-panel {
       display: block;
       --expansion-panel-content-padding: 0;
-      border-radius: 6px;
-      --ha-card-border-radius: 6px;
+      border-radius: var(--ha-border-radius-md);
+      --ha-card-border-radius: var(--ha-border-radius-md);
     }
     ha-svg-icon,
     ha-icon {
@@ -131,6 +139,6 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-form-expandable": HaFormExpendable;
+    "ha-form-expandable": HaFormExpandable;
   }
 }

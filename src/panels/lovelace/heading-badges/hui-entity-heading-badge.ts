@@ -7,7 +7,6 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-heading-badge";
@@ -16,6 +15,8 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { DEFAULT_CONFIG } from "../editor/heading-badge-editor/hui-entity-heading-badge-editor";
@@ -39,10 +40,26 @@ export class HuiEntityHeadingBadge
   implements LovelaceHeadingBadge
 {
   public static async getConfigElement(): Promise<LovelaceHeadingBadgeEditor> {
-    await import(
-      "../editor/heading-badge-editor/hui-entity-heading-badge-editor"
-    );
+    await import("../editor/heading-badge-editor/hui-entity-heading-badge-editor");
     return document.createElement("hui-heading-entity-editor");
+  }
+
+  public static getStubConfig(hass: HomeAssistant): EntityHeadingBadgeConfig {
+    const includeDomains = ["sensor", "light", "switch"];
+    const maxEntities = 1;
+    const entities = Object.keys(hass.states);
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      [],
+      includeDomains
+    );
+
+    return {
+      type: "entity",
+      entity: foundEntities[0] || "",
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -137,7 +154,11 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
-    const name = config.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-heading-badge
@@ -166,7 +187,7 @@ export class HuiEntityHeadingBadge
                 .hass=${this.hass}
                 .stateObj=${stateObj}
                 .content=${config.state_content}
-                .name=${config.name}
+                .name=${name}
                 dash-unavailable
               ></state-display>
             `

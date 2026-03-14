@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import {
   castSendShowLovelaceView,
   ensureConnectedCastSession,
 } from "../../../cast/receiver_messages";
+import "../../../components/ha-button";
 import "../../../components/ha-icon";
 import type { HomeAssistant } from "../../../types";
 import type { CastConfig, LovelaceRow } from "../entity-rows/types";
@@ -61,14 +61,15 @@ class HuiCastRow extends LitElement implements LovelaceRow {
                 : html`
                     <div class="controls">
                       <google-cast-launcher></google-cast-launcher>
-                      <mwc-button
+                      <ha-button
                         @click=${this._sendLovelace}
                         class=${classMap({ inactive: !active })}
-                        .unelevated=${active}
+                        appearance="plain"
+                        size="small"
                         .disabled=${!this._castManager.status}
                       >
                         SHOW
-                      </mwc-button>
+                      </ha-button>
                     </div>
                   `}
       </div>
@@ -126,7 +127,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     }
     ha-icon {
       padding: 8px;
-      color: var(--paper-item-icon-color);
+      color: var(--state-icon-color);
     }
     .flex {
       flex: 1;

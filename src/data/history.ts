@@ -142,7 +142,7 @@ export const subscribeHistory = (
   );
 };
 
-class HistoryStream {
+export class HistoryStream {
   hass: HomeAssistant;
 
   hoursToShow?: number;
@@ -221,6 +221,7 @@ class HistoryStream {
         // only expire the rest of the history as it ages.
         const lastExpiredState = expiredStates[expiredStates.length - 1];
         lastExpiredState.lu = purgeBeforePythonTime;
+        delete lastExpiredState.lc;
         newHistory[entityId].unshift(lastExpiredState);
       }
     }
@@ -435,9 +436,9 @@ export const convertStatisticsToHistory = (
   Object.entries(orderedStatistics).forEach(([key, value]) => {
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-      lc: e.start / 1000,
+      lc: e.end / 1000,
       a: {},
-      lu: e.start / 1000,
+      lu: e.end / 1000,
     }));
     statsHistoryStates[key] = entityHistoryStates;
   });
@@ -578,7 +579,7 @@ export const computeHistory = (
   const unitStates = Object.keys(lineChartDevices).map((key) => {
     const splitKey = key.split("_");
     const unit = splitKey[0];
-    const deviceClass = splitKey[1] || undefined;
+    const deviceClass = splitKey.slice(1).join("_") || undefined;
     return processLineChartEntities(
       unit,
       deviceClass,
@@ -640,6 +641,12 @@ export const mergeHistoryResults = (
   }
 
   for (const item of ltsResult.line) {
+    if (item.unit === BLANK_UNIT) {
+      // disabled entities have no unit, so we need to find the unit from the history result
+      item.unit =
+        historyResult.line.find((line) => line.identifier === item.identifier)
+          ?.unit ?? BLANK_UNIT;
+    }
     const key = computeGroupKey(
       item.unit,
       item.device_class,

@@ -2,7 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../../data/zha";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
@@ -38,7 +38,6 @@ export class HaDeviceInfoZha extends LitElement {
     }
     return html`
       <ha-expansion-panel header="Zigbee info">
-        <div>IEEE: ${this._zhaDevice.ieee}</div>
         <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
         <div>Device Type: ${this._zhaDevice.device_type}</div>
         <div>

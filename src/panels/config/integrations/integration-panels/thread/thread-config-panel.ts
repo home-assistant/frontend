@@ -1,11 +1,9 @@
-import "@material/mwc-button";
-import type { ActionDetail } from "@material/mwc-list";
 import {
+  mdiCellphoneKey,
   mdiDeleteOutline,
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiCellphoneKey,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -14,9 +12,10 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
 import { extractSearchParam } from "../../../../../common/url/search-params";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
@@ -47,9 +46,10 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 export interface ThreadNetwork {
   name: string;
@@ -75,11 +75,17 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
 
     return html`
-      <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
-        <ha-button-menu slot="toolbar-icon">
+      <hass-subpage
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        header="Thread"
+        back-path="/config"
+      >
+        <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             .path=${mdiDotsVertical}
             slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
           ></ha-icon-button>
           <a
             href=${getConfigEntryDiagnosticsDownloadUrl(
@@ -88,23 +94,23 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             target="_blank"
             @click=${this._signUrl}
           >
-            <mwc-list-item>
+            <ha-dropdown-item>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.download_diagnostics"
               )}
-            </mwc-list-item>
+            </ha-dropdown-item>
           </a>
-          <mwc-list-item @click=${this._addTLV}
+          <ha-dropdown-item @click=${this._addTLV}
             >${this.hass.localize(
               "ui.panel.config.thread.add_dataset_from_tlv"
-            )}</mwc-list-item
+            )}</ha-dropdown-item
           >
-          <mwc-list-item @click=${this._addOTBR}
+          <ha-dropdown-item @click=${this._addOTBR}
             >${this.hass.localize(
               "ui.panel.config.thread.add_open_thread_border_router"
-            )}</mwc-list-item
+            )}</ha-dropdown-item
           >
-        </ha-button-menu>
+        </ha-dropdown>
         <div class="content">
           <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
           ${networks.preferred
@@ -117,16 +123,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-                  <a
+                  <ha-button
+                    appearance="plain"
+                    size="small"
                     href=${documentationUrl(this.hass, `/integrations/thread`)}
                     target="_blank"
                   >
-                    <mwc-button
-                      >${this.hass.localize(
-                        "ui.panel.config.thread.more_info"
-                      )}</mwc-button
-                    >
-                  </a>
+                    ${this.hass.localize(
+                      "ui.panel.config.thread.more_info"
+                    )}</ha-button
+                  >
                 </div>
               </ha-card>`}
           ${networks.networks.length
@@ -143,7 +149,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               slot="fab"
               @click=${this._importExternalThreadCredentials}
               extended
-              label="Send credentials to Home Assistant"
+              .label=${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_ha"
+              )}
               ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
             ></ha-fab>`
           : nothing}
@@ -214,12 +222,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               >
                 <img
                   slot="graphic"
-                  .src=${brandsUrl({
-                    domain: router.brand,
-                    brand: true,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  .src=${brandsUrl(
+                    {
+                      domain: router.brand,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   alt=${router.brand}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
@@ -240,12 +250,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                             )}
                           ></ha-svg-icon>`
                         : ""}
-                      <ha-button-menu
+                      <ha-dropdown
                         slot="meta"
                         .network=${network}
                         .router=${router}
                         .otbr=${otbr}
-                        @action=${this._handleRouterAction}
+                        @wa-select=${this._handleRouterAction}
                       >
                         <ha-icon-button
                           .label=${this.hass.localize(
@@ -255,7 +265,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                           slot="trigger"
                         ></ha-icon-button>
                         ${showDefaultRouter
-                          ? html`<ha-list-item .disabled=${isDefaultRouter}>
+                          ? html`<ha-dropdown-item
+                              value="set-default"
+                              .disabled=${isDefaultRouter}
+                            >
                               ${isDefaultRouter
                                 ? this.hass.localize(
                                     "ui.panel.config.thread.default_router"
@@ -263,28 +276,28 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                                 : this.hass.localize(
                                     "ui.panel.config.thread.set_default_router"
                                   )}
-                            </ha-list-item>`
+                            </ha-dropdown-item>`
                           : ""}
                         ${otbr
-                          ? html`<ha-list-item>
+                          ? html`<ha-dropdown-item value="reset-router">
                                 ${this.hass.localize(
                                   "ui.panel.config.thread.reset_border_router"
-                                )}</ha-list-item
+                                )}</ha-dropdown-item
                               >
-                              <ha-list-item>
+                              <ha-dropdown-item value="change-channel">
                                 ${this.hass.localize(
                                   "ui.panel.config.thread.change_channel"
-                                )}</ha-list-item
+                                )}</ha-dropdown-item
                               >
                               ${network.dataset?.preferred
                                 ? ""
-                                : html`<ha-list-item>
+                                : html`<ha-dropdown-item value="add-to-network">
                                     ${this.hass.localize(
                                       "ui.panel.config.thread.add_to_my_network"
                                     )}
-                                  </ha-list-item>`}`
+                                  </ha-dropdown-item>`}`
                           : ""}
-                      </ha-button-menu>`
+                      </ha-dropdown>`
                   : ""}
               </ha-list-item>`;
             })}`
@@ -294,21 +307,25 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               ? html`${this.hass.localize(
                     "ui.panel.config.thread.no_routers_otbr_network"
                   )}
-                  <mwc-button
+                  <ha-button
+                    appearance="plain"
+                    size="small"
                     .otbr=${otbrForNetwork}
                     @click=${this._resetBorderRouterEvent}
                     >${this.hass.localize(
                       "ui.panel.config.thread.reset_border_router"
-                    )}</mwc-button
+                    )}</ha-button
                   >`
               : this.hass.localize("ui.panel.config.thread.no_border_routers")}
           </div> `}
       ${network.dataset && !network.dataset.preferred
         ? html`<div class="card-actions">
-            <mwc-button
+            <ha-button
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
-              >Make preferred network</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.thread.thread_network_make_preferred"
+              )}</ha-button
             >
           </div>`
         : ""}
@@ -316,10 +333,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       network.dataset?.preferred &&
       network.routers?.length
         ? html`<div class="card-actions">
-            <mwc-button
+            <ha-button
+              size="small"
               .networkDataset=${network.dataset}
               @click=${this._sendCredentials}
-              >Send credentials to phone</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_phone"
+              )}</ha-button
             >
           </div>`
         : ""}
@@ -471,24 +491,22 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleRouterAction(ev: CustomEvent<ActionDetail>) {
+  private _handleRouterAction(ev: HaDropdownSelectEvent) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    const index = network.dataset
-      ? Number(ev.detail.index)
-      : Number(ev.detail.index) + 1;
-    switch (index) {
-      case 0:
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "set-default":
         this._setPreferredBorderAgent(network.dataset!, router);
         break;
-      case 1:
+      case "reset-router":
         this._resetBorderRouter(otbr);
         break;
-      case 2:
+      case "change-channel":
         this._changeChannel(otbr);
         break;
-      case 3:
+      case "add-to-network":
         this._setDataset(otbr);
         break;
     }
@@ -699,12 +717,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         overflow: visible;
       }
       ha-list-item img {
-        border-radius: 0;
+        border-radius: var(--ha-border-radius-square);
       }
       ha-svg-icon[slot="meta"] {
         width: 24px;
       }
-      ha-button-menu a {
+      ha-dropdown a {
         text-decoration: none;
       }
       .routers {
@@ -720,7 +738,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         background-color: var(--light-primary-color);
         color: var(--secondary-text-color);
         padding: 16px;
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         margin-bottom: 8px;
       }
       ha-card {

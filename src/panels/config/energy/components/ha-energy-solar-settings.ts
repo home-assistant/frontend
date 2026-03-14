@@ -1,10 +1,10 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiPencil, mdiSolarPower } from "@mdi/js";
+import { mdiDelete, mdiPencil, mdiPlus, mdiSolarPower } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import type {
   EnergyInfo,
@@ -59,7 +59,7 @@ export class EnergySolarSettings extends LitElement {
     });
 
     return html`
-      <ha-card outlined>
+      <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.solar.title")}
@@ -85,58 +85,65 @@ export class EnergySolarSettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-
-          <h3>
-            ${this.hass.localize(
-              "ui.panel.config.energy.solar.solar_production"
-            )}
-          </h3>
-          ${solarSources.map((source) => {
-            const entityState = this.hass.states[source.stat_energy_from];
-            return html`
-              <div class="row" .source=${source}>
-                ${entityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${entityState.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>`}
-                <span class="content"
-                  >${getStatisticLabel(
-                    this.hass,
-                    source.stat_energy_from,
-                    this.statsMetadata?.[source.stat_energy_from]
-                  )}</span
-                >
-                ${this.info
-                  ? html`
-                      <ha-icon-button
-                        .label=${this.hass.localize(
-                          "ui.panel.config.energy.solar.edit_solar_production"
-                        )}
-                        @click=${this._editSource}
-                        .path=${mdiPencil}
-                      ></ha-icon-button>
-                    `
-                  : ""}
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.solar.delete_solar_production"
-                  )}
-                  @click=${this._deleteSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
+          ${solarSources.length > 0
+            ? html`
+                <div class="items-container">
+                  ${solarSources.map((source) => {
+                    const entityState =
+                      this.hass.states[source.stat_energy_from];
+                    return html`
+                      <div class="row" .source=${source}>
+                        ${entityState?.attributes.icon
+                          ? html`<ha-icon
+                              .icon=${entityState.attributes.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiSolarPower}
+                            ></ha-svg-icon>`}
+                        <span class="content"
+                          >${getStatisticLabel(
+                            this.hass,
+                            source.stat_energy_from,
+                            this.statsMetadata?.[source.stat_energy_from]
+                          )}</span
+                        >
+                        ${this.info
+                          ? html`
+                              <ha-icon-button
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.energy.solar.edit_solar_production"
+                                )}
+                                @click=${this._editSource}
+                                .path=${mdiPencil}
+                              ></ha-icon-button>
+                            `
+                          : ""}
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.solar.delete_solar_production"
+                          )}
+                          @click=${this._deleteSource}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  })}
+                </div>
+              `
+            : ""}
           ${this.info
             ? html`
-                <div class="row border-bottom">
-                  <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-                  <mwc-button @click=${this._addSource}>
+                <div class="row">
+                  <ha-button
+                    @click=${this._addSource}
+                    appearance="filled"
+                    size="small"
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.energy.solar.add_solar_production"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               `
             : ""}

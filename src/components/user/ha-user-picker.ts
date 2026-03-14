@@ -1,21 +1,35 @@
-import "@material/mwc-list/mwc-list-item";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { property } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stringCompare } from "../../common/string/compare";
 import type { User } from "../../data/user";
 import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
-import "../ha-select";
+import "../ha-combo-box-item";
+import "../ha-generic-picker";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type { PickerValueRenderer } from "../ha-picker-field";
 import "./ha-user-badge";
-import "../ha-list-item";
 
+interface UserComboBoxItem extends PickerComboBoxItem {
+  user?: User;
+}
+
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.username", weight: 6 },
+  { name: "id", weight: 3 },
+];
+
+@customElement("ha-user-picker")
 class HaUserPicker extends LitElement {
-  public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
+
+  @property() public placeholder?: string;
 
   @property({ attribute: false }) public noUserLabel?: string;
 
@@ -25,80 +39,128 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _sortedUsers = memoizeOne((users?: User[]) => {
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    if (!this.users) {
+      this._fetchUsers();
+    }
+  }
+
+  private async _fetchUsers() {
+    this.users = await fetchUsers(this.hass);
+  }
+
+  private usersMap = memoizeOne((users?: User[]): Map<string, User> => {
+    if (!users) {
+      return new Map();
+    }
+    return new Map(users.map((user) => [user.id, user]));
+  });
+
+  private _valueRenderer: PickerValueRenderer = (value) => {
+    const user = this.usersMap(this.users).get(value);
+    if (!user) {
+      return html` <span slot="headline">${value}</span> `;
+    }
+
+    return html`
+      <ha-user-badge
+        slot="start"
+        .hass=${this.hass}
+        .user=${user}
+      ></ha-user-badge>
+      <span slot="headline">${user.name}</span>
+    `;
+  };
+
+  private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
+    const user = item.user;
+    if (!user) {
+      return html`<ha-combo-box-item type="button" compact>
+        ${item.icon
+          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+          : item.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+      </ha-combo-box-item>`;
+    }
+
+    return html`
+      <ha-combo-box-item type="button" compact>
+        <ha-user-badge
+          slot="start"
+          .hass=${this.hass}
+          .user=${item.user}
+        ></ha-user-badge>
+        <span slot="headline">${item.primary}</span>
+      </ha-combo-box-item>
+    `;
+  };
+
+  private _getUsers = memoizeOne((users?: User[]) => {
     if (!users) {
       return [];
     }
 
     return users
       .filter((user) => !user.system_generated)
-      .sort((a, b) =>
-        stringCompare(a.name, b.name, this.hass!.locale.language)
-      );
+      .map<UserComboBoxItem>((user) => ({
+        id: user.id,
+        primary: user.name,
+        domain_name: user.name,
+        search_labels: { username: user.username },
+        sorting_label: user.name,
+        user,
+      }));
   });
 
+  private _getItems = () => this._getUsers(this.users);
+
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ?? this.hass.localize("ui.components.user-picker.user");
+
     return html`
-      <ha-select
+      <ha-generic-picker
+        .hass=${this.hass}
+        .autofocus=${this.autofocus}
         .label=${this.label}
-        .disabled=${this.disabled}
+        .placeholder=${placeholder}
         .value=${this.value}
-        @selected=${this._userChanged}
-      >
-        ${this.users?.length === 0
-          ? html`<mwc-list-item value="">
-              ${this.noUserLabel ||
-              this.hass?.localize("ui.components.user-picker.no_user")}
-            </mwc-list-item>`
-          : ""}
-        ${this._sortedUsers(this.users).map(
-          (user) => html`
-            <ha-list-item graphic="avatar" .value=${user.id}>
-              <ha-user-badge
-                .hass=${this.hass}
-                .user=${user}
-                slot="graphic"
-              ></ha-user-badge>
-              ${user.name}
-            </ha-list-item>
-          `
+        .notFoundLabel=${this._notFoundLabel}
+        .getItems=${this._getItems}
+        .valueRenderer=${this._valueRenderer}
+        .rowRenderer=${this._rowRenderer}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.user-picker.unknown"
         )}
-      </ha-select>
+        @value-changed=${this._valueChanged}
+      >
+      </ha-generic-picker>
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    if (this.users === undefined) {
-      fetchUsers(this.hass!).then((users) => {
-        this.users = users;
-      });
-    }
+  private _valueChanged(ev) {
+    const value = ev.detail.value;
+
+    this.value = value;
+    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "change");
   }
 
-  private _userChanged(ev) {
-    const newValue = ev.target.value;
-
-    if (newValue !== this.value) {
-      this.value = newValue;
-      setTimeout(() => {
-        fireEvent(this, "value-changed", { value: newValue });
-        fireEvent(this, "change");
-      }, 0);
-    }
-  }
-
-  static styles = css`
-    :host {
-      display: inline-block;
-    }
-    mwc-list {
-      display: block;
-    }
-  `;
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.user-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
-
-customElements.define("ha-user-picker", HaUserPicker);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,3 +1,3 @@
 import "./layout/hc-connect";
 
-import("../../../src/resources/ha-style");
+import("../../../src/resources/append-ha-style");

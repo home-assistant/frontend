@@ -29,7 +29,6 @@ export class HaConfigEntrySelector extends LitElement {
       .disabled=${this.disabled}
       .required=${this.required}
       .integration=${this.selector.config_entry?.integration}
-      allow-custom-entity
     ></ha-config-entry-picker>`;
   }
 

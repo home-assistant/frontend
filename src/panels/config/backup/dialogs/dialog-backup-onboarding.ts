@@ -1,17 +1,16 @@
 import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
@@ -86,13 +85,11 @@ const RECOMMENDED_CONFIG: BackupConfig = {
 class DialogBackupOnboarding extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _step?: Step;
 
   @state() private _params?: BackupOnboardingDialogParams;
-
-  @query("ha-md-dialog") private _dialog!: HaMdDialog;
 
   @state() private _config?: BackupConfig;
 
@@ -115,21 +112,23 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       };
     }
 
-    this._opened = true;
+    this._open = true;
   }
 
   public closeDialog() {
-    if (this._params!.cancel) {
-      this._params!.cancel();
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
+    if (this._params?.cancel) {
+      this._params.cancel();
     }
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
     this._step = undefined;
     this._config = undefined;
     this._params = undefined;
-    return true;
+    this._open = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private get _firstStep(): Step {
@@ -168,7 +167,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     try {
       await this._save(true);
       this._params?.submit!(true);
-      this._dialog.close();
+      this.closeDialog();
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
@@ -202,7 +201,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._opened || !this._params || !this._step) {
+    if (!this._params || !this._step) {
       return nothing;
     }
 
@@ -210,33 +209,36 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     const isFirstStep = this._step === this._firstStep;
 
     return html`
-      <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
-        <ha-dialog-header slot="headline">
-          ${isFirstStep
-            ? html`
-                <ha-icon-button
-                  slot="navigationIcon"
-                  .label=${this.hass.localize("ui.common.close")}
-                  .path=${mdiClose}
-                  @click=${this.closeDialog}
-                ></ha-icon-button>
-              `
-            : html`
-                <ha-icon-button-prev
-                  slot="navigationIcon"
-                  @click=${this._previousStep}
-                ></ha-icon-button-prev>
-              `}
-
-          <span slot="title">${this._stepTitle}</span>
-        </ha-dialog-header>
-        <div slot="content">${this._renderStepContent()}</div>
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._stepTitle}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
+      >
+        ${isFirstStep
+          ? html`
+              <ha-icon-button
+                slot="headerNavigationIcon"
+                data-dialog="close"
+                .label=${this.hass.localize("ui.common.close")}
+                .path=${mdiClose}
+              ></ha-icon-button>
+            `
+          : html`
+              <ha-icon-button-prev
+                slot="headerNavigationIcon"
+                @click=${this._previousStep}
+              ></ha-icon-button-prev>
+            `}
+        <div>${this._renderStepContent()}</div>
         ${!FULL_DIALOG_STEPS.has(this._step)
           ? html`
-              <div slot="actions">
+              <ha-dialog-footer slot="footer">
                 ${isLastStep
                   ? html`
                       <ha-button
+                        slot="primaryAction"
                         @click=${this._done}
                         .disabled=${!this._isStepValid()}
                       >
@@ -247,16 +249,17 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                     `
                   : html`
                       <ha-button
+                        slot="primaryAction"
                         @click=${this._nextStep}
                         .disabled=${!this._isStepValid()}
                       >
                         ${this.hass.localize("ui.common.next")}
                       </ha-button>
                     `}
-              </div>
+              </ha-dialog-footer>
             `
           : nothing}
-      </ha-md-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -375,8 +378,13 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
                 )}
               </span>
-              <ha-button slot="end" @click=${this._downloadKey}>
-                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+              <ha-button
+                size="small"
+                appearance="plain"
+                slot="end"
+                @click=${this._downloadKey}
+              >
+                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
                 )}
@@ -535,11 +543,9 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
-          width: 90vw;
-          max-width: 560px;
-          --dialog-content-padding: 8px 24px;
-          max-height: min(605px, 100% - 48px);
+        ha-dialog {
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
+          --ha-dialog-max-height: min(605px, 100% - 48px);
         }
         ha-md-list {
           background: none;
@@ -552,14 +558,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           margin-left: -24px;
           margin-right: -24px;
         }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-md-dialog {
-            max-width: none;
-          }
-          div[slot="content"] {
-            margin-top: 0;
-          }
-        }
         p {
           margin-top: 0;
         }
@@ -569,21 +567,21 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         .encryption-key {
           border: 1px solid var(--divider-color);
           background-color: var(--primary-background-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 16px;
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 24px;
+          gap: var(--ha-space-6);
         }
         .encryption-key p {
           margin: 0;
           flex: 1;
-          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
+          font-family: var(--ha-font-family-code);
           font-style: normal;
-          font-weight: 400;
-          line-height: 28px;
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
         }
         .encryption-key ha-icon-button {

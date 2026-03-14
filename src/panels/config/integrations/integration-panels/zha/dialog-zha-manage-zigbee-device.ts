@@ -1,5 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,11 +6,16 @@ import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
+import "../../../../../components/ha-dialog";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
 import type {
@@ -41,6 +44,8 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
   @state() private _groups: ZHAGroup[] = [];
 
+  @state() private _open = false;
+
   public async showDialog(
     params: ZHAManageZigbeeDeviceDialogParams
   ): Promise<void> {
@@ -51,9 +56,14 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     }
     this._currTab = params.tab || "clusters";
     this.large = false;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._device = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -86,17 +96,17 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
+            @click=${this.closeDialog}
           ></ha-icon-button>
           <span
             slot="title"
@@ -105,22 +115,23 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>
-          <mwc-tab-bar
-            .activeIndex=${tabs.indexOf(this._currTab)}
-            @MDCTabBar:activated=${this._handleTabChanged}
-          >
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
             ${tabs.map(
               (tab) => html`
-                <mwc-tab
-                  .label=${this.hass.localize(
+                <ha-tab-group-tab
+                  slot="nav"
+                  .panel=${tab}
+                  .active=${this._currTab === tab}
+                >
+                  ${this.hass.localize(
                     `ui.dialogs.zha_manage_device.tabs.${tab}`
                   )}
-                ></mwc-tab>
+                </ha-tab-group-tab>
               `
             )}
-          </mwc-tab-bar>
+          </ha-tab-group>
         </ha-dialog-header>
-        <div class="content" tabindex="-1" dialogInitialFocus>
+        <div class="content" tabindex="-1" autofocus>
           ${cache(
             this._currTab === "clusters"
               ? html`
@@ -139,7 +150,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                             .bindableDevices=${this._bindableDevices}
                           ></zha-device-binding-control>
                         `
-                      : ""}
+                      : nothing}
                     ${this._device && this._groups.length > 0
                       ? html`
                           <zha-group-binding-control
@@ -148,7 +159,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                             .groups=${this._groups}
                           ></zha-group-binding-control>
                         `
-                      : ""}
+                      : nothing}
                   `
                 : this._currTab === "signature"
                   ? html`
@@ -187,7 +198,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs(this._device)[ev.detail.index];
+    const newTab = ev.detail.name as Tab;
     if (newTab === this._currTab) {
       return;
     }
@@ -210,24 +221,25 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
-          --dialog-surface-position: static;
-          --dialog-content-position: static;
-          --vertical-align-dialog: flex-start;
+          --dialog-content-padding: 0;
         }
 
         .content {
           outline: none;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
         }
 
-        @media all and (min-width: 600px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 560px;
-            --mdc-dialog-max-width: 560px;
-            --dialog-surface-margin-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
+        ha-tab-group-tab {
+          flex: 1;
+        }
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

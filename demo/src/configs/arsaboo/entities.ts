@@ -1,8 +1,7 @@
-import { convertEntities } from "../../../../src/fake_data/entity";
 import type { DemoConfig } from "../types";
 
 export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
-  convertEntities({
+  Object.values({
     "todo.shopping_list": {
       entity_id: "todo.shopping_list",
       state: "2",
@@ -143,7 +142,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "on",
       attributes: {
         friendly_name: "Home Automation",
-        icon: "hass:home-automation",
+        icon: "mdi:home-automation",
       },
     },
     "input_boolean.tvtime": {

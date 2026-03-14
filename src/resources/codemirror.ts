@@ -12,10 +12,16 @@ import type { KeyBinding } from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 
-export { autocompletion } from "@codemirror/autocomplete";
+export { autocompletion, selectedCompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 export { highlightingFor, foldGutter } from "@codemirror/language";
-export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export {
+  closeSearchPanel,
+  highlightSelectionMatches,
+  openSearchPanel,
+  search,
+  searchKeymap,
+} from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,
@@ -25,6 +31,8 @@ export {
   keymap,
   lineNumbers,
   rectangularSelection,
+  dropCursor,
+  tooltips,
 } from "@codemirror/view";
 export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
@@ -51,7 +59,7 @@ export const haTheme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
-      "var(--code-editor-background-color, var(--mdc-text-field-fill-color, whitesmoke))",
+      "var(--code-editor-background-color, var(--card-background-color))",
     borderRadius:
       "var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0px 0px",
     caretColor: "var(--secondary-text-color)",
@@ -59,11 +67,19 @@ export const haTheme = EditorView.theme({
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
+  "&.cm-editor": {
+    "--indent-marker-active-bg-color": "var(--divider-color)",
+  },
+
   "&.cm-editor.cm-focused": {
     outline: "none",
   },
 
   "&.cm-focused .cm-cursor": {
+    borderLeftColor: "var(--primary-color)",
+  },
+
+  ".cm-dropCursor": {
     borderLeftColor: "var(--secondary-text-color)",
   },
 
@@ -102,7 +118,7 @@ export const haTheme = EditorView.theme({
     background: "none",
     color: "var(--primary-color)",
     fontFamily:
-      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))",
+      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, var(--ha-font-family-body)))",
     fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
     height: "36px",
     fontWeight: "var(--mdc-typography-button-font-weight, 500)",
@@ -136,8 +152,20 @@ export const haTheme = EditorView.theme({
       "var(--code-editor-background-color, var(--card-background-color))",
     border: "1px solid var(--divider-color)",
     borderRadius: "var(--mdc-shape-medium, 4px)",
+    maxWidth: "min(420px, calc(var(--safe-width) - var(--ha-space-8)))",
+    boxSizing: "border-box",
     boxShadow:
       "0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)",
+  },
+
+  ".cm-tooltip.cm-tooltip-autocomplete": {
+    maxWidth:
+      "min(420px, calc(var(--safe-width) - var(--ha-space-8)), calc(100% - var(--ha-space-2)))",
+  },
+
+  ".cm-tooltip-autocomplete > ul": {
+    maxWidth: "100%",
+    boxSizing: "border-box",
   },
 
   "& .cm-tooltip.cm-tooltip-autocomplete > ul > li": {
@@ -162,15 +190,6 @@ export const haTheme = EditorView.theme({
     color: "var(--text-primary-color)",
   },
 
-  "& .cm-completionInfo.cm-completionInfo-right": {
-    left: "calc(100% + 4px)",
-  },
-
-  "& .cm-tooltip.cm-completionInfo": {
-    padding: "4px 8px",
-    marginTop: "-5px",
-  },
-
   ".cm-selectionMatch": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
   },
@@ -187,7 +206,7 @@ export const haTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor:
       "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
-    color: "var(--paper-dialog-color, var(--secondary-text-color))",
+    color: "var(--secondary-text-color)",
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",

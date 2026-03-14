@@ -1,4 +1,4 @@
-import { mdiStar } from "@mdi/js";
+import { mdiInformationOutline, mdiStar } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -71,6 +71,17 @@ export class HaNetwork extends LitElement {
         <span slot="description" data-for="auto_configure">
           ${this.hass.localize("ui.panel.config.network.adapter.detected")}:
           ${format_auto_detected_interfaces(this.networkConfig.adapters)}
+          ${!configured_adapters.length
+            ? html`<div class="info-text">
+                <ha-svg-icon
+                  .path=${mdiInformationOutline}
+                  class="info-icon"
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.network.adapter.auto_configure_manual_hint"
+                )}
+              </div>`
+            : nothing}
         </span>
       </ha-settings-row>
       ${configured_adapters.length || this._expanded
@@ -163,7 +174,6 @@ export class HaNetwork extends LitElement {
 
         ha-settings-row {
           padding: 0;
-          --paper-time-input-justify-content: flex-end;
           --settings-row-content-display: contents;
           --settings-row-prefix-display: contents;
         }
@@ -171,6 +181,21 @@ export class HaNetwork extends LitElement {
         span[slot="heading"],
         span[slot="description"] {
           cursor: pointer;
+        }
+
+        .info-text {
+          display: flex;
+          align-items: center;
+          margin-top: 8px;
+          color: var(--secondary-text-color);
+        }
+
+        .info-icon {
+          width: 18px;
+          height: 18px;
+          color: var(--info-color, var(--primary-color));
+          margin-right: 8px;
+          flex-shrink: 0;
         }
       `,
     ];

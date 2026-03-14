@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -19,14 +19,17 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       contents: write # Required to upload release assets
+      id-token: write # For "Trusted Publisher" to PyPi
+    if: github.repository_owner == 'home-assistant'
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -34,7 +37,7 @@ jobs:
         uses: home-assistant/actions/helpers/verify-version@master
 
       - name: Setup Node
-        uses: actions/setup-node@v4.3.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -46,16 +49,20 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+
       - name: Build and release package
         run: |
-          python3 -m pip install twine build
-          export TWINE_USERNAME="__token__"
-          export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
+          python3 -m pip install build
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          skip-existing: true
+
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           files: |
             dist/*.whl
@@ -73,10 +80,11 @@ jobs:
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
+      # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@2025.03.0
+        uses: home-assistant/wheels@2025.12.0
         with:
-          abi: cp313
+          abi: cp314
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
@@ -90,9 +98,9 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Setup Node
-        uses: actions/setup-node@v4.3.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -107,35 +115,6 @@ jobs:
       - name: Tar folder
         run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
       - name: Upload release asset
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
-
-  release-supervisor:
-    name: Release supervisor frontend
-    if: github.event.release.prerelease == false
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # Required to upload release assets
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
-      - name: Setup Node
-        uses: actions/setup-node@v4.3.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install
-      - name: Download Translations
-        run: ./script/translations_download
-        env:
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Build supervisor
-        run: hassio/script/build_hassio
-      - name: Tar folder
-        run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
-      - name: Upload release asset
-        uses: softprops/action-gh-release@v2.2.1
-        with:
-          files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz

@@ -1,12 +1,11 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
@@ -22,7 +21,7 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import type { ItemSelectedEvent, SetAttributeServiceData } from "./types";
+import type { SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
@@ -30,7 +29,7 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ attribute: false, type: Object })
+  @property({ attribute: false })
   public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
@@ -68,24 +67,18 @@ export class ZHAClusterAttributes extends LitElement {
               "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
             )}
             class="menu"
-            .value=${String(this._selectedAttributeId)}
+            .value=${this._selectedAttributeId}
             @selected=${this._selectedAttributeChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this._attributes.map((entry) => ({
+              value: entry.id,
+              label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
+            }))}
           >
-            ${this._attributes.map(
-              (entry) => html`
-                <mwc-list-item .value=${String(entry.id)}>
-                  ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
-                </mwc-list-item>
-              `
-            )}
           </ha-select>
         </div>
         ${this._selectedAttributeId !== undefined
           ? this._renderAttributeInteractions()
-          : ""}
+          : nothing}
       </ha-card>
     `;
   }
@@ -117,15 +110,6 @@ export class ZHAClusterAttributes extends LitElement {
         ></ha-textfield>
       </div>
       <div class="card-actions">
-        <ha-progress-button
-          @click=${this._onGetZigbeeAttributeClick}
-          .progress=${this._readingAttribute}
-          .disabled=${this._readingAttribute}
-        >
-          ${this.hass!.localize(
-            "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
-          )}
-        </ha-progress-button>
         <ha-call-service-button
           .hass=${this.hass}
           domain="zha"
@@ -136,6 +120,15 @@ export class ZHAClusterAttributes extends LitElement {
             "ui.panel.config.zha.cluster_attributes.write_zigbee_attribute"
           )}
         </ha-call-service-button>
+        <ha-progress-button
+          @click=${this._onGetZigbeeAttributeClick}
+          .progress=${this._readingAttribute}
+          .disabled=${this._readingAttribute}
+        >
+          ${this.hass!.localize(
+            "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
+          )}
+        </ha-progress-button>
       </div>
     `;
   }
@@ -210,10 +203,10 @@ export class ZHAClusterAttributes extends LitElement {
       this._readingAttribute = true;
       try {
         this._attributeValue = await readAttributeValue(this.hass, data);
-        forwardHaptic("success");
+        forwardHaptic(this, "success");
         button.actionSuccess();
       } catch (_err: any) {
-        forwardHaptic("failure");
+        forwardHaptic(this, "failure");
         button.actionError();
       } finally {
         this._readingAttribute = false;
@@ -221,8 +214,8 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(event: ItemSelectedEvent): void {
-    this._selectedAttributeId = Number(event.target!.value);
+  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
+    this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }
 
@@ -230,6 +223,10 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
+        ha-card {
+          border: none;
+        }
+
         ha-select {
           margin-top: 16px;
         }
@@ -262,6 +259,13 @@ export class ZHAClusterAttributes extends LitElement {
 
         .header {
           flex-grow: 1;
+        }
+
+        .card-actions {
+          display: flex;
+          margin-top: var(--ha-space-2);
+          justify-content: flex-end;
+          gap: var(--ha-space-3);
         }
       `,
     ];

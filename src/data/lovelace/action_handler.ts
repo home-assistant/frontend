@@ -1,6 +1,7 @@
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 
 export interface ActionHandlerOptions {
+  hasTap?: boolean;
   hasHold?: boolean;
   hasDoubleClick?: boolean;
   disabled?: boolean;

@@ -1,14 +1,14 @@
-import { customElement, property, state } from "lit/decorators";
-import { css, html, LitElement, nothing } from "lit";
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 
+import { copyToClipboard } from "../common/util/copy-clipboard";
+import type { HomeAssistant } from "../types";
+import { showToast } from "../util/toast";
 import "./ha-button";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import type { HomeAssistant } from "../types";
-import { copyToClipboard } from "../common/util/copy-clipboard";
-import { showToast } from "../util/toast";
 import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-copy-textfield")
@@ -48,8 +48,8 @@ export class HaCopyTextfield extends LitElement {
               ></ha-icon-button>`
             : nothing}
         </div>
-        <ha-button @click=${this._copy} unelevated>
-          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+        <ha-button @click=${this._copy} appearance="plain" size="small">
+          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
           ${this.label || this.hass.localize("ui.common.copy")}
         </ha-button>
       </div>
@@ -76,7 +76,7 @@ export class HaCopyTextfield extends LitElement {
     .container {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin-top: 8px;
     }
 
@@ -95,7 +95,7 @@ export class HaCopyTextfield extends LitElement {
       right: 8px;
       inset-inline-start: initial;
       inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

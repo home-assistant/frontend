@@ -1,7 +1,4 @@
 import "@lit-labs/virtualizer";
-import "@material/mwc-button";
-import "@material/mwc-list";
-import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,17 +7,27 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../resources/styles";
+import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
 import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
+
+interface FilteredEntity {
+  entity: HassEntity;
+  nameList: (string | undefined)[];
+}
 
 @customElement("dialog-expose-entity")
 class DialogExposeEntity extends LitElement {
@@ -28,15 +35,28 @@ class DialogExposeEntity extends LitElement {
 
   @state() private _params?: ExposeEntityDialogParams;
 
+  @state() private _open = false;
+
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
 
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
+
   public async showDialog(params: ExposeEntityDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._selected = [];
     this._filter = undefined;
@@ -51,6 +71,14 @@ class DialogExposeEntity extends LitElement {
     const header = this.hass.localize(
       "ui.panel.config.voice_assistants.expose.expose_dialog.header"
     );
+    const subtitle = this.hass.localize(
+      "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
+      {
+        assistants: this._params.filterAssistants
+          .map((ass) => voiceAssistants[ass].name)
+          .join(", "),
+      }
+    );
 
     const entities = this._filterEntities(
       this._params.exposedEntities,
@@ -58,34 +86,20 @@ class DialogExposeEntity extends LitElement {
     );
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${header}>
-        <ha-dialog-header slot="heading" show-border>
-          <h2 class="header" slot="title">
-            ${header}
-            <span class="subtitle">
-              ${this.hass.localize(
-                "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
-                {
-                  assistants: this._params.filterAssistants
-                    .map((ass) => voiceAssistants[ass].name)
-                    .join(", "),
-                }
-              )}
-            </span>
-          </h2>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            slot="navigationIcon"
-          ></ha-icon-button>
-          <search-input
-            .hass=${this.hass}
-            .filter=${this._filter}
-            @value-changed=${this._filterChanged}
-          ></search-input>
-        </ha-dialog-header>
-        <mwc-list multi>
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${header}
+        header-subtitle=${subtitle}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
+      >
+        <search-input
+          .hass=${this.hass}
+          .filter=${this._filter}
+          @value-changed=${this._filterChanged}
+        ></search-input>
+        <ha-list multi>
           <lit-virtualizer
             scroller
             class="ha-scrollbar"
@@ -94,17 +108,26 @@ class DialogExposeEntity extends LitElement {
             .renderItem=${this._renderItem}
           >
           </lit-virtualizer>
-        </mwc-list>
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._expose}
-          .disabled=${this._selected.length === 0}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
-            { count: this._selected.length }
-          )}
-        </mwc-button>
+        </ha-list>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._expose}
+            .disabled=${this._selected.length === 0}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
+              { count: this._selected.length }
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -134,38 +157,101 @@ class DialogExposeEntity extends LitElement {
     (
       exposedEntities: Record<string, ExposeEntitySettings>,
       filter?: string
-    ) => {
+    ): FilteredEntity[] => {
       const lowerFilter = filter?.toLowerCase();
-      return Object.values(this.hass.states).filter(
-        (entity) =>
-          this._params!.filterAssistants.some(
-            (ass) => !exposedEntities[entity.entity_id]?.[ass]
-          ) &&
-          (!lowerFilter ||
-            entity.entity_id.toLowerCase().includes(lowerFilter) ||
-            computeStateName(entity)?.toLowerCase().includes(lowerFilter))
-      );
+      const result: FilteredEntity[] = [];
+
+      for (const entity of Object.values(this.hass.states)) {
+        if (
+          this._params!.filterAssistants.every(
+            (ass) => exposedEntities[entity.entity_id]?.[ass]
+          )
+        ) {
+          continue;
+        }
+
+        const nameList = computeEntityNameList(
+          entity,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        );
+
+        if (!lowerFilter) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        if (entity.entity_id.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        const entityName = computeStateName(entity);
+        if (entityName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        const [, deviceName, areaName] = nameList;
+
+        if (deviceName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        if (areaName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+      }
+
+      return result;
     }
   );
 
-  private _renderItem = (entityState: HassEntity) => html`
-    <ha-check-list-item
-      graphic="icon"
-      twoLine
-      .value=${entityState.entity_id}
-      .selected=${this._selected.includes(entityState.entity_id)}
-      @request-selected=${this._handleSelected}
-    >
-      <ha-state-icon
-        title=${ifDefined(entityState?.state)}
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${entityState}
-      ></ha-state-icon>
-      ${computeStateName(entityState)}
-      <span slot="secondary">${entityState.entity_id}</span>
-    </ha-check-list-item>
-  `;
+  private _renderItem = (item: FilteredEntity) => {
+    const { entity: entityState, nameList } = item;
+    const [entityName, deviceName, areaName] = nameList;
+
+    const isRTL = computeRTL(this.hass);
+    const primary = entityName || deviceName || entityState.entity_id;
+    const context = [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ");
+    const showEntityId = this.hass.userData?.showEntityIdPicker;
+
+    return html`
+      <ha-check-list-item
+        graphic="icon"
+        ?twoLine=${context}
+        ?threeLine=${showEntityId}
+        .value=${entityState.entity_id}
+        .selected=${this._selected.includes(entityState.entity_id)}
+        @request-selected=${this._handleSelected}
+      >
+        <ha-state-icon
+          title=${ifDefined(entityState?.state)}
+          slot="graphic"
+          .hass=${this.hass}
+          .stateObj=${entityState}
+        ></ha-state-icon>
+        ${primary}
+        ${context || showEntityId
+          ? html`<span slot="secondary">
+              ${context}
+              ${showEntityId
+                ? html`<br /><span class="entity-id"
+                      >${entityState.entity_id}</span
+                    >`
+                : nothing}
+            </span>`
+          : nothing}
+      </ha-check-list-item>
+    `;
+  };
 
   private _expose() {
     this._params!.exposeEntities(this._selected);
@@ -175,13 +261,12 @@ class DialogExposeEntity extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
-          --mdc-dialog-min-width: 500px;
-          --mdc-dialog-max-width: 600px;
         }
-        mwc-list {
+        ha-list {
           position: relative;
         }
         lit-virtualizer {
@@ -191,23 +276,8 @@ class DialogExposeEntity extends LitElement {
           width: 100%;
           display: block;
           box-sizing: border-box;
+          margin-top: var(--ha-space-2);
           --text-field-suffix-padding-left: 8px;
-        }
-        .header {
-          margin: 0;
-          pointer-events: auto;
-          -webkit-font-smoothing: antialiased;
-          font-weight: inherit;
-          font-size: inherit;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          margin: -4px 0;
-        }
-        .subtitle {
-          color: var(--secondary-text-color);
-          font-size: 1rem;
-          line-height: normal;
         }
         lit-virtualizer {
           width: 100%;
@@ -217,9 +287,17 @@ class DialogExposeEntity extends LitElement {
           width: 100%;
           height: 72px;
         }
+        ha-check-list-item[threeLine] {
+          height: 88px;
+        }
+        ha-check-list-item .entity-id {
+          line-height: var(--ha-line-height-normal);
+          padding-left: var(--ha-space-1);
+          font-size: var(--ha-font-size-xs);
+        }
         ha-check-list-item ha-state-icon {
-          margin-left: 24px;
-          margin-inline-start: 24px;
+          margin-left: var(--ha-space-6);
+          margin-inline-start: var(--ha-space-6);
           margin-inline-end: initial;
         }
         @media all and (max-height: 800px) {
@@ -233,27 +311,21 @@ class DialogExposeEntity extends LitElement {
           }
         }
         @media all and (max-width: 500px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
-            --mdc-dialog-max-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
-            --mdc-dialog-min-height: 100%;
-            --mdc-dialog-max-height: 100%;
-            --vertical-align-dialog: flex-end;
-            --ha-dialog-border-radius: 0px;
-          }
           lit-virtualizer {
-            height: calc(100vh - 198px);
+            height: calc(
+              100vh -
+                210px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
           search-input {
             --text-field-suffix-padding-left: unset;
           }
           ha-check-list-item ha-state-icon {
-            margin-left: 8px;
-            margin-inline-start: 8px;
+            margin-left: var(--ha-space-2);
+            margin-inline-start: var(--ha-space-2);
             margin-inline-end: initial;
           }
         }

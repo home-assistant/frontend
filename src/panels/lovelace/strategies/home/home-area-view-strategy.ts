@@ -1,0 +1,439 @@
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
+import { clamp } from "../../../../common/number/clamp";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+import type {
+  EmptyStateCardConfig,
+  HeadingCardConfig,
+} from "../../cards/types";
+import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES,
+  HOME_SUMMARIES_FILTERS,
+  HOME_SUMMARIES_ICONS,
+  type HomeSummary,
+} from "./helpers/home-summaries";
+
+export interface HomeAreaViewStrategyConfig {
+  type: "home-area";
+  area?: string;
+  home_panel?: boolean;
+}
+
+@customElement("home-area-view-strategy")
+export class HomeAreaViewStrategy extends ReactiveElement {
+  static async generate(
+    config: HomeAreaViewStrategyConfig,
+    hass: HomeAssistant
+  ): Promise<LovelaceViewConfig> {
+    if (!config.area) {
+      throw new Error("Area not provided");
+    }
+
+    const area = hass.areas[config.area];
+
+    if (!area) {
+      throw new Error("Unknown area");
+    }
+
+    const sections: LovelaceSectionRawConfig[] = [];
+
+    const badges: LovelaceBadgeConfig[] = [];
+
+    if (area.temperature_entity_id) {
+      badges.push({
+        entity: area.temperature_entity_id,
+        type: "entity",
+        color: "red",
+      });
+    }
+
+    if (area.humidity_entity_id) {
+      badges.push({
+        entity: area.humidity_entity_id,
+        type: "entity",
+        color: "indigo",
+      });
+    }
+
+    const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
+
+    const areaFilter = generateEntityFilter(hass, {
+      area: config.area,
+    });
+
+    const allEntities = Object.keys(hass.states);
+    const areaEntities = allEntities.filter(areaFilter);
+
+    const entitiesBySummary = HOME_SUMMARIES.reduce(
+      (acc, summary) => {
+        const summariesFilters = HOME_SUMMARIES_FILTERS[summary];
+        const filterFunctions = summariesFilters.map((filter) =>
+          generateEntityFilter(hass, filter)
+        );
+        acc[summary] = findEntities(areaEntities, filterFunctions);
+        return acc;
+      },
+      {} as Record<HomeSummary, string[]>
+    );
+
+    const {
+      light,
+      climate,
+      security,
+      media_players: mediaPlayers,
+    } = entitiesBySummary;
+
+    if (light.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "light"),
+            icon: HOME_SUMMARIES_ICONS.light,
+            tap_action: hass.panels.light
+              ? {
+                  action: "navigate",
+                  navigation_path: "/light?historyBack=1",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...light.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (climate.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "climate"),
+            icon: HOME_SUMMARIES_ICONS.climate,
+            tap_action: hass.panels.climate
+              ? {
+                  action: "navigate",
+                  navigation_path: "/climate?historyBack=1",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...climate.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (security.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "security"),
+            icon: HOME_SUMMARIES_ICONS.security,
+            tap_action: hass.panels.security
+              ? {
+                  action: "navigate",
+                  navigation_path: "/security?historyBack=1",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...security.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (mediaPlayers.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "media_players"),
+            icon: HOME_SUMMARIES_ICONS.media_players,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "media-players?historyBack=1",
+            },
+          } satisfies HeadingCardConfig,
+          ...mediaPlayers.map(computeTileCard),
+        ],
+      });
+    }
+
+    const deviceSections: LovelaceSectionRawConfig[] = [];
+
+    const summaryEntities = Object.values(entitiesBySummary).flat();
+
+    // Scenes section
+    const sceneFilter = generateEntityFilter(hass, {
+      domain: "scene",
+      entity_category: "none",
+    });
+    const scenes = areaEntities.filter(sceneFilter);
+
+    if (scenes.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize("ui.panel.lovelace.strategy.home.scenes"),
+            icon: "mdi:palette",
+            tap_action: hass.user?.is_admin
+              ? {
+                  action: "navigate",
+                  navigation_path: "/config/scene/dashboard",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...scenes.map(computeTileCard),
+        ],
+      });
+    }
+
+    // Automations section
+    const automationFilter = generateEntityFilter(hass, {
+      domain: "automation",
+      entity_category: "none",
+    });
+    const automations = areaEntities.filter(automationFilter);
+
+    // Rest of entities grouped by device
+    const otherEntities = areaEntities.filter(
+      (entityId) =>
+        !summaryEntities.includes(entityId) &&
+        !scenes.includes(entityId) &&
+        !automations.includes(entityId)
+    );
+
+    const entitiesByDevice: Record<string, string[]> = {};
+    const unassignedEntities: string[] = [];
+    for (const entityId of otherEntities) {
+      const stateObj = hass.states[entityId];
+      if (!stateObj) continue;
+      const { device } = getEntityContext(
+        stateObj,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors
+      );
+      if (!device) {
+        unassignedEntities.push(entityId);
+        continue;
+      }
+      if (!(device.id in entitiesByDevice)) {
+        entitiesByDevice[device.id] = [];
+      }
+      entitiesByDevice[device.id].push(entityId);
+    }
+
+    const otherDeviceEntities = Object.entries(entitiesByDevice).map(
+      ([deviceId, entities]) => ({
+        device_id: deviceId,
+        entities: entities,
+      })
+    );
+
+    if (unassignedEntities.length > 0) {
+      otherDeviceEntities.push({
+        device_id: "unassigned",
+        entities: unassignedEntities,
+      });
+    }
+
+    const batteryFilter = generateEntityFilter(hass, {
+      domain: "sensor",
+      device_class: "battery",
+    });
+
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
+
+    for (const deviceEntities of otherDeviceEntities) {
+      if (deviceEntities.entities.length === 0) continue;
+
+      const batteryEntities = deviceEntities.entities.filter((e) =>
+        batteryFilter(e)
+      );
+      const entities = deviceEntities.entities.filter(
+        (e) => !batteryFilter(e) && primaryFilter(e)
+      );
+
+      if (entities.length === 0) {
+        continue;
+      }
+
+      const deviceId = deviceEntities.device_id;
+      const device = hass.devices[deviceId];
+      let heading = "";
+      if (device) {
+        heading =
+          computeDeviceName(device) ||
+          hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
+      } else {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
+      }
+
+      deviceSections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: heading,
+            tap_action:
+              hass.user?.is_admin && device
+                ? {
+                    action: "navigate",
+                    navigation_path: `/config/devices/device/${device.id}`,
+                  }
+                : undefined,
+            badges: [
+              ...batteryEntities.slice(0, 1).map((e) => ({
+                entity: e,
+                type: "entity",
+                tap_action: {
+                  action: "more-info",
+                },
+              })),
+            ],
+          } satisfies HeadingCardConfig,
+          ...entities.map((e) => ({
+            ...computeTileCard(e),
+            name: {
+              type: "entity",
+            },
+          })),
+        ],
+      });
+    }
+
+    if (deviceSections.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 3,
+        cards: [
+          {
+            type: "heading",
+            heading_style: "subtitle",
+            heading: "",
+          } satisfies HeadingCardConfig,
+        ],
+      } satisfies LovelaceSectionRawConfig);
+      sections.push(...deviceSections);
+    }
+
+    // Show automations last, if they exist
+    if (automations.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.home.automations"
+            ),
+            icon: "mdi:robot",
+            tap_action: hass.user?.is_admin
+              ? {
+                  action: "navigate",
+                  navigation_path: "/config/automation/dashboard",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...automations.map(computeTileCard),
+        ],
+      });
+    }
+
+    // No sections, show empty state
+    if (sections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: area.icon || "mdi:shape-square-rounded-plus",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home-area.no_devices_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home-area.no_devices_content"
+            ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_add_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_assign_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/home/other-devices",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
+    }
+
+    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
+    const maxColumns = clamp(sections.length, 2, 3);
+
+    // Take the full width if there is only one section to avoid narrow header on desktop
+    if (sections.length === 1) {
+      sections[0].column_span = 2;
+    }
+
+    return {
+      type: "sections",
+      header: {
+        badges_position: "bottom",
+      },
+      max_columns: maxColumns,
+      sections: sections,
+      badges: badges,
+    };
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "home-area-view-strategy": HomeAreaViewStrategy;
+  }
+}

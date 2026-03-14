@@ -21,7 +21,7 @@ class HaPanelMap extends LitElement {
 
   protected render() {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}

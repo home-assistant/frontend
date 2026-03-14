@@ -1,12 +1,13 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
 
 @customElement("dialog-cloud-certificate")
@@ -15,11 +16,19 @@ class DialogCloudCertificate extends LitElement {
 
   @state() private _params?: CloudCertificateDialogParams;
 
+  @state() private _open = false;
+
   public showDialog(params: CloudCertificateDialogParams) {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -32,15 +41,12 @@ class DialogCloudCertificate extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            "ui.panel.config.cloud.dialog_certificate.certificate_information"
-          )
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.cloud.dialog_certificate.certificate_information"
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           <p>
@@ -74,11 +80,13 @@ class DialogCloudCertificate extends LitElement {
           </ul>
         </div>
 
-        <mwc-button @click=${this.closeDialog} slot="primaryAction">
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.dialog_certificate.close"
-          )}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_certificate.close"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -87,9 +95,6 @@ class DialogCloudCertificate extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 535px;
-        }
         .break-word {
           overflow-wrap: break-word;
         }

@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,20 +7,20 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
-import "../../../../../components/ha-form/ha-form";
 import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
+import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceCapabilities,
   DeviceTrigger,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
   fetchDeviceTriggerCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")
@@ -37,7 +37,7 @@ export class HaDeviceTrigger extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origTrigger?: DeviceTrigger;
 
@@ -132,6 +132,7 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
       this._getCapabilities();
     }

@@ -60,7 +60,7 @@ export interface Agent {
   supported_languages: "*" | string[];
 }
 
-export interface AssitDebugResult {
+export interface AssistDebugResult {
   intent: {
     name: string;
   };
@@ -75,7 +75,7 @@ export interface AssitDebugResult {
 }
 
 export interface AssistDebugResponse {
-  results: (AssitDebugResult | null)[];
+  results: (AssistDebugResult | null)[];
 }
 
 export const processConversationInput = (

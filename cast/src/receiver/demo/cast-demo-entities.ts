@@ -1,8 +1,7 @@
-import type { Entity } from "../../../../src/fake_data/entity";
-import { convertEntities } from "../../../../src/fake_data/entity";
+import type { EntityInput } from "../../../../src/fake_data/entities/types";
 
-export const castDemoEntities: () => Entity[] = () =>
-  convertEntities({
+export const castDemoEntities: () => EntityInput[] = () =>
+  Object.values({
     "light.reading_light": {
       entity_id: "light.reading_light",
       state: "on",
@@ -75,7 +74,7 @@ export const castDemoEntities: () => Entity[] = () =>
         longitude: 4.8903147,
         radius: 100,
         friendly_name: "Home",
-        icon: "hass:home",
+        icon: "mdi:home",
       },
     },
     "input_number.harmonyvolume": {
@@ -88,7 +87,7 @@ export const castDemoEntities: () => Entity[] = () =>
         step: 1,
         mode: "slider",
         friendly_name: "Volume",
-        icon: "hass:volume-high",
+        icon: "mdi:volume-high",
       },
     },
     "climate.upstairs": {

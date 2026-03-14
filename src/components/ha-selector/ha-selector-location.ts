@@ -11,6 +11,7 @@ import type { SchemaUnion } from "../ha-form/types";
 import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {
@@ -27,7 +28,7 @@ export class HaLocationSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   private _schema = memoizeOne(
-    (radius?: boolean, radius_readonly?: boolean) =>
+    (localize: LocalizeFunc, radius?: boolean, radius_readonly?: boolean) =>
       [
         {
           name: "",
@@ -36,12 +37,12 @@ export class HaLocationSelector extends LitElement {
             {
               name: "latitude",
               required: true,
-              selector: { number: { step: "any" } },
+              selector: { number: { step: "any", unit_of_measurement: "°" } },
             },
             {
               name: "longitude",
               required: true,
-              selector: { number: { step: "any" } },
+              selector: { number: { step: "any", unit_of_measurement: "°" } },
             },
           ],
         },
@@ -52,7 +53,16 @@ export class HaLocationSelector extends LitElement {
                 required: true,
                 default: 1000,
                 disabled: !!radius_readonly,
-                selector: { number: { min: 0, step: 1, mode: "box" } as const },
+                selector: {
+                  number: {
+                    min: 0,
+                    step: 1,
+                    mode: "box",
+                    unit_of_measurement: localize(
+                      "ui.components.selectors.location.radius_meters"
+                    ),
+                  } as const,
+                },
               } as const,
             ]
           : []),
@@ -84,6 +94,7 @@ export class HaLocationSelector extends LitElement {
       <ha-form
         .hass=${this.hass}
         .schema=${this._schema(
+          this.hass.localize,
           this.selector.location?.radius,
           this.selector.location?.radius_readonly
         )}

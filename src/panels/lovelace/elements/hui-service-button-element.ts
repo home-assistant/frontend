@@ -11,9 +11,7 @@ export class HuiServiceButtonElement
   implements LovelaceElement
 {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-service-button-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-service-button-element-editor");
     return document.createElement("hui-service-button-element-editor");
   }
 

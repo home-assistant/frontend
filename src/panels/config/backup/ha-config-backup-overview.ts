@@ -3,16 +3,15 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
   BackupAgent,
@@ -40,6 +39,7 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-overview")
 class HaConfigBackupOverview extends LitElement {
@@ -63,13 +63,14 @@ class HaConfigBackupOverview extends LitElement {
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
-  private async _uploadBackup(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  @property({ attribute: false }) public uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
 
+  private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
-  }
+  };
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
@@ -143,19 +144,23 @@ class HaConfigBackupOverview extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
       >
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown
+          slot="toolbar-icon"
+          placement="bottom-end"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-list-item graphic="icon" @request-selected=${this._uploadBackup}>
-            <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+          <ha-dropdown-item value="upload_backup">
+            <ha-svg-icon slot="icon" .path=${mdiUpload}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.backup.overview.menu.upload_backup"
             )}
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">
           ${this.info && Object.keys(this.info.agent_errors).length
             ? html`${Object.entries(this.info.agent_errors).map(
@@ -182,6 +187,8 @@ class HaConfigBackupOverview extends LitElement {
                 <ha-backup-overview-progress
                   .hass=${this.hass}
                   .manager=${this.manager}
+                  .agents=${this.agents}
+                  .uploadProgress=${this.uploadProgress}
                 >
                 </ha-backup-overview-progress>
               `
@@ -240,6 +247,14 @@ class HaConfigBackupOverview extends LitElement {
     `;
   }
 
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item.value;
+
+    if (action === "upload_backup") {
+      this._uploadBackup();
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -248,10 +263,10 @@ class HaConfigBackupOverview extends LitElement {
           padding: 28px 20px 0;
           max-width: 690px;
           margin: 0 auto;
-          gap: 24px;
+          gap: var(--ha-space-6);
           display: flex;
           flex-direction: column;
-          margin-bottom: calc(env(safe-area-inset-bottom) + 72px);
+          margin-bottom: calc(var(--safe-area-inset-bottom) + 72px);
         }
         .card-actions {
           display: flex;

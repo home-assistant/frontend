@@ -1,32 +1,33 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { array, assert, assign, object, optional, string } from "superstruct";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { ALARM_MODES } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
+import {
+  ALARM_MODE_STATE_MAP,
+  DEFAULT_STATES,
+  filterSupportedAlarmStates,
+} from "../../cards/hui-alarm-panel-card";
 import type {
   AlarmPanelCardConfig,
   AlarmPanelCardConfigState,
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import {
-  DEFAULT_STATES,
-  ALARM_MODE_STATE_MAP,
-  filterSupportedAlarmStates,
-} from "../../cards/hui-alarm-panel-card";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { ALARM_MODES } from "../../../../data/alarm_control_panel";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     states: optional(array()),
     theme: optional(string()),
   })
@@ -61,13 +62,13 @@ export class HuiAlarmPanelCardEditor
           selector: { entity: { domain: "alarm_control_panel" } },
         },
         {
-          type: "grid",
-          name: "",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            { name: "theme", selector: { theme: {} } },
-          ],
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
         },
+        { name: "theme", selector: { theme: {} } },
         {
           name: "states",
           selector: {

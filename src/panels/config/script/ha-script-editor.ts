@@ -1,7 +1,7 @@
-import "@material/mwc-button";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
+  mdiAppleKeyboardCommand,
   mdiCog,
-  mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
@@ -11,35 +11,37 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
+  mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
   mdiTag,
   mdiTransitConnection,
+  mdiUndo,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
-
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -47,7 +49,7 @@ import {
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
+  normalizeScriptConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -58,84 +60,50 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries, HomeAssistant, Route } from "../../../types";
+import type { Entries } from "../../../types";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
+import {
+  AutomationScriptEditorMixin,
+  automationScriptEditorStyles,
+} from "../automation/ha-automation-script-editor-mixin";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
+@customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
-  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
+  AutomationScriptEditorMixin<ScriptConfig>(
+    PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
+  )
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public scriptId: string | null = null;
 
-  @property({ attribute: false }) public entityId: string | null = null;
-
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
-  @property({ type: Boolean }) public narrow = false;
-
-  @property({ attribute: false }) public route!: Route;
-
-  @state() private _config?: ScriptConfig;
-
-  @state() private _dirty = false;
-
-  @state() private _errors?: string;
-
-  @state() private _yamlErrors?: string;
-
-  @state() private _entityId?: string;
-
-  @state() private _mode: "gui" | "yaml" = "gui";
-
-  @state() private _readOnly = false;
-
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
-    transformer: function (this: HaScriptEditor, value) {
-      return value.find(({ entity_id }) => entity_id === this._entityId);
-    },
-    watch: ["_entityId"],
-  })
-  private _registryEntry?: EntityRegistryEntry;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
 
-  @state() private _validationErrors?: (string | TemplateResult)[];
-
-  @state() private _blueprintConfig?: BlueprintScriptConfig;
-
-  @state() private _saving = false;
-
-  private _entityRegistryUpdate?: EntityRegistryUpdate;
-
   private _newScriptId?: string;
 
-  private _entityRegCreated?: (
-    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
-  ) => void;
+  private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => this.config!,
+  });
 
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
     if (
-      this._entityRegCreated &&
+      this.entityRegCreated &&
       this._newScriptId &&
       changedProps.has("entityRegistry")
     ) {
@@ -144,280 +112,266 @@ export class HaScriptEditor extends SubscribeMixin(
           entity.platform === "script" && entity.unique_id === this._newScriptId
       );
       if (script) {
-        this._entityRegCreated(script);
-        this._entityRegCreated = undefined;
+        this.entityRegCreated(script);
+        this.entityRegCreated = undefined;
       }
     }
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._config) {
-      return nothing;
+    if (!this.config) {
+      return this.renderLoading();
     }
 
-    const stateObj = this._entityId
-      ? this.hass.states[this._entityId]
+    const stateObj = this.currentEntityId
+      ? this.hass.states[this.currentEntityId]
       : undefined;
 
-    const useBlueprint = "use_blueprint" in this._config;
+    const useBlueprint = "use_blueprint" in this.config;
+    const shortcutIcon = isMac
+      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
+      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${this._backTapped}
-        .header=${this._config.alias ||
+        .backCallback=${this.backTapped}
+        .header=${this.config.alias ||
         this.hass.localize("ui.panel.config.script.editor.default_name")}
       >
+        ${this.mode === "gui" && !this.narrow
+          ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.undo")}
+                .path=${mdiUndo}
+                @click=${this._undo}
+                .disabled=${!this._undoRedoController.canUndo}
+                id="button-undo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-undo">
+                ${this.hass.localize("ui.common.undo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Z</span>)
+                </span>
+              </ha-tooltip>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.redo")}
+                .path=${mdiRedo}
+                @click=${this._redo}
+                .disabled=${!this._undoRedoController.canRedo}
+                id="button-redo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-redo">
+                ${this.hass.localize("ui.common.redo")}
+                <span class="shortcut"
+                  >(
+                  ${isMac
+                    ? html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Shift</span>
+                        <span>+</span>
+                        <span>Z</span>`
+                    : html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Y</span>`})
+                </span>
+              </ha-tooltip>`
+          : nothing}
         ${this.scriptId && !this.narrow
           ? html`
-              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+              <ha-button
+                appearance="plain"
+                @click=${this._showTrace}
+                slot="toolbar-icon"
+              >
                 ${this.hass.localize(
                   "ui.panel.config.script.editor.show_trace"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this.scriptId}
-            @click=${this._showInfo}
-          >
+          ${this.mode === "gui" && this.narrow
+            ? html`<ha-dropdown-item
+                  value="undo"
+                  .disabled=${!this._undoRedoController.canUndo}
+                >
+                  ${this.hass.localize("ui.common.undo")}
+                  <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
+                </ha-dropdown-item>
+                <ha-dropdown-item
+                  value="redo"
+                  .disabled=${!this._undoRedoController.canRedo}
+                >
+                  ${this.hass.localize("ui.common.redo")}
+                  <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
+                </ha-dropdown-item>`
+            : nothing}
+
+          <ha-dropdown-item .disabled=${!this.scriptId} value="info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._showSettings}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="settings">
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._editCategory}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="category">
             ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
+              `ui.panel.config.scene.picker.${this.registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this.scriptId}
-            @click=${this._runScript}
-          >
+          <ha-dropdown-item .disabled=${!this.scriptId} value="run">
             ${this.hass.localize("ui.panel.config.script.picker.run_script")}
-            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+          </ha-dropdown-item>
 
           ${this.scriptId && this.narrow
-            ? html`
-                <a href="/config/script/trace/${this.scriptId}">
-                  <ha-list-item graphic="icon">
-                    ${this.hass.localize(
-                      "ui.panel.config.script.editor.show_trace"
-                    )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiTransitConnection}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                </a>
-              `
+            ? html`<ha-dropdown-item value="trace">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.show_trace"
+                )}
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiTransitConnection}
+                ></ha-svg-icon>
+              </ha-dropdown-item>`
             : nothing}
-          ${!useBlueprint && !("fields" in this._config)
+          ${!useBlueprint && !("fields" in this.config)
             ? html`
-                <ha-list-item
-                  graphic="icon"
-                  .disabled=${this._readOnly || this._mode === "yaml"}
-                  @click=${this._addFields}
+                <ha-dropdown-item
+                  .disabled=${this.readOnly || this.mode === "yaml"}
+                  value="add_fields"
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.field.add_fields"
                   )}
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiFormTextbox}
                   ></ha-svg-icon>
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            graphic="icon"
-            @click=${this._promptScriptAlias}
-            .disabled=${!this.scriptId ||
-            this._readOnly ||
-            this._mode === "yaml"}
+          <ha-dropdown-item
+            value="rename"
+            .disabled=${!this.scriptId || this.readOnly || this.mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.script.editor.rename")}
-            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
+          </ha-dropdown-item>
           ${!useBlueprint
             ? html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._promptScriptMode}
-                  .disabled=${this._readOnly || this._mode === "yaml"}
+                <ha-dropdown-item
+                  value="change_mode"
+                  .disabled=${this.readOnly || this.mode === "yaml"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.change_mode"
                   )}
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiDebugStepOver}
                   ></ha-svg-icon>
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            .disabled=${this._blueprintConfig ||
-            (!this._readOnly && !this.scriptId)}
-            graphic="icon"
-            @click=${this._duplicate}
+          <ha-dropdown-item
+            .disabled=${!!this.blueprintConfig ||
+            (!this.readOnly && !this.scriptId)}
+            value="duplicate"
           >
             ${this.hass.localize(
-              this._readOnly
+              this.readOnly
                 ? "ui.panel.config.script.editor.migrate"
                 : "ui.panel.config.script.editor.duplicate"
             )}
             <ha-svg-icon
-              slot="graphic"
-              .path=${mdiContentDuplicate}
+              slot="icon"
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
           ${useBlueprint
             ? html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._takeControl}
-                  .disabled=${this._readOnly}
+                <ha-dropdown-item
+                  value="take_control"
+                  .disabled=${this.readOnly}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.take_control"
                   )}
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiFileEdit}
-                  ></ha-svg-icon>
-                </ha-list-item>
+                  <ha-svg-icon slot="icon" .path=${mdiFileEdit}></ha-svg-icon>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            graphic="icon"
-            @click=${this._mode === "gui"
-              ? this._switchYamlMode
-              : this._switchUiMode}
-          >
+          <ha-dropdown-item value="toggle_yaml_mode">
             ${this.hass.localize(
-              `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
+              `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item
-            .disabled=${this._readOnly || !this.scriptId}
-            class=${classMap({ warning: Boolean(this.scriptId) })}
-            graphic="icon"
-            @click=${this._deleteConfirm}
+          <ha-dropdown-item
+            .disabled=${this.readOnly || !this.scriptId}
+            value="delete"
+            .variant=${this.scriptId ? "danger" : "default"}
           >
             ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.scriptId) })}
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
-        <div
-          class="content ${classMap({
-            "yaml-mode": this._mode === "yaml",
-          })}"
-        >
-          ${this._errors || stateObj?.state === UNAVAILABLE
-            ? html`<ha-alert
-                alert-type="error"
-                .title=${stateObj?.state === UNAVAILABLE
-                  ? this.hass.localize(
-                      "ui.panel.config.script.editor.unavailable"
-                    )
-                  : undefined}
-              >
-                ${this._errors || this._validationErrors}
-                ${stateObj?.state === UNAVAILABLE
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiRobotConfused}
-                    ></ha-svg-icon>`
-                  : nothing}
-              </ha-alert>`
-            : ""}
-          ${this._blueprintConfig
-            ? html`<ha-alert alert-type="info">
-                ${this.hass.localize(
-                  "ui.panel.config.script.editor.confirm_take_control"
-                )}
-                <div slot="action" style="display: flex;">
-                  <mwc-button @click=${this._takeControlSave}
-                    >${this.hass.localize("ui.common.yes")}</mwc-button
-                  >
-                  <mwc-button @click=${this._revertBlueprint}
-                    >${this.hass.localize("ui.common.no")}</mwc-button
-                  >
-                </div>
-              </ha-alert>`
-            : this._readOnly
-              ? html`<ha-alert alert-type="warning" dismissable
-                  >${this.hass.localize(
-                    "ui.panel.config.script.editor.read_only"
-                  )}
-                  <mwc-button slot="action" @click=${this._duplicate}>
-                    ${this.hass.localize(
-                      "ui.panel.config.script.editor.migrate"
-                    )}
-                  </mwc-button>
-                </ha-alert>`
-              : nothing}
-          ${this._mode === "gui"
+          </ha-dropdown-item>
+        </ha-dropdown>
+        <div class=${this.mode === "yaml" ? "yaml-mode" : ""}>
+          ${this.mode === "gui"
             ? html`
-                <div
-                  class=${classMap({
-                    rtl: computeRTL(this.hass),
-                  })}
-                >
+                <div>
                   ${useBlueprint
                     ? html`
                         <blueprint-script-editor
                           .hass=${this.hass}
                           .narrow=${this.narrow}
                           .isWide=${this.isWide}
-                          .config=${this._config}
-                          .disabled=${this._readOnly}
+                          .config=${this.config}
+                          .disabled=${this.readOnly}
+                          .saving=${this.saving}
+                          .dirty=${this.dirty}
                           @value-changed=${this._valueChanged}
+                          @save-script=${this._handleSaveScript}
                         ></blueprint-script-editor>
                       `
                     : html`
@@ -425,37 +379,103 @@ export class HaScriptEditor extends SubscribeMixin(
                           .hass=${this.hass}
                           .narrow=${this.narrow}
                           .isWide=${this.isWide}
-                          .config=${this._config}
-                          .disabled=${this._readOnly}
+                          .config=${this.config}
+                          .disabled=${this.readOnly}
+                          .dirty=${this.dirty}
+                          .saving=${this.saving}
                           @value-changed=${this._valueChanged}
-                        ></manual-script-editor>
+                          @editor-save=${this._handleSaveScript}
+                          @save-script=${this._handleSaveScript}
+                        >
+                          <div class="alert-wrapper" slot="alerts">
+                            ${this.errors || stateObj?.state === UNAVAILABLE
+                              ? html`<ha-alert
+                                  alert-type="error"
+                                  .title=${stateObj?.state === UNAVAILABLE
+                                    ? this.hass.localize(
+                                        "ui.panel.config.script.editor.unavailable"
+                                      )
+                                    : undefined}
+                                >
+                                  ${this.errors || this.validationErrors}
+                                  ${stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-svg-icon
+                                        slot="icon"
+                                        .path=${mdiRobotConfused}
+                                      ></ha-svg-icon>`
+                                    : nothing}
+                                </ha-alert>`
+                              : nothing}
+                            ${this.blueprintConfig
+                              ? html`<ha-alert alert-type="info">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.script.editor.confirm_take_control"
+                                  )}
+                                  <div slot="action" style="display: flex;">
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this.takeControlSave}
+                                      >${this.hass.localize(
+                                        "ui.common.yes"
+                                      )}</ha-button
+                                    >
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this.revertBlueprint}
+                                      >${this.hass.localize(
+                                        "ui.common.no"
+                                      )}</ha-button
+                                    >
+                                  </div>
+                                </ha-alert>`
+                              : this.readOnly
+                                ? html`<ha-alert
+                                    alert-type="warning"
+                                    dismissable
+                                    >${this.hass.localize(
+                                      "ui.panel.config.script.editor.read_only"
+                                    )}
+                                    <ha-button
+                                      appearance="plain"
+                                      slot="action"
+                                      @click=${this._duplicate}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.script.editor.migrate"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>`
+                                : nothing}
+                          </div>
+                        </manual-script-editor>
                       `}
                 </div>
               `
-            : this._mode === "yaml"
+            : this.mode === "yaml"
               ? html`<ha-yaml-editor
-                  copy-clipboard
-                  .hass=${this.hass}
-                  .defaultValue=${this._preprocessYaml()}
-                  .readOnly=${this._readOnly}
-                  @value-changed=${this._yamlChanged}
-                ></ha-yaml-editor>`
+                    .hass=${this.hass}
+                    .defaultValue=${this._preprocessYaml()}
+                    .readOnly=${this.readOnly}
+                    disable-fullscreen
+                    @value-changed=${this._yamlChanged}
+                    @editor-save=${this._handleSaveScript}
+                    .showErrors=${false}
+                  ></ha-yaml-editor>
+                  <ha-fab
+                    slot="fab"
+                    class=${!this.readOnly && this.dirty ? "dirty" : ""}
+                    .label=${this.hass.localize("ui.common.save")}
+                    .disabled=${this.saving}
+                    extended
+                    @click=${this._handleSaveScript}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentSave}
+                    ></ha-svg-icon>
+                  </ha-fab>`
               : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
-          .label=${this.hass.localize(
-            "ui.panel.config.script.editor.save_script"
-          )}
-          .disabled=${this._saving}
-          extended
-          @click=${this._handleSave}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </ha-fab>
       </hass-subpage>
     `;
   }
@@ -484,27 +504,26 @@ export class HaScriptEditor extends SubscribeMixin(
       const entity = this.entityRegistry.find(
         (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
       );
-      this._entityId = entity?.entity_id;
+      this.currentEntityId = entity?.entity_id;
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
-      this._dirty = !!initData;
+      this.dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {};
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
-      this._config = {
+      this.config = {
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
-      this._readOnly = false;
-      this._dirty = true;
+      this.readOnly = false;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this.config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -513,25 +532,25 @@ export class HaScriptEditor extends SubscribeMixin(
       if (regEntry?.unique_id) {
         this.scriptId = regEntry.unique_id;
       }
-      this._entityId = this.entityId;
-      this._dirty = false;
-      this._readOnly = true;
+      this.currentEntityId = this.entityId;
+      this.dirty = false;
+      this.readOnly = true;
     }
   }
 
   private async _checkValidation() {
-    this._validationErrors = undefined;
-    if (!this._entityId || !this._config) {
+    this.validationErrors = undefined;
+    if (!this.currentEntityId || !this.config) {
       return;
     }
-    const stateObj = this.hass.states[this._entityId];
+    const stateObj = this.hass.states[this.currentEntityId];
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      actions: this._config.sequence,
+      actions: this.config.sequence,
     });
-    this._validationErrors = (
+    this.validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
       value.valid
@@ -543,29 +562,16 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
-        this._dirty = false;
-        this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this.dirty = false;
+        this.readOnly = false;
+        this.config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
-        this._entityId = entity?.entity_id;
+        this.currentEntityId = entity?.entity_id;
         this._checkValidation();
       },
       (resp) => {
@@ -588,23 +594,25 @@ export class HaScriptEditor extends SubscribeMixin(
                 { err_no: resp.status_code || resp.code }
               )
         );
-        history.back();
+        goBack("/config");
       }
     );
   }
 
   private _valueChanged(ev) {
-    this._config = ev.detail.value;
-    this._errors = undefined;
-    this._dirty = true;
+    if (this.config) {
+      this._undoRedoController.commit(this.config);
+    }
+
+    this.config = ev.detail.value;
+    this.errors = undefined;
+    this.dirty = true;
   }
 
-  private async _runScript(ev: CustomEvent) {
-    ev.stopPropagation();
-
-    if (hasScriptFields(this.hass, this._entityId!)) {
+  private async _runScript() {
+    if (hasScriptFields(this.hass, this.currentEntityId!)) {
       showMoreInfoDialog(this, {
-        entityId: this._entityId!,
+        entityId: this.currentEntityId!,
       });
       return;
     }
@@ -612,20 +620,13 @@ export class HaScriptEditor extends SubscribeMixin(
     await triggerScript(this.hass, this.scriptId!);
     showToast(this, {
       message: this.hass.localize("ui.notification_toast.triggered", {
-        name: this._config!.alias,
+        name: this.config!.alias,
       }),
     });
   }
 
-  private _showSettings() {
-    showMoreInfoDialog(this, {
-      entityId: this._entityId!,
-      view: "settings",
-    });
-  }
-
   private _editCategory() {
-    if (!this._registryEntry) {
+    if (!this.registryEntry) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.scene.picker.no_category_support"
@@ -638,7 +639,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     showAssignCategoryDialog(this, {
       scope: "script",
-      entityReg: this._registryEntry,
+      entityReg: this.registryEntry,
     });
   }
 
@@ -675,7 +676,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _showTrace() {
     if (this.scriptId) {
-      const result = await this._confirmUnsavedChanged();
+      const result = await this.confirmUnsavedChanged();
       if (result) {
         navigate(`/config/script/trace/${this.scriptId}`);
       }
@@ -683,42 +684,47 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _addFields() {
-    if ("fields" in this._config!) {
+    if ("fields" in this.config!) {
       return;
     }
+
+    if (this.config) {
+      this._undoRedoController.commit(this.config);
+    }
+
     this._manualEditor?.addFields();
-    this._dirty = true;
+    this.dirty = true;
   }
 
   private _preprocessYaml() {
-    return this._config;
+    return this.config;
   }
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._dirty = true;
+    this.dirty = true;
     if (!ev.detail.isValid) {
-      this._yamlErrors = ev.detail.errorMsg;
+      this.yamlErrors = ev.detail.errorMsg;
       return;
     }
-    this._yamlErrors = undefined;
-    this._config = ev.detail.value;
-    this._errors = undefined;
+    this.yamlErrors = undefined;
+    this.config = ev.detail.value;
+    this.errors = undefined;
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (!this._dirty) {
+  protected async confirmUnsavedChanged(): Promise<boolean> {
+    if (!this.dirty) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
-        config: this._config!,
+        config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {
-          this._config = config;
-          this._entityRegistryUpdate = entityRegistryUpdate;
-          this._dirty = true;
+          this.config = config;
+          this.entityRegistryUpdate = entityRegistryUpdate;
+          this.dirty = true;
           this.requestUpdate();
 
           const id = this.scriptId || String(Date.now());
@@ -734,8 +740,8 @@ export class HaScriptEditor extends SubscribeMixin(
         },
         onClose: () => resolve(false),
         onDiscard: () => resolve(true),
-        entityRegistryUpdate: this._entityRegistryUpdate,
-        entityRegistryEntry: this._registryEntry,
+        entityRegistryUpdate: this.entityRegistryUpdate,
+        entityRegistryEntry: this.registryEntry,
         title: this.hass.localize(
           this.scriptId
             ? "ui.panel.config.script.editor.leave.unsaved_confirm_title"
@@ -751,15 +757,8 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private _backTapped = async () => {
-    const result = await this._confirmUnsavedChanged();
-    if (result) {
-      afterNextRender(() => history.back());
-    }
-  };
-
   private async _takeControl() {
-    const config = this._config as BlueprintScriptConfig;
+    const config = this.config as BlueprintScriptConfig;
 
     try {
       const result = await substituteBlueprint(
@@ -770,40 +769,25 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
 
-      this._blueprintConfig = config;
-      this._config = newConfig;
-      if (this._mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
+      this.blueprintConfig = config;
+      this.config = newConfig;
+      if (this.mode === "yaml") {
+        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
       }
-      this._readOnly = true;
-      this._errors = undefined;
+      this.readOnly = true;
+      this.errors = undefined;
     } catch (err: any) {
-      this._errors = err.message;
+      this.errors = err.message;
     }
-  }
-
-  private _revertBlueprint() {
-    this._config = this._blueprintConfig;
-    if (this._mode === "yaml") {
-      this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
-    }
-    this._blueprintConfig = undefined;
-    this._readOnly = false;
-  }
-
-  private _takeControlSave() {
-    this._readOnly = false;
-    this._dirty = true;
-    this._blueprintConfig = undefined;
   }
 
   private async _duplicate() {
-    const result = this._readOnly
+    const result = this.readOnly
       ? await showConfirmationDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.script.picker.migrate_script"
@@ -812,14 +796,14 @@ export class HaScriptEditor extends SubscribeMixin(
             "ui.panel.config.script.picker.migrate_script_description"
           ),
         })
-      : await this._confirmUnsavedChanged();
+      : await this.confirmUnsavedChanged();
     if (result) {
-      this._entityId = undefined;
+      this.currentEntityId = undefined;
       showScriptEditor({
-        ...this._config,
-        alias: this._readOnly
-          ? this._config?.alias
-          : `${this._config?.alias} (${this.hass.localize(
+        ...this.config,
+        alias: this.readOnly
+          ? this.config?.alias
+          : `${this.config?.alias} (${this.hass.localize(
               "ui.panel.config.script.picker.duplicate"
             )})`,
       });
@@ -833,7 +817,7 @@ export class HaScriptEditor extends SubscribeMixin(
       ),
       text: this.hass.localize(
         "ui.panel.config.script.editor.delete_confirm_text",
-        { name: this._config?.alias }
+        { name: this.config?.alias }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       destructive: true,
@@ -844,45 +828,23 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
-    history.back();
-  }
-
-  private async _switchUiMode() {
-    if (this._yamlErrors) {
-      const result = await showConfirmationDialog(this, {
-        text: html`${this.hass.localize(
-            "ui.panel.config.automation.editor.switch_ui_yaml_error"
-          )}<br /><br />${this._yamlErrors}`,
-        confirmText: this.hass!.localize("ui.common.continue"),
-        destructive: true,
-        dismissText: this.hass!.localize("ui.common.cancel"),
-      });
-      if (!result) {
-        return;
-      }
-    }
-    this._yamlErrors = undefined;
-    this._mode = "gui";
-  }
-
-  private _switchYamlMode() {
-    this._mode = "yaml";
+    goBack("/config");
   }
 
   private async _promptScriptAlias(): Promise<boolean> {
     return new Promise((resolve) => {
       showAutomationSaveDialog(this, {
-        config: this._config!,
+        config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {
-          this._config = config;
-          this._entityRegistryUpdate = entityRegistryUpdate;
-          this._dirty = true;
+          this.config = config;
+          this.entityRegistryUpdate = entityRegistryUpdate;
+          this.dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
-        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryUpdate: this.entityRegistryUpdate,
         entityRegistryEntry: this.entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         ),
@@ -893,10 +855,10 @@ export class HaScriptEditor extends SubscribeMixin(
   private async _promptScriptMode(): Promise<void> {
     return new Promise((resolve) => {
       showAutomationModeDialog(this, {
-        config: this._config!,
+        config: this.config!,
         updateConfig: (config) => {
-          this._config = config;
-          this._dirty = true;
+          this.config = config;
+          this.dirty = true;
           this.requestUpdate();
           resolve();
         },
@@ -905,22 +867,24 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private async _handleSave() {
-    if (this._yamlErrors) {
+  private async _handleSaveScript() {
+    if (this.yamlErrors) {
       showToast(this, {
-        message: this._yamlErrors,
+        message: this.yamlErrors,
       });
       return;
     }
+
+    this._manualEditor?.resetPastedConfig();
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
       if (!saved) {
         return;
       }
-      this._entityId = this._computeEntityIdFromAlias(this._config!.alias);
+      this.currentEntityId = this._computeEntityIdFromAlias(this.config!.alias);
     }
-    const id = this.scriptId || this._entityId || Date.now();
+    const id = this.scriptId || this.currentEntityId || Date.now();
 
     await this._saveScript(id);
     if (!this.scriptId) {
@@ -929,13 +893,13 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _saveScript(id): Promise<void> {
-    this._saving = true;
+    this.saving = true;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
-    if (this._entityRegistryUpdate !== undefined && !this.scriptId) {
+    if (this.entityRegistryUpdate !== undefined && !this.scriptId) {
       this._newScriptId = id.toString();
       entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
-        this._entityRegCreated = resolve;
+        this.entityRegCreated = resolve;
       });
     }
 
@@ -943,11 +907,11 @@ export class HaScriptEditor extends SubscribeMixin(
       await this.hass!.callApi(
         "POST",
         "config/script/config/" + id,
-        this._config
+        this.config
       );
 
-      if (this._entityRegistryUpdate !== undefined) {
-        let entityId = this._entityId;
+      if (this.entityRegistryUpdate !== undefined) {
+        let entityId = this.currentEntityId;
 
         // wait for new script to appear in entity registry
         if (entityRegPromise) {
@@ -957,28 +921,22 @@ export class HaScriptEditor extends SubscribeMixin(
           } catch (e) {
             entityId = undefined;
             if (e instanceof Error && e.name === "TimeoutError") {
-              showAlertDialog(this, {
-                title: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script"
-                    ),
-                  }
-                ),
-                text: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script"
-                    ),
-                    types: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script_plural"
-                    ),
-                  }
-                ),
-                warning: true,
+              // Show the dialog and give user a chance to wait for the registry
+              // to respond.
+              await showAutomationSaveTimeoutDialog(this, {
+                savedPromise: entityRegPromise,
+                type: "script",
               });
+              try {
+                // We already gave the user a chance to wait once, so if they skipped
+                // the dialog and it's still not there just immediately timeout.
+                const automation = await promiseTimeout(0, entityRegPromise);
+                entityId = automation.entity_id;
+              } catch (e2) {
+                if (!(e2 instanceof Error && e2.name === "TimeoutError")) {
+                  throw e2;
+                }
+              }
             } else {
               throw e;
             }
@@ -988,92 +946,189 @@ export class HaScriptEditor extends SubscribeMixin(
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
             categories: {
-              script: this._entityRegistryUpdate.category || null,
+              script: this.entityRegistryUpdate.category || null,
             },
-            labels: this._entityRegistryUpdate.labels || [],
-            area_id: this._entityRegistryUpdate.area || null,
+            labels: this.entityRegistryUpdate.labels || [],
+            area_id: this.entityRegistryUpdate.area || null,
           });
         }
       }
 
-      this._dirty = false;
+      this.dirty = false;
     } catch (errors: any) {
-      this._errors = errors.body?.message || errors.error || errors.body;
+      this.errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
     } finally {
-      this._saving = false;
+      this.saving = false;
     }
   }
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._handleSave(),
+      s: () => this._handleSaveScript(),
+      c: () => this._copySelectedRow(),
+      x: () => this._cutSelectedRow(),
+      Delete: () => this._deleteSelectedRow(),
+      Backspace: () => this._deleteSelectedRow(),
+      z: () => this._undo(),
+      Z: () => this._redo(),
+      y: () => this._redo(),
     };
   }
 
-  protected get isDirty() {
-    return this._dirty;
+  // @ts-ignore
+  private _collapseAll() {
+    this._manualEditor?.collapseAll();
   }
 
-  protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
+  // @ts-ignore
+  private _expandAll() {
+    this._manualEditor?.expandAll();
+  }
+
+  private _copySelectedRow() {
+    this._manualEditor?.copySelectedRow();
+  }
+
+  private _cutSelectedRow() {
+    this._manualEditor?.cutSelectedRow();
+  }
+
+  private _deleteSelectedRow() {
+    this._manualEditor?.deleteSelectedRow();
+  }
+
+  private _applyUndoRedo(config: ScriptConfig) {
+    this._manualEditor?.triggerCloseSidebar();
+    this.config = config;
+    this.dirty = true;
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "undo":
+        this._undo();
+        break;
+      case "redo":
+        this._redo();
+        break;
+      case "info":
+        this._showInfo();
+        break;
+      case "settings":
+        this.showSettings();
+        break;
+      case "category":
+        this._editCategory();
+        break;
+      case "run":
+        this._runScript();
+        break;
+      case "add_fields":
+        this._addFields();
+        break;
+      case "rename":
+        this._promptScriptAlias();
+        break;
+      case "change_mode":
+        this._promptScriptMode();
+        break;
+      case "duplicate":
+        this._duplicate();
+        break;
+      case "take_control":
+        this._takeControl();
+        break;
+      case "toggle_yaml_mode":
+        if (this.mode === "gui") {
+          this.switchYamlMode();
+          break;
+        }
+        this.switchUiMode();
+        break;
+      case "delete":
+        this._deleteConfirm();
+        break;
+      case "trace":
+        this._showTrace();
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      automationScriptEditorStyles,
       css`
-        p {
-          margin-bottom: 0;
-        }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
-        .yaml-mode {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          padding-bottom: 0;
-        }
-        .config-container,
         manual-script-editor,
-        blueprint-script-editor,
-        :not(.yaml-mode) > ha-alert {
+        blueprint-script-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
           display: block;
         }
-        .config-container ha-alert {
-          margin-bottom: 16px;
-          display: block;
-        }
-        ha-yaml-editor {
-          flex-grow: 1;
-          --actions-border-radius: 0;
-          --code-mirror-height: 100%;
-          min-height: 0;
+
+        :not(.yaml-mode) > .error-wrapper {
+          position: absolute;
+          top: 4px;
+          z-index: 3;
+          width: 100%;
           display: flex;
           flex-direction: column;
+          align-items: center;
         }
+        :not(.yaml-mode) > .error-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+        }
+
+        .alert-wrapper {
+          position: sticky;
+          top: 0;
+          margin-top: 0;
+          margin-bottom: 8px;
+          z-index: 1;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-2);
+          pointer-events: none;
+        }
+
+        .alert-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
+          pointer-events: auto;
+        }
+
+        manual-script-editor {
+          max-width: var(--ha-automation-editor-max-width);
+          padding: 0 12px;
+        }
+
         span[slot="introduction"] a {
           color: var(--primary-color);
-        }
-        ha-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 0;
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
         }
         .header {
           display: flex;
@@ -1081,26 +1136,24 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-button-menu a {
-          text-decoration: none;
-          color: var(--primary-color);
         }
       `,
     ];
   }
 }
 
-customElements.define("ha-script-editor", HaScriptEditor);
-
 declare global {
   interface HTMLElementTagNameMap {
     "ha-script-editor": HaScriptEditor;
+  }
+
+  interface HASSDomEvents {
+    "save-script": undefined;
   }
 }

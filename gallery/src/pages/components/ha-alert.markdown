@@ -147,13 +147,13 @@ The `title ` option should not be used without a description.
 
 <ha-alert alert-type="success">
   This is a success alert — check it out!
-  <mwc-button slot="action" label="Undo"></mwc-button>
+  <ha-button slot="action">Undo</ha-button>
 </ha-alert>
 
 ```html
 <ha-alert alert-type="success">
   This is a success alert — check it out!
-  <mwc-button slot="action" label="Undo"></mwc-button>
+  <ha-button slot="action">Undo</ha-button>
 </ha-alert>
 ```
 

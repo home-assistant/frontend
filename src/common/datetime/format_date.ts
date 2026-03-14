@@ -77,7 +77,7 @@ export const formatDateNumeric = (
   const month = parts.find((value) => value.type === "month")?.value;
   const year = parts.find((value) => value.type === "year")?.value;
 
-  const lastPart = parts.at(parts.length - 1);
+  const lastPart = parts[parts.length - 1];
   let lastLiteral = lastPart?.type === "literal" ? lastPart?.value : "";
 
   if (locale.language === "bg" && locale.date_format === DateFormat.YMD) {
@@ -166,6 +166,21 @@ const formatDateMonthMem = memoizeOne(
     })
 );
 
+// Aug
+export const formatDateMonthShort = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateMonthShortMem(locale, config.time_zone).format(dateObj);
+
+const formatDateMonthShortMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      month: "short",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
 // 2021
 export const formatDateYear = (
   dateObj: Date,
@@ -207,6 +222,42 @@ const formatDateWeekdayShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "short",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+// Mon, Aug 10
+export const formatDateWeekdayVeryShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  formatDateWeekdayVeryShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayVeryShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+// Mon, Aug 10, 2021
+export const formatDateWeekdayShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateWeekdayShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );

@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
@@ -74,18 +74,18 @@ export class HaMoreInfoStateHeader extends LitElement {
     }
     .state {
       font-style: normal;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       font-size: 36px;
-      line-height: 44px;
+      line-height: var(--ha-line-height-condensed);
     }
     .last-changed {
       font-style: normal;
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-normal);
       letter-spacing: 0.1px;
-      padding: 4px 0;
-      margin-bottom: 20px;
+      padding: var(--ha-space-1) 0;
+      margin-bottom: var(--ha-space-5);
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;

@@ -1,12 +1,13 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import type { ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
@@ -14,6 +15,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 
+@customElement("dialog-zone-detail")
 class DialogZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -22,6 +24,8 @@ class DialogZoneDetail extends LitElement {
   @state() private _data?: ZoneMutableParams;
 
   @state() private _params?: ZoneDetailDialogParams;
+
+  @state() private _open = false;
 
   @state() private _submitting = false;
 
@@ -49,9 +53,14 @@ class DialogZoneDetail extends LitElement {
         radius: 100,
       };
     }
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -78,49 +87,58 @@ class DialogZoneDetail extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.entry
-            ? this._params.entry.name
-            : this.hass!.localize("ui.panel.config.zone.detail.new_zone")
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.entry
+          ? this.hass!.localize("ui.common.edit_item", {
+              name: this._params.entry.name,
+            })
+          : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
-        <div>
-          <ha-form
-            .hass=${this.hass}
-            .schema=${this._schema(this._data.icon)}
-            .data=${this._formData(this._data)}
-            .error=${this._error}
-            .computeLabel=${this._computeLabel}
-            class=${this._data.passive ? "passive" : ""}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        ${this._params.entry
-          ? html`
-              <mwc-button
-                slot="secondaryAction"
-                class="warning"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
-              </mwc-button>
-            `
-          : nothing}
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!valid || this._submitting}
-        >
+        <ha-form
+          autofocus
+          .hass=${this.hass}
+          .schema=${this._schema(this._data.icon)}
+          .data=${this._formData(this._data)}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          class=${this._data.passive ? "passive" : ""}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+        <ha-dialog-footer slot="footer">
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.zone.detail.update")
-            : this.hass!.localize("ui.panel.config.zone.detail.create")}
-        </mwc-button>
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteEntry}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass!.localize("ui.common.cancel")}
+                </ha-button>
+              `}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!valid || this._submitting}
+          >
+            ${this._params.entry
+              ? this.hass!.localize("ui.common.save")
+              : this.hass!.localize("ui.panel.config.zone.detail.create")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -198,7 +216,7 @@ class DialogZoneDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry!()) {
-        this._params = undefined;
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
@@ -209,16 +227,6 @@ class DialogZoneDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-min-width: min(600px, 95vw);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
-          }
-        }
         ha-form.passive {
           --zone-radius-color: var(--secondary-text-color);
         }
@@ -232,5 +240,3 @@ declare global {
     "dialog-zone-detail": DialogZoneDetail;
   }
 }
-
-customElements.define("dialog-zone-detail", DialogZoneDetail);

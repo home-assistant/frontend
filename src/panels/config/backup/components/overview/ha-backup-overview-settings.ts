@@ -151,18 +151,18 @@ class HaBackupBackupsSummary extends LitElement {
   private _addonsDescription(config: BackupConfig): string {
     if (config.create_backup.include_all_addons) {
       return this.hass.localize(
-        "ui.panel.config.backup.overview.settings.addons_all"
+        "ui.panel.config.backup.overview.settings.apps_all"
       );
     }
     const count = config.create_backup.include_addons?.length;
     if (count) {
       return this.hass.localize(
-        "ui.panel.config.backup.overview.settings.addons_many",
+        "ui.panel.config.backup.overview.settings.apps_many",
         { count }
       );
     }
     return this.hass.localize(
-      "ui.panel.config.backup.overview.settings.addons_none"
+      "ui.panel.config.backup.overview.settings.apps_none"
     );
   }
 
@@ -260,7 +260,7 @@ class HaBackupBackupsSummary extends LitElement {
                     </div>
                     <div slot="supporting-text">
                       ${this.hass.localize(
-                        "ui.panel.config.backup.overview.settings.addons"
+                        "ui.panel.config.backup.overview.settings.apps"
                       )}
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>
@@ -285,7 +285,7 @@ class HaBackupBackupsSummary extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button @click=${this._configure}>
+          <ha-button @click=${this._configure} appearance="filled">
             ${this.hass.localize(
               "ui.panel.config.backup.overview.settings.configure"
             )}
@@ -303,7 +303,7 @@ class HaBackupBackupsSummary extends LitElement {
           padding: 28px 20px 0;
           max-width: 690px;
           margin: 0 auto;
-          gap: 24px;
+          gap: var(--ha-space-6);
           display: flex;
           flex-direction: column;
           margin-bottom: 24px;

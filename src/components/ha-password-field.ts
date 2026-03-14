@@ -28,7 +28,7 @@ export class HaPasswordField extends LitElement {
 
   @property() public autocomplete?: string;
 
-  @property() public autocorrect?: string;
+  @property({ type: Boolean }) public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;
@@ -89,7 +89,7 @@ export class HaPasswordField extends LitElement {
   @property({ type: Boolean }) readOnly = false;
 
   // eslint-disable-next-line lit/no-native-attributes
-  @property({ attribute: false, type: String }) autocapitalize = "";
+  @property({ attribute: false }) autocapitalize = "";
 
   @state() private _unmaskedPassword = false;
 
@@ -196,7 +196,7 @@ export class HaPasswordField extends LitElement {
       right: 8px;
       inset-inline-start: initial;
       inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

@@ -3,22 +3,33 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
-import type { Trigger } from "../../../../src/data/automation";
+import type { LegacyTrigger } from "../../../../src/data/automation";
 import { describeTrigger } from "../../../../src/data/automation_i18n";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
-  getEntity("light", "kitchen", "on", {
-    friendly_name: "Kitchen Light",
-  }),
-  getEntity("person", "person", "", {
-    friendly_name: "Person",
-  }),
-  getEntity("zone", "home", "", {
-    friendly_name: "Home",
-  }),
+  {
+    entity_id: "light.kitchen",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen Light",
+    },
+  },
+  {
+    entity_id: "person.person",
+    state: "",
+    attributes: {
+      friendly_name: "Person",
+    },
+  },
+  {
+    entity_id: "zone.home",
+    state: "",
+    attributes: {
+      friendly_name: "Home",
+    },
+  },
 ];
 
 const triggers = [
@@ -66,7 +77,7 @@ const triggers = [
   },
 ];
 
-const initialTrigger: Trigger = {
+const initialTrigger: LegacyTrigger = {
   trigger: "state",
   entity_id: "light.kitchen",
 };

@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -9,17 +8,27 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { CoverEntity } from "../../../data/cover";
 import { CoverEntityFeature } from "../../../data/cover";
-import { UNAVAILABLE } from "../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { CoverTiltPositionCardFeatureConfig } from "./types";
+import type {
+  CoverTiltPositionCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
 const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 
-export const supportsCoverTiltPositionCardFeature = (stateObj: HassEntity) => {
+export const supportsCoverTiltPositionCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "cover" &&
@@ -34,11 +43,18 @@ class HuiCoverTiltPositionCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: CoverEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
 
   @state() private _config?: CoverTiltPositionCardFeatureConfig;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
+  }
 
   static getStubConfig(): CoverTiltPositionCardFeatureConfig {
     return {
@@ -57,21 +73,22 @@ class HuiCoverTiltPositionCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsCoverTiltPositionCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsCoverTiltPositionCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
 
-    const percentage = this.stateObj.attributes.current_tilt_position ?? 0;
+    const percentage = this._stateObj.attributes.current_tilt_position ?? 0;
 
     const value = Math.max(Math.round(percentage), 0);
 
-    const openColor = stateColorCss(this.stateObj, "open");
+    const openColor = stateColorCss(this._stateObj, "open");
 
     const color = this.color
       ? computeCssColor(this.color)
-      : stateColorCss(this.stateObj);
+      : stateColorCss(this._stateObj);
 
     const style = {
       "--feature-color": color,
@@ -88,13 +105,13 @@ class HuiCoverTiltPositionCardFeature
         mode="cursor"
         inverted
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
-          this.stateObj,
+          this._stateObj,
           this.hass.entities,
           "current_tilt_position"
         )}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
         .locale=${this.hass.locale}
       >
@@ -108,7 +125,7 @@ class HuiCoverTiltPositionCardFeature
     if (isNaN(value)) return;
 
     this.hass!.callService("cover", "set_cover_tilt_position", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       tilt_position: value,
     });
   }

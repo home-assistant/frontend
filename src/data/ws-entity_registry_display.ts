@@ -1,9 +1,9 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import type { EntityRegistryDisplayEntryResponse } from "./entity_registry";
-import { fetchEntityRegistryDisplay } from "./entity_registry";
 import { debounce } from "../common/util/debounce";
+import type { EntityRegistryDisplayEntryResponse } from "./entity/entity_registry";
+import { fetchEntityRegistryDisplay } from "./entity/entity_registry";
 
 const subscribeEntityRegistryDisplayUpdates = (
   conn: Connection,

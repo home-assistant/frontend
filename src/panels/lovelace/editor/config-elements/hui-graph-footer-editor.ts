@@ -1,5 +1,5 @@
 import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -51,7 +51,6 @@ export class HuiGraphFooterEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          allow-custom-entity
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )}
@@ -60,7 +59,7 @@ export class HuiGraphFooterEditor
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
           .required=${true}
-          @change=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">
           <ha-formfield
@@ -139,7 +138,14 @@ export class HuiGraphFooterEditor
   }
 
   static get styles(): CSSResultGroup {
-    return configElementStyle;
+    return [
+      configElementStyle,
+      css`
+        .card-config ha-switch {
+          margin: 1px 0;
+        }
+      `,
+    ];
   }
 }
 

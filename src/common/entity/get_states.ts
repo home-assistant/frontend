@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "./compute_state_domain";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { UNAVAILABLE_STATES } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
-import { computeDomain } from "./compute_domain";
 import { stringCompare } from "../string/compare";
+import { computeDomain } from "./compute_domain";
+import { computeStateDomain } from "./compute_state_domain";
 
 export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
@@ -18,6 +18,7 @@ export const FIXED_DOMAIN_STATES = {
     "pending",
     "triggered",
   ],
+  alert: ["on", "off", "idle"],
   assist_satellite: ["idle", "listening", "responding", "processing"],
   automation: ["on", "off"],
   binary_sensor: ["on", "off"],
@@ -213,6 +214,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "pm1",
       "pm10",
       "pm25",
+      "pm4",
       "power_factor",
       "power",
       "pressure",

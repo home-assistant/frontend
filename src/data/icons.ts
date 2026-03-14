@@ -12,6 +12,7 @@ import {
   mdiChatSleep,
   mdiClipboardList,
   mdiClock,
+  mdiCodeBraces,
   mdiCog,
   mdiCommentAlert,
   mdiCounter,
@@ -37,6 +38,7 @@ import {
   mdiRoomService,
   mdiScriptText,
   mdiSpeakerMessage,
+  mdiStarFourPoints,
   mdiThermostat,
   mdiTimerOutline,
   mdiToggleSwitch,
@@ -54,9 +56,11 @@ import type { HomeAssistant } from "../types";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity_registry";
+} from "./entity/entity_registry";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { getConditionDomain, getConditionObjectId } from "./condition";
+import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;
@@ -66,6 +70,7 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
 /** Fallback icons for each domain */
 export const FALLBACK_DOMAIN_ICONS = {
+  ai_task: mdiStarFourPoints,
   air_quality: mdiAirFilter,
   alert: mdiAlert,
   automation: mdiRobot,
@@ -111,6 +116,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   text: mdiFormTextbox,
   time: mdiClock,
   timer: mdiTimerOutline,
+  template: mdiCodeBraces,
   todo: mdiClipboardList,
   tts: mdiSpeakerMessage,
   vacuum: mdiRobotVacuum,
@@ -129,14 +135,29 @@ const resources: {
     all?: Promise<Record<string, ServiceIcons>>;
     domains: Record<string, ServiceIcons | Promise<ServiceIcons>>;
   };
+  triggers: {
+    all?: Promise<Record<string, TriggerIcons>>;
+    domains: Record<string, TriggerIcons | Promise<TriggerIcons>>;
+  };
+  conditions: {
+    all?: Promise<Record<string, ConditionIcons>>;
+    domains: Record<string, ConditionIcons | Promise<ConditionIcons>>;
+  };
 } = {
   entity: {},
   entity_component: {},
   services: { domains: {} },
+  triggers: { domains: {} },
+  conditions: { domains: {} },
 };
 
 interface IconResources<
-  T extends ComponentIcons | PlatformIcons | ServiceIcons,
+  T extends
+    | ComponentIcons
+    | PlatformIcons
+    | ServiceIcons
+    | TriggerIcons
+    | ConditionIcons,
 > {
   resources: Record<string, T>;
 }
@@ -145,10 +166,12 @@ type PlatformIcons = Record<
   string,
   {
     state: Record<string, string>;
+    range?: Record<string, string>;
     state_attributes: Record<
       string,
       {
         state: Record<string, string>;
+        range?: Record<string, string>;
         default: string;
       }
     >;
@@ -160,10 +183,12 @@ export type ComponentIcons = Record<
   string,
   {
     state?: Record<string, string>;
+    range?: Record<string, string>;
     state_attributes?: Record<
       string,
       {
         state: Record<string, string>;
+        range?: Record<string, string>;
         default: string;
       }
     >;
@@ -176,12 +201,29 @@ type ServiceIcons = Record<
   { service: string; sections?: Record<string, string> }
 >;
 
-export type IconCategory = "entity" | "entity_component" | "services";
+type TriggerIcons = Record<
+  string,
+  { trigger: string; sections?: Record<string, string> }
+>;
+
+type ConditionIcons = Record<
+  string,
+  { condition: string; sections?: Record<string, string> }
+>;
+
+export type IconCategory =
+  | "entity"
+  | "entity_component"
+  | "services"
+  | "triggers"
+  | "conditions";
 
 interface CategoryType {
   entity: PlatformIcons;
   entity_component: ComponentIcons;
   services: ServiceIcons;
+  triggers: TriggerIcons;
+  conditions: ConditionIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -250,40 +292,135 @@ export const getComponentIcons = async (
   return resources.entity_component.resources.then((res) => res[domain]);
 };
 
-export const getServiceIcons = async (
+export const getCategoryIcons = async <
+  T extends Exclude<IconCategory, "entity" | "entity_component">,
+>(
   hass: HomeAssistant,
+  category: T,
   domain?: string,
   force = false
-): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> => {
+): Promise<CategoryType[T] | Record<string, CategoryType[T]> | undefined> => {
   if (!domain) {
-    if (!force && resources.services.all) {
-      return resources.services.all;
+    if (!force && resources[category].all) {
+      return resources[category].all as Promise<
+        Record<string, CategoryType[T]>
+      >;
     }
-    resources.services.all = getHassIcons(hass, "services", domain).then(
-      (res) => {
-        resources.services.domains = res.resources;
-        return res?.resources;
-      }
-    );
-    return resources.services.all;
+    resources[category].all = getHassIcons(hass, category).then((res) => {
+      resources[category].domains = res.resources as any;
+      return res?.resources as Record<string, CategoryType[T]>;
+    }) as any;
+    return resources[category].all as Promise<Record<string, CategoryType[T]>>;
   }
-  if (!force && domain in resources.services.domains) {
-    return resources.services.domains[domain];
+  if (!force && domain in resources[category].domains) {
+    return resources[category].domains[domain] as Promise<CategoryType[T]>;
   }
-  if (resources.services.all && !force) {
-    await resources.services.all;
-    if (domain in resources.services.domains) {
-      return resources.services.domains[domain];
+  if (resources[category].all && !force) {
+    await resources[category].all;
+    if (domain in resources[category].domains) {
+      return resources[category].domains[domain] as Promise<CategoryType[T]>;
     }
   }
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  const result = getHassIcons(hass, "services", domain);
-  resources.services.domains[domain] = result.then(
+  const result = getHassIcons(hass, category, domain);
+  resources[category].domains[domain] = result.then(
     (res) => res?.resources[domain]
-  );
-  return resources.services.domains[domain];
+  ) as any;
+  return resources[category].domains[domain] as Promise<CategoryType[T]>;
+};
+
+export const getServiceIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> =>
+  getCategoryIcons(hass, "services", domain, force);
+
+export const getTriggerIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> =>
+  getCategoryIcons(hass, "triggers", domain, force);
+
+export const getConditionIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<ConditionIcons | Record<string, ConditionIcons> | undefined> =>
+  getCategoryIcons(hass, "conditions", domain, force);
+
+// Cache for sorted range keys
+const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
+
+// Helper function to get an icon from a range of values
+const getIconFromRange = (
+  value: number,
+  range: Record<string, string>
+): string | undefined => {
+  // Get cached range values or compute and cache them
+  let rangeValues = sortedRangeCache.get(range);
+  if (!rangeValues) {
+    rangeValues = Object.keys(range)
+      .map(Number)
+      .filter((k) => !isNaN(k))
+      .sort((a, b) => a - b);
+    sortedRangeCache.set(range, rangeValues);
+  }
+
+  if (rangeValues.length === 0) {
+    return undefined;
+  }
+
+  // If the value is below the first threshold, return undefined
+  // (we'll fall back to the default icon)
+  if (value < rangeValues[0]) {
+    return undefined;
+  }
+
+  // Find the highest threshold that's less than or equal to the value
+  let selectedThreshold = rangeValues[0];
+  for (const threshold of rangeValues) {
+    if (value >= threshold) {
+      selectedThreshold = threshold;
+    } else {
+      break;
+    }
+  }
+
+  return range[selectedThreshold.toString()];
+};
+
+// Helper function to get an icon based on state and translations
+const getIconFromTranslations = (
+  state: string | number | undefined,
+  translations:
+    | {
+        default?: string;
+        state?: Record<string, string>;
+        range?: Record<string, string>;
+      }
+    | undefined
+): string | undefined => {
+  if (!translations) {
+    return undefined;
+  }
+
+  // First check for exact state match
+  if (state && translations.state?.[state]) {
+    return translations.state[state];
+  }
+  // Then check for range-based icons if we have a numeric state
+  if (state !== undefined && translations.range && !isNaN(Number(state))) {
+    return (
+      getIconFromRange(Number(state), translations.range) ??
+      translations.default
+    );
+  }
+  // Fallback to default icon
+  return translations.default;
 };
 
 export const entityIcon = async (
@@ -331,7 +468,8 @@ const getEntityIcon = async (
     const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
       const translations = platformIcons[domain]?.[translation_key];
-      icon = (state && translations?.state?.[state]) || translations?.default;
+
+      icon = getIconFromTranslations(state, translations);
     }
   }
 
@@ -345,7 +483,8 @@ const getEntityIcon = async (
       const translations =
         (device_class && entityComponentIcons[device_class]) ||
         entityComponentIcons._;
-      icon = (state && translations?.state?.[state]) || translations?.default;
+
+      icon = getIconFromTranslations(state, translations);
     }
   }
   return icon;
@@ -372,9 +511,10 @@ export const attributeIcon = async (
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
-      const translations =
-        platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute];
-      icon = (value && translations?.state?.[value]) || translations?.default;
+      icon = getIconFromTranslations(
+        value,
+        platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute]
+      );
     }
   }
   if (!icon) {
@@ -384,8 +524,48 @@ export const attributeIcon = async (
         (deviceClass &&
           entityComponentIcons[deviceClass]?.state_attributes?.[attribute]) ||
         entityComponentIcons._?.state_attributes?.[attribute];
-      icon = (value && translations?.state?.[value]) || translations?.default;
+
+      icon = getIconFromTranslations(value, translations);
     }
+  }
+  return icon;
+};
+
+export const triggerIcon = async (
+  hass: HomeAssistant,
+  trigger: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
+
+  const domain = getTriggerDomain(trigger);
+  const triggerName = getTriggerObjectId(trigger);
+
+  const triggerIcons = await getTriggerIcons(hass, domain);
+  if (triggerIcons) {
+    const trgrIcon = triggerIcons[triggerName] as TriggerIcons[string];
+    icon = trgrIcon?.trigger;
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
+  }
+  return icon;
+};
+
+export const conditionIcon = async (
+  hass: HomeAssistant,
+  condition: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
+
+  const domain = getConditionDomain(condition);
+  const conditionIcons = await getConditionIcons(hass, domain);
+  if (conditionIcons) {
+    const conditionName = getConditionObjectId(condition);
+    const condIcon = conditionIcons[conditionName] as ConditionIcons[string];
+    icon = condIcon?.condition;
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
   }
   return icon;
 };
@@ -426,14 +606,28 @@ export const serviceSectionIcon = async (
 export const domainIcon = async (
   hass: HomeAssistant,
   domain: string,
-  deviceClass?: string
+  deviceClass?: string,
+  state?: string
 ): Promise<string | undefined> => {
   const entityComponentIcons = await getComponentIcons(hass, domain);
   if (entityComponentIcons) {
     const translations =
       (deviceClass && entityComponentIcons[deviceClass]) ||
       entityComponentIcons._;
-    return translations?.default;
+    // First check for exact state match
+    if (state && translations.state?.[state]) {
+      return translations.state[state];
+    }
+    // Then check for range-based icons if we have a numeric state
+    if (state !== undefined && translations.range && !isNaN(Number(state))) {
+      return (
+        getIconFromRange(Number(state), translations.range) ??
+        translations.default
+      );
+    }
+    // Fallback to default icon
+    return translations.default;
   }
+
   return undefined;
 };

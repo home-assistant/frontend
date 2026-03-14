@@ -91,7 +91,7 @@ class MatterAddDeviceNew extends LitElement {
         justify-content: space-between;
         padding: 0 24px;
         box-sizing: border-box;
-        gap: 16px;
+        gap: var(--ha-space-4);
         width: 100%;
         max-width: 400px;
       }

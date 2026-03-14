@@ -1,9 +1,11 @@
-import type { DeviceRegistryEntry } from "../../data/device_registry";
+import memoizeOne from "memoize-one";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
+import { getDuplicates } from "../string/get_duplicates";
 import { computeStateName } from "./compute_state_name";
 
 export const computeDeviceName = (
@@ -36,3 +38,13 @@ export const fallbackDeviceName = (
   }
   return undefined;
 };
+
+export const getDuplicatedDeviceNames = memoizeOne(
+  (devices: HomeAssistant["devices"]): Set<string> => {
+    const names = Object.values(devices)
+      .map((device) => computeDeviceName(device))
+      .filter((name): name is string => name !== undefined);
+
+    return getDuplicates(names);
+  }
+);

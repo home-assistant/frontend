@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
@@ -151,11 +150,6 @@ class MoreInfoLock extends LitElement {
               </ha-control-button-group>
             `
           : nothing}
-        <ha-attributes
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          extra-filters="code_format"
-        ></ha-attributes>
       </div>
     `;
   }
@@ -165,9 +159,9 @@ class MoreInfoLock extends LitElement {
       moreInfoControlStyle,
       css`
         ha-control-button {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           height: 60px;
-          --control-button-border-radius: 24px;
+          --control-button-border-radius: var(--ha-border-radius-3xl);
         }
         .open-button {
           width: 130px;
@@ -181,8 +175,8 @@ class MoreInfoLock extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: row;
-          gap: 8px;
-          font-weight: 500;
+          gap: var(--ha-space-2);
+          font-weight: var(--ha-font-weight-medium);
           color: var(--success-color);
         }
         ha-control-button-group.jammed {
@@ -190,9 +184,6 @@ class MoreInfoLock extends LitElement {
           width: 100%;
           max-width: 400px;
           margin: 0 auto;
-        }
-        ha-control-button-group + ha-attributes:not([empty]) {
-          margin-top: 16px;
         }
         @keyframes pulse {
           0% {
@@ -219,7 +210,7 @@ class MoreInfoLock extends LitElement {
           --mdc-icon-size: 80px;
           animation: pulse 1s infinite;
           color: var(--state-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           width: 144px;
           height: 144px;
           display: flex;
@@ -233,7 +224,7 @@ class MoreInfoLock extends LitElement {
           left: 0;
           height: 100%;
           width: 100%;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           background-color: var(--state-color);
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;

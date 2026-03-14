@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,9 +5,12 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-button-menu";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import type {
   CloudStatusLoggedIn,
@@ -33,6 +35,7 @@ import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
 import { showSupportPackageDialog } from "./show-dialog-cloud-support-package";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -53,26 +56,26 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="reset">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.reset_cloud_data"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="download">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.download_support_package"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -148,22 +151,25 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                <a
+                <ha-button
+                  appearance="filled"
                   href="https://account.nabucasa.com"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.manage_account"
-                    )}
-                  </mwc-button>
-                </a>
-                <mwc-button @click=${this._signOut} class="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.manage_account"
+                  )}
+                </ha-button>
+                <ha-button
+                  @click=${this._signOut}
+                  variant="danger"
+                  appearance="plain"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.sign_out"
                   )}
-                </mwc-button>
+                </ha-button>
               </div>
             </ha-card>
           </ha-config-section>
@@ -198,12 +204,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-remote-pref
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-remote-pref>
 
             <cloud-tts-pref
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-tts-pref>
 
@@ -222,7 +228,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-webhooks
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-webhooks>
           </ha-config-section>
@@ -293,13 +298,15 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
-  private _handleMenuAction(ev) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "reset":
         this._deleteCloudData();
         break;
-      case 1:
+      case "download":
         this._downloadSupportPackage();
+        break;
     }
   }
 
@@ -359,7 +366,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
           flex-direction: row-reverse;
           justify-content: space-between;
         }
-        mwc-button {
+        ha-button {
           align-self: center;
         }
         .wrap {

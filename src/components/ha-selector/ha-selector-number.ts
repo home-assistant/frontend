@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";
+import type { HaTextField } from "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -23,11 +24,20 @@ export class HaNumberSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
+
   @property({ type: Boolean }) public required = true;
 
   @property({ type: Boolean }) public disabled = false;
 
+  @query("ha-textfield", true) private _input?: HaTextField | HTMLInputElement;
+
   private _valueStr = "";
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
+  }
 
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("value")) {
@@ -60,6 +70,14 @@ export class HaNumberSelector extends LitElement {
       }
     }
 
+    const translationKey = this.selector.number?.translation_key;
+    let unit = this.selector.number?.unit_of_measurement;
+    if (isBox && unit && this.localizeValue && translationKey) {
+      unit =
+        this.localizeValue(`${translationKey}.unit_of_measurement.${unit}`) ||
+        unit;
+    }
+
     return html`
       ${this.label && !isBox
         ? html`${this.label}${this.required ? "*" : ""}`
@@ -71,12 +89,12 @@ export class HaNumberSelector extends LitElement {
                 labeled
                 .min=${this.selector.number!.min}
                 .max=${this.selector.number!.max}
-                .value=${this.value ?? ""}
+                .value=${this.value}
                 .step=${sliderStep}
                 .disabled=${this.disabled}
                 .required=${this.required}
                 @change=${this._handleSliderChange}
-                .ticks=${this.selector.number?.slider_ticks}
+                .withMarkers=${this.selector.number?.slider_ticks || false}
               >
               </ha-slider>
             `
@@ -97,7 +115,7 @@ export class HaNumberSelector extends LitElement {
           .helper=${isBox ? this.helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
-          .suffix=${this.selector.number?.unit_of_measurement}
+          .suffix=${unit}
           type="number"
           autoValidate
           ?no-spinner=${!isBox}
@@ -106,7 +124,9 @@ export class HaNumberSelector extends LitElement {
         </ha-textfield>
       </div>
       ${!isBox && this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }

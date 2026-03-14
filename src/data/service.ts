@@ -4,7 +4,7 @@ import type { Action } from "./script";
 export const callExecuteScript = (
   hass: HomeAssistant,
   sequence: Action | Action[]
-): Promise<{ context: Context; response: Record<string, any> }> =>
+): Promise<{ context: Context; response: Record<string, any> | null }> =>
   hass.callWS({
     type: "execute_script",
     sequence,

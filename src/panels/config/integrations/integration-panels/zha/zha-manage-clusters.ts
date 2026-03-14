@@ -1,13 +1,12 @@
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
 import type { Cluster, ZHADevice } from "../../../../../data/zha";
 import { fetchClustersForZhaDevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -77,35 +76,29 @@ export class ZHAManageClusters extends LitElement {
             class="menu"
             .value=${String(this._selectedClusterIndex)}
             @selected=${this._selectedClusterChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this._clusters.map((entry, idx) => ({
+              value: String(idx),
+              label: computeClusterKey(entry),
+            }))}
           >
-            ${this._clusters.map(
-              (entry, idx) => html`
-                <mwc-list-item .value=${String(idx)}
-                  >${computeClusterKey(entry)}</mwc-list-item
-                >
-              `
-            )}
           </ha-select>
         </div>
         ${this._selectedCluster
           ? html`
-              <mwc-tab-bar
-                .activeIndex=${tabs.indexOf(this._currTab)}
-                @MDCTabBar:activated=${this._handleTabChanged}
-              >
+              <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                 ${tabs.map(
                   (tab) => html`
-                    <mwc-tab
-                      .label=${this.hass.localize(
+                    <ha-tab-group-tab
+                      slot="nav"
+                      .panel=${tab}
+                      .active=${this._currTab === tab}
+                      >${this.hass.localize(
                         `ui.panel.config.zha.clusters.tabs.${tab}`
-                      )}
-                    ></mwc-tab>
+                      )}</ha-tab-group-tab
+                    >
                   `
                 )}
-              </mwc-tab-bar>
+              </ha-tab-group>
 
               <div class="content" tabindex="-1" dialogInitialFocus>
                 ${cache(
@@ -148,15 +141,15 @@ export class ZHAManageClusters extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = tabs[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
     this._currTab = newTab;
   }
 
-  private _selectedClusterChanged(event): void {
-    this._selectedClusterIndex = Number(event.target!.value);
+  private _selectedClusterChanged(event: HaSelectSelectEvent): void {
+    this._selectedClusterIndex = Number(event.detail.value);
     this._selectedCluster = this._clusters[this._selectedClusterIndex];
   }
 
@@ -164,6 +157,12 @@ export class ZHAManageClusters extends LitElement {
     return [
       haStyle,
       css`
+        .content {
+          padding: var(--ha-space-4) 0 0;
+          border: none;
+          outline: none;
+        }
+
         ha-select {
           margin-top: 16px;
         }
@@ -175,7 +174,19 @@ export class ZHAManageClusters extends LitElement {
         }
         .node-picker {
           align-items: center;
+          margin: 0 var(--ha-space-5);
           padding-bottom: 10px;
+        }
+
+        ha-tab-group {
+          margin: 0 var(--ha-space-5);
+        }
+        ha-tab-group-tab {
+          flex: 1;
+        }
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

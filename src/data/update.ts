@@ -4,7 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
-import { BINARY_STATE_ON } from "../common/const";
+import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -13,7 +13,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import type { EntitySources } from "./entity_sources";
+import type { EntitySources } from "./entity/entity_sources";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,
@@ -44,13 +44,35 @@ export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
   entity.attributes.update_percentage !== null;
 
+export const updateAvailable = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  entity.state === BINARY_STATE_ON ||
+  (showSkipped && Boolean(entity.attributes.skipped_version));
+
 export const updateCanInstall = (
   entity: UpdateEntity,
   showSkipped = false
 ): boolean =>
-  (entity.state === BINARY_STATE_ON ||
-    (showSkipped && Boolean(entity.attributes.skipped_version))) &&
+  updateAvailable(entity, showSkipped) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const updateCanNotInstall = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  updateAvailable(entity, showSkipped) &&
+  !supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const latestVersionIsSkipped = (entity: UpdateEntity): boolean =>
+  !!(
+    entity.attributes.latest_version &&
+    entity.attributes.skipped_version === entity.attributes.latest_version
+  );
+
+export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
+  entity.state === BINARY_STATE_OFF && !latestVersionIsSkipped(entity);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
@@ -99,13 +121,17 @@ export const filterUpdateEntities = (
     );
   });
 
-export const filterUpdateEntitiesWithInstall = (
+export const filterUpdateEntitiesParameterized = (
   entities: HassEntities,
-  showSkipped = false
+  showSkipped = false,
+  showNotInstallable = false
 ) =>
-  filterUpdateEntities(entities).filter((entity) =>
-    updateCanInstall(entity, showSkipped)
-  );
+  filterUpdateEntities(entities).filter((entity) => {
+    if (showNotInstallable) {
+      return updateCanNotInstall(entity, showSkipped);
+    }
+    return updateCanInstall(entity, showSkipped);
+  });
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,
@@ -207,7 +233,11 @@ export const computeUpdateStateDisplay = (
   return hass.formatEntityState(stateObj);
 };
 
-type UpdateType = "addon" | "home_assistant" | "generic";
+export type UpdateType =
+  | "addon"
+  | "home_assistant"
+  | "home_assistant_os"
+  | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,
@@ -215,6 +245,7 @@ export const getUpdateType = (
 ): UpdateType => {
   const entity_id = stateObj.entity_id;
   const domain = entitySources[entity_id]?.domain;
+
   if (domain !== "hassio") {
     return "generic";
   }
@@ -224,13 +255,11 @@ export const getUpdateType = (
     return "home_assistant";
   }
 
-  if (
-    ![
-      HOME_ASSISTANT_CORE_TITLE,
-      HOME_ASSISTANT_SUPERVISOR_TITLE,
-      HOME_ASSISTANT_OS_TITLE,
-    ].includes(title)
-  ) {
+  if (title === HOME_ASSISTANT_OS_TITLE) {
+    return "home_assistant_os";
+  }
+
+  if (title !== HOME_ASSISTANT_SUPERVISOR_TITLE) {
     return "addon";
   }
   return "generic";

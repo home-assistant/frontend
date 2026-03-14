@@ -157,12 +157,14 @@ class HaLogbookRenderer extends LitElement {
       !item.state &&
       domain &&
       isComponentLoaded(this.hass, domain)
-        ? brandsUrl({
-            domain: domain!,
-            type: "icon",
-            useFallback: true,
-            darkOptimized: this.hass.themes?.darkMode,
-          })
+        ? brandsUrl(
+            {
+              domain: domain!,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )
         : undefined;
 
     const traceContext =
@@ -400,7 +402,9 @@ class HaLogbookRenderer extends LitElement {
         ? `${domainToName(this.hass.localize, item.context_domain)}:
       ${
         this.hass.localize(
-          `component.${item.context_domain}.services.${item.context_service}.name`
+          `component.${item.context_domain}.services.${item.context_service}.name`,
+          this.hass.services[item.context_domain][item.context_service]
+            .description_placeholders
         ) ||
         this.hass.services[item.context_domain]?.[item.context_service]?.name ||
         item.context_service
@@ -586,7 +590,7 @@ class HaLogbookRenderer extends LitElement {
           position: relative;
           display: flex;
           width: 100%;
-          line-height: 2em;
+          line-height: var(--ha-line-height-expanded);
           padding: 8px 16px;
           box-sizing: border-box;
           border-top: 1px solid var(--divider-color);
@@ -598,7 +602,7 @@ class HaLogbookRenderer extends LitElement {
           background-color: var(--disabled-color);
           height: 8px;
           width: 8px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           flex-shrink: 0;
           margin-right: 12px;
           margin-inline-start: initial;
@@ -636,8 +640,8 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .secondary {
-          font-size: 12px;
-          line-height: 1.7;
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
         }
 
         .secondary a {
@@ -682,7 +686,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           text-decoration: none;
         }
 
@@ -700,7 +704,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .narrow .entry {
-          line-height: 1.5;
+          line-height: var(--ha-line-height-normal);
         }
 
         .narrow .icon-message state-badge {

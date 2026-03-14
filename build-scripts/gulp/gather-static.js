@@ -6,8 +6,8 @@ import path from "path";
 import paths from "../paths.cjs";
 
 const npmPath = (...parts) =>
-  path.resolve(paths.polymer_dir, "node_modules", ...parts);
-const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
+  path.resolve(paths.root_dir, "node_modules", ...parts);
+const polyPath = (...parts) => path.resolve(paths.root_dir, ...parts);
 
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
@@ -123,20 +123,9 @@ gulp.task("copy-translations-app", async () => {
   copyTranslations(staticDir);
 });
 
-gulp.task("copy-translations-supervisor", async () => {
-  const staticDir = paths.hassio_output_static;
-  copyTranslations(staticDir);
-});
-
 gulp.task("copy-translations-landing-page", async () => {
   const staticDir = paths.landingPage_output_static;
   copyTranslations(staticDir);
-});
-
-gulp.task("copy-static-supervisor", async () => {
-  const staticDir = paths.hassio_output_static;
-  copyLocaleData(staticDir);
-  copyFonts(staticDir);
 });
 
 gulp.task("copy-static-app", async () => {

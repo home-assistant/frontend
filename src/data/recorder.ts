@@ -2,6 +2,7 @@ import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
+import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -14,6 +15,8 @@ export interface RecorderInfo {
 }
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
+
+export type StatisticPeriod = "5minute" | "hour" | "day" | "week" | "month";
 
 export type Statistics = Record<string, StatisticValue[]>;
 
@@ -94,7 +97,9 @@ export interface StatisticsValidationResultUnitsChanged {
   data: {
     statistic_id: string;
     state_unit: string;
+    state_unit_class: string | null;
     metadata_unit: string;
+    metadata_unit_class: string | null;
     supported_unit: string;
   };
 }
@@ -107,6 +112,8 @@ export interface StatisticsValidationResultMeanTypeChanged {
     metadata_mean_type: StatisticMeanType;
   };
 }
+
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
@@ -122,7 +129,7 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "L" | "gal" | "ft³" | "m³";
+  volume?: (typeof VOLUME_UNITS)[number];
 }
 
 const _statisticTypes = [
@@ -169,7 +176,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
+  period: StatisticPeriod = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
 ) =>
@@ -188,7 +195,7 @@ export const fetchStatistic = (
   statistic_id: string,
   period: {
     fixed_period?: { start: string | Date; end: string | Date };
-    calendar?: { period: string; offset: number };
+    calendar?: { period: string; offset?: number };
     rolling_window?: { duration: HaDurationData; offset: HaDurationData };
   },
   units?: StatisticsUnitConfiguration
@@ -209,7 +216,14 @@ export const fetchStatistic = (
               : period.fixed_period.end,
         }
       : undefined,
-    calendar: period.calendar,
+    calendar: period.calendar
+      ? {
+          ...(period.calendar.period === "week"
+            ? { first_weekday: firstWeekday(hass.locale).substring(0, 3) }
+            : {}),
+          ...period.calendar,
+        }
+      : undefined,
     rolling_window: period.rolling_window,
   });
 
@@ -221,12 +235,14 @@ export const validateStatistics = (hass: HomeAssistant) =>
 export const updateStatisticsMetadata = (
   hass: HomeAssistant,
   statistic_id: string,
-  unit_of_measurement: string | null
+  unit_of_measurement: string | null,
+  unit_class: string | null
 ) =>
   hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
+    unit_class,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
@@ -236,7 +252,7 @@ export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values?: StatisticValue[]
 ): number | null => {
   let growth: number | null = null;
 

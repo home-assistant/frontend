@@ -13,7 +13,7 @@ import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../data/water_heater";
 import type { HomeAssistant } from "../../types";

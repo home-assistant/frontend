@@ -7,12 +7,14 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -28,9 +30,6 @@ import type {
   PictureGlanceCardConfig,
   PictureGlanceEntityConfig,
 } from "./types";
-import type { PersonEntity } from "../../../data/person";
-
-const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
@@ -62,6 +61,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: PictureGlanceCardConfig;
 
@@ -104,10 +105,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
     });
 
-    this._config = {
-      tap_action: { action: "more-info" },
-      ...config,
-    };
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -181,7 +179,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let image: string | undefined = this._config.image;
+    let image: string | undefined =
+      (typeof this._config?.image === "object" &&
+        this._config.image.media_content_id) ||
+      (this._config.image as string | undefined);
     if (this._config.image_entity) {
       const stateObj: ImageEntity | PersonEntity | undefined =
         this.hass.states[this._config.image_entity];
@@ -198,35 +199,52 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const ignoreAspectRatio =
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
+
+    const hasTapAction =
+      hasAction(this._config.tap_action) ||
+      Boolean(
+        !this._config.tap_action &&
+        (this._config.camera_image ||
+          this._config.image_entity ||
+          this._config.entity)
+      );
+
     return html`
       <ha-card>
-        <hui-image
-          class=${classMap({
-            clickable: Boolean(
-              this._config.tap_action ||
-                this._config.hold_action ||
-                this._config.camera_image ||
-                this._config.image_entity
-            ),
-          })}
+        <div
+          class="image-container ${classMap({
+            clickable:
+              hasTapAction ||
+              hasAction(this._config.hold_action) ||
+              hasAction(this._config.double_tap_action),
+          })}"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config!.hold_action),
-            hasDoubleClick: hasAction(this._config!.double_tap_action),
+            hasTap: hasTapAction,
+            hasHold: hasAction(this._config.hold_action),
+            hasDoubleClick: hasAction(this._config.double_tap_action),
           })}
-          tabindex=${ifDefined(
-            hasAction(this._config.tap_action) ? "0" : undefined
-          )}
+          tabindex=${ifDefined(hasTapAction ? "0" : undefined)}
+          role=${ifDefined(hasTapAction ? "button" : undefined)}
           .config=${this._config}
-          .hass=${this.hass}
-          .image=${image}
-          .stateImage=${this._config.state_image}
-          .stateFilter=${this._config.state_filter}
-          .cameraImage=${this._config.camera_image}
-          .cameraView=${this._config.camera_view}
-          .entity=${this._config.entity}
-          .aspectRatio=${this._config.aspect_ratio}
-        ></hui-image>
+        >
+          <hui-image
+            .hass=${this.hass}
+            .image=${image}
+            .stateImage=${this._config.state_image}
+            .stateFilter=${this._config.state_filter}
+            .cameraImage=${this._config.camera_image}
+            .cameraView=${this._config.camera_view}
+            .entity=${this._config.entity}
+            .fitMode=${this._config.fit_mode}
+            .aspectRatio=${ignoreAspectRatio
+              ? undefined
+              : this._config.aspect_ratio}
+          ></hui-image>
+        </div>
         <div class="box">
           ${this._config.title
             ? html`<div class="title">${this._config.title}</div>`
@@ -280,7 +298,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
           class=${classMap({
-            "state-on": !STATES_OFF.has(stateObj.state),
+            "state-on": stateActive(stateObj),
           })}
           title=${`${computeStateName(
             stateObj
@@ -323,8 +341,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       height: 100%;
       box-sizing: border-box;
     }
-    hui-image.clickable {
+    .image-container {
+      height: 100%;
+    }
+    .image-container.clickable {
       cursor: pointer;
+    }
+    hui-image {
+      pointer-events: none;
+      height: 100%;
     }
     .box {
       position: absolute;
@@ -341,15 +366,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       flex-direction: row;
     }
     .box .title {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      font-size: 16px;
-      line-height: 40px;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
       color: var(--ha-picture-card-text-color, white);
       align-self: center;
     }
@@ -357,7 +382,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       font-size: 0;
     }
     ha-icon-button {
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --disabled-text-color: currentColor;
       color: var(--ha-picture-icon-button-color, #a9a9a9);
     }
@@ -369,7 +394,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
     .state {
       display: block;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       text-align: center;
       line-height: 12px;
       white-space: nowrap;

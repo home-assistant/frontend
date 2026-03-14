@@ -6,7 +6,7 @@ import { hsv2rgb, rgb2hex, rgb2hsv } from "../../common/color/convert-color";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LightEntity } from "../../data/light";
 import type { HomeAssistant } from "../../types";
 
@@ -67,7 +67,7 @@ export class HaStateControlLightBrightness extends LitElement {
         max="100"
         .showHandle=${stateActive(this.stateObj)}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.formatEntityAttributeName(
+        .label=${this.hass.formatEntityAttributeName(
           this.stateObj,
           "brightness"
         )}
@@ -90,11 +90,11 @@ export class HaStateControlLightBrightness extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-slider-thickness: 130px;
-      --control-slider-border-radius: 36px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
       --control-slider-color: var(--primary-color);
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
-      --control-slider-tooltip-font-size: 20px;
+      --control-slider-tooltip-font-size: var(--ha-font-size-xl);
     }
   `;
 }

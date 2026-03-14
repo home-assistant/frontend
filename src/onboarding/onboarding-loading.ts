@@ -12,7 +12,7 @@ class OnboardingLoading extends LitElement {
     /* MIT License (MIT). Copyright (c) 2014 Luke Haas */
     .loader,
     .loader:after {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       width: 40px;
       height: 40px;
     }

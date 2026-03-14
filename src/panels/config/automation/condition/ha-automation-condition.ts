@@ -1,64 +1,117 @@
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nextRender } from "../../../../common/util/render-status";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Condition,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type Condition,
 } from "../../../../data/automation";
-import type { HomeAssistant } from "../../../../types";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  subscribeConditions,
+} from "../../../../data/condition";
+import { subscribeLabFeature } from "../../../../data/labs";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export default class HaAutomationCondition extends AutomationSortableListMixin<Condition>(
+  SubscribeMixin(LitElement)
+) {
   @property({ attribute: false }) public conditions!: Condition[];
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ attribute: false }) public highlightedConditions?: Condition[];
 
-  @state() private _showReorder = false;
+  @property({ type: Boolean }) public root = false;
 
-  @storage({
-    key: "automationClipboard",
-    state: true,
-    subscribe: true,
-    storage: "sessionStorage",
-  })
-  public _clipboard?: AutomationClipboard;
+  @state() private _conditionDescriptions: ConditionDescriptions = {};
 
-  private _focusLastConditionOnChange = false;
+  @queryAll("ha-automation-condition-row")
+  private _conditionRowElements?: HaAutomationConditionRow[];
 
-  private _conditionKeys = new WeakMap<Condition, string>();
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
 
-  private _unsubMql?: () => void;
+  private _unsub?: Promise<UnsubscribeFunc>;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
-      this._showReorder = matches;
-    });
+  protected get items(): Condition[] {
+    return this.conditions;
+  }
+
+  protected set items(items: Condition[]) {
+    this.conditions = items;
+  }
+
+  protected setHighlightedItems(items: Condition[]) {
+    this.highlightedConditions = items;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
+    this._unsubscribe();
+  }
+
+  protected hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass!.connection,
+        "automation",
+        "new_triggers_conditions",
+        (feature) => {
+          this._newTriggersAndConditions = feature.enabled;
+        }
+      ),
+    ];
+  }
+
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    this._conditionDescriptions = {};
+    this._unsub = subscribeConditions(this.hass, (descriptions) => {
+      this._conditionDescriptions = {
+        ...this._conditionDescriptions,
+        ...descriptions,
+      };
+    });
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("conditions");
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -85,25 +138,55 @@ export default class HaAutomationCondition extends LitElement {
       fireEvent(this, "value-changed", {
         value: updatedConditions,
       });
-    } else if (this._focusLastConditionOnChange) {
-      this._focusLastConditionOnChange = false;
+    } else if (
+      this.focusLastItemOnChange ||
+      this.focusItemIndexOnChange !== undefined
+    ) {
+      const mode = this.focusLastItemOnChange ? "new" : "moved";
+
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
-        "ha-automation-condition-row:last-of-type"
+        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
       )!;
+
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
+
       row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
-        row.focus();
+        // on new condition open the settings in the sidebar, except for building blocks
+        if (
+          this.optionsInSidebar &&
+          (!CONDITION_BUILDING_BLOCKS.includes(row.condition.condition) ||
+            mode === "moved")
+        ) {
+          row.openSidebar();
+          if (this.narrow) {
+            row.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          }
+        }
+
+        if (mode === "new") {
+          row.expand();
+        }
+
+        if (!this.optionsInSidebar) {
+          row.focus();
+        }
       });
     }
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
-      "ha-automation-condition-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    this._conditionRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._conditionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 
@@ -115,36 +198,55 @@ export default class HaAutomationCondition extends LitElement {
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-condition-row"
-        .disabled=${!this._showReorder || this.disabled}
+        .disabled=${this.disabled}
         group="conditions"
         invert-swap
-        @item-moved=${this._conditionMoved}
-        @item-added=${this._conditionAdded}
-        @item-removed=${this._conditionRemoved}
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
       >
-        <div class="conditions">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
-            (condition) => this._getKey(condition),
+            (condition) => this.getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
+                .root=${this.root}
                 .sortableData=${cond}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.conditions.length - 1}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
+                .conditionDescriptions=${this._conditionDescriptions}
                 .disabled=${this.disabled}
-                @duplicate=${this._duplicateCondition}
-                @move-down=${this._moveDown}
-                @move-up=${this._moveUp}
-                @value-changed=${this._conditionChanged}
+                .narrow=${this.narrow}
+                @duplicate=${this.duplicateItem}
+                @insert-after=${this.insertAfter}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
                 .hass=${this.hass}
+                .highlight=${this.highlightedConditions?.includes(cond)}
+                .optionsInSidebar=${this.optionsInSidebar}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
               >
-                ${this._showReorder && !this.disabled
+                ${!this.disabled
                   ? html`
-                      <div class="handle" slot="icons">
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      <div
+                        tabindex="0"
+                        class="handle ${this.rowSortSelected === idx
+                          ? "active"
+                          : ""}"
+                        slot="icons"
+                        @keydown=${this.handleDragKeydown}
+                        @click=${stopPropagation}
+                        .index=${idx}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                       </div>
                     `
                   : nothing}
@@ -153,23 +255,15 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addConditionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add"
               )}
-              @click=${this._addConditionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-            </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.add_building_block"
-              )}
-              @click=${this._addConditionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
           </div>
         </div>
@@ -178,6 +272,9 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _addConditionDialog() {
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
     showAddAutomationElementDialog(this, {
       type: "condition",
       add: this._addCondition,
@@ -185,21 +282,17 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  private _addConditionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "condition",
-      add: this._addCondition,
-      clipboardItem: this._clipboard?.condition?.condition,
-      group: "building_blocks",
-    });
-  }
-
-  private _addCondition = (value) => {
+  private _addCondition = (value: string, target?: HassServiceTarget) => {
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
         deepClone(this._clipboard!.condition)
       );
+    } else if (isDynamic(value)) {
+      conditions = this.conditions.concat({
+        condition: getValueFromDynamic(value),
+        target,
+      });
     } else {
       const condition = value as Condition["condition"];
       const elClass = customElements.get(
@@ -209,143 +302,14 @@ export default class HaAutomationCondition extends LitElement {
       };
       conditions = this.conditions.concat({
         ...elClass.defaultConfig,
+        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
       });
     }
-    this._focusLastConditionOnChange = true;
+    this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   };
 
-  private _getKey(condition: Condition) {
-    if (!this._conditionKeys.has(condition)) {
-      this._conditionKeys.set(condition, Math.random().toString());
-    }
-
-    return this._conditionKeys.get(condition)!;
-  }
-
-  private _moveUp(ev) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    const newIndex = index - 1;
-    this._move(index, newIndex);
-  }
-
-  private _moveDown(ev) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    const newIndex = index + 1;
-    this._move(index, newIndex);
-  }
-
-  private _move(oldIndex: number, newIndex: number) {
-    const conditions = this.conditions.concat();
-    const item = conditions.splice(oldIndex, 1)[0];
-    conditions.splice(newIndex, 0, item);
-    this.conditions = conditions;
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private async _conditionAdded(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const conditions = [
-      ...this.conditions.slice(0, index),
-      data,
-      ...this.conditions.slice(index),
-    ];
-    // Add condition locally to avoid UI jump
-    this.conditions = conditions;
-    await nextRender();
-    fireEvent(this, "value-changed", { value: this.conditions });
-  }
-
-  private async _conditionRemoved(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const condition = this.conditions[index];
-    // Remove condition locally to avoid UI jump
-    this.conditions = this.conditions.filter((c) => c !== condition);
-    await nextRender();
-    // Ensure condition is removed even after update
-    const conditions = this.conditions.filter((c) => c !== condition);
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const conditions = [...this.conditions];
-    const newValue = ev.detail.value;
-    const index = (ev.target as any).index;
-
-    if (newValue === null) {
-      conditions.splice(index, 1);
-    } else {
-      // Store key on new value.
-      const key = this._getKey(conditions[index]);
-      this._conditionKeys.set(newValue, key);
-
-      conditions[index] = newValue;
-    }
-
-    this.conditions = conditions;
-
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _duplicateCondition(ev: CustomEvent) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    fireEvent(this, "value-changed", {
-      value: this.conditions.concat(deepClone(this.conditions[index])),
-    });
-  }
-
-  static styles = css`
-    .conditions {
-      padding: 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-condition-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .buttons {
-      order: 1;
-    }
-    ha-svg-icon {
-      height: 20px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-  `;
+  static styles = automationRowsStyles;
 }
 
 declare global {

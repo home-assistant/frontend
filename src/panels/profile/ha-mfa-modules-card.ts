@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-button";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant, MFAModule } from "../../types";
 import { showMfaModuleSetupFlowDialog } from "./show-ha-mfa-module-setup-flow-dialog";
@@ -22,17 +22,15 @@ class HaMfaModulesCard extends LitElement {
             html`<ha-settings-row two-line>
               <span slot="heading">${module.name}</span>
               <span slot="description">${module.id}</span>
-              ${module.enabled
-                ? html`<mwc-button .module=${module} @click=${this._disable}
-                    >${this.hass.localize(
-                      "ui.panel.profile.mfa.disable"
-                    )}</mwc-button
-                  >`
-                : html`<mwc-button .module=${module} @click=${this._enable}
-                    >${this.hass.localize(
-                      "ui.panel.profile.mfa.enable"
-                    )}</mwc-button
-                  >`}
+              <ha-button
+                size="small"
+                appearance="plain"
+                .module=${module}
+                @click=${module.enabled ? this._disable : this._enable}
+                >${this.hass.localize(
+                  `ui.panel.profile.mfa.${module.enabled ? "disable" : "enable"}`
+                )}</ha-button
+              >
             </ha-settings-row>`
         )}
       </ha-card>
@@ -40,13 +38,10 @@ class HaMfaModulesCard extends LitElement {
   }
 
   static styles = css`
-    mwc-button {
+    ha-button {
       margin-right: -0.57em;
       margin-inline-end: -0.57em;
       margin-inline-start: initial;
-    }
-    ha-list-item {
-      --mdc-list-item-meta-size: auto;
     }
   `;
 

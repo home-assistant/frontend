@@ -1,7 +1,6 @@
-import "@material/mwc-button";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-attributes";
+import "../../../components/ha-button";
 import type { TimerEntity } from "../../../data/timer";
 import type { HomeAssistant } from "../../../types";
 
@@ -20,34 +19,49 @@ class MoreInfoTimer extends LitElement {
       <div class="actions">
         ${this.stateObj.state === "idle" || this.stateObj.state === "paused"
           ? html`
-              <mwc-button .action=${"start"} @click=${this._handleActionClick}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .action=${"start"}
+                @click=${this._handleActionClick}
+              >
                 ${this.hass!.localize("ui.card.timer.actions.start")}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         ${this.stateObj.state === "active"
           ? html`
-              <mwc-button .action=${"pause"} @click=${this._handleActionClick}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .action=${"pause"}
+                @click=${this._handleActionClick}
+              >
                 ${this.hass!.localize("ui.card.timer.actions.pause")}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         ${this.stateObj.state === "active" || this.stateObj.state === "paused"
           ? html`
-              <mwc-button .action=${"cancel"} @click=${this._handleActionClick}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .action=${"cancel"}
+                @click=${this._handleActionClick}
+              >
                 ${this.hass!.localize("ui.card.timer.actions.cancel")}
-              </mwc-button>
-              <mwc-button .action=${"finish"} @click=${this._handleActionClick}>
+              </ha-button>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .action=${"finish"}
+                @click=${this._handleActionClick}
+              >
                 ${this.hass!.localize("ui.card.timer.actions.finish")}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="remaining,restore"
-      ></ha-attributes>
     `;
   }
 
@@ -60,7 +74,7 @@ class MoreInfoTimer extends LitElement {
 
   static styles = css`
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;

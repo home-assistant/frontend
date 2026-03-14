@@ -1,8 +1,9 @@
-import type { PropertyValues, TemplateResult } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -25,6 +26,10 @@ class HaWebRtcPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityid?: string;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -56,6 +61,18 @@ class HaWebRtcPlayer extends LitElement {
 
   private _candidatesList: RTCIceCandidate[] = [];
 
+  private _handleVisibilityChange = () => {
+    if (document.pictureInPictureElement) {
+      // video is playing in picture-in-picture mode, don't do anything
+      return;
+    }
+    if (document.hidden) {
+      this._cleanUp();
+    } else {
+      this._startWebRtc();
+    }
+  };
+
   protected override render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -69,6 +86,11 @@ class HaWebRtcPlayer extends LitElement {
         ?controls=${this.controls}
         poster=${ifDefined(this.posterUrl)}
         @loadeddata=${this._loadedData}
+        style=${styleMap({
+          height: this.aspectRatio == null ? "100%" : "auto",
+          aspectRatio: this.aspectRatio,
+          objectFit: this.fitMode,
+        })}
       ></video>
     `;
   }
@@ -78,10 +100,15 @@ class HaWebRtcPlayer extends LitElement {
     if (this.hasUpdated && this.entityid) {
       this._startWebRtc();
     }
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     this._cleanUp();
   }
 
@@ -191,25 +218,6 @@ class HaWebRtcPlayer extends LitElement {
 
     let candidates = "";
 
-    if (this._clientConfig?.getCandidatesUpfront) {
-      await new Promise<void>((resolve) => {
-        this._peerConnection!.onicegatheringstatechange = (ev: Event) => {
-          const iceGatheringState = (ev.target as RTCPeerConnection)
-            .iceGatheringState;
-          if (iceGatheringState === "complete") {
-            this._peerConnection!.onicegatheringstatechange = null;
-            resolve();
-          }
-
-          this._logEvent("Ice gathering state changed", iceGatheringState);
-        };
-      });
-
-      if (!this._peerConnection || !this.entityid) {
-        return;
-      }
-    }
-
     while (this._candidatesList.length) {
       const candidate = this._candidatesList.pop();
       if (candidate) {
@@ -315,6 +323,10 @@ class HaWebRtcPlayer extends LitElement {
 
   private _addTrack = async (event: RTCTrackEvent) => {
     if (!this._remoteStream) {
+      return;
+    }
+    // If the track is audio and the player is muted, we do not add it to the stream.
+    if (event.track.kind === "audio" && this.muted) {
       return;
     }
     this._remoteStream.addTrack(event.track);

@@ -1,26 +1,33 @@
 import { mdiTuneVariant } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
-import { UNAVAILABLE } from "../../../data/entity";
+import "../../../components/ha-list-item";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import { HumidifierEntityFeature } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { HumidifierModesCardFeatureConfig } from "./types";
+import type {
+  HumidifierModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "humidifier" &&
@@ -35,14 +42,28 @@ class HuiHumidifierModesCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: HumidifierModesCardFeatureConfig;
 
   @state() _currentMode?: string;
 
-  @query("ha-control-select-menu", true)
-  private _haSelect?: HaControlSelectMenu;
+  private _renderModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this._stateObj}
+      attribute="mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | HumidifierEntity
+      | undefined;
+  }
 
   static getStubConfig(): HumidifierModesCardFeatureConfig {
     return {
@@ -52,9 +73,7 @@ class HuiHumidifierModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-humidifier-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-humidifier-modes-card-feature-editor");
     return document.createElement("hui-humidifier-modes-card-feature-editor");
   }
 
@@ -67,32 +86,28 @@ class HuiHumidifierModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentMode = this.stateObj.attributes.mode;
-    }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (this._haSelect && changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        this.hass &&
-        this.hass.formatEntityAttributeValue !==
-          oldHass?.formatEntityAttributeValue
-      ) {
-        this._haSelect.layoutOptions();
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentMode = this._stateObj.attributes.mode;
       }
     }
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const mode =
-      (ev.detail as any).value ?? ((ev.target as any).value as string);
+  private async _valueChanged(
+    ev: CustomEvent<{ value?: string; item?: { value: string } }>
+  ) {
+    const mode = ev.detail.value ?? ev.detail.item?.value;
 
-    const oldMode = this.stateObj!.attributes.mode;
+    const oldMode = this._stateObj!.attributes.mode;
 
-    if (mode === oldMode) return;
+    if (mode === oldMode || !mode) {
+      return;
+    }
 
     this._currentMode = mode;
 
@@ -105,7 +120,7 @@ class HuiHumidifierModesCardFeature
 
   private async _setMode(mode: string) {
     await this.hass!.callService("humidifier", "set_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       mode: mode,
     });
   }
@@ -114,42 +129,45 @@ class HuiHumidifierModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsHumidifierModesCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsHumidifierModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const options = filterModes(
       stateObj.attributes.available_modes,
       this._config!.modes
-    ).map<ControlSelectOption>((mode) => ({
+    ).map((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
+        this._stateObj!,
         "mode",
         mode
       ),
-      icon: html`<ha-attribute-icon
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        attribute="mode"
-        .attributeValue=${mode}
-      ></ha-attribute-icon>`,
     }));
 
     if (this._config.style === "icons") {
       return html`
         <ha-control-select
-          .options=${options}
+          .options=${options.map((option) => ({
+            ...option,
+            icon: html`<ha-attribute-icon
+              slot="graphic"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              attribute="mode"
+              .attributeValue=${option.value}
+            ></ha-attribute-icon>`,
+          }))}
           .value=${this._currentMode}
           @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          hide-option-label
+          .label=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -157,35 +175,17 @@ class HuiHumidifierModesCardFeature
 
     return html`
       <ha-control-select-menu
+        .hass=${this.hass}
         show-arrow
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
         .value=${this._currentMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
-        fixedMenuPosition
-        naturalMenuWidth
-        @selected=${this._valueChanged}
-        @closed=${stopPropagation}
+        .disabled=${this._stateObj.state === UNAVAILABLE}
+        @wa-select=${this._valueChanged}
+        .options=${options}
+        .renderIcon=${this._renderModeIcon}
       >
-        ${this._currentMode
-          ? html`<ha-attribute-icon
-              slot="icon"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-              attribute="mode"
-              .attributeValue=${this._currentMode}
-            ></ha-attribute-icon>`
-          : html`<ha-svg-icon
-              slot="icon"
-              .path=${mdiTuneVariant}
-            ></ha-svg-icon>`}
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option.value} graphic="icon">
-              ${option.icon}${option.label}
-            </ha-list-item>
-          `
-        )}
+        <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
       </ha-control-select-menu>
     `;
   }

@@ -14,5 +14,5 @@
   "name": "Home Assistant Cast",
   "short_name": "HA Cast",
   "start_url": "/?homescreen=1",
-  "theme_color": "#03A9F4"
+  "theme_color": "#009ac7"
 }

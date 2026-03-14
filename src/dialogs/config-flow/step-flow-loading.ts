@@ -26,20 +26,21 @@ class StepFlowLoading extends LitElement {
       this.step
     );
     return html`
-      <div class="init-spinner">
+      <div class="content">
+        <ha-spinner size="large"></ha-spinner>
         ${description ? html`<div>${description}</div>` : ""}
-        <ha-spinner></ha-spinner>
       </div>
     `;
   }
 
   static styles = css`
-    .init-spinner {
+    .content {
+      margin-top: 0;
       padding: 50px 100px;
       text-align: center;
     }
     ha-spinner {
-      margin-top: 16px;
+      margin-bottom: 16px;
     }
   `;
 }

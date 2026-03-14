@@ -1,10 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
-import { css, html, nothing, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import type { HomeAssistant } from "../types";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
 const DEFAULT_THEME = "default";
@@ -25,6 +24,26 @@ export class HaThemePicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   protected render(): TemplateResult {
+    const options: HaSelectOption[] = Object.keys(
+      this.hass?.themes.themes || {}
+    ).map((theme) => ({
+      value: theme,
+    }));
+
+    if (this.includeDefault) {
+      options.unshift({
+        value: DEFAULT_THEME,
+        label: "Home Assistant",
+      });
+    }
+
+    if (!this.required) {
+      options.unshift({
+        value: "remove",
+        label: this.hass!.localize("ui.components.theme-picker.no_theme"),
+      });
+    }
+
     return html`
       <ha-select
         .label=${this.label ||
@@ -33,31 +52,8 @@ export class HaThemePicker extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
-      >
-        ${!this.required
-          ? html`
-              <mwc-list-item value="remove">
-                ${this.hass!.localize("ui.components.theme-picker.no_theme")}
-              </mwc-list-item>
-            `
-          : nothing}
-        ${this.includeDefault
-          ? html`
-              <mwc-list-item .value=${DEFAULT_THEME}>
-                Home Assistant
-              </mwc-list-item>
-            `
-          : nothing}
-        ${Object.keys(this.hass!.themes.themes)
-          .sort()
-          .map(
-            (theme) =>
-              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
-          )}
-      </ha-select>
+        .options=${options}
+      ></ha-select>
     `;
   }
 
@@ -67,11 +63,11 @@ export class HaThemePicker extends LitElement {
     }
   `;
 
-  private _changed(ev): void {
-    if (!this.hass || ev.target.value === "") {
+  private _changed(ev: HaSelectSelectEvent): void {
+    if (!this.hass || ev.detail.value === "") {
       return;
     }
-    this.value = ev.target.value === "remove" ? undefined : ev.target.value;
+    this.value = ev.detail.value === "remove" ? undefined : ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

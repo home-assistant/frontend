@@ -11,11 +11,11 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -104,7 +104,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -119,7 +119,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${this._config.name || computeStateName(stateObj)}
+            ${computeLovelaceEntityName(this.hass, stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">
@@ -146,7 +146,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                     ? ""
                     : "problem"}
                 >
-                  ${stateObj.attributes[item]}
+                  ${this._formatSensorValue(stateObj, item)}
                 </div>
                 <div class="uom">
                   ${stateObj.attributes.unit_of_measurement_dict[item] || ""}
@@ -178,22 +178,18 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     }
 
     .header {
-      /* start paper-font-headline style */
-      font-family: "Roboto", "Noto", sans-serif;
-      -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
-      text-rendering: optimizeLegibility;
-      font-size: 24px;
-      font-weight: 400;
-      letter-spacing: -0.012em;
-      /* end paper-font-headline style */
-
-      line-height: 40px;
+      font-family: var(--ha-font-family-body);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      font-size: var(--ha-font-size-2xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       padding: 8px 16px;
     }
 
     .has-plant-image .header {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
       line-height: 16px;
       padding: 16px;
       color: white;
@@ -217,7 +213,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     ha-icon,
     ha-svg-icon {
-      color: var(--paper-item-icon-color);
+      color: var(--state-icon-color);
     }
 
     .attributes {
@@ -227,7 +223,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     .attributes:focus {
       outline: none;
       background: var(--divider-color);
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
     }
 
     .attributes div {
@@ -236,13 +232,27 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     .problem {
       color: var(--error-color);
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .uom {
       color: var(--secondary-text-color);
     }
   `;
+
+  private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
+    const sensorEntityId = stateObj.attributes.sensors?.[attribute];
+    const sensorStateObj = sensorEntityId
+      ? this.hass!.states[sensorEntityId]
+      : undefined;
+    if (sensorStateObj) {
+      return this.hass!.formatEntityStateToParts(sensorStateObj)
+        .filter((part) => part.type !== "unit")
+        .map((part) => part.value)
+        .join("");
+    }
+    return stateObj.attributes[attribute] ?? "";
+  }
 
   private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(

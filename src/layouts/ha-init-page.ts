@@ -1,7 +1,10 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import "../components/ha-spinner";
+import "../components/ha-button";
 
+@customElement("ha-init-page")
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
@@ -20,7 +23,9 @@ class HaInitPage extends LitElement {
           <p class="retry-text">
             Retrying in ${this._retryInSeconds} seconds...
           </p>
-          <mwc-button @click=${this._retry}>Retry now</mwc-button>
+          <ha-button size="small" appearance="plain" @click=${this._retry}
+            >Retry now</ha-button
+          >
           ${location.host.includes("ui.nabu.casa")
             ? html`
                 <p>
@@ -64,7 +69,7 @@ class HaInitPage extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("error") && this.error) {
-      import("@material/mwc-button");
+      import("../components/ha-button");
     }
   }
 
@@ -115,8 +120,6 @@ class HaInitPage extends LitElement {
     }
   `;
 }
-
-customElements.define("ha-init-page", HaInitPage);
 
 declare global {
   interface HTMLElementTagNameMap {

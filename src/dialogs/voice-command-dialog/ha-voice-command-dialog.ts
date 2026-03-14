@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiChevronDown,
   mdiClose,
@@ -11,14 +11,16 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import "../../components/ha-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-dialog";
-import "../../components/ha-dialog-header";
-import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
 import "../../components/ha-alert";
 import "../../components/ha-assist-chat";
+import "../../components/ha-button";
+import "../../components/ha-dialog";
+import "../../components/ha-dialog-header";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
@@ -34,8 +36,11 @@ import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 export class HaVoiceCommandDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
+  @state() private _dialogOpen = false;
+
+  @state()
   @storage({
     key: "AssistPipelineId",
     state: true,
@@ -56,109 +61,117 @@ export class HaVoiceCommandDialog extends LitElement {
   public async showDialog(
     params: Required<VoiceCommandDialogParams>
   ): Promise<void> {
+    await this._loadPipelines();
+    const pipelinesIds = this._pipelines?.map((pipeline) => pipeline.id) || [];
     if (
       params.pipeline_id === "preferred" ||
       (params.pipeline_id === "last_used" && !this._pipelineId)
     ) {
-      await this._loadPipelines();
       this._pipelineId = this._preferredPipeline;
     } else if (!["last_used", "preferred"].includes(params.pipeline_id)) {
       this._pipelineId = params.pipeline_id;
     }
 
+    // If the pipeline id is not in the list of pipelines, set it to preferred
+    if (this._pipelineId && !pipelinesIds.includes(this._pipelineId)) {
+      this._pipelineId = this._preferredPipeline;
+    }
+
     this._startListening = params.start_listening;
-    this._opened = true;
+    this._dialogOpen = true;
+    this._open = true;
   }
 
-  public async closeDialog(): Promise<void> {
-    this._opened = false;
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._dialogOpen = false;
     this._pipelines = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._dialogOpen) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize("ui.dialogs.voice_command.title")}
-        flexContent
-        hideactions
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        flexcontent
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
+            data-dialog="close"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
           <div slot="title">
             ${this.hass.localize("ui.dialogs.voice_command.title")}
-            <ha-button-menu
+            <ha-dropdown
               @opened=${this._loadPipelines}
               @closed=${stopPropagation}
-              activatable
-              fixed
+              @wa-select=${this._selectPipeline}
             >
-              <ha-button slot="trigger">
+              <ha-button
+                slot="trigger"
+                appearance="plain"
+                variant="neutral"
+                size="small"
+                .loading=${!this._pipelines}
+              >
                 ${this._pipeline?.name}
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${!this._pipelines
-                ? html`<div class="pipelines-loading">
-                    <ha-spinner size="small"></ha-spinner>
-                  </div>`
+                ? nothing
                 : this._pipelines?.map(
                     (pipeline) =>
-                      html`<ha-list-item
+                      html`<ha-dropdown-item
                         ?selected=${pipeline.id === this._pipelineId ||
                         (!this._pipelineId &&
                           pipeline.id === this._preferredPipeline)}
-                        .pipeline=${pipeline.id}
-                        @click=${this._selectPipeline}
-                        .hasMeta=${pipeline.id === this._preferredPipeline}
+                        .value=${pipeline.id}
                       >
                         ${pipeline.name}${pipeline.id ===
                         this._preferredPipeline
                           ? html`
                               <ha-svg-icon
-                                slot="meta"
+                                slot="details"
                                 .path=${mdiStar}
                               ></ha-svg-icon>
                             `
                           : nothing}
-                      </ha-list-item>`
+                      </ha-dropdown-item>`
                   )}
               ${this.hass.user?.is_admin
-                ? html`<li divider role="separator"></li>
+                ? html`<wa-divider></wa-divider>
                     <a href="/config/voice-assistants/assistants"
-                      ><ha-list-item
+                      ><ha-dropdown-item
                         >${this.hass.localize(
                           "ui.dialogs.voice_command.manage_assistants"
-                        )}</ha-list-item
-                      ></a
-                    >`
+                        )}
+
+                        <ha-icon-next
+                          slot="details"
+                        ></ha-icon-next></ha-dropdown-item
+                    ></a>`
                 : nothing}
-            </ha-button-menu>
+            </ha-dropdown>
           </div>
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
-            rel="noopener noreferer"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize("ui.common.help")}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>
+            rel="noopener noreferrer"
+          ></ha-icon-button>
         </ha-dialog-header>
 
         ${this._errorLoadAssist
@@ -186,8 +199,8 @@ export class HaVoiceCommandDialog extends LitElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("_pipelineId") ||
-      (changedProperties.has("_opened") &&
-        this._opened === true &&
+      (changedProperties.has("_open") &&
+        this._open === true &&
         this._pipelineId)
     ) {
       this._getPipeline();
@@ -205,9 +218,12 @@ export class HaVoiceCommandDialog extends LitElement {
     this._preferredPipeline = preferred_pipeline || undefined;
   }
 
-  private async _selectPipeline(ev: CustomEvent) {
-    this._pipelineId = (ev.currentTarget as any).pipeline;
-    await this.updateComplete;
+  private async _selectPipeline(ev: HaDropdownSelectEvent) {
+    const pipelineId = ev.detail?.item?.value;
+    if (pipelineId) {
+      this._pipelineId = pipelineId;
+      await this.updateComplete;
+    }
   }
 
   private async _getPipeline() {
@@ -240,8 +256,6 @@ export class HaVoiceCommandDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-max-width: 500px;
-          --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {
@@ -252,59 +266,50 @@ export class HaVoiceCommandDialog extends LitElement {
           flex-direction: column;
           margin: -4px 0;
         }
-        ha-button-menu {
+        ha-dropdown {
+          display: flex;
           --mdc-theme-on-primary: var(--text-primary-color);
           --mdc-theme-primary: var(--primary-color);
-          margin-top: -8px;
+          margin-top: -4px;
           margin-bottom: 0;
           margin-right: 0;
           margin-inline-end: 0;
-          margin-left: -8px;
-          margin-inline-start: -8px;
+          margin-left: -9px;
+          margin-inline-start: -9px;
         }
-        ha-button-menu ha-button {
-          --mdc-theme-primary: var(--secondary-text-color);
-          --mdc-typography-button-text-transform: none;
-          --mdc-typography-button-font-size: unset;
-          --mdc-typography-button-font-weight: 400;
-          --mdc-typography-button-letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          --mdc-typography-button-line-height: var(
-            --mdc-typography-headline6-line-height,
-            2rem
-          );
-          --button-height: auto;
+        ha-dropdown ha-button {
+          --ha-button-height: var(--ha-space-5);
         }
-        ha-button-menu ha-button ha-svg-icon {
-          height: 28px;
-          margin-left: 4px;
-          margin-inline-start: 4px;
+        ha-dropdown ha-button::part(base) {
+          margin-left: 5px;
+          padding: 0;
+        }
+        @media (prefers-color-scheme: dark) {
+          ha-dropdown ha-button {
+            --ha-button-theme-lighter-color: rgba(255, 255, 255, 0.1);
+          }
+        }
+        ha-dropdown ha-button ha-svg-icon {
+          height: var(--ha-space-7);
+          margin-left: var(--ha-space-1);
+          margin-inline-start: var(--ha-space-1);
           margin-inline-end: initial;
           direction: var(--direction);
         }
-        ha-list-item {
-          --mdc-list-item-meta-size: 16px;
-        }
-        ha-list-item ha-svg-icon {
-          margin-left: 4px;
-          margin-inline-start: 4px;
+        ha-dropdown-item ha-svg-icon {
+          margin-left: var(--ha-space-1);
+          margin-inline-start: var(--ha-space-1);
           margin-inline-end: initial;
           direction: var(--direction);
           display: block;
         }
-        ha-button-menu a {
+        ha-dropdown a {
           text-decoration: none;
         }
 
         .pipelines-loading {
           display: flex;
           justify-content: center;
-        }
-        ha-assist-chat {
-          margin: 0 24px 16px;
-          min-height: 399px;
         }
       `,
     ];

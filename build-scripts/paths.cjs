@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  polymer_dir: path.resolve(__dirname, ".."),
+  root_dir: path.resolve(__dirname, ".."),
 
   build_dir: path.resolve(__dirname, "../build"),
   app_output_root: path.resolve(__dirname, "../hass_frontend"),
@@ -48,16 +48,6 @@ module.exports = {
     __dirname,
     "../landing-page/dist/static"
   ),
-
-  hassio_dir: path.resolve(__dirname, "../hassio"),
-  hassio_output_root: path.resolve(__dirname, "../hassio/build"),
-  hassio_output_static: path.resolve(__dirname, "../hassio/build/static"),
-  hassio_output_latest: path.resolve(
-    __dirname,
-    "../hassio/build/frontend_latest"
-  ),
-  hassio_output_es5: path.resolve(__dirname, "../hassio/build/frontend_es5"),
-  hassio_publicPath: "/api/hassio/app",
 
   translations_src: path.resolve(__dirname, "../src/translations"),
 };

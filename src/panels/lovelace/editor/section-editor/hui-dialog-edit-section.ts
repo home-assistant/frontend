@@ -1,5 +1,9 @@
-import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDotsVertical,
+  mdiFileMoveOutline,
+  mdiPlaylistEdit,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,27 +11,43 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { saveConfig } from "../../../../data/lovelace/config/types";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../../../data/lovelace/config/view";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import type { Lovelace } from "../../types";
+import { addSection, deleteSection, moveSection } from "../config-util";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
 } from "../lovelace-path";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { getViewType } from "../../views/get-view-type";
+import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -38,6 +58,8 @@ export class HuiDialogEditSection
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public lovelace?: Lovelace;
+
   @state() private _params?: EditSectionDialogParams;
 
   @state() private _config?: LovelaceSectionRawConfig;
@@ -47,6 +69,8 @@ export class HuiDialogEditSection
   @state() private _yamlMode = false;
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
+
+  @state() private _open = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
@@ -61,6 +85,9 @@ export class HuiDialogEditSection
 
   public async showDialog(params: EditSectionDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
+
+    this.lovelace = params.lovelace;
 
     this._config = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
@@ -72,12 +99,16 @@ export class HuiDialogEditSection
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._yamlMode = false;
     this._config = undefined;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -95,7 +126,8 @@ export class HuiDialogEditSection
       content = html`
         <ha-yaml-editor
           .hass=${this.hass}
-          dialogInitialFocus
+          autofocus
+          in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -127,74 +159,84 @@ export class HuiDialogEditSection
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
-        @closed=${this._cancel}
-        .heading=${heading}
+        @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
+            @click=${this._cancel}
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${heading}</span>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
+            placement="bottom-end"
             @closed=${stopPropagation}
-            @action=${this._handleAction}
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="toggle-yaml">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="move-to-view">
               <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
+                slot="icon"
+                .path=${mdiFileMoveOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_view.move_to_view"
+              )}
+            </ha-dropdown-item>
+          </ha-dropdown>
           ${!this._yamlMode
             ? html`
-                <mwc-tab-bar
-                  .activeIndex=${TABS.indexOf(this._currTab)}
-                  @MDCTabBar:activated=${this._handleTabChanged}
-                >
+                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                   ${TABS.map(
                     (tab) => html`
-                      <mwc-tab
-                        .label=${this.hass!.localize(
+                      <ha-tab-group-tab
+                        slot="nav"
+                        .panel=${tab}
+                        .active=${this._currTab === tab}
+                      >
+                        ${this.hass!.localize(
                           `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
                         )}
-                      >
-                      </mwc-tab>
+                      </ha-tab-group-tab>
                     `
                   )}
-                </mwc-tab-bar>
+                </ha-tab-group>
               `
             : nothing}
         </ha-dialog-header>
         ${content}
-        <ha-button slot="secondaryAction" @click=${this._cancel}>
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._cancel}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
 
-        <ha-button slot="primaryAction" @click=${this._save}>
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
+          <ha-button slot="primaryAction" @click=${this._save}>
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -205,22 +247,153 @@ export class HuiDialogEditSection
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = TABS[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
     this._currTab = newTab;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "toggle-yaml":
         this._yamlMode = !this._yamlMode;
+        break;
+      case "move-to-view":
+        this._openSelectView();
         break;
     }
   }
+
+  private _openSelectView(): void {
+    if (!this._params || !this.lovelace) {
+      return;
+    }
+
+    showSelectViewDialog(this, {
+      lovelaceConfig: this._params.lovelaceConfig,
+      urlPath: this.lovelace.urlPath,
+      allowDashboardChange: true,
+      header: this.hass!.localize(
+        "ui.panel.lovelace.editor.move_section.header"
+      ),
+      viewSelectedCallback: this._moveSectionToView,
+    });
+  }
+
+  private _moveSectionToView = async (
+    urlPath: string | null,
+    selectedDashConfig: LovelaceConfig,
+    viewIndex: number
+  ) => {
+    if (!this._params || !this.lovelace) {
+      return;
+    }
+
+    const toView = selectedDashConfig.views[viewIndex];
+
+    if (
+      isStrategyView(toView) ||
+      getViewType(toView) !== SECTIONS_VIEW_LAYOUT
+    ) {
+      showAlertDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error_title"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error_text"
+        ),
+        warning: true,
+      });
+      return;
+    }
+
+    const fromViewIndex = this._params.viewIndex;
+    const fromSectionIndex = this._params.sectionIndex;
+
+    // Same dashboard
+    if (urlPath === this.lovelace.urlPath) {
+      const oldConfig = this.lovelace.config;
+      const toIndex = toView.sections?.length ?? 0;
+      try {
+        await this.lovelace.saveConfig(
+          moveSection(
+            oldConfig,
+            [fromViewIndex, fromSectionIndex],
+            [viewIndex, toIndex]
+          )
+        );
+        this.lovelace.showToast({
+          message: this.hass!.localize(
+            "ui.panel.lovelace.editor.move_section.success"
+          ),
+          duration: 4000,
+          action: {
+            action: async () => {
+              await this.lovelace!.saveConfig(oldConfig);
+            },
+            text: this.hass!.localize("ui.common.undo"),
+          },
+        });
+
+        this.closeDialog();
+      } catch (err: any) {
+        this.lovelace.showToast({
+          message: this.hass!.localize(
+            "ui.panel.lovelace.editor.move_section.error"
+          ),
+        });
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
+      return;
+    }
+
+    // Cross dashboard
+    const oldFromConfig = this.lovelace.config;
+    const oldToConfig = selectedDashConfig;
+    try {
+      const section = findLovelaceContainer(oldFromConfig, [
+        fromViewIndex,
+        fromSectionIndex,
+      ]) as LovelaceSectionRawConfig;
+
+      await saveConfig(
+        this.hass!,
+        urlPath,
+        addSection(oldToConfig, viewIndex, section)
+      );
+
+      await this.lovelace.saveConfig(
+        deleteSection(oldFromConfig, fromViewIndex, fromSectionIndex)
+      );
+
+      this.lovelace.showToast({
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.success"
+        ),
+        duration: 4000,
+        action: {
+          action: async () => {
+            await saveConfig(this.hass!, urlPath, oldToConfig);
+            await this.lovelace!.saveConfig(oldFromConfig);
+          },
+          text: this.hass!.localize("ui.common.undo"),
+        },
+      });
+
+      this.closeDialog();
+    } catch (err: any) {
+      this.lovelace.showToast({
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error"
+        ),
+      });
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  };
 
   private _viewYamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
@@ -258,31 +431,20 @@ export class HuiDialogEditSection
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
+          --dialog-content-padding: var(--ha-space-6);
         }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
-        mwc-tab-bar {
-          color: var(--primary-text-color);
-          text-transform: uppercase;
-          padding: 0 20px;
+        ha-tab-group-tab {
+          flex: 1;
         }
-        @media all and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

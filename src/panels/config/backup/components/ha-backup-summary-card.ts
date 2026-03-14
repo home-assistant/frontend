@@ -9,12 +9,18 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-spinner";
 
-type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
+type SummaryStatus =
+  | "success"
+  | "error"
+  | "info"
+  | "warning"
+  | "loading"
+  | "none";
 
-const ICONS: Record<SummaryStatus, string> = {
+const ICONS: Partial<Record<SummaryStatus, string>> = {
   success: mdiCheck,
   error: mdiAlertCircleOutline,
   warning: mdiAlertOutline,
@@ -42,11 +48,13 @@ class HaBackupSummaryCard extends LitElement {
         <div class="summary">
           ${this.status === "loading"
             ? html`<ha-spinner></ha-spinner>`
-            : html`
-                <div class="icon ${this.status}">
-                  <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
-                </div>
-              `}
+            : this.status === "none"
+              ? nothing
+              : html`
+                  <div class="icon ${this.status}">
+                    <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
+                  </div>
+                `}
 
           <div class="content">
             <p class="heading">${this.heading}</p>
@@ -74,8 +82,8 @@ class HaBackupSummaryCard extends LitElement {
     .summary {
       display: flex;
       flex-direction: row;
-      column-gap: 16px;
-      row-gap: 8px;
+      column-gap: var(--ha-space-4);
+      row-gap: var(--ha-space-2);
       align-items: center;
       padding: 16px;
       padding-bottom: 8px;
@@ -84,7 +92,7 @@ class HaBackupSummaryCard extends LitElement {
     }
     .icon {
       position: relative;
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       width: 40px;
       height: 40px;
       display: flex;
@@ -92,6 +100,7 @@ class HaBackupSummaryCard extends LitElement {
       justify-content: center;
       overflow: hidden;
       --icon-color: var(--primary-color);
+      animation: pop-in var(--ha-animation-duration-normal, 250ms) ease-out;
     }
     .icon.success {
       --icon-color: var(--success-color);
@@ -125,10 +134,10 @@ class HaBackupSummaryCard extends LitElement {
       min-width: 0;
     }
     .heading {
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       font-style: normal;
-      font-weight: 400;
-      line-height: 28px;
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       color: var(--primary-text-color);
       margin: 0;
       text-overflow: ellipsis;
@@ -136,10 +145,10 @@ class HaBackupSummaryCard extends LitElement {
       white-space: nowrap;
     }
     .description {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-style: normal;
-      font-weight: 400;
-      line-height: 20px;
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.25px;
       color: var(--secondary-text-color);
       margin: 0;
@@ -153,6 +162,16 @@ class HaBackupSummaryCard extends LitElement {
         width: 100%;
         display: flex;
         justify-content: flex-end;
+      }
+    }
+    @keyframes pop-in {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
       }
     }
   `;

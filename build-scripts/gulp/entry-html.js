@@ -169,14 +169,14 @@ const APP_PAGE_ENTRIES = {
 
 gulp.task(
   "gen-pages-app-dev",
-  genPagesDevTask(APP_PAGE_ENTRIES, paths.polymer_dir, paths.app_output_root)
+  genPagesDevTask(APP_PAGE_ENTRIES, paths.root_dir, paths.app_output_root)
 );
 
 gulp.task(
   "gen-pages-app-prod",
   genPagesProdTask(
     APP_PAGE_ENTRIES,
-    paths.polymer_dir,
+    paths.root_dir,
     paths.app_output_root,
     paths.app_output_latest,
     paths.app_output_es5
@@ -264,30 +264,5 @@ gulp.task(
     paths.landingPage_output_root,
     paths.landingPage_output_latest,
     paths.landingPage_output_es5
-  )
-);
-
-const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
-
-gulp.task(
-  "gen-pages-hassio-dev",
-  genPagesDevTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    "src",
-    paths.hassio_publicPath
-  )
-);
-
-gulp.task(
-  "gen-pages-hassio-prod",
-  genPagesProdTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    paths.hassio_output_es5,
-    "src"
   )
 );

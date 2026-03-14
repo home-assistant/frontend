@@ -31,10 +31,10 @@ export const isNavigationClick = (e: MouseEvent, preventDefault = true) => {
 
   const location = window.location;
   const origin = location.origin || location.protocol + "//" + location.host;
-  if (href.indexOf(origin) !== 0) {
+  if (!href.startsWith(origin)) {
     return undefined;
   }
-  href = href.substr(origin.length);
+  href = href.slice(origin.length);
 
   if (href === "#") {
     return undefined;

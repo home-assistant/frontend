@@ -53,11 +53,11 @@ export class HaFormfield extends FormfieldBase {
       :host(:not([alignEnd])) ::slotted(ha-switch) {
         margin-right: 10px;
         margin-inline-end: 10px;
-        margin-inline-start: inline;
+        margin-inline-start: initial;
       }
       .mdc-form-field {
         align-items: var(--ha-formfield-align-items, center);
-        gap: 4px;
+        gap: var(--ha-space-1);
       }
       .mdc-form-field > label {
         direction: var(--direction);

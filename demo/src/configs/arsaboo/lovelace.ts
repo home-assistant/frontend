@@ -4,7 +4,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
   title: "Home Assistant",
   views: [
     {
-      icon: "hass:home-assistant",
+      icon: "mdi:home-assistant",
       id: "home",
       title: "Home",
       cards: [

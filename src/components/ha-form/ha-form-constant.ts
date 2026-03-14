@@ -20,7 +20,7 @@ export class HaFormConstant extends LitElement implements HaFormElement {
       display: block;
     }
     .label {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
   `;
 }

@@ -1,6 +1,7 @@
 import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -28,6 +29,7 @@ import type {
 import type { HumidifierCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
@@ -42,7 +44,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current_as_primary: optional(boolean()),
     features: optional(array(any())),
@@ -56,12 +58,16 @@ const SCHEMA = [
     selector: { entity: { domain: "humidifier" } },
   },
   {
+    name: "name",
+    selector: {
+      entity_name: {},
+    },
+    context: { entity: "entity" },
+  },
+  {
     type: "grid",
     name: "",
-    schema: [
-      { name: "name", selector: { text: {} } },
-      { name: "theme", selector: { theme: {} } },
-    ],
+    schema: [{ name: "theme", selector: { theme: {} } }],
   },
   {
     name: "show_current_as_primary",
@@ -85,13 +91,19 @@ export class HuiHumidifierCardEditor
     this._config = config;
   }
 
+  private _featureContext = memoizeOne(
+    (entityId?: string): LovelaceCardFeatureContext => ({
+      entity_id: entityId,
+    })
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const entityId = this._config!.entity;
-    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
+    const entityId = this._config.entity;
+    const featureContext = this._featureContext(entityId);
 
     return html`
       <ha-form
@@ -111,7 +123,7 @@ export class HuiHumidifierCardEditor
         <div class="content">
           <hui-card-features-editor
             .hass=${this.hass}
-            .stateObj=${stateObj}
+            .context=${featureContext}
             .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}

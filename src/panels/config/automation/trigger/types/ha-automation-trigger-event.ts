@@ -48,12 +48,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         "ui.panel.config.automation.editor.triggers.type.event.context_users"
       )}
       <ha-users-picker
-        .pickedUserLabel=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.event.context_user_picked"
-        )}
-        .pickUserLabel=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
-        )}
         .hass=${this.hass}
         .disabled=${this.disabled}
         .value=${this._wrapUsersInArray(context?.user_id)}

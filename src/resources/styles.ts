@@ -16,11 +16,12 @@ export const buttonLinkStyle = css`
 
 export const haStyle = css`
   :host {
-    font-family: var(--paper-font-body1_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-body1_-_-webkit-font-smoothing);
-    font-size: var(--paper-font-body1_-_font-size);
-    font-weight: var(--paper-font-body1_-_font-weight);
-    line-height: var(--paper-font-body1_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    font-size: var(--ha-font-size-m);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-normal);
   }
 
   app-header div[sticky] {
@@ -33,37 +34,48 @@ export const haStyle = css`
     margin-inline-end: initial;
   }
 
+  .header {
+    transition:
+      box-shadow 200ms linear,
+      width var(--ha-animation-duration-normal) ease,
+      padding-left var(--ha-animation-duration-normal) ease,
+      padding-right var(--ha-animation-duration-normal) ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header {
+      transition: box-shadow 200ms linear;
+    }
+  }
+
   h1 {
-    font-family: var(--paper-font-headline_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-headline_-_white-space);
-    overflow: var(--paper-font-headline_-_overflow);
-    text-overflow: var(--paper-font-headline_-_text-overflow);
-    font-size: var(--paper-font-headline_-_font-size);
-    font-weight: var(--paper-font-headline_-_font-weight);
-    line-height: var(--paper-font-headline_-_line-height);
+    font-family: var(--ha-font-family-heading);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    font-size: var(--ha-font-size-2xl);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-condensed);
   }
 
   h2 {
-    font-family: var(--paper-font-title_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-title_-_white-space);
-    overflow: var(--paper-font-title_-_overflow);
-    text-overflow: var(--paper-font-title_-_text-overflow);
-    font-size: var(--paper-font-title_-_font-size);
-    font-weight: var(--paper-font-title_-_font-weight);
-    line-height: var(--paper-font-title_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--ha-font-size-xl);
+    font-weight: var(--ha-font-weight-medium);
+    line-height: var(--ha-line-height-normal);
   }
 
   h3 {
-    font-family: var(--paper-font-subhead_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-subhead_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-subhead_-_white-space);
-    overflow: var(--paper-font-subhead_-_overflow);
-    text-overflow: var(--paper-font-subhead_-_text-overflow);
-    font-size: var(--paper-font-subhead_-_font-size);
-    font-weight: var(--paper-font-subhead_-_font-weight);
-    line-height: var(--paper-font-subhead_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    font-size: var(--ha-font-size-l);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-normal);
   }
 
   a {
@@ -80,11 +92,6 @@ export const haStyle = css`
 
   .warning {
     color: var(--error-color);
-  }
-
-  ha-button.warning,
-  mwc-button.warning {
-    --mdc-theme-primary: var(--error-color);
   }
 
   ${buttonLinkStyle}
@@ -143,15 +150,20 @@ export const haStyle = css`
 `;
 
 export const haStyleDialog = css`
-  /* mwc-dialog (ha-dialog) styles */
-  ha-dialog {
+  ha-dialog,
+  ha-adaptive-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
     --mdc-dialog-max-width: min(600px, 95vw);
     --justify-action-buttons: space-between;
+    --dialog-container-padding: var(--safe-area-inset-top, 0)
+      var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
+      var(--safe-area-inset-left, 0);
+    --dialog-surface-padding: 0px;
   }
 
-  ha-dialog .form {
+  ha-dialog .form,
+  ha-adaptive-dialog .form {
     color: var(--primary-text-color);
   }
 
@@ -161,25 +173,73 @@ export const haStyleDialog = css`
 
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
-    ha-dialog {
-      --mdc-dialog-min-width: calc(
-        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-      );
-      --mdc-dialog-max-width: calc(
-        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-      );
-      --mdc-dialog-min-height: 100%;
-      --mdc-dialog-max-height: 100%;
+    ha-dialog,
+    ha-adaptive-dialog {
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
+      --dialog-container-padding: 0px;
+      --dialog-surface-padding: var(--safe-area-inset-top, 0)
+        var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
+        var(--safe-area-inset-left, 0);
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
     }
-  }
-  mwc-button.warning,
-  ha-button.warning {
-    --mdc-theme-primary: var(--error-color);
+    ha-dialog {
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
+    }
   }
   .error {
     color: var(--error-color);
+  }
+`;
+
+export const haStyleDialogFixedTop = css`
+  ha-dialog,
+  ha-adaptive-dialog {
+    /* Pin dialog to top so it doesn't jump when content changes size */
+    --vertical-align-dialog: flex-start;
+    --dialog-surface-margin-top: var(--ha-space-10);
+    --mdc-dialog-max-height: calc(
+      100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
+    --mdc-dialog-max-height: calc(
+      100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
+    --ha-dialog-max-height: calc(
+      100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
+    --ha-dialog-max-height: calc(
+      100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
+  }
+
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog,
+    ha-adaptive-dialog {
+      /* When in fullscreen, dialog should be attached to top */
+      --dialog-surface-margin-top: 0px;
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
+      --ha-dialog-max-height: 100vh;
+      --ha-dialog-max-height: 100svh;
+    }
   }
 `;
 
@@ -190,8 +250,7 @@ export const haStyleScrollbar = css`
   }
 
   .ha-scrollbar::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 

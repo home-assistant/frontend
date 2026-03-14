@@ -1,22 +1,21 @@
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-md-select";
-import "../../../../components/ha-md-select-option";
+import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
+import "../../../../components/ha-dialog";
 import type {
   BackupAgent,
   BackupConfig,
@@ -30,7 +29,7 @@ import {
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "../components/config/ha-backup-config-data";
 import type { BackupConfigData } from "../components/config/ha-backup-config-data";
 import "../components/ha-backup-agents-picker";
@@ -73,12 +72,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _formData?: FormData;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(_params: GenerateBackupDialogParams): void {
     this._step = STEPS[0];
     this._formData = INITIAL_DATA;
     this._params = _params;
+    this._open = true;
 
     this._fetchAgents();
     this._fetchBackupConfig();
@@ -88,6 +88,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
+    this._open = false;
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
@@ -114,7 +115,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
     return true;
   }
 
@@ -179,15 +180,19 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const selectedAgents = this._formData.agent_ids;
 
     return html`
-      <ha-md-dialog open disable-cancel-action @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+      >
+        <ha-dialog-header slot="header">
           ${isFirstStep
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
+                  data-dialog="close"
                   .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
-                  @click=${this.closeDialog}
                 ></ha-icon-button>
               `
             : html`
@@ -198,13 +203,17 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               `}
           <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
         </ha-dialog-header>
-        <div slot="content" class="content">
+        <div class="content">
           ${this._step === "data" ? this._renderData() : this._renderSync()}
         </div>
-        <div slot="actions">
+        <ha-dialog-footer slot="footer">
           ${isFirstStep
             ? html`
-                <ha-button @click=${this.closeDialog}>
+                <ha-button
+                  slot="secondaryAction"
+                  @click=${this.closeDialog}
+                  appearance="plain"
+                >
                   ${this.hass.localize("ui.common.cancel")}
                 </ha-button>
               `
@@ -212,6 +221,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           ${isLastStep
             ? html`
                 <ha-button
+                  slot="primaryAction"
                   @click=${this._submit}
                   .disabled=${this._formData.agents_mode === "custom" &&
                   !selectedAgents.length}
@@ -223,14 +233,15 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               `
             : html`
                 <ha-button
+                  slot="primaryAction"
                   @click=${this._nextStep}
                   .disabled=${this._step === "data" && this._noDataSelected}
                 >
                   ${this.hass.localize("ui.common.next")}
                 </ha-button>
               `}
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -300,31 +311,27 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               "ui.panel.config.backup.dialogs.generate.sync.locations_description"
             )}
           </span>
-          <ha-md-select
+          <ha-select
             slot="end"
-            id="agents_mode"
-            @change=${this._selectChanged}
+            @selected=${this._selectChanged}
             .value=${this._formData.agents_mode}
-          >
-            <ha-md-select-option
-              value="all"
-              .disabled=${disabledAgentIds.length}
-            >
-              <div slot="headline">
-                ${this.hass.localize(
+            .options=${[
+              {
+                value: "all",
+                label: this.hass.localize(
                   "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
                   { count: this._allAgentIds.length }
-                )}
-              </div>
-            </ha-md-select-option>
-            <ha-md-select-option value="custom">
-              <div slot="headline">
-                ${this.hass.localize(
+                ),
+                disabled: !!disabledAgentIds.length,
+              },
+              {
+                value: "custom",
+                label: this.hass.localize(
                   "ui.panel.config.backup.dialogs.generate.sync.locations_options.custom"
-                )}
-              </div>
-            </ha-md-select-option>
-          </ha-md-select>
+                ),
+              },
+            ]}
+          ></ha-select>
         </ha-md-list-item>
       </ha-md-list>
       ${disabledAgentIds.length
@@ -363,11 +370,11 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     `;
   }
 
-  private _selectChanged(ev) {
-    const select = ev.currentTarget;
+  private _selectChanged(ev: ValueChangedEvent<"custom" | "all">) {
+    const value = ev.detail.value;
     this._formData = {
       ...this._formData!,
-      [select.id]: select.value,
+      agents_mode: value,
     };
   }
 
@@ -436,9 +443,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
+        ha-dialog {
           --dialog-content-padding: 24px;
-          max-height: calc(100vh - 48px);
         }
         ha-md-list {
           background: none;
@@ -448,24 +454,19 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
         }
-        ha-md-list-item ha-md-select {
+        ha-md-list-item ha-select {
           min-width: 210px;
         }
         @media all and (max-width: 450px) {
-          ha-md-list-item ha-md-select {
+          ha-md-list-item ha-select {
             min-width: 160px;
             width: 160px;
           }
         }
-        ha-md-list-item ha-md-select > span {
+        ha-md-list-item ha-select > span {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
-        }
-        ha-md-list-item ha-md-select-option {
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
         }
         ha-textfield {
           width: 100%;

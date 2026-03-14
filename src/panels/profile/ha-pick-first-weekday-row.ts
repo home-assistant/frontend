@@ -1,9 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekday } from "../../common/datetime/first_weekday";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { FirstWeekday } from "../../data/translation";
@@ -31,43 +31,40 @@ class FirstWeekdayRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.first_weekday}
           @selected=${this._handleFormatSelection}
-          naturalMenuWidth
-        >
-          ${[
+          .options=${[
             FirstWeekday.language,
             FirstWeekday.monday,
             FirstWeekday.saturday,
             FirstWeekday.sunday,
-          ].map((day) => {
-            const value = this.hass.localize(
+          ].map((day) => ({
+            value: day.toString(),
+            label: this.hass.localize(
               `ui.panel.profile.first_weekday.values.${day}`
-            );
-            const twoLine = day === FirstWeekday.language;
-            return html`
-              <mwc-list-item .value=${day} .twoline=${twoLine}>
-                <span>${value}</span>
-                ${twoLine
-                  ? html`
-                      <span slot="secondary"
-                        >${this.hass.localize(
-                          `ui.panel.profile.first_weekday.values.${firstWeekday(
-                            this.hass.locale
-                          )}`
-                        )}</span
-                      >
-                    `
-                  : ""}
-              </mwc-list-item>
-            `;
-          })}
-        </ha-select>
+            ),
+            secondary:
+              day === FirstWeekday.language
+                ? this.hass.localize(
+                    `ui.panel.profile.first_weekday.values.${firstWeekday(
+                      this.hass.locale
+                    )}`
+                  )
+                : undefined,
+          }))}
+        ></ha-select>
       </ha-settings-row>
     `;
   }
 
-  private async _handleFormatSelection(ev) {
-    fireEvent(this, "hass-first-weekday-select", ev.target.value);
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<FirstWeekday>) {
+    fireEvent(this, "hass-first-weekday-select", ev.detail.value);
   }
+
+  static styles = css`
+    ha-select {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

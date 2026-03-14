@@ -99,7 +99,7 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   static styles = css`
     :host {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -114,7 +114,7 @@ export class HuiHeaderFooterEditor extends LitElement {
 
     ha-icon-button,
     .header-footer-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 

@@ -15,7 +15,7 @@ dist/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
-/node_modules/
+node_modules/
 yarn-error.log
 npm-debug.log
 
@@ -53,3 +53,8 @@ src/cast/dev_const.ts
 
 # test coverage
 test/coverage/
+
+# AI tooling
+.claude
+.cursor
+

@@ -1,28 +1,26 @@
-import "@material/mwc-button/mwc-button";
+import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-formfield";
-import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
-import type { ValueChangedEvent, HomeAssistant } from "../../../types";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { showToast } from "../../../util/toast";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { obfuscateUrl } from "../../../util/url";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { showToast } from "../../../util/toast";
+import { obfuscateUrl } from "../../../util/url";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends SubscribeMixin(LitElement) {
@@ -112,10 +110,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   )}
                 </ha-alert>
               `
-            : ""}
+            : nothing}
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+            : nothing}
 
           <div class="description">
             ${this.hass.localize("ui.panel.config.url.description")}
@@ -128,20 +126,21 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                     "ui.panel.config.url.external_url_label"
                   )}
                 </h4>
-                <ha-settings-row slim>
-                  <span slot="heading">
-                    ${this.hass.localize(
+                <ha-md-list-item>
+                  <span slot="headline"
+                    >${this.hass.localize(
                       "ui.panel.config.url.external_use_ha_cloud"
-                    )}
-                  </span>
+                    )}</span
+                  >
                   <ha-switch
+                    slot="end"
                     .disabled=${disabled}
                     .checked=${this._cloudChecked}
                     @change=${this._toggleCloud}
                   ></ha-switch>
-                </ha-settings-row>
+                </ha-md-list-item>
               `
-            : ""}
+            : nothing}
           <div class="url-container">
             <div class="textfield-container">
               <ha-textfield
@@ -172,13 +171,18 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${externalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${externalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
           ${hasCloud || !isComponentLoaded(this.hass, "cloud")
-            ? ""
+            ? nothing
             : html`
                 <div class="row">
                   <div class="flex"></div>
@@ -207,38 +211,42 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                         ${this.hass.localize(
                           "ui.panel.config.url.ha_cloud_remote_not_enabled"
                         )}
-                        <a href="/config/cloud" slot="action"
-                          ><mwc-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.url.enable_remote"
-                            )}
-                          ></mwc-button
-                        ></a>
+                        <ha-button
+                          size="small"
+                          appearance="plain"
+                          href="/config/cloud"
+                          slot="action"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.url.enable_remote"
+                          )}
+                        </ha-button>
                       </ha-alert>
                     `}
               `
-            : ""}
+            : nothing}
 
           <h4>
             ${this.hass.localize("ui.panel.config.url.internal_url_label")}
           </h4>
-          <ha-settings-row slim>
-            <span slot="heading">
-              ${this.hass.localize(
+          <ha-md-list-item>
+            <span slot="headline"
+              >${this.hass.localize(
                 "ui.panel.config.url.internal_url_automatic"
-              )}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
+              )}</span
+            >
+            <span slot="supporting-text"
+              >${this.hass.localize(
                 "ui.panel.config.url.internal_url_automatic_description"
-              )}
-            </span>
+              )}</span
+            >
             <ha-switch
+              slot="end"
               .disabled=${disabled}
               .checked=${!this._showCustomInternalUrl}
               @change=${this._toggleInternalAutomatic}
             ></ha-switch>
-          </ha-settings-row>
+          </ha-md-list-item>
 
           <div class="url-container">
             <div class="textfield-container">
@@ -272,8 +280,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${internalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${internalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
@@ -299,15 +312,15 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                     )}
                   </ha-alert>
                 `
-              : ""
+              : nothing
           }
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${disabled}>
+          <ha-button @click=${this._save} .disabled=${disabled}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
@@ -433,7 +446,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     .url-container {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin-top: 8px;
     }
     .textfield-container {
@@ -449,10 +462,18 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       right: 8px;
       inset-inline-start: initial;
       inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);
+    }
+
+    ha-md-list-item {
+      --md-list-item-top-space: 0;
+      --md-list-item-bottom-space: 0;
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+      --md-list-item-two-line-container-height: 48px;
     }
   `;
 }

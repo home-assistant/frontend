@@ -125,13 +125,13 @@ export class DemoHaControlSelectMenu extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
     }
     .custom {
       --control-button-icon-color: var(--primary-color);
       --control-button-background-color: var(--primary-color);
       --control-button-background-opacity: 0.2;
-      --control-button-border-radius: 18px;
+      --control-button-border-radius: var(--ha-border-radius-xl);
       height: 100px;
       width: 100px;
     }

@@ -3,10 +3,16 @@ import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
 import type { StackCardConfig } from "./types";
+import { createErrorCardElement } from "../create-element/create-element-base";
+import type { HuiErrorCard } from "./hui-error-card";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -27,12 +33,23 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @state() protected _cards?: HuiCard[];
 
+  @state() protected _errorCard?: HuiErrorCard;
+
   @state() protected _config?: T;
 
   @property({ attribute: false }) public layout?: string;
 
   public getCardSize(): number | Promise<number> {
     return 1;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      rows: "auto",
+      min_columns: 3,
+      fixed_rows: true,
+    };
   }
 
   public setConfig(config: T): void {
@@ -44,6 +61,15 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       const element = this._createCardElement(card);
       return element;
     });
+    if (this._cards.length === 0) {
+      this._errorCard = createErrorCardElement({
+        type: "error",
+        severity: "warning",
+        message: "Empty card",
+      });
+    } else {
+      this._errorCard = undefined;
+    }
   }
 
   protected update(changedProperties) {
@@ -54,11 +80,17 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         this._cards.forEach((card) => {
           card.hass = this.hass;
         });
+        if (this._errorCard) {
+          this._errorCard.hass = this.hass;
+        }
       }
       if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
           card.preview = this.preview;
         });
+        if (this._errorCard) {
+          this._errorCard.preview = this.preview;
+        }
       }
     }
 
@@ -87,6 +119,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         : ""}
       <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
         ${this._cards}
+        ${this.preview && this._errorCard ? this._errorCard : nothing}
       </div>
     `;
   }
@@ -96,12 +129,12 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       color: var(--ha-card-header-color, var(--primary-text-color));
       text-align: var(--ha-stack-title-text-align, start);
       font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, 24px);
-      font-weight: normal;
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+      font-weight: var(--ha-font-weight-normal);
       margin-block-start: 0px;
       margin-block-end: 0px;
       letter-spacing: -0.012em;
-      line-height: 32px;
+      line-height: var(--ha-line-height-condensed);
       display: block;
       padding: 24px 16px 16px;
     }

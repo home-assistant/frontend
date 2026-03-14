@@ -24,9 +24,11 @@ import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
 import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
   type: "entity",
@@ -37,7 +39,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 const entityConfigStruct = object({
   type: optional(string()),
   entity: optional(string()),
-  name: optional(string()),
+  name: optional(entityNameStruct),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
@@ -92,8 +94,9 @@ export class HuiHeadingEntityEditor
                 {
                   name: "name",
                   selector: {
-                    text: {},
+                    entity_name: {},
                   },
+                  context: { entity: "entity" },
                 },
                 {
                   name: "icon",
@@ -155,6 +158,7 @@ export class HuiHeadingEntityEditor
                   default_action: "none",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -168,6 +172,7 @@ export class HuiHeadingEntityEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

@@ -1,11 +1,10 @@
-import "@material/mwc-button/mwc-button";
-import { mdiClose, mdiTuneVertical } from "@mdi/js";
+import { mdiTuneVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -19,11 +18,18 @@ class DialogVoiceSettings extends LitElement {
 
   @state() private _params?: VoiceSettingsDialogParams;
 
+  @state() private _open = false;
+
   public showDialog(params: VoiceSettingsDialogParams): void {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -45,24 +51,18 @@ class DialogVoiceSettings extends LitElement {
       this.hass.localize("ui.panel.config.entities.picker.unnamed_entity");
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" .title=${title}>${title}</span>
-          <ha-icon-button
-            slot="actionItems"
-            .label=${this.hass.localize(
-              "ui.dialogs.voice-settings.view_entity"
-            )}
-            .path=${mdiTuneVertical}
-            @click=${this._viewMoreInfo}
-          ></ha-icon-button>
-        </ha-dialog-header>
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
+      >
+        <ha-icon-button
+          slot="headerActionItems"
+          .label=${this.hass.localize("ui.dialogs.voice-settings.view_entity")}
+          .path=${mdiTuneVertical}
+          @click=${this._viewMoreInfo}
+        ></ha-icon-button>
         <div>
           <entity-voice-settings
             .hass=${this.hass}

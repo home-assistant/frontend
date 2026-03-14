@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -7,12 +6,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
   ZWaveJSFirmwareUpdateProgressMessage,
@@ -71,20 +72,29 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _firmwareTarget?: number;
 
+  @state() private _open = false;
+
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
   private _subscribedNodeFirmwareUpdate?: Promise<UnsubscribeFunc>;
 
   private _deviceName?: string;
 
+  private _cancelUpload?: () => void;
+
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
     this.device = params.device;
+    this._open = true;
     this._fetchData();
     this._subscribeNodeStatus();
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._unsubscribeNodeFirmwareUpdate();
     this._unsubscribeNodeStatus();
     this.device = undefined;
@@ -114,12 +124,16 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         .label=${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.upload_firmware"
         )}
+        .uploadingLabel=${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.uploading",
+          { name: this._firmwareFile?.name }
+        )}
         .value=${this._firmwareFile}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
       ${this._nodeStatus.is_controller_node
         ? nothing
-        : html`<p>
+        : html`<p class=${this._uploading ? "disabled" : ""}>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
               )}
@@ -129,16 +143,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .data=${{ firmware_target: this._firmwareTarget }}
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
-            ></ha-form>`}
-      <mwc-button
-        slot="primaryAction"
-        @click=${this._beginFirmwareUpdate}
-        .disabled=${this._firmwareFile === undefined}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.begin_update"
-        )}
-      </mwc-button>`;
+              .disabled=${this._uploading}
+            ></ha-form>`} `;
 
     const status = this._updateFinishedMessage
       ? this._updateFinishedMessage.success
@@ -150,29 +156,52 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       ? "_controller"
       : "";
 
+    const beginFirmwareUpdateButton = html`
+      <ha-button
+        slot="primaryAction"
+        @click=${this._beginFirmwareUpdate}
+        .disabled=${this._firmwareFile === undefined || this._uploading}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.begin_update"
+        )}
+      </ha-button>
+    `;
+
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
-          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._abortFirmwareUpdate}
+            variant="danger"
+          >
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"
             )}
-          </mwc-button>
+          </ha-button>
         `;
+
+    const closeButton = html`
+      <ha-button slot="primaryAction" @click=${this.closeDialog}>
+        ${this.hass.localize("ui.common.close")}
+      </ha-button>
+    `;
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.zwave_js.update_firmware.title")
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.title"
         )}
+        @closed=${this._dialogClosed}
       >
         ${!this._updateProgressMessage && !this._updateFinishedMessage
           ? !this._updateInProgress
             ? html`
-                <p>
+                <p class=${this._uploading ? "disabled" : ""}>
                   ${this.hass.localize(
                     `ui.panel.config.zwave_js.update_firmware.introduction${localizationKeySuffix}`,
                     {
@@ -181,6 +210,14 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   )}
                 </p>
                 ${beginFirmwareUpdateHTML}
+                ${this._uploading &&
+                this._nodeStatus.status === NodeStatus.Asleep
+                  ? html`<p class="wakeup">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.update_firmware.device_asleep"
+                      )}
+                    </p>`
+                  : nothing}
               `
             : html`
                 <p>
@@ -213,7 +250,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         }
                       )}
                 </p>
-                ${abortFirmwareUpdateButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
             ? html`
@@ -242,7 +278,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
-                ${abortFirmwareUpdateButton}
               `
             : html`
                 <div class="flex-container">
@@ -287,6 +322,20 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                       </p>
                       ${beginFirmwareUpdateHTML}`}
               `}
+        <ha-dialog-footer slot="footer">
+          ${!this._updateProgressMessage && !this._updateFinishedMessage
+            ? !this._updateInProgress
+              ? html`
+                  ${this._uploading ? abortFirmwareUpdateButton : nothing}
+                  ${beginFirmwareUpdateButton}
+                `
+              : html` ${abortFirmwareUpdateButton} ${closeButton} `
+            : this._updateProgressMessage && !this._updateFinishedMessage
+              ? html` ${abortFirmwareUpdateButton} ${closeButton} `
+              : this._updateFinishedMessage!.success
+                ? html` ${closeButton} `
+                : html` ${beginFirmwareUpdateButton} `}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -306,17 +355,26 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._updateProgressMessage = this._updateFinishedMessage = undefined;
     try {
       this._subscribeNodeFirmwareUpdate();
-      await uploadFirmwareAndBeginUpdate(
-        this.hass,
-        this.device!.id,
-        this._firmwareFile!,
-        this._firmwareTarget
-      );
+      await new Promise<void>((resolve, reject) => {
+        const abortController = new AbortController();
+        this._cancelUpload = () => {
+          this._cancelUpload = undefined;
+          abortController.abort();
+          resolve();
+        };
+        uploadFirmwareAndBeginUpdate(
+          this.hass,
+          this.device!.id,
+          this._firmwareFile!,
+          this._firmwareTarget,
+          abortController.signal
+        )
+          .then(() => this._cancelUpload?.())
+          .catch(reject);
+      });
       this._updateInProgress = true;
-      this._uploading = false;
     } catch (err: any) {
       this._unsubscribeNodeFirmwareUpdate();
-      this._uploading = false;
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.upload_failed"
@@ -324,6 +382,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         text: err.message,
         confirmText: this.hass!.localize("ui.common.close"),
       });
+    } finally {
+      this._uploading = false;
     }
   }
 
@@ -340,6 +400,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         confirmText: this.hass!.localize("ui.common.yes"),
       })
     ) {
+      this._cancelUpload?.();
       this._unsubscribeNodeFirmwareUpdate();
       try {
         await abortZwaveNodeFirmwareUpdate(this.hass, this.device!.id);
@@ -356,6 +417,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._updateFinishedMessage = undefined;
       this._updateProgressMessage = undefined;
       this._updateInProgress = false;
+      this._uploading = false;
     }
   }
 
@@ -444,6 +506,17 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         ha-svg-icon {
           width: 68px;
           height: 48px;
+        }
+
+        p.disabled {
+          color: var(--disabled-text-color);
+        }
+
+        p.wakeup {
+          color: var(--warning-color);
+          font-weight: var(--ha-font-weight-bold);
+          margin-top: 24px;
+          margin-bottom: 0;
         }
       `,
     ];

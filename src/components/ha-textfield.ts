@@ -20,7 +20,7 @@ export class HaTextField extends TextFieldBase {
 
   @property() public autocomplete?: string;
 
-  @property() public autocorrect?: string;
+  @property({ type: Boolean }) public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;
@@ -57,8 +57,8 @@ export class HaTextField extends TextFieldBase {
       }
     }
     if (changedProperties.has("autocorrect")) {
-      if (this.autocorrect) {
-        this.formElement.setAttribute("autocorrect", this.autocorrect);
+      if (this.autocorrect === false) {
+        this.formElement.setAttribute("autocorrect", "off");
       } else {
         this.formElement.removeAttribute("autocorrect");
       }
@@ -95,11 +95,12 @@ export class HaTextField extends TextFieldBase {
         width: var(--ha-textfield-input-width, 100%);
       }
       .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
-        padding: var(--text-field-padding, 0px 16px);
+        padding-top: var(--text-field-padding-top, 0px);
+        padding-bottom: var(--text-field-padding-bottom, 0px);
+        padding-inline-start: var(--text-field-padding-start, 16px);
+        padding-inline-end: var(--text-field-padding-end, 16px);
       }
       .mdc-text-field__affix--suffix {
-        padding-left: var(--text-field-suffix-padding-left, 12px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
         padding-inline-start: var(--text-field-suffix-padding-left, 12px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
         direction: ltr;
@@ -110,12 +111,12 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
 
-      .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon {
-        padding-left: var(--text-field-suffix-padding-left, 0px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
-        padding-inline-start: var(--text-field-suffix-padding-left, 0px);
+      .mdc-text-field--with-trailing-icon {
+        padding-inline-start: var(--text-field-suffix-padding-left, 16px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
+        direction: var(--direction);
       }
+
       .mdc-text-field:not(.mdc-text-field--disabled)
         .mdc-text-field__affix--suffix {
         color: var(--secondary-text-color);
@@ -136,13 +137,12 @@ export class HaTextField extends TextFieldBase {
       }
 
       .mdc-floating-label:not(.mdc-floating-label--float-above) {
-        text-overflow: ellipsis;
-        width: inherit;
-        padding-right: 30px;
-        padding-inline-end: 30px;
-        padding-inline-start: initial;
-        box-sizing: border-box;
-        direction: var(--direction);
+        max-width: calc(100% - 16px);
+      }
+
+      .mdc-floating-label--float-above {
+        max-width: calc((100% - 16px) / 0.75);
+        transition: none;
       }
 
       input {
@@ -183,11 +183,15 @@ export class HaTextField extends TextFieldBase {
       }
 
       .mdc-floating-label {
+        padding-inline-end: 16px;
+        padding-inline-start: initial;
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
         transform-origin: var(--float-start);
         direction: var(--direction);
         text-align: var(--float-start);
+        box-sizing: border-box;
+        text-overflow: ellipsis;
       }
 
       .mdc-text-field--with-leading-icon.mdc-text-field--filled

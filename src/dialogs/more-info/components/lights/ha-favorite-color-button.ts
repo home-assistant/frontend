@@ -10,8 +10,8 @@ import {
   temperature2rgb,
 } from "../../../../common/color/convert-light-color";
 import { luminosity } from "../../../../common/color/rgb";
-import type { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-outlined-icon-button";
+import type { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import type { LightColor, LightEntity } from "../../../../data/light";
 
@@ -28,6 +28,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
   @property({ attribute: false }) public stateObj?: LightEntity;
 
   @property({ attribute: false }) color!: LightColor;
+
+  @property({ type: Boolean, reflect: true }) wide = false;
 
   @query("ha-outlined-icon-button", true)
   private _button?: HaOutlinedIconButton;
@@ -106,7 +108,24 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --md-ripple-focus-color: 0;
           --md-ripple-hover-opacity: 0;
           --md-ripple-pressed-opacity: 0;
-          border-radius: 9999px;
+          border-radius: var(--ha-border-radius-pill);
+        }
+        :host([wide]) ha-outlined-icon-button {
+          width: 100%;
+          border-radius: var(--ha-favorite-color-button-border-radius);
+          --_container-shape: var(--ha-favorite-color-button-border-radius);
+          --_container-shape-start-start: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-start-end: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-end-start: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-end-end: var(
+            --ha-favorite-color-button-border-radius
+          );
         }
         :host([disabled]) {
           pointer-events: none;

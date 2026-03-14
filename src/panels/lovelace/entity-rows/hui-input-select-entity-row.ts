@@ -1,16 +1,15 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-select";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import type { InputSelectEntity } from "../../../data/input_select";
 import { setInputSelectOption } from "../../../data/input_select";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -45,11 +44,17 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
     }
+
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <hui-generic-entity-row
@@ -58,25 +63,14 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         hide-name
       >
         <ha-select
-          .label=${this._config.name || computeStateName(stateObj)}
+          .label=${name}
           .value=${stateObj.state}
           .options=${stateObj.attributes.options}
           .disabled=${
             stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
           }
-          naturalMenuWidth
           @selected=${this._selectedChanged}
-          @click=${stopPropagation}
-          @closed=${stopPropagation}
         >
-          ${stateObj.attributes.options
-            ? stateObj.attributes.options.map(
-                (option) =>
-                  html`<mwc-list-item .value=${option}
-                    >${option}</mwc-list-item
-                  >`
-              )
-            : ""}
         </ha-select>
       </hui-generic-entity-row>
     `;
@@ -93,11 +87,11 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
   `;
 
-  private _selectedChanged(ev): void {
+  private _selectedChanged(ev: HaSelectSelectEvent): void {
     const stateObj = this.hass!.states[
       this._config!.entity
     ] as InputSelectEntity;
-    const option = ev.target.value;
+    const option = ev.detail.value;
     if (
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)
@@ -105,7 +99,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       return;
     }
 
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
 
     setInputSelectOption(this.hass!, stateObj.entity_id, option);
   }

@@ -1,6 +1,6 @@
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
@@ -40,6 +40,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "vacuum",
   "valve",
   "water_heater",
+  "weather",
 ]);
 
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {
@@ -64,15 +65,27 @@ export const domainStateColorProperties = (
   const compareState = state !== undefined ? state : stateObj.state;
   const active = stateActive(stateObj, state);
 
+  return domainColorProperties(
+    domain,
+    stateObj.attributes.device_class,
+    compareState,
+    active
+  );
+};
+
+export const domainColorProperties = (
+  domain: string,
+  deviceClass: string | undefined,
+  state: string,
+  active: boolean
+) => {
   const properties: string[] = [];
 
-  const stateKey = slugify(compareState, "_");
+  const stateKey = slugify(state, "_");
   const activeKey = active ? "active" : "inactive";
 
-  const dc = stateObj.attributes.device_class;
-
-  if (dc) {
-    properties.push(`--state-${domain}-${dc}-${stateKey}-color`);
+  if (deviceClass) {
+    properties.push(`--state-${domain}-${deviceClass}-${stateKey}-color`);
   }
 
   properties.push(

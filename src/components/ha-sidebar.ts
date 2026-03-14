@@ -1,78 +1,62 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiBell,
-  mdiCalendar,
   mdiCellphoneCog,
-  mdiChartBox,
-  mdiClipboardList,
-  mdiClose,
   mdiCog,
-  mdiFormatListBulletedType,
-  mdiHammer,
-  mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
-  mdiPlayBoxMultiple,
-  mdiPlus,
-  mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
+import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
+import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import {
+  FIXED_PANELS,
+  getDefaultPanelUrlPath,
+  getPanelIcon,
+  getPanelIconPath,
+  getPanelTitle,
+} from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
+import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
+import "./ha-fade-in";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-menu-button";
-import "./ha-sortable";
+import "./ha-md-list";
+import "./ha-md-list-item";
+import type { HaMdListItem } from "./ha-md-list-item";
+import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-import { preventDefault } from "../common/dom/prevent_default";
-
-const SHOW_AFTER_SPACER = ["config", "developer-tools"];
-
-const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
   map: 2,
   logbook: 3,
   history: 4,
-  "developer-tools": 9,
-  config: 11,
-};
-
-const PANEL_ICONS = {
-  calendar: mdiCalendar,
-  "developer-tools": mdiHammer,
-  energy: mdiLightningBolt,
-  history: mdiChartBox,
-  logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  map: mdiTooltipAccount,
-  "media-browser": mdiPlayBoxMultiple,
-  todo: mdiClipboardList,
 };
 
 const panelSorter = (
@@ -136,10 +120,10 @@ const defaultPanelSorter = (
   return stringCompare(a.title!, b.title!, language);
 };
 
-const computePanels = memoizeOne(
+export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
-    defaultPanel: HomeAssistant["defaultPanel"],
+    defaultPanel: string,
     panelsOrder: string[],
     hiddenPanels: string[],
     locale: HomeAssistant["locale"]
@@ -149,19 +133,25 @@ const computePanels = memoizeOne(
     }
 
     const beforeSpacer: PanelInfo[] = [];
-    const afterSpacer: PanelInfo[] = [];
 
-    Object.values(panels).forEach((panel) => {
+    const allPanels = Object.values(panels).filter(
+      (panel) => !FIXED_PANELS.includes(panel.url_path)
+    );
+
+    allPanels.forEach((panel) => {
+      const isDefaultPanel = panel.url_path === defaultPanel;
+
       if (
-        hiddenPanels.includes(panel.url_path) ||
-        (!panel.title && panel.url_path !== defaultPanel)
+        !isDefaultPanel &&
+        (!panel.title ||
+          panel.show_in_sidebar === false ||
+          hiddenPanels.includes(panel.url_path) ||
+          (panel.default_visible === false &&
+            !panelsOrder.includes(panel.url_path)))
       ) {
         return;
       }
-      (SHOW_AFTER_SPACER.includes(panel.url_path)
-        ? afterSpacer
-        : beforeSpacer
-      ).push(panel);
+      beforeSpacer.push(panel);
     });
 
     const reverseSort = [...panelsOrder].reverse();
@@ -169,16 +159,13 @@ const computePanels = memoizeOne(
     beforeSpacer.sort((a, b) =>
       panelSorter(reverseSort, defaultPanel, a, b, locale.language)
     );
-    afterSpacer.sort((a, b) =>
-      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
-    );
 
-    return [beforeSpacer, afterSpacer];
+    return [beforeSpacer, []];
   }
 );
 
 @customElement("ha-sidebar")
-class HaSidebar extends SubscribeMixin(LitElement) {
+class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -188,49 +175,76 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
 
-  @property({ attribute: "edit-mode", type: Boolean })
-  public editMode = false;
-
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _updatesCount = 0;
 
   @state() private _issuesCount = 0;
 
+  @state() private _panelOrder?: string[];
+
+  @state() private _hiddenPanels?: string[];
+
   private _mouseLeaveTimeout?: number;
+
+  private _touchendTimeout?: number;
 
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
 
-  private _editStyleLoaded = false;
-
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
-  @storage({
-    key: "sidebarPanelOrder",
-    state: true,
-    subscribe: true,
-  })
-  private _panelOrder: string[] = [];
+  @query(".tooltip") private _tooltip!: HTMLDivElement;
 
-  @storage({
-    key: "sidebarHiddenPanels",
-    state: true,
-    subscribe: true,
-  })
-  private _hiddenPanels: string[] = [];
+  @query(".before-spacer") private _scrollableList?: HTMLDivElement;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return this.hass.user?.is_admin
-      ? [
-          subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-            this._issuesCount = repairs.issues.filter(
-              (issue) => !issue.ignored
-            ).length;
-          }),
-        ]
-      : [];
+  protected get scrollableElement(): HTMLElement | null {
+    return this._scrollableList as HTMLElement | null;
+  }
+
+  public hassSubscribe() {
+    return [
+      subscribeFrontendUserData(
+        this.hass.connection,
+        "sidebar",
+        ({ value }) => {
+          this._panelOrder = value?.panelOrder;
+          this._hiddenPanels = value?.hiddenPanels;
+
+          // fallback to old localStorage values
+          if (!this._panelOrder) {
+            const storedOrder = localStorage.getItem("sidebarPanelOrder");
+            this._panelOrder = storedOrder ? JSON.parse(storedOrder) : [];
+          }
+          if (!this._hiddenPanels) {
+            const storedHidden = localStorage.getItem("sidebarHiddenPanels");
+            this._hiddenPanels = storedHidden ? JSON.parse(storedHidden) : [];
+          }
+        }
+      ),
+      ...(this.hass.user?.is_admin
+        ? [
+            subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+              this._issuesCount = repairs.issues.filter(
+                (issue) => !issue.ignored
+              ).length;
+            }),
+          ]
+        : []),
+    ];
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // clear timeouts
+    clearTimeout(this._mouseLeaveTimeout);
+    clearTimeout(this._tooltipHideTimeout);
+    clearTimeout(this._touchendTimeout);
+    // set undefined values
+    this._mouseLeaveTimeout = undefined;
+    this._tooltipHideTimeout = undefined;
+    this._touchendTimeout = undefined;
   }
 
   protected render() {
@@ -238,16 +252,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
+    const selectedPanel = this.hass.panelUrl;
+
     // prettier-ignore
     return html`
       ${this._renderHeader()}
-      ${this._renderAllPanels()}
-      ${this._renderDivider()}
-      ${this._renderNotifications()}
-      ${this._renderUserItem()}
-      <div disabled class="bottom-spacer"></div>
-      <div class="tooltip"></div>
-    `;
+      ${this._renderAllPanels(selectedPanel)}
+      <div class="tooltip"></div>`;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -255,13 +266,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("expanded") ||
       changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
-      changedProps.has("editMode") ||
-      changedProps.has("_externalConfig") ||
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
       changedProps.has("_hiddenPanels") ||
-      changedProps.has("_panelOrder")
+      changedProps.has("_panelOrder") ||
+      changedProps.has("_contentScrolled") ||
+      changedProps.has("_contentScrollable")
     ) {
       return true;
     }
@@ -280,7 +291,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel ||
+      hass.userData !== oldHass.userData ||
+      hass.systemData !== oldHass.systemData ||
       hass.connected !== oldHass.connected
     );
   }
@@ -307,34 +319,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
-    if (changedProps.has("editMode") && this.editMode) {
-      this._editModeActivated();
-    }
     if (!changedProps.has("hass")) {
       return;
     }
 
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
     if (
       this.hass &&
-      changedProps.get("hass")?.connected === false &&
+      oldHass?.connected === false &&
       this.hass.connected === true
     ) {
       this._subscribePersistentNotifications();
     }
 
     this._calculateCounts();
-
-    if (!SUPPORT_SCROLL_IF_NEEDED) {
-      return;
-    }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
-      const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
-      if (selectedEl) {
-        // @ts-ignore
-        selectedEl.scrollIntoViewIfNeeded();
-      }
-    }
   }
 
   private _calculateCounts = throttle(() => {
@@ -358,8 +357,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       class="menu"
       @action=${this._handleAction}
       .actionHandler=${actionHandler({
-        hasHold: !this.editMode,
-        disabled: this.editMode,
+        hasHold: true,
       })}
     >
       ${!this.narrow
@@ -373,225 +371,147 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `
         : ""}
-      ${this.editMode
-        ? html`<mwc-button outlined @click=${this._closeEditMode}>
-            ${this.hass.localize("ui.sidebar.done")}
-          </mwc-button>`
-        : html`<div class="title">Home Assistant</div>`}
+      <div class="title">Home Assistant</div>
     </div>`;
   }
 
-  private _renderAllPanels() {
-    const [beforeSpacer, afterSpacer] = computePanels(
-      this.hass.panels,
-      this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
-      this.hass.locale
-    );
-
-    // Show the supervisor as being part of configuration
-    const selectedPanel = this.route.path?.startsWith("/hassio/")
-      ? "config"
-      : this.hass.panelUrl;
-
-    // prettier-ignore
-    return html`
-      <paper-listbox
-        attr-for-selected="data-panel"
-        class="ha-scrollbar"
-        .selected=${selectedPanel}
+  private _renderAllPanels(selectedPanel: string) {
+    const renderList = (content, cls: string, scrollable: boolean) =>
+      html`<ha-md-list
+        class=${classMap({
+          "ha-scrollbar": scrollable,
+          [cls]: true,
+        })}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @iron-activate=${preventDefault}
-      >
-        ${this.editMode
-          ? this._renderPanelsEdit(beforeSpacer)
-          : this._renderPanels(beforeSpacer)}
-        ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer)}
-        ${this._renderExternalConfiguration()}
-      </paper-listbox>
-    `;
-  }
+        >${content}</ha-md-list
+      >`;
 
-  private _renderPanels(panels: PanelInfo[]) {
-    return panels.map((panel) =>
-      this._renderPanel(
-        panel.url_path,
-        panel.url_path === this.hass.defaultPanel
-          ? panel.title || this.hass.localize("panel.states")
-          : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.icon,
-        panel.url_path === this.hass.defaultPanel && !panel.icon
-          ? PANEL_ICONS.lovelace
-          : panel.url_path in PANEL_ICONS
-            ? PANEL_ICONS[panel.url_path]
-            : undefined
-      )
-    );
-  }
+    if (!this._panelOrder || !this._hiddenPanels) {
+      return html`
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="small"></ha-spinner>
+        </ha-fade-in>
+        ${renderList(
+          html`${this._renderFixedPanels(selectedPanel)}`,
+          "after-spacer",
+          false
+        )}
+      `;
+    }
 
-  private _renderPanel(
-    urlPath: string,
-    title: string | null,
-    icon?: string | null,
-    iconPath?: string | null
-  ) {
-    return urlPath === "config"
-      ? this._renderConfiguration(title)
-      : html`
-          <a
-            role="option"
-            aria-selected=${urlPath === this.hass.panelUrl}
-            href=${`/${urlPath}`}
-            data-panel=${urlPath}
-            tabindex="-1"
-            @mouseenter=${this._itemMouseEnter}
-            @mouseleave=${this._itemMouseLeave}
-          >
-            <paper-icon-item>
-              ${iconPath
-                ? html`<ha-svg-icon
-                    slot="item-icon"
-                    .path=${iconPath}
-                  ></ha-svg-icon>`
-                : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
-              <span class="item-text">${title}</span>
-            </paper-icon-item>
-            ${this.editMode
-              ? html`<ha-icon-button
-                  .label=${this.hass.localize("ui.sidebar.hide_panel")}
-                  .path=${mdiClose}
-                  class="hide-panel"
-                  .panel=${urlPath}
-                  @click=${this._hidePanel}
-                ></ha-icon-button>`
-              : ""}
-          </a>
-        `;
-  }
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
 
-  private _panelMoved(ev: CustomEvent) {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-
-    const [beforeSpacer] = computePanels(
+    const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      defaultPanel,
       this._panelOrder,
       this._hiddenPanels,
       this.hass.locale
     );
 
-    const panelOrder = beforeSpacer.map((panel) => panel.url_path);
-    const panel = panelOrder.splice(oldIndex, 1)[0];
-    panelOrder.splice(newIndex, 0, panel);
-
-    this._panelOrder = panelOrder;
+    // prettier-ignore
+    return html`<div class="panels-list">
+      <div class="wrapper">
+        ${renderList(
+      this._renderPanels(beforeSpacer, selectedPanel),
+      "before-spacer",
+      true
+    )}
+        ${this.renderScrollableFades()}
+      </div>
+      ${this._renderSpacer()}
+      ${renderList(
+      html`
+          ${this._renderPanels(afterSpacer, selectedPanel)}
+          ${this._renderFixedPanels(selectedPanel)}
+        `,
+      "after-spacer",
+      false
+    )}
+    </div>`;
   }
 
-  private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
+  private _renderFixedPanels(selectedPanel: string) {
+    // prettier-ignore
     return html`
-      <ha-sortable
-        handle-selector="paper-icon-item"
-        .disabled=${!this.editMode}
-        @item-moved=${this._panelMoved}
-      >
-        <div class="reorder-list">${this._renderPanels(beforeSpacer)}</div>
-      </ha-sortable>
-      ${this._renderSpacer()}${this._renderHiddenPanels()}
+      ${this.hass.user?.is_admin
+        ? this._renderConfiguration(selectedPanel)
+        : this._renderExternalConfiguration()}
+      ${this._renderNotifications()}
+      ${this._renderUserItem(selectedPanel)}
     `;
   }
 
-  private _renderHiddenPanels() {
-    return html`${this._hiddenPanels.length
-      ? html`${this._hiddenPanels.map((url) => {
-          const panel = this.hass.panels[url];
-          if (!panel) {
-            return "";
-          }
-          return html`<paper-icon-item
-            @click=${this._unhidePanel}
-            class="hidden-panel"
-            .panel=${url}
-          >
-            ${panel.url_path === this.hass.defaultPanel && !panel.icon
-              ? html`<ha-svg-icon
-                  slot="item-icon"
-                  .path=${PANEL_ICONS.lovelace}
-                ></ha-svg-icon>`
-              : panel.url_path in PANEL_ICONS
-                ? html`<ha-svg-icon
-                    slot="item-icon"
-                    .path=${PANEL_ICONS[panel.url_path]}
-                  ></ha-svg-icon>`
-                : html`<ha-icon
-                    slot="item-icon"
-                    .icon=${panel.icon}
-                  ></ha-icon>`}
-            <span class="item-text"
-              >${panel.url_path === this.hass.defaultPanel
-                ? this.hass.localize("panel.states")
-                : this.hass.localize(`panel.${panel.title}`) ||
-                  panel.title}</span
-            >
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.show_panel")}
-              .path=${mdiPlus}
-              class="show-panel"
-            ></ha-icon-button>
-          </paper-icon-item>`;
-        })}
-        ${this._renderSpacer()}`
-      : ""}`;
+  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
+    return panels.map((panel) =>
+      this._renderPanel(panel, panel.url_path === selectedPanel)
+    );
   }
 
-  private _renderDivider() {
-    return html`<div class="divider"></div>`;
+  private _renderPanel(panel: PanelInfo, isSelected: boolean) {
+    const title = getPanelTitle(this.hass, panel);
+    const urlPath = panel.url_path;
+    const icon = getPanelIcon(panel);
+    const iconPath = getPanelIconPath(panel);
+
+    return html`
+      <ha-md-list-item
+        .href=${`/${urlPath}`}
+        type="link"
+        class=${classMap({ selected: isSelected })}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
+        ${iconPath
+          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+          : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
+        <span class="item-text" slot="headline">${title}</span>
+      </ha-md-list-item>
+    `;
   }
 
   private _renderSpacer() {
     return html`<div class="spacer" disabled></div>`;
   }
 
-  private _renderConfiguration(title: string | null) {
-    return html`<a
-      class="configuration-container"
-      role="option"
-      aria-selected=${this.hass.panelUrl === "config"}
-      href="/config"
-      data-panel="config"
-      tabindex="-1"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
-        class="configuration"
-        role="option"
-        aria-selected=${this.hass.panelUrl === "config"}
+  private _renderConfiguration(selectedPanel: string) {
+    if (!this.hass.user?.is_admin) {
+      return nothing;
+    }
+    const isSelected =
+      selectedPanel === "config" || this.route.path?.startsWith("/hassio/");
+    return html`
+      <ha-md-list-item
+        class="configuration ${classMap({ selected: isSelected })}"
+        type="button"
+        href="/config"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
-        ${!this.alwaysExpand &&
-        (this._updatesCount > 0 || this._issuesCount > 0)
+        <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+        ${this._updatesCount > 0 || this._issuesCount > 0
           ? html`
-              <span class="configuration-badge" slot="item-icon">
+              <span class="badge" slot="start">
                 ${this._updatesCount + this._issuesCount}
               </span>
             `
-          : ""}
-        <span class="item-text">${title}</span>
-        ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
+          : nothing}
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("panel.config")}</span
+        >
+        ${this._updatesCount > 0 || this._issuesCount > 0
           ? html`
-              <span class="configuration-badge"
+              <span class="badge" slot="end"
                 >${this._updatesCount + this._issuesCount}</span
               >
             `
-          : ""}
-      </paper-icon-item>
-    </a>`;
+          : nothing}
+      </ha-md-list-item>
+    `;
   }
 
   private _renderNotifications() {
@@ -599,93 +519,75 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ? this._notifications.length
       : 0;
 
-    return html`<div
-      class="notifications-container"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
+    return html`
+      <ha-md-list-item
         class="notifications"
-        role="option"
-        aria-selected="false"
         @click=${this._handleShowNotificationDrawer}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+        type="button"
       >
-        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
-        ${!this.alwaysExpand && notificationCount > 0
+        <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
+        ${notificationCount > 0
           ? html`
-              <span class="notification-badge" slot="item-icon">
-                ${notificationCount}
-              </span>
+              <span class="badge" slot="start"> ${notificationCount} </span>
             `
-          : ""}
-        <span class="item-text">
-          ${this.hass.localize("ui.notification_drawer.title")}
-        </span>
-        ${this.alwaysExpand && notificationCount > 0
-          ? html` <span class="notification-badge">${notificationCount}</span> `
-          : ""}
-      </paper-icon-item>
-    </div>`;
+          : nothing}
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("ui.notification_drawer.title")}</span
+        >
+        ${notificationCount > 0
+          ? html`<span class="badge" slot="end">${notificationCount}</span>`
+          : nothing}
+      </ha-md-list-item>
+    `;
   }
 
-  private _renderUserItem() {
-    return html`<a
-      class=${classMap({
-        profile: true,
-        // Mimic behavior that paper-listbox provides
-        "iron-selected": this.hass.panelUrl === "profile",
-      })}
-      href="/profile"
-      data-panel="panel"
-      tabindex="-1"
-      role="option"
-      aria-selected=${this.hass.panelUrl === "profile"}
-      aria-label=${this.hass.localize("panel.profile")}
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item>
+  private _renderUserItem(selectedPanel: string) {
+    const isRTL = computeRTL(this.hass);
+    const isSelected = selectedPanel === "profile";
+
+    return html`
+      <ha-md-list-item
+        href="/profile"
+        type="link"
+        class=${classMap({
+          user: true,
+          selected: isSelected,
+          rtl: isRTL,
+        })}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
         <ha-user-badge
-          slot="item-icon"
+          slot="start"
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
-
-        <span class="item-text">
-          ${this.hass.user ? this.hass.user.name : ""}
-        </span>
-      </paper-icon-item>
-    </a>`;
+        <span class="item-text" slot="headline"
+          >${this.hass.user ? this.hass.user.name : ""}</span
+        >
+      </ha-md-list-item>
+    `;
   }
 
   private _renderExternalConfiguration() {
-    return html`${!this.hass.user?.is_admin &&
-    this.hass.auth.external?.config.hasSettingsScreen
-      ? html`
-          <a
-            role="option"
-            aria-label=${this.hass.localize(
-              "ui.sidebar.external_app_configuration"
-            )}
-            href="#external-app-configuration"
-            tabindex="-1"
-            aria-selected="false"
-            @click=${this._handleExternalAppConfiguration}
-            @mouseenter=${this._itemMouseEnter}
-            @mouseleave=${this._itemMouseLeave}
-          >
-            <paper-icon-item>
-              <ha-svg-icon
-                slot="item-icon"
-                .path=${mdiCellphoneCog}
-              ></ha-svg-icon>
-              <span class="item-text">
-                ${this.hass.localize("ui.sidebar.external_app_configuration")}
-              </span>
-            </paper-icon-item>
-          </a>
-        `
-      : ""}`;
+    if (!this.hass.auth.external?.config.hasSettingsScreen) {
+      return nothing;
+    }
+    return html`
+      <ha-md-list-item
+        @click=${this._handleExternalAppConfiguration}
+        type="button"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
+        <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
+        >
+      </ha-md-list-item>
+    `;
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
@@ -695,73 +597,26 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     });
   }
 
-  private get _tooltip() {
-    return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
-  }
-
   private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
     if (ev.detail.action !== "hold") {
       return;
     }
 
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
-  }
-
-  private async _editModeActivated() {
-    await this._loadEditStyle();
-  }
-
-  private async _loadEditStyle() {
-    if (this._editStyleLoaded) return;
-
-    const editStylesImport = await import("../resources/ha-sidebar-edit-style");
-
-    const style = document.createElement("style");
-    style.innerHTML = (editStylesImport.sidebarEditStyle as CSSResult).cssText;
-    this.shadowRoot!.appendChild(style);
-
-    await this.updateComplete;
-  }
-
-  private _closeEditMode() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: false });
-  }
-
-  private async _hidePanel(ev: Event) {
-    ev.preventDefault();
-    const panel = (ev.currentTarget as any).panel;
-    if (this._hiddenPanels.includes(panel)) {
-      return;
-    }
-    // Make a copy for Memoize
-    this._hiddenPanels = [...this._hiddenPanels, panel];
-    // Remove it from the panel order
-    this._panelOrder = this._panelOrder.filter((order) => order !== panel);
-  }
-
-  private async _unhidePanel(ev: Event) {
-    ev.preventDefault();
-    const panel = (ev.currentTarget as any).panel;
-    this._hiddenPanels = this._hiddenPanels.filter(
-      (hidden) => hidden !== panel
-    );
+    showEditSidebarDialog(this);
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
     // On keypresses on the listbox, we're going to ignore mouse enter events
     // for 100ms so that we ignore it when pressing down arrow scrolls the
     // sidebar causing the mouse to hover a new icon
-    if (
-      this.alwaysExpand ||
-      new Date().getTime() < this._recentKeydownActiveUntil
-    ) {
+    if (new Date().getTime() < this._recentKeydownActiveUntil) {
       return;
     }
     if (this._mouseLeaveTimeout) {
       clearTimeout(this._mouseLeaveTimeout);
       this._mouseLeaveTimeout = undefined;
     }
-    this._showTooltip(ev.currentTarget as PaperIconItemElement);
+    this._showTooltip(ev.currentTarget as HaMdListItem);
   }
 
   private _itemMouseLeave() {
@@ -774,14 +629,22 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _listboxFocusIn(ev) {
-    if (this.alwaysExpand || ev.target.nodeName !== "A") {
+    if (ev.target.localName !== "ha-md-list-item") {
       return;
     }
-    this._showTooltip(ev.target.querySelector("paper-icon-item"));
+    this._showTooltip(ev.target);
   }
 
   private _listboxFocusOut() {
     this._hideTooltip();
+  }
+
+  private _listboxTouchend() {
+    clearTimeout(this._touchendTimeout);
+    this._touchendTimeout = window.setTimeout(() => {
+      // Allow 1 second for users to read the tooltip on touch devices
+      this._hideTooltip();
+    }, 1000);
   }
 
   @eventOptions({
@@ -801,22 +664,27 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._recentKeydownActiveUntil = new Date().getTime() + 100;
   }
 
-  private _showTooltip(item: PaperIconItemElement) {
+  private _showTooltip(item: HaMdListItem) {
     if (this._tooltipHideTimeout) {
       clearTimeout(this._tooltipHideTimeout);
       this._tooltipHideTimeout = undefined;
     }
-    const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
-    let top = item.offsetTop + 11;
-    if (listbox.contains(item)) {
-      top -= listbox.scrollTop;
+    const itemText = item.querySelector(".item-text") as HTMLElement | null;
+    if (this.hasAttribute("expanded") && itemText) {
+      const isTruncated = itemText.scrollWidth > itemText.clientWidth;
+      if (!isTruncated) {
+        this._hideTooltip();
+        return;
+      }
     }
-    tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
+    const tooltip = this._tooltip;
+    const itemRect = item.getBoundingClientRect();
+
+    tooltip.innerText = itemText?.innerText ?? "";
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
-    tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
+    tooltip.style.top = `${itemRect.top + itemRect.height / 2 - tooltip.offsetHeight / 2}px`;
+    tooltip.style.left = `calc(${itemRect.right + 8}px)`;
   }
 
   private _hideTooltip() {
@@ -840,8 +708,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResultGroup {
+  static get styles() {
     return [
+      ...super.styles,
       haStyleScrollbar,
       css`
         :host {
@@ -855,15 +724,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
+          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
         }
         .menu {
-          height: var(--header-height);
+          height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
           box-sizing: border-box;
           display: flex;
-          padding: 0 4px;
+          padding: 0 var(--ha-space-1);
           border-bottom: 1px solid transparent;
           white-space: nowrap;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(
             --sidebar-menu-button-text-color,
             var(--primary-text-color)
@@ -873,249 +743,246 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             --sidebar-menu-button-background-color,
             inherit
           );
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           align-items: center;
-          padding-left: calc(4px + env(safe-area-inset-left));
-          padding-inline-start: calc(4px + env(safe-area-inset-left));
+          overflow: hidden;
+          width: calc(56px + var(--safe-area-inset-left, 0px));
+          padding-left: calc(
+            var(--ha-space-1) + var(--safe-area-inset-left, 0px)
+          );
+          padding-inline-start: calc(
+            var(--ha-space-1) + var(--safe-area-inset-left, 0px)
+          );
           padding-inline-end: initial;
+          padding-top: var(--safe-area-inset-top, 0px);
+          transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) .menu {
-          width: calc(256px + env(safe-area-inset-left));
+          width: calc(256px + var(--safe-area-inset-left, 0px));
+        }
+        :host([narrow][expanded]) .menu {
+          width: 100%;
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
         }
         .title {
-          margin-left: 19px;
-          margin-inline-start: 19px;
+          margin-left: 3px;
+          margin-inline-start: 3px;
           margin-inline-end: initial;
-          width: 100%;
-          display: none;
+          flex: 1;
+          min-width: 0;
+          max-width: 0;
+          opacity: 0;
+          transition:
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
         :host([narrow]) .title {
           margin: 0;
-          padding: 0 16px;
+          padding: 0 var(--ha-space-4);
         }
         :host([expanded]) .title {
-          display: initial;
-        }
-        :host([expanded]) .menu mwc-button {
-          margin: 0 8px;
-        }
-        .menu mwc-button {
-          width: 100%;
-        }
-        .reorder-list,
-        .hidden-panel {
-          display: none;
+          max-width: 100%;
+          opacity: 1;
+          transition-delay: 0ms, 80ms;
         }
 
-        paper-listbox {
-          padding: 4px 0;
+        .panels-list {
           display: flex;
           flex-direction: column;
-          box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 132px);
           height: calc(
-            100% - var(--header-height) - 132px - env(safe-area-inset-bottom)
+            100vh - var(--header-height) - var(--safe-area-inset-top, 0px)
           );
+        }
+
+        ha-fade-in {
+          padding: var(--ha-space-1) 0;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: calc(
+            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              152px
+          ); /* 152px = three list items w/o padding-top */
+        }
+
+        ha-md-list {
           overflow-x: hidden;
           background: none;
-          margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
+          margin-left: var(--safe-area-inset-left, 0px);
         }
 
-        a {
-          text-decoration: none;
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
+        .wrapper {
           position: relative;
-          display: block;
-          outline: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          flex: 1;
+        }
+        ha-md-list.before-spacer {
+          padding-bottom: 0;
+        }
+        ha-md-list.after-spacer {
+          padding-top: 0;
+          min-height: fit-content;
         }
 
-        paper-icon-item {
+        ha-md-list-item {
+          flex-shrink: 0;
           box-sizing: border-box;
-          margin: 4px;
-          padding-left: 12px;
-          padding-inline-start: 12px;
-          padding-inline-end: initial;
-          border-radius: 4px;
-          --paper-item-min-height: 40px;
-          width: 48px;
+          margin: var(--ha-space-1);
+          border-radius: var(--ha-border-radius-sm);
+          --md-list-item-one-line-container-height: var(--ha-space-10);
+          --md-list-item-top-space: 0;
+          --md-list-item-bottom-space: 0;
+          width: var(--ha-space-12);
+          position: relative;
+          --md-list-item-label-text-color: var(--sidebar-text-color);
+          --md-list-item-leading-space: var(--ha-space-3);
+          --md-list-item-trailing-space: var(--ha-space-3);
+          --md-list-item-leading-icon-size: var(--ha-space-6);
+          transition: width var(--ha-animation-duration-normal) ease;
         }
-        :host([expanded]) paper-icon-item {
+        :host([expanded]) ha-md-list-item {
           width: 248px;
         }
-
-        ha-icon[slot="item-icon"],
-        ha-svg-icon[slot="item-icon"] {
-          color: var(--sidebar-icon-color);
+        :host([narrow][expanded]) ha-md-list-item {
+          width: calc(240px - var(--safe-area-inset-left, 0px));
         }
 
-        .iron-selected paper-icon-item::before,
-        a:not(.iron-selected):focus::before {
-          border-radius: 4px;
+        ha-md-list-item.selected {
+          --md-list-item-label-text-color: var(--sidebar-selected-icon-color);
+          --md-ripple-hover-color: var(--sidebar-selected-icon-color);
+        }
+        ha-md-list-item.selected::before {
+          border-radius: var(--ha-border-radius-sm);
           position: absolute;
           top: 0;
-          right: 2px;
+          right: 0;
           bottom: 0;
-          left: 2px;
+          left: 0;
           pointer-events: none;
           content: "";
           transition: opacity 15ms linear;
           will-change: opacity;
-        }
-        .iron-selected paper-icon-item::before {
           background-color: var(--sidebar-selected-icon-color);
-          opacity: 0.12;
-        }
-        a:not(.iron-selected):focus::before {
-          background-color: currentColor;
           opacity: var(--dark-divider-opacity);
-          margin: 4px 8px;
-        }
-        .iron-selected paper-icon-item:focus::before,
-        .iron-selected:focus paper-icon-item::before {
-          opacity: 0.2;
         }
 
-        .iron-selected paper-icon-item[pressed]:before {
-          opacity: 0.37;
+        ha-icon[slot="start"],
+        ha-svg-icon[slot="start"] {
+          width: var(--ha-space-6);
+          flex-shrink: 0;
+          color: var(--sidebar-icon-color);
         }
 
-        paper-icon-item span {
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        a.iron-selected paper-icon-item ha-icon,
-        a.iron-selected paper-icon-item ha-svg-icon {
+        ha-md-list-item.selected ha-svg-icon[slot="start"],
+        ha-md-list-item.selected ha-icon[slot="start"] {
           color: var(--sidebar-selected-icon-color);
         }
 
-        a.iron-selected .item-text {
-          color: var(--sidebar-selected-text-color);
-        }
-
-        paper-icon-item .item-text {
-          display: none;
-          max-width: calc(100% - 56px);
-        }
-        :host([expanded]) paper-icon-item .item-text {
+        ha-md-list-item .item-text {
           display: block;
+          max-width: 0;
+          opacity: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
+          transition:
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
-
-        .divider {
-          bottom: 112px;
-          padding: 10px 0;
-        }
-        .divider::before {
-          content: " ";
+        :host([expanded]) ha-md-list-item .item-text {
+          max-width: 100%;
+          opacity: 1;
+          transition-delay: 0ms, 80ms;
           display: block;
-          height: 1px;
-          background-color: var(--divider-color);
-        }
-        .notifications-container,
-        .configuration-container {
-          display: flex;
-          margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
-        }
-        .notifications {
-          cursor: pointer;
-        }
-        .notifications .item-text,
-        .configuration .item-text {
-          flex: 1;
-        }
-        .profile {
-          margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
-        }
-        .profile paper-icon-item {
-          padding-left: 4px;
-          padding-inline-start: 4px;
-          padding-inline-end: auto;
-        }
-        .profile .item-text {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-        }
-
-        .notification-badge,
-        .configuration-badge {
-          position: absolute;
-          left: calc(var(--app-drawer-width, 248px) - 42px);
-          inset-inline-start: calc(var(--app-drawer-width, 248px) - 42px);
-          inset-inline-end: initial;
-          min-width: 20px;
-          box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          background-color: var(--accent-color);
-          line-height: 20px;
-          text-align: center;
-          padding: 0px 2px;
-          color: var(--text-accent-color, var(--text-primary-color));
-        }
-        ha-svg-icon + .notification-badge,
-        ha-svg-icon + .configuration-badge {
-          position: absolute;
-          bottom: 14px;
-          left: 26px;
-          inset-inline-start: 26px;
-          inset-inline-end: initial;
-          font-size: 0.65em;
-        }
-
-        .spacer {
-          flex: 1;
-          pointer-events: none;
-        }
-
-        .subheader {
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-          padding: 16px;
+          overflow: hidden;
+          text-overflow: ellipsis;
           white-space: nowrap;
         }
 
-        .dev-tools {
+        .badge {
           display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          padding: 0 8px;
-          width: 256px;
-          box-sizing: border-box;
+          justify-content: center;
+          align-items: center;
+          min-width: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: normal;
+          background-color: var(--accent-color);
+          padding: 2px 6px;
+          color: var(--text-accent-color, var(--text-primary-color));
+          transition:
+            opacity var(--ha-animation-duration-normal) ease,
+            transform var(--ha-animation-duration-normal) ease;
         }
 
-        .dev-tools a {
-          color: var(--sidebar-icon-color);
+        ha-svg-icon + .badge {
+          position: absolute;
+          top: var(--ha-space-1);
+          left: 26px;
+          border-radius: var(--ha-border-radius-md);
+          font-size: 0.65em;
+          line-height: var(--ha-line-height-expanded);
+          padding: 0 var(--ha-space-1);
+        }
+        :host([expanded]) .badge[slot="start"],
+        :host(:not([expanded])) .badge[slot="end"] {
+          opacity: 0;
+          transform: scale(0.8);
+          pointer-events: none;
+        }
+
+        ha-md-list-item.user {
+          --md-list-item-leading-icon-size: var(--ha-space-10);
+          --md-list-item-leading-space: var(--ha-space-1);
+        }
+
+        ha-md-list-item.user.rtl {
+          --md-list-item-leading-space: var(--ha-space-3);
+        }
+
+        ha-user-badge {
+          flex-shrink: 0;
+          margin-right: calc(var(--ha-space-2) * -1);
+        }
+
+        .spacer {
+          margin-top: auto;
+          pointer-events: none;
         }
 
         .tooltip {
           display: none;
           position: absolute;
           opacity: 0.9;
-          border-radius: 2px;
-          white-space: nowrap;
+          border-radius: var(--ha-border-radius-sm);
+          max-width: calc(var(--ha-space-20) * 3);
+          white-space: normal;
+          overflow-wrap: break-word;
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);
-          padding: 4px;
-          font-weight: 500;
+          padding: var(--ha-space-1);
+          font-weight: var(--ha-font-weight-medium);
         }
 
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .menu,
+          ha-md-list-item,
+          ha-md-list-item .item-text,
+          .title {
+            transition: 1ms;
+          }
         }
       `,
     ];

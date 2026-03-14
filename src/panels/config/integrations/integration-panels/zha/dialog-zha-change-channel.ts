@@ -2,17 +2,17 @@ import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { changeZHANetworkChannel } from "../../../../../data/zha";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-list-item";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import { changeZHANetworkChannel } from "../../../../../data/zha";
+import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../../../types";
 import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
@@ -36,7 +36,10 @@ const VALID_CHANNELS = [
 ];
 
 @customElement("dialog-zha-change-channel")
-class DialogZHAChangeChannel extends LitElement implements HassDialog {
+class DialogZHAChangeChannel
+  extends LitElement
+  implements HassDialog<ZHAChangeChannelDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _migrationInProgress = false;
@@ -45,16 +48,27 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
 
   @state() private _newChannel?: "auto" | number;
 
-  public async showDialog(params: ZHAChangeChannelDialogParams): Promise<void> {
+  @state() private _open = false;
+
+  public showDialog(params: ZHAChangeChannelDialogParams): void {
     this._params = params;
     this._newChannel = "auto";
+    this._open = true;
   }
 
-  public closeDialog() {
+  public closeDialog(): boolean {
+    if (this._migrationInProgress) {
+      return false;
+    }
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._newChannel = undefined;
+    this._migrationInProgress = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -64,16 +78,20 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.zha.change_channel_dialog.title")
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.zha.change_channel_dialog.title"
         )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
-        <ha-alert alert-type="warning">
+        <ha-alert
+          alert-type="warning"
+          .title=${this.hass.localize(
+            "ui.panel.config.zha.change_channel_dialog.migration_warning_title"
+          )}
+        >
           ${this.hass.localize(
             "ui.panel.config.zha.change_channel_dialog.migration_warning"
           )}
@@ -91,53 +109,51 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
           )}
         </p>
 
-        <p>
-          <ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.zha.change_channel_dialog.new_channel"
-            )}
-            fixedMenuPosition
-            naturalMenuWidth
-            @selected=${this._newChannelChosen}
-            @closed=${stopPropagation}
-            .value=${String(this._newChannel)}
-          >
-            ${VALID_CHANNELS.map(
-              (newChannel) =>
-                html`<ha-list-item .value=${String(newChannel)}
-                  >${newChannel === "auto"
-                    ? this.hass.localize(
-                        "ui.panel.config.zha.change_channel_dialog.channel_auto"
-                      )
-                    : newChannel}</ha-list-item
-                >`
-            )}
-          </ha-select>
-        </p>
-
-        <ha-progress-button
-          slot="primaryAction"
-          .progress=${this._migrationInProgress}
-          .disabled=${this._migrationInProgress}
-          @click=${this._changeNetworkChannel}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.zha.change_channel_dialog.change_channel"
+        <ha-select
+          .label=${this.hass.localize(
+            "ui.panel.config.zha.change_channel_dialog.new_channel"
           )}
-        </ha-progress-button>
-
-        <ha-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          .disabled=${this._migrationInProgress}
-          >${this.hass.localize("ui.common.cancel")}</ha-button
+          autofocus
+          @selected=${this._newChannelChosen}
+          .value=${String(this._newChannel)}
+          .options=${VALID_CHANNELS.map((channel) => ({
+            value: String(channel),
+            label:
+              channel === "auto"
+                ? this.hass.localize(
+                    "ui.panel.config.zha.change_channel_dialog.channel_auto"
+                  )
+                : String(channel),
+          }))}
         >
+        </ha-select>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+            .disabled=${this._migrationInProgress}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-progress-button
+            slot="primaryAction"
+            .progress=${this._migrationInProgress}
+            .disabled=${this._migrationInProgress}
+            @click=${this._changeNetworkChannel}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.zha.change_channel_dialog.change_channel"
+            )}
+          </ha-progress-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _newChannelChosen(evt: Event): void {
-    const value: string = (evt.target! as HTMLSelectElement).value;
+  private _newChannelChosen(ev: HaSelectSelectEvent): void {
+    const value = ev.detail.value;
     this._newChannel = value === "auto" ? "auto" : parseInt(value, 10);
   }
 

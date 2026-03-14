@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
+import "../components/ha-button";
 import { callProtectedLockService, LockEntityFeature } from "../data/lock";
 import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
@@ -29,18 +29,30 @@ class StateCardLock extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${!supportsOpen
-          ? html`<mwc-button @click=${this._callService} data-service="open"
-              >${this.hass.localize("ui.card.lock.open")}</mwc-button
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
+              @click=${this._callService}
+              data-service="open"
+              >${this.hass.localize("ui.card.lock.open")}</ha-button
             >`
           : nothing}
         ${isLocked
-          ? html` <mwc-button @click=${this._callService} data-service="unlock"
-              >${this.hass.localize("ui.card.lock.unlock")}</mwc-button
+          ? html` <ha-button
+              appearance="plain"
+              size="small"
+              @click=${this._callService}
+              data-service="unlock"
+              >${this.hass.localize("ui.card.lock.unlock")}</ha-button
             >`
           : nothing}
         ${!isLocked
-          ? html`<mwc-button @click=${this._callService} data-service="lock"
-              >${this.hass.localize("ui.card.lock.lock")}</mwc-button
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
+              @click=${this._callService}
+              data-service="lock"
+              >${this.hass.localize("ui.card.lock.lock")}</ha-button
             >`
           : nothing}
       </div>
@@ -60,7 +72,7 @@ class StateCardLock extends LitElement {
     return [
       haStyle,
       css`
-        mwc-button {
+        ha-button {
           top: 3px;
           height: 37px;
           margin-right: -0.57em;

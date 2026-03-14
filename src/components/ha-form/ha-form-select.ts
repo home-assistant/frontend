@@ -1,16 +1,16 @@
-import memoizeOne from "memoize-one";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../ha-selector/ha-selector-select";
 import type {
   HaFormElement,
   HaFormSelectData,
   HaFormSelectSchema,
 } from "./types";
-import type { SelectSelector } from "../../data/selector";
-import "../ha-selector/ha-selector-select";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -24,12 +24,16 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
+
   @property({ type: Boolean }) public disabled = false;
 
   private _selectSchema = memoizeOne(
-    (options): SelectSelector => ({
+    (schema: HaFormSelectSchema): SelectSelector => ({
       select: {
-        options: options.map((option) => ({
+        translation_key: schema.name,
+        options: schema.options.map((option) => ({
           value: option[0],
           label: option[1],
         })),
@@ -37,17 +41,24 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     })
   );
 
+  public reportValidity(): boolean {
+    if (!this.schema.required || this.data) {
+      return true;
+    }
+    return false;
+  }
+
   protected render(): TemplateResult {
     return html`
       <ha-selector-select
         .hass=${this.hass}
-        .schema=${this.schema}
         .value=${this.data}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
-        .required=${this.schema.required}
-        .selector=${this._selectSchema(this.schema.options)}
+        .required=${this.schema.required || false}
+        .selector=${this._selectSchema(this.schema)}
+        .localizeValue=${this.localizeValue}
         @value-changed=${this._valueChanged}
       ></ha-selector-select>
     `;

@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -10,6 +8,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { groupBy } from "../../../../../common/util/group-by";
@@ -17,7 +16,10 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-generic-picker";
+import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -39,11 +41,14 @@ import {
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  HomeAssistant,
+  Route,
+  ValueChangedEvent,
+} from "../../../../../types";
 import "../../../ha-config-section";
-import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
 
 const icons = {
@@ -54,7 +59,7 @@ const icons = {
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -110,11 +115,14 @@ class ZWaveJSNodeConfig extends LitElement {
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.header"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -220,7 +228,7 @@ class ZWaveJSNodeConfig extends LitElement {
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -293,9 +301,10 @@ class ZWaveJSNodeConfig extends LitElement {
               ? this.hass.localize(
                   item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
                 )
-              : item.configuration_value_type === "enumerated"
-                ? item.metadata.states[item.metadata.default] ||
-                  item.metadata.default
+              : item.metadata.states?.[item.metadata.default]
+                ? item.configuration_value_type === "manual_entry"
+                  ? `${item.metadata.default} - ${item.metadata.states[item.metadata.default]}`
+                  : item.metadata.states[item.metadata.default]
                 : item.metadata.default
           }`
         : "";
@@ -318,8 +327,33 @@ class ZWaveJSNodeConfig extends LitElement {
         </div>
       `;
     }
-
     if (item.configuration_value_type === "manual_entry") {
+      if (
+        item.metadata.states &&
+        item.metadata.min != null &&
+        item.metadata.max != null &&
+        item.metadata.max - item.metadata.min <= 100
+      ) {
+        return html`
+          ${labelAndDescription}
+          <ha-generic-picker
+            .hass=${this.hass}
+            .value=${item.value?.toString()}
+            allow-custom-value
+            hide-clear-icon
+            .getItems=${this._getManualEntryItems(item.metadata.states)}
+            .disabled=${!item.metadata.writeable}
+            .invalid=${result?.status === "error"}
+            .placeholder=${item.metadata.unit}
+            .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
+            .valueRenderer=${this._enumeratedPickerValueRenderer(
+              item.metadata.states
+            )}
+            @value-changed=${this._getComboBoxValueChangedCallback(id, item)}
+          >
+          </ha-generic-picker>
+        `;
+      }
       return html`${labelAndDescription}
         <ha-textfield
           type="number"
@@ -339,7 +373,10 @@ class ZWaveJSNodeConfig extends LitElement {
         </ha-textfield>`;
     }
 
-    if (item.configuration_value_type === "enumerated") {
+    if (
+      item.configuration_value_type === "enumerated" &&
+      Object.keys(item.metadata.states).length < 5
+    ) {
       return html`
         ${labelAndDescription}
         <ha-select
@@ -351,13 +388,36 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-        >
-          ${Object.entries(item.metadata.states).map(
-            ([key, entityState]) => html`
-              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
-            `
+          .options=${Object.entries(item.metadata.states).map(
+            ([key, entityState]) => ({
+              value: key,
+              label: entityState,
+            })
           )}
+        >
         </ha-select>
+      `;
+    }
+    if (item.configuration_value_type === "enumerated") {
+      return html`
+        ${labelAndDescription}
+        <ha-generic-picker
+          .hass=${this.hass}
+          .disabled=${!item.metadata.writeable}
+          .value=${item.value?.toString()}
+          .key=${id}
+          hide-clear-icon
+          @value-changed=${this._pickerValueChanged}
+          .helper=${defaultLabel}
+          .getItems=${this._getEnumeratedPickerItems(item.metadata.states!)}
+          .valueRenderer=${this._enumeratedPickerValueRenderer(
+            item.metadata.states!
+          )}
+          .property=${item.property}
+          .endpoint=${item.endpoint}
+          .propertyKey=${item.property_key}
+        >
+        </ha-generic-picker>
       `;
     }
 
@@ -403,16 +463,24 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
-  private _dropdownSelected(ev) {
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
+  }
+
+  private _pickerValueChanged(ev) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
+  }
+
+  private _handleEnumeratedPickerValueChanged(ev, value: string) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value?.toString() === ev.target.value) {
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     this._setResult(ev.target.key, undefined);
 
-    this._updateConfigParameter(ev.target, Number(ev.target.value));
+    this._updateConfigParameter(ev.target, Number(value));
   }
 
   private _numericInputChanged(ev) {
@@ -421,6 +489,15 @@ class ZWaveJSNodeConfig extends LitElement {
     }
     const value = Number(ev.target.value);
     if (Number(this._config![ev.target.key].value) === value) {
+      return;
+    }
+    if (isNaN(value)) {
+      this._setError(
+        ev.target.key,
+        this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_not_numeric"
+        )
+      );
       return;
     }
     if (
@@ -438,6 +515,58 @@ class ZWaveJSNodeConfig extends LitElement {
     }
     this._setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
+  }
+
+  private _getEnumeratedPickerItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: label,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
+  );
+
+  private _enumeratedPickerValueRenderer = memoizeOne(
+    (states: Record<string, string>) => (value: string) =>
+      html`<span slot="headline">${states[value] || value}</span>`
+  );
+
+  private _getManualEntryItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: `${label}`,
+          secondary: value,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
+  );
+
+  private _getComboBoxValueChangedCallback(
+    id: string,
+    item: ZWaveJSNodeConfigParam
+  ) {
+    return (ev: ValueChangedEvent<number>) =>
+      this._numericInputChanged({
+        ...ev,
+        target: {
+          ...ev.target,
+          key: id,
+          min: item.metadata.min,
+          max: item.metadata.max,
+          value: ev.detail.value,
+          property: item.property,
+          endpoint: item.endpoint,
+          propertyKey: item.property_key,
+        },
+      });
   }
 
   private async _updateConfigParameter(target, value) {
@@ -601,7 +730,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-settings-row {
           --settings-row-prefix-display: contents;
           --settings-row-content-width: 100%;
-          --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
         }
@@ -618,7 +746,7 @@ class ZWaveJSNodeConfig extends LitElement {
           padding-right: 24px;
           padding-inline-end: 24px;
           padding-inline-start: initial;
-          line-height: 1.5em;
+          line-height: var(--ha-line-height-normal);
         }
 
         .prefix span {

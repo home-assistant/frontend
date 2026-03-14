@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, ReactiveElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -24,7 +24,7 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : undefined;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
@@ -33,6 +33,8 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
@@ -74,22 +76,64 @@ export class HaForm extends LitElement implements HaFormElement {
     return {};
   }
 
-  public async focus() {
-    await this.updateComplete;
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
     const root = this.renderRoot.querySelector(".root");
     if (!root) {
-      return;
+      return true;
     }
-    for (const child of root.children) {
-      if (child.tagName !== "HA-ALERT") {
-        if (child instanceof ReactiveElement) {
-          // eslint-disable-next-line no-await-in-loop
-          await child.updateComplete;
-        }
-        (child as HTMLElement).focus();
-        break;
+
+    const elements = [...root.children].filter(
+      (child) => child.localName !== "ha-alert"
+    ) as (HTMLElement & { reportValidity?: () => boolean })[];
+
+    let isValid = true;
+    let firstInvalidElement: HTMLElement | undefined;
+
+    this.schema.forEach((item, index) => {
+      const element = elements[index];
+      if (!element) {
+        return;
       }
+
+      let elementValid = true;
+
+      if (
+        "reportValidity" in element &&
+        typeof element.reportValidity === "function"
+      ) {
+        elementValid = element.reportValidity();
+      } else if (
+        item.required &&
+        !(
+          "type" in item && ["boolean", "constant"].includes(item.type ?? "")
+        ) &&
+        !(
+          "selector" in item &&
+          ("boolean" in item.selector || "constant" in item.selector)
+        )
+      ) {
+        const value = getValue(this.data, item);
+        elementValid = value !== undefined && value !== null && value !== "";
+      }
+
+      if (!elementValid) {
+        isValid = false;
+        if (!firstInvalidElement) {
+          firstInvalidElement = element;
+        }
+      }
+    });
+
+    if (firstInvalidElement) {
+      firstInvalidElement.focus?.();
     }
+
+    return isValid;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
@@ -135,12 +179,13 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .narrow=${this.narrow}
                   .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? "" : item.default}
+                  .placeholder=${item.required ? undefined : item.default}
                   .helper=${this._computeHelper(item)}
                   .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
@@ -184,8 +229,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return context;
   }
 
-  protected createRenderRoot() {
-    const root = super.createRenderRoot();
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    const root = super.createRenderRoot() as ShadowRoot;
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;

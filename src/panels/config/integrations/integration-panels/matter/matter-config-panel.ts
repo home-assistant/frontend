@@ -1,22 +1,7 @@
-import { mdiMathLog, mdiServerNetwork } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../../../types";
-
-export const configTabs: PageNavigation[] = [
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.network",
-    path: `/config/zwave_js/dashboard`,
-    iconPath: mdiServerNetwork,
-  },
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.logs",
-    path: `/config/zwave_js/logs`,
-    iconPath: mdiMathLog,
-  },
-];
 
 @customElement("matter-config-panel")
 class MatterConfigRouter extends HassRouterPage {
@@ -37,6 +22,10 @@ class MatterConfigRouter extends HassRouterPage {
       add: {
         tag: "matter-add-device",
         load: () => import("./matter-add-device"),
+      },
+      options: {
+        tag: "matter-options-page",
+        load: () => import("./matter-options-page"),
       },
     },
   };

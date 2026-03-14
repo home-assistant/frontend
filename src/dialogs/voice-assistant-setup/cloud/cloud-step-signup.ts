@@ -90,11 +90,11 @@ export class CloudStepSignup extends LitElement {
           ? html`<ha-button
                 @click=${this._handleResendVerifyEmail}
                 .disabled=${this._requestInProgress}
+                appearance="plain"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.register.resend_confirm_email"
                 )}</ha-button
               ><ha-button
-                unelevated
                 @click=${this._login}
                 .disabled=${this._requestInProgress}
                 >${this.hass.localize(
@@ -104,12 +104,12 @@ export class CloudStepSignup extends LitElement {
           : html`<ha-button
                 @click=${this._signIn}
                 .disabled=${this._requestInProgress}
+                appearance="plain"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.login.sign_in"
                 )}</ha-button
               >
               <ha-button
-                unelevated
                 @click=${this._handleRegister}
                 .disabled=${this._requestInProgress}
                 >${this.hass.localize("ui.common.next")}</ha-button

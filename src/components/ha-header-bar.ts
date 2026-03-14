@@ -38,6 +38,7 @@ export class HaHeaderBar extends LitElement {
         .mdc-top-app-bar {
           position: static;
           color: var(--mdc-theme-on-primary, #fff);
+          padding: var(--header-bar-padding);
         }
         .mdc-top-app-bar__section.mdc-top-app-bar__section--align-start {
           flex: 1;
@@ -46,7 +47,7 @@ export class HaHeaderBar extends LitElement {
           flex: none;
         }
         .mdc-top-app-bar__title {
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding-inline-start: 24px;
           padding-inline-end: initial;
         }

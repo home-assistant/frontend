@@ -1,9 +1,9 @@
 import { customElement } from "lit/decorators";
-import type { DeviceCondition } from "../../data/device_automation";
+import type { DeviceCondition } from "../../data/device/device_automation";
 import {
   fetchDeviceConditions,
   localizeDeviceAutomationCondition,
-} from "../../data/device_automation";
+} from "../../data/device/device_automation";
 import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 
 @customElement("ha-device-condition-picker")

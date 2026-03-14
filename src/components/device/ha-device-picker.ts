@@ -1,33 +1,24 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { stringCompare } from "../../common/string/compare";
-import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
-import type {
-  DeviceEntityDisplayLookup,
-  DeviceRegistryEntry,
-} from "../../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
-import "../ha-list-item";
-
-interface Device {
-  name: string;
-  area: string;
-  id: string;
-}
-
-type ScorableDevice = ScorableTextItem & Device;
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
+import { getDeviceContext } from "../../common/entity/context/get_device_context";
+import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import {
+  deviceComboBoxKeys,
+  getDevices,
+  type DevicePickerItem,
+} from "../../data/device/device_picker";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
+import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -35,21 +26,29 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-const rowRenderer: ComboBoxLitRenderer<Device> = (item) =>
-  html`<ha-list-item .twoline=${!!item.area}>
-    <span>${item.name}</span>
-    <span slot="secondary">${item.area}</span>
-  </ha-list-item>`;
-
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: Boolean }) public autofocus = false;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
 
   @property() public label?: string;
 
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property() public placeholder?: string;
+
+  @property({ type: String, attribute: "search-label" })
+  public searchLabel?: string;
+
+  @property({ attribute: false }) public createDomains?: string[];
 
   /**
    * Show only devices with entities from specific domains.
@@ -89,256 +88,193 @@ export class HaDevicePicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaDevicePickerEntityFilterFunc;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ attribute: "hide-clear-icon", type: Boolean })
+  public hideClearIcon = false;
 
-  @property({ type: Boolean }) public required = false;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  @state() private _opened?: boolean;
+  @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
-
-  private _init = false;
-
-  private _getDevices = memoizeOne(
+  private _getDevicesMemoized = memoizeOne(
     (
-      devices: DeviceRegistryEntry[],
-      areas: HomeAssistant["areas"],
-      entities: EntityRegistryDisplayEntry[],
-      includeDomains: this["includeDomains"],
-      excludeDomains: this["excludeDomains"],
-      includeDeviceClasses: this["includeDeviceClasses"],
-      deviceFilter: this["deviceFilter"],
-      entityFilter: this["entityFilter"],
-      excludeDevices: this["excludeDevices"]
-    ): ScorableDevice[] => {
-      if (!devices.length) {
-        return [
-          {
-            id: "no_devices",
-            area: "",
-            name: this.hass.localize("ui.components.device-picker.no_devices"),
-            strings: [],
-          },
-        ];
+      _devices: HomeAssistant["devices"],
+      configEntryLookup: Record<string, ConfigEntry>,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeDevices?: string[],
+      value?: string
+    ) =>
+      getDevices(
+        this.hass,
+        configEntryLookup,
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value
+      )
+  );
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    this._loadConfigEntries();
+  }
+
+  private async _loadConfigEntries() {
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
+  }
+
+  private _getItems = () =>
+    this._getDevicesMemoized(
+      this.hass.devices,
+      this._configEntryLookup,
+      this.includeDomains,
+      this.excludeDomains,
+      this.includeDeviceClasses,
+      this.deviceFilter,
+      this.entityFilter,
+      this.excludeDevices,
+      this.value
+    );
+
+  private _valueRenderer = memoizeOne(
+    (configEntriesLookup: Record<string, ConfigEntry>) => (value: string) => {
+      const deviceId = value;
+      const device = this.hass.devices[deviceId];
+
+      if (!device) {
+        return html`<span slot="headline">${deviceId}</span>`;
       }
 
-      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
+      const { area } = getDeviceContext(device, this.hass);
 
-      if (
-        includeDomains ||
-        excludeDomains ||
-        includeDeviceClasses ||
-        entityFilter
-      ) {
-        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
-      }
+      const deviceName = device ? computeDeviceName(device) : undefined;
+      const areaName = area ? computeAreaName(area) : undefined;
 
-      let inputDevices = devices.filter(
-        (device) => device.id === this.value || !device.disabled_by
-      );
+      const primary = deviceName;
+      const secondary = areaName;
 
-      if (includeDomains) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) =>
-            includeDomains.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
+      const configEntry = device.primary_config_entry
+        ? configEntriesLookup[device.primary_config_entry]
+        : undefined;
 
-      if (excludeDomains) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return true;
-          }
-          return entities.every(
-            (entity) =>
-              !excludeDomains.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
-
-      if (excludeDevices) {
-        inputDevices = inputDevices.filter(
-          (device) => !excludeDevices!.includes(device.id)
-        );
-      }
-
-      if (includeDeviceClasses) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return (
-              stateObj.attributes.device_class &&
-              includeDeviceClasses.includes(stateObj.attributes.device_class)
-            );
-          });
-        });
-      }
-
-      if (entityFilter) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return devEntities.some((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return entityFilter(stateObj);
-          });
-        });
-      }
-
-      if (deviceFilter) {
-        inputDevices = inputDevices.filter(
-          (device) =>
-            // We always want to include the device of the current value
-            device.id === this.value || deviceFilter!(device)
-        );
-      }
-
-      const outputDevices = inputDevices.map((device) => {
-        const name = computeDeviceNameDisplay(
-          device,
-          this.hass,
-          deviceEntityLookup[device.id]
-        );
-
-        return {
-          id: device.id,
-          name:
-            name ||
-            this.hass.localize("ui.components.device-picker.unnamed_device"),
-          area:
-            device.area_id && areas[device.area_id]
-              ? areas[device.area_id].name
-              : this.hass.localize("ui.components.device-picker.no_area"),
-          strings: [name || ""],
-        };
-      });
-      if (!outputDevices.length) {
-        return [
-          {
-            id: "no_devices",
-            area: "",
-            name: this.hass.localize("ui.components.device-picker.no_match"),
-            strings: [],
-          },
-        ];
-      }
-      if (outputDevices.length === 1) {
-        return outputDevices;
-      }
-      return outputDevices.sort((a, b) =>
-        stringCompare(a.name || "", b.name || "", this.hass.locale.language)
-      );
+      return html`
+        ${configEntry
+          ? html`<img
+              slot="start"
+              alt=""
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: configEntry.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />`
+          : nothing}
+        <span slot="headline">${primary}</span>
+        <span slot="supporting-text">${secondary}</span>
+      `;
     }
   );
 
-  public async open() {
-    await this.updateComplete;
-    await this.comboBox?.open();
-  }
+  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
+    <ha-combo-box-item type="button">
+      ${item.domain
+        ? html`
+            <img
+              slot="start"
+              alt=""
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: item.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
+          `
+        : nothing}
 
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
-  }
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+      ${item.domain_name
+        ? html`
+            <div slot="trailing-supporting-text" class="domain">
+              ${item.domain_name}
+            </div>
+          `
+        : nothing}
+    </ha-combo-box-item>
+  `;
 
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (!this._init && this.hass) ||
-      (this._init && changedProps.has("_opened") && this._opened)
-    ) {
-      this._init = true;
-      const devices = this._getDevices(
-        Object.values(this.hass.devices),
-        this.hass.areas,
-        Object.values(this.hass.entities),
-        this.includeDomains,
-        this.excludeDomains,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.excludeDevices
-      );
-      this.comboBox.items = devices;
-      this.comboBox.filteredItems = devices;
-    }
-  }
+  protected render() {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.device-picker.placeholder");
 
-  protected render(): TemplateResult {
+    const valueRenderer = this._valueRenderer(this._configEntryLookup);
+
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.device-picker.device")
-          : this.label}
-        .value=${this._value}
-        .helper=${this.helper}
-        .renderer=${rowRenderer}
+        .autofocus=${this.autofocus}
         .disabled=${this.disabled}
-        .required=${this.required}
-        item-id-path="id"
-        item-value-path="id"
-        item-label-path="name"
-        @opened-changed=${this._openedChanged}
-        @value-changed=${this._deviceChanged}
-        @filter-changed=${this._filterChanged}
-      ></ha-combo-box>
+        .helper=${this.helper}
+        .label=${this.label}
+        .searchLabel=${this.searchLabel}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.device-picker.no_devices"
+        )}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .rowRenderer=${this._rowRenderer}
+        .getItems=${this._getItems}
+        .hideClearIcon=${this.hideClearIcon}
+        .valueRenderer=${valueRenderer}
+        .searchKeys=${deviceComboBoxKeys}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
+        @value-changed=${this._valueChanged}
+      >
+      </ha-generic-picker>
     `;
   }
 
-  private get _value() {
-    return this.value || "";
+  public async open() {
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
-  private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value.toLowerCase();
-    target.filteredItems = filterString.length
-      ? fuzzyFilterSort<ScorableDevice>(filterString, target.items || [])
-      : target.items;
-  }
-
-  private _deviceChanged(ev: ValueChangedEvent<string>) {
+  private _valueChanged(ev) {
     ev.stopPropagation();
-    let newValue = ev.detail.value;
-
-    if (newValue === "no_devices") {
-      newValue = "";
-    }
-
-    if (newValue !== this._value) {
-      this._setValue(newValue);
-    }
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
-  private _setValue(value: string) {
+    const value = ev.detail.value;
     this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
+    fireEvent(this, "value-changed", { value });
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.device-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

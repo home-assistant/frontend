@@ -1,11 +1,12 @@
-import "@material/mwc-button/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -21,14 +22,21 @@ export class DialogJoinBeta
 
   @state() private _dialogParams?: JoinBetaDialogParams;
 
+  @state() private _open = false;
+
   public showDialog(dialogParams: JoinBetaDialogParams): void {
     this._dialogParams = dialogParams;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -38,12 +46,10 @@ export class DialogJoinBeta
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.join_beta_channel.title")
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize("ui.dialogs.join_beta_channel.title")}
+        @closed=${this._dialogClosed}
       >
         <ha-alert alert-type="warning">
           ${this.hass.localize("ui.dialogs.join_beta_channel.backup")}
@@ -67,12 +73,18 @@ export class DialogJoinBeta
           )}
           <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
         </a>
-        <mwc-button slot="primaryAction" @click=${this._cancel}>
-          ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button slot="primaryAction" @click=${this._join}>
-          ${this.hass.localize("ui.dialogs.join_beta_channel.join")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._cancel}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._join}>
+            ${this.hass.localize("ui.dialogs.join_beta_channel.join")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

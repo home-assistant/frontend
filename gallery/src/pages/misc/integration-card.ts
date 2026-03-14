@@ -6,8 +6,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { IntegrationManifest } from "../../../../src/data/integration";
 
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
-import type { EntityRegistryEntry } from "../../../../src/data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../src/data/entity/entity_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../../../src/panels/config/integrations/ha-config-flow-card";
 import type {

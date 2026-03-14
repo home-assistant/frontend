@@ -1106,7 +1106,7 @@ export default {
       friendly_name: "Philips Hue",
       entity_picture: null,
       description:
-        "Press the button on the bridge to register Philips Hue with Home Assistant.\n\n![Description image](/static/images/config_philips_hue.jpg)",
+        "Press the button on the bridge to register Philips Hue with Home Assistant.",
       submit_caption: "I have pressed the button",
     },
     last_changed: "2018-07-19T10:44:46.515160+00:00",

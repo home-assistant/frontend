@@ -3,27 +3,25 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { findEntities } from "../common/find-entities";
 import "../../../components/entity/state-badge";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { isUnavailableState } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
-import type { LovelaceElement, StateIconElementConfig } from "./types";
 import type { LovelacePictureElementEditor } from "../types";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { LovelaceElement, StateIconElementConfig } from "./types";
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-state-icon-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-state-icon-element-editor");
     return document.createElement("hui-state-icon-element-editor");
   }
 
@@ -60,6 +58,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     this._config = {
       state_color: true,
       tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
       ...config,
     };
   }
@@ -109,7 +108,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     state-badge:focus {
       outline: none;
       background: var(--divider-color);
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
     }
   `;
 

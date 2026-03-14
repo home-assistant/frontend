@@ -3,20 +3,24 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/buttons/ha-progress-button";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
+import "../../components/ha-dialog";
 import type { HaTextArea } from "../../components/ha-textarea";
 import { convertTextToSpeech } from "../../data/tts";
+import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { TTSTryDialogParams } from "./show-dialog-tts-try";
-import "../../components/buttons/ha-progress-button";
 
 @customElement("dialog-tts-try")
 export class TTSTryDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loadingExample = false;
+
+  @state() private _open = false;
 
   @state() private _params?: TTSTryDialogParams;
 
@@ -34,9 +38,14 @@ export class TTSTryDialog extends LitElement {
   public showDialog(params: TTSTryDialogParams) {
     this._params = params;
     this._valid = Boolean(this._defaultMessage);
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -61,12 +70,10 @@ export class TTSTryDialog extends LitElement {
     }
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.tts-try.header")
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize("ui.dialogs.tts-try.header")}
+        @closed=${this._dialogClosed}
       >
         <ha-textarea
           autogrow
@@ -77,20 +84,22 @@ export class TTSTryDialog extends LitElement {
           )}
           .value=${this._defaultMessage}
           @input=${this._inputChanged}
-          ?dialogInitialFocus=${!this._defaultMessage}
+          ?autofocus=${!this._defaultMessage}
         >
         </ha-textarea>
 
-        <ha-progress-button
-          .progress=${this._loadingExample}
-          ?dialogInitialFocus=${Boolean(this._defaultMessage)}
-          slot="primaryAction"
-          .label=${this.hass.localize("ui.dialogs.tts-try.play")}
-          @click=${this._playExample}
-          .disabled=${!this._valid}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlayCircleOutline}></ha-svg-icon>
-        </ha-progress-button>
+        <ha-dialog-footer slot="footer">
+          <ha-progress-button
+            slot="primaryAction"
+            .progress=${this._loadingExample}
+            ?autofocus=${Boolean(this._defaultMessage)}
+            @click=${this._playExample}
+            .disabled=${!this._valid}
+            .iconPath=${mdiPlayCircleOutline}
+          >
+            ${this.hass.localize("ui.dialogs.tts-try.play")}
+          </ha-progress-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -149,21 +158,21 @@ export class TTSTryDialog extends LitElement {
     });
   }
 
-  static styles = css`
-    ha-dialog {
-      --mdc-dialog-max-width: 500px;
-    }
-    ha-textarea,
-    ha-select {
-      width: 100%;
-    }
-    ha-select {
-      margin-top: 8px;
-    }
-    .loading {
-      height: 36px;
-    }
-  `;
+  static styles = [
+    haStyleDialog,
+    css`
+      ha-textarea,
+      ha-select {
+        width: 100%;
+      }
+      ha-select {
+        margin-top: 8px;
+      }
+      .loading {
+        height: 36px;
+      }
+    `,
+  ];
 }
 
 declare global {

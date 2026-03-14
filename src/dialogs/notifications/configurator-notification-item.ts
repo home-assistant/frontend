@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainToName } from "../../data/integration";
 import type { PersitentNotificationEntity } from "../../data/persistent_notification";
 import type { HomeAssistant } from "../../types";
+import "../../components/ha-button";
 import "./notification-item-template";
 
 @customElement("configurator-notification-item")
@@ -31,9 +31,13 @@ export class HuiConfiguratorNotificationItem extends LitElement {
           })}
         </div>
 
-        <mwc-button slot="actions" @click=${this._handleClick}>
+        <ha-button
+          appearance="plain"
+          slot="actions"
+          @click=${this._handleClick}
+        >
           ${this.hass.formatEntityState(this.notification)}
-        </mwc-button>
+        </ha-button>
       </notification-item-template>
     `;
   }

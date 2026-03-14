@@ -6,8 +6,8 @@ import { computeAttributeNameDisplay } from "../../common/entity/compute_attribu
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
 import type { CoverEntity } from "../../data/cover";
-import { UNAVAILABLE } from "../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-cover-position")
@@ -50,7 +50,7 @@ export class HaStateControlCoverPosition extends LitElement {
         show-handle
         mode="end"
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
@@ -76,11 +76,11 @@ export class HaStateControlCoverPosition extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-slider-thickness: 130px;
-      --control-slider-border-radius: 36px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
       --control-slider-color: var(--primary-color);
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
-      --control-slider-tooltip-font-size: 20px;
+      --control-slider-tooltip-font-size: var(--ha-font-size-xl);
     }
   `;
 }

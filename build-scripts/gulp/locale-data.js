@@ -4,7 +4,7 @@ import gulp from "gulp";
 import { join, resolve } from "node:path";
 import paths from "../paths.cjs";
 
-const formatjsDir = join(paths.polymer_dir, "node_modules", "@formatjs");
+const formatjsDir = join(paths.root_dir, "node_modules", "@formatjs");
 const outDir = join(paths.build_dir, "locale-data");
 
 const INTL_POLYFILLS = {

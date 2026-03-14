@@ -24,10 +24,16 @@ describe("absoluteTime", () => {
 
   it("should format date correctly for same year", () => {
     const from = new Date();
-    from.setUTCMonth(9, 20);
     from.setUTCHours(13, 23);
-    const result = absoluteTime(from, locale, config);
-    expect(result).toBe("Oct 20, 13:23");
+    if (from.getUTCMonth() === 9 && from.getUTCDate() === 20) {
+      from.setUTCMonth(10, 20);
+      const result = absoluteTime(from, locale, config);
+      expect(result).toBe("Nov 20, 13:23");
+    } else {
+      from.setUTCMonth(9, 20);
+      const result = absoluteTime(from, locale, config);
+      expect(result).toBe("Oct 20, 13:23");
+    }
   });
 
   it("should format date with year correctly", () => {

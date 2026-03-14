@@ -32,11 +32,14 @@ export class HaIntegrationHeader extends LitElement {
       <div class="header">
         <img
           alt=""
-          src=${brandsUrl({
-            domain: this.domain,
-            type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
-          })}
+          src=${brandsUrl(
+            {
+              domain: this.domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )}
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
           @error=${this._onImageError}
@@ -121,19 +124,19 @@ export class HaIntegrationHeader extends LitElement {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-      font-size: 16px;
-      font-weight: 400;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
       color: var(--primary-text-color);
     }
     .has-secondary {
       -webkit-line-clamp: 1;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
     .secondary {
       min-width: 0;
       --mdc-icon-size: 20px;
       -webkit-line-clamp: 1;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       display: flex;
       flex-direction: row;
     }

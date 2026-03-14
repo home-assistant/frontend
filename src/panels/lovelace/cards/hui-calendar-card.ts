@@ -1,14 +1,23 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
+import {
+  computeCssColor,
+  isValidColorString,
+} from "../../../common/color/compute-color";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
+import "../../../components/ha-spinner";
 import type { Calendar, CalendarEvent } from "../../../data/calendar";
 import { fetchCalendarEvents } from "../../../data/calendar";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -17,11 +26,18 @@ import type {
 import "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
 import "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
-export class HuiCalendarCard extends LitElement implements LovelaceCard {
+export class HuiCalendarCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
@@ -49,17 +65,21 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _events: CalendarEvent[] = [];
 
   @state() private _config?: CalendarCardConfig;
 
   @state() private _calendars: Calendar[] = [];
 
-  @state() private _eventDisplay = "list-item";
-
   @state() private _narrow = false;
 
   @state() private _error?: string = undefined;
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
+
+  @state() private _eventsLoaded = false;
 
   private _startDate?: Date;
 
@@ -76,11 +96,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    this._calendars = config!.entities.map((entity, idx) => ({
-      entity_id: entity,
-      backgroundColor: getColorByIndex(idx),
-    }));
-
     if (this._config?.entities !== config.entities) {
       this._fetchCalendarEvents();
     }
@@ -88,8 +103,70 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._config = { initial_view: "dayGridMonth", ...config };
   }
 
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    // Don't build calendars until entity registry is loaded
+    if (!this._entityRegistry) {
+      return;
+    }
+
+    // Reset loading state when config changes or entity registry updates
+    if (changedProps.has("_config") || changedProps.has("_entityRegistry")) {
+      this._eventsLoaded = false;
+    }
+
+    if (
+      !this.hasUpdated ||
+      (changedProps.has("_config") && this._config?.entities) ||
+      changedProps.has("_entityRegistry")
+    ) {
+      const computedStyles = getComputedStyle(this);
+      const entityOptionsMap = new Map(
+        this._entityRegistry?.map((entry) => [
+          entry.entity_id,
+          entry.options,
+        ]) ?? []
+      );
+      if (this._config?.entities) {
+        this._calendars = this._config.entities.map((entity, idx) => {
+          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
+          let backgroundColor: string;
+          // Validate and use the color from entity registry if valid
+          if (entityColor && isValidColorString(entityColor)) {
+            backgroundColor = computeCssColor(entityColor);
+          } else {
+            // Fall back to default color by index
+            backgroundColor = getColorByIndex(idx, computedStyles);
+          }
+          return {
+            entity_id: entity,
+            backgroundColor,
+          };
+        });
+      }
+    }
+  }
+
   public getCardSize(): number {
-    return this._config?.header ? 1 : 0 + 11;
+    return 12;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 4,
+      min_rows: 4,
+    };
+  }
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass!.connection!, (entities) => {
+        this._entityRegistry = entities;
+      }),
+    ];
   }
 
   public connectedCallback(): void {
@@ -105,9 +182,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._calendars.length) {
+    if (!this._config || !this.hass) {
       return nothing;
     }
+
+    const loading = !this._entityRegistry || !this._eventsLoaded;
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
@@ -117,25 +196,53 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <div class="header">${this._config.title}</div>
+        ${this._config.title
+          ? html`<div class="header">${this._config.title}</div>`
+          : nothing}
         <ha-full-calendar
+          class=${classMap({
+            "is-grid": this.layout === "grid",
+            "is-panel": this.layout === "panel",
+            "has-title": !!this._config.title,
+            loading: loading,
+          })}
           .narrow=${this._narrow}
           .events=${this._events}
+          .calendars=${this._calendars}
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
-          .eventDisplay=${this._eventDisplay}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
+        ${loading
+          ? html`<div class="loading">
+              <ha-spinner></ha-spinner>
+            </div>`
+          : nothing}
       </ha-card>
     `;
   }
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
     if (!this._config || !this.hass) {
       return;
+    }
+
+    // Refetch events when entity registry changes (to update colors)
+    if (changedProps.has("_entityRegistry") && this._entityRegistry) {
+      this._fetchCalendarEvents();
+    }
+
+    // If no calendars configured, mark events as loaded to hide spinner
+    if (
+      this._entityRegistry &&
+      !this._calendars.length &&
+      !this._eventsLoaded
+    ) {
+      this._eventsLoaded = true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -154,10 +261,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
-    this._eventDisplay =
-      ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
+    this._eventsLoaded = false;
     this._fetchCalendarEvents();
   }
 
@@ -174,19 +280,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       this._calendars
     );
     this._events = result.events;
+    // Wait for component update and one animation frame for FullCalendar to render
+    this.updateComplete.then(() => {
+      requestAnimationFrame(() => {
+        this._eventsLoaded = true;
+      });
+    });
 
     if (result.errors.length > 0) {
-      const nameList = result.errors
-        .map((error_entity_id) =>
-          this.hass!.states[error_entity_id]
-            ? computeStateName(this.hass!.states[error_entity_id])
-            : error_entity_id
-        )
-        .join(", ");
-
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
-      )} ${nameList}`;
+      )}`;
     }
   }
 
@@ -218,20 +322,53 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding: 0 8px 8px;
       box-sizing: border-box;
       height: 100%;
+      overflow: hidden;
     }
 
     .header {
       color: var(--ha-card-header-color, var(--primary-text-color));
-      font-size: var(--ha-card-header-font-size, 24px);
-      line-height: 1.2;
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+      line-height: var(--ha-line-height-condensed);
       padding-top: 16px;
       padding-left: 8px;
       padding-inline-start: 8px;
       direction: var(--direction);
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     ha-full-calendar {
       --calendar-height: 400px;
+      display: block;
+      width: 100%;
+      height: var(--calendar-height);
+      min-height: var(--calendar-height);
+    }
+
+    ha-full-calendar.loading {
+      visibility: hidden;
+    }
+
+    ha-full-calendar.is-grid,
+    ha-full-calendar.is-panel {
+      --calendar-height: calc(100% - 16px);
+    }
+
+    ha-full-calendar.is-grid.has-title,
+    ha-full-calendar.is-panel.has-title {
+      --calendar-height: calc(
+        100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
+      );
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-background-color, var(--ha-card-background));
+      z-index: 1;
     }
   `;
 }

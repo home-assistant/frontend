@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-button";
 import "../../../components/ha-relative-time";
 import { triggerAutomationActions } from "../../../data/automation";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-automation")
@@ -30,12 +30,14 @@ class MoreInfoAutomation extends LitElement {
       </div>
 
       <div class="actions">
-        <mwc-button
+        <ha-button
+          appearance="plain"
+          size="small"
           @click=${this._runActions}
           .disabled=${isUnavailableState(this.stateObj!.state)}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -50,7 +52,7 @@ class MoreInfoAutomation extends LitElement {
       justify-content: space-between;
     }
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -58,7 +60,7 @@ class MoreInfoAutomation extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
   `;
 }

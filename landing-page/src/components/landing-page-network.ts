@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import memoizeOne from "memoize-one";
 import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -67,6 +66,7 @@ class LandingPageNetwork extends LitElement {
           ${ALTERNATIVE_DNS_SERVERS.map(
             ({ translationKey }, key) =>
               html`<ha-button
+                size="small"
                 .index=${key}
                 .disabled=${!dnsPrimaryInterfaceNameservers}
                 @click=${this._setDns}

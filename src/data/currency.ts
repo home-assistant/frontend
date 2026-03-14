@@ -117,7 +117,7 @@ export const countryCurrency = {
   MQ: "EUR",
   MP: "USD",
   MS: "XCD",
-  MR: "MRO",
+  MR: "MRU",
   IM: "GBP",
   UG: "UGX",
   TZ: "TZS",

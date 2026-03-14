@@ -1,14 +1,17 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
+import type { HomeAssistant } from "../types";
 
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
+  dhcp: "config/dhcp",
   matter: "config/matter",
   mqtt: "config/mqtt",
+  ssdp: "config/ssdp",
   thread: "config/thread",
+  zeroconf: "config/zeroconf",
   zha: "config/zha/dashboard",
   zwave_js: "config/zwave_js/dashboard",
 };
@@ -21,6 +24,8 @@ export type IntegrationType =
   | "hardware"
   | "entity"
   | "system";
+
+export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 export interface IntegrationManifest {
   is_built_in: boolean;
@@ -154,3 +159,9 @@ export const subscribeLogInfo = (
     conn,
     onChange
   );
+
+export const waitForIntegrationSetup = (hass: HomeAssistant, domain: string) =>
+  hass.callWS<{ integration_loaded: boolean }>({
+    type: "integration/wait",
+    domain,
+  });

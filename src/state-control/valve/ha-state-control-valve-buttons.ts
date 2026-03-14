@@ -124,7 +124,7 @@ export class HaStateControlValveButtons extends LitElement {
       --control-button-group-thickness: 100px;
     }
     ha-control-button {
-      --control-button-border-radius: 36px;
+      --control-button-border-radius: var(--ha-border-radius-6xl);
       --mdc-icon-size: 24px;
     }
   `;

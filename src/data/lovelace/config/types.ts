@@ -11,8 +11,7 @@ export interface LovelaceConfig extends LovelaceDashboardBaseConfig {
   views: LovelaceViewRawConfig[];
 }
 
-export interface LovelaceDashboardStrategyConfig
-  extends LovelaceDashboardBaseConfig {
+export interface LovelaceDashboardStrategyConfig extends LovelaceDashboardBaseConfig {
   strategy: LovelaceStrategyConfig;
 }
 

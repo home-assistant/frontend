@@ -1,23 +1,30 @@
-import "@material/mwc-button";
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
-import { subscribeDataEntryFlowProgressed } from "../../data/data_entry_flow";
+import {
+  subscribeDataEntryFlowProgress,
+  subscribeDataEntryFlowProgressed,
+} from "../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
 import type {
   DataEntryFlowDialogParams,
   LoadingReason,
 } from "./show-dialog-data-entry-flow";
+import { showOptionsFlowDialog } from "./show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";
@@ -52,7 +59,11 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _loading?: LoadingReason;
 
+  @state() private _progress?: number;
+
   private _instance = instance;
+
+  @state() private _open = false;
 
   @state() private _step:
     | DataEntryFlowStep
@@ -62,11 +73,12 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _handler?: string;
 
-  private _unsubDataEntryFlowProgressed?: Promise<UnsubscribeFunc>;
+  private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
     this._params = params;
     this._instance = instance++;
+    this._open = true;
 
     const curInstance = this._instance;
     let step: DataEntryFlowStep;
@@ -139,6 +151,17 @@ class DataEntryFlowDialog extends LitElement {
     if (!this._params) {
       return;
     }
+    if (!this._open) {
+      this._dialogClosed();
+      return;
+    }
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    if (!this._params) {
+      return;
+    }
     const flowFinished = Boolean(
       this._step && ["create_entry", "abort"].includes(this._step.type)
     );
@@ -160,13 +183,104 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     this._params = undefined;
     this._handler = undefined;
-    if (this._unsubDataEntryFlowProgressed) {
-      this._unsubDataEntryFlowProgressed.then((unsub) => {
-        unsub();
-      });
-      this._unsubDataEntryFlowProgressed = undefined;
+    if (this._unsubDataEntryFlowProgress) {
+      this._unsubDataEntryFlowProgress();
+      this._unsubDataEntryFlowProgress = undefined;
     }
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _devices = memoizeOne(
+    (
+      showDevices: boolean,
+      devices: DeviceRegistryEntry[],
+      entry_id?: string,
+      carryOverDevices?: string[]
+    ) =>
+      showDevices && entry_id
+        ? devices.filter(
+            (device) =>
+              device.config_entries.includes(entry_id) ||
+              carryOverDevices?.includes(device.id)
+          )
+        : []
+  );
+
+  private _getDialogTitle(): string {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepHeader(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortHeader
+          ? this._params.flowConfig.renderAbortHeader(this.hass, this._step)
+          : this.hass.localize(
+              `component.${this._params.domain ?? this._step.handler}.title`
+            );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressHeader(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuHeader(this.hass, this._step);
+      case "create_entry": {
+        const devicesLength = this._devices(
+          this._params.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          this._step.result?.entry_id,
+          this._params.carryOverDevices
+        ).length;
+        return this.hass.localize(
+          `ui.panel.config.integrations.config_flow.${
+            devicesLength ? "device_created" : "success"
+          }`,
+          {
+            number: devicesLength,
+          }
+        );
+      }
+      default:
+        return "";
+    }
+  }
+
+  private _getDialogSubtitle(): string | TemplateResult | undefined {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuSubheader?.(
+          this.hass,
+          this._step
+        );
+      default:
+        return "";
+    }
   }
 
   protected render() {
@@ -174,21 +288,75 @@ class DataEntryFlowDialog extends LitElement {
       return nothing;
     }
 
+    const showDocumentationLink =
+      ([
+        "form",
+        "menu",
+        "external",
+        "progress",
+        "data_entry_flow_progressed",
+      ].includes(this._step?.type as any) &&
+        this._params.manifest?.is_built_in) ||
+      !!this._params.manifest?.documentation;
+
+    const dialogTitle = this._getDialogTitle();
+    const dialogSubtitle = this._getDialogSubtitle();
+
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        hideActions
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        @after-show=${this._focusFormStep}
+        @closed=${this._dialogClosed}
       >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this.hass.localize("ui.common.close")}
+          .path=${mdiClose}
+          data-dialog="close"
+        ></ha-icon-button>
+
+        <div
+          slot="headerTitle"
+          class="dialog-title${this._step?.type === "form" ? " form" : ""}"
+          title=${dialogTitle}
+        >
+          ${dialogTitle}
+        </div>
+
+        ${dialogSubtitle
+          ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
+          : nothing}
+        ${showDocumentationLink && !this._loading && this._step
+          ? html`
+              <a
+                slot="headerActionItems"
+                class="help"
+                href=${this._params.manifest!.is_built_in
+                  ? documentationUrl(
+                      this.hass,
+                      `/integrations/${this._params.manifest!.domain}`
+                    )
+                  : this._params.manifest!.documentation}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircleOutline}
+                >
+                </ha-icon-button
+              ></a>
+            `
+          : nothing}
         <div>
           ${this._loading || this._step === null
             ? html`
                 <step-flow-loading
                   .flowConfig=${this._params.flowConfig}
                   .hass=${this.hass}
-                  .loadingReason=${this._loading}
+                  .loadingReason=${this._loading!}
                   .handler=${this._handler}
                   .step=${this._step}
                 ></step-flow-loading>
@@ -196,46 +364,13 @@ class DataEntryFlowDialog extends LitElement {
             : this._step === undefined
               ? // When we are going to next step, we render 1 round of empty
                 // to reset the element.
-                ""
+                nothing
               : html`
-                  <div class="dialog-actions">
-                    ${([
-                      "form",
-                      "menu",
-                      "external",
-                      "progress",
-                      "data_entry_flow_progressed",
-                    ].includes(this._step?.type as any) &&
-                      this._params.manifest?.is_built_in) ||
-                    this._params.manifest?.documentation
-                      ? html`
-                          <a
-                            href=${this._params.manifest.is_built_in
-                              ? documentationUrl(
-                                  this.hass,
-                                  `/integrations/${this._params.manifest.domain}`
-                                )
-                              : this._params?.manifest?.documentation}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                          >
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.help")}
-                              .path=${mdiHelpCircle}
-                            >
-                            </ha-icon-button
-                          ></a>
-                        `
-                      : ""}
-                    <ha-icon-button
-                      .label=${this.hass.localize("ui.common.close")}
-                      .path=${mdiClose}
-                      dialogAction="close"
-                    ></ha-icon-button>
-                  </div>
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          autofocus
+                          narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
@@ -255,7 +390,9 @@ class DataEntryFlowDialog extends LitElement {
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .domain=${this._step.handler}
+                              .handler=${this._step.handler}
+                              .domain=${this._params.domain ??
+                              this._step.handler}
                             ></step-flow-abort>
                           `
                         : this._step.type === "progress"
@@ -264,6 +401,7 @@ class DataEntryFlowDialog extends LitElement {
                                 .flowConfig=${this._params.flowConfig}
                                 .step=${this._step}
                                 .hass=${this.hass}
+                                .progress=${this._progress}
                               ></step-flow-progress>
                             `
                           : this._step.type === "menu"
@@ -280,7 +418,13 @@ class DataEntryFlowDialog extends LitElement {
                                   .step=${this._step}
                                   .hass=${this.hass}
                                   .navigateToResult=${this._params
-                                    .navigateToResult}
+                                    .navigateToResult ?? false}
+                                  .devices=${this._devices(
+                                    this._params.flowConfig.showDevices,
+                                    Object.values(this.hass.devices),
+                                    this._step.result?.entry_id,
+                                    this._params.carryOverDevices
+                                  )}
                                 ></step-flow-create-entry>
                               `}
                 `}
@@ -316,7 +460,10 @@ class DataEntryFlowDialog extends LitElement {
       return;
     }
 
-    this._loading = "loading_step";
+    const delayedLoading = setTimeout(() => {
+      // only show loading for slow steps to avoid flickering
+      this._loading = "loading_step";
+    }, 250);
     let _step: DataEntryFlowStep;
     try {
       _step = await step;
@@ -330,30 +477,100 @@ class DataEntryFlowDialog extends LitElement {
       });
       return;
     } finally {
+      clearTimeout(delayedLoading);
       this._loading = undefined;
     }
 
     this._step = undefined;
     await this.updateComplete;
     this._step = _step;
+    if (
+      (_step.type === "create_entry" || _step.type === "abort") &&
+      _step.next_flow
+    ) {
+      // skip device rename if there is a chained flow
+      this._step = undefined;
+      this._handler = undefined;
+      if (this._unsubDataEntryFlowProgress) {
+        this._unsubDataEntryFlowProgress();
+        this._unsubDataEntryFlowProgress = undefined;
+      }
+      if (_step.next_flow[0] === "config_flow") {
+        showConfigFlowDialog(this, {
+          continueFlowId: _step.next_flow[1],
+          carryOverDevices: this._devices(
+            this._params!.flowConfig.showDevices,
+            Object.values(this.hass.devices),
+            _step.type === "create_entry" ? _step.result?.entry_id : undefined,
+            this._params!.carryOverDevices
+          ).map((device) => device.id),
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else if (_step.next_flow[0] === "options_flow") {
+        if (_step.type === "create_entry") {
+          showOptionsFlowDialog(this, _step.result!, {
+            continueFlowId: _step.next_flow[1],
+            navigateToResult: this._params!.navigateToResult,
+            dialogClosedCallback: this._params!.dialogClosedCallback,
+          });
+        }
+      } else if (_step.next_flow[0] === "config_subentries_flow") {
+        if (_step.type === "create_entry") {
+          showSubConfigFlowDialog(this, _step.result!, _step.next_flow[0], {
+            continueFlowId: _step.next_flow[1],
+            navigateToResult: this._params!.navigateToResult,
+            dialogClosedCallback: this._params!.dialogClosedCallback,
+          });
+        }
+      } else {
+        this.closeDialog();
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error",
+            { error: `Unsupported next flow type: ${_step.next_flow[0]}` }
+          ),
+        });
+      }
+    }
   }
 
   private async _subscribeDataEntryFlowProgressed() {
-    if (this._unsubDataEntryFlowProgressed) {
+    if (this._unsubDataEntryFlowProgress) {
       return;
     }
-    this._unsubDataEntryFlowProgressed = subscribeDataEntryFlowProgressed(
-      this.hass.connection,
-      async (ev) => {
+    this._progress = undefined;
+    const unsubs = [
+      subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
           return;
         }
         this._processStep(
           this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
         );
-      }
-    );
+        this._progress = undefined;
+      }),
+      subscribeDataEntryFlowProgress(this.hass.connection, (ev) => {
+        // ha-progress-ring has an issue with 0 so we round up
+        this._progress = Math.ceil(ev.data.progress * 100);
+      }),
+    ];
+    this._unsubDataEntryFlowProgress = async () => {
+      (await Promise.all(unsubs)).map((unsub) => unsub());
+    };
   }
+
+  private _focusFormStep = async (): Promise<void> => {
+    if (this._step?.type !== "form" || !this._open) {
+      return;
+    }
+
+    await this.updateComplete;
+    (
+      this.renderRoot.querySelector(
+        "step-flow-form[autofocus]"
+      ) as HTMLElement | null
+    )?.focus();
+  };
 
   static get styles(): CSSResultGroup {
     return [
@@ -362,16 +579,14 @@ class DataEntryFlowDialog extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        .dialog-actions {
-          padding: 16px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          inset-inline-start: initial;
-          inset-inline-end: 0px;
-          direction: var(--direction);
+        .dialog-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .dialog-actions > * {
+        .dialog-title.form {
+          white-space: normal;
+        }
+        .help {
           color: var(--secondary-text-color);
         }
       `,

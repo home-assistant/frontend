@@ -1,7 +1,8 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
@@ -10,12 +11,14 @@ import { subscribeNotifications } from "../../data/persistent_notification";
 import type { HomeAssistant } from "../../types";
 import "./notification-item";
 import "../../components/ha-header-bar";
+import "../../components/ha-button";
 import "../../components/ha-drawer";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
-export class HuiNotificationDrawer extends LitElement {
+export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _notifications: PersistentNotification[] = [];
@@ -49,7 +52,7 @@ export class HuiNotificationDrawer extends LitElement {
     );
     this.style.setProperty(
       "--mdc-drawer-width",
-      narrow ? window.innerWidth + "px" : "500px"
+      `min(100vw, calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px)))`
     );
     this._open = true;
   }
@@ -65,6 +68,14 @@ export class HuiNotificationDrawer extends LitElement {
     this._notifications = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
+
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
 
   protected render() {
     if (!this._open) {
@@ -111,24 +122,21 @@ export class HuiNotificationDrawer extends LitElement {
         </ha-header-bar>
         <div class="notifications">
           ${notifications.length
-            ? html`${notifications.map(
-                (notification) =>
-                  html`<div class="notification">
-                    <notification-item
-                      .hass=${this.hass}
-                      .notification=${notification}
-                    ></notification-item>
-                  </div>`
-              )}
-              ${this._notifications.length > 1
-                ? html`<div class="notification-actions">
-                    <mwc-button raised @click=${this._dismissAll}>
-                      ${this.hass.localize(
-                        "ui.notification_drawer.dismiss_all"
-                      )}
-                    </mwc-button>
-                  </div>`
-                : ""}`
+            ? html`<div class="list-container">
+                  <lit-virtualizer
+                    .items=${notifications}
+                    .renderItem=${this._renderItem}
+                  ></lit-virtualizer>
+                </div>
+                ${this._notifications.length > 1
+                  ? html`<div class="notification-actions">
+                      <ha-button appearance="filled" @click=${this._dismissAll}>
+                        ${this.hass.localize(
+                          "ui.notification_drawer.dismiss_all"
+                        )}
+                      </ha-button>
+                    </div>`
+                  : ""}`
             : html` <div class="empty">
                 ${this.hass.localize("ui.notification_drawer.empty")}
                 <div></div>
@@ -137,6 +145,15 @@ export class HuiNotificationDrawer extends LitElement {
       </ha-drawer>
     `;
   }
+
+  private _renderItem = (notification: PersistentNotification) => html`
+    <div class="notification">
+      <notification-item
+        .hass=${this.hass}
+        .notification=${notification}
+      ></notification-item>
+    </div>
+  `;
 
   private _dialogClosed(ev: Event) {
     ev.stopPropagation();
@@ -148,39 +165,71 @@ export class HuiNotificationDrawer extends LitElement {
     this.closeDialog();
   }
 
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    return {
+      Escape: () => this.closeDialog(),
+    };
+  }
+
   static styles = css`
     ha-header-bar {
       --mdc-theme-on-primary: var(--primary-text-color);
       --mdc-theme-primary: var(--primary-background-color);
+      --header-bar-padding: var(--safe-area-inset-top, 0px) 0 0
+        var(--safe-area-inset-left, 0px);
       border-bottom: 1px solid var(--divider-color);
       display: block;
     }
 
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      ha-header-bar {
+        --header-bar-padding: var(--safe-area-inset-top, 0px)
+          var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
+      }
+    }
+
+    .list-container {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding-top: var(--ha-space-4);
+    }
+
     .notifications {
-      overflow-y: auto;
-      padding-top: 16px;
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
-      padding-inline-start: env(safe-area-inset-left);
-      padding-inline-end: env(safe-area-inset-right);
-      padding-bottom: env(safe-area-inset-bottom);
-      height: calc(100% - 1px - var(--header-height));
+      display: flex;
+      flex-direction: column;
+      padding-left: var(--safe-area-inset-left, 0px);
+      padding-inline-start: var(--safe-area-inset-left, 0px);
+      padding-bottom: var(--safe-area-inset-bottom, 0px);
+      height: calc(
+        100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
+      );
       box-sizing: border-box;
       background-color: var(--primary-background-color);
       color: var(--primary-text-color);
     }
 
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      .notifications {
+        padding-right: var(--safe-area-inset-right, 0px);
+        padding-inline-end: var(--safe-area-inset-right, 0px);
+      }
+    }
+
     .notification {
-      padding: 0 16px 16px;
+      padding: 0 var(--ha-space-4) var(--ha-space-4);
+      width: 100%;
     }
 
     .notification-actions {
-      padding: 0 16px 16px;
+      border-top: 1px solid var(--divider-color);
+      padding: var(--ha-space-4);
       text-align: center;
+      flex: 0 0 auto;
     }
 
     .empty {
-      padding: 16px;
+      padding: var(--ha-space-4);
       text-align: center;
     }
   `;

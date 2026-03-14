@@ -1,11 +1,14 @@
-import { MdFilledTextField } from "@material/web/textfield/filled-text-field";
+import { styles } from "@material/web/textfield/internal/filled-styles";
+import { FilledTextField } from "@material/web/textfield/internal/filled-text-field";
+import { styles as sharedStyles } from "@material/web/textfield/internal/shared-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-md-textfield")
-export class HaMdTextfield extends MdFilledTextField {
+export class HaMdTextfield extends FilledTextField {
   static override styles = [
-    ...super.styles,
+    sharedStyles,
+    styles,
     css`
       :host {
         --ha-icon-display: block;

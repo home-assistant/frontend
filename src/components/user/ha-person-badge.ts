@@ -45,7 +45,7 @@ class PersonBadge extends LitElement {
       width: 100%;
       height: 100%;
       background-size: cover;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .initials {
       display: inline-flex;
@@ -54,15 +54,15 @@ class PersonBadge extends LitElement {
       box-sizing: border-box;
       width: 100%;
       height: 100%;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--light-primary-color);
       text-decoration: none;
       color: var(--text-light-primary-color, var(--primary-text-color));
       overflow: hidden;
-      font-size: var(--person-badge-font-size, 1em);
+      font-size: var(--person-badge-font-size, var(--ha-font-size-m));
     }
     .initials.long {
-      font-size: 80%;
+      font-size: var(--ha-person-badge-font-size-long, var(--ha-font-size-s));
     }
   `;
 }

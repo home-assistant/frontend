@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -6,9 +5,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-tooltip";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import type {
   AttributeConfigurationStatus,
   Cluster,
@@ -46,15 +47,22 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @state() private _showDetails = false;
 
+  @state() private _open = false;
+
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   public showDialog(params: ZHAReconfigureDeviceDialogParams): void {
     this._params = params;
     this._clusterConfigurationStatuses = new Map();
     this._stages = undefined;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._unsubscribe();
     this._params = undefined;
     this._status = undefined;
@@ -72,14 +80,15 @@ class DialogZHAReconfigureDevice extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +
-            ": " +
-            (this._params.device.user_given_name || this._params.device.name)
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        header-title=${this.hass.localize(
+          `ui.dialogs.zha_reconfigure_device.heading`
+        ) +
+        ": " +
+        (this._params.device.user_given_name || this._params.device.name)}
+        @closed=${this._dialogClosed}
       >
         ${!this._status
           ? html`
@@ -95,14 +104,6 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </em>
               </p>
-              <mwc-button
-                slot="primaryAction"
-                @click=${this._startReconfiguration}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.zha_reconfigure_device.start_reconfiguration"
-                )}
-              </mwc-button>
             `
           : ``}
         ${this._status === "started"
@@ -124,18 +125,6 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
-                ${this._showDetails
-                  ? this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_hide`
-                    )
-                  : this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_show`
-                    )}
-              </mwc-button>
             `
           : ``}
         ${this._status === "failed"
@@ -153,18 +142,6 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
-                ${this._showDetails
-                  ? this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_hide`
-                    )
-                  : this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_show`
-                    )}
-              </mwc-button>
             `
           : ``}
         ${this._status === "finished"
@@ -182,18 +159,6 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
-                ${this._showDetails
-                  ? this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_hide`
-                    )
-                  : this.hass.localize(
-                      `ui.dialogs.zha_reconfigure_device.button_show`
-                    )}
-              </mwc-button>
             `
           : ``}
         ${this._stages
@@ -295,14 +260,18 @@ class DialogZHAReconfigureDevice extends LitElement {
                                               `
                                             : html`
                                                 <span class="stage">
+                                                  <ha-svg-icon
+                                                    .id="svg-icon-${clusterStatus
+                                                      .cluster.name}"
+                                                    .path=${mdiCloseCircle}
+                                                    class="failed"
+                                                  ></ha-svg-icon>
                                                   <ha-tooltip
+                                                    .for="svg-icon-${clusterStatus
+                                                      .cluster.name}"
                                                     placement="top"
-                                                    .content=${attribute.status}
                                                   >
-                                                    <ha-svg-icon
-                                                      .path=${mdiCloseCircle}
-                                                      class="failed"
-                                                    ></ha-svg-icon>
+                                                    ${attribute.status}
                                                   </ha-tooltip>
                                                 </span>
                                               `}
@@ -323,6 +292,37 @@ class DialogZHAReconfigureDevice extends LitElement {
               </div>
             `
           : ""}
+        <ha-dialog-footer slot="footer">
+          ${!this._status
+            ? html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._startReconfiguration}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.zha_reconfigure_device.start_reconfiguration"
+                  )}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this._toggleDetails}
+                >
+                  ${this._showDetails
+                    ? this.hass.localize(
+                        `ui.dialogs.zha_reconfigure_device.button_hide`
+                      )
+                    : this.hass.localize(
+                        `ui.dialogs.zha_reconfigure_device.button_show`
+                      )}
+                </ha-button>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
+              `}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

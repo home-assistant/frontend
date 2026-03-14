@@ -21,7 +21,8 @@
         "esbenp.prettier-vscode",
         "runem.lit-plugin",
         "github.vscode-pull-request-github",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "yeion7.styled-global-variables-autocomplete"
       ],
       "settings": {
         "files.eol": "\n",

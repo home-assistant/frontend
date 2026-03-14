@@ -9,7 +9,6 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-badge";
@@ -20,6 +19,7 @@ import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -162,11 +162,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     if (!stateObj) {
       return html`
         <ha-badge .label=${entityId} class="error">
-          <ha-svg-icon
-            slot="icon"
-            .hass=${this.hass}
-            .path=${mdiAlertCircle}
-          ></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
           ${this.hass.localize("ui.badge.entity.not_found")}
         </ha-badge>
       `;
@@ -179,17 +175,21 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       "--badge-color": color,
     };
 
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
+
     const stateDisplay = html`
       <state-display
         .stateObj=${stateObj}
         .hass=${this.hass}
         .content=${this._config.state_content}
-        .name=${this._config.name}
+        .name=${name}
       >
       </state-display>
     `;
-
-    const name = this._config.name || computeStateName(stateObj);
 
     const showState = this._config.show_state;
     const showName = this._config.show_name;

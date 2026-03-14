@@ -3,7 +3,6 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import type { ValveEntity } from "../../../data/valve";
@@ -57,7 +56,7 @@ class MoreInfoValve extends LitElement {
     );
 
     if (positionStateDisplay) {
-      return `${stateDisplay} ⸱ ${positionStateDisplay}`;
+      return `${stateDisplay} · ${positionStateDisplay}`;
     }
     return stateDisplay;
   }
@@ -155,11 +154,6 @@ class MoreInfoValve extends LitElement {
           }
         </div>
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="current_position,current_tilt_position"
-      ></ha-attributes>
     `;
   }
 
@@ -173,7 +167,7 @@ class MoreInfoValve extends LitElement {
           align-items: center;
         }
         .main-control > * {
-          margin: 0 8px;
+          margin: 0 var(--ha-space-2);
         }
       `,
     ];

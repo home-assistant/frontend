@@ -84,17 +84,22 @@ export const calcDateRange = (
     case "now-7d":
       return [
         calcDate(today, subDays, hass.locale, hass.config, 7),
-        calcDate(today, subDays, hass.locale, hass.config, 1),
+        calcDate(today, subDays, hass.locale, hass.config, 0),
       ];
     case "now-30d":
       return [
         calcDate(today, subDays, hass.locale, hass.config, 30),
-        calcDate(today, subDays, hass.locale, hass.config, 1),
+        calcDate(today, subDays, hass.locale, hass.config, 0),
       ];
     case "now-12m":
       return [
-        calcDate(subMonths(today, 12), startOfMonth, hass.locale, hass.config),
-        calcDate(subMonths(today, 1), endOfMonth, hass.locale, hass.config),
+        calcDate(
+          today,
+          (date) => subMonths(startOfMonth(date), 11),
+          hass.locale,
+          hass.config
+        ),
+        calcDate(today, endOfMonth, hass.locale, hass.config),
       ];
     case "now-1h":
       return [

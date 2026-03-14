@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -14,6 +13,8 @@ import type { HumidifierEntity } from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import type { LovelaceCardFeatureContext } from "../card-features/types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -69,6 +70,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: HumidifierCardConfig;
 
+  @state() private _featureContext: LovelaceCardFeatureContext = {};
+
   public getCardSize(): number {
     return 7;
   }
@@ -79,6 +82,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+    this._featureContext = {
+      entity_id: config.entity,
+    };
   }
 
   private _handleMoreInfo() {
@@ -121,13 +127,17 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
     }
 
-    const name = this._config!.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     const color = stateColorCss(stateObj);
 
@@ -165,7 +175,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                 "--feature-color": color,
               })}
               .hass=${this.hass}
-              .stateObj=${stateObj}
+              .context=${this._featureContext}
               .features=${this._config.features}
             ></hui-card-features>`
           : nothing}
@@ -210,8 +220,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: 18px;
-      line-height: 36px;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
       padding: 8px 30px 8px 30px;
       margin: 0;
       text-align: center;
@@ -250,7 +260,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       right: 0;
       inset-inline-end: 0px;
       inset-inline-start: initial;
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
       color: var(--secondary-text-color);
       direction: var(--direction);
     }

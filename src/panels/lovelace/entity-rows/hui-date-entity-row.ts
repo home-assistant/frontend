@@ -2,9 +2,9 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { setDateValue } from "../../../data/date";
-import type { HomeAssistant } from "../../../types";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -36,7 +36,7 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -59,7 +59,7 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       setDateValue(this.hass!, this._config!.entity, ev.detail.value);
     }

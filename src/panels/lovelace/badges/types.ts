@@ -1,3 +1,4 @@
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
@@ -31,7 +32,7 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
 export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   type: "entity";
   entity?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   color?: string;
   show_name?: boolean;
@@ -46,4 +47,21 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
    * @deprecated use `show_state`, `show_name`, `icon_type`
    */
   display_type?: DisplayType;
+}
+
+interface EnergyTotalBadgeConfig extends LovelaceBadgeConfig {
+  title?: string;
+  collection_key?: string;
+}
+
+export interface PowerTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "power-total";
+}
+
+export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "water-total";
+}
+
+export interface GasTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "gas-total";
 }

@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,14 +11,14 @@ import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceAction,
   DeviceCapabilities,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
@@ -35,7 +35,7 @@ export class HaDeviceAction extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origAction?: DeviceAction;
 
@@ -127,6 +127,7 @@ export class HaDeviceAction extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
       this._getCapabilities();
     }
@@ -135,8 +136,8 @@ export class HaDeviceAction extends LitElement {
     }
   }
 
-  protected updated(changedPros) {
-    const prevAction = changedPros.get("action");
+  protected updated(changedProps) {
+    const prevAction = changedProps.get("action");
     if (
       prevAction &&
       !deviceAutomationsEqual(this._entityReg, prevAction, this.action)

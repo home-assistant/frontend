@@ -1,10 +1,11 @@
 import { AttachableController } from "@material/web/internal/controller/attachable-controller";
-import { MdRipple } from "@material/web/ripple/ripple";
+import { Ripple } from "@material/web/ripple/internal/ripple";
+import { styles } from "@material/web/ripple/internal/ripple-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-ripple")
-export class HaRipple extends MdRipple {
+export class HaRipple extends Ripple {
   private readonly attachableTouchController = new AttachableController(
     this,
     this._onTouchControlChange.bind(this)
@@ -13,6 +14,14 @@ export class HaRipple extends MdRipple {
   attach(control: HTMLElement) {
     super.attach(control);
     this.attachableTouchController.attach(control);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // @ts-ignore
+    this.hovered = false;
+    // @ts-ignore
+    this.pressed = false;
   }
 
   detach() {
@@ -37,7 +46,7 @@ export class HaRipple extends MdRipple {
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-ripple-hover-opacity: var(--ha-ripple-hover-opacity, 0.08);

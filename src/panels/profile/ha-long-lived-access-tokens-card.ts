@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,14 +5,14 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-settings-row";
 import "../../components/ha-icon-button";
+import "../../components/ha-settings-row";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -26,14 +25,14 @@ class HaLongLivedTokens extends LitElement {
   @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
   private _accessTokens = memoizeOne(
-    (refreshTokens: RefreshToken[]): RefreshToken[] =>
-      refreshTokens
-        ?.filter((token) => token.type === "long_lived_access_token")
+    (refreshTokens?: RefreshToken[]): RefreshToken[] =>
+      (refreshTokens ?? [])
+        .filter((token) => token.type === "long_lived_access_token")
         .reverse()
   );
 
   protected render(): TemplateResult {
-    const accessTokens = this._accessTokens(this.refreshTokens!);
+    const accessTokens = this._accessTokens(this.refreshTokens);
 
     return html`
       <ha-card
@@ -55,13 +54,13 @@ class HaLongLivedTokens extends LitElement {
               "ui.panel.profile.long_lived_access_tokens.learn_auth_requests"
             )}
           </a>
-          ${!accessTokens?.length
+          ${!accessTokens.length
             ? html`<p>
                 ${this.hass.localize(
                   "ui.panel.profile.long_lived_access_tokens.empty_state"
                 )}
               </p>`
-            : accessTokens!.map(
+            : accessTokens.map(
                 (token) =>
                   html`<ha-settings-row two-line>
                     <span slot="heading">${token.client_name}</span>
@@ -88,48 +87,25 @@ class HaLongLivedTokens extends LitElement {
         </div>
 
         <div class="card-actions">
-          <mwc-button @click=${this._createToken}>
+          <ha-button @click=${this._createToken}>
             ${this.hass.localize(
               "ui.panel.profile.long_lived_access_tokens.create"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
   }
 
-  private async _createToken(): Promise<void> {
-    const name = await showPromptDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.profile.long_lived_access_tokens.prompt_name"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.profile.long_lived_access_tokens.name"
-      ),
+  private _createToken(): void {
+    const accessTokens = this._accessTokens(this.refreshTokens);
+
+    showLongLivedAccessTokenDialog(this, {
+      createdCallback: () => fireEvent(this, "hass-refresh-tokens"),
+      existingNames: accessTokens
+        .map((token) => token.client_name)
+        .filter((name): name is string => Boolean(name)),
     });
-
-    if (!name) {
-      return;
-    }
-
-    try {
-      const token = await this.hass.callWS<string>({
-        type: "auth/long_lived_access_token",
-        lifespan: 3650,
-        client_name: name,
-      });
-
-      showLongLivedAccessTokenDialog(this, { token, name });
-
-      fireEvent(this, "hass-refresh-tokens");
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.create_failed"
-        ),
-        text: err.message,
-      });
-    }
   }
 
   private async _deleteToken(ev: Event): Promise<void> {
@@ -175,11 +151,12 @@ class HaLongLivedTokens extends LitElement {
         a {
           color: var(--primary-color);
         }
-        mwc-button {
-          --mdc-theme-primary: var(--primary-color);
-        }
         ha-icon-button {
           color: var(--primary-text-color);
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

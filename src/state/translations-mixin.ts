@@ -8,17 +8,18 @@ import {
 } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import type {
+  DateFormat,
   FirstWeekday,
   NumberFormat,
   TimeFormat,
-  DateFormat,
-  TranslationCategory,
   TimeZone,
+  TranslationCategory,
 } from "../data/translation";
 import {
   getHassTranslations,
   getHassTranslationsPre109,
   saveTranslationPreferences,
+  subscribeTranslationPreferences,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, HomeAssistant } from "../types";
@@ -36,21 +37,11 @@ declare global {
     "hass-language-select": {
       language: string;
     };
-    "hass-number-format-select": {
-      number_format: NumberFormat;
-    };
-    "hass-time-format-select": {
-      time_format: TimeFormat;
-    };
-    "hass-date-format-select": {
-      date_format: DateFormat;
-    };
-    "hass-time-zone-select": {
-      time_zone: TimeZone;
-    };
-    "hass-first-weekday-select": {
-      first_weekday: FirstWeekday;
-    };
+    "hass-number-format-select": NumberFormat;
+    "hass-time-format-select": TimeFormat;
+    "hass-date-format-select": DateFormat;
+    "hass-time-zone-select": TimeZone;
+    "hass-first-weekday-select": FirstWeekday;
     "translations-updated": undefined;
   }
 }
@@ -119,7 +110,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassConnected() {
       super.hassConnected();
-      getUserLocale(this.hass!).then((locale) => {
+
+      subscribeTranslationPreferences(this.hass!, async ({ value }) => {
+        const locale = await getUserLocale(value);
+
         if (locale?.language && this.hass!.language !== locale.language) {
           // We just got language from backend, no need to save back
           this._selectLanguage(locale.language, false);
@@ -487,6 +481,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
   };
 
-// Load selected translation into memory immediately so it is ready when Polymer
+// Load selected translation into memory immediately so it is ready when the app
 // initializes.
 getTranslation(null, getLocalLanguage());

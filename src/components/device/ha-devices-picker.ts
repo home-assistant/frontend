@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { ValueChangedEvent, HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "./ha-device-picker";
 import type {
   HaDevicePickerDeviceFilterFunc,
@@ -61,7 +61,6 @@ class HaDevicesPicker extends LitElement {
         (entityId) => html`
           <div>
             <ha-device-picker
-              allow-custom-entity
               .curValue=${entityId}
               .hass=${this.hass}
               .deviceFilter=${this.deviceFilter}
@@ -79,7 +78,6 @@ class HaDevicesPicker extends LitElement {
       )}
       <div>
         <ha-device-picker
-          allow-custom-entity
           .hass=${this.hass}
           .helper=${this.helper}
           .deviceFilter=${this.deviceFilter}

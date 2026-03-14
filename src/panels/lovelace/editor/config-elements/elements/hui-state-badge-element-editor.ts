@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import type { LovelacePictureElementEditor } from "../../../types";
 import type { StateBadgeElementConfig } from "../../../elements/types";
 import { actionConfigStruct } from "../../structs/action-struct";
@@ -14,6 +15,7 @@ const stateBadgeElementConfigStruct = object({
   type: literal("state-badge"),
   entity: optional(string()),
   style: optional(any()),
+  name: optional(string()),
   title: optional(string()),
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
@@ -22,6 +24,7 @@ const stateBadgeElementConfigStruct = object({
 
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
+  { name: "name", selector: { text: {} } },
   { name: "title", selector: { text: {} } },
   {
     name: "interactions",
@@ -36,21 +39,32 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "",
         type: "optional_actions",
         flatten: true,
-        schema: (["hold_action", "double_tap_action"] as const).map(
-          (action) => ({
-            name: action,
+        schema: [
+          {
+            name: "double_tap_action",
             selector: {
               ui_action: {
-                default_action: "none" as const,
+                default_action: "none",
               },
             },
-          })
-        ),
+            context: ACTION_RELATED_CONTEXT,
+          },
+        ],
       },
     ],
   },

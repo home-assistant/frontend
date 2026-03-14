@@ -1,11 +1,12 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
+import "../../components/ha-button";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { ConfigEntryMutableParams } from "../../data/config_entries";
 import { updateConfigEntry } from "../../data/config_entries";
@@ -28,6 +29,8 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: ConfigEntrySystemOptionsDialogParams
   ): Promise<void> {
@@ -35,9 +38,14 @@ class DialogConfigEntrySystemOptions extends LitElement {
     this._error = undefined;
     this._disableNewEntities = params.entry.pref_disable_new_entities;
     this._disablePolling = params.entry.pref_disable_polling;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -50,17 +58,19 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.config_entry_system_options.title", {
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.dialogs.config_entry_system_options.title",
+          {
             integration:
               this.hass.localize(
                 `component.${this._params.entry.domain}.title`
               ) || this._params.entry.domain,
-          })
+          }
         )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <ha-formfield
@@ -82,10 +92,10 @@ class DialogConfigEntrySystemOptions extends LitElement {
             </p>`}
         >
           <ha-switch
+            autofocus
             .checked=${!this._disableNewEntities}
             @change=${this._disableNewEntitiesChanged}
             .disabled=${this._submitting}
-            dialogInitialFocus
           ></ha-switch>
         </ha-formfield>
 
@@ -113,20 +123,26 @@ class DialogConfigEntrySystemOptions extends LitElement {
             .disabled=${this._submitting}
           ></ha-switch>
         </ha-formfield>
-        <mwc-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          .disabled=${this._submitting}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting}
-        >
-          ${this.hass.localize("ui.dialogs.config_entry_system_options.update")}
-        </mwc-button>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize(
+              "ui.dialogs.config_entry_system_options.update"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

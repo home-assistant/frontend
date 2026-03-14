@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { UNAVAILABLE } from "./entity";
+import type { HomeAssistant } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
 
 export const enum AssistSatelliteEntityFeature {
   ANNOUNCE = 1,
@@ -52,7 +52,8 @@ export const assistSatelliteAnnounce = (
   args: {
     message?: string;
     media_id?: string;
-    preannounce_media_id?: string | null;
+    preannounce?: boolean;
+    preannounce_media_id?: string;
   }
 ) => hass.callService("assist_satellite", "announce", args, { entity_id });
 

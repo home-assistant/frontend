@@ -9,7 +9,7 @@
     ":semanticCommitsDisabled",
     "group:monorepos",
     "group:recommended",
-    "npm:unpublishSafe"
+    "security:minimumReleaseAgeNpm"
   ],
   "enabledManagers": ["npm", "nvm"],
   "postUpdateOptions": ["yarnDedupeHighest"],

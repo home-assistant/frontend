@@ -1,1 +1,1 @@
-yarn run lint-staged --relative --shell "/bin/bash"
+yarn run lint-staged --relative

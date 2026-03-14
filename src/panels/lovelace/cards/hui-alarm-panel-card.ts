@@ -1,7 +1,8 @@
+import { mdiClose } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -9,6 +10,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-textfield";
@@ -19,19 +21,20 @@ import {
   FORMAT_NUMBER,
   callAlarmAction,
 } from "../../../data/alarm_control_panel";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard } from "../types";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
+import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
+import { findEntities } from "../common/find-entities";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import type { LovelaceCard } from "../types";
 import type { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 
-const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
+const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", ""];
 
 export const DEFAULT_STATES = [
   "arm_home",
@@ -100,7 +103,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
-  @query("#alarmCode") private _input?: HaTextField;
+  @state() private _value?: string;
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
@@ -116,14 +119,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 9;
+      return 10;
     }
 
     const stateObj = this.hass.states[this._config.entity];
 
     return !stateObj || stateObj.attributes.code_format !== FORMAT_NUMBER
       ? 4
-      : 9;
+      : 10;
   }
 
   public setConfig(config: AlarmPanelCardConfig): void {
@@ -220,7 +223,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -230,12 +233,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
+
     return html`
       <ha-card>
         <h1 class="card-header">
-          ${this._config.name ||
-          stateObj.attributes.friendly_name ||
-          stateLabel}
+          ${name}
           <ha-assist-chip
             filled
             style=${styleMap({
@@ -258,13 +265,15 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             : (["disarm"] as const)
           ).map(
             (stateAction) => html`
-              <mwc-button
+              <ha-button
                 .action=${stateAction}
                 @click=${this._handleActionClick}
-                outlined
+                appearance="filled"
+                size="small"
+                variant=${stateAction === "disarm" ? "danger" : "brand"}
               >
                 ${this._actionDisplay(stateAction)}
-              </mwc-button>
+              </ha-button>
             `
           )}
         </div>
@@ -272,7 +281,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? nothing
           : html`
               <ha-textfield
-                id="alarmCode"
+                .value=${this._value || ""}
+                @input=${this._handleInput}
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
                 .inputMode=${stateObj.attributes.code_format === FORMAT_NUMBER
@@ -283,26 +293,31 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode
           ? nothing
           : html`
-              <div id="keypad">
+              <div class="keypad">
                 ${BUTTONS.map((value) =>
                   value === ""
-                    ? html` <mwc-button disabled></mwc-button> `
-                    : html`
-                        <mwc-button
-                          .value=${value}
-                          @click=${this._handlePadClick}
-                          outlined
-                          class=${classMap({
-                            numberkey: value !== "clear",
-                          })}
-                        >
-                          ${value === "clear"
-                            ? this.hass!.localize(
-                                `ui.card.alarm_control_panel.clear_code`
-                              )
-                            : value}
-                        </mwc-button>
-                      `
+                    ? html`<span></span>`
+                    : value === "clear"
+                      ? html`
+                          <ha-control-button
+                            @click=${this._handlePadClick}
+                            class="clear"
+                            .value=${value}
+                            .disabled=${!this._value}
+                            .label=${this.hass!.localize("ui.common.clear")}
+                          >
+                            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                          </ha-control-button>
+                        `
+                      : html`
+                          <ha-control-button
+                            .value=${value}
+                            @click=${this._handlePadClick}
+                            .label=${value}
+                          >
+                            ${value}
+                          </ha-control-button>
+                        `
                 )}
               </div>
             `}
@@ -324,22 +339,23 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         ) || entityState;
   }
 
+  private _handleInput(e: Event): void {
+    this._value = (e.currentTarget as HaTextField).value;
+  }
+
   private _handlePadClick(e: MouseEvent): void {
     const val = (e.currentTarget! as any).value;
-    this._input!.value = val === "clear" ? "" : this._input!.value + val;
+    this._value = val === "clear" ? "" : (this._value || "") + val;
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    const input = this._input;
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
-      input?.value || undefined
+      this._value || undefined
     );
-    if (input) {
-      input.value = "";
-    }
+    this._value = undefined;
   }
 
   private _handleMoreInfo() {
@@ -408,20 +424,28 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       animation: none;
     }
 
-    #keypad {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: auto;
-      width: 100%;
-      max-width: 300px;
+    .keypad {
+      --keypad-columns: 3;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(var(--keypad-columns), auto);
+      grid-auto-rows: auto;
+      grid-gap: var(--ha-space-4);
+      justify-items: center;
+      align-items: center;
       direction: ltr;
     }
 
-    #keypad mwc-button {
-      padding: 8px;
-      width: 30%;
-      box-sizing: border-box;
+    ha-control-button {
+      width: 56px;
+      height: 56px;
+      --control-button-border-radius: var(--ha-border-radius-4xl);
+      --mdc-icon-size: 24px;
+      font-size: var(--ha-font-size-2xl);
+    }
+    .clear {
+      --control-button-background-color: var(--red-color);
+      --control-button-icon-color: var(--red-color);
     }
 
     .actions {
@@ -431,16 +455,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       justify-content: center;
     }
 
-    .actions mwc-button {
+    .actions ha-button {
       margin: 0 4px 4px;
-    }
-
-    mwc-button#disarm {
-      color: var(--error-color);
-    }
-
-    mwc-button.numberkey {
-      --mdc-typography-button-font-size: var(--keypad-font-size, 0.875rem);
     }
   `;
 }

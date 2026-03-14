@@ -42,7 +42,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -67,7 +67,8 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
           : attribute !== undefined
             ? html`
                 <ha-attribute-value
-                  .hideUnit=${this._config.suffix}
+                  .hideUnit=${this._config.suffix !== undefined &&
+                  this._config.suffix !== ""}
                   .hass=${this.hass}
                   .stateObj=${stateObj}
                   .attribute=${this._config.attribute}

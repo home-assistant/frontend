@@ -1,7 +1,5 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
-  mdiArrowLeft,
   mdiClose,
   mdiDotsVertical,
   mdiGrid,
@@ -12,16 +10,21 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
   MediaPlayerItem,
   MediaPlayerLayoutType,
 } from "../../data/media-player";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../ha-dialog";
 import "../ha-dialog-header";
+import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
+import "../ha-dropdown-item";
+import "../ha-icon-button-arrow-prev";
+import "../ha-dialog";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -29,7 +32,6 @@ import type {
   MediaPlayerItemId,
 } from "./ha-media-player-browse";
 import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
@@ -43,6 +45,8 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   @state() _preferredLayout: MediaPlayerLayoutType = "auto";
 
+  @state() private _open = false;
+
   @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
@@ -53,9 +57,11 @@ class DialogMediaPlayerBrowse extends LitElement {
         media_content_type: undefined,
       },
     ];
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
     this._params = undefined;
     this._navigateIds = undefined;
     this._currentItem = undefined;
@@ -71,27 +77,19 @@ class DialogMediaPlayerBrowse extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        hideActions
-        flexContent
-        .heading=${!this._currentItem
-          ? this.hass.localize(
-              "ui.components.media-browser.media-player-browser"
-            )
-          : this._currentItem.title}
+        .hass=${this.hass}
+        .open=${this._open}
+        flexcontent
         @closed=${this.closeDialog}
         @opened=${this._dialogOpened}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
             ? html`
-                <ha-icon-button
+                <ha-icon-button-arrow-prev
                   slot="navigationIcon"
-                  .path=${mdiArrowLeft}
                   @click=${this._goBack}
-                ></ha-icon-button>
+                ></ha-icon-button-arrow-prev>
               `
             : nothing}
           <span slot="title">
@@ -107,52 +105,51 @@ class DialogMediaPlayerBrowse extends LitElement {
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            @action=${this._handleMenuAction}
+            @wa-select=${this._handleMenuAction}
             @closed=${stopPropagation}
-            fixed
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item graphic="icon">
-              ${this.hass.localize("ui.components.media-browser.auto")}
+            <ha-dropdown-item value="auto">
               <ha-svg-icon
                 class=${this._preferredLayout === "auto"
                   ? "selected_menu_item"
                   : ""}
-                slot="graphic"
+                slot="icon"
                 .path=${mdiAlphaABoxOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item graphic="icon">
-              ${this.hass.localize("ui.components.media-browser.grid")}
+              ${this.hass.localize("ui.components.media-browser.auto")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="grid">
               <ha-svg-icon
                 class=${this._preferredLayout === "grid"
                   ? "selected_menu_item"
                   : ""}
-                slot="graphic"
+                slot="icon"
                 .path=${mdiGrid}
               ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item graphic="icon">
-              ${this.hass.localize("ui.components.media-browser.list")}
+              ${this.hass.localize("ui.components.media-browser.grid")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="list">
               <ha-svg-icon
-                slot="graphic"
+                slot="icon"
                 class=${this._preferredLayout === "list"
                   ? "selected_menu_item"
                   : ""}
                 .path=${mdiListBoxOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
-          </ha-button-menu>
+              ${this.hass.localize("ui.components.media-browser.list")}
+            </ha-dropdown-item>
+          </ha-dropdown>
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
-            dialogAction="close"
+            data-dialog="close"
             slot="actionItems"
           ></ha-icon-button>
         </ha-dialog-header>
@@ -163,6 +160,11 @@ class DialogMediaPlayerBrowse extends LitElement {
           .navigateIds=${this._navigateIds}
           .action=${this._action}
           .preferredLayout=${this._preferredLayout}
+          .accept=${this._params.accept}
+          .defaultId=${this._params.defaultId}
+          .defaultType=${this._params.defaultType}
+          .hideContentType=${this._params.hideContentType}
+          .contentIdHelper=${this._params.contentIdHelper}
           @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
@@ -175,15 +177,16 @@ class DialogMediaPlayerBrowse extends LitElement {
     this.classList.add("opened");
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+    switch (action) {
+      case "auto":
         this._preferredLayout = "auto";
         break;
-      case 1:
+      case "grid":
         this._preferredLayout = "grid";
         break;
-      case 2:
+      case "list":
         this._preferredLayout = "list";
         break;
     }
@@ -217,30 +220,34 @@ class DialogMediaPlayerBrowse extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
-          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 
         ha-media-player-browse {
-          --media-browser-max-height: calc(100vh - 65px);
+          --media-browser-max-height: calc(
+            100vh - 65px - var(--safe-area-inset-y)
+          );
         }
 
         :host(.opened) ha-media-player-browse {
-          height: calc(100vh - 65px);
+          height: calc(100vh - 65px - var(--safe-area-inset-y));
         }
 
         @media (min-width: 800px) {
           ha-dialog {
-            --mdc-dialog-max-width: 800px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100vh - 72px);
+            --ha-dialog-max-width: 800px;
+            --ha-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
           ha-media-player-browse {
             position: initial;
-            --media-browser-max-height: calc(100vh - 145px);
+            --media-browser-max-height: calc(
+              100vh - 145px - var(--safe-area-inset-y)
+            );
             width: 700px;
           }
         }

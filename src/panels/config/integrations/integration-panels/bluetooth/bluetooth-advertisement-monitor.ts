@@ -1,11 +1,12 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -21,8 +22,9 @@ import {
   subscribeBluetoothAdvertisements,
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
@@ -33,9 +35,18 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @property({ attribute: false }) public address?: string;
+
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  private _tabs: PageNavigation[] = [
+    {
+      translationKey: "ui.panel.config.bluetooth.navigation.advertisements",
+      path: "/config/bluetooth/advertisement-monitor",
+    },
+  ];
 
   @state() private _data: BluetoothDeviceData[] = [];
 
@@ -101,6 +112,20 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     if (this._unsub_scanners) {
       this._unsub_scanners();
       this._unsub_scanners = undefined;
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    const searchParams = extractSearchParamsObject();
+    const address = searchParams.address;
+    if (address) {
+      this.address = address;
     }
   }
 
@@ -170,15 +195,19 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
       const device = this._sourceDevices[row.address];
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
+      const sourceName =
+        scannerDevice?.name_by_user ||
+        scannerDevice?.name ||
+        scanner?.name ||
+        row.source;
+      const areaName = scannerDevice?.area_id
+        ? this.hass.areas[scannerDevice.area_id]?.name
+        : undefined;
       return {
         ...row,
         id: row.address,
         source_address: row.source,
-        source:
-          scannerDevice?.name_by_user ||
-          scannerDevice?.name ||
-          scanner?.name ||
-          row.source,
+        source: areaName ? `${sourceName} (${areaName})` : sourceName,
         device: device?.name_by_user || device?.name || undefined,
         datetime: new Date(row.time * 1000),
       };
@@ -193,12 +222,18 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_advertisements_found"
+        )}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        filter=${this.address || ""}
         clickable
+        .tabs=${this._tabs}
+        back-path="/config/bluetooth/dashboard"
       ></hass-tabs-subpage-data-table>
     `;
   }

@@ -2,7 +2,7 @@ import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -17,6 +17,7 @@ import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
+@customElement("state-badge")
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
@@ -77,6 +78,17 @@ export class StateBadge extends LitElement {
       return html`<div class="missing">
         <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
       </div>`;
+    }
+
+    const cls = this.getClass();
+    if (cls) {
+      cls.forEach((toSet, className) => {
+        if (!toSet) {
+          this.classList.remove(className);
+        } else {
+          this.classList.add(className);
+        }
+      });
     }
 
     if (!this.icon) {
@@ -175,16 +187,30 @@ export class StateBadge extends LitElement {
         backgroundImage = `url(${imageUrl})`;
         this.icon = false;
       }
-
-      if (domain === "update") {
-        this.style.borderRadius = "0";
-      } else if (domain === "media_player" || domain === "camera") {
-        this.style.borderRadius = "8%";
-      }
     }
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
+  }
+
+  protected getClass() {
+    const cls = new Map(
+      ["has-no-radius", "has-media-image", "has-image"].map((_cls) => [
+        _cls,
+        false,
+      ])
+    );
+    if (this.stateObj) {
+      const domain = computeDomain(this.stateObj.entity_id);
+      if (domain === "update") {
+        cls.set("has-no-radius", true);
+      } else if (domain === "media_player" || domain === "camera") {
+        cls.set("has-media-image", true);
+      } else if (this.style.backgroundImage !== "") {
+        cls.set("has-image", true);
+      }
+    }
+    return cls;
   }
 
   static get styles(): CSSResultGroup {
@@ -193,17 +219,25 @@ export class StateBadge extends LitElement {
       css`
         :host {
           position: relative;
-          display: inline-block;
+          display: inline-flex;
           width: 40px;
-          color: var(--paper-item-icon-color, #44739e);
-          border-radius: 50%;
+          color: var(--state-icon-color);
+          border-radius: var(--state-badge-border-radius, 50%);
           height: 40px;
-          text-align: center;
           background-size: cover;
-          line-height: 40px;
-          vertical-align: middle;
           box-sizing: border-box;
           --state-inactive-color: initial;
+          align-items: center;
+          justify-content: center;
+        }
+        :host(.has-image) {
+          border-radius: var(--state-badge-with-image-border-radius, 50%);
+        }
+        :host(.has-media-image) {
+          border-radius: var(--state-badge-with-media-image-border-radius, 8%);
+        }
+        :host(.has-no-radius) {
+          border-radius: var(--ha-border-radius-square);
         }
         :host(:focus) {
           outline: none;
@@ -232,5 +266,3 @@ declare global {
     "state-badge": StateBadge;
   }
 }
-
-customElements.define("state-badge", StateBadge);

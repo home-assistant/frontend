@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { TagTrigger } from "../../../../../data/automation";
 import type { Tag } from "../../../../../data/tag";
 import { fetchTags } from "../../../../../data/tag";
@@ -42,14 +42,11 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         .disabled=${this.disabled || this._tags.length === 0}
         .value=${this.trigger.tag_id}
         @selected=${this._tagChanged}
+        .options=${this._tags.map((tag) => ({
+          value: tag.id,
+          label: tag.name || tag.id,
+        }))}
       >
-        ${this._tags.map(
-          (tag) => html`
-            <mwc-list-item .value=${tag.id}>
-              ${tag.name || tag.id}
-            </mwc-list-item>
-          `
-        )}
       </ha-select>
     `;
   }
@@ -64,18 +61,18 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     );
   }
 
-  private _tagChanged(ev) {
+  private _tagChanged(ev: HaSelectSelectEvent) {
     if (
-      !ev.target.value ||
+      !ev.detail.value ||
       !this._tags ||
-      this.trigger.tag_id === ev.target.value
+      this.trigger.tag_id === ev.detail.value
     ) {
       return;
     }
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        tag_id: ev.target.value,
+        tag_id: ev.detail.value,
       },
     });
   }

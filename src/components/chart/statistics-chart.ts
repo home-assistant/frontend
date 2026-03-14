@@ -29,8 +29,9 @@ import {
   getStatisticMetadata,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
+import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -61,14 +62,14 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType: "line" | "bar" = "line";
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
@@ -96,7 +97,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
-  @state() private _legendData: string[] = [];
+  @state() private _legendData: CustomLegendOption["data"];
 
   @state() private _statisticIds: string[] = [];
 
@@ -105,6 +106,8 @@ export class StatisticsChart extends LitElement {
   @state() private _hiddenStats = new Set<string>();
 
   private _computedStyle?: CSSStyleDeclaration;
+
+  private _previousYAxisLabelValue = 0;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -181,12 +184,12 @@ export class StatisticsChart extends LitElement {
   }
 
   private _datasetHidden(ev: CustomEvent) {
-    this._hiddenStats.add(ev.detail.name);
+    this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    this._hiddenStats.delete(ev.detail.name);
+    this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
@@ -197,8 +200,8 @@ export class StatisticsChart extends LitElement {
       : "";
     return params
       .map((param, index: number) => {
-        if (rendered[param.seriesName]) return "";
-        rendered[param.seriesName] = true;
+        if (rendered[param.seriesIndex]) return "";
+        rendered[param.seriesIndex] = true;
 
         const statisticId = this._statisticIds[param.seriesIndex];
         const stateObj = this.hass.states[statisticId];
@@ -238,17 +241,25 @@ export class StatisticsChart extends LitElement {
       this.maxYAxis;
     if (typeof minYAxis === "number") {
       if (this.fitYData) {
-        minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+        minYAxis = ({ min }) =>
+          Math.min(this._roundYAxis(min, Math.floor), this.minYAxis!);
       }
     } else if (this.logarithmicScale) {
-      minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
+      minYAxis = ({ min }) => {
+        const value = min > 0 ? min * 0.95 : min * 1.05;
+        return this._roundYAxis(value, Math.floor);
+      };
     }
     if (typeof maxYAxis === "number") {
       if (this.fitYData) {
-        maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+        maxYAxis = ({ max }) =>
+          Math.max(this._roundYAxis(max, Math.ceil), this.maxYAxis!);
       }
     } else if (this.logarithmicScale) {
-      maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
+      maxYAxis = ({ max }) => {
+        const value = max > 0 ? max * 1.05 : max * 0.95;
+        return this._roundYAxis(value, Math.ceil);
+      };
     }
     const endTime = this.endTime ?? new Date();
     let startTime = this.startTime;
@@ -306,8 +317,12 @@ export class StatisticsChart extends LitElement {
         splitLine: {
           show: true,
         },
+        axisLabel: {
+          formatter: this._formatYAxisLabel,
+        } as any,
       },
       legend: {
+        type: "custom",
         show: !this.hideLegend,
         data: this._legendData,
       },
@@ -320,7 +335,10 @@ export class StatisticsChart extends LitElement {
       },
       tooltip: {
         trigger: "axis",
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };
@@ -353,6 +371,7 @@ export class StatisticsChart extends LitElement {
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
     const legendData: {
+      id: string;
       name: string;
       color?: ZRColor;
       borderColor?: ZRColor;
@@ -450,12 +469,16 @@ export class StatisticsChart extends LitElement {
 
       const hasMean =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
-      const drawBands =
-        hasMean ||
-        (this.statTypes.includes("min") &&
-          statisticsHaveType(stats, "min") &&
-          this.statTypes.includes("max") &&
-          statisticsHaveType(stats, "max"));
+      const hasMax =
+        this.statTypes.includes("max") && statisticsHaveType(stats, "max");
+      const hasMin =
+        this.statTypes.includes("min") && statisticsHaveType(stats, "min");
+      const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
+
+      const hasState = this.statTypes.includes("state");
+
+      const bandTop = hasMax ? "max" : "mean";
+      const bandBottom = hasMin ? "min" : "mean";
 
       const sortedTypes = drawBands
         ? [...this.statTypes].sort((a, b) => {
@@ -472,16 +495,18 @@ export class StatisticsChart extends LitElement {
       let displayedLegend = false;
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
-          const band = drawBands && (type === "min" || type === "max");
+          const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
+            (band && hasMin && hasMax && hasMean) ||
+            (hasState && ["change", "sum"].includes(type))
+              ? color + (this.hideLegend ? "00" : "7F")
+              : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
             smooth: this.chartType === "line" ? 0.4 : false,
-            smoothMonotone: "x",
             cursor: "default",
             data: [],
             name: name
@@ -492,7 +517,9 @@ export class StatisticsChart extends LitElement {
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
             symbol: "none",
-            sampling: "minmax",
+            // minmax sampling operates independently per series, breaking stacking alignment
+            // https://github.com/apache/echarts/issues/11879
+            sampling: band && drawBands ? "lttb" : "minmax",
             animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
@@ -510,10 +537,17 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            if (drawBands && type === "max") {
-              (series as LineSeriesOption).areaStyle = {
-                color: color + "3F",
-              };
+            if (this._hiddenStats.has(`${statistic_id}-${bandBottom}`)) {
+              // changing the stackOrder forces echarts to render the stacked series that are not hidden #28472
+              series.stackOrder = "seriesDesc";
+              (series as LineSeriesOption).areaStyle = undefined;
+            } else {
+              series.stackOrder = "seriesAsc";
+              if (drawBands && type === bandTop) {
+                (series as LineSeriesOption).areaStyle = {
+                  color: color + "3F",
+                };
+              }
             }
           }
           if (!this.hideLegend) {
@@ -522,6 +556,7 @@ export class StatisticsChart extends LitElement {
               : displayedLegend === false;
             if (showLegend) {
               statLegendData.push({
+                id: statistic_id,
                 name,
                 color: series.color as ZRColor,
                 borderColor: series.itemStyle?.borderColor,
@@ -539,6 +574,7 @@ export class StatisticsChart extends LitElement {
       let firstSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
+        const endDate = new Date(stat.end);
         if (prevDate === startDate) {
           return;
         }
@@ -553,19 +589,81 @@ export class StatisticsChart extends LitElement {
             } else {
               val.push((stat.sum || 0) - firstSum);
             }
-          } else if (type === "max" && this.chartType === "line") {
-            const max = stat.max || 0;
-            val.push(Math.abs(max - (stat.min || 0)));
-            val.push(max);
+          } else if (
+            type === bandTop &&
+            this.chartType === "line" &&
+            drawBands &&
+            !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
+          ) {
+            const top = stat[bandTop] || 0;
+            val.push(Math.abs(top - (stat[bandBottom] || 0)));
+            val.push(top);
           } else {
             val.push(stat[type] ?? null);
           }
           dataValues.push(val);
         });
-        if (!this._hiddenStats.has(name)) {
-          pushData(startDate, new Date(stat.end), dataValues);
+        if (!this._hiddenStats.has(statistic_id)) {
+          pushData(
+            startDate,
+            endDate.getTime() < endTime.getTime() ? endDate : endTime,
+            dataValues
+          );
         }
       });
+
+      // Close out the last stat segment at prevEndTime
+      const lastEndTime = prevEndTime;
+      const lastValues = prevValues;
+      if (lastEndTime && lastValues) {
+        statDataSets.forEach((d, i) => {
+          d.data!.push(
+            this._transformDataValue([lastEndTime, ...lastValues[i]!])
+          );
+        });
+      }
+
+      // Append current state if viewing recent data
+      const now = new Date();
+      // allow 10m of leeway for "now", because stats are 5 minute aggregated
+      const isUpToNow = now.getTime() - endTime.getTime() <= 600000;
+      if (isUpToNow) {
+        // Skip external statistics (they have ":" in the ID)
+        if (!statistic_id.includes(":")) {
+          const stateObj = this.hass.states[statistic_id];
+          if (stateObj) {
+            const currentValue = parseFloat(stateObj.state);
+            if (
+              isFinite(currentValue) &&
+              !this._hiddenStats.has(statistic_id)
+            ) {
+              // Then push the current state at now
+              statTypes.forEach((type, i) => {
+                if (type === "sum" || type === "change") {
+                  // Skip cumulative types - need special calculation.
+                  return;
+                }
+                const val: (number | null)[] = [];
+                if (
+                  type === bandTop &&
+                  this.chartType === "line" &&
+                  drawBands &&
+                  !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
+                ) {
+                  // For band chart, current value is both min and max, so diff is 0
+                  val.push(0);
+                  val.push(currentValue);
+                } else {
+                  val.push(currentValue);
+                }
+                statDataSets[i].data!.push(
+                  this._transformDataValue([now, ...val])
+                );
+              });
+            }
+          }
+        }
+      }
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
@@ -576,10 +674,10 @@ export class StatisticsChart extends LitElement {
       this.unit = unit;
     }
 
-    legendData.forEach(({ name, color, borderColor }) => {
+    legendData.forEach(({ id, name, color, borderColor }) => {
       // Add an empty series for the legend
       totalDataSets.push({
-        id: name + "-legend",
+        id: id,
         name: name,
         color,
         itemStyle: {
@@ -592,9 +690,13 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    if (legendData.length !== this._legendData.length) {
+    if (legendData.length !== this._legendData?.length) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData = legendData.map(({ name }) => name);
+      this._legendData =
+        legendData.length > 1
+          ? legendData.map(({ id, name }) => ({ id, name }))
+          : // if there is only one entity, let the base chart handle the legend
+            undefined;
     }
     this._statisticIds = statisticIds;
   }
@@ -610,14 +712,34 @@ export class StatisticsChart extends LitElement {
     if (this.logarithmicScale) {
       // log(0) is -Infinity, so we need to set a minimum value
       if (typeof value === "number") {
-        return Math.max(value, 0.1);
+        return Math.max(value, Number.EPSILON);
       }
       if (typeof value === "function") {
-        return (values: any) => Math.max(value(values), 0.1);
+        return (values: any) => Math.max(value(values), Number.EPSILON);
       }
     }
     return value;
   }
+
+  private _roundYAxis(value: number, roundingFn: (value: number) => number) {
+    return Math.abs(value) < 1 ? value : roundingFn(value);
+  }
+
+  private _formatYAxisLabel = (value: number) => {
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
+    this._previousYAxisLabelValue = value;
+    return label;
+  };
 
   static styles = css`
     :host {

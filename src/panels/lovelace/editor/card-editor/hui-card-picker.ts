@@ -4,15 +4,16 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/search-input";
-import { isUnavailableState } from "../../../../data/entity";
+import { haStyleScrollbar } from "../../../../resources/styles";
+import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";
@@ -29,7 +30,7 @@ import {
 import { tryCreateCardElement } from "../../create-element/create-card-element";
 import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { coreCards } from "../lovelace-cards";
+import { coreCards, energyCards } from "../lovelace-cards";
 import type { Card, CardPickTarget } from "../types";
 
 interface CardElement {
@@ -43,6 +44,7 @@ export class HuiCardPicker extends LitElement {
 
   @property({ attribute: false }) public suggestedCards?: string[];
 
+  @state()
   @storage({
     key: "dashboardCardClipboard",
     state: true,
@@ -58,10 +60,6 @@ export class HuiCardPicker extends LitElement {
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   @state() private _filter = "";
-
-  @state() private _width?: number;
-
-  @state() private _height?: number;
 
   private _unusedEntities?: string[];
 
@@ -119,7 +117,16 @@ export class HuiCardPicker extends LitElement {
     (cardElements: CardElement[]): CardElement[] =>
       cardElements.filter(
         (cardElement: CardElement) =>
-          !cardElement.card.isSuggested && !cardElement.card.isCustom
+          !cardElement.card.isSuggested &&
+          !cardElement.card.isCustom &&
+          !cardElement.card.isEnergy
+      )
+  );
+
+  private _energyCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) => cardElement.card.isEnergy
       )
   );
 
@@ -135,6 +142,7 @@ export class HuiCardPicker extends LitElement {
 
     const suggestedCards = this._suggestedCards(this._cards);
     const othersCards = this._otherCards(this._cards);
+    const energyCardsItems = this._energyCards(this._cards);
     const customCardsItems = this._customCards(this._cards);
 
     return html`
@@ -146,13 +154,7 @@ export class HuiCardPicker extends LitElement {
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></search-input>
-      <div
-        id="content"
-        style=${styleMap({
-          width: this._width ? `${this._width}px` : "auto",
-          height: this._height ? `${this._height}px` : "auto",
-        })}
-      >
+      <div id="content" class="ha-scrollbar">
         ${this._filter
           ? html`<div class="cards-container">
               ${this._filterCards(this._cards, this._filter).map(
@@ -160,49 +162,64 @@ export class HuiCardPicker extends LitElement {
               )}
             </div>`
           : html`
-              <div class="cards-container">
-                ${suggestedCards.length > 0
-                  ? html`
-                      <div class="cards-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.suggested_cards`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${this._renderClipboardCard()}
-                ${suggestedCards.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-              </div>
-              <div class="cards-container">
-                ${suggestedCards.length > 0
-                  ? html`
-                      <div class="cards-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.other_cards`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${othersCards.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-              </div>
-              <div class="cards-container">
-                ${customCardsItems.length > 0
-                  ? html`
-                      <div class="cards-container-header">
+              ${suggestedCards.length > 0
+                ? html` <ha-expansion-panel expanded>
+                    <div slot="header" class="cards-container-header">
+                      ${this.hass!.localize(
+                        `ui.panel.lovelace.editor.card.generic.suggested_cards`
+                      )}
+                    </div>
+                    <div class="cards-container">
+                      ${this._renderClipboardCard()}
+                      ${suggestedCards.map(
+                        (cardElement: CardElement) => cardElement.element
+                      )}
+                    </div>
+                  </ha-expansion-panel>`
+                : nothing}
+              <ha-expansion-panel expanded>
+                <div slot="header" class="cards-container-header">
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.generic.core_cards`
+                  )}
+                </div>
+                <div class="cards-container">
+                  ${suggestedCards.length === 0
+                    ? this._renderClipboardCard()
+                    : nothing}
+                  ${othersCards.map(
+                    (cardElement: CardElement) => cardElement.element
+                  )}
+                </div>
+              </ha-expansion-panel>
+              <ha-expansion-panel>
+                <div slot="header" class="cards-container-header">
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.generic.energy_cards`
+                  )}
+                </div>
+                <div class="cards-container">
+                  ${energyCardsItems.map(
+                    (cardElement: CardElement) => cardElement.element
+                  )}
+                </div>
+              </ha-expansion-panel>
+              ${customCardsItems.length > 0
+                ? html`
+                    <ha-expansion-panel expanded>
+                      <div slot="header" class="cards-container-header">
                         ${this.hass!.localize(
                           `ui.panel.lovelace.editor.card.generic.custom_cards`
                         )}
                       </div>
-                    `
-                  : nothing}
-                ${customCardsItems.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-              </div>
+                      <div class="cards-container">
+                        ${customCardsItems.map(
+                          (cardElement: CardElement) => cardElement.element
+                        )}
+                      </div>
+                    </ha-expansion-panel>
+                  `
+                : nothing}
             `}
         <div class="cards-container">
           <div
@@ -262,6 +279,16 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("_filter")) {
+      const div = this.parentElement!.shadowRoot!.getElementById("content");
+      if (div) {
+        div.scrollTo({ behavior: "auto", top: 0 });
+      }
+    }
+  }
+
   private _loadCards() {
     let cards: Card[] = coreCards.map((card: Card) => ({
       name: this.hass!.localize(
@@ -287,6 +314,19 @@ export class HuiCardPicker extends LitElement {
         this.hass?.language
       );
     });
+
+    cards = cards.concat(
+      energyCards.map((card: Card) => ({
+        name: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.name`
+        ),
+        description: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.description`
+        ),
+        isEnergy: true,
+        ...card,
+      }))
+    );
 
     if (customCards.length > 0) {
       cards = cards.concat(
@@ -352,30 +392,7 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
-    const value = ev.detail.value;
-
-    if (!value) {
-      // Reset when we no longer filter
-      this._width = undefined;
-      this._height = undefined;
-    } else if (!this._width || !this._height) {
-      // Save height and width so the dialog doesn't jump while searching
-      const div = this.shadowRoot!.getElementById("content");
-      if (div && !this._width) {
-        const width = div.clientWidth;
-        if (width) {
-          this._width = width;
-        }
-      }
-      if (div && !this._height) {
-        const height = div.clientHeight;
-        if (height) {
-          this._height = height;
-        }
-      }
-    }
-
-    this._filter = value;
+    this._filter = ev.detail.value;
   }
 
   private _cardPicked(ev: Event): void {
@@ -483,40 +500,56 @@ export class HuiCardPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        #content {
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
+        }
+
         search-input {
           display: block;
+          width: 100%;
           --mdc-shape-small: var(--card-picker-search-shape);
           margin: var(--card-picker-search-margin);
           position: sticky;
           top: 0;
           z-index: 10;
           background-color: var(
-              --ha-dialog-surface-background,
-              var(--mdc-theme-surface, #fff)
+            --ha-dialog-surface-background,
+            var(--mdc-theme-surface, #fff)
           );
         }
 
         .cards-container-header {
-          font-size: 16px;
-          font-weight: 500;
-          padding: 12px 8px;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+          padding: var(--ha-space-3) var(--ha-space-2);
           margin: 0;
           grid-column: 1 / -1;
           position: sticky;
-          top: 56px;
+          top: 0;
           z-index: 1;
-          background: linear-gradient(90deg, var(
-                  --ha-dialog-surface-background,
-                  var(--mdc-theme-surface, #fff)
-          ) 0%, #ffffff00 80%);
+          background: linear-gradient(
+            90deg,
+            var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff))
+              0%,
+            #ffffff00 80%
+          );
         }
 
         .cards-container {
           display: grid;
-          grid-gap: 8px 8px;
+          gap: var(--ha-space-2);
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          margin-top: 20px;
+          padding: var(--ha-space-3);
         }
 
         .card {
@@ -524,29 +557,33 @@ export class HuiCardPicker extends LitElement {
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
           overflow: hidden;
-          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
+          border: var(--ha-card-border-width, 1px) solid
+            var(--ha-card-border-color, var(--divider-color));
         }
 
         .card-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
-          padding: 12px 16px;
+          line-height: var(--ha-line-height-condensed);
+          padding: var(--ha-space-3) var(--ha-space-4);
           display: block;
           text-align: center;
         }
 
         .preview {
           pointer-events: none;
-          margin: 20px;
+          margin: var(--ha-space-5);
           flex-grow: 1;
           display: flex;
           align-items: center;
@@ -573,7 +610,10 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         .manual {
@@ -583,16 +623,16 @@ export class HuiCardPicker extends LitElement {
 
         .icon {
           position: absolute;
-          top: 8px;
-          right: 8px
-          inset-inline-start: 8px;
-          inset-inline-end: 8px;
-          border-radius: 50%;
-          --mdc-icon-size: 16px;
-          line-height: 16px;
+          top: var(--ha-space-2);
+          right: var(--ha-space-2);
+          inset-inline-start: var(--ha-space-2);
+          inset-inline-end: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-circle);
+          --mdc-icon-size: var(--ha-space-4);
+          line-height: var(--ha-space-4);
           box-sizing: border-box;
           color: var(--text-primary-color);
-          padding: 4px;
+          padding: var(--ha-space-1);
         }
         .icon.custom {
           background: var(--warning-color);

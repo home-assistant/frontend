@@ -1,25 +1,24 @@
-import "@material/mwc-list/mwc-list-item";
-import { mdiDrag } from "@mdi/js";
+import { mdiDragHorizontalVariant } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
+import "../ha-dropdown-item";
 import "../ha-formfield";
+import "../ha-generic-picker";
 import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-sortable";
 import "../ha-select-box";
+import "../ha-sortable";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -40,8 +39,6 @@ export class HaSelectSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @query("ha-combo-box", true) private comboBox!: HaComboBox;
-
   private _itemMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
@@ -59,15 +56,8 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
-  private _filter = "";
-
   protected render() {
-    const options =
-      this.selector.select?.options?.map((option) =>
-        typeof option === "object"
-          ? (option as SelectOption)
-          : ({ value: option, label: option } as SelectOption)
-      ) || [];
+    const options = this._getOptions(this.selector);
 
     const translationKey = this.selector.select?.translation_key;
 
@@ -103,7 +93,7 @@ export class HaSelectSelector extends LitElement {
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
-          @value-changed=${this._valueChanged}
+          @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
           .hass=${this.hass}
         ></ha-select-box>
@@ -130,7 +120,7 @@ export class HaSelectSelector extends LitElement {
                     .checked=${item.value === this.value}
                     .value=${item.value}
                     .disabled=${item.disabled || this.disabled}
-                    @change=${this._valueChanged}
+                    @change=${this._radioChanged}
                   ></ha-radio>
                 </ha-formfield>
               `
@@ -165,10 +155,6 @@ export class HaSelectSelector extends LitElement {
       const value =
         !this.value || this.value === "" ? [] : ensureArray(this.value);
 
-      const optionItems = options.filter(
-        (option) => !option.disabled && !value?.includes(option.value)
-      );
-
       return html`
         ${value?.length
           ? html`
@@ -197,7 +183,7 @@ export class HaSelectSelector extends LitElement {
                             ? html`
                                 <ha-svg-icon
                                   slot="icon"
-                                  .path=${mdiDrag}
+                                  .path=${mdiDragHorizontalVariant}
                                 ></ha-svg-icon>
                               `
                             : nothing}
@@ -212,82 +198,82 @@ export class HaSelectSelector extends LitElement {
             `
           : nothing}
 
-        <ha-combo-box
-          item-value-path="value"
-          item-label-path="label"
+        <ha-generic-picker
           .hass=${this.hass}
-          .label=${this.label}
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${""}
-          .items=${optionItems}
+          .addButtonLabel=${this.label}
+          .getItems=${this._getItems(options, value, true)}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
-          @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
-          @opened-changed=${this._openedChanged}
-        ></ha-combo-box>
+        ></ha-generic-picker>
       `;
     }
 
     if (this.selector.select?.custom_value) {
-      if (
-        this.value !== undefined &&
-        !Array.isArray(this.value) &&
-        !options.find((option) => option.value === this.value)
-      ) {
-        options.unshift({ value: this.value, label: this.value });
-      }
-
-      const optionItems = options.filter((option) => !option.disabled);
-
       return html`
-        <ha-combo-box
-          item-value-path="value"
-          item-label-path="label"
+        <ha-generic-picker
           .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required}
-          .items=${optionItems}
-          .value=${this.value}
-          @filter-changed=${this._filterChanged}
+          .getItems=${this._getItems(options)}
+          .value=${typeof this.value === "string" ? this.value : undefined}
           @value-changed=${this._comboBoxValueChanged}
-          @opened-changed=${this._openedChanged}
-        ></ha-combo-box>
+          allow-custom-value
+        ></ha-generic-picker>
       `;
     }
 
     return html`
       <ha-select
-        fixedMenuPosition
-        naturalMenuWidth
         .label=${this.label ?? ""}
-        .value=${this.value ?? ""}
+        .value=${typeof this.value === "string" ? this.value : ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
         clearable
-        @closed=${stopPropagation}
-        @selected=${this._valueChanged}
+        @selected=${this._selectChanged}
+        .options=${options}
       >
-        ${options.map(
-          (item: SelectOption) => html`
-            <mwc-list-item .value=${item.value} .disabled=${item.disabled}
-              >${item.label}</mwc-list-item
-            >
-          `
-        )}
       </ha-select>
     `;
   }
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
       : "";
   }
+
+  private _getOptions = memoizeOne(
+    (selector: SelectSelector) =>
+      selector.select?.options?.map((option) =>
+        typeof option === "object"
+          ? (option as SelectOption)
+          : ({ value: option, label: option } as SelectOption)
+      ) || []
+  );
+
+  private _getItems = memoizeOne(
+    (options: SelectOption[], value?: string[], multiple = false) => {
+      const filteredOptions = options.filter((option) =>
+        !option.disabled && !multiple ? true : !value?.includes(option.value)
+      );
+
+      return () =>
+        filteredOptions.map((option) => ({
+          id: option.value,
+          primary: option.label,
+          sorting_label: option.label,
+        }));
+    }
+  );
 
   private get _mode(): "list" | "dropdown" | "box" {
     return (
@@ -296,16 +282,24 @@ export class HaSelectSelector extends LitElement {
     );
   }
 
-  private _valueChanged(ev) {
+  private _radioChanged(ev) {
     ev.stopPropagation();
+    this._valueChanged(ev);
+  }
 
-    if (ev.detail?.index === -1 && this.value !== undefined) {
+  private _selectChanged(ev) {
+    ev.stopPropagation();
+    // Additional handling for reset of select elements
+    if (ev.detail?.value === undefined && this.value !== undefined) {
       fireEvent(this, "value-changed", {
         value: undefined,
       });
       return;
     }
+    this._valueChanged(ev);
+  }
 
+  private _valueChanged(ev) {
     const value = ev.detail?.value || ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
@@ -353,8 +347,6 @@ export class HaSelectSelector extends LitElement {
     fireEvent(this, "value-changed", {
       value,
     });
-    await this.updateComplete;
-    this._filterChanged();
   }
 
   private _comboBoxValueChanged(ev: CustomEvent): void {
@@ -372,47 +364,15 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    const currentValue =
-      !this.value || this.value === "" ? [] : ensureArray(this.value);
+    const currentValue = !this.value ? [] : ensureArray(this.value);
 
     if (newValue !== undefined && currentValue.includes(newValue)) {
       return;
     }
 
-    setTimeout(() => {
-      this._filterChanged();
-      this.comboBox.setInputValue("");
-    }, 0);
-
     fireEvent(this, "value-changed", {
       value: [...currentValue, newValue],
     });
-  }
-
-  private _openedChanged(ev?: CustomEvent): void {
-    if (ev?.detail.value) {
-      this._filterChanged();
-    }
-  }
-
-  private _filterChanged(ev?: CustomEvent): void {
-    this._filter = ev?.detail.value || "";
-
-    const filteredItems = this.comboBox.items?.filter((item) => {
-      const label = item.label || item.value;
-      return label.toLowerCase().includes(this._filter?.toLowerCase());
-    });
-
-    if (
-      this._filter &&
-      this.selector.select?.custom_value &&
-      filteredItems &&
-      !filteredItems.some((item) => (item.label || item.value) === this._filter)
-    ) {
-      filteredItems.unshift({ label: this._filter, value: this._filter });
-    }
-
-    this.comboBox.filteredItems = filteredItems;
   }
 
   static styles = css`
@@ -420,11 +380,10 @@ export class HaSelectSelector extends LitElement {
       position: relative;
     }
     ha-select,
-    mwc-formfield,
     ha-formfield {
       display: block;
     }
-    mwc-list-item[disabled] {
+    ha-dropdown-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
     ha-chip-set {

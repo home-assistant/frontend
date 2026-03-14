@@ -44,8 +44,3 @@ GitHub Actions:
       - any-glob-to-any-file:
           - .github/workflows/**
           - .github/*.yml
-
-Supervisor:
-  - changed-files:
-      - any-glob-to-any-file:
-          - hassio/src/**

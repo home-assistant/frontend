@@ -17,7 +17,7 @@ export class HaCard extends LitElement {
       backdrop-filter: var(--ha-card-backdrop-filter, none);
       box-shadow: var(--ha-card-box-shadow, none);
       box-sizing: border-box;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border-width: var(--ha-card-border-width, 1px);
       border-style: solid;
       border-color: var(--ha-card-border-color, var(--divider-color, #e0e0e0));
@@ -41,29 +41,34 @@ export class HaCard extends LitElement {
     :host ::slotted(.card-header) {
       color: var(--ha-card-header-color, var(--primary-text-color));
       font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, 24px);
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: 48px;
-      padding: 12px 16px 16px;
+      line-height: var(--ha-line-height-expanded);
+      padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4);
       display: block;
-      margin-block-start: 0px;
-      margin-block-end: 0px;
-      font-weight: normal;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-weight: var(--ha-font-weight-normal);
     }
 
-    :host ::slotted(.card-content:not(:first-child)),
+    /* clean-css ignore:start */
+    :host
+      ::slotted(
+        .card-content:not(:nth-child(1 of .card-content, .card-header))
+      ),
     slot:not(:first-child)::slotted(.card-content) {
-      padding-top: 0px;
-      margin-top: -8px;
+      padding-top: 0;
+      margin-top: calc(var(--ha-space-2) * -1);
     }
+    /* clean-css ignore:end */
 
     :host ::slotted(.card-content) {
-      padding: 16px;
+      padding: var(--ha-space-4);
     }
 
     :host ::slotted(.card-actions) {
       border-top: 1px solid var(--divider-color, #e8e8e8);
-      padding: 5px 16px;
+      padding: var(--ha-space-2);
     }
   `;
 

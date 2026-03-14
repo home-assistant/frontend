@@ -1,19 +1,30 @@
+import memoizeOne from "memoize-one";
 import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { any, assert, literal, object, optional, string } from "superstruct";
+import {
+  any,
+  assert,
+  literal,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { ImageElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const imageElementConfigStruct = object({
   type: literal("image"),
   entity: optional(string()),
-  image: optional(string()),
+  image: optional(union([string(), object()])),
   style: optional(any()),
   title: optional(string()),
   tap_action: optional(actionConfigStruct),
@@ -26,53 +37,6 @@ const imageElementConfigStruct = object({
   state_filter: optional(any()),
   aspect_ratio: optional(string()),
 });
-
-const SCHEMA = [
-  { name: "entity", selector: { entity: {} } },
-  { name: "title", selector: { text: {} } },
-  {
-    name: "interactions",
-    type: "expandable",
-    flatten: true,
-    iconPath: mdiGestureTap,
-    schema: [
-      {
-        name: "tap_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "",
-        type: "optional_actions",
-        flatten: true,
-        schema: (["hold_action", "double_tap_action"] as const).map(
-          (action) => ({
-            name: action,
-            selector: {
-              ui_action: {
-                default_action: "none" as const,
-              },
-            },
-          })
-        ),
-      },
-    ],
-  },
-  { name: "image", selector: { image: {} } },
-  { name: "camera_image", selector: { entity: { domain: "camera" } } },
-  {
-    name: "camera_view",
-    selector: { select: { options: ["auto", "live"] } },
-  },
-  { name: "state_image", selector: { object: {} } },
-  { name: "filter", selector: { text: {} } },
-  { name: "state_filter", selector: { object: {} } },
-  { name: "aspect_ratio", selector: { text: {} } },
-  { name: "style", selector: { object: {} } },
-] as const;
 
 @customElement("hui-image-element-editor")
 export class HuiImageElementEditor
@@ -88,6 +52,90 @@ export class HuiImageElementEditor
     this._config = config;
   }
 
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "entity", selector: { entity: {} } },
+        { name: "title", selector: { text: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+              context: ACTION_RELATED_CONTEXT,
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+              context: ACTION_RELATED_CONTEXT,
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: [
+                {
+                  name: "double_tap_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                  context: ACTION_RELATED_CONTEXT,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
+        { name: "camera_image", selector: { entity: { domain: "camera" } } },
+        {
+          name: "camera_view",
+          selector: {
+            select: {
+              options: ["auto", "live"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                ),
+              })),
+              mode: "dropdown",
+            },
+          },
+        },
+        { name: "state_image", selector: { object: {} } },
+        { name: "filter", selector: { text: {} } },
+        { name: "state_filter", selector: { object: {} } },
+        { name: "aspect_ratio", selector: { text: {} } },
+        { name: "style", selector: { object: {} } },
+      ] as const
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -96,19 +144,28 @@ export class HuiImageElementEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
-        .schema=${SCHEMA}
+        .data=${this._processData(this._config)}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
 
+  private _processData = memoizeOne((config: ImageElementConfig) => ({
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
+
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
     this.hass!.localize(
       `ui.panel.lovelace.editor.card.generic.${schema.name}`
     ) ||

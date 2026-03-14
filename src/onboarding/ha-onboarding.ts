@@ -25,6 +25,7 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
 import type { AuthUrlSearchParams } from "../data/auth";
 import { hassUrl } from "../data/auth";
+import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
   fetchInstallationType,
@@ -143,7 +144,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           .label=${""}
           native-name
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"
@@ -220,10 +220,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.addEventListener("onboarding-progress", (ev) =>
       this._handleProgress(ev)
     );
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
-    makeDialogManager(this, this.shadowRoot!);
+    makeDialogManager(this);
     import("../components/ha-language-picker");
   }
 
@@ -403,6 +406,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
               ),
             };
 
+      await saveFrontendSystemData(this.hass!.connection, "core", {
+        onboarded_version: this.hass!.config.version,
+        onboarded_date: new Date().toISOString(),
+      });
+
       let result: OnboardingResponses["integration"];
 
       try {
@@ -513,7 +521,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ha-language-picker {
       display: block;
       width: 200px;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       overflow: hidden;
       --ha-select-height: 40px;
       --mdc-select-fill-color: none;

@@ -1,32 +1,30 @@
-import "@material/mwc-list/mwc-list";
+import { consume } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
-import memoizeOne from "memoize-one";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import { subscribeLabelRegistry } from "../data/label_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { stringCompare } from "../common/string/compare";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { labelsContext } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-label";
 import "./ha-icon-button";
+import "./ha-label";
+import "./ha-list";
 import "./ha-list-item";
 import "./search-input-outlined";
-import { stringCompare } from "../common/string/compare";
 
 @customElement("ha-filter-labels")
-export class HaFilterLabels extends SubscribeMixin(LitElement) {
+export class HaFilterLabels extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: string[];
@@ -35,19 +33,13 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _labels: LabelRegistryEntry[] = [];
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
-  }
 
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
@@ -93,13 +85,17 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list
+              <ha-list
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
                 multi
               >
                 ${repeat(
-                  this._filteredLabels(this._labels, this._filter, this.value),
+                  this._filteredLabels(
+                    this._labels || [],
+                    this._filter,
+                    this.value
+                  ),
                   (label) => label.label_id,
                   (label) => {
                     const color = label.color
@@ -110,7 +106,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
-                      <ha-label style=${color ? `--color: ${color}` : ""}>
+                      <ha-label
+                        style=${color ? `--color: ${color}` : ""}
+                        .description=${label.description}
+                      >
                         ${label.icon
                           ? html`<ha-icon
                               slot="icon"
@@ -122,7 +121,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                     </ha-check-list-item>`;
                   }
                 )}
-              </mwc-list> `
+              </ha-list> `
           : nothing}
       </ha-expansion-panel>
       ${this.expanded
@@ -142,8 +141,12 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32)}px`;
+        this.renderRoot.querySelector("ha-list")!.style.height =
+          `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 32px - height of the search input
+        // 48px - height of ha-list-item
       }, 300);
     }
   }
@@ -165,25 +168,33 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
-      return;
-    }
+    const filteredLabels = this._filteredLabels(
+      this._labels || [],
+      this._filter,
+      this.value
+    );
 
-    const value: string[] = [];
+    const filteredLabelIds = new Set(filteredLabels.map((l) => l.label_id));
 
+    // Keep previously selected labels that are not in the current filtered view
+    const preservedLabels = (this.value || []).filter(
+      (id) => !filteredLabelIds.has(id)
+    );
+
+    // Build the new selection from the filtered labels based on selected indices
+    const newlySelectedLabels: string[] = [];
     for (const index of ev.detail.index) {
-      const labelId = this._labels[index].label_id;
-      value.push(labelId);
+      const labelId = filteredLabels[index]?.label_id;
+      if (labelId) {
+        newlySelectedLabels.push(labelId);
+      }
     }
-    this.value = value;
+
+    const value = [...preservedLabels, ...newlySelectedLabels];
+    this.value = value.length ? value : [];
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: value.length ? value : undefined,
       items: undefined,
     });
   }
@@ -210,7 +221,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -228,11 +239,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);
@@ -252,7 +263,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

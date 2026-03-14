@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { DOMAINS_WITH_CARD } from "../const";
 import { canToggleState } from "./can_toggle_state";

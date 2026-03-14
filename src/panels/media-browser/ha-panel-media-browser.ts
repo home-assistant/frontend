@@ -1,12 +1,9 @@
 import {
-  mdiGrid,
-  mdiListBoxOutline,
-  mdiArrowLeft,
   mdiAlphaABoxOutline,
   mdiDotsVertical,
+  mdiGrid,
+  mdiListBoxOutline,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,15 +11,22 @@ import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/media-player/ha-media-player-browse";
+import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import "../../components/media-player/ha-media-manage-button";
+import "../../components/media-player/ha-media-player-browse";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "../../components/media-player/ha-media-player-browse";
+import {
+  getEntityIdFromCameraMediaSource,
+  isCameraMediaSource,
+} from "../../data/camera";
 import type {
   MediaPickedEvent,
   MediaPlayerItem,
@@ -31,17 +35,13 @@ import type {
 import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
 import type { ResolvedMediaSource } from "../../data/media_source";
 import { resolveMediaSource } from "../../data/media_source";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import {
-  getEntityIdFromCameraMediaSource,
-  isCameraMediaSource,
-} from "../../data/camera";
-import "../../components/ha-top-app-bar-fixed";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -63,6 +63,7 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
+  @state()
   @storage({
     key: "mediaBrowserPreferredLayout",
     state: true,
@@ -77,6 +78,7 @@ class PanelMediaBrowser extends LitElement {
     },
   ];
 
+  @state()
   @storage({
     key: "mediaBrowseEntityId",
     state: true,
@@ -90,12 +92,11 @@ class PanelMediaBrowser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._navigateIds.length > 1
           ? html`
               <ha-icon-button-arrow-prev
                 slot="navigationIcon"
-                .path=${mdiArrowLeft}
                 @click=${this._goBack}
               ></ha-icon-button-arrow-prev>
             `
@@ -119,43 +120,40 @@ class PanelMediaBrowser extends LitElement {
           .currentItem=${this._currentItem}
           @media-refresh=${this._refreshMedia}
         ></ha-media-manage-button>
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item graphic="icon">
+          <ha-dropdown-item
+            value="auto"
+            class=${this._preferredLayout === "auto"
+              ? "selected_menu_item"
+              : ""}
+          >
             ${this.hass.localize("ui.components.media-browser.auto")}
-            <ha-svg-icon
-              class=${this._preferredLayout === "auto"
-                ? "selected_menu_item"
-                : ""}
-              slot="graphic"
-              .path=${mdiAlphaABoxOutline}
-            ></ha-svg-icon>
-          </mwc-list-item>
-          <mwc-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item
+            value="grid"
+            class=${this._preferredLayout === "grid"
+              ? "selected_menu_item"
+              : ""}
+          >
             ${this.hass.localize("ui.components.media-browser.grid")}
-            <ha-svg-icon
-              class=${this._preferredLayout === "grid"
-                ? "selected_menu_item"
-                : ""}
-              slot="graphic"
-              .path=${mdiGrid}
-            ></ha-svg-icon>
-          </mwc-list-item>
-          <mwc-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item
+            value="list"
+            class=${this._preferredLayout === "list"
+              ? "selected_menu_item"
+              : ""}
+          >
             ${this.hass.localize("ui.components.media-browser.list")}
-            <ha-svg-icon
-              slot="graphic"
-              class=${this._preferredLayout === "list"
-                ? "selected_menu_item"
-                : ""}
-              .path=${mdiListBoxOutline}
-            ></ha-svg-icon>
-          </mwc-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
@@ -174,22 +172,24 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._preferredLayout = "auto";
-        break;
-      case 1:
-        this._preferredLayout = "grid";
-        break;
-      case 2:
-        this._preferredLayout = "list";
-        break;
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+
+    if (["auto", "grid", "list"].includes(value)) {
+      this._preferredLayout = value as MediaPlayerLayoutType;
     }
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (
+      !this.hasUpdated &&
+      this._entityId !== BROWSER_PLAYER &&
+      !(this._entityId in this.hass.states)
+    ) {
+      this._entityId = BROWSER_PLAYER;
+    }
 
     if (!changedProps.has("route")) {
       return;
@@ -339,19 +339,52 @@ class PanelMediaBrowser extends LitElement {
         }
 
         ha-media-player-browse {
-          height: calc(100vh - (100px + var(--header-height)));
+          height: calc(
+            100vh -
+              (
+                100px + var(--header-height, 0px) +
+                  var(--safe-area-inset-top, 0px) +
+                  var(--safe-area-inset-bottom, 0px)
+              )
+          );
         }
 
         :host([narrow]) ha-media-player-browse {
-          height: calc(100vh - (57px + var(--header-height)));
+          height: calc(
+            100vh -
+              (
+                68px + var(--header-height, 0px) +
+                  var(--safe-area-inset-top, 0px) +
+                  var(--safe-area-inset-bottom, 0px)
+              )
+          );
         }
+
         .selected_menu_item {
           color: var(--primary-color);
         }
 
+        .selected_menu_item ha-svg-icon {
+          color: currentColor;
+        }
+
         ha-bar-media-player {
           position: fixed;
-          width: var(--mdc-top-app-bar-width, 100%);
+          bottom: var(--safe-area-inset-bottom, 0px);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+        }
+        :host([narrow]) ha-bar-media-player {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
         }
       `,
     ];

@@ -42,6 +42,19 @@ export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
     entry_id,
   });
 
+export const updateSubEntry = (
+  hass: HomeAssistant,
+  entry_id: string,
+  subentry_id: string,
+  updatedValues: SubEntryMutableParams
+) =>
+  hass.callWS({
+    type: "config_entries/subentries/update",
+    entry_id,
+    subentry_id,
+    ...updatedValues,
+  });
+
 export const deleteSubEntry = (
   hass: HomeAssistant,
   entry_id: string,
@@ -59,6 +72,8 @@ export type ConfigEntryMutableParams = Partial<
     "title" | "pref_disable_new_entities" | "pref_disable_polling"
   >
 >;
+
+export type SubEntryMutableParams = Partial<Pick<SubEntry, "title">>;
 
 // https://github.com/home-assistant/core/blob/2286dea636fda001f03433ba14d7adbda43979e5/homeassistant/config_entries.py#L81
 export const ERROR_STATES: ConfigEntry["state"][] = [
@@ -95,10 +110,9 @@ export const subscribeConfigEntries = (
   if (filters && filters.type) {
     params.type_filter = filters.type;
   }
-  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>(
-    (message) => callbackFunction(message),
-    params
-  );
+  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>((message) => {
+    callbackFunction(message);
+  }, params);
 };
 
 export const getConfigEntries = (
@@ -191,3 +205,29 @@ export const sortConfigEntries = (
   );
   return [primaryEntry, ...otherEntries];
 };
+
+export class ConfigEntryStream {
+  private _entries: ConfigEntry[] = [];
+
+  processMessage(message: ConfigEntryUpdate[]) {
+    message.forEach((configEntry) => {
+      if (configEntry.type === null || configEntry.type === "added") {
+        this._entries.push(configEntry.entry);
+        return;
+      }
+      if (configEntry.type === "removed") {
+        this._entries = this._entries.filter(
+          (entry) => entry.entry_id !== configEntry.entry.entry_id
+        );
+        return;
+      }
+      if (configEntry.type === "updated") {
+        const newEntry = configEntry.entry;
+        this._entries = this._entries.map((entry) =>
+          entry.entry_id === newEntry.entry_id ? newEntry : entry
+        );
+      }
+    });
+    return this._entries;
+  }
+}

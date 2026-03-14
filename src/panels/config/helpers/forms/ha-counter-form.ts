@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -15,6 +16,8 @@ class HaCounterForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public new = false;
+
+  @property({ type: Boolean }) public disabled = false;
 
   private _item?: Partial<Counter>;
 
@@ -81,6 +84,7 @@ class HaCounterForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -90,6 +94,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-textfield
           .value=${this._minimum}
@@ -99,6 +104,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.minimum"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-textfield
           .value=${this._maximum}
@@ -108,6 +114,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.maximum"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-textfield
           .value=${this._initial}
@@ -117,33 +124,39 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.initial"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <ha-textfield
-                .value=${this._step}
-                .configValue=${"step"}
-                type="number"
-                @input=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.counter.step"
-                )}
-              ></ha-textfield>
-              <div class="row">
-                <ha-switch
-                  .checked=${this._restore}
-                  .configValue=${"restore"}
-                  @change=${this._valueChanged}
-                >
-                </ha-switch>
-                <div>
-                  ${this.hass.localize(
-                    "ui.dialogs.helper_settings.counter.restore"
-                  )}
-                </div>
-              </div>
-            `
-          : ""}
+        <ha-expansion-panel
+          header=${this.hass.localize(
+            "ui.dialogs.helper_settings.generic.advanced_settings"
+          )}
+          outlined
+        >
+          <ha-textfield
+            .value=${this._step}
+            .configValue=${"step"}
+            type="number"
+            @input=${this._valueChanged}
+            .label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.counter.step"
+            )}
+            .disabled=${this.disabled}
+          ></ha-textfield>
+          <div class="row">
+            <ha-switch
+              .checked=${this._restore}
+              .configValue=${"restore"}
+              @change=${this._valueChanged}
+              .disabled=${this.disabled}
+            >
+            </ha-switch>
+            <div>
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.counter.restore"
+              )}
+            </div>
+          </div>
+        </ha-expansion-panel>
       </div>
     `;
   }

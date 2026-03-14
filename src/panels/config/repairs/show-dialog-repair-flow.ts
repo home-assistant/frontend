@@ -1,7 +1,6 @@
 import { html, nothing } from "lit";
 import type { DataEntryFlowStep } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
-import "./dialog-repairs-issue-subtitle";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   createRepairsFlow,
@@ -14,6 +13,7 @@ import {
   showFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
 import type { HomeAssistant } from "../../../types";
+import "./dialog-repairs-issue-subtitle";
 
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
   step.description_placeholders && issue.translation_placeholders
@@ -68,8 +68,11 @@ export const showRepairsFlowDialog = (
       deleteFlow: deleteRepairsFlow,
 
       renderAbortHeader(hass) {
+        return hass.localize("ui.dialogs.repair_flow.form.header");
+      },
+
+      renderAbortSubheader(hass) {
         return html`
-          ${hass.localize("ui.dialogs.repair_flow.form.header")}
           <dialog-repairs-issue-subtitle
             .hass=${hass}
             .issue=${issue}
@@ -98,13 +101,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormStepHeader(hass, step) {
-        return html`
-          ${hass.localize(
+        return (
+          hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize("ui.dialogs.repair_flow.form.header")}
+          ) || hass.localize("ui.dialogs.repair_flow.form.header")
+        );
+      },
+
+      renderShowFormStepSubheader(hass) {
+        return html`
           <dialog-repairs-issue-subtitle
             .hass=${hass}
             .issue=${issue}
@@ -196,13 +204,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormProgressHeader(hass, step) {
-        return html`
-          ${hass.localize(
+        return (
+          hass.localize(
             `component.${issue.domain}.issues.step.${
               issue.translation_key || issue.issue_id
             }.fix_flow.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize(`component.${issue.domain}.title`)}
+          ) || hass.localize(`component.${issue.domain}.title`)
+        );
+      },
+
+      renderShowFormProgressSubheader(hass) {
+        return html`
           <dialog-repairs-issue-subtitle
             .hass=${hass}
             .issue=${issue}
@@ -229,13 +242,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderMenuHeader(hass, step) {
-        return html`
-          ${hass.localize(
+        return (
+          hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize(`component.${issue.domain}.title`)}
+          ) || hass.localize(`component.${issue.domain}.title`)
+        );
+      },
+
+      renderMenuSubheader(hass) {
+        return html`
           <dialog-repairs-issue-subtitle
             .hass=${hass}
             .issue=${issue}
@@ -267,6 +285,15 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.menu_options.${option}`,
+          mergePlaceholders(issue, step)
+        );
+      },
+
+      renderMenuOptionDescription(hass, step, option) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.menu_option_descriptions.${option}`,
           mergePlaceholders(issue, step)
         );
       },

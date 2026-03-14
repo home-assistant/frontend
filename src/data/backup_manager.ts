@@ -10,6 +10,10 @@ export type CreateBackupStage =
   | "addon_repositories"
   | "addons"
   | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
+  | "cleaning_up"
   | "docker_config"
   | "finishing_file"
   | "folders"
@@ -26,13 +30,17 @@ export type RestoreBackupStage =
   | "addon_repositories"
   | "addons"
   | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
   | "await_home_assistant_restart"
   | "check_home_assistant"
   | "docker_config"
   | "download_from_agent"
   | "folders"
   | "home_assistant"
-  | "remove_delta_addons";
+  | "remove_delta_addons"
+  | "remove_delta_apps";
 
 export type RestoreBackupState = "completed" | "failed" | "in_progress";
 
@@ -58,19 +66,39 @@ interface RestoreBackupEvent {
   state: RestoreBackupState;
 }
 
+export interface UploadBackupEvent {
+  manager_state: BackupManagerState;
+  agent_id: string;
+  uploaded_bytes: number;
+  total_bytes: number;
+}
+
+export type ManagerState =
+  | "idle"
+  | "create_backup"
+  | "receive_backup"
+  | "restore_backup";
+
 export type ManagerStateEvent =
   | IdleEvent
   | CreateBackupEvent
   | ReceiveBackupEvent
   | RestoreBackupEvent;
 
+export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
+
 export const subscribeBackupEvents = (
   hass: HomeAssistant,
-  callback: (event: ManagerStateEvent) => void
+  callback: (event: BackupSubscriptionEvent) => void,
+  preCheck?: () => boolean | Promise<boolean>
 ) =>
-  hass.connection.subscribeMessage<ManagerStateEvent>(callback, {
-    type: "backup/subscribe_events",
-  });
+  hass.connection.subscribeMessage<BackupSubscriptionEvent>(
+    callback,
+    {
+      type: "backup/subscribe_events",
+    },
+    { preCheck }
+  );
 
 export const DEFAULT_MANAGER_STATE: ManagerStateEvent = {
   manager_state: "idle",

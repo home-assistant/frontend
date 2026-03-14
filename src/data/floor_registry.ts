@@ -1,6 +1,5 @@
-import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
-import type { AreaRegistryEntry } from "./area_registry";
+import type { AreaRegistryEntry } from "./area/area_registry";
 import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
@@ -51,6 +50,15 @@ export const deleteFloorRegistryEntry = (
     floor_id: floorId,
   });
 
+export const reorderFloorRegistryEntries = (
+  hass: HomeAssistant,
+  floorIds: string[]
+) =>
+  hass.callWS({
+    type: "config/floor_registry/reorder",
+    floor_ids: floorIds,
+  });
+
 export const getFloorAreaLookup = (
   areas: AreaRegistryEntry[]
 ): FloorAreaLookup => {
@@ -66,22 +74,3 @@ export const getFloorAreaLookup = (
   }
   return floorAreaLookup;
 };
-
-export const floorCompare =
-  (entries?: FloorRegistryEntry[], order?: string[]) =>
-  (a: string, b: string) => {
-    const indexA = order ? order.indexOf(a) : -1;
-    const indexB = order ? order.indexOf(b) : -1;
-    if (indexA === -1 && indexB === -1) {
-      const nameA = entries?.[a]?.name ?? a;
-      const nameB = entries?.[b]?.name ?? b;
-      return stringCompare(nameA, nameB);
-    }
-    if (indexA === -1) {
-      return 1;
-    }
-    if (indexB === -1) {
-      return -1;
-    }
-    return indexA - indexB;
-  };

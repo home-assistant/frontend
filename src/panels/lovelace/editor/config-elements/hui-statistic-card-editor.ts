@@ -1,12 +1,20 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { any, assert, assign, object, optional, string } from "superstruct";
+import {
+  any,
+  assert,
+  assign,
+  boolean,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type {
   StatisticsMetaData,
   StatisticType,
@@ -21,18 +29,24 @@ import type { StatisticCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
+import {
+  PERIOD_ENERGY,
+  STATISTIC_CARD_DEFAULT_PERIOD,
+} from "../../cards/hui-statistic-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     unit: optional(string()),
     stat_type: optional(string()),
     period: optional(any()),
     theme: optional(string()),
     footer: optional(headerFooterConfigStructs),
+    energy_date_selection: optional(boolean()),
     collection_key: optional(string()),
   })
 );
@@ -70,6 +84,14 @@ export class HuiStatisticCardEditor
 
   public setConfig(config: StatisticCardConfig): void {
     assert(config, cardConfigStruct);
+    // Migrate legacy period option to new key
+    if (config.period === PERIOD_ENERGY) {
+      config = {
+        energy_date_selection: true,
+        ...config,
+        period: STATISTIC_CARD_DEFAULT_PERIOD,
+      };
+    }
     this._config = config;
     this._fetchMetadata();
   }
@@ -103,6 +125,7 @@ export class HuiStatisticCardEditor
     (
       selectedPeriodKey: string | undefined,
       localize: LocalizeFunc,
+      enableDateSelect: boolean,
       metadata?: StatisticsMetaData
     ) =>
       [
@@ -125,31 +148,58 @@ export class HuiStatisticCardEditor
             },
           },
         },
+        ...(!enableDateSelect
+          ? [
+              {
+                name: "period",
+                required: true,
+                selector:
+                  selectedPeriodKey && selectedPeriodKey in periods
+                    ? {
+                        select: {
+                          multiple: false,
+                          options: Object.keys(periods).map((periodKey) => ({
+                            value: periodKey,
+                            label:
+                              localize(
+                                `ui.panel.lovelace.editor.card.statistic.periods.${periodKey}`
+                              ) || periodKey,
+                          })),
+                        },
+                      }
+                    : { object: {} },
+              },
+            ]
+          : []),
         {
-          name: "period",
-          required: true,
-          selector:
-            selectedPeriodKey &&
-            Object.keys(periods).includes(selectedPeriodKey)
-              ? {
-                  select: {
-                    multiple: false,
-                    options: Object.keys(periods).map((periodKey) => ({
-                      value: periodKey,
-                      label:
-                        localize(
-                          `ui.panel.lovelace.editor.card.statistic.periods.${periodKey}`
-                        ) || periodKey,
-                    })),
+          name: "",
+          type: "grid",
+          schema: [
+            ...(enableDateSelect
+              ? ([
+                  {
+                    type: "string",
+                    name: "collection_key",
+                    required: false,
                   },
-                }
-              : { object: {} },
+                ] as HaFormSchema[])
+              : []),
+            {
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
+            },
+          ],
+        },
+        {
+          name: "name",
+          selector: { entity_name: {} },
+          context: { entity: "entity" },
         },
         {
           type: "grid",
           name: "",
           schema: [
-            { name: "name", selector: { text: {} } },
             {
               name: "icon",
               selector: {
@@ -176,6 +226,7 @@ export class HuiStatisticCardEditor
     const schema = this._schema(
       typeof data.period === "string" ? data.period : undefined,
       this.hass.localize,
+      !!this._config!.energy_date_selection,
       this._metadata
     );
 
@@ -184,6 +235,7 @@ export class HuiStatisticCardEditor
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .computeHelper=${this._computeHelperCallback}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -240,26 +292,34 @@ export class HuiStatisticCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    if (schema.name === "period") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.statistic.period"
-      );
+  private _computeHelperCallback = (schema) => {
+    switch (schema.name) {
+      case "collection_key":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+        );
+      default:
+        return undefined;
     }
+  };
 
-    if (schema.name === "theme") {
-      return `${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.theme"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.optional"
-      )})`;
+  private _computeLabelCallback = (schema) => {
+    switch (schema.name) {
+      case "period":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.statistic.period"
+        );
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
-    );
   };
 }
 

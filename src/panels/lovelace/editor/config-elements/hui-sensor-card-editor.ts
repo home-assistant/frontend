@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -12,20 +13,22 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 import type { SensorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     graph: optional(union([literal("line"), literal("none")])),
     unit: optional(string()),
@@ -41,70 +44,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  {
-    name: "entity",
-    selector: {
-      entity: { domain: ["counter", "input_number", "number", "sensor"] },
-    },
-  },
-  { name: "name", selector: { text: {} } },
-  {
-    type: "grid",
-    name: "",
-    schema: [
-      {
-        name: "icon",
-        selector: {
-          icon: {},
-        },
-        context: {
-          icon_entity: "entity",
-        },
-      },
-      {
-        name: "graph",
-        selector: {
-          select: {
-            options: [
-              {
-                value: "none",
-                label: "None",
-              },
-              {
-                value: "line",
-                label: "Line",
-              },
-            ],
-          },
-        },
-      },
-      { name: "unit", selector: { text: {} } },
-      { name: "detail", selector: { boolean: {} } },
-      { name: "theme", selector: { theme: {} } },
-      {
-        name: "hours_to_show",
-        default: DEFAULT_HOURS_TO_SHOW,
-        selector: { number: { min: 1, mode: "box" } },
-      },
-    ],
-  },
-  {
-    type: "grid",
-    name: "limits",
-    schema: [
-      {
-        name: "min",
-        selector: { number: { mode: "box" } },
-      },
-      {
-        name: "max",
-        selector: { number: { mode: "box" } },
-      },
-    ],
-  },
-] as const;
-
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
@@ -118,6 +57,75 @@ export class HuiSensorCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "entity",
+          selector: {
+            entity: { domain: ["counter", "input_number", "number", "sensor"] },
+          },
+        },
+        {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
+              },
+            },
+            {
+              name: "graph",
+              selector: {
+                select: {
+                  options: ["none", "line"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.sensor.graph_options.${value}`
+                    ),
+                  })),
+                },
+              },
+            },
+            { name: "unit", selector: { text: {} } },
+            { name: "detail", selector: { boolean: {} } },
+            { name: "theme", selector: { theme: {} } },
+            {
+              name: "hours_to_show",
+              default: DEFAULT_HOURS_TO_SHOW,
+              selector: { number: { min: 1, mode: "box" } },
+            },
+          ],
+        },
+        {
+          type: "grid",
+          name: "limits",
+          schema: [
+            {
+              name: "min",
+              selector: { number: { mode: "box" } },
+            },
+            {
+              name: "max",
+              selector: { number: { mode: "box" } },
+            },
+          ],
+        },
+      ] as const
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -134,7 +142,7 @@ export class HuiSensorCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -147,7 +155,9 @@ export class HuiSensorCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "theme":
         return `${this.hass!.localize(

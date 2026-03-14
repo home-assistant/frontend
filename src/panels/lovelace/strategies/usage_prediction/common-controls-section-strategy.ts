@@ -1,0 +1,123 @@
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
+import type { HomeAssistant } from "../../../../types";
+import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
+
+const DEFAULT_LIMIT = 8;
+
+export interface CommonControlSectionStrategyConfig {
+  type: "common-controls";
+  limit?: number;
+  exclude_entities?: string[];
+  include_entities?: string[];
+  hide_empty?: boolean;
+  heading?: HeadingCardConfig;
+  /** @deprecated Use `heading` instead */
+  icon?: string;
+  /** @deprecated Use `heading` instead */
+  title?: string;
+  /** @deprecated Use `heading` instead */
+  title_visibilty?: Condition[];
+}
+
+@customElement("common-controls-section-strategy")
+export class CommonControlsSectionStrategy extends ReactiveElement {
+  static async generate(
+    config: CommonControlSectionStrategyConfig,
+    hass: HomeAssistant
+  ): Promise<LovelaceSectionConfig> {
+    const section: LovelaceSectionConfig = {
+      type: "grid",
+      cards: [],
+    };
+
+    if (config.heading) {
+      section.cards?.push(config.heading);
+    } else if (config.title) {
+      section.cards?.push({
+        type: "heading",
+        heading: config.title,
+        icon: config.icon,
+        visibility: config.title_visibilty,
+      } satisfies HeadingCardConfig);
+    }
+
+    if (!isComponentLoaded(hass, "usage_prediction")) {
+      section.cards!.push({
+        type: "markdown",
+        content: hass.localize(
+          "ui.panel.lovelace.strategy.common_controls.not_loaded"
+        ),
+      });
+      section.disabled = config.hide_empty;
+      return section;
+    }
+
+    const predictedCommonControl = await getCommonControlUsagePrediction(hass);
+    let predictedEntities = predictedCommonControl.entities.filter((entity) => {
+      if (!(entity in hass.states)) {
+        return false;
+      }
+      const entityEntry = hass.entities[entity];
+      // Filter out hidden entities (respects user/integration/device hidden_by)
+      if (entityEntry?.hidden) {
+        return false;
+      }
+      return true;
+    });
+
+    if (config.exclude_entities?.length) {
+      predictedEntities = predictedEntities.filter(
+        (entity) => !config.exclude_entities!.includes(entity)
+      );
+    }
+
+    if (config.include_entities?.length) {
+      // Remove included entities from predicted list to avoid duplicates
+      predictedEntities = predictedEntities.filter(
+        (entity) => !config.include_entities!.includes(entity)
+      );
+      // Add included entities to the start of the list
+      predictedEntities.unshift(
+        ...config.include_entities!.filter((entity) => entity in hass.states)
+      );
+    }
+
+    const limit = config.limit ?? DEFAULT_LIMIT;
+    predictedEntities = predictedEntities.slice(0, limit);
+
+    if (predictedEntities.length > 0) {
+      section.cards!.push(
+        ...predictedEntities.map(
+          (entityId) =>
+            ({
+              type: "tile",
+              entity: entityId,
+              state_content: ["state", "area_name"],
+              show_entity_picture: true,
+            }) satisfies TileCardConfig
+        )
+      );
+    } else {
+      section.cards!.push({
+        type: "markdown",
+        content: hass.localize(
+          "ui.panel.lovelace.strategy.common_controls.no_data"
+        ),
+      });
+      section.disabled = config.hide_empty;
+    }
+
+    return section;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "common-controls-section-strategy": CommonControlsSectionStrategy;
+  }
+}

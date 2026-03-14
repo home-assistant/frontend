@@ -1,18 +1,35 @@
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassServiceTarget,
 } from "home-assistant-js-websocket";
-import { navigate } from "../common/navigate";
 import { ensureArray } from "../common/array/ensure-array";
+import type { WeekdayShort } from "../common/datetime/weekday";
+import { navigate } from "../common/navigate";
+import type { LocalizeKeys } from "../common/translations/localize";
+import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
-import type { DeviceCondition, DeviceTrigger } from "./device_automation";
-import type { Action, MODES } from "./script";
+import type { ConditionDescription } from "./condition";
+import { CONDITION_BUILDING_BLOCKS } from "./condition";
+import type {
+  DeviceCondition,
+  DeviceTrigger,
+} from "./device/device_automation";
+import type { Action, Field, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
-import { createSearchParam } from "../common/url/search-params";
+import type { TriggerDescription } from "./trigger";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
+
+export const DYNAMIC_PREFIX = "__DYNAMIC__";
+
+export const isDynamic = (key: string | undefined): boolean | undefined =>
+  key?.startsWith(DYNAMIC_PREFIX);
+
+export const getValueFromDynamic = (key: string): string =>
+  key.substring(DYNAMIC_PREFIX.length);
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -83,6 +100,12 @@ export interface BaseTrigger {
   id?: string;
   variables?: Record<string, unknown>;
   enabled?: boolean;
+  options?: Record<string, unknown>;
+}
+
+export interface PlatformTrigger extends BaseTrigger {
+  trigger: Exclude<string, LegacyTrigger["trigger"]>;
+  target?: HassServiceTarget;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -94,17 +117,17 @@ export interface StateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
-export interface MqttTrigger extends BaseTrigger {
-  trigger: "mqtt";
-  topic: string;
-  payload?: string;
-}
-
 export interface GeoLocationTrigger extends BaseTrigger {
   trigger: "geo_location";
   source: string;
   zone: string;
   event: "enter" | "leave";
+}
+
+export interface MqttTrigger extends BaseTrigger {
+  trigger: "mqtt";
+  topic: string;
+  payload?: string;
 }
 
 export interface HassTrigger extends BaseTrigger {
@@ -169,6 +192,7 @@ export interface TagTrigger extends BaseTrigger {
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
   at: string | { entity_id: string; offset?: string };
+  weekday?: string | string[];
 }
 
 export interface TemplateTrigger extends BaseTrigger {
@@ -191,7 +215,7 @@ export interface CalendarTrigger extends BaseTrigger {
   offset: string;
 }
 
-export type Trigger =
+export type LegacyTrigger =
   | StateTrigger
   | MqttTrigger
   | GeoLocationTrigger
@@ -208,13 +232,20 @@ export type Trigger =
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger
-  | CalendarTrigger
-  | TriggerList;
+  | CalendarTrigger;
+
+export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 
 interface BaseCondition {
   condition: string;
   alias?: string;
   enabled?: boolean;
+  options?: Record<string, unknown>;
+}
+
+export interface PlatformCondition extends BaseCondition {
+  condition: Exclude<string, LegacyCondition["condition"]>;
+  target?: HassServiceTarget;
 }
 
 export interface LogicalCondition extends BaseCondition {
@@ -254,13 +285,11 @@ export interface ZoneCondition extends BaseCondition {
   zone: string;
 }
 
-type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
-
 export interface TimeCondition extends BaseCondition {
   condition: "time";
   after?: string;
   before?: string;
-  weekday?: Weekday | Weekday[];
+  weekday?: WeekdayShort | WeekdayShort[];
 }
 
 export interface TemplateCondition extends BaseCondition {
@@ -291,12 +320,17 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
 }
 
+export interface AutomationElementGroupCollection {
+  titleKey?: LocalizeKeys;
+  groups: AutomationElementGroup;
+}
+
 export type AutomationElementGroup = Record<
   string,
   { icon?: string; members?: AutomationElementGroup }
 >;
 
-export type Condition =
+export type LegacyCondition =
   | StateCondition
   | NumericStateCondition
   | SunCondition
@@ -306,6 +340,8 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition
   | TriggerCondition;
+
+export type Condition = LegacyCondition | PlatformCondition;
 
 export type ConditionWithShorthand =
   | Condition
@@ -324,7 +360,7 @@ export const expandConditionWithShorthand = (
     };
   }
 
-  for (const condition of ["and", "or", "not"]) {
+  for (const condition of CONDITION_BUILDING_BLOCKS) {
     if (condition in cond) {
       return {
         condition,
@@ -492,6 +528,33 @@ export const getAutomationEditorInitData = () => {
   return data;
 };
 
+export const isTrigger = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const trigger = config as Record<string, unknown>;
+  return (
+    ("trigger" in trigger && typeof trigger.trigger === "string") ||
+    ("platform" in trigger && typeof trigger.platform === "string")
+  );
+};
+
+export const isCondition = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const condition = config as Record<string, unknown>;
+  return "condition" in condition && typeof condition.condition === "string";
+};
+
+export const isScriptField = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const field = config as Record<string, unknown>;
+  return "field" in field && typeof field.field === "object";
+};
+
 export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
@@ -524,4 +587,88 @@ export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
+}
+
+export interface BaseSidebarConfig {
+  delete: () => void;
+  close: (focus?: boolean) => void;
+}
+
+export interface TriggerSidebarConfig extends BaseSidebarConfig {
+  save: (value: Trigger) => void;
+  rename: () => void;
+  disable: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  insertAfter: (value: Trigger | Trigger[]) => boolean;
+  toggleYamlMode: () => void;
+  config: Trigger;
+  description?: TriggerDescription;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ConditionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Condition) => void;
+  rename: () => void;
+  disable: () => void;
+  test: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  insertAfter: (value: Condition | Condition[]) => boolean;
+  toggleYamlMode: () => void;
+  config: Condition;
+  description?: ConditionDescription;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ActionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Action) => void;
+  rename: () => void;
+  disable: () => void;
+  continueOnError: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  insertAfter: (value: Action | Action[]) => boolean;
+  run: () => void;
+  toggleYamlMode: () => void;
+  config: {
+    action: Action;
+  };
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface OptionSidebarConfig extends BaseSidebarConfig {
+  rename: () => void;
+  duplicate: () => void;
+  defaultOption?: boolean;
+}
+
+export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
+  save: (value: Field) => void;
+  config: {
+    field: Field;
+    selector: boolean;
+    key: string;
+    excludeKeys: string[];
+  };
+  toggleYamlMode: () => void;
+  yamlMode: boolean;
+}
+
+export type SidebarConfig =
+  | TriggerSidebarConfig
+  | ConditionSidebarConfig
+  | ActionSidebarConfig
+  | OptionSidebarConfig
+  | ScriptFieldSidebarConfig;
+
+export interface ShowAutomationEditorParams {
+  data?: Partial<AutomationConfig>;
+  expanded?: boolean;
 }

@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-progress-ring";
 import "../../components/ha-spinner";
-import { ON, UNAVAILABLE } from "../../data/entity";
+import { ON, UNAVAILABLE } from "../../data/entity/entity";
 import {
   updateCanInstall,
   type UpdateEntity,
@@ -131,7 +131,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       );
       this._refreshTimeout = window.setTimeout(() => {
         this._nextStep();
-      }, 5000);
+      }, 10000);
     } else {
       this._nextStep();
     }

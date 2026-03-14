@@ -90,7 +90,6 @@ export class HaConfigUsers extends LitElement {
           title: localize("ui.panel.config.users.picker.headers.username"),
           sortable: true,
           filterable: true,
-          direction: "asc",
           template: (user) => html`${user.username || "—"}`,
         },
         group: {
@@ -98,7 +97,6 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           groupable: true,
-          direction: "asc",
         },
         is_active: {
           title: this.hass.localize(

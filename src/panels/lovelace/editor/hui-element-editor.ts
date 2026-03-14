@@ -4,8 +4,8 @@ import { property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { debounce } from "../../../common/util/debounce";
 import { handleStructError } from "../../../common/structs/handle-errors";
+import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
@@ -57,6 +57,9 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -82,12 +85,18 @@ export abstract class HuiElementEditor<
 
   @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
 
+  private _loadCount = 0;
+
   public get value(): T | undefined {
     return this._config;
   }
 
   public set value(config: T | undefined) {
-    if (this._config && deepEqual(config, this._config)) {
+    // Compare symbols to detect callback changes (e.g., preview click handlers)
+    if (
+      this._config &&
+      deepEqual(config, this._config, { compareSymbols: true })
+    ) {
       return;
     }
     this._config = config;
@@ -144,6 +153,9 @@ export abstract class HuiElementEditor<
   }
 
   public toggleMode() {
+    if (!this.GUImode) {
+      this._yamlEditor?.disableCodeEditorFullscreen();
+    }
     this.GUImode = !this.GUImode;
   }
 
@@ -237,10 +249,12 @@ export abstract class HuiElementEditor<
                   .defaultValue=${this._config}
                   autofocus
                   .hass=${this.hass}
+                  .inDialog=${this.inDialog}
                   @value-changed=${this._handleYAMLChanged}
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
+                  .showErrors=${false}
                 ></ha-yaml-editor>
               </div>
             `}
@@ -411,7 +425,7 @@ export abstract class HuiElementEditor<
     if (!this.value) {
       return;
     }
-
+    const loadNum = ++this._loadCount;
     try {
       this._errors = undefined;
       this._warnings = undefined;
@@ -435,6 +449,9 @@ export abstract class HuiElementEditor<
         this.GUImode = false;
       }
     } catch (err: any) {
+      if (loadNum !== this._loadCount) {
+        return;
+      }
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;

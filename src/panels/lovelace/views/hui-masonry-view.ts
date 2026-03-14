@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
@@ -33,6 +33,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
   return minIndex;
 };
 
+@customElement("hui-masonry-view")
 export class MasonryView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -292,7 +293,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     hui-view-badges {
       display: block;
       margin: 4px 8px 4px 8px;
-      font-size: 85%;
+      font-size: var(--ha-font-size-s);
     }
 
     #columns {
@@ -329,9 +330,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     ha-fab {
       position: fixed;
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }
@@ -356,5 +357,3 @@ declare global {
     "hui-masonry-view": MasonryView;
   }
 }
-
-customElements.define("hui-masonry-view", MasonryView);

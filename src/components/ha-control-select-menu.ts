@@ -1,98 +1,103 @@
-import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiMenuDown } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { css, html, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { debounce } from "../common/util/debounce";
-import { nextRender } from "../common/util/render-status";
+import memoizeOne from "memoize-one";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-icon";
-import type { HaIcon } from "./ha-icon";
-import "./ha-ripple";
 import "./ha-svg-icon";
-import type { HaSvgIcon } from "./ha-svg-icon";
+
+export interface SelectOption {
+  label: string;
+  value: string;
+  iconPath?: string;
+  icon?: string;
+}
 
 @customElement("ha-control-select-menu")
-export class HaControlSelectMenu extends SelectBase {
-  @query(".select") protected mdcRoot!: HTMLElement;
-
-  @query(".select-anchor") protected anchorElement!: HTMLDivElement | null;
-
+export class HaControlSelectMenu extends LitElement {
   @property({ type: Boolean, attribute: "show-arrow" })
   public showArrow = false;
 
   @property({ type: Boolean, attribute: "hide-label" })
   public hideLabel = false;
 
-  @property() public options;
+  @property({ type: Boolean })
+  public disabled = false;
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.get("options")) {
-      this.layoutOptions();
-      this.selectByValue(this.value);
-    }
-  }
+  @property({ type: Boolean })
+  public required = false;
+
+  @property()
+  public label?: string;
+
+  @property()
+  public value?: string;
+
+  @property({ attribute: false }) public options: SelectOption[] = [];
+
+  @property({ attribute: false })
+  public renderIcon?: (value: string) => TemplateResult<1> | typeof nothing;
+
+  @query("button") private _triggerButton!: HTMLButtonElement;
 
   public override render() {
-    const classes = {
-      "select-disabled": this.disabled,
-      "select-required": this.required,
-      "select-invalid": !this.isUiValid,
-      "select-no-value": !this.selectedText,
-    };
-
-    const labelledby = this.label && !this.hideLabel ? "label" : undefined;
-    const labelAttribute =
-      this.label && this.hideLabel ? this.label : undefined;
+    if (this.disabled) {
+      return this._renderTrigger();
+    }
 
     return html`
-      <div class="select ${classMap(classes)}">
-        <input
-          class="formElement"
-          .name=${this.name}
-          .value=${this.value}
-          hidden
-          ?disabled=${this.disabled}
-          ?required=${this.required}
-        />
-        <!-- @ts-ignore -->
-        <div
-          class="select-anchor"
-          aria-autocomplete="none"
-          role="combobox"
-          aria-expanded=${this.menuOpen}
-          aria-invalid=${!this.isUiValid}
-          aria-haspopup="listbox"
-          aria-labelledby=${ifDefined(labelledby)}
-          aria-label=${ifDefined(labelAttribute)}
-          aria-required=${this.required}
-          aria-controls="listbox"
-          @focus=${this.onFocus}
-          @blur=${this.onBlur}
-          @click=${this.onClick}
-          @keydown=${this.onKeydown}
-        >
-          ${this._renderIcon()}
-          <div class="content">
-            ${this.hideLabel
-              ? nothing
-              : html`<p id="label" class="label">${this.label}</p>`}
-            ${this.selectedText
-              ? html`<p class="value">${this.selectedText}</p>`
-              : nothing}
-          </div>
-          ${this._renderArrow()}
-          <ha-ripple .disabled=${this.disabled}></ha-ripple>
-        </div>
-        ${this.renderMenu()}
-      </div>
+      <ha-dropdown placement="bottom" @wa-show=${this._showDropdown}>
+        ${this._renderTrigger()} ${this.options.map(this._renderOption)}
+      </ha-dropdown>
     `;
   }
 
+  private _renderTrigger() {
+    const selectedText = this.getValueObject(this.options, this.value)?.label;
+
+    const classes = {
+      "select-disabled": this.disabled,
+      "select-required": this.required,
+      "select-no-value": !selectedText,
+    };
+
+    return html`<button
+      ?disabled=${this.disabled}
+      slot="trigger"
+      class="select-anchor ${classMap(classes)}"
+    >
+      ${this._renderIcon()}
+      <div class="content">
+        ${this.hideLabel
+          ? nothing
+          : html`<p id="label" class="label">${this.label}</p>`}
+        ${selectedText ? html`<p class="value">${selectedText}</p>` : nothing}
+      </div>
+      ${this._renderArrow()}
+    </button>`;
+  }
+
+  private _renderOption = (option: SelectOption) =>
+    html`<ha-dropdown-item
+      .value=${option.value}
+      .selected=${this.value === option.value}
+      >${option.iconPath
+        ? html`<ha-svg-icon slot="icon" .path=${option.iconPath}></ha-svg-icon>`
+        : option.icon
+          ? html`<ha-icon slot="icon" .icon=${option.icon}></ha-icon>`
+          : this.renderIcon
+            ? html`<span slot="icon">${this.renderIcon(option.value)}</span>`
+            : nothing}
+      ${option.label}</ha-dropdown-item
+    >`;
+
   private _renderArrow() {
-    if (!this.showArrow) return nothing;
+    if (!this.showArrow) {
+      return nothing;
+    }
 
     return html`
       <div class="icon">
@@ -102,47 +107,38 @@ export class HaControlSelectMenu extends SelectBase {
   }
 
   private _renderIcon() {
-    const index = this.mdcFoundation?.getSelectedIndex();
-    const items = this.menuElement?.items ?? [];
-    const item = index != null ? items[index] : undefined;
+    const value = this.getValueObject(this.options, this.value);
     const defaultIcon = this.querySelector("[slot='icon']");
-    const icon = (item?.querySelector("[slot='graphic']") ?? null) as
-      | HaSvgIcon
-      | HaIcon
-      | null;
-
-    if (!defaultIcon && !icon) {
-      return null;
-    }
 
     return html`
       <div class="icon">
-        ${icon && icon.localName === "ha-svg-icon" && "path" in icon
-          ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
-          : icon && icon.localName === "ha-icon" && "icon" in icon
-            ? html`<ha-icon .path=${icon.icon}></ha-icon>`
-            : html`<slot name="icon"></slot>`}
+        ${value?.iconPath
+          ? html`<ha-svg-icon
+              slot="icon"
+              .path=${value.iconPath}
+            ></ha-svg-icon>`
+          : value?.icon
+            ? html`<ha-icon slot="icon" .icon=${value.icon}></ha-icon>`
+            : this.renderIcon && this.value
+              ? this.renderIcon(this.value)
+              : defaultIcon
+                ? html`<slot name="icon"></slot>`
+                : nothing}
       </div>
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("translations-updated", this._translationsUpdated);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener(
-      "translations-updated",
-      this._translationsUpdated
+  private _showDropdown() {
+    this.style.setProperty(
+      "--control-select-menu-width",
+      `${this._triggerButton.offsetWidth}px`
     );
   }
 
-  private _translationsUpdated = debounce(async () => {
-    await nextRender();
-    this.layoutOptions();
-  }, 500);
+  private getValueObject = memoizeOne(
+    (options: SelectOption[], value?: string) =>
+      options.find((option) => option.value === value)
+  );
 
   static override styles = [
     css`
@@ -152,18 +148,20 @@ export class HaControlSelectMenu extends SelectBase {
         --control-select-menu-text-color: var(--primary-text-color);
         --control-select-menu-background-color: var(--disabled-color);
         --control-select-menu-background-opacity: 0.2;
-        --control-select-menu-border-radius: 14px;
+        --control-select-menu-border-radius: var(--ha-border-radius-lg);
         --control-select-menu-height: 48px;
         --control-select-menu-padding: 6px 10px;
         --mdc-icon-size: 20px;
         --ha-ripple-color: var(--secondary-text-color);
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         line-height: 1.4;
         width: auto;
-        color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
+        border: none;
+        text-align: left;
+        color: var(--primary-text-color);
         height: var(--control-select-menu-height);
         padding: var(--control-select-menu-padding);
         overflow: hidden;
@@ -186,9 +184,15 @@ export class HaControlSelectMenu extends SelectBase {
         width: 100%;
         user-select: none;
         font-style: normal;
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;
       }
+      .select-anchor:hover {
+        --control-select-menu-background-color: var(
+          --ha-color-on-neutral-quiet
+        );
+      }
+
       .content {
         display: flex;
         flex-direction: column;
@@ -208,14 +212,17 @@ export class HaControlSelectMenu extends SelectBase {
       }
 
       .label {
-        font-size: 0.85em;
+        font-size: var(--ha-font-size-s);
         letter-spacing: 0.4px;
       }
-
       .select-no-value .label {
         font-size: inherit;
         line-height: inherit;
         letter-spacing: inherit;
+      }
+
+      .content .value {
+        font-size: var(--ha-font-size-m);
       }
 
       .select-anchor:focus-visible {
@@ -236,16 +243,13 @@ export class HaControlSelectMenu extends SelectBase {
         opacity: var(--control-select-menu-background-opacity);
       }
 
-      .select-disabled .select-anchor {
+      .select-disabled.select-anchor {
         cursor: not-allowed;
         color: var(--disabled-color);
       }
 
-      mwc-menu {
-        --mdc-shape-medium: 8px;
-      }
-      mwc-list {
-        --mdc-list-vertical-padding: 0;
+      ha-dropdown::part(menu) {
+        min-width: var(--control-select-menu-width);
       }
     `,
   ];

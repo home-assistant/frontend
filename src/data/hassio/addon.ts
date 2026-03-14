@@ -8,7 +8,7 @@ import type { HassioResponse } from "./common";
 import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
 
 export type AddonCapability = Exclude<
-  keyof TranslationDict["supervisor"]["addon"]["dashboard"]["capability"],
+  keyof TranslationDict["ui"]["panel"]["config"]["apps"]["dashboard"]["capability"],
   "label" | "role" | "stages"
 >;
 export type AddonStage = "stable" | "experimental" | "deprecated";
@@ -29,9 +29,15 @@ export type AddonState =
   | null;
 export type AddonRepository = "core" | "local" | string;
 
+interface AddonFieldTranslation {
+  name?: string;
+  description?: string;
+  fields?: Record<string, AddonFieldTranslation>;
+}
+
 interface AddonTranslations {
   network?: Record<string, string>;
-  configuration?: Record<string, { name?: string; description?: string }>;
+  configuration?: Record<string, AddonFieldTranslation>;
 }
 
 export interface HassioAddonInfo {
@@ -101,6 +107,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  system_managed: boolean;
+  system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
   webui: null | string;
@@ -394,8 +402,8 @@ export const fetchAddonInfo = (
   supervisorApiCall(
     hass,
     !supervisor.addon?.addons.find((addon) => addon.slug === addonSlug)
-      ? `/store/addons/${addonSlug}` // Use /store/addons when add-on is not installed
-      : `/addons/${addonSlug}/info` // Use /addons when add-on is installed
+      ? `/store/addons/${addonSlug}` // Use /store/addons when app is not installed
+      : `/addons/${addonSlug}/info` // Use /addons when app is installed
   );
 
 export const rebuildLocalAddon = async (

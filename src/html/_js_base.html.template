@@ -7,7 +7,6 @@
     script.src = src;
     return document.head.appendChild(script);
   }
-  window.polymerSkipLoadingFontRoboto = true;
   if (!("attachShadow" in Element.prototype)) {
     _ls("/static/polyfills/webcomponents-bundle.js", true);
     _ls("/static/polyfills/lit-polyfill-support.js", true);
