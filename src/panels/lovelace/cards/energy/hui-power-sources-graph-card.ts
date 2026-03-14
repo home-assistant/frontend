@@ -13,6 +13,7 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -31,9 +32,24 @@ export class HuiPowerSourcesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: PowerSourcesGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): PowerSourcesGraphCardConfig {
+    return {
+      type: "power-sources-graph",
+    };
+  }
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -62,6 +78,9 @@ export class HuiPowerSourcesGraphCard
   }
 
   public setConfig(config: PowerSourcesGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -189,14 +208,15 @@ export class HuiPowerSourcesGraphCard
         continue;
       }
 
-      if (source.type === "grid" && source.power) {
-        statIds.grid.stats.push(...source.power.map((p) => p.stat_rate));
+      if (source.type === "grid") {
+        if (source.stat_rate) {
+          statIds.grid.stats.push(source.stat_rate);
+        }
       }
     }
     const commonSeriesOptions: LineSeriesOption = {
       type: "line",
       smooth: 0.4,
-      smoothMonotone: "x",
       lineStyle: {
         width: 1,
       },

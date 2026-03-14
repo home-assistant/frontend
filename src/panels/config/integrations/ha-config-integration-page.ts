@@ -13,7 +13,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -64,6 +64,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import "./ha-config-entry-row";
+import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
@@ -133,6 +134,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _domainEntities: Record<string, string[]> = {};
 
+  @queryAll("ha-config-entry-row")
+  private _configEntryRows!: NodeListOf<HaConfigEntryRow>;
+
+  private _handleHashChange = () => {
+    this._searchParms = new URLSearchParams(window.location.hash.substring(1));
+  };
+
   private _domainConfigEntries = memoizeOne(
     (domain: string, configEntries?: ConfigEntry[]): ConfigEntry[] =>
       configEntries
@@ -149,6 +157,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ? configEntries.filter((entry) => entry.handler === domain)
         : []
   );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("hashchange", this._handleHashChange);
+    this._handleHashChange();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("hashchange", this._handleHashChange);
+  }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -196,8 +215,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     super.updated(changed);
     if (
       this._searchParms.has("config_entry") &&
-      changed.has("configEntries") &&
-      !changed.get("configEntries") &&
+      ((changed.has("configEntries") && !changed.get("configEntries")) ||
+        changed.has("_searchParms")) &&
       this.configEntries
     ) {
       this._highlightEntry();
@@ -376,11 +395,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="logo-container">
                 <img
                   alt=${domainToName(this.hass.localize, this.domain)}
-                  src=${brandsUrl({
-                    domain: this.domain,
-                    type: "icon@2x",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain: this.domain,
+                      type: "icon@2x",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @load=${this._onImageLoad}
@@ -722,9 +744,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private async _highlightEntry() {
     await nextRender();
     const entryId = this._searchParms.get("config_entry")!;
-    const row = this.shadowRoot!.querySelector(
-      `[data-entry-id="${entryId}"]`
-    ) as any;
+    this._configEntryRows.forEach((entry) =>
+      entry.classList.remove("highlight")
+    );
+    const row = Array.from(this._configEntryRows).find(
+      (entry) => entry.dataset.entryId === entryId
+    );
     if (row) {
       row.scrollIntoView({
         block: "center",
@@ -1093,9 +1118,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         a {
           text-decoration: none;
-        }
-        .highlight::after {
-          background-color: var(--info-color);
         }
         .warning {
           color: var(--error-color);

@@ -26,6 +26,7 @@ import {
   formatConsumptionShort,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -41,9 +42,24 @@ class HuiEnergyDistrubutionCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDistributionCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDistributionCardConfig {
+    return {
+      type: "energy-distribution",
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -52,6 +68,9 @@ class HuiEnergyDistrubutionCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: EnergyDistributionCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -112,12 +131,13 @@ class HuiEnergyDistrubutionCard
     const types = energySourcesByType(prefs);
 
     const hasGrid =
-      !!types.grid?.[0].flow_from.length || !!types.grid?.[0].flow_to.length;
+      !!types.grid?.[0] &&
+      (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
-    const hasReturnToGrid = !!types.grid?.[0].flow_to.length;
+    const hasReturnToGrid = !!types.grid?.[0] && !!types.grid[0].stat_energy_to;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
@@ -298,7 +318,7 @@ class HuiEnergyDistrubutionCard
                         class="circle"
                         href=${electricityMapUrl}
                         target="_blank"
-                        rel="noopener no referrer"
+                        rel="noopener noreferrer"
                       >
                         <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                         ${formatConsumptionShort(
@@ -538,9 +558,7 @@ class HuiEnergyDistrubutionCard
               ${hasGas && hasWater
                 ? ""
                 : html`<span class="label"
-                    >${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.home"
-                    )}</span
+                    >${this.hass.config.location_name}</span
                   >`}
             </div>
           </div>
@@ -797,7 +815,7 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
-        ${this._config.link_dashboard
+        ${this._config.link_dashboard && this.hass.panels.energy
           ? html`
               <div class="card-actions">
                 <ha-button

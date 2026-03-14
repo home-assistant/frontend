@@ -306,7 +306,10 @@ export class StateHistoryChartLine extends LitElement {
         visualMap: this._visualMap,
         tooltip: {
           trigger: "axis",
-          appendTo: document.body,
+          renderMode: "html",
+          position: "bottom",
+          align: "center",
+          confine: true,
           formatter: this._renderTooltip,
         },
       };

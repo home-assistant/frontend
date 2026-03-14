@@ -13,7 +13,7 @@ import "../../../components/ha-password-field";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -97,7 +97,7 @@ export class DialogAddApplicationCredential extends LitElement {
       ? domainToName(this.hass.localize, this._domain!)
       : "";
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._abortDialog}
@@ -267,7 +267,7 @@ export class DialogAddApplicationCredential extends LitElement {
                   )}
                 </ha-button>
               </ha-dialog-footer>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

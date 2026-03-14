@@ -25,7 +25,7 @@ import "../../components/ha-switch";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import {
   CalendarEntityFeature,
@@ -148,7 +148,7 @@ class DialogCalendarEventEditor extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -308,7 +308,7 @@ class DialogCalendarEventEditor extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

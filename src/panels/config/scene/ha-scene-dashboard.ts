@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -63,7 +63,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -79,10 +79,7 @@ import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry"
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import type { SceneEntity } from "../../../data/scene";
 import {
   activateScene,
@@ -179,12 +176,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "scene-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -324,12 +322,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           localize("ui.panel.config.scene.picker.only_editable")
         ),
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -420,9 +417,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       subscribeCategoryRegistry(this.hass.connection, "scene", (categories) => {
         this._categories = categories;
       }),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
     ];
   }
 
@@ -495,7 +489,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
 
         <ha-filter-floor-areas

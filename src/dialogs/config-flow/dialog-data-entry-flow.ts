@@ -1,4 +1,4 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
@@ -303,7 +303,7 @@ class DataEntryFlowDialog extends LitElement {
     const dialogSubtitle = this._getDialogSubtitle();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -344,7 +344,7 @@ class DataEntryFlowDialog extends LitElement {
               >
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircle}
+                  .path=${mdiHelpCircleOutline}
                 >
                 </ha-icon-button
               ></a>
@@ -429,7 +429,7 @@ class DataEntryFlowDialog extends LitElement {
                               `}
                 `}
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -576,7 +576,7 @@ class DataEntryFlowDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         .dialog-title {

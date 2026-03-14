@@ -188,6 +188,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     }
     .add-entity {
       display: block;
+      margin-bottom: var(--ha-space-1);
       margin-left: 31px;
       margin-right: 71px;
       margin-inline-start: 31px;
@@ -233,7 +234,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 

@@ -12,7 +12,7 @@ import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 import "../../../../components/ha-button";
 import "../../../../components/ha-copy-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 
 @customElement("dialog-manage-cloudhook")
 export class DialogManageCloudhook extends LitElement {
@@ -50,7 +50,7 @@ export class DialogManageCloudhook extends LitElement {
           )
         : documentationUrl(this.hass!, `/integrations/${webhook.domain}/`);
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize(
@@ -105,7 +105,7 @@ export class DialogManageCloudhook extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

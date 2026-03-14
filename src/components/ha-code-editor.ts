@@ -1,3 +1,5 @@
+import "@home-assistant/webawesome/dist/components/popup/popup";
+import type WaPopup from "@home-assistant/webawesome/dist/components/popup/popup";
 import type {
   Completion,
   CompletionContext,
@@ -20,7 +22,7 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -28,6 +30,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { copyToClipboard } from "../common/util/copy-clipboard";
+import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import "./ha-code-editor-completion-items";
@@ -83,6 +86,9 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
 
@@ -105,6 +111,18 @@ export class HaCodeEditor extends ReactiveElement {
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
+
+  private _completionInfoPopover?: WaPopup;
+
+  private _completionInfoContainer?: HTMLDivElement;
+
+  private _completionInfoDestroy?: () => void;
+
+  private _completionInfoRequest = 0;
+
+  private _completionInfoKey?: string;
+
+  private _completionInfoFrame?: number;
 
   private _editorToolbar?: HaIconButtonToolbar;
 
@@ -131,6 +149,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this.classList.toggle("in-dialog", this.inDialog);
     // Force update on reconnection so editor is recreated
     if (this.hasUpdated) {
       this.requestUpdate();
@@ -149,6 +168,15 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   public disconnectedCallback() {
+    fireEvent(this, "dialog-set-fullscreen", false);
+    this._clearCompletionInfo();
+    if (this._completionInfoFrame !== undefined) {
+      cancelAnimationFrame(this._completionInfoFrame);
+      this._completionInfoFrame = undefined;
+    }
+    this._completionInfoPopover?.remove();
+    this._completionInfoPopover = undefined;
+    this._completionInfoContainer = undefined;
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
@@ -215,6 +243,9 @@ export class HaCodeEditor extends ReactiveElement {
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
     }
+    if (changedProps.has("inDialog")) {
+      this.classList.toggle("in-dialog", this.inDialog);
+    }
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
       this._updateToolbarButtons();
@@ -279,6 +310,9 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.foldingCompartment.of(
         this._getFoldingExtensions()
       ),
+      this._loadedCodeMirror.tooltips({
+        position: "absolute",
+      }),
       ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
@@ -309,6 +343,11 @@ export class HaCodeEditor extends ReactiveElement {
       parent: this.renderRoot,
     });
     this._canCopy = this._value?.length > 0;
+
+    const cmScroller = this.codemirror.dom.querySelector(".cm-scroller");
+    if (cmScroller) {
+      cmScroller.classList.add("ha-scrollbar");
+    }
 
     // Update the toolbar. Creating it if required
     this._updateToolbar();
@@ -428,10 +467,19 @@ export class HaCodeEditor extends ReactiveElement {
   private _updateFullscreenState(
     fullscreen: boolean = this._isFullscreen
   ): boolean {
+    const previousFullscreen = this._isFullscreen;
+
+    this.classList.toggle("in-dialog", this.inDialog);
+
     // Update the current fullscreen state based on selected value. If fullscreen
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
       fullscreen && !this.disableFullscreen && this.hasToolbar;
+
+    if (previousFullscreen !== this._isFullscreen) {
+      fireEvent(this, "dialog-set-fullscreen", this._isFullscreen);
+    }
+
     // Return whether successfully in requested state
     return this._isFullscreen === fullscreen;
   }
@@ -572,6 +620,157 @@ export class HaCodeEditor extends ReactiveElement {
     return completionInfo;
   };
 
+  private _getCompletionInfo = (
+    completion: Completion
+  ): CompletionInfo | Promise<CompletionInfo> | null => {
+    if (this.hass && completion.label in this.hass.states) {
+      return this._renderInfo(completion);
+    }
+
+    if (completion.label.startsWith("mdi:")) {
+      return renderIcon(completion);
+    }
+
+    return null;
+  };
+
+  private _ensureCompletionInfoPopover(): WaPopup {
+    if (!this._completionInfoPopover) {
+      this._completionInfoPopover = document.createElement(
+        "wa-popup"
+      ) as WaPopup;
+      this._completionInfoPopover.classList.add("completion-info-popover");
+      this._completionInfoPopover.placement = "right-start";
+      this._completionInfoPopover.distance = 4;
+      this._completionInfoPopover.flip = true;
+      this._completionInfoPopover.flipFallbackPlacements =
+        "left-start bottom-start top-start";
+      this._completionInfoPopover.shift = true;
+      this._completionInfoPopover.shiftPadding = 8;
+      this._completionInfoPopover.autoSize = "both";
+      this._completionInfoPopover.autoSizePadding = 8;
+
+      this._completionInfoContainer = document.createElement("div");
+      this._completionInfoPopover.appendChild(this._completionInfoContainer);
+      this.renderRoot.appendChild(this._completionInfoPopover);
+    }
+
+    return this._completionInfoPopover;
+  }
+
+  private _clearCompletionInfo() {
+    this._completionInfoRequest += 1;
+    this._completionInfoKey = undefined;
+    this._completionInfoDestroy?.();
+    this._completionInfoDestroy = undefined;
+    this._completionInfoContainer?.replaceChildren();
+
+    if (this._completionInfoPopover?.active) {
+      this._completionInfoPopover.active = false;
+    }
+  }
+
+  private _renderCompletionInfoContent(info: CompletionInfo) {
+    this._completionInfoDestroy?.();
+    this._completionInfoDestroy = undefined;
+
+    if (!this._completionInfoContainer) {
+      return;
+    }
+
+    if (info === null) {
+      this._completionInfoContainer.replaceChildren();
+      return;
+    }
+
+    if ("nodeType" in info) {
+      this._completionInfoContainer.replaceChildren(info);
+      return;
+    }
+
+    this._completionInfoContainer.replaceChildren(info.dom);
+    this._completionInfoDestroy = info.destroy;
+  }
+
+  private _syncCompletionInfoPopover = () => {
+    if (this._completionInfoFrame !== undefined) {
+      cancelAnimationFrame(this._completionInfoFrame);
+    }
+
+    this._completionInfoFrame = requestAnimationFrame(() => {
+      this._completionInfoFrame = undefined;
+      this._syncCompletionInfoPopoverNow();
+    });
+  };
+
+  private _syncCompletionInfoPopoverNow = () => {
+    if (!this.codemirror || !this._loadedCodeMirror) {
+      return;
+    }
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const completion = this._loadedCodeMirror.selectedCompletion(
+      this.codemirror.state
+    );
+    const selectedOption = this.codemirror.dom.querySelector(
+      ".cm-tooltip-autocomplete li[aria-selected]"
+    ) as HTMLElement | null;
+
+    if (!completion || !selectedOption) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const infoResult = this._getCompletionInfo(completion);
+
+    if (!infoResult) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const requestId = ++this._completionInfoRequest;
+    const infoKey = completion.label;
+    const popover = this._ensureCompletionInfoPopover();
+    popover.anchor = selectedOption;
+
+    const showPopover = async (info: CompletionInfo) => {
+      if (requestId !== this._completionInfoRequest) {
+        if (info && typeof info === "object" && "destroy" in info) {
+          info.destroy?.();
+        }
+        return;
+      }
+
+      if (infoKey !== this._completionInfoKey) {
+        this._renderCompletionInfoContent(info);
+        this._completionInfoKey = infoKey;
+      }
+
+      await popover.updateComplete;
+      popover.active = true;
+      popover.reposition();
+    };
+
+    if ("then" in infoResult) {
+      infoResult.then(showPopover).catch(() => {
+        if (requestId === this._completionInfoRequest) {
+          this._clearCompletionInfo();
+        }
+      });
+      return;
+    }
+
+    showPopover(infoResult).catch(() => {
+      if (requestId === this._completionInfoRequest) {
+        this._clearCompletionInfo();
+      }
+    });
+  };
+
   private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
       return [];
@@ -581,7 +780,6 @@ export class HaCodeEditor extends ReactiveElement {
       type: "variable",
       label: key,
       detail: states[key].attributes.friendly_name,
-      info: this._renderInfo,
     }));
 
     return options;
@@ -755,7 +953,6 @@ export class HaCodeEditor extends ReactiveElement {
         type: "variable",
         label: `mdi:${icon.name}`,
         detail: icon.keywords.join(", "),
-        info: renderIcon,
       }));
     }
 
@@ -783,6 +980,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _onUpdate = (update: ViewUpdate): void => {
     this._canUndo = !this.readOnly && undoDepth(update.state) > 0;
     this._canRedo = !this.readOnly && redoDepth(update.state) > 0;
+    this._syncCompletionInfoPopover();
     if (!update.docChanged) {
       return;
     }
@@ -802,100 +1000,138 @@ export class HaCodeEditor extends ReactiveElement {
     return [];
   };
 
-  static styles = css`
-    :host {
-      position: relative;
-      display: block;
-      --code-editor-toolbar-height: 28px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          position: relative;
+          display: block;
+          --code-editor-toolbar-height: 28px;
+        }
 
-    :host(.error-state) .cm-gutters {
-      border-color: var(--error-state-color, var(--error-color)) !important;
-    }
+        :host(.error-state) .cm-gutters {
+          border-color: var(--error-state-color, var(--error-color)) !important;
+        }
 
-    :host(.hasToolbar) .cm-gutters {
-      padding-top: 0;
-    }
+        :host(.hasToolbar) .cm-gutters {
+          padding-top: 0;
+        }
 
-    :host(.hasToolbar) .cm-focused .cm-gutters {
-      padding-top: 1px;
-    }
+        :host(.hasToolbar) .cm-focused .cm-gutters {
+          padding-top: 1px;
+        }
 
-    :host(.error-state) .cm-content {
-      border-color: var(--error-state-color, var(--error-color)) !important;
-    }
+        :host(.error-state) .cm-content {
+          border-color: var(--error-state-color, var(--error-color)) !important;
+        }
 
-    :host(.hasToolbar) .cm-content {
-      border: none;
-      border-top: 1px solid var(--secondary-text-color);
-    }
+        :host(.hasToolbar) .cm-content {
+          border: none;
+          border-top: 1px solid var(--secondary-text-color);
+        }
 
-    :host(.hasToolbar) .cm-focused .cm-content {
-      border-top: 2px solid var(--primary-color);
-      padding-top: 15px;
-    }
+        :host(.hasToolbar) .cm-focused .cm-content {
+          border-top: 2px solid var(--primary-color);
+          padding-top: 15px;
+        }
 
-    :host(.fullscreen) {
-      position: fixed !important;
-      top: calc(var(--header-height, 56px) + 8px) !important;
-      left: 8px !important;
-      right: 8px !important;
-      bottom: 8px !important;
-      z-index: 6;
-      border-radius: var(--ha-border-radius-lg) !important;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
-      overflow: hidden !important;
-      background-color: var(
-        --code-editor-background-color,
-        var(--card-background-color)
-      ) !important;
-      margin: 0 !important;
-      padding-top: var(--safe-area-inset-top) !important;
-      padding-left: var(--safe-area-inset-left) !important;
-      padding-right: var(--safe-area-inset-right) !important;
-      padding-bottom: var(--safe-area-inset-bottom) !important;
-      box-sizing: border-box !important;
-      display: block !important;
-    }
+        :host(.fullscreen) {
+          position: fixed !important;
+          top: calc(var(--header-height, 56px) + var(--ha-space-2)) !important;
+          left: var(--ha-space-2) !important;
+          right: var(--ha-space-2) !important;
+          bottom: var(--ha-space-2) !important;
+          z-index: 6;
+          border-radius: var(--ha-border-radius-lg) !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+          overflow: hidden !important;
+          background-color: var(
+            --code-editor-background-color,
+            var(--card-background-color)
+          ) !important;
+          margin: 0 !important;
+          padding-top: var(--safe-area-inset-top) !important;
+          padding-left: var(--safe-area-inset-left) !important;
+          padding-right: var(--safe-area-inset-right) !important;
+          padding-bottom: var(--safe-area-inset-bottom) !important;
+          box-sizing: border-box !important;
+          display: block !important;
+        }
 
-    :host(.hasToolbar) .cm-editor {
-      padding-top: var(--code-editor-toolbar-height);
-    }
+        :host(.in-dialog.fullscreen) {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }
 
-    :host(.fullscreen) .cm-editor {
-      height: 100% !important;
-      max-height: 100% !important;
-      border-radius: var(--ha-border-radius-square) !important;
-    }
+        :host(.hasToolbar) .cm-editor {
+          padding-top: var(--code-editor-toolbar-height);
+        }
 
-    :host(:not(.hasToolbar)) .code-editor-toolbar {
-      display: none !important;
-    }
+        :host(.fullscreen) .cm-editor {
+          height: 100% !important;
+          max-height: 100% !important;
+          border-radius: var(--ha-border-radius-square) !important;
+        }
 
-    .code-editor-toolbar {
-      --icon-button-toolbar-height: var(--code-editor-toolbar-height);
-      --icon-button-toolbar-color: var(
-        --code-editor-gutter-color,
-        var(--secondary-background-color, whitesmoke)
-      );
-      border-top-left-radius: var(--ha-border-radius-sm);
-      border-top-right-radius: var(--ha-border-radius-sm);
-    }
+        :host(:not(.hasToolbar)) .code-editor-toolbar {
+          display: none !important;
+        }
 
-    .completion-info {
-      display: grid;
-      gap: 3px;
-      padding: 8px;
-    }
+        .code-editor-toolbar {
+          --icon-button-toolbar-height: var(--code-editor-toolbar-height);
+          --icon-button-toolbar-color: var(
+            --code-editor-gutter-color,
+            var(--secondary-background-color, whitesmoke)
+          );
+          border-top-left-radius: var(--ha-border-radius-sm);
+          border-top-right-radius: var(--ha-border-radius-sm);
+        }
 
-    /* Hide completion info on narrow screens */
-    @media (max-width: 600px) {
-      .cm-completionInfo,
-      .completion-info {
-        display: none;
-      }
-    }
-  `;
+        .completion-info {
+          display: grid;
+          gap: 3px;
+          padding: 8px;
+        }
+
+        wa-popup.completion-info-popover {
+          --auto-size-available-width: min(
+            420px,
+            calc(var(--safe-width) - var(--ha-space-8))
+          );
+        }
+
+        wa-popup.completion-info-popover::part(popup) {
+          padding: 0;
+          color: var(--primary-text-color);
+          background-color: var(
+            --code-editor-background-color,
+            var(--card-background-color)
+          );
+          border: 1px solid var(--divider-color);
+          border-radius: var(--mdc-shape-medium, 4px);
+          box-shadow:
+            0px 5px 5px -3px rgb(0 0 0 / 20%),
+            0px 8px 10px 1px rgb(0 0 0 / 14%),
+            0px 3px 14px 2px rgb(0 0 0 / 12%);
+        }
+
+        /* Hide completion info on narrow screens */
+        @media (max-width: 600px) {
+          wa-popup.completion-info-popover,
+          .completion-info {
+            display: none;
+          }
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
