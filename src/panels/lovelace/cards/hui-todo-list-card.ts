@@ -182,33 +182,50 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _getCheckedItems = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
-        ? this._sortItems(this._filterItems(items, this._config?.period), sort)
+        ? this._sortItems(
+            this._filterItems(
+              items,
+              TodoItemStatus.Completed,
+              this._config?.period
+            ),
+            sort
+          )
         : []
   );
 
   private _getUncheckedItems = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
-        ? this._sortItems(this._filterItems(items, this._config?.period), sort)
+        ? this._sortItems(
+            this._filterItems(
+              items,
+              TodoItemStatus.NeedsAction,
+              this._config?.period
+            ),
+            sort
+          )
         : []
   );
 
   private _filterItems(
     items: TodoItem[],
+    status: TodoItemStatus,
     period?: {
       calendar?: { period: string; offset: number };
     }
   ): TodoItem[] {
-    const filteredItems = items.filter(
-      (item) => item.status === TodoItemStatus.NeedsAction
-    );
+    const endDate =
+      period && period.calendar && period.calendar.period
+        ? this._addPeriod(new Date(), period.calendar)
+        : undefined;
 
-    if (!period || !period.calendar || !period.calendar.period)
-      return filteredItems;
-
-    const endDate = this._addPeriod(new Date(), period.calendar);
-
-    return filteredItems.filter((item) => {
+    return items.filter((item) => {
+      if (item.status !== status) {
+        return false;
+      }
+      if (!endDate) {
+        return true;
+      }
       const dueDate = this._getDueDate(item);
       return dueDate && dueDate <= endDate;
     });
