@@ -6,7 +6,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
@@ -67,7 +67,7 @@ export class HuiDialogSelectDashboard extends LitElement {
       this.hass.localize("ui.panel.lovelace.editor.select_dashboard.header");
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
@@ -115,7 +115,7 @@ export class HuiDialogSelectDashboard extends LitElement {
             ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

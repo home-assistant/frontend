@@ -3,10 +3,9 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-dialog";
 import { hardResetController } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -34,18 +33,11 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   @state() private _resetStatus = ResetStatus.NotStarted;
 
-  @state() private _open = false;
-
   public showDialog(params: ZWaveJSHardResetControllerDialogParams): void {
     this._entryId = params.entryId;
-    this._open = true;
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this._entryId = undefined;
     this._resetStatus = ResetStatus.NotStarted;
 
@@ -58,14 +50,16 @@ class DialogZWaveJSHardResetController extends LitElement {
     }
 
     return html`<ha-dialog
-      .hass=${this.hass}
-      .open=${this._open}
-      header-title=${this.hass.localize(
-        `ui.panel.config.zwave_js.hard_reset_controller.${
-          ResetStatus[this._resetStatus]
-        }.title`
+      open
+      @closed=${this.closeDialog}
+      .heading=${createCloseHeading(
+        this.hass,
+        this.hass.localize(
+          `ui.panel.config.zwave_js.hard_reset_controller.${
+            ResetStatus[this._resetStatus]
+          }.title`
+        )
       )}
-      @closed=${this._dialogClosed}
     >
       <div class="flex-container">
         <div>
@@ -83,18 +77,16 @@ class DialogZWaveJSHardResetController extends LitElement {
         </p>
       </div>
       ${this._resetStatus === ResetStatus.NotStarted
-        ? html`<ha-dialog-footer slot="footer">
-            <ha-button
-              slot="secondaryAction"
+        ? html`<ha-button
               appearance="plain"
+              slot="primaryAction"
               @click=${this.closeDialog}
             >
               ${this.hass.localize("ui.common.cancel")}
             </ha-button>
             <ha-button slot="primaryAction" @click=${this._hardResetController}>
               ${this.hass.localize("ui.common.continue")}
-            </ha-button>
-          </ha-dialog-footer>`
+            </ha-button>`
         : nothing}
     </ha-dialog>`;
   }

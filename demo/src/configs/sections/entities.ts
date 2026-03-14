@@ -1,7 +1,8 @@
+import { convertEntities } from "../../../../src/fake_data/entity";
 import type { DemoConfig } from "../types";
 
 export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
-  Object.values({
+  convertEntities({
     "cover.living_room_garden_shutter": {
       entity_id: "cover.living_room_garden_shutter",
       state: "open",
@@ -141,7 +142,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "device_tracker.car": {
-      entity_id: "device_tracker.car",
+      entity_id: "sensor.outdoor_humidity",
       state: "not_home",
       attributes: {
         friendly_name: "Car",
@@ -199,7 +200,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "binary_sensor.kitchen_motion": {
-      entity_id: "binary_sensor.kitchen_motion",
+      entity_id: "light.kitchen_motion",
       state: "on",
       attributes: {
         device_class: "motion",
@@ -335,7 +336,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "sensor.rain": {
-      entity_id: "sensor.rain",
+      entity_id: "sensor.moon_phase",
       state: "7.2",
       attributes: {
         state_class: "total_increasing",
@@ -565,7 +566,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "update.home_assistant_core_update": {
-      entity_id: "update.home_assistant_core_update",
+      entity_id: "update.home_assistant_supervisor_update",
       state: "off",
       attributes: {
         auto_update: false,

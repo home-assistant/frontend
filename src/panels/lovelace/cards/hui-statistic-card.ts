@@ -9,10 +9,7 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
-import {
-  getEnergyDataCollection,
-  validateEnergyCollectionKey,
-} from "../../../data/energy";
+import { getEnergyDataCollection } from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
 import {
   fetchStatistic,
@@ -36,11 +33,7 @@ import type {
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
 
-/* @deprecated */
 export const PERIOD_ENERGY = "energy_date_selection";
-export const STATISTIC_CARD_DEFAULT_PERIOD = {
-  calendar: { period: "month" },
-};
 
 @customElement("hui-statistic-card")
 export class HuiStatisticCard extends LitElement implements LovelaceCard {
@@ -67,7 +60,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     return {
       entity: foundEntities[0] || "",
-      period: STATISTIC_CARD_DEFAULT_PERIOD,
+      period: { calendar: { period: "month" } },
     };
   }
 
@@ -99,7 +92,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._useEnergyDateSelect()) {
+    if (this._config?.period === PERIOD_ENERGY) {
       this._subscribeEnergy();
     } else {
       this._setFetchStatisticTimer();
@@ -156,17 +149,6 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       !isValidEntityId(config.entity)
     ) {
       throw new Error("Invalid entity");
-    }
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key);
-    }
-    // Migrate legacy period option to new key
-    if (config.period === PERIOD_ENERGY) {
-      config = {
-        energy_date_selection: true,
-        ...config,
-        period: STATISTIC_CARD_DEFAULT_PERIOD,
-      };
     }
 
     this._config = config;
@@ -268,18 +250,17 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       | undefined;
 
     if (this.hass) {
-      const useDateSelect = this._useEnergyDateSelect();
-      if (useDateSelect && !this._energySub) {
+      if (this._config.period === PERIOD_ENERGY && !this._energySub) {
         this._subscribeEnergy();
         return;
       }
-      if (!useDateSelect && this._energySub) {
+      if (this._config.period !== PERIOD_ENERGY && this._energySub) {
         this._unsubscribeEnergy();
         this._setFetchStatisticTimer();
         return;
       }
       if (
-        useDateSelect &&
+        this._config.period === PERIOD_ENERGY &&
         this._energySub &&
         changedProps.has("_config") &&
         oldConfig?.collection_key !== this._config.collection_key
@@ -325,19 +306,11 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _useEnergyDateSelect() {
-    if (!this._config) return false;
-    // Use date selection if enabled through config key
-    if (this._config.energy_date_selection) return true;
-    // Otherwise check if period key is set to the legacy energy mode value
-    return this._config.period === PERIOD_ENERGY;
-  }
-
   private _setFetchStatisticTimer() {
     this._fetchStatistic();
     // statistics are created every hour
     clearInterval(this._interval);
-    if (!this._useEnergyDateSelect()) {
+    if (this._config?.period !== PERIOD_ENERGY) {
       this._interval = window.setInterval(
         () => this._fetchStatistic(),
         5 * 1000 * 60

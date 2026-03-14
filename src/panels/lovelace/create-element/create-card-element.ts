@@ -67,8 +67,6 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-usage-graph-card"),
   "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
   "water-sankey": () => import("../cards/water/hui-water-sankey-card"),
-  "water-flow-sankey": () =>
-    import("../cards/water/hui-water-flow-sankey-card"),
   "power-sources-graph": () =>
     import("../cards/energy/hui-power-sources-graph-card"),
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),
@@ -95,7 +93,6 @@ const LAZY_LOAD_TYPES = {
   picture: () => import("../cards/hui-picture-card"),
   "plant-status": () => import("../cards/hui-plant-status-card"),
   "recovery-mode": () => import("../cards/hui-recovery-mode-card"),
-  "toggle-group": () => import("../cards/hui-toggle-group-card"),
   "todo-list": () => import("../cards/hui-todo-list-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),

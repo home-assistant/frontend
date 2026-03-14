@@ -1,29 +1,24 @@
-import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-button";
 import "../../../components/ha-textfield";
 import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
-import { localizeContext } from "../../../data/context";
-import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 import type { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
 
 @customElement("dialog-category-registry-detail")
-class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParams>(
-  LitElement
-) {
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+class DialogCategoryDetail extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
 
@@ -31,32 +26,52 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
 
   @state() private _error?: string;
 
+  @state() private _params?: CategoryRegistryDetailDialogParams;
+
   @state() private _submitting?: boolean;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.params?.entry) {
-      this._name = this.params.entry.name || "";
-      this._icon = this.params.entry.icon || null;
+  @state() private _open = false;
+
+  public async showDialog(
+    params: CategoryRegistryDetailDialogParams
+  ): Promise<void> {
+    this._params = params;
+    this._error = undefined;
+    this._open = true;
+    if (this._params.entry) {
+      this._name = this._params.entry.name || "";
+      this._icon = this._params.entry.icon || null;
     } else {
-      this._name = this.params?.suggestedName || "";
+      this._name = this._params.suggestedName || "";
       this._icon = null;
     }
+    await this.updateComplete;
+  }
+
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._error = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this.params) {
+    if (!this._params) {
       return nothing;
     }
-    const entry = this.params.entry;
+    const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
     return html`
-      <ha-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
         header-title=${entry
-          ? this.localize("ui.panel.config.category.editor.edit")
-          : this.localize("ui.panel.config.category.editor.create")}
-        prevent-scrim-close
+          ? this.hass.localize("ui.panel.config.category.editor.edit")
+          : this.hass.localize("ui.panel.config.category.editor.create")}
+        @closed=${this._dialogClosed}
       >
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -65,8 +80,8 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
           <ha-textfield
             .value=${this._name}
             @input=${this._nameChanged}
-            .label=${this.localize("ui.panel.config.category.editor.name")}
-            .validationMessage=${this.localize(
+            .label=${this.hass.localize("ui.panel.config.category.editor.name")}
+            .validationMessage=${this.hass.localize(
               "ui.panel.config.category.editor.required_error_msg"
             )}
             required
@@ -74,9 +89,10 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
           ></ha-textfield>
 
           <ha-icon-picker
-            .value=${this._icon ?? undefined}
+            .hass=${this.hass}
+            .value=${this._icon}
             @value-changed=${this._iconChanged}
-            .label=${this.localize("ui.panel.config.category.editor.icon")}
+            .label=${this.hass.localize("ui.panel.config.category.editor.icon")}
           ></ha-icon-picker>
         </div>
         <ha-dialog-footer slot="footer">
@@ -85,7 +101,7 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.localize("ui.common.cancel")}
+            ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -93,11 +109,11 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
             .disabled=${nameInvalid || !!this._submitting}
           >
             ${entry
-              ? this.localize("ui.common.save")
-              : this.localize("ui.common.add")}
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize("ui.common.add")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -116,7 +132,7 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
   }
 
   private async _updateEntry() {
-    const create = !this.params!.entry;
+    const create = !this._params!.entry;
     this._submitting = true;
     let newValue: CategoryRegistryEntry | undefined;
     try {
@@ -125,15 +141,15 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
         icon: this._icon || (create ? undefined : null),
       };
       if (create) {
-        newValue = await this.params!.createEntry!(values);
+        newValue = await this._params!.createEntry!(values);
       } else {
-        newValue = await this.params!.updateEntry!(values);
+        newValue = await this._params!.updateEntry!(values);
       }
       this.closeDialog();
     } catch (err: any) {
       this._error =
         err.message ||
-        this.localize("ui.panel.config.category.editor.unknown_error");
+        this.hass.localize("ui.panel.config.category.editor.unknown_error");
     } finally {
       this._submitting = false;
     }

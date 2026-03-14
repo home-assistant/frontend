@@ -1,7 +1,7 @@
 import { mdiCalendar } from "@mdi/js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
@@ -9,7 +9,6 @@ import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 
@@ -52,12 +51,6 @@ export class HaDateInput extends LitElement {
   @property() public helper?: string;
 
   @property({ attribute: "can-clear", type: Boolean }) public canClear = false;
-
-  @query("ha-textfield", true) private _input?: HaTextField;
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
-  }
 
   render() {
     return html`<ha-textfield

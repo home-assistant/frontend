@@ -18,11 +18,9 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { afterNextRender } from "../../common/util/render-status";
-import { filterXSS } from "../../common/util/xss";
 import { themesContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts/echarts";
@@ -30,6 +28,8 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
+import { afterNextRender } from "../../common/util/render-status";
+import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
 
@@ -877,20 +877,10 @@ export class HaChartBase extends LitElement {
           };
         }
         if (s.sampling === "minmax") {
-          const minX = xAxis?.min
-            ? xAxis.min instanceof Date
-              ? xAxis.min.getTime()
-              : typeof xAxis.min === "number"
-                ? xAxis.min
-                : undefined
-            : undefined;
-          const maxX = xAxis?.max
-            ? xAxis.max instanceof Date
-              ? xAxis.max.getTime()
-              : typeof xAxis.max === "number"
-                ? xAxis.max
-                : undefined
-            : undefined;
+          const minX =
+            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
+          const maxX =
+            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
           return {
             ...s,
             sampling: undefined,
@@ -1125,13 +1115,13 @@ export class HaChartBase extends LitElement {
     .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
       border-radius: var(--ha-border-radius-sm);
-      --ha-icon-button-size: 32px;
+      --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
     }
     .chart-controls.small ha-icon-button,
     .chart-controls.small ::slotted(ha-icon-button) {
-      --ha-icon-button-size: 22px;
+      --mdc-icon-button-size: 22px;
       --mdc-icon-size: 16px;
     }
     .chart-controls ha-icon-button.inactive,

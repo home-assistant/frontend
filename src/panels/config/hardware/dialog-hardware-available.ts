@@ -7,7 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHardwareInfo } from "../../../data/hassio/hardware";
@@ -87,7 +87,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -156,7 +156,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             )}
           </div>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -168,7 +168,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     return [
       haStyleScrollbar,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
         .content-container {

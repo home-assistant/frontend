@@ -113,8 +113,6 @@ class DialogRestart extends LitElement {
         .hass=${this.hass}
         .open=${this._dialogOpen}
         header-title=${dialogTitle}
-        allow-mode-change
-        flexcontent
         @closed=${this._dialogClosed}
       >
         <div class="content">

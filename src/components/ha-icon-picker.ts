@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import type { ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import "./ha-icon";
@@ -88,6 +88,8 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property() public value?: string;
 
   @property() public label?: string;
@@ -109,6 +111,7 @@ export class HaIconPicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
+        .hass=${this.hass}
         allow-custom-value
         .getItems=${this._getIconPickerItems}
         .helper=${this.helper}

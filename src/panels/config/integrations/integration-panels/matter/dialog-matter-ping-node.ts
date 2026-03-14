@@ -4,12 +4,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-dialog";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -29,11 +28,8 @@ class DialogMatterPingNode extends LitElement {
     success: boolean,
   ][];
 
-  @state() private _open = false;
-
   public async showDialog(params: MatterPingNodeDialogParams): Promise<void> {
     this.device_id = params.device_id;
-    this._open = true;
   }
 
   private async _copyIpToClipboard(ev) {
@@ -51,12 +47,12 @@ class DialogMatterPingNode extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.matter.ping_node.title"
+        open
+        @closed=${this.closeDialog}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.matter.ping_node.title")
         )}
-        @closed=${this._dialogClosed}
       >
         ${this._status === "failed"
           ? html`
@@ -75,6 +71,9 @@ class DialogMatterPingNode extends LitElement {
                   </p>
                 </div>
               </div>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.common.close")}
+              </ha-button>
             `
           : this._pingResultEntries
             ? html`
@@ -99,6 +98,9 @@ class DialogMatterPingNode extends LitElement {
                       </ha-list-item>`
                   )}
                 </ha-list>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
               `
             : this._status === "started"
               ? html`
@@ -114,6 +116,9 @@ class DialogMatterPingNode extends LitElement {
                       </p>
                     </div>
                   </div>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
                 `
               : html`
                   <p>
@@ -128,24 +133,12 @@ class DialogMatterPingNode extends LitElement {
                       )}
                     </em>
                   </p>
+                  <ha-button slot="primaryAction" @click=${this._startPing}>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.ping_node.start_ping"
+                    )}
+                  </ha-button>
                 `}
-        <ha-dialog-footer slot="footer">
-          ${this._status === "failed" ||
-          this._pingResultEntries ||
-          this._status === "started"
-            ? html`
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              `
-            : html`
-                <ha-button slot="primaryAction" @click=${this._startPing}>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.ping_node.start_ping"
-                  )}
-                </ha-button>
-              `}
-        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -169,10 +162,6 @@ class DialogMatterPingNode extends LitElement {
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this.device_id = undefined;
     this._status = undefined;
     this._pingResultEntries = undefined;

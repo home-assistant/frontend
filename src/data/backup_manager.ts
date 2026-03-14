@@ -13,7 +13,6 @@ export type CreateBackupStage =
   | "app_repositories"
   | "apps"
   | "await_app_restarts"
-  | "cleaning_up"
   | "docker_config"
   | "finishing_file"
   | "folders"
@@ -66,13 +65,6 @@ interface RestoreBackupEvent {
   state: RestoreBackupState;
 }
 
-export interface UploadBackupEvent {
-  manager_state: BackupManagerState;
-  agent_id: string;
-  uploaded_bytes: number;
-  total_bytes: number;
-}
-
 export type ManagerState =
   | "idle"
   | "create_backup"
@@ -85,14 +77,12 @@ export type ManagerStateEvent =
   | ReceiveBackupEvent
   | RestoreBackupEvent;
 
-export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
-
 export const subscribeBackupEvents = (
   hass: HomeAssistant,
-  callback: (event: BackupSubscriptionEvent) => void,
+  callback: (event: ManagerStateEvent) => void,
   preCheck?: () => boolean | Promise<boolean>
 ) =>
-  hass.connection.subscribeMessage<BackupSubscriptionEvent>(
+  hass.connection.subscribeMessage<ManagerStateEvent>(
     callback,
     {
       type: "backup/subscribe_events",

@@ -21,12 +21,12 @@ export function getAssistantsTableColumn<T>(
     defaultHidden: !visible,
     sortable: true,
     showNarrow: true,
-    minWidth: "112px",
-    maxWidth: "112px",
+    minWidth: "160px",
+    maxWidth: "160px",
     valueColumn: "assistants_sortable_key",
     template: (entry: any) =>
       html`${entry.assistants.length !== 0
-        ? html`<div style="display: flex; gap: var(--ha-space-1);">
+        ? html`<div style="display: flex; gap: var(--ha-space-4);">
             ${availableAssistants.map((vaId) => {
               const supported =
                 !supportedEntities?.[vaId] ||
@@ -68,7 +68,7 @@ export const getAssistantsTableColumnIcon = (
         .unsupported=${unsupported ?? false}
       ></voice-assistants-expose-assistant-icon>`
     : preserveSpacing
-      ? html`<div style="width: 24px;"></div>`
+      ? html`<div style="width: 40px;"></div>`
       : nothing;
 };
 

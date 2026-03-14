@@ -36,9 +36,7 @@ import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 export class HaVoiceCommandDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _open = false;
-
-  @state() private _dialogOpen = false;
+  @state() private _opened = false;
 
   @state()
   @storage({
@@ -78,36 +76,32 @@ export class HaVoiceCommandDialog extends LitElement {
     }
 
     this._startListening = params.start_listening;
-    this._dialogOpen = true;
-    this._open = true;
+    this._opened = true;
   }
 
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._dialogOpen = false;
+  public async closeDialog(): Promise<void> {
+    this._opened = false;
     this._pipelines = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._dialogOpen) {
+    if (!this._opened) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        @closed=${this._dialogClosed}
-        flexcontent
+        open
+        @closed=${this.closeDialog}
+        .heading=${this.hass.localize("ui.dialogs.voice_command.title")}
+        flexContent
+        hideactions
       >
-        <ha-dialog-header slot="header">
+        <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
-            data-dialog="close"
+            dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
@@ -164,14 +158,17 @@ export class HaVoiceCommandDialog extends LitElement {
                 : nothing}
             </ha-dropdown>
           </div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.help")}
-            .path=${mdiHelpCircleOutline}
+          <a
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
-            rel="noopener noreferrer"
-          ></ha-icon-button>
+            rel="noopener noreferer"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize("ui.common.help")}
+              .path=${mdiHelpCircleOutline}
+            ></ha-icon-button>
+          </a>
         </ha-dialog-header>
 
         ${this._errorLoadAssist
@@ -199,8 +196,8 @@ export class HaVoiceCommandDialog extends LitElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("_pipelineId") ||
-      (changedProperties.has("_open") &&
-        this._open === true &&
+      (changedProperties.has("_opened") &&
+        this._opened === true &&
         this._pipelineId)
     ) {
       this._getPipeline();
@@ -256,6 +253,8 @@ export class HaVoiceCommandDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          --mdc-dialog-max-width: 500px;
+          --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {
@@ -278,7 +277,7 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: -9px;
         }
         ha-dropdown ha-button {
-          --ha-button-height: var(--ha-space-5);
+          --ha-button-height: 20px;
         }
         ha-dropdown ha-button::part(base) {
           margin-left: 5px;
@@ -290,15 +289,15 @@ export class HaVoiceCommandDialog extends LitElement {
           }
         }
         ha-dropdown ha-button ha-svg-icon {
-          height: var(--ha-space-7);
-          margin-left: var(--ha-space-1);
-          margin-inline-start: var(--ha-space-1);
+          height: 28px;
+          margin-left: 4px;
+          margin-inline-start: 4px;
           margin-inline-end: initial;
           direction: var(--direction);
         }
         ha-dropdown-item ha-svg-icon {
-          margin-left: var(--ha-space-1);
-          margin-inline-start: var(--ha-space-1);
+          margin-left: 4px;
+          margin-inline-start: 4px;
           margin-inline-end: initial;
           direction: var(--direction);
           display: block;
@@ -310,6 +309,10 @@ export class HaVoiceCommandDialog extends LitElement {
         .pipelines-loading {
           display: flex;
           justify-content: center;
+        }
+        ha-assist-chat {
+          margin: 0 24px 16px;
+          min-height: 399px;
         }
       `,
     ];

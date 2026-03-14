@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button-toggle";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
@@ -147,7 +147,7 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this._dialogParams?.title}
@@ -216,7 +216,7 @@ class DialogLightColorFavorite extends LitElement {
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -224,7 +224,7 @@ class DialogLightColorFavorite extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --ha-dialog-width-md: 420px; /* prevent width jumps when switching modes */
           --ha-dialog-max-height: min(
             600px,
@@ -233,7 +233,7 @@ class DialogLightColorFavorite extends LitElement {
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
+          ha-wa-dialog {
             --ha-dialog-width-md: 100vw;
             --ha-dialog-max-height: calc(100% - 100px);
           }

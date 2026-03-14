@@ -68,9 +68,9 @@ export class HuiDistributionCard
 
     // Strategy 1: Try to find power sensors (W, kW) - most common use case
     const powerFilter = (stateObj: HassEntity): boolean => {
+      const unit = stateObj.attributes.unit_of_measurement;
       const stateValue = Number(stateObj.state);
-      const deviceClass = stateObj.attributes.device_class;
-      return deviceClass === "power" && !isNaN(stateValue);
+      return (unit === "W" || unit === "kW") && !isNaN(stateValue);
     };
 
     let foundEntities = findEntities(
@@ -163,6 +163,7 @@ export class HuiDistributionCard
       columns: 12,
       rows: "auto",
       min_columns: 3,
+      fixed_rows: true,
     };
   }
 
@@ -489,8 +490,8 @@ export class HuiDistributionCard
   }
 
   static styles = css`
-    ha-card {
-      height: 100%;
+    :host {
+      display: block;
     }
 
     ha-alert {

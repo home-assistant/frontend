@@ -2,69 +2,46 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  {
-    entity_id: "light.kitchen_lights",
-    state: "on",
-    attributes: {
-      friendly_name: "Kitchen Lights",
-    },
-  },
-  {
-    entity_id: "light.bed_light",
-    state: "on",
-    attributes: {
-      friendly_name: "Bed Lights",
-    },
-  },
-  {
-    entity_id: "device_tracker.demo_paulus",
-    state: "work",
-    attributes: {
-      source_type: "gps",
-      latitude: 32.877105,
-      longitude: 117.232185,
-      gps_accuracy: 91,
-      battery: 71,
-      friendly_name: "Paulus",
-    },
-  },
-  {
-    entity_id: "device_tracker.demo_anne_therese",
-    state: "school",
-    attributes: {
-      source_type: "gps",
-      latitude: 32.877105,
-      longitude: 117.232185,
-      gps_accuracy: 91,
-      battery: 71,
-      friendly_name: "Anne Therese",
-    },
-  },
-  {
-    entity_id: "device_tracker.demo_home_boy",
-    state: "home",
-    attributes: {
-      source_type: "gps",
-      latitude: 32.877105,
-      longitude: 117.232185,
-      gps_accuracy: 91,
-      battery: 71,
-      friendly_name: "Home Boy",
-    },
-  },
-  {
-    entity_id: "sensor.illumination",
-    state: "23",
-    attributes: {
-      friendly_name: "Illumination",
-      unit_of_measurement: "lx",
-    },
-  },
+  getEntity("light", "kitchen_lights", "on", {
+    friendly_name: "Kitchen Lights",
+  }),
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Bed Lights",
+  }),
+  getEntity("device_tracker", "demo_paulus", "work", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Paulus",
+  }),
+  getEntity("device_tracker", "demo_anne_therese", "school", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Anne Therese",
+  }),
+  getEntity("device_tracker", "demo_home_boy", "home", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Home Boy",
+  }),
+  getEntity("sensor", "illumination", "23", {
+    friendly_name: "Illumination",
+    unit_of_measurement: "lx",
+  }),
 ];
 
 const CONFIGS = [

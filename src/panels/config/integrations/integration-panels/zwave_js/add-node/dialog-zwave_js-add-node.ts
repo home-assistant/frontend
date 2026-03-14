@@ -2,9 +2,10 @@ import { mdiChevronLeft, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
+import type { HaDialog } from "../../../../../../components/ha-dialog";
 import { updateDeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type {
   QRProvisioningInformation,
@@ -41,12 +42,11 @@ import {
 import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
 import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-header";
-import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
-import "../../../../../../components/ha-dialog";
 
 import { navigate } from "../../../../../../common/navigate";
 import type { EntityRegistryEntry } from "../../../../../../data/entity/entity_registry";
@@ -66,12 +66,6 @@ import "./zwave-js-add-node-select-method";
 import "./zwave-js-add-node-select-security-strategy";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
-
-interface ButtonParams {
-  disabled?: boolean;
-  label: string;
-  onClick: () => void;
-}
 
 @customElement("dialog-zwave_js-add-node")
 class DialogZWaveJSAddNode extends LitElement {
@@ -112,6 +106,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _codeInput = "";
 
+  @query("ha-dialog") private _dialog?: HaDialog;
+
   private _qrProcessing = false;
 
   private _addNodeTimeoutHandle?: number;
@@ -134,38 +130,36 @@ class DialogZWaveJSAddNode extends LitElement {
     // Prevent accidentally closing the dialog in certain stages
     const preventClose = !!this._step && this._shouldPreventClose(this._step);
 
-    const headerHtml = this._renderHeader();
-
-    const content = this._renderStepContent();
-    const actions = this._renderStepActions();
+    const { headerText, headerHtml } = this._renderHeader();
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        ?prevent-scrim-close=${preventClose}
         @closed=${this._dialogClosed}
+        .scrimClickAction=${preventClose ? "" : "close"}
+        .escapeKeyAction=${preventClose ? "" : "close"}
+        .heading=${headerText}
       >
-        <ha-dialog-header slot="header"> ${headerHtml} </ha-dialog-header>
-        ${content}
-        ${actions === nothing
-          ? nothing
-          : html`<ha-dialog-footer slot="footer">${actions}</ha-dialog-footer>`}
+        <ha-dialog-header slot="heading"> ${headerHtml} </ha-dialog-header>
+        ${this._renderStep()}
       </ha-dialog>
     `;
   }
 
-  private _renderHeader(): TemplateResult {
+  private _renderHeader(): { headerText: string; headerHtml: TemplateResult } {
     let headerText = this.hass.localize(
       `ui.panel.config.zwave_js.add_node.title`
     );
 
     if (this._step === "loading") {
-      return html`
-        <ha-fade-in slot="title" .delay=${1000}>
-          <span>${headerText}</span>
-        </ha-fade-in>
-      `;
+      return {
+        headerText,
+        headerHtml: html`
+          <ha-fade-in slot="title" .delay=${1000}>
+            <span>${headerText}</span>
+          </ha-fade-in>
+        `,
+      };
     }
 
     let icon: string | undefined;
@@ -225,20 +219,23 @@ class DialogZWaveJSAddNode extends LitElement {
       `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
     );
 
-    return html`
-      ${icon
-        ? html`<ha-icon-button
-            slot="navigationIcon"
-            @click=${this._handleCloseOrBack}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${icon}
-          ></ha-icon-button>`
-        : nothing}
-      <span slot="title">${headerText}</span>
-    `;
+    return {
+      headerText,
+      headerHtml: html`
+        ${icon
+          ? html`<ha-icon-button
+              slot="navigationIcon"
+              @click=${this._handleCloseOrBack}
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${icon}
+            ></ha-icon-button>`
+          : nothing}
+        <span slot="title">${headerText}</span>
+      `,
+    };
   }
 
-  private _renderStepContent() {
+  private _renderStep() {
     if (["select_method", "select_other_method"].includes(this._step!)) {
       return html`<zwave-js-add-node-select-method
         .hass=${this.hass}
@@ -274,6 +271,13 @@ class DialogZWaveJSAddNode extends LitElement {
           @value-changed=${this._manualQrCodeInputChange}
           @zwave-submit=${this._qrCodeScanned}
         ></zwave-js-add-node-code-input>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._codeInput}
+          @click=${this._qrCodeScanned}
+        >
+          ${this.hass.localize("ui.common.next")}
+        </ha-button>
       `;
     }
 
@@ -293,25 +297,52 @@ class DialogZWaveJSAddNode extends LitElement {
             ._searchDevicesShowSecurityOptions}
           @add-another-z-wave-device=${this._addAnotherDevice}
         ></zwave-js-add-node-searching-devices>
+        ${this._step === "search_smart_start_device"
+          ? html`
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.common.close")}
+              </ha-button>
+            `
+          : nothing}
       `;
     }
 
     if (this._step === "choose_security_strategy") {
       return html`<zwave-js-add-node-select-security-strategy
-        .hass=${this.hass}
-        @z-wave-strategy-selected=${this._setSecurityStrategy}
-      ></zwave-js-add-node-select-security-strategy>`;
+          .hass=${this.hass}
+          @z-wave-strategy-selected=${this._setSecurityStrategy}
+        ></zwave-js-add-node-select-security-strategy>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${this._inclusionStrategy === undefined}
+          @click=${this._searchDevicesWithStrategy}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.select_method.search_device"
+          )}
+        </ha-button>`;
     }
 
     if (this._step === "configure_device") {
       return html`<zwave-js-add-node-configure-device
-        .hass=${this.hass}
-        .deviceName=${this._device?.name ?? ""}
-        .longRangeSupported=${!!this._device?.provisioningInfo?.supportedProtocols?.includes(
-          Protocols.ZWaveLongRange
-        ) && this._controllerSupportsLongRange}
-        @value-changed=${this._setDeviceOptions}
-      ></zwave-js-add-node-configure-device> `;
+          .hass=${this.hass}
+          .deviceName=${this._device?.name ?? ""}
+          .longRangeSupported=${!!this._device?.provisioningInfo?.supportedProtocols?.includes(
+            Protocols.ZWaveLongRange
+          ) && this._controllerSupportsLongRange}
+          @value-changed=${this._setDeviceOptions}
+        ></zwave-js-add-node-configure-device>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._deviceOptions?.name}
+          @click=${this._saveDevice}
+        >
+          ${this.hass.localize(
+            this._device?.id
+              ? "ui.common.save"
+              : "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+          )}
+        </ha-button>`;
     }
 
     if (this._step === "validate_dsk_enter_pin") {
@@ -330,6 +361,15 @@ class DialogZWaveJSAddNode extends LitElement {
           numeric
           .error=${this._error}
         ></zwave-js-add-node-code-input>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._dskPin || this._dskPin.length !== 5}
+          @click=${this._validateDskAndEnterPin}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+          )}
+        </ha-button>
       `;
     }
 
@@ -354,6 +394,11 @@ class DialogZWaveJSAddNode extends LitElement {
           .deviceName=${this._device?.name}
           .reason=${this._lowSecurityReason?.toString()}
         ></zwave-js-add-node-added-insecure>
+        <ha-button slot="primaryAction" @click=${this._navigateToDevice}>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.added_insecure.view_device"
+          )}
+        </ha-button>
       `;
     }
 
@@ -366,6 +411,9 @@ class DialogZWaveJSAddNode extends LitElement {
           .selectedSecurityClasses=${this._securityClasses}
           @value-changed=${this._securityClassChange}
         ></zwave-js-add-node-grant-security-classes>
+        <ha-button slot="primaryAction" @click=${this._grantSecurityClasses}>
+          ${this.hass.localize("ui.common.submit")}
+        </ha-button>
       `;
     }
 
@@ -382,86 +430,6 @@ class DialogZWaveJSAddNode extends LitElement {
     return html`<zwave-js-add-node-loading
       .delay=${1000}
     ></zwave-js-add-node-loading>`;
-  }
-
-  private _renderStepActions() {
-    const buttonParams: ButtonParams | undefined =
-      new Map<ZWaveJSAddNodeStage, ButtonParams | undefined>([
-        [
-          "qr_code_input",
-          {
-            label: this.hass.localize("ui.common.next"),
-            onClick: this._qrCodeScanned,
-          },
-        ],
-        [
-          "search_smart_start_device",
-          {
-            label: this.hass.localize("ui.common.close"),
-            onClick: this.closeDialog,
-          },
-        ],
-        [
-          "choose_security_strategy",
-          {
-            label: this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.select_method.search_device"
-            ),
-            onClick: this._searchDevicesWithStrategy,
-          },
-        ],
-        [
-          "configure_device",
-          {
-            label: this.hass.localize(
-              this._device?.id
-                ? "ui.common.save"
-                : "ui.panel.config.zwave_js.add_node.configure_device.add_device"
-            ),
-            onClick: this._saveDevice,
-          },
-        ],
-        [
-          "validate_dsk_enter_pin",
-          {
-            disabled: !this._dskPin || this._dskPin.length !== 5,
-            label: this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.configure_device.add_device"
-            ),
-            onClick: this._validateDskAndEnterPin,
-          },
-        ],
-        [
-          "added_insecure",
-          {
-            label: this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.added_insecure.view_device"
-            ),
-            onClick: this._navigateToDevice,
-          },
-        ],
-        [
-          "grant_security_classes",
-          {
-            label: this.hass.localize("ui.common.submit"),
-            onClick: this._grantSecurityClasses,
-          },
-        ],
-      ]).get(this._step!) ?? undefined;
-
-    if (!buttonParams) {
-      return nothing;
-    }
-
-    return html`
-      <ha-button
-        slot="primaryAction"
-        .disabled=${buttonParams.disabled ?? false}
-        @click=${buttonParams.onClick}
-      >
-        ${buttonParams.label}
-      </ha-button>
-    `;
   }
 
   private _onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -1127,10 +1095,10 @@ class DialogZWaveJSAddNode extends LitElement {
     }
 
     if (this._open) {
-      this._open = false;
-      return;
+      this._dialog?.close();
+    } else {
+      this._dialogClosed();
     }
-    this._dialogClosed();
   }
 
   public disconnectedCallback(): void {
@@ -1144,6 +1112,19 @@ class DialogZWaveJSAddNode extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-dialog {
+          --mdc-dialog-min-width: 512px;
+        }
+        @media all and (max-width: 500px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
+            --mdc-dialog-min-height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --vertical-align-dialog: flex-end;
+            --ha-dialog-border-radius: var(--ha-border-radius-square);
+          }
+        }
         ha-fade-in {
           display: block;
         }

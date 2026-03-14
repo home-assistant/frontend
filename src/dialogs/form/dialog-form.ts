@@ -2,9 +2,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
-import "../../components/ha-dialog-footer";
-import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
@@ -21,40 +20,24 @@ export class DialogForm
 
   @state() private _data: FormDialogData = {};
 
-  @state() private _open = false;
-
-  @state() private _closeState?: "canceled" | "submitted";
-
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
     this._data = params.data || {};
-    this._open = true;
   }
 
-  public closeDialog(): boolean {
-    this._open = false;
+  public closeDialog() {
+    this._params = undefined;
+    this._data = {};
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
   }
 
-  private _dialogClosed(): void {
-    if (!this._closeState) {
-      this._params?.cancel?.();
-    }
-    this._closeState = undefined;
-    this._params = undefined;
-    this._data = {};
-    this._open = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private _submit(): void {
-    this._closeState = "submitted";
     this._params?.submit?.(this._data);
     this.closeDialog();
   }
 
   private _cancel(): void {
-    this._closeState = "canceled";
     this._params?.cancel?.();
     this.closeDialog();
   }
@@ -70,14 +53,14 @@ export class DialogForm
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this._params.title}
-        prevent-scrim-close
-        @closed=${this._dialogClosed}
+        open
+        scrimClickAction
+        escapeKeyAction
+        .heading=${createCloseHeading(this.hass, this._params.title)}
+        @closed=${this._cancel}
       >
         <ha-form
-          autofocus
+          dialogInitialFocus
           .hass=${this.hass}
           .computeLabel=${this._params.computeLabel}
           .computeHelper=${this._params.computeHelper}
@@ -86,18 +69,16 @@ export class DialogForm
           @value-changed=${this._valueChanged}
         >
         </ha-form>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
-            ${this._params.cancelText || this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this._submit}>
-            ${this._params.submitText || this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
+        <ha-button
+          appearance="plain"
+          @click=${this._cancel}
+          slot="secondaryAction"
+        >
+          ${this._params.cancelText || this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button @click=${this._submit} slot="primaryAction">
+          ${this._params.submitText || this.hass.localize("ui.common.save")}
+        </ha-button>
       </ha-dialog>
     `;
   }

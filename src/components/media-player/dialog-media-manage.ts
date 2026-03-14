@@ -25,7 +25,7 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
-import "../ha-dialog";
+import "../ha-wa-dialog";
 import "../ha-dialog-header";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
@@ -99,7 +99,7 @@ class DialogMediaManage extends LitElement {
     let fileIndex = 0;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${this._uploading || this._deleting}
@@ -244,7 +244,7 @@ class DialogMediaManage extends LitElement {
               )}
             </ha-tip>`
           : nothing}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -333,7 +333,7 @@ class DialogMediaManage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
         ha-dialog-header ha-media-upload-button,

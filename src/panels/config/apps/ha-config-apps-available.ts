@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -29,7 +30,8 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-
+import { showRegistriesDialog } from "./dialogs/registries/show-dialog-registries";
+import { showRepositoriesDialog } from "./dialogs/repositories/show-dialog-repositories";
 import "./supervisor-apps-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -82,7 +84,14 @@ export class HaConfigAppsAvailable extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._loadData();
+    const repositoryUrl = extractSearchParam("repository_url");
+    navigate("/config/apps/available", { replace: true });
+    this._loadData().then(() => {
+      if (repositoryUrl) {
+        this._manageRepositories(repositoryUrl);
+      }
+    });
+
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
@@ -232,11 +241,19 @@ export class HaConfigAppsAvailable extends LitElement {
   }
 
   private _manageRepositoriesClicked() {
-    navigate("/config/apps/repositories");
+    this._manageRepositories();
+  }
+
+  private _manageRepositories(url?: string) {
+    showRepositoriesDialog(this, {
+      addon: this._addon!,
+      url,
+      closeCallback: () => this._loadData(),
+    });
   }
 
   private _manageRegistries() {
-    navigate("/config/apps/registries");
+    showRegistriesDialog(this);
   }
 
   private async _loadData(): Promise<void> {

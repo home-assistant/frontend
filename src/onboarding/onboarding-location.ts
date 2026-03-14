@@ -11,8 +11,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-button";
 import "../components/ha-list";
+import "../components/ha-button";
 import "../components/ha-list-item";
 import "../components/ha-radio";
 import "../components/ha-spinner";
@@ -486,7 +486,7 @@ class OnboardingLocation extends LitElement {
           right: 10px;
           inset-inline-end: 10px;
           inset-inline-start: initial;
-          --ha-icon-button-size: 36px;
+          --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           inset-inline-start: initial;

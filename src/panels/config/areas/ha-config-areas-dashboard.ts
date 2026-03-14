@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircleOutline,
+  mdiHelpCircle,
   mdiPencil,
   mdiPlus,
   mdiSort,
@@ -179,7 +179,7 @@ export class HaConfigAreasDashboard extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircleOutline}
+          .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
         <div class="container">

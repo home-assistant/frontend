@@ -5,12 +5,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import { subscribeDeviceRegistry } from "../../../../../data/device/device_registry";
 import type {
@@ -51,24 +51,17 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     nlwr?: WorkingRouteStatistics;
   } = {};
 
-  @state() private _open = false;
-
   private _subscribedNodeStatistics?: Promise<UnsubscribeFunc>;
 
   private _subscribedDeviceRegistry?: UnsubscribeFunc;
 
   public showDialog(params: ZWaveJSNodeStatisticsDialogParams): void {
     this.device = params.device;
-    this._open = true;
     this._subscribeDeviceRegistry();
     this._subscribeNodeStatistics();
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this._nodeStatistics = undefined;
     this.device = undefined;
 
@@ -84,12 +77,12 @@ class DialogZWaveJSNodeStatistics extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.zwave_js.node_statistics.title"
+        open
+        @closed=${this.closeDialog}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.zwave_js.node_statistics.title")
         )}
-        @closed=${this._dialogClosed}
       >
         <ha-list noninteractive>
           <ha-list-item twoline hasmeta>

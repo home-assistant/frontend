@@ -2,7 +2,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-form/ha-form";
@@ -81,7 +81,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
       );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -131,7 +131,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                 )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

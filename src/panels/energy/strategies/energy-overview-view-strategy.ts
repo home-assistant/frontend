@@ -13,23 +13,15 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const collectionKey =
-      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
-
     const view: LovelaceViewConfig = {
       type: "sections",
       sections: [],
       dense_section_placement: true,
-      max_columns: 3,
-      footer: {
-        card: {
-          type: "energy-date-selection",
-          collection_key: collectionKey,
-          opening_direction: "right",
-          vertical_opening_direction: "up",
-        },
-      },
+      max_columns: 2,
     };
+
+    const collectionKey =
+      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
@@ -49,10 +41,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     }
 
     const hasGrid = prefs.energy_sources.find(
-      (source): source is GridSourceTypeEnergyPreference =>
+      (source) =>
         source.type === "grid" &&
-        (!!source.stat_energy_from || !!source.stat_energy_to)
-    );
+        (source.flow_from?.length || source.flow_to?.length)
+    ) as GridSourceTypeEnergyPreference;
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
@@ -64,14 +56,12 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       (source) => source.type === "water"
     );
     const hasWaterDevices = prefs.device_consumption_water?.length;
-    const hasPowerSources = prefs.energy_sources.find((source) => {
-      if (source.type === "solar" && source.stat_rate) return true;
-      if (source.type === "battery" && source.stat_rate) return true;
-      if (source.type === "grid") {
-        return !!source.stat_rate || !!source.power_config;
-      }
-      return false;
-    });
+    const hasPowerSources = prefs.energy_sources.find(
+      (source) =>
+        (source.type === "solar" && source.stat_rate) ||
+        (source.type === "battery" && source.stat_rate) ||
+        (source.type === "grid" && source.power?.length)
+    );
 
     if (hasGrid || hasBattery || hasSolar) {
       view.sections!.push({
@@ -129,7 +119,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
               "ui.panel.energy.cards.energy_usage_graph_title"
             ),
             type: "energy-usage-graph",
-            collection_key: collectionKey,
+            collection_key: "energy_dashboard",
           },
         ],
       });

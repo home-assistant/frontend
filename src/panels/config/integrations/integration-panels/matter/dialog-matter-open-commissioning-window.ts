@@ -5,8 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-dialog";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
@@ -27,13 +26,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   @state() private _commissionParams?: MatterCommissioningParameters;
 
-  @state() private _open = false;
-
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
-    this._open = true;
   }
 
   protected render() {
@@ -43,12 +39,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.matter.open_commissioning_window.title"
+        open
+        @closed=${this.closeDialog}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize(
+            "ui.panel.config.matter.open_commissioning_window.title"
+          )
         )}
-        @closed=${this._dialogClosed}
       >
         ${this._commissionParams
           ? html`
@@ -67,14 +65,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     alt=${domainToName(this.hass.localize, "matter")}
-                    src=${brandsUrl(
-                      {
-                        domain: "matter",
-                        type: "logo",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
+                    src=${brandsUrl({
+                      domain: "matter",
+                      type: "logo",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
                   />
                   <ha-qr-code
                     .data=${this._commissionParams.setup_qr_code}
@@ -95,6 +90,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   >
                 </div>
               </div>
+              <ha-button slot="primaryAction" @click=${this._copyCode}>
+                ${this.hass.localize(
+                  "ui.panel.config.matter.open_commissioning_window.copy_code"
+                )}
+              </ha-button>
             `
           : this._status === "started"
             ? html`
@@ -110,6 +110,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     </p>
                   </div>
                 </div>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
               `
             : this._status === "failed"
               ? html`
@@ -126,6 +129,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       </p>
                     </div>
                   </div>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
                 `
               : html`
                   <p>
@@ -145,30 +151,12 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
                     )}
                   </p>
-                `}
-        <ha-dialog-footer slot="footer">
-          ${this._commissionParams
-            ? html`
-                <ha-button slot="primaryAction" @click=${this._copyCode}>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.open_commissioning_window.copy_code"
-                  )}
-                </ha-button>
-              `
-            : this._status === "started" || this._status === "failed"
-              ? html`
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
-                  </ha-button>
-                `
-              : html`
                   <ha-button slot="primaryAction" @click=${this._start}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.start_commissioning"
                     )}
                   </ha-button>
                 `}
-        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -198,10 +186,6 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this.device_id = undefined;
     this._status = undefined;
     this._commissionParams = undefined;

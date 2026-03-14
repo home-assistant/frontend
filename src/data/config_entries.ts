@@ -96,6 +96,22 @@ export interface ConfigEntryUpdate {
   entry: ConfigEntry;
 }
 
+export const subscribeAndProcessConfigEntries = (
+  hass: HomeAssistant,
+  callbackFunction: (entries: ConfigEntry[]) => void,
+  filters?: {
+    type?: IntegrationType[];
+    domain?: string;
+  }
+): Promise<UnsubscribeFunc> => {
+  const stream = new ConfigEntryStream();
+  const processCallback = (messages: ConfigEntryUpdate[]) => {
+    callbackFunction(stream.processMessage(messages));
+  };
+
+  return subscribeConfigEntries(hass, processCallback, filters);
+};
+
 export const subscribeConfigEntries = (
   hass: HomeAssistant,
   callbackFunction: (message: ConfigEntryUpdate[]) => void,

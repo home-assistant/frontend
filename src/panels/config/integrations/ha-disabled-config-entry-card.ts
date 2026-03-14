@@ -39,11 +39,12 @@ export class HaDisabledConfigEntryCard extends LitElement {
         .localizedDomainName=${this.entry.localized_domain_name}
         .label=${this.entry.title || this.entry.localized_domain_name}
       >
-        <ha-icon-button
-          .path=${mdiCog}
+        <a
           href=${`/config/integrations/integration/${this.entry.domain}`}
           slot="header-button"
-        ></ha-icon-button>
+        >
+          <ha-icon-button .path=${mdiCog}></ha-icon-button>
+        </a>
         <ha-button @click=${this._handleEnable} appearance="filled">
           ${this.hass.localize("ui.common.enable")}
         </ha-button>
@@ -84,7 +85,7 @@ export class HaDisabledConfigEntryCard extends LitElement {
     ha-button {
       --mdc-theme-primary: var(--primary-color);
     }
-    ha-icon-button {
+    a ha-icon-button {
       color: var(--secondary-text-color);
     }
   `;

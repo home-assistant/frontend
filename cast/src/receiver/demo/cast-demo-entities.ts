@@ -1,7 +1,8 @@
-import type { EntityInput } from "../../../../src/fake_data/entities/types";
+import type { Entity } from "../../../../src/fake_data/entity";
+import { convertEntities } from "../../../../src/fake_data/entity";
 
-export const castDemoEntities: () => EntityInput[] = () =>
-  Object.values({
+export const castDemoEntities: () => Entity[] = () =>
+  convertEntities({
     "light.reading_light": {
       entity_id: "light.reading_light",
       state: "on",

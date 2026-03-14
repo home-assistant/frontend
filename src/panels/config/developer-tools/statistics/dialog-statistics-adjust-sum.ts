@@ -7,7 +7,7 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-next";
@@ -148,7 +148,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -158,7 +158,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       >
         ${content}
         <ha-dialog-footer slot="footer">${footer}</ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  any,
   array,
   assert,
   assign,
@@ -49,7 +48,6 @@ export const mapEntitiesConfigStruct = union([
     unit: optional(string()),
     focus: optional(boolean()),
     name: optional(string()),
-    color: optional(string()),
   }),
   string(),
 ]);
@@ -78,7 +76,6 @@ const cardConfigStruct = assign(
     auto_fit: optional(boolean()),
     fit_zones: optional(boolean()),
     theme_mode: optional(string()),
-    conditions: optional(any()),
   })
 );
 
@@ -87,7 +84,6 @@ const themeModes = ["auto", "light", "dark"] as const;
 const SUB_SCHEMA = [
   { name: "entity", selector: { entity: {} }, required: true },
   { name: "name", selector: { text: {} } },
-  { name: "color", selector: { ui_color: {} } },
 ] as const;
 
 @customElement("hui-map-card-editor")

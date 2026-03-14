@@ -1,10 +1,10 @@
-import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import type { DurationSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { HaDurationData } from "../ha-duration-input";
 import "../ha-duration-input";
-import type { HaDurationData, HaDurationInput } from "../ha-duration-input";
 
 @customElement("ha-selector-duration")
 export class HaTimeDuration extends LitElement {
@@ -24,12 +24,6 @@ export class HaTimeDuration extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
-
-  @query("ha-duration-input", true) private _input?: HaDurationInput;
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
-  }
 
   private _data = memoizeOne(
     (value?: HaDurationData | string | number): HaDurationData | undefined => {
@@ -72,7 +66,6 @@ export class HaTimeDuration extends LitElement {
         .enableDay=${this.selector.duration?.enable_day}
         .enableMillisecond=${this.selector.duration?.enable_millisecond}
         .allowNegative=${this.selector.duration?.allow_negative}
-        .enableSecond=${this.selector.duration?.enable_second ?? true}
       ></ha-duration-input>
     `;
   }

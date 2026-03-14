@@ -28,8 +28,6 @@ import {
   formatDateMonthYear,
   formatDateShort,
   formatDateVeryShort,
-  formatDateWeekdayShortDate,
-  formatDateWeekdayVeryShortDate,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
@@ -218,17 +216,13 @@ function formatTooltip(
   }
   // when comparing the first value is offset to match the main period
   // and the real date is in the third value
-  // find the first param with the real date to handle gap-filled entries
-  const origDate = params.find((p) => p.value?.[2] != null)?.value?.[2];
-  const date = new Date(origDate ?? params[0].value?.[0]);
+  const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
 
   if (suggestedPeriod === "month") {
     period = `${formatDateMonthYear(date, locale, config)}`;
   } else if (suggestedPeriod === "day") {
-    period = showCompareYear
-      ? formatDateWeekdayShortDate(date, locale, config)
-      : formatDateWeekdayVeryShortDate(date, locale, config);
+    period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${
       compare

@@ -1,4 +1,3 @@
-import { mdiDragHorizontalVariant } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -7,7 +6,6 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-area-picker";
-import "./ha-sortable";
 
 @customElement("ha-areas-picker")
 export class HaAreasPicker extends SubscribeMixin(LitElement) {
@@ -64,8 +62,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public reorder = false;
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -73,42 +69,26 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
     const currentAreas = this._currentAreas;
     return html`
-      <ha-sortable
-        .disabled=${!this.reorder || this.disabled}
-        handle-selector=".area-handle"
-        @item-moved=${this._areaMoved}
-      >
-        <div class="list">
-          ${currentAreas.map(
-            (area) => html`
-              <div class="area">
-                <ha-area-picker
-                  .curValue=${area}
-                  .noAdd=${this.noAdd}
-                  .hass=${this.hass}
-                  .value=${area}
-                  .label=${this.pickedAreaLabel}
-                  .includeDomains=${this.includeDomains}
-                  .excludeDomains=${this.excludeDomains}
-                  .includeDeviceClasses=${this.includeDeviceClasses}
-                  .deviceFilter=${this.deviceFilter}
-                  .entityFilter=${this.entityFilter}
-                  .disabled=${this.disabled}
-                  @value-changed=${this._areaChanged}
-                ></ha-area-picker>
-                ${this.reorder
-                  ? html`
-                      <ha-svg-icon
-                        class="area-handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `
-                  : nothing}
-              </div>
-            `
-          )}
-        </div>
-      </ha-sortable>
+      ${currentAreas.map(
+        (area) => html`
+          <div>
+            <ha-area-picker
+              .curValue=${area}
+              .noAdd=${this.noAdd}
+              .hass=${this.hass}
+              .value=${area}
+              .label=${this.pickedAreaLabel}
+              .includeDomains=${this.includeDomains}
+              .excludeDomains=${this.excludeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .disabled=${this.disabled}
+              @value-changed=${this._areaChanged}
+            ></ha-area-picker>
+          </div>
+        `
+      )}
       <div>
         <ha-area-picker
           .noAdd=${this.noAdd}
@@ -128,17 +108,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
         ></ha-area-picker>
       </div>
     `;
-  }
-
-  private _areaMoved(e: CustomEvent) {
-    e.stopPropagation();
-    const { oldIndex, newIndex } = e.detail;
-    const currentAreas = this._currentAreas;
-    const movedArea = currentAreas[oldIndex];
-    const newAreas = [...currentAreas];
-    newAreas.splice(oldIndex, 1);
-    newAreas.splice(newIndex, 0, movedArea);
-    this._updateAreas(newAreas);
   }
 
   private get _currentAreas(): string[] {
@@ -189,19 +158,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   static override styles = css`
     div {
       margin-top: 8px;
-    }
-    .area {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-    .area ha-area-picker {
-      flex: 1;
-    }
-    .area-handle {
-      padding: 8px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
     }
   `;
 }

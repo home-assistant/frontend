@@ -9,7 +9,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-markdown";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -23,8 +23,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
-
-const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-water-settings")
 export class DialogEnergyWaterSettings
@@ -43,13 +41,9 @@ export class DialogEnergyWaterSettings
 
   @state() private _water_units?: string[];
 
-  @state() private _flow_rate_units?: string[];
-
   @state() private _error?: string;
 
   private _excludeList?: string[];
-
-  private _excludeListFlowRate?: string[];
 
   public async showDialog(
     params: EnergySettingsWaterDialogParams
@@ -68,15 +62,9 @@ export class DialogEnergyWaterSettings
     this._water_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "water")
     ).units;
-    this._flow_rate_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate")
-    ).units;
     this._excludeList = this._params.water_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
-    this._excludeListFlowRate = this._params.water_sources
-      .map((entry) => entry.stat_rate)
-      .filter((id) => id && id !== this._source?.stat_rate) as string[];
 
     this._open = true;
   }
@@ -91,7 +79,6 @@ export class DialogEnergyWaterSettings
     this._source = undefined;
     this._error = undefined;
     this._excludeList = undefined;
-    this._excludeListFlowRate = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -111,16 +98,28 @@ export class DialogEnergyWaterSettings
       isExternalStatistic(this._source.stat_energy_from);
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.water.dialog.header"
         )}
-        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        <div>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.energy.water.dialog.paragraph"
+            )}
+          </p>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.energy.water.dialog.entity_para",
+              { unit: pickableUnit }
+            )}
+          </p>
+        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -133,26 +132,7 @@ export class DialogEnergyWaterSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.water.dialog.entity_para",
-            { unit: pickableUnit }
-          )}
           autofocus
-        ></ha-statistic-picker>
-
-        <ha-statistic-picker
-          .hass=${this.hass}
-          .includeUnitClass=${flowRateUnitClasses}
-          .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.water.dialog.water_flow_rate"
-          )}
-          .excludeStatistics=${this._excludeListFlowRate}
-          @value-changed=${this._flowRateStatisticChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.water.dialog.flow_rate_para",
-            { unit: this._flow_rate_units?.join(", ") || "" }
-          )}
         ></ha-statistic-picker>
 
         <p>
@@ -270,7 +250,7 @@ export class DialogEnergyWaterSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -303,13 +283,6 @@ export class DialogEnergyWaterSettings
       entity_energy_price: ev.detail.value,
       number_energy_price: null,
       stat_cost: null,
-    };
-  }
-
-  private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
-    this._source = {
-      ...this._source!,
-      stat_rate: ev.detail.value || undefined,
     };
   }
 
@@ -346,10 +319,6 @@ export class DialogEnergyWaterSettings
       haStyle,
       haStyleDialog,
       css`
-        ha-statistic-picker {
-          display: block;
-          margin-bottom: var(--ha-space-4);
-        }
         ha-formfield {
           display: block;
         }

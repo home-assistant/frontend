@@ -1,29 +1,28 @@
-import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-color-picker";
-import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-textarea";
 import "../../../components/ha-textfield";
-import { localizeContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
-import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
 
 @customElement("dialog-label-detail")
-class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
-  LitElement
-) {
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+class DialogLabelDetail
+  extends LitElement
+  implements HassDialog<LabelDetailDialogParams>
+{
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
 
@@ -35,35 +34,52 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
 
   @state() private _error?: string;
 
+  @state() private _params?: LabelDetailDialogParams;
+
   @state() private _submitting = false;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.params?.entry) {
-      this._name = this.params.entry.name || "";
-      this._icon = this.params.entry.icon || "";
-      this._color = this.params.entry.color || "";
-      this._description = this.params.entry.description || "";
+  @state() private _open = false;
+
+  public showDialog(params: LabelDetailDialogParams): void {
+    this._params = params;
+    this._error = undefined;
+    if (this._params.entry) {
+      this._name = this._params.entry.name || "";
+      this._icon = this._params.entry.icon || "";
+      this._color = this._params.entry.color || "";
+      this._description = this._params.entry.description || "";
     } else {
-      this._name = this.params?.suggestedName || "";
+      this._name = this._params.suggestedName || "";
       this._icon = "";
       this._color = "";
       this._description = "";
     }
+    this._open = true;
+  }
+
+  public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this.params) {
+    if (!this._params) {
       return nothing;
     }
 
     return html`
-      <ha-dialog
-        open
-        header-title=${this.params.entry
-          ? this.params.entry.name || this.params.entry.label_id
-          : this.localize("ui.dialogs.label-detail.new_label")}
-        prevent-scrim-close
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.entry
+          ? this._params.entry.name || this._params.entry.label_id
+          : this.hass!.localize("ui.dialogs.label-detail.new_label")}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -75,35 +91,39 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._input}
-              .label=${this.localize("ui.dialogs.label-detail.name")}
-              .validationMessage=${this.localize(
+              .label=${this.hass!.localize("ui.dialogs.label-detail.name")}
+              .validationMessage=${this.hass!.localize(
                 "ui.dialogs.label-detail.required_error_msg"
               )}
               required
             ></ha-textfield>
             <ha-icon-picker
               .value=${this._icon}
+              .hass=${this.hass}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              .label=${this.localize("ui.dialogs.label-detail.icon")}
+              .label=${this.hass!.localize("ui.dialogs.label-detail.icon")}
             ></ha-icon-picker>
             <ha-color-picker
               .value=${this._color}
               .configValue=${"color"}
+              .hass=${this.hass}
               @value-changed=${this._valueChanged}
-              .label=${this.localize("ui.dialogs.label-detail.color")}
+              .label=${this.hass!.localize("ui.dialogs.label-detail.color")}
             ></ha-color-picker>
             <ha-textarea
               .value=${this._description}
               .configValue=${"description"}
               @input=${this._input}
-              .label=${this.localize("ui.dialogs.label-detail.description")}
+              .label=${this.hass!.localize(
+                "ui.dialogs.label-detail.description"
+              )}
             ></ha-textarea>
           </div>
         </div>
 
         <ha-dialog-footer slot="footer">
-          ${this.params.entry && this.params.removeEntry
+          ${this._params.entry && this._params.removeEntry
             ? html`
                 <ha-button
                   slot="secondaryAction"
@@ -112,29 +132,21 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
                   @click=${this._deleteEntry}
                   .disabled=${this._submitting}
                 >
-                  ${this.localize("ui.common.delete")}
+                  ${this.hass!.localize("ui.common.delete")}
                 </ha-button>
               `
-            : html`
-                <ha-button
-                  appearance="plain"
-                  slot="secondaryAction"
-                  @click=${this.closeDialog}
-                >
-                  ${this.localize("ui.common.cancel")}
-                </ha-button>
-              `}
+            : nothing}
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
             .disabled=${this._submitting || !this._name}
           >
-            ${this.params.entry
-              ? this.localize("ui.common.update")
-              : this.localize("ui.common.create")}
+            ${this._params.entry
+              ? this.hass!.localize("ui.common.update")
+              : this.hass!.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -163,10 +175,10 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
         color: this._color.trim() || null,
         description: this._description.trim() || null,
       };
-      if (this.params!.entry) {
-        await this.params!.updateEntry!(values);
+      if (this._params!.entry) {
+        await this._params!.updateEntry!(values);
       } else {
-        await this.params!.createEntry!(values);
+        await this._params!.createEntry!(values);
       }
       this.closeDialog();
     } catch (err: any) {
@@ -179,8 +191,8 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
   private async _deleteEntry() {
     this._submitting = true;
     try {
-      if (await this.params!.removeEntry!()) {
-        this.params = undefined;
+      if (await this._params!.removeEntry!()) {
+        this._params = undefined;
       }
     } finally {
       this._submitting = false;

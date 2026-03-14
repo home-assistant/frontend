@@ -260,7 +260,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     .remove-icon,
     .edit-icon,
     .duplicate-icon {
-      --ha-icon-button-size: 36px;
+      --mdc-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 

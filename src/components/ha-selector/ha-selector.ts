@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { Selector } from "../../data/selector";
@@ -94,27 +94,9 @@ export class HaSelector extends LitElement {
 
   @property({ attribute: false }) public context?: Record<string, any>;
 
-  @query("#selector", true) private _selectorElement?: HTMLElement;
-
-  public reportValidity(): boolean {
-    if (
-      this._selectorElement &&
-      "reportValidity" in this._selectorElement &&
-      typeof this._selectorElement.reportValidity === "function"
-    ) {
-      return this._selectorElement?.reportValidity() ?? true;
-    }
-    if (this.required) {
-      return (
-        this.value !== undefined && this.value !== null && this.value !== ""
-      );
-    }
-    return true;
-  }
-
   public async focus() {
     await this.updateComplete;
-    this._selectorElement?.focus();
+    (this.renderRoot.querySelector("#selector") as HTMLElement)?.focus();
   }
 
   private get _type() {

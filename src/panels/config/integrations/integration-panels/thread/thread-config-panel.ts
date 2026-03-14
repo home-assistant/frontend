@@ -75,12 +75,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
 
     return html`
-      <hass-subpage
-        .narrow=${this.narrow}
-        .hass=${this.hass}
-        header="Thread"
-        back-path="/config"
-      >
+      <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             .path=${mdiDotsVertical}
@@ -222,14 +217,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               >
                 <img
                   slot="graphic"
-                  .src=${brandsUrl(
-                    {
-                      domain: router.brand,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    },
-                    this.hass.auth.data.hassUrl
-                  )}
+                  .src=${brandsUrl({
+                    domain: router.brand,
+                    brand: true,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
                   alt=${router.brand}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"

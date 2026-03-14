@@ -54,14 +54,16 @@ export class AssistPipelineDebug extends LitElement {
         "ui.panel.config.voice_assistants.debug.header"
       )}
     >
-      <ha-icon-button
-        .path=${mdiMicrophoneMessage}
-        .label=${this.hass.localize(
-          "ui.panel.config.voice_assistants.debug.start_debug_run"
-        )}
+      <a
         href="/config/voice-assistants/debug?pipeline=${this.pipelineId}"
         slot="toolbar-icon"
-      ></ha-icon-button>
+        ><ha-icon-button
+          .path=${mdiMicrophoneMessage}
+          .label=${this.hass.localize(
+            "ui.panel.config.voice_assistants.debug.start_debug_run"
+          )}
+        ></ha-icon-button
+      ></a>
       <div class="toolbar">
         ${this._runs?.length
           ? html`

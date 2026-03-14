@@ -1,6 +1,5 @@
-import { consume } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -9,9 +8,12 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
-import { updateLabelRegistryEntry } from "../data/label/label_registry";
+import {
+  subscribeLabelRegistry,
+  updateLabelRegistryEntry,
+} from "../data/label/label_registry";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
@@ -22,7 +24,7 @@ import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
-export class HaLabelsPicker extends LitElement {
+export class HaLabelsPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -78,9 +80,7 @@ export class HaLabelsPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @consume({ context: labelsContext, subscribe: true })
-  @state()
-  private _labels?: LabelRegistryEntry[];
+  @state() private _labels?: Record<string, LabelRegistryEntry>;
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
@@ -94,20 +94,26 @@ export class HaLabelsPicker extends LitElement {
     await this.labelPicker?.focus();
   }
 
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        const lookUp = {};
+        labels.forEach((label) => {
+          lookUp[label.label_id] = label;
+        });
+        this._labels = lookUp;
+      }),
+    ];
+  }
+
   private _sortedLabels = memoizeOne(
     (
       value: string[] | undefined,
-      labels: LabelRegistryEntry[] | undefined,
+      labels: Record<string, LabelRegistryEntry> | undefined,
       language: string
     ) =>
       value
-        ?.map(
-          (id) =>
-            labels?.find((label) => label.label_id === id) || {
-              label_id: id,
-              name: id,
-            }
-        )
+        ?.map((id) => labels?.[id])
         .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
   );
 

@@ -103,12 +103,7 @@ export class HaScriptTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .header=${title}
-        .scrollable=${this.narrow}
-      >
+      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
         ${!this.narrow && this.scriptId
           ? html`
               <ha-button
@@ -570,18 +565,14 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          flex: 1;
-          min-height: 0;
+          min-height: calc(100% - var(--header-height));
           display: flex;
-          overflow: hidden;
           background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
-          flex: none;
           height: auto;
           flex-direction: column;
-          overflow: visible;
         }
 
         .container {
@@ -590,33 +581,15 @@ export class HaScriptTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
+          overflow-x: auto;
           max-width: 50%;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-        hat-script-graph {
-          flex: 1;
-          min-width: 0;
-          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
-          overflow: visible;
-          height: auto;
-        }
-        :host([narrow]) hat-script-graph {
-          overflow: visible;
-          flex: none;
         }
         .info {
           flex: 1;
-          overflow-y: auto;
           background-color: var(--card-background-color);
-        }
-        :host([narrow]) .info {
-          overflow: visible;
         }
         .trace-link {
           text-decoration: none;

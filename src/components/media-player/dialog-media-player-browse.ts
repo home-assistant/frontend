@@ -24,7 +24,7 @@ import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-icon-button-arrow-prev";
-import "../ha-dialog";
+import "../ha-wa-dialog";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -76,7 +76,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -169,7 +169,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -222,7 +222,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
 
@@ -237,7 +237,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         @media (min-width: 800px) {
-          ha-dialog {
+          ha-wa-dialog {
             --ha-dialog-max-width: 800px;
             --ha-dialog-max-height: calc(
               100vh - var(--ha-space-18) - var(--safe-area-inset-y)

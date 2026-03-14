@@ -39,18 +39,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
         tag: "zha-network-visualization-page",
         load: () => import("./zha-network-visualization-page"),
       },
-      options: {
-        tag: "zha-options-page",
-        load: () => import("./zha-options-page"),
-      },
-      "network-info": {
-        tag: "zha-network-info-page",
-        load: () => import("./zha-network-info-page"),
-      },
-      section: {
-        tag: "zha-config-section-page",
-        load: () => import("./zha-config-section-page"),
-      },
     },
   };
 
@@ -65,8 +53,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
       el.ieee = this.routeTail.path.substr(1);
     } else if (this._currentPage === "visualization") {
       el.zoomedDeviceIdFromURL = this.routeTail.path.substr(1);
-    } else if (this._currentPage === "section") {
-      el.sectionId = this.routeTail.path.substr(1);
     }
   }
 }

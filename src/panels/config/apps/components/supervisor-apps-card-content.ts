@@ -1,4 +1,4 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -24,7 +24,7 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ attribute: false }) public iconClass?: string;
 
-  @property() public icon = mdiHelpCircleOutline;
+  @property() public icon = mdiHelpCircle;
 
   @property({ attribute: false }) public iconImage?: string;
 

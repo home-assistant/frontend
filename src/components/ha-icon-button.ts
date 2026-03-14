@@ -1,8 +1,9 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import "@material/mwc-icon-button";
+import type { IconButton } from "@material/mwc-icon-button";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "./ha-button";
 import "./ha-svg-icon";
 
 @customElement("ha-icon-button")
@@ -18,19 +19,15 @@ export class HaIconButton extends LitElement {
   // These should always be set as properties, not attributes,
   // so that only the <button> element gets the attribute
   @property({ type: String, attribute: "aria-haspopup" })
-  ariaHasPopup!: "false" | "true" | "menu" | "listbox" | "tree" | "grid";
+  override ariaHasPopup!: IconButton["ariaHasPopup"];
 
   @property({ attribute: "hide-title", type: Boolean }) hideTitle = false;
 
-  @property({ type: Boolean, reflect: true }) selected = false;
+  @query("mwc-icon-button", true) private _button?: IconButton;
 
-  @property() href?: string;
-
-  @property() target?: "_blank" | "_parent" | "_self" | "_top";
-
-  @property() rel?: string;
-
-  @property() download?: string;
+  public override focus() {
+    this._button?.focus();
+  }
 
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
@@ -39,69 +36,30 @@ export class HaIconButton extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-button
-        appearance="plain"
-        variant="neutral"
+      <mwc-icon-button
         aria-label=${ifDefined(this.label)}
         title=${ifDefined(this.hideTitle ? undefined : this.label)}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
-        .iconTag=${this.path ? "ha-svg-icon" : "span"}
-        .href=${this.href}
-        .target=${this.target}
-        .rel=${this.rel}
-        .download=${this.download}
       >
         ${this.path
           ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
-          : html`<span><slot></slot></span>`}
-      </ha-button>
+          : html`<slot></slot>`}
+      </mwc-icon-button>
     `;
   }
 
-  static styles: CSSResultGroup = css`
+  static styles = css`
     :host {
       display: inline-block;
       outline: none;
-      --ha-button-height: var(--ha-icon-button-size, 48px);
     }
-    ha-button {
-      position: relative;
-      isolation: isolate;
-      --wa-form-control-padding-inline: var(
-        --ha-icon-button-padding-inline,
-        --ha-space-2
-      );
-      --wa-color-on-normal: currentColor;
-      --wa-color-fill-quiet: transparent;
-      --ha-button-label-overflow: visible;
-    }
-    ha-button::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      border-radius: 50%;
-      background-color: currentColor;
-      opacity: 0;
+    :host([disabled]) {
       pointer-events: none;
     }
-    ha-button::part(base) {
-      width: var(--wa-form-control-height);
-      aspect-ratio: 1;
-      outline-offset: -4px;
-    }
-    ha-button::part(label) {
-      display: flex;
-    }
-    :host([selected]) ha-button::after {
-      opacity: 0.1;
-    }
-
-    @media (hover: hover) {
-      :host(:hover:not([disabled])) ha-button::after {
-        opacity: 0.1;
-      }
+    mwc-icon-button {
+      --mdc-theme-on-primary: currentColor;
+      --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
     }
   `;
 }

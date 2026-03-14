@@ -174,7 +174,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     return html`
       <ha-sortable
         @item-moved=${this._colorMoved}
-        draggable-selector=".color"
+        item=".color"
         no-style
         .disabled=${!this.editMode}
       >

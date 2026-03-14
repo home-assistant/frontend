@@ -48,20 +48,3 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
    */
   display_type?: DisplayType;
 }
-
-interface EnergyTotalBadgeConfig extends LovelaceBadgeConfig {
-  title?: string;
-  collection_key?: string;
-}
-
-export interface PowerTotalBadgeConfig extends EnergyTotalBadgeConfig {
-  type: "power-total";
-}
-
-export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
-  type: "water-total";
-}
-
-export interface GasTotalBadgeConfig extends EnergyTotalBadgeConfig {
-  type: "gas-total";
-}

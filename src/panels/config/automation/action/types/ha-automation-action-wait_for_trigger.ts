@@ -1,17 +1,15 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
-import { isTemplate } from "../../../../../common/string/has-template";
-import "../../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../../components/ha-form/types";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
+import "../../../../../components/ha-duration-input";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-textfield";
 import type { WaitForTriggerAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
-import type { TimeoutType } from "../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
 
@@ -36,49 +34,33 @@ export class HaWaitForTriggerAction
     return { wait_for_trigger: [] };
   }
 
-  private _schema = memoizeOne(
-    (timeoutType: TimeoutType) =>
-      [
-        {
-          name: "timeout",
-          required: false,
-          selector:
-            timeoutType === "string_template"
-              ? { template: {} }
-              : timeoutType === "object_template"
-                ? { object: {} }
-                : { duration: { enable_millisecond: true } },
-        },
-        {
-          name: "continue_on_timeout",
-          selector: { boolean: {} },
-        },
-      ] as const satisfies readonly HaFormSchema[]
-  );
-
   protected render() {
-    const timeout = this.action.timeout;
-    const timeoutType: TimeoutType =
-      typeof timeout === "string" && isTemplate(timeout)
-        ? "string_template"
-        : typeof timeout === "object" &&
-            timeout !== null &&
-            Object.values(timeout).some(
-              (v) => typeof v === "string" && isTemplate(v)
-            )
-          ? "object_template"
-          : "duration";
+    const timeData = createDurationData(this.action.timeout);
 
     return html`
       ${this.inSidebar || (!this.inSidebar && !this.indent)
         ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this.action}
-              .schema=${this._schema(timeoutType)}
+            <ha-duration-input
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
+              )}
+              .data=${timeData}
               .disabled=${this.disabled}
-              .computeLabel=${this._computeLabelCallback}
-            ></ha-form>
+              enable-millisecond
+              @value-changed=${this._timeoutChanged}
+            ></ha-duration-input>
+            <ha-formfield
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
+              )}
+            >
+              <ha-switch
+                .checked=${this.action.continue_on_timeout ?? true}
+                .disabled=${this.disabled}
+                @change=${this._continueChanged}
+              ></ha-switch>
+            </ha-formfield>
           `
         : nothing}
       ${this.indent || (!this.inSidebar && !this.indent)
@@ -96,20 +78,29 @@ export class HaWaitForTriggerAction
     `;
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.actions.type.wait_for_trigger.${
-        schema.name === "continue_on_timeout" ? "continue_timeout" : schema.name
-      }`
-    );
+  private _timeoutChanged(ev: ValueChangedEvent<TimeChangedEvent>): void {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, timeout: value },
+    });
+  }
+
+  private _continueChanged(ev) {
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, continue_on_timeout: ev.target.checked },
+    });
+  }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
   }
 
   static styles = css`
+    ha-duration-input {
+      display: block;
+      margin-bottom: 24px;
+    }
     ha-automation-trigger.expansion-panel {
       display: block;
       margin-top: 24px;

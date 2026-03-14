@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-list";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -45,7 +45,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._opened}
         header-title=${this.hass.localize(
@@ -94,7 +94,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
             <ha-icon-next slot="end"></ha-icon-next>
           </ha-md-list-item>
         </ha-md-list>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -113,7 +113,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
 

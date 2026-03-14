@@ -19,7 +19,6 @@ import {
   getEnergyDataCollection,
   getEnergySolarForecasts,
   getSuggestedPeriod,
-  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -43,24 +42,9 @@ export class HuiEnergySolarGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
-  public static async getConfigElement() {
-    await import("../../editor/config-elements/hui-energy-graph-card-editor");
-    return document.createElement("hui-energy-graph-card-editor");
-  }
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySolarGraphCardConfig;
-
-  public static getStubConfig(
-    _hass: HomeAssistant,
-    _entities: string[],
-    _entitiesFill: string[]
-  ): EnergySolarGraphCardConfig {
-    return {
-      type: "energy-solar-graph",
-    };
-  }
 
   @state() private _chartData: ECOption["series"][] = [];
 
@@ -89,9 +73,6 @@ export class HuiEnergySolarGraphCard
   }
 
   public setConfig(config: EnergySolarGraphCardConfig): void {
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key);
-    }
     this._config = config;
   }
 

@@ -9,7 +9,7 @@ import "../../ha-icon-next";
 import "../../ha-md-list";
 import "../../ha-md-list-item";
 import "../../ha-svg-icon";
-import "../../ha-dialog";
+import "../../ha-wa-dialog";
 import "../ha-target-picker-item-row";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
@@ -42,7 +42,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._opened}
         header-title=${this.hass.localize(
@@ -64,7 +64,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
           .includeDeviceClasses=${this._params.includeDeviceClasses}
           expand
         ></ha-target-picker-item-row>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 }

@@ -47,9 +47,6 @@ export class HaYamlEditor extends LitElement {
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
-  @property({ type: Boolean, attribute: "in-dialog" })
-  public inDialog = false;
-
   @property({ type: Boolean }) public required = false;
 
   @property({ attribute: "copy-clipboard", type: Boolean })
@@ -104,13 +101,6 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
-  public disableCodeEditorFullscreen(): void {
-    this.disableFullscreen = true;
-    if (this._codeEditor) {
-      this._codeEditor.disableFullscreen = true;
-    }
-  }
-
   protected render() {
     if (this._yaml === undefined) {
       return nothing;
@@ -124,7 +114,6 @@ export class HaYamlEditor extends LitElement {
         .value=${this._yaml}
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
-        .inDialog=${this.inDialog}
         mode="yaml"
         autocomplete-entities
         autocomplete-icons

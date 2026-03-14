@@ -83,7 +83,6 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
       height: var(--feature-height);
       border-radius: var(--feature-border-radius);
       overflow: hidden;
-      pointer-events: none !important;
     }
     :host > div {
       height: 100%;

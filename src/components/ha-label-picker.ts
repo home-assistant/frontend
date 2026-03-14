@@ -1,7 +1,5 @@
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import {
@@ -12,10 +10,10 @@ import {
   state,
 } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { labelsContext } from "../data/context";
 import {
   getLabels,
   labelComboBoxKeys,
@@ -23,17 +21,19 @@ import {
 } from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
+  subscribeLabelRegistry,
   type LabelRegistryEntry,
 } from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import {
-  DEFAULT_ROW_RENDERER_CONTENT,
   type PickerComboBoxItem,
+  DEFAULT_ROW_RENDERER_CONTENT,
 } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
@@ -52,7 +52,7 @@ export const renderLabelColorBadge = (color: string | undefined) =>
   ></div>`;
 
 @customElement("ha-label-picker")
-export class HaLabelPicker extends LitElement {
+export class HaLabelPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -108,9 +108,7 @@ export class HaLabelPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @consume({ context: labelsContext, subscribe: true })
-  @state()
-  private _labels?: LabelRegistryEntry[];
+  @state() private _labels?: LabelRegistryEntry[];
 
   @queryAssignedElements({ flatten: true })
   private _slotNodes?: NodeListOf<HTMLElement>;
@@ -120,6 +118,14 @@ export class HaLabelPicker extends LitElement {
   public async open() {
     await this.updateComplete;
     await this._picker?.open();
+  }
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
+    ];
   }
 
   private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>
@@ -220,10 +226,7 @@ export class HaLabelPicker extends LitElement {
         .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
-        <slot
-          @slotchange=${this._handleSlotChange}
-          .slot=${this._slotNodes?.length ? "field" : undefined}
-        ></slot>
+        <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>
       </ha-generic-picker>
     `;
   }
@@ -277,10 +280,6 @@ export class HaLabelPicker extends LitElement {
     this.hass.localize("ui.components.label-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
-
-  private _handleSlotChange() {
-    this.requestUpdate();
-  }
 }
 
 declare global {

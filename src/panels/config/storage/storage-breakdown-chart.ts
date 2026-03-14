@@ -9,8 +9,8 @@ import type { SunburstNode } from "../../../components/chart/ha-sunburst-chart";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-segmented-bar";
-import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
+import type { Segment } from "../../../components/ha-segmented-bar";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
 import type { HomeAssistant } from "../../../types";
 import { roundWithOneDecimal } from "../../../util/calculate";
@@ -235,7 +235,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     ha-icon-button {
-      --ha-icon-button-size: 36px;
+      --mdc-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
     }

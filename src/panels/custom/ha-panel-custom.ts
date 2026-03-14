@@ -51,7 +51,6 @@ export class HaPanelCustom extends ReactiveElement {
       route: this.route,
     });
     this._setProperties = setProperties;
-    this.querySelector("iframe")?.classList.add("loaded");
   }
 
   public disconnectedCallback() {
@@ -92,8 +91,6 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
-    this.style.backgroundColor = "var(--primary-background-color)";
-
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
 
@@ -150,17 +147,20 @@ export class HaPanelCustom extends ReactiveElement {
     this.innerHTML = `
       <style>
         iframe {
-          border: none;
-          width: 100%;
-          height: 100vh;
-          height: 100dvh;
+          border: 0;
+          width: calc(100% - var(--safe-area-inset-right, 0px));
+          height: calc(100% - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px));
           display: block;
           background-color: var(--primary-background-color);
-          opacity: 0;
-          transition: opacity var(--ha-animation-duration-normal) ease;
+          margin-top: var(--safe-area-inset-top);
+          margin-bottom: var(--safe-area-inset-bottom);
+          margin-right: var(--safe-area-inset-right);
         }
-        iframe.loaded {
-          opacity: 1;
+        @media (max-width: 870px) {
+          iframe {
+            width: calc(100% - var(--safe-area-inset-left, 0px) - var(--safe-area-inset-right, 0px));
+            margin-left: var(--safe-area-inset-left);
+          }
         }
       </style>
       <iframe ${titleAttr}></iframe>`.trim();

@@ -2,11 +2,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-bottom-sheet";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-icon";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-svg-icon";
-import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { ListItemsDialogParams } from "./show-list-items-dialog";
@@ -20,16 +20,8 @@ export class ListItemsDialog
 
   @state() private _params?: ListItemsDialogParams;
 
-  @state() private _open = false;
-
   public async showDialog(params: ListItemsDialogParams): Promise<void> {
     this._params = params;
-    this._open = true;
-  }
-
-  public closeDialog(_historyState?: any): boolean {
-    this._open = false;
-    return true;
   }
 
   private _dialogClosed(): void {
@@ -41,7 +33,7 @@ export class ListItemsDialog
     const item = (ev.currentTarget as any).item;
     if (!item) return;
     item.action();
-    this.closeDialog();
+    this._dialogClosed();
   }
 
   protected render() {
@@ -91,11 +83,7 @@ export class ListItemsDialog
 
     if (this._params.mode === "bottom-sheet") {
       return html`
-        <ha-bottom-sheet
-          placement="bottom"
-          .open=${this._open}
-          @closed=${this._dialogClosed}
-        >
+        <ha-bottom-sheet placement="bottom" open @closed=${this._dialogClosed}>
           ${content}
         </ha-bottom-sheet>
       `;
@@ -103,10 +91,10 @@ export class ListItemsDialog
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this._params.title ?? " "}
+        open
+        .heading=${createCloseHeading(this.hass, this._params.title ?? " ")}
         @closed=${this._dialogClosed}
+        hideActions
       >
         ${content}
       </ha-dialog>

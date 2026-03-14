@@ -12,7 +12,7 @@ import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
@@ -143,7 +143,7 @@ export class DialogDeviceAutomation extends LitElement {
     });
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -252,7 +252,7 @@ export class DialogDeviceAutomation extends LitElement {
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
         </ha-list>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -261,12 +261,12 @@ export class DialogDeviceAutomation extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
         }
         @media all and (min-width: 550px) {
-          ha-dialog {
+          ha-wa-dialog {
             --mdc-dialog-min-width: 500px;
           }
         }

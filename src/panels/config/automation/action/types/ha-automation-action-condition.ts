@@ -2,14 +2,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../../../../common/translations/localize";
+import { stringCompare } from "../../../../../common/string/compare";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
 import "../../../../../components/ha-dropdown-item";
-import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -23,9 +21,8 @@ import {
   getConditionObjectId,
   subscribeConditions,
 } from "../../../../../data/condition";
-import { domainToName } from "../../../../../data/integration";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
@@ -92,24 +89,43 @@ export class HaConditionAction
         ? `${DYNAMIC_PREFIX}${this.action.condition}`
         : this.action.condition;
 
+    let valueLabel = value;
+
+    const items = html`${this._processedTypes(
+      this._conditionDescriptions,
+      this.hass.localize
+    ).map(([opt, label, condition]) => {
+      const selected = value === opt;
+
+      if (selected) {
+        valueLabel = label;
+      }
+
+      return html`
+        <ha-dropdown-item .value=${opt} .selected=${selected}>
+          <ha-condition-icon
+            .hass=${this.hass}
+            slot="icon"
+            .condition=${condition}
+          ></ha-condition-icon>
+          ${label}
+        </ha-dropdown-item>
+      `;
+    })}`;
+
     return html`
       ${this.inSidebar || (!this.inSidebar && !this.indent)
         ? html`
-            <ha-generic-picker
-              .hass=${this.hass}
+            <ha-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
               .disabled=${this.disabled}
-              .value=${value}
-              .getItems=${this._processedTypes(
-                this._conditionDescriptions,
-                this.hass.localize
-              )}
-              .rowRenderer=${this._rowRenderer}
-              .valueRenderer=${this._valueRenderer}
-              @value-changed=${this._typeChanged}
-            ></ha-generic-picker>
+              .value=${valueLabel}
+              @selected=${this._typeChanged}
+            >
+              ${items}
+            </ha-select>
           `
         : nothing}
       ${(this.indent && buildingBlock) ||
@@ -134,83 +150,36 @@ export class HaConditionAction
     `;
   }
 
-  private _valueRenderer = (value: string) => {
-    const isDynamicValue = isDynamic(value);
-    const condition = isDynamicValue ? getValueFromDynamic(value) : value;
-
-    let label = condition;
-
-    if (isDynamicValue) {
-      const domain = getConditionDomain(condition);
-      const conditionObjId = getConditionObjectId(condition);
-      label =
-        this.hass.localize(
-          `component.${domain}.conditions.${conditionObjId}.name`
-        ) || condition;
-    } else {
-      label =
-        this.hass.localize(
-          `ui.panel.config.automation.editor.conditions.type.${condition}.label` as LocalizeKeys
-        ) || condition;
-    }
-
-    return html`<ha-condition-icon
-        slot="start"
-        .hass=${this.hass}
-        .condition=${condition}
-      ></ha-condition-icon
-      ><span slot="headline">${label}</span>`;
-  };
-
-  private _rowRenderer = (item: PickerComboBoxItem) => html`
-    <ha-combo-box-item type="button">
-      <ha-condition-icon
-        slot="start"
-        .hass=${this.hass}
-        .condition=${item.search_labels!.condition || undefined}
-      ></ha-condition-icon>
-      <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-    </ha-combo-box-item>
-  `;
-
   private _processedTypes = memoizeOne(
-    (conditionDescriptions: ConditionDescriptions, localize: LocalizeFunc) => {
+    (
+      conditionDescriptions: ConditionDescriptions,
+      localize: LocalizeFunc
+    ): [string, string, string][] => {
       const legacy = (
         Object.keys(CONDITION_ICONS) as (keyof typeof CONDITION_ICONS)[]
-      ).map((condition) => {
-        const primary = localize(
-          `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-        );
-        return {
-          id: condition,
-          primary,
-          sorting_label: primary,
-          search_labels: {
+      ).map(
+        (condition) =>
+          [
             condition,
-          },
-        };
-      });
+            localize(
+              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+            ),
+            condition,
+          ] as [string, string, string]
+      );
       const platform = Object.keys(conditionDescriptions).map((condition) => {
         const domain = getConditionDomain(condition);
         const conditionObjId = getConditionObjectId(condition);
-        const primary =
+        return [
+          `${DYNAMIC_PREFIX}${condition}`,
           localize(`component.${domain}.conditions.${conditionObjId}.name`) ||
-          condition;
-        return {
-          id: `${DYNAMIC_PREFIX}${condition}`,
-          primary,
-          secondary: domainToName(this.hass.localize, domain),
-          sorting_label: primary,
-          search_labels: {
             condition,
-            domain,
-          },
-        };
+          condition,
+        ] as [string, string, string];
       });
-      return () => [...legacy, ...platform];
+      return [...legacy, ...platform].sort((a, b) =>
+        stringCompare(a[1], b[1], this.hass.locale.language)
+      );
     }
   );
 
@@ -232,8 +201,7 @@ export class HaConditionAction
     });
   }
 
-  private _typeChanged(ev: ValueChangedEvent<string>) {
-    ev.stopPropagation();
+  private _typeChanged(ev: HaSelectSelectEvent) {
     const type = ev.detail.value;
 
     if (!type) {
@@ -281,7 +249,7 @@ export class HaConditionAction
   }
 
   static styles = css`
-    ha-generic-picker {
+    ha-select {
       margin-bottom: 24px;
       display: block;
     }

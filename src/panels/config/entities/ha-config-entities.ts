@@ -16,7 +16,7 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -74,7 +74,7 @@ import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
-import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import { fullEntitiesContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
@@ -97,7 +97,10 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import { createLabelRegistryEntry } from "../../../data/label/label_registry";
+import {
+  createLabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label/label_registry";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
@@ -107,6 +110,7 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
@@ -159,7 +163,7 @@ export interface EntityRow extends StateEntity {
 }
 
 @customElement("ha-config-entities")
-export class HaConfigEntities extends LitElement {
+export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -213,9 +217,8 @@ export class HaConfigEntities extends LitElement {
 
   @state() private _expandedFilter?: string;
 
-  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels?: LabelRegistryEntry[];
+  _labels!: LabelRegistryEntry[];
 
   @state() private _entitySources?: EntitySources;
 
@@ -751,6 +754,14 @@ export class HaConfigEntities extends LitElement {
       return { filteredEntities: result, filteredConfigEntry, filteredDomains };
     }
   );
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
+    ];
+  }
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {

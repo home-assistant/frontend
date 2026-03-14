@@ -3,10 +3,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-dialog";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
@@ -31,13 +32,10 @@ class DialogMatterManageFabrics extends LitElement {
 
   @state() private _nodeDiagnostics?: MatterNodeDiagnostics;
 
-  @state() private _open = false;
-
   public async showDialog(
     params: MatterManageFabricsDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
-    this._open = true;
     this._fetchNodeDetails();
   }
 
@@ -48,12 +46,13 @@ class DialogMatterManageFabrics extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.matter.manage_fabrics.title"
+        open
+        hideActions
+        @closed=${this.closeDialog}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.matter.manage_fabrics.title")
         )}
-        @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize("ui.panel.config.matter.manage_fabrics.fabrics")}
@@ -141,10 +140,6 @@ class DialogMatterManageFabrics extends LitElement {
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this.device_id = undefined;
     this._nodeDiagnostics = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });

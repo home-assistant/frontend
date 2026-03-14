@@ -8,7 +8,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { obfuscateUrl } from "../../../../util/url";
@@ -48,13 +48,14 @@ class DialogCloudAlreadyConnected extends LitElement {
     const { details } = this._params;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.cloud.dialog_already_connected.heading"
         )}
         @closed=${this._dialogClosed}
+        width="medium"
       >
         <div class="intro">
           <span>
@@ -152,7 +153,7 @@ class DialogCloudAlreadyConnected extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

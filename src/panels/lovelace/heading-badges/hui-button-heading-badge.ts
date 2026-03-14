@@ -108,12 +108,11 @@ export class HuiButtonHeadingBadge
         var(--ha-border-radius-pill)
       );
       --control-button-padding: 0;
-      --mdc-icon-size: var(--ha-heading-badge-icon-size, 16px);
+      --mdc-icon-size: var(--ha-heading-badge-icon-size, 14px);
       width: auto;
       height: var(--ha-heading-badge-size, 26px);
       min-width: var(--ha-heading-badge-size, 26px);
-      font-size: var(--ha-heading-badge-font-size, var(--ha-font-size-m));
-      font-weight: var(--ha-font-weight-medium);
+      font-size: var(--ha-font-size-s);
     }
     ha-control-button.with-text {
       --control-button-padding: 0 var(--ha-space-2);
@@ -122,7 +121,6 @@ export class HuiButtonHeadingBadge
       --control-button-icon-color: var(--color);
       --control-button-background-color: var(--color);
       --control-button-focus-color: var(--color);
-      --control-button-background-opacity: 0.2;
       --ha-ripple-color: var(--color);
     }
     .content {

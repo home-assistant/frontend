@@ -4,9 +4,8 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
+import { goBack } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { goBack, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -14,11 +13,6 @@ import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
-
-const normalizePathname = (pathname: string): string =>
-  pathname.endsWith("/") && pathname.length > 1
-    ? pathname.slice(0, -1)
-    : pathname;
 
 export interface PageNavigation {
   path: string;
@@ -37,7 +31,7 @@ export interface PageNavigation {
 }
 
 @customElement("hass-tabs-subpage")
-export class HassTabsSubpage extends LitElement {
+class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
@@ -65,14 +59,6 @@ export class HassTabsSubpage extends LitElement {
    */
   @property({ type: Boolean, attribute: "has-fab" }) public hasFab = false;
 
-  /**
-   * Whether tabs are shown (2 or more tabs visible).
-   * When both, show-tabs and narrow are true, tabs are shown as bottom bar.
-   * @type {Boolean}
-   */
-  @property({ type: Boolean, attribute: "show-tabs", reflect: true })
-  public showTabs = false;
-
   @state() private _activeTab?: PageNavigation;
 
   // @ts-ignore
@@ -91,7 +77,6 @@ export class HassTabsSubpage extends LitElement {
       const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
       if (shownTabs.length < 2) {
-        this.showTabs = false;
         if (shownTabs.length === 1) {
           const page = shownTabs[0];
           return [
@@ -101,11 +86,11 @@ export class HassTabsSubpage extends LitElement {
         return [""];
       }
 
-      this.showTabs = true;
       return shownTabs.map(
         (page) => html`
-          <a href=${page.path} @click=${this._tabClicked}>
+          <a href=${page.path}>
             <ha-tab
+              .hass=${this.hass}
               .active=${page.path === activeTab?.path}
               .narrow=${this.narrow}
               .name=${page.translationKey
@@ -127,9 +112,8 @@ export class HassTabsSubpage extends LitElement {
 
   public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
-      const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
-        this._isActiveTabPath(tab.path, currentPath)
+        `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
     super.willUpdate(changedProperties);
@@ -145,6 +129,7 @@ export class HassTabsSubpage extends LitElement {
       this.narrow,
       this.localizeFunc || this.hass.localize
     );
+    const showTabs = tabs.length > 1;
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
@@ -158,10 +143,11 @@ export class HassTabsSubpage extends LitElement {
                 `
               : this.backPath
                 ? html`
-                    <ha-icon-button-arrow-prev
-                      .href=${this.backPath}
-                      .hass=${this.hass}
-                    ></ha-icon-button-arrow-prev>
+                    <a href=${this.backPath}>
+                      <ha-icon-button-arrow-prev
+                        .hass=${this.hass}
+                      ></ha-icon-button-arrow-prev>
+                    </a>
                   `
                 : html`
                     <ha-icon-button-arrow-prev
@@ -169,12 +155,12 @@ export class HassTabsSubpage extends LitElement {
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}
-            ${this.narrow || !this.showTabs
+            ${this.narrow || !showTabs
               ? html`<div class="main-title">
-                  <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                  <slot name="header">${!showTabs ? tabs[0] : ""}</slot>
                 </div>`
               : ""}
-            ${this.showTabs && !this.narrow
+            ${showTabs && !this.narrow
               ? html`<div id="tabbar">${tabs}</div>`
               : ""}
             <div id="toolbar-icon">
@@ -182,11 +168,13 @@ export class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${this.showTabs && this.narrow
+        ${showTabs && this.narrow
           ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>
-      <div class="container">
+      <div
+        class=${classMap({ container: true, tabs: showTabs && this.narrow })}
+      >
         ${this.pane
           ? html`<div class="pane">
               <div class="shadow-container"></div>
@@ -195,12 +183,15 @@ export class HassTabsSubpage extends LitElement {
               </div>
             </div>`
           : nothing}
-        <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+        <div
+          class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
+          @scroll=${this._saveScrollPos}
+        >
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
       </div>
-      <div id="fab">
+      <div id="fab" class=${classMap({ tabs: showTabs })}>
         <slot name="fab"></slot>
       </div>
     `;
@@ -217,36 +208,6 @@ export class HassTabsSubpage extends LitElement {
       return;
     }
     goBack();
-  }
-
-  private _isActiveTabPath(tabPath: string, currentPath: string): boolean {
-    try {
-      const tabUrl = new URL(tabPath, window.location.origin);
-      const currentUrl = new URL(currentPath, window.location.origin);
-
-      const tabPathname = normalizePathname(tabUrl.pathname);
-      const currentPathname = normalizePathname(currentUrl.pathname);
-
-      if (
-        currentPathname === tabPathname ||
-        currentPathname.startsWith(`${tabPathname}/`)
-      ) {
-        return true;
-      }
-
-      return false;
-    } catch (_err) {
-      return currentPath === tabPath || currentPath.startsWith(`${tabPath}/`);
-    }
-  }
-
-  private async _tabClicked(ev: MouseEvent): Promise<void> {
-    const href = isNavigationClick(ev);
-    if (!href) {
-      return;
-    }
-
-    await navigate(href, { replace: true });
   }
 
   static get styles(): CSSResultGroup {
@@ -370,6 +331,7 @@ export class HassTabsSubpage extends LitElement {
           width: 100%;
           margin-right: var(--safe-area-inset-right);
           margin-inline-end: var(--safe-area-inset-right);
+          margin-bottom: var(--safe-area-inset-bottom);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
@@ -377,7 +339,7 @@ export class HassTabsSubpage extends LitElement {
           margin-left: var(--safe-area-inset-left);
           margin-inline-start: var(--safe-area-inset-left);
         }
-        :host([narrow][show-tabs]) .content {
+        :host([narrow]) .content.tabs {
           /* Bottom bar reuses header height */
           margin-bottom: calc(
             var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
@@ -388,7 +350,7 @@ export class HassTabsSubpage extends LitElement {
           height: calc(64px + var(--safe-area-inset-bottom, 0px));
         }
 
-        :host([narrow][show-tabs]) .content .fab-bottom-space {
+        :host([narrow]) .content.tabs .fab-bottom-space {
           height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
 
@@ -404,7 +366,7 @@ export class HassTabsSubpage extends LitElement {
           justify-content: flex-end;
           gap: var(--ha-space-2);
         }
-        :host([narrow][show-tabs]) #fab {
+        :host([narrow]) #fab.tabs {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
         }
         #fab[is-wide] {

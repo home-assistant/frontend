@@ -58,8 +58,7 @@ class PanelSecurity extends LitElement {
         oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors ||
-        oldHass.panels !== this.hass.panels
+        oldHass.floors !== this.hass.floors
       ) {
         if (this.hass.config.state === "RUNNING") {
           this._debounceRegistriesChanged();

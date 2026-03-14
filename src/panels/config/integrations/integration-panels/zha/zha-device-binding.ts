@@ -128,9 +128,7 @@ export class ZHADeviceBindingControl extends LitElement {
         }
 
         .content {
-          padding: var(--ha-space-4) 0 0;
-          border: none;
-          outline: none;
+          padding-top: var(--ha-space-2);
         }
 
         .command-picker {
@@ -147,9 +145,8 @@ export class ZHADeviceBindingControl extends LitElement {
         }
         .card-actions {
           display: flex;
-          margin-top: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-3);
+          gap: var(--ha-space-1);
         }
       `,
     ];

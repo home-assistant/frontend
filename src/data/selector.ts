@@ -100,7 +100,6 @@ export interface AreaSelector {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
-    reorder?: boolean;
   } | null;
 }
 
@@ -232,7 +231,6 @@ export interface DurationSelector {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
-    enable_second?: boolean;
   } | null;
 }
 

@@ -6,7 +6,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import { stateColorProperties } from "../../common/entity/state_color";
-import { slugify } from "../../common/string/slugify";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { computeCssValue } from "../../resources/css-variables";
 
@@ -33,22 +32,6 @@ function computeTimelineStateColor(
     return computeCssValue("--history-unknown-color", computedStyles);
   }
 
-  const domain = computeDomain(stateObj.entity_id);
-
-  // Zone states for person/device_tracker don't have specific CSS color variables,
-  // so they all fall back to the same --state-person-active-color.
-  // Only use a custom CSS variable if explicitly defined (e.g. --state-person-kitchen-color),
-  // otherwise return undefined to get unique colors from the generic color handler.
-  if (
-    (domain === "person" || domain === "device_tracker") &&
-    !((FIXED_DOMAIN_STATES[domain] || []) as readonly string[]).includes(state)
-  ) {
-    return computeCssValue(
-      `--state-${domain}-${slugify(state, "_")}-color`,
-      computedStyles
-    );
-  }
-
   const properties = stateColorProperties(stateObj, state);
 
   if (!properties) {
@@ -58,6 +41,8 @@ function computeTimelineStateColor(
   const rgb = computeCssValue(properties, computedStyles);
 
   if (!rgb) return undefined;
+
+  const domain = computeDomain(stateObj.entity_id);
   const shade = DOMAIN_STATE_SHADES[domain]?.[state] as number | number;
   if (!shade) {
     return rgb;

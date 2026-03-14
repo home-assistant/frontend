@@ -10,7 +10,7 @@ import { subscribePollingCollection } from "../../../common/util/subscribe-polli
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-metric";
 import "../../../components/ha-spinner";
 import type { HassioStats } from "../../../data/hassio/common";
@@ -137,7 +137,7 @@ class DialogSystemInformation extends LitElement {
     const sections = this._getSections();
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -233,7 +233,7 @@ class DialogSystemInformation extends LitElement {
             ${this.hass.localize("ui.panel.config.repairs.copy")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

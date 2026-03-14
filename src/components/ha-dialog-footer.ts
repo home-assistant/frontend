@@ -9,7 +9,7 @@ import { customElement } from "lit/decorators";
  *
  * @summary
  * A simple footer container for dialog actions,
- * typically used as the `footer` slot in `ha-dialog`.
+ * typically used as the `footer` slot in `ha-wa-dialog`.
  *
  * @slot primaryAction - Primary action button(s), aligned to the end.
  * @slot secondaryAction - Secondary action button(s), placed before the primary action.

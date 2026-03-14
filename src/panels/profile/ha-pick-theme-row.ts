@@ -328,10 +328,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       flex-grow: 1;
     }
     ha-textfield {
-      --text-field-padding-top: 8px;
-      --text-field-padding-bottom: 8px;
-      --text-field-padding-start: 8px;
-      --text-field-padding-end: 8px;
+      --text-field-padding: 8px;
       min-width: 75px;
       flex-grow: 1;
       margin: 0 4px;

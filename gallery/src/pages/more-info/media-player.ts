@@ -20,7 +20,7 @@ class DemoMoreInfoMediaPlayer extends LitElement {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${ENTITIES.map((ent) => ent.entity_id)}
+        .entities=${ENTITIES.map((ent) => ent.entityId)}
       ></demo-more-infos>
     `;
   }

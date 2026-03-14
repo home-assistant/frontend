@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,7 +11,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
-import { labelsContext } from "../data/context";
+import { subscribeLabelRegistry } from "../data/label/label_registry";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -24,7 +25,7 @@ import "./ha-list-item";
 import "./search-input-outlined";
 
 @customElement("ha-filter-labels")
-export class HaFilterLabels extends LitElement {
+export class HaFilterLabels extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: string[];
@@ -33,13 +34,19 @@ export class HaFilterLabels extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @consume({ context: labelsContext, subscribe: true })
-  @state()
-  private _labels?: LabelRegistryEntry[];
+  @state() private _labels: LabelRegistryEntry[] = [];
 
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
+    ];
+  }
 
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
@@ -91,11 +98,7 @@ export class HaFilterLabels extends LitElement {
                 multi
               >
                 ${repeat(
-                  this._filteredLabels(
-                    this._labels || [],
-                    this._filter,
-                    this.value
-                  ),
+                  this._filteredLabels(this._labels, this._filter, this.value),
                   (label) => label.label_id,
                   (label) => {
                     const color = label.color
@@ -142,11 +145,7 @@ export class HaFilterLabels extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
-        // 49px - height of a header + 1px
-        // 4px - padding-top of the search-input
-        // 32px - height of the search input
-        // 48px - height of ha-list-item
+          `${this.clientHeight - (49 + 48 + 32)}px`;
       }, 300);
     }
   }
@@ -169,7 +168,7 @@ export class HaFilterLabels extends LitElement {
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
     const filteredLabels = this._filteredLabels(
-      this._labels || [],
+      this._labels,
       this._filter,
       this.value
     );

@@ -26,8 +26,9 @@ import {
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
-import "../../../../../layouts/hass-subpage";
+import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { bluetoothTabs } from "./bluetooth-config-dashboard";
 
 const UPDATE_THROTTLE_TIME = 10000;
 
@@ -118,13 +119,11 @@ export class BluetoothNetworkVisualization extends LitElement {
 
   protected render() {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize(
-          "ui.panel.config.bluetooth.navigation.visualization"
-        )}
-        back-path="/config/bluetooth/dashboard"
+        .route=${this.route}
+        .tabs=${bluetoothTabs}
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -132,7 +131,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 

@@ -12,12 +12,6 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import {
-  LARGE_SCREEN_CONDITION,
-  SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
-import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
-import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -51,96 +45,16 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
-      // Visibility condition: any light is on
-      const anyOnCondition = {
-        condition: "or" as const,
-        conditions: areaLights.map((entityId) => ({
-          condition: "state" as const,
-          entity: entityId,
-          state: "on",
-        })),
-      };
-
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: hass.panels.home
-          ? {
-              action: "navigate",
-              navigation_path: `/home/areas-${area.area_id}`,
-            }
-          : undefined,
-        badges: [
-          // Toggle buttons for mobile
-          {
-            type: "button",
-            icon: "mdi:power",
-            text: hass.localize("ui.panel.lovelace.strategy.light.off"),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_on",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [
-              SMALL_SCREEN_CONDITION,
-              {
-                condition: "not",
-                conditions: [anyOnCondition],
-              },
-            ],
-          } satisfies ButtonHeadingBadgeConfig,
-          {
-            type: "button",
-            icon: "mdi:power",
-            color: "orange",
-            text: hass.localize("ui.panel.lovelace.strategy.light.on"),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_off",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
-          } satisfies ButtonHeadingBadgeConfig,
-        ] satisfies LovelaceCardConfig[],
-      });
-
-      // Toggle group card for desktop
-      cards.push({
-        type: "toggle-group",
-        color: "amber",
-        entities: areaLights,
-        visibility: [LARGE_SCREEN_CONDITION],
-        grid_options: {
-          columns: 6,
-          rows: 1,
+        tap_action: {
+          action: "navigate",
+          navigation_path: `/home/areas-${area.area_id}`,
         },
-      } as ToggleGroupCardConfig);
-
-      areaCards.forEach((card) => {
-        // Insert a blank card before every 3rd card to align the individual
-        // cards with the toggle group card on desktop
-        if (
-          areaCards.indexOf(card) % 3 === 0 &&
-          areaCards.indexOf(card) !== 0
-        ) {
-          cards.push({
-            type: "vertical-stack",
-            cards: [],
-            visibility: [LARGE_SCREEN_CONDITION],
-            grid_options: {
-              columns: 6,
-              rows: 1,
-            },
-          });
-        }
-
-        cards.push(card);
       });
+      cards.push(...areaCards);
     }
   }
 

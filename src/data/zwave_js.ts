@@ -1053,6 +1053,17 @@ export const setZWaveJSLogLevel = (
     config: { level },
   });
 
+export interface ZWaveJSIntegrationSettings {
+  installer_mode: boolean;
+}
+
+export const fetchZwaveIntegrationSettings = (
+  hass: HomeAssistant
+): Promise<ZWaveJSIntegrationSettings> =>
+  hass.callWS({
+    type: "zwave_js/get_integration_settings",
+  });
+
 export const cancelSecureBootstrapS2 = (
   hass: HomeAssistant,
   entry_id: string

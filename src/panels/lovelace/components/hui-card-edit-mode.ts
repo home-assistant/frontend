@@ -14,7 +14,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -22,6 +21,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
@@ -310,7 +310,7 @@ export class HuiCardEditMode extends LitElement {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
-          --ha-icon-button-size: 32px;
+          --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
         }
       `,

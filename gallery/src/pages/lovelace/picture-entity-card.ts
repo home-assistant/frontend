@@ -1,33 +1,22 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  {
-    entity_id: "light.kitchen_lights",
-    state: "on",
-    attributes: {
-      friendly_name: "Kitchen Lights",
-    },
-  },
-  {
-    entity_id: "light.bed_light",
-    state: "off",
-    attributes: {
-      friendly_name: "Bed Light",
-    },
-  },
-  {
-    entity_id: "person.paulus",
-    state: "home",
-    attributes: {
-      friendly_name: "Paulus",
-      entity_picture: "/images/paulus.jpg",
-    },
-  },
+  getEntity("light", "kitchen_lights", "on", {
+    friendly_name: "Kitchen Lights",
+  }),
+  getEntity("light", "bed_light", "off", {
+    friendly_name: "Bed Light",
+  }),
+  getEntity("person", "paulus", "home", {
+    friendly_name: "Paulus",
+    entity_picture: "/images/paulus.jpg",
+  }),
 ];
 
 const CONFIGS = [

@@ -19,7 +19,7 @@ import "../ha-alert";
 import "../ha-button";
 import "../ha-dialog-footer";
 import "../ha-dialog-header";
-import "../ha-dialog";
+import "../ha-wa-dialog";
 import "./ha-media-player-toggle";
 import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dialog";
 
@@ -76,7 +76,7 @@ class DialogJoinMediaPlayers extends LitElement {
 
     const entityId = this._entityId;
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -136,7 +136,7 @@ class DialogJoinMediaPlayers extends LitElement {
             ${this.hass.localize("ui.common.apply")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

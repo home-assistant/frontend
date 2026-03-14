@@ -1,4 +1,4 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -146,7 +146,7 @@ export class HaPlatformCondition extends LitElement {
               rel="noreferrer"
             >
               <ha-icon-button
-                .path=${mdiHelpCircleOutline}
+                .path=${mdiHelpCircle}
                 class="help-icon"
               ></ha-icon-button>
             </a>`

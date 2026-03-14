@@ -3,25 +3,18 @@ import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { mockTodo } from "../../../../demo/src/stubs/todo";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 
 const ENTITIES = [
-  {
-    entity_id: "todo.shopping_list",
-    state: "2",
-    attributes: {
-      friendly_name: "Shopping List",
-      supported_features: 15,
-    },
-  },
-  {
-    entity_id: "todo.read_only",
-    state: "2",
-    attributes: {
-      friendly_name: "Read only",
-    },
-  },
+  getEntity("todo", "shopping_list", "2", {
+    friendly_name: "Shopping List",
+    supported_features: 15,
+  }),
+  getEntity("todo", "read_only", "2", {
+    friendly_name: "Read only",
+  }),
 ];
 
 const CONFIGS = [

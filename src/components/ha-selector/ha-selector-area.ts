@@ -123,7 +123,6 @@ export class HaAreaSelector extends LitElement {
           : undefined}
         .disabled=${this.disabled}
         .required=${this.required}
-        .reorder=${this.selector.area?.reorder ?? false}
       ></ha-areas-picker>
     `;
   }

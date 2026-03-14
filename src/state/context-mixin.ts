@@ -1,18 +1,12 @@
 import { ContextProvider } from "@lit/context";
-import {
-  ConfigEntryStream,
-  type ConfigEntryUpdate,
-} from "../data/config_entries";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   areasContext,
-  authContext,
   configContext,
-  configEntriesContext,
   connectionContext,
   devicesContext,
   entitiesContext,
   floorsContext,
-  fullEntitiesContext,
   labelsContext,
   localeContext,
   localizeContext,
@@ -23,16 +17,16 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
-import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { LazyContextProvider } from "./lazy-context-provider";
 
 export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
+    private _unsubscribeLabels?: UnsubscribeFunc;
+
     private __contextProviders: Record<
       string,
       ContextProvider<any> | undefined
@@ -103,34 +97,9 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         context: floorsContext,
         initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
       }),
-      auth: new ContextProvider(this, {
-        context: authContext,
-        initialValue: this.hass?.auth,
-      }),
-    };
-
-    private __lazyContextProviders = {
-      labels: new LazyContextProvider(this, {
+      labels: new ContextProvider(this, {
         context: labelsContext,
-        subscribeFn: (connection, setValue) =>
-          subscribeLabelRegistry(connection, setValue),
-      }),
-      fullEntities: new LazyContextProvider(this, {
-        context: fullEntitiesContext,
-        subscribeFn: (connection, setValue) =>
-          subscribeEntityRegistry(connection, setValue),
-      }),
-      configEntries: new LazyContextProvider(this, {
-        context: configEntriesContext,
-        subscribeFn: (connection, setValue) => {
-          const stream = new ConfigEntryStream();
-          return connection.subscribeMessage<ConfigEntryUpdate[]>(
-            (messages) => {
-              setValue(stream.processMessage(messages));
-            },
-            { type: "config_entries/subscribe" }
-          );
-        },
+        initialValue: [],
       }),
     };
 
@@ -142,11 +111,12 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         }
       }
 
-      // Provide connection to lazy providers so they can subscribe on demand
-      const connection = this.hass!.connection!;
-      for (const provider of Object.values(this.__lazyContextProviders)) {
-        provider.setConnection(connection);
-      }
+      this._unsubscribeLabels = subscribeLabelRegistry(
+        this.hass!.connection!,
+        (labels) => {
+          this.__contextProviders.labels!.setValue(labels);
+        }
+      );
     }
 
     protected _updateHass(obj: Partial<HomeAssistant>) {
@@ -160,8 +130,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     public disconnectedCallback() {
       super.disconnectedCallback();
-      for (const provider of Object.values(this.__lazyContextProviders)) {
-        provider.unsubscribe();
-      }
+      this._unsubscribeLabels?.();
     }
   };

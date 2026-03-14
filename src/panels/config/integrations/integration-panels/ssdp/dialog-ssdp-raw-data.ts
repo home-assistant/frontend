@@ -5,7 +5,7 @@ import { dump } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-wa-dialog";
 
 export interface SSDPRawDataDialogParams {
   key: string;
@@ -40,7 +40,7 @@ class DialogSSDPRawData extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${`${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
@@ -53,7 +53,7 @@ class DialogSSDPRawData extends LitElement {
           read-only
           autofocus
         ></ha-code-editor>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

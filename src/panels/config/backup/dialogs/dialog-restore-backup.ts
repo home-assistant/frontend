@@ -11,7 +11,7 @@ import "../../../../components/ha-password-field";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import type { RestoreBackupParams } from "../../../../data/backup";
 import {
   fetchBackupConfig,
@@ -136,10 +136,11 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
+        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -162,7 +163,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           : this._step === "confirm" || this._step === "encryption"
             ? this._renderConfirmActions()
             : nothing}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -291,9 +292,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._unsub = subscribeBackupEvents(
       this.hass!,
       (event) => {
-        if ("agent_id" in event) {
-          return;
-        }
         if (event.manager_state === "idle" && this._state === "in_progress") {
           this.closeDialog();
         }

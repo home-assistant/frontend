@@ -12,7 +12,7 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -40,15 +40,12 @@ class DialogImportBlueprint extends LitElement {
 
   @state() private _url?: string;
 
-  @state() private _sourceUrlWarning = false;
-
   @query("#input") private _input?: HaTextField;
 
   public showDialog(params): void {
     this._params = params;
     this._error = undefined;
     this._url = this._params.url;
-    this._sourceUrlWarning = !this._isTrustedBlueprintUrl(this._url);
     this.large = false;
     this._open = true;
   }
@@ -62,7 +59,6 @@ class DialogImportBlueprint extends LitElement {
     this._result = undefined;
     this._params = undefined;
     this._url = undefined;
-    this._sourceUrlWarning = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -72,7 +68,7 @@ class DialogImportBlueprint extends LitElement {
     }
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
@@ -88,22 +84,7 @@ class DialogImportBlueprint extends LitElement {
           <span slot="title" @click=${this._enlarge}> ${heading} </span>
         </ha-dialog-header>
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._sourceUrlWarning
-              ? html`
-                  <ha-alert
-                    alert-type="warning"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.blueprint.add.source_warning_title"
-                    )}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.blueprint.add.source_warning_description"
-                    )}
-                  </ha-alert>
-                `
-              : nothing}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
             ? html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_header",
@@ -240,7 +221,7 @@ class DialogImportBlueprint extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -262,39 +243,12 @@ class DialogImportBlueprint extends LitElement {
         );
         return;
       }
-      this._sourceUrlWarning = !this._isTrustedBlueprintUrl(url);
       this._result = await importBlueprint(this.hass, url);
-      this._sourceUrlWarning =
-        this._sourceUrlWarning ||
-        !this._isTrustedBlueprintUrl(
-          this._result.blueprint.metadata.source_url
-        );
     } catch (err: any) {
       this._error = err.message;
     } finally {
       this._importing = false;
     }
-  }
-
-  private _isTrustedBlueprintUrl(url?: string): boolean {
-    if (!url) {
-      return true;
-    }
-
-    let hostname: string;
-    try {
-      hostname = new URL(url).hostname.toLowerCase();
-    } catch {
-      return false;
-    }
-
-    return (
-      hostname === "github.com" ||
-      hostname.endsWith(".github.com") ||
-      hostname.endsWith(".githubusercontent.com") ||
-      hostname === "home-assistant.io" ||
-      hostname.endsWith(".home-assistant.io")
-    );
   }
 
   private async _save() {
@@ -326,15 +280,11 @@ class DialogImportBlueprint extends LitElement {
     css`
       p {
         margin-top: 0;
-        margin-bottom: var(--ha-space-2);
+        margin-bottom: 8px;
       }
       ha-textfield {
         display: block;
-        margin-top: var(--ha-space-6);
-      }
-      ha-alert {
-        display: block;
-        margin-bottom: var(--ha-space-2);
+        margin-top: 24px;
       }
       a {
         text-decoration: none;

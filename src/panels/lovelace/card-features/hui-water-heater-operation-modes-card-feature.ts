@@ -49,14 +49,6 @@ class HuiWaterHeaterOperationModeCardFeature
 
   @state() _currentOperationMode?: OperationMode;
 
-  private _renderOperationModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this._stateObj}
-      attribute="operation_mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -161,8 +153,14 @@ class HuiWaterHeaterOperationModeCardFeature
           .value=${this._currentOperationMode}
           .disabled=${this._stateObj.state === UNAVAILABLE}
           @wa-select=${this._valueChanged}
-          .options=${options}
-          .renderIcon=${this._renderOperationModeIcon}
+          .options=${options.map((option) => ({
+            ...option,
+            attributeIcon: {
+              stateObj: this._stateObj,
+              attribute: "operation_mode",
+              attributeValue: option.value,
+            },
+          }))}
         >
           <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
         </ha-control-select-menu>

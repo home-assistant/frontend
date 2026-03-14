@@ -1,8 +1,7 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { formatDurationDigital } from "../../common/datetime/format_duration";
 import type { FrontendLocaleData } from "../translation";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 
+// These attributes are hidden from the more-info window for all entities.
 export const STATE_ATTRIBUTES = [
   "entity_id",
   "assumed_state",
@@ -28,6 +27,8 @@ export const STATE_ATTRIBUTES = [
   "available_tones",
 ];
 
+// These attributes are hidden from the more-info window for entities of the
+// matching domain and device_class.
 export const STATE_ATTRIBUTES_DOMAIN_CLASS = {
   sensor: {
     enum: ["options"],
@@ -186,15 +187,3 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "unit_of_measurement",
   "xy_color",
 ];
-
-export const computeShownAttributes = (stateObj: HassEntity) => {
-  const domain = computeStateDomain(stateObj);
-  const filtersArray = STATE_ATTRIBUTES.concat(
-    STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
-      stateObj.attributes?.device_class
-    ] || []
-  );
-  return Object.keys(stateObj.attributes).filter(
-    (key) => filtersArray.indexOf(key) === -1
-  );
-};

@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import { ERROR_STATES, RECOVERABLE_STATES } from "../../../data/config_entries";
 import type { HomeAssistant } from "../../../types";
 import type { PickConfigEntryDialogParams } from "./show-pick-config-entry-dialog";
@@ -38,7 +38,7 @@ export class DialogPickConfigEntry extends LitElement {
       `component.${this._params.domain}.config_subentries.${this._params.subFlowType}.initiate_flow.user`
     );
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -57,7 +57,7 @@ export class DialogPickConfigEntry extends LitElement {
               >`
           )}
         </ha-md-list>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -67,7 +67,7 @@ export class DialogPickConfigEntry extends LitElement {
   }
 
   static styles = css`
-    ha-dialog {
+    ha-wa-dialog {
       --dialog-content-padding: 0;
     }
   `;

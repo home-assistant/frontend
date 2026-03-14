@@ -679,7 +679,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
     @media (prefers-reduced-motion: reduce) {
       :host {
-        transition: 1ms;
+        transition: none;
       }
     }
 

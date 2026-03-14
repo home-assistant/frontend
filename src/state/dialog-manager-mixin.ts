@@ -32,7 +32,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       this.addEventListener("register-dialog", (e) =>
         this.registerDialog(e.detail)
       );
-      makeDialogManager(this);
+      makeDialogManager(this, this.shadowRoot!);
     }
 
     protected registerDialog({
@@ -44,10 +44,10 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       this.addEventListener(dialogShowEvent, (showEv) => {
         showDialog(
           this,
+          this.shadowRoot!,
           dialogTag,
           (showEv as HASSDomEvent<unknown>).detail,
           dialogImport,
-          undefined,
           addHistory
         );
       });

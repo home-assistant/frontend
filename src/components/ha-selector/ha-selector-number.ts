@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
@@ -8,7 +8,6 @@ import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";
-import type { HaTextField } from "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -31,13 +30,7 @@ export class HaNumberSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-textfield", true) private _input?: HaTextField | HTMLInputElement;
-
   private _valueStr = "";
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
-  }
 
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("value")) {

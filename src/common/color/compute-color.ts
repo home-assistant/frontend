@@ -32,17 +32,9 @@ const YAML_ONLY_THEMES_COLORS = new Set([
   "disabled",
 ]);
 
-export function computeCssVariableName(color: string): string {
-  if (THEME_COLORS.has(color) || YAML_ONLY_THEMES_COLORS.has(color)) {
-    return `--${color}-color`;
-  }
-  return color;
-}
-
 export function computeCssColor(color: string): string {
-  const cssVarName = computeCssVariableName(color);
-  if (cssVarName !== color) {
-    return `var(${cssVarName})`;
+  if (THEME_COLORS.has(color) || YAML_ONLY_THEMES_COLORS.has(color)) {
+    return `var(--${color}-color)`;
   }
   return color;
 }

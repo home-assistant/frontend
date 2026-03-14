@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
 
@@ -31,7 +31,7 @@ class DialogCommunity extends LitElement {
     if (!this.localize) {
       return nothing;
     }
-    return html`<ha-dialog
+    return html`<ha-wa-dialog
       .open=${this._open}
       header-title=${this.localize(
         "ui.panel.page-onboarding.welcome.community"
@@ -102,11 +102,11 @@ class DialogCommunity extends LitElement {
           </ha-list-item>
         </a>
       </ha-list>
-    </ha-dialog>`;
+    </ha-wa-dialog>`;
   }
 
   static styles = css`
-    ha-dialog {
+    ha-wa-dialog {
       --dialog-content-padding: 0;
     }
     ha-list-item {

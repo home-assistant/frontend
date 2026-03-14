@@ -246,14 +246,11 @@ class HaConfigBackupSettings extends LitElement {
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
-                      .src=${brandsUrl(
-                        {
-                          domain: "cloud",
-                          type: "icon",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        },
-                        this.hass.auth.data.hassUrl
-                      )}
+                      .src=${brandsUrl({
+                        domain: "cloud",
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                       alt="Nabu Casa logo"

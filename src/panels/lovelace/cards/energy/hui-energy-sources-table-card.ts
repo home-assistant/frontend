@@ -13,7 +13,6 @@ import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
-  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -42,26 +41,9 @@ export class HuiEnergySourcesTableCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
-  public static async getConfigElement() {
-    await import("../../editor/config-elements/hui-energy-sources-table-card-editor");
-    return document.createElement("hui-energy-sources-table-card-editor");
-  }
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySourcesTableCardConfig;
-
-  public static getStubConfig(
-    _hass: HomeAssistant,
-    _entities: string[],
-    _entitiesFill: string[]
-  ): EnergySourcesTableCardConfig {
-    return {
-      type: "energy-sources-table",
-      show_only_totals: false,
-      types: ["grid", "solar", "battery"],
-    };
-  }
 
   @state() private _data?: EnergyData;
 
@@ -82,9 +64,6 @@ export class HuiEnergySourcesTableCard
   }
 
   public setConfig(config: EnergySourcesTableCardConfig): void {
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key);
-    }
     this._config = config;
   }
 
@@ -299,19 +278,17 @@ export class HuiEnergySourcesTableCard
 
     const computedStyles = getComputedStyle(this);
 
-    // Check if any source has cost configuration
-    const gridHasCosts = types.grid?.some(
-      (source) =>
-        source.stat_cost ||
-        source.entity_energy_price ||
-        source.number_energy_price ||
-        source.stat_compensation ||
-        source.entity_energy_price_export ||
-        source.number_energy_price_export
-    );
-
     const showCosts = !!(
-      gridHasCosts ||
+      types.grid?.[0].flow_from.some(
+        (flow) =>
+          flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
+      ) ||
+      types.grid?.[0].flow_to.some(
+        (flow) =>
+          flow.stat_compensation ||
+          flow.entity_energy_price ||
+          flow.number_energy_price
+      ) ||
       types.gas?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
@@ -601,95 +578,103 @@ export class HuiEnergySourcesTableCard
                       : undefined
                   )
                 : ""}
-              ${types.grid?.map((source, idx) => {
-                const importResult = (() => {
-                  if (!source.stat_energy_from) return nothing;
-
-                  const cost_stat =
-                    source.stat_cost ||
-                    this._data!.info.cost_sensors[source.stat_energy_from];
-                  const { hasData, energy, energyCompare, cost, costCompare } =
-                    _extractStatData(
-                      source.stat_energy_from,
+              ${types.grid?.map(
+                (source) =>
+                  html`${source.flow_from.map((flow, idx) => {
+                    const cost_stat =
+                      flow.stat_cost ||
+                      this._data!.info.cost_sensors[flow.stat_energy_from];
+                    const {
+                      hasData,
+                      energy,
+                      energyCompare,
+                      cost,
+                      costCompare,
+                    } = _extractStatData(
+                      flow.stat_energy_from,
                       cost_stat || null
                     );
 
-                  if (!hasData && !cost && !costCompare) {
-                    return nothing;
-                  }
+                    if (!hasData && !cost && !costCompare) {
+                      return nothing;
+                    }
 
-                  totalGrid += energy;
-                  totalGridCompare += energyCompare;
+                    totalGrid += energy;
+                    totalGridCompare += energyCompare;
 
-                  if (cost_stat) {
-                    hasGridCost = true;
-                    totalGridCost += cost;
-                    totalGridCostCompare += costCompare;
-                  }
+                    if (cost_stat) {
+                      hasGridCost = true;
+                      totalGridCost += cost;
+                      totalGridCostCompare += costCompare;
+                    }
 
-                  if (showOnlyTotals) {
-                    return nothing;
-                  }
+                    if (showOnlyTotals) {
+                      return nothing;
+                    }
 
-                  return this._renderRow(
-                    computedStyles,
-                    "grid_consumption",
-                    source.stat_energy_from,
-                    idx,
-                    energy,
-                    energyCompare,
-                    "kWh",
-                    cost,
-                    costCompare,
-                    showCosts,
-                    compare
-                  );
-                })();
+                    return this._renderRow(
+                      computedStyles,
+                      "grid_consumption",
+                      flow.stat_energy_from,
+                      idx,
+                      energy,
+                      energyCompare,
+                      "kWh",
+                      cost,
+                      costCompare,
+                      showCosts,
+                      compare
+                    );
+                  })}
+                  ${source.flow_to.map((flow, idx) => {
+                    const cost_stat =
+                      flow.stat_compensation ||
+                      this._data!.info.cost_sensors[flow.stat_energy_to];
+                    const {
+                      hasData,
+                      energy,
+                      energyCompare,
+                      cost,
+                      costCompare,
+                    } = _extractStatData(
+                      flow.stat_energy_to,
+                      cost_stat || null
+                    );
 
-                const exportResult = (() => {
-                  if (!source.stat_energy_to) return nothing;
+                    if (!hasData && !cost && !costCompare) {
+                      return nothing;
+                    }
+                    totalGrid -= energy;
+                    totalGridCompare -= energyCompare;
 
-                  const cost_stat =
-                    source.stat_compensation ||
-                    this._data!.info.cost_sensors[source.stat_energy_to];
-                  const { hasData, energy, energyCompare, cost, costCompare } =
-                    _extractStatData(source.stat_energy_to, cost_stat || null);
+                    if (cost_stat !== null) {
+                      hasGridCost = true;
+                      totalGridCost -= cost;
+                      totalGridCostCompare -= costCompare;
+                    }
 
-                  if (!hasData && !cost && !costCompare) {
-                    return nothing;
-                  }
-                  totalGrid -= energy;
-                  totalGridCompare -= energyCompare;
+                    if (showOnlyTotals) {
+                      return nothing;
+                    }
 
-                  if (cost_stat) {
-                    hasGridCost = true;
-                    totalGridCost -= cost;
-                    totalGridCostCompare -= costCompare;
-                  }
-
-                  if (showOnlyTotals) {
-                    return nothing;
-                  }
-
-                  return this._renderRow(
-                    computedStyles,
-                    "grid_return",
-                    source.stat_energy_to,
-                    idx,
-                    -energy,
-                    -energyCompare,
-                    "kWh",
-                    -cost,
-                    -costCompare,
-                    showCosts,
-                    compare
-                  );
-                })();
-
-                return html`${importResult}${exportResult}`;
-              })}
+                    return this._renderRow(
+                      computedStyles,
+                      "grid_return",
+                      flow.stat_energy_to,
+                      idx,
+                      -energy,
+                      -energyCompare,
+                      "kWh",
+                      -cost,
+                      -costCompare,
+                      showCosts,
+                      compare
+                    );
+                  })}`
+              )}
               ${types.grid &&
-              types.grid.some((s) => !!s.stat_energy_from || !!s.stat_energy_to)
+              (types.grid?.[0].flow_from?.length ||
+                types.grid?.[0].flow_to?.length)
                 ? this._renderTotalRow(
                     this.hass.localize(
                       "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"

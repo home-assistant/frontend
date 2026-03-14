@@ -28,12 +28,9 @@ This element is based on webawesome `wa-tooltip` it only sets some css tokens an
 
 In your theme settings use this without the prefixed `--`.
 
-- `--ha-tooltip-background-color` (Default: `var(--secondary-background-color)`)
-- `--ha-tooltip-text-color` (Default: `var(--primary-text-color)`)
-- `--ha-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
-- `--ha-tooltip-font-size` (Default: `var(--ha-font-size-s)`)
-- `--ha-tooltip-font-weight` (Default: `var(--ha-font-weight-normal)`)
-- `--ha-tooltip-line-height` (Default: `var(--ha-line-height-condensed)`)
-- `--ha-tooltip-padding` (Default: 8px)
-- `--ha-tooltip-border-radius` (Default: `var(--ha-border-radius-sm)`)
+- `--ha-tooltip-border-radius` (Default: 4px)
 - `--ha-tooltip-arrow-size` (Default: 8px)
+- `--wa-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
+- `--ha-tooltip-font-size` (Default: `var(--ha-font-size-s)`)
+- `--wa-tooltip-font-weight` (Default: `var(--ha-font-weight-normal)`)
+- `--wa-tooltip-line-height` (Default: `var(--ha-line-height-condensed)`)

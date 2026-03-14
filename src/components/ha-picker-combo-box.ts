@@ -1,6 +1,5 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
 import { mdiClose, mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
@@ -15,7 +14,6 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { localeContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,
@@ -23,6 +21,7 @@ import {
 } from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
+import type { HomeAssistant } from "../types";
 import { isTouch } from "../util/is_touch";
 import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
@@ -91,6 +90,8 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
 
 @customElement("ha-picker-combo-box")
 export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
@@ -161,14 +162,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @query("ha-textfield") private _searchFieldElement?: HaTextField;
 
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
-
-  @state()
-  @consume({ context: localeContext, subscribe: true })
-  private locale!: ContextType<typeof localeContext>;
-
   @state() private _items: PickerComboBoxItem[] = [];
 
   @state() private _selectedSection?: string;
@@ -222,9 +215,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const searchLabel =
       this.label ??
       (this.allowCustomValue
-        ? (this.localize?.("ui.components.combo-box.search_or_custom") ??
+        ? (this.hass?.localize("ui.components.combo-box.search_or_custom") ??
           "Search | Add custom value")
-        : (this.localize?.("ui.common.search") ?? "Search"));
+        : (this.hass?.localize("ui.common.search") ?? "Search"));
 
     return html`<ha-textfield
         .label=${searchLabel}
@@ -235,7 +228,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         <ha-icon-button
           @click=${this._clearSearch}
           slot="trailingIcon"
-          .label=${this.localize?.("ui.common.clear") || "Clear"}
+          .label=${this.hass?.localize("ui.common.clear") || "Clear"}
           .path=${mdiClose}
         ></ha-icon-button>
       </ha-textfield>
@@ -357,7 +350,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         return caseInsensitiveStringCompare(
           sortLabelA,
           sortLabelB,
-          this.locale?.language ?? navigator.language
+          this.hass?.locale.language ?? navigator.language
         );
       });
     }
@@ -368,18 +361,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     const additionalItems = this._getAdditionalItems();
     items.push(...additionalItems);
-
-    if (this.allowCustomValue && this._search) {
-      items.push({
-        id: this._search,
-        primary:
-          this.customValueLabel ??
-          this.localize?.("ui.components.combo-box.add_custom_item") ??
-          "Add custom item",
-        secondary: `"${this._search}"`,
-        icon_path: mdiPlus,
-      });
-    }
 
     if (this.mode === "dialog") {
       items.push({ id: PADDING_ID, primary: "" }); // padding for safe area inset
@@ -408,10 +389,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
                 ? typeof this.notFoundLabel === "function"
                   ? this.notFoundLabel(this._search)
                   : this.notFoundLabel ||
-                    this.localize?.("ui.components.combo-box.no_match") ||
+                    this.hass?.localize("ui.components.combo-box.no_match") ||
                     "No matching items found"
                 : this.emptyLabel ||
-                  this.localize?.("ui.components.combo-box.no_items") ||
+                  this.hass?.localize("ui.components.combo-box.no_items") ||
                   "No items available"}</span
             >
           </ha-combo-box-item>
@@ -425,7 +406,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
     return html`<div
       id=${`list-item-${index}`}
-      class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
+      class="combo-box-row ${this._value === item.id ? "current-value" : ""}"
       .value=${item.id}
       .index=${index}
       @click=${this._valueSelected}
@@ -438,6 +419,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _onScrollList(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._listScrolled = top > 0;
+  }
+
+  private get _value() {
+    return this.value || "";
   }
 
   private _valueSelected = (ev: MouseEvent) => {
@@ -510,7 +495,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           id: searchString,
           primary:
             this.customValueLabel ??
-            this.localize?.("ui.components.combo-box.add_custom_item") ??
+            this.hass?.localize("ui.components.combo-box.add_custom_item") ??
             "Add custom item",
           secondary: `"${searchString}"`,
           icon_path: mdiPlus,
@@ -799,15 +784,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         :host {
           display: flex;
           flex-direction: column;
-          padding-top: var(--ha-space-4);
+          padding-top: var(--ha-space-3);
           flex: 1;
         }
 
         :host([clearable]) {
-          --text-field-padding-top: 0;
-          --text-field-padding-bottom: 0;
-          --text-field-padding-start: var(--ha-space-4);
-          --text-field-padding-end: 0;
+          --text-field-padding: 0 0 0 var(--ha-space-4);
         }
 
         ha-textfield {

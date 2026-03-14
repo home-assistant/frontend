@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-dialog-footer";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
@@ -52,7 +52,7 @@ class DialogAssignCategory extends LitElement {
     }
     const entry = this._params.entityReg.categories[this._params.scope];
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
@@ -91,7 +91,7 @@ class DialogAssignCategory extends LitElement {
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

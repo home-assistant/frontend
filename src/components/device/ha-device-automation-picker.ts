@@ -36,7 +36,7 @@ export abstract class HaDeviceAutomationPicker<
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg: EntityRegistryEntry[] = [];
+  _entityReg!: EntityRegistryEntry[];
 
   protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(

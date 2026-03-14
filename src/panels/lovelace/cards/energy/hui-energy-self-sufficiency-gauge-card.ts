@@ -1,4 +1,4 @@
-import { mdiInformationOutline } from "@mdi/js";
+import { mdiInformation } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -13,7 +13,6 @@ import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
-  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -31,24 +30,9 @@ class HuiEnergySelfSufficiencyGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
-  public static async getConfigElement() {
-    await import("../../editor/config-elements/hui-energy-graph-card-editor");
-    return document.createElement("hui-energy-graph-card-editor");
-  }
-
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySelfSufficiencyGaugeCardConfig;
-
-  public static getStubConfig(
-    _hass: HomeAssistant,
-    _entities: string[],
-    _entitiesFill: string[]
-  ): EnergySelfSufficiencyGaugeCardConfig {
-    return {
-      type: "energy-self-sufficiency-gauge",
-    };
-  }
 
   @state() private _data?: EnergyData;
 
@@ -69,9 +53,6 @@ class HuiEnergySelfSufficiencyGaugeCard
   }
 
   public setConfig(config: EnergySelfSufficiencyGaugeCardConfig): void {
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key);
-    }
     this._config = config;
   }
 
@@ -129,10 +110,7 @@ class HuiEnergySelfSufficiencyGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <ha-tooltip for="info" placement="left">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"

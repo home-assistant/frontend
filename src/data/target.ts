@@ -16,11 +16,6 @@ export const TARGET_SEPARATOR = "________";
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 
-export interface TargetItem {
-  type: TargetType;
-  id: string;
-}
-
 export interface SingleHassServiceTarget {
   entity_id?: string;
   device_id?: string;

@@ -9,7 +9,7 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -112,7 +112,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     const defaultConfig = this._generateDefaultConfig(this.hass.localize);
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -198,7 +198,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                 `}
           </div>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -258,12 +258,12 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     return [
       haStyleScrollbar,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
           --ha-dialog-min-height: 60svh;
         }
-        ha-dialog::part(body) {
+        ha-wa-dialog::part(body) {
           overflow: hidden;
           min-height: 0;
         }

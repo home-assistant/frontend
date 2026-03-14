@@ -1,7 +1,27 @@
+import { mdiNetwork, mdiServerNetwork, mdiTextBoxOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+
+export const configTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.network",
+    path: `/config/zwave_js/dashboard`,
+    iconPath: mdiServerNetwork,
+  },
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.logs",
+    path: `/config/zwave_js/logs`,
+    iconPath: mdiTextBoxOutline,
+  },
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.visualization",
+    path: `/config/zwave_js/visualization`,
+    iconPath: mdiNetwork,
+  },
+];
 
 @customElement("zwave_js-config-router")
 class ZWaveJSConfigRouter extends HassRouterPage {
@@ -53,9 +73,9 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         tag: "zwave_js-node-config",
         load: () => import("./zwave_js-node-config"),
       },
-      statistics: {
-        tag: "zwave_js-controller-statistics",
-        load: () => import("./zwave_js-controller-statistics"),
+      node_installer: {
+        tag: "zwave_js-node-installer",
+        load: () => import("./zwave_js-node-installer"),
       },
       logs: {
         tag: "zwave_js-logs",
@@ -64,14 +84,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       provisioned: {
         tag: "zwave_js-provisioned",
         load: () => import("./zwave_js-provisioned"),
-      },
-      "network-info": {
-        tag: "zwave_js-network-info-page",
-        load: () => import("./zwave_js-network-info-page"),
-      },
-      options: {
-        tag: "zwave_js-options-page",
-        load: () => import("./zwave_js-options-page"),
       },
       visualization: {
         tag: "zwave_js-network-visualization",

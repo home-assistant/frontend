@@ -30,7 +30,6 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
-import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 
@@ -156,10 +155,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    const columnCount = Math.max(
-      Math.min(maxColumnCount, totalSectionCount),
-      1
-    );
+    const columnCount = Math.min(maxColumnCount, totalSectionCount);
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
@@ -309,12 +305,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               `
             : nothing}
         </div>
-        <hui-view-footer
-          .hass=${this.hass}
-          .lovelace=${this.lovelace}
-          .viewIndex=${this.index}
-          .config=${this._config?.footer}
-        ></hui-view-footer>
         <div class="imported-cards-section">
           ${editMode && this._config?.cards?.length
             ? html`
@@ -461,7 +451,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
-      flex: 1;
     }
 
     @media (max-width: 600px) {
@@ -471,9 +460,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: calc(100% - 2 * var(--row-gap));
+      display: block;
       padding: var(--row-gap) var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
@@ -506,7 +493,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
       padding: var(--row-gap) 0;
       align-items: flex-start;
-      flex: 1 0 auto;
     }
 
     .wrapper.has-sidebar .container {
@@ -661,10 +647,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     hui-view-header {
       display: block;
       padding-top: var(--row-gap);
-    }
-
-    hui-view-footer {
-      display: block;
     }
 
     .imported-cards {

@@ -97,10 +97,9 @@ export class HuiRepairsCard
     }
 
     // Update visibility based on admin status and repairs count
-    const shouldBeHidden = Boolean(
+    const shouldBeHidden =
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._repairsIssues.length === 0)
-    );
+      (this._config.hide_empty && this._repairsIssues.length === 0);
 
     if (shouldBeHidden !== this.hidden) {
       this.style.display = shouldBeHidden ? "none" : "";

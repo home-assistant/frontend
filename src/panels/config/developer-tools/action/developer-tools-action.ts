@@ -1,4 +1,4 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { dump, load } from "js-yaml";
@@ -281,7 +281,7 @@ class HaPanelDevAction extends LitElement {
                         >
                           <ha-icon-button
                             class="help-icon"
-                            .path=${mdiHelpCircleOutline}
+                            .path=${mdiHelpCircle}
                             .label=${this.hass!.localize("ui.common.help")}
                           ></ha-icon-button>
                         </a>`

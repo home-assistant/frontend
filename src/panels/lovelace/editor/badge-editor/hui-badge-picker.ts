@@ -12,7 +12,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
-import { haStyleScrollbar } from "../../../../resources/styles";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -140,7 +139,6 @@ export class HuiBadgePicker extends LitElement {
       ></search-input>
       <div
         id="content"
-        class="ha-scrollbar"
         style=${styleMap({
           width: this._width ? `${this._width}px` : "auto",
           height: this._height ? `${this._height}px` : "auto",
@@ -470,23 +468,9 @@ export class HuiBadgePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          min-height: 0;
-        }
-
-        #content {
-          flex: 1;
-          min-height: 0;
-          overflow: auto;
-        }
-
         search-input {
           display: block;
-          width: 100%;
           --mdc-shape-small: var(--badge-picker-search-shape);
           margin: var(--badge-picker-search-margin);
         }
@@ -494,17 +478,16 @@ export class HuiBadgePicker extends LitElement {
         .badges-container-header {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
-          padding: var(--ha-space-3) var(--ha-space-2) var(--ha-space-1)
-            var(--ha-space-2);
+          padding: 12px 8px 4px 8px;
           margin: 0;
           grid-column: 1 / -1;
         }
 
         .badges-container {
           display: grid;
-          gap: var(--ha-space-2);
+          grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          padding: var(--ha-space-3);
+          margin-top: 20px;
         }
 
         .badge {
@@ -531,20 +514,19 @@ export class HuiBadgePicker extends LitElement {
           font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
           line-height: var(--ha-line-height-condensed);
-          padding: var(--ha-space-3) var(--ha-space-4);
+          padding: 12px 16px;
           display: block;
           text-align: center;
           background: var(
             --ha-card-background,
             var(--card-background-color, white)
           );
-          border-bottom: var(--ha-card-border-width, 1px) solid
-            var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
         }
 
         .preview {
           pointer-events: none;
-          margin: var(--ha-space-5);
+          margin: 20px;
           flex-grow: 1;
           display: flex;
           align-items: center;
@@ -579,16 +561,16 @@ export class HuiBadgePicker extends LitElement {
 
         .icon {
           position: absolute;
-          top: var(--ha-space-2);
-          right: var(--ha-space-2);
-          inset-inline-start: var(--ha-space-2);
-          inset-inline-end: var(--ha-space-2);
+          top: 8px;
+          right: 8px;
+          inset-inline-start: 8px;
+          inset-inline-end: 8px;
           border-radius: var(--ha-border-radius-circle);
-          --mdc-icon-size: var(--ha-space-4);
-          line-height: var(--ha-space-4);
+          --mdc-icon-size: 16px;
+          line-height: 16px;
           box-sizing: border-box;
           color: var(--text-primary-color);
-          padding: var(--ha-space-1);
+          padding: 4px;
         }
         .icon.custom {
           background: var(--warning-color);

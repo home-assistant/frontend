@@ -49,7 +49,7 @@ export class EnergyDeviceSettings extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
           ${this.hass.localize(
@@ -82,52 +82,49 @@ export class EnergyDeviceSettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-          ${this.preferences.device_consumption.length > 0
-            ? html`
-                <div class="items-container">
-                  <ha-sortable
-                    handle-selector=".handle"
-                    @item-moved=${this._itemMoved}
-                  >
-                    <div class="devices">
-                      ${repeat(
-                        this.preferences.device_consumption,
-                        (device) => device.stat_consumption,
-                        (device) => html`
-                          <div class="row" .device=${device}>
-                            <div class="handle">
-                              <ha-svg-icon
-                                .path=${mdiDragHorizontalVariant}
-                              ></ha-svg-icon>
-                            </div>
-                            <span class="content"
-                              >${device.name ||
-                              getStatisticLabel(
-                                this.hass,
-                                device.stat_consumption,
-                                this.statsMetadata?.[device.stat_consumption]
-                              )}</span
-                            >
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.edit")}
-                              @click=${this._editDevice}
-                              .path=${mdiPencil}
-                            ></ha-icon-button>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              @click=${this._deleteDevice}
-                              .device=${device}
-                              .path=${mdiDelete}
-                            ></ha-icon-button>
-                          </div>
-                        `
-                      )}
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.device_consumption.devices"
+            )}
+          </h3>
+          <ha-sortable handle-selector=".handle" @item-moved=${this._itemMoved}>
+            <div class="devices">
+              ${repeat(
+                this.preferences.device_consumption,
+                (device) => device.stat_consumption,
+                (device) => html`
+                  <div class="row" .device=${device}>
+                    <div class="handle">
+                      <ha-svg-icon
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
                     </div>
-                  </ha-sortable>
-                </div>
-              `
-            : ""}
+                    <span class="content"
+                      >${device.name ||
+                      getStatisticLabel(
+                        this.hass,
+                        device.stat_consumption,
+                        this.statsMetadata?.[device.stat_consumption]
+                      )}</span
+                    >
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.edit")}
+                      @click=${this._editDevice}
+                      .path=${mdiPencil}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.delete")}
+                      @click=${this._deleteDevice}
+                      .device=${device}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </div>
+                `
+              )}
+            </div>
+          </ha-sortable>
           <div class="row">
+            <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
             <ha-button
               @click=${this._addDevice}
               appearance="filled"

@@ -52,9 +52,6 @@ export class HaPickLanguageRow extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-language-picker {
-      width: 100%;
-    }
   `;
 }
 

@@ -423,77 +423,31 @@ export class HaMap extends ReactiveElement {
           ? baseOpacity! + pointIndex * opacityStep!
           : undefined;
 
-        const thisPoint = path.points[pointIndex];
-        const nextPoint = path.points[pointIndex + 1];
-
         // DRAW point
         this._mapPaths.push(
-          Leaflet.circleMarker(thisPoint.point, {
+          Leaflet.circleMarker(path.points[pointIndex].point, {
             radius: isTouch ? 8 : 3,
             color: path.color || darkPrimaryColor,
             opacity,
             fillOpacity: opacity,
             interactive: true,
-          }).bindTooltip(this._computePathTooltip(path, thisPoint), {
-            direction: "top",
-          })
+          }).bindTooltip(
+            this._computePathTooltip(path, path.points[pointIndex]),
+            { direction: "top" }
+          )
         );
 
         // DRAW line between this and next point
-        if (Math.abs(thisPoint.point[1] - nextPoint.point[1]) <= 180) {
-          // if the path does not cross the antimeridian, draw a simple line
-          // between the two points
-          this._mapPaths.push(
-            Leaflet.polyline([thisPoint.point, nextPoint.point], {
+        this._mapPaths.push(
+          Leaflet.polyline(
+            [path.points[pointIndex].point, path.points[pointIndex + 1].point],
+            {
               color: path.color || darkPrimaryColor,
               opacity,
               interactive: false,
-            })
-          );
-        } else {
-          // if the path crosses the antimeridian, split the line into two, to
-          // avoid it being drawn across the entire map
-          const longitudeDifference =
-            ((nextPoint.point[1] - thisPoint.point[1] + 540) % 360) - 180;
-          let intersectionLatitude: number;
-          if (longitudeDifference === 0) {
-            // very, very unlikely edge case
-            intersectionLatitude =
-              (thisPoint.point[0] + nextPoint.point[0]) / 2;
-          } else {
-            intersectionLatitude =
-              thisPoint.point[0] +
-              ((nextPoint.point[0] - thisPoint.point[0]) *
-                (thisPoint.point[1] > 0
-                  ? 180 - thisPoint.point[1]
-                  : -180 - thisPoint.point[1])) /
-                longitudeDifference;
-          }
-
-          const intersectionPoint1: LatLngTuple = [
-            intersectionLatitude,
-            thisPoint.point[1] > 0 ? 180 : -180,
-          ];
-          const intersectionPoint2: LatLngTuple = [
-            intersectionLatitude,
-            nextPoint.point[1] > 0 ? 180 : -180,
-          ];
-
-          this._mapPaths.push(
-            Leaflet.polyline([thisPoint.point, intersectionPoint1], {
-              color: path.color || darkPrimaryColor,
-              opacity,
-              interactive: false,
-            })
-          );
-          this._mapPaths.push(
-            Leaflet.polyline([intersectionPoint2, nextPoint.point], {
-              color: path.color || darkPrimaryColor,
-              opacity,
-              interactive: false,
-            })
-          );
-        }
+            }
+          )
+        );
       }
       const pointIndex = path.points.length - 1;
       if (pointIndex >= 0) {

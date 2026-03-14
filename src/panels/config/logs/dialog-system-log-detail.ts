@@ -7,7 +7,7 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -83,10 +83,9 @@ class DialogSystemLogDetail extends LitElement {
     });
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="large"
         @closed=${this._dialogClosed}
       >
         <span slot="headerTitle">${title}</span>
@@ -187,7 +186,7 @@ class DialogSystemLogDetail extends LitElement {
             : item.message[0]}
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -231,7 +230,7 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0px;
         }
 

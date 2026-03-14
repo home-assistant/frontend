@@ -1,4 +1,4 @@
-import { mdiFolderMultipleOutline, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -15,18 +15,10 @@ import "../../../../../components/ha-icon-button";
 import type { ZHAGroup } from "../../../../../data/zha";
 import { fetchGroups } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
-
-const groupsTab: PageNavigation[] = [
-  {
-    translationKey: "ui.panel.config.zha.groups.caption",
-    path: "/config/zha/groups",
-    iconPath: mdiFolderMultipleOutline,
-  },
-];
+import { zhaTabs } from "./zha-config-dashboard";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
@@ -108,8 +100,7 @@ export class ZHAGroupsDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${groupsTab}
-        back-path="/config/zha/dashboard"
+        .tabs=${zhaTabs}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}

@@ -164,7 +164,7 @@ export class HaEntityToggle extends LitElement {
       min-width: 38px;
     }
     ha-icon-button {
-      --ha-icon-button-size: 40px;
+      --mdc-icon-button-size: 40px;
       color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
       transition: color 0.5s;
     }

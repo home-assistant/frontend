@@ -37,13 +37,6 @@ export interface LovelaceViewHeaderConfig {
   badges_wrap?: "wrap" | "scroll";
 }
 
-export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;
-
-export interface LovelaceViewFooterConfig {
-  card?: LovelaceCardConfig;
-  max_width?: number;
-}
-
 export interface LovelaceViewSidebarConfig {
   sections?: LovelaceSectionConfig[];
   content_label?: string;
@@ -75,7 +68,6 @@ export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
   header?: LovelaceViewHeaderConfig;
-  footer?: LovelaceViewFooterConfig;
   // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
   sidebar?: LovelaceViewSidebarConfig;
 }

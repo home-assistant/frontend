@@ -7,8 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-dialog";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
@@ -72,8 +71,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _firmwareTarget?: number;
 
-  @state() private _open = false;
-
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
   private _subscribedNodeFirmwareUpdate?: Promise<UnsubscribeFunc>;
@@ -85,16 +82,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
     this.device = params.device;
-    this._open = true;
     this._fetchData();
     this._subscribeNodeStatus();
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this._unsubscribeNodeFirmwareUpdate();
     this._unsubscribeNodeStatus();
     this.device = undefined;
@@ -144,7 +136,16 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
               .disabled=${this._uploading}
-            ></ha-form>`} `;
+            ></ha-form>`}
+      <ha-button
+        slot="primaryAction"
+        @click=${this._beginFirmwareUpdate}
+        .disabled=${this._firmwareFile === undefined || this._uploading}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.begin_update"
+        )}
+      </ha-button>`;
 
     const status = this._updateFinishedMessage
       ? this._updateFinishedMessage.success
@@ -156,24 +157,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       ? "_controller"
       : "";
 
-    const beginFirmwareUpdateButton = html`
-      <ha-button
-        slot="primaryAction"
-        @click=${this._beginFirmwareUpdate}
-        .disabled=${this._firmwareFile === undefined || this._uploading}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.begin_update"
-        )}
-      </ha-button>
-    `;
-
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
           <ha-button
-            slot="secondaryAction"
-            appearance="plain"
+            slot="primaryAction"
             @click=${this._abortFirmwareUpdate}
             variant="danger"
           >
@@ -191,12 +179,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.title"
+        open
+        @closed=${this.closeDialog}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.zwave_js.update_firmware.title")
         )}
-        @closed=${this._dialogClosed}
       >
         ${!this._updateProgressMessage && !this._updateFinishedMessage
           ? !this._updateInProgress
@@ -218,6 +206,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                       )}
                     </p>`
                   : nothing}
+                ${this._uploading ? abortFirmwareUpdateButton : nothing}
               `
             : html`
                 <p>
@@ -250,6 +239,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         }
                       )}
                 </p>
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
             ? html`
@@ -278,6 +268,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
             : html`
                 <div class="flex-container">
@@ -311,10 +302,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 </div>
                 ${this._updateFinishedMessage!.success
                   ? html`<p>
-                      ${this.hass.localize(
-                        `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
-                      )}
-                    </p>`
+                        ${this.hass.localize(
+                          `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
+                        )}
+                      </p>
+                      ${closeButton}`
                   : html`<p>
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
@@ -322,20 +314,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                       </p>
                       ${beginFirmwareUpdateHTML}`}
               `}
-        <ha-dialog-footer slot="footer">
-          ${!this._updateProgressMessage && !this._updateFinishedMessage
-            ? !this._updateInProgress
-              ? html`
-                  ${this._uploading ? abortFirmwareUpdateButton : nothing}
-                  ${beginFirmwareUpdateButton}
-                `
-              : html` ${abortFirmwareUpdateButton} ${closeButton} `
-            : this._updateProgressMessage && !this._updateFinishedMessage
-              ? html` ${abortFirmwareUpdateButton} ${closeButton} `
-              : this._updateFinishedMessage!.success
-                ? html` ${closeButton} `
-                : html` ${beginFirmwareUpdateButton} `}
-        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

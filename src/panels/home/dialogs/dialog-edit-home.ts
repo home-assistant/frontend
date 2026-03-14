@@ -5,7 +5,7 @@ import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -51,11 +51,10 @@ export class DialogEditHome
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
-        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <p class="description">
@@ -106,7 +105,7 @@ export class DialogEditHome
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -139,7 +138,7 @@ export class DialogEditHome
   static styles = [
     haStyleDialog,
     css`
-      ha-dialog {
+      ha-wa-dialog {
         --dialog-content-padding: var(--ha-space-6);
       }
 

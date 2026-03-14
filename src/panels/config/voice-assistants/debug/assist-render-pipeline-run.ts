@@ -670,10 +670,10 @@ export class AssistPipelineDebug extends LitElement {
       background-color: var(--light-primary-color);
       color: var(--text-light-primary-color, var(--primary-text-color));
       direction: var(--direction);
-    }
-
-    .tool_result [slot="header"] {
-      color: var(--text-light-primary-color, var(--primary-text-color));
+      --primary-text-color: var(
+        --text-light-primary-color,
+        var(--primary-text-color)
+      );
     }
 
     .message.user,

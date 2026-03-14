@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -9,6 +10,7 @@ import {
   mdiDevices,
   mdiFlask,
   mdiHammer,
+  mdiInformation,
   mdiInformationOutline,
   mdiLabel,
   mdiLightningBolt,
@@ -33,19 +35,24 @@ import {
   mdiZigbee,
   mdiZWave,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus } from "../../data/cloud";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
+  subscribeEntityRegistry,
 } from "../../data/entity/entity_registry";
+import { subscribeLabelRegistry } from "../../data/label/label_registry";
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
 
 declare global {
@@ -290,15 +297,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#3263C3",
     },
   ],
-  developer_tools: [
-    {
-      path: "/config/developer-tools",
-      translationKey: "ui.panel.config.dashboard.developer_tools.main",
-      iconPath: mdiHammer,
-      iconColor: "#7A5AA6",
-      core: true,
-    },
-  ],
   // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
@@ -485,7 +483,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "info",
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
-      iconPath: mdiInformationOutline,
+      iconPath: mdiInformation,
       iconColor: "#4A5963",
       core: true,
     },
@@ -493,12 +491,33 @@ export const configSections: Record<string, PageNavigation[]> = {
 };
 
 @customElement("ha-panel-config")
-class HaPanelConfig extends HassRouterPage {
+class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  private _entitiesContext = new ContextProvider(this, {
+    context: fullEntitiesContext,
+    initialValue: [],
+  });
+
+  private _labelsContext = new ContextProvider(this, {
+    context: labelsContext,
+    initialValue: [],
+  });
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entitiesContext.setValue(entities);
+      }),
+      subscribeLabelRegistry(this.hass.connection!, (labels) => {
+        this._labelsContext.setValue(labels);
+      }),
+    ];
+  }
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

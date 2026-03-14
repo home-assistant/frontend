@@ -203,14 +203,11 @@ export class HaTargetPickerValueChip extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl(
-        {
-          domain: domain,
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        },
-        this.hass.auth.data.hassUrl
-      );
+      this._iconImg = brandsUrl({
+        domain: domain,
+        type: "icon",
+        darkOptimized: this.hass.themes?.darkMode,
+      });
 
       this._setDomainName(domain);
     } catch {
@@ -218,7 +215,7 @@ export class HaTargetPickerValueChip extends LitElement {
     }
   }
 
-  private _removeItem(ev: MouseEvent) {
+  private _removeItem(ev) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -226,7 +223,7 @@ export class HaTargetPickerValueChip extends LitElement {
     });
   }
 
-  private _handleExpand(ev: MouseEvent) {
+  private _handleExpand(ev) {
     ev.stopPropagation();
     fireEvent(this, "expand-target-item", {
       type: this.type,
@@ -250,7 +247,7 @@ export class HaTargetPickerValueChip extends LitElement {
       cursor: default;
     }
     .mdc-chip ha-icon-button {
-      --ha-icon-button-size: 24px;
+      --mdc-icon-button-size: 24px;
       display: flex;
       align-items: center;
       outline: none;

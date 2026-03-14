@@ -1,4 +1,4 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import type {
   HassService,
   HassServices,
@@ -507,7 +507,7 @@ export class HaServiceControl extends LitElement {
                   rel="noreferrer"
                 >
                   <ha-icon-button
-                    .path=${mdiHelpCircleOutline}
+                    .path=${mdiHelpCircle}
                     class="help-icon"
                   ></ha-icon-button>
                 </a>`

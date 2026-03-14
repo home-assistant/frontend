@@ -140,15 +140,11 @@ class StepFlowCreateEntry extends LitElement {
                                   this.hass.localize,
                                   domains[device.primary_config_entry]
                                 )}
-                                src=${brandsUrl(
-                                  {
-                                    domain:
-                                      domains[device.primary_config_entry],
-                                    type: "icon",
-                                    darkOptimized: this.hass.themes?.darkMode,
-                                  },
-                                  this.hass.auth.data.hassUrl
-                                )}
+                                src=${brandsUrl({
+                                  domain: domains[device.primary_config_entry],
+                                  type: "icon",
+                                  darkOptimized: this.hass.themes?.darkMode,
+                                })}
                                 crossorigin="anonymous"
                                 referrerpolicy="no-referrer"
                               />`

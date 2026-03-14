@@ -12,6 +12,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -54,7 +55,7 @@ import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
-import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -75,13 +76,17 @@ import {
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import { createLabelRegistryEntry } from "../../../data/label/label_registry";
+import {
+  createLabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -108,7 +113,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
 }
 
 @customElement("ha-config-devices-dashboard")
-export class HaConfigDeviceDashboard extends LitElement {
+export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -121,7 +126,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  entities: EntityRegistryEntry[] = [];
+  entities!: EntityRegistryEntry[];
 
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
@@ -158,9 +163,8 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state() private _expandedFilter?: string;
 
-  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels?: LabelRegistryEntry[];
+  _labels!: LabelRegistryEntry[];
 
   @storage({ key: "devices-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -531,14 +535,11 @@ export class HaConfigDeviceDashboard extends LitElement {
                 alt=""
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
-                src=${brandsUrl(
-                  {
-                    domain: device.domains[0],
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  },
-                  this.hass.auth.data.hassUrl
-                )}
+                src=${brandsUrl({
+                  domain: device.domains[0],
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
               />`
             : "",
       },
@@ -653,6 +654,14 @@ export class HaConfigDeviceDashboard extends LitElement {
       labels: getLabelsTableColumn(),
     } as DataTableColumnContainer<DeviceItem>;
   });
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
+    ];
+  }
 
   private _renderAreaItems = (slot = "") =>
     html`${Object.values(this.hass.areas).map(

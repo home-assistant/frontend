@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
@@ -86,7 +86,7 @@ class DialogZoneDetail extends LitElement {
       !radiusInvalid;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.entry
@@ -94,7 +94,6 @@ class DialogZoneDetail extends LitElement {
               name: this._params.entry.name,
             })
           : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
-        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-form
@@ -139,7 +138,7 @@ class DialogZoneDetail extends LitElement {
               : this.hass!.localize("ui.panel.config.zone.detail.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

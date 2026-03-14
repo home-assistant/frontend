@@ -21,14 +21,11 @@ class IntegrationBadge extends LitElement {
       <div class="icon">
         <img
           alt=""
-          src=${brandsUrl(
-            {
-              domain: this.domain,
-              type: "icon",
-              darkOptimized: this.darkOptimizedIcon,
-            },
-            location.origin
-          )}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.darkOptimizedIcon,
+          })}
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
         />

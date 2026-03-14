@@ -195,7 +195,7 @@ export const fetchStatistic = (
   statistic_id: string,
   period: {
     fixed_period?: { start: string | Date; end: string | Date };
-    calendar?: { period: string; offset?: number };
+    calendar?: { period: string; offset: number };
     rolling_window?: { duration: HaDurationData; offset: HaDurationData };
   },
   units?: StatisticsUnitConfiguration

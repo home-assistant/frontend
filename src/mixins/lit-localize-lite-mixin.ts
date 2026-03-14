@@ -2,10 +2,10 @@ import type { LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { computeLocalize } from "../common/translations/localize";
-import { computeDirectionStyles } from "../common/util/compute_rtl";
-import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
+import { translationMetadata } from "../resources/translations-metadata";
+import { computeDirectionStyles } from "../common/util/compute_rtl";
 
 const empty = () => "";
 
@@ -28,16 +28,16 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       this._initializeLocalizeLite();
     }
 
+    protected firstUpdated(changedProps: PropertyValues) {
+      super.firstUpdated(changedProps);
+      computeDirectionStyles(
+        translationMetadata.translations[this.language!].isRTL,
+        this
+      );
+    }
+
     protected willUpdate(changedProperties: PropertyValues) {
       super.willUpdate(changedProperties);
-
-      if (!this.updated || changedProperties.has("language")) {
-        computeDirectionStyles(
-          translationMetadata.translations[this.language!].isRTL,
-          this
-        );
-      }
-
       if (changedProperties.get("language")) {
         this._resources = undefined;
         this._initializeLocalizeLite();

@@ -23,8 +23,6 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public scrollable = true;
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
@@ -41,10 +39,11 @@ class HassSubpage extends LitElement {
               `
             : this.backPath
               ? html`
-                  <ha-icon-button-arrow-prev
-                    href=${this.backPath}
-                    .hass=${this.hass}
-                  ></ha-icon-button-arrow-prev>
+                  <a href=${this.backPath}>
+                    <ha-icon-button-arrow-prev
+                      .hass=${this.hass}
+                    ></ha-icon-button-arrow-prev>
+                  </a>
                 `
               : html`
                   <ha-icon-button-arrow-prev
@@ -59,14 +58,7 @@ class HassSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div
-        class=${classMap({
-          content: true,
-          "ha-scrollbar": this.scrollable,
-          "not-scrollable": !this.scrollable,
-        })}
-        @scroll=${this._saveScrollPos}
-      >
+      <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
         <slot></slot>
       </div>
       <div id="fab">
@@ -164,20 +156,20 @@ class HassSubpage extends LitElement {
               1px - var(--header-height, 0px) - var(
                 --safe-area-inset-top,
                 0px
-              ) - var(--safe-area-inset-bottom, 0px)
+              ) - var(
+                --hass-subpage-bottom-inset,
+                var(--safe-area-inset-bottom, 0px)
+              )
           );
-          padding-bottom: var(--safe-area-inset-bottom, 0px);
+          margin-bottom: var(
+            --hass-subpage-bottom-inset,
+            var(--safe-area-inset-bottom)
+          );
           margin-right: var(--safe-area-inset-right);
           overflow-y: auto;
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
-        .content.not-scrollable {
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
         :host([narrow]) .content {
           width: calc(
             100% - var(--safe-area-inset-left, 0px) - var(

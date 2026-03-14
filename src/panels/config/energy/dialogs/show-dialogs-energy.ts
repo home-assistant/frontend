@@ -4,17 +4,49 @@ import type {
   DeviceConsumptionEnergyPreference,
   EnergyGasUnitClass,
   EnergyInfo,
+  FlowFromGridSourceEnergyPreference,
+  FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
+  GridPowerSourceEnergyPreference,
+  GridPowerSourceInput,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 
-export interface EnergySettingsGridDialogParams {
-  source?: GridSourceTypeEnergyPreference;
-  grid_sources: GridSourceTypeEnergyPreference[];
-  saveCallback: (source: GridSourceTypeEnergyPreference) => Promise<void>;
+export interface EnergySettingsGridFlowDialogParams {
+  source?:
+    | FlowFromGridSourceEnergyPreference
+    | FlowToGridSourceEnergyPreference;
+  metadata?: StatisticsMetaData;
+  direction: "from" | "to";
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (
+    source:
+      | FlowFromGridSourceEnergyPreference
+      | FlowToGridSourceEnergyPreference
+  ) => Promise<void>;
+}
+
+export interface EnergySettingsGridFlowFromDialogParams {
+  source?: FlowFromGridSourceEnergyPreference;
+  metadata?: StatisticsMetaData;
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (source: FlowFromGridSourceEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsGridFlowToDialogParams {
+  source?: FlowToGridSourceEnergyPreference;
+  metadata?: StatisticsMetaData;
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsGridPowerDialogParams {
+  source?: GridPowerSourceEnergyPreference;
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (source: GridPowerSourceInput) => Promise<void>;
 }
 
 export interface EnergySettingsSolarDialogParams {
@@ -114,6 +146,28 @@ export const showEnergySettingsWaterDialog = (
   });
 };
 
+export const showEnergySettingsGridFlowFromDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsGridFlowFromDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-grid-flow-settings",
+    dialogImport: () => import("./dialog-energy-grid-flow-settings"),
+    dialogParams: { ...dialogParams, direction: "from" },
+  });
+};
+
+export const showEnergySettingsGridFlowToDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsGridFlowToDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-grid-flow-settings",
+    dialogImport: () => import("./dialog-energy-grid-flow-settings"),
+    dialogParams: { ...dialogParams, direction: "to" },
+  });
+};
+
 export const showEnergySettingsDeviceWaterDialog = (
   element: HTMLElement,
   dialogParams: EnergySettingsDeviceWaterDialogParams
@@ -125,13 +179,13 @@ export const showEnergySettingsDeviceWaterDialog = (
   });
 };
 
-export const showEnergySettingsGridDialog = (
+export const showEnergySettingsGridPowerDialog = (
   element: HTMLElement,
-  dialogParams: EnergySettingsGridDialogParams
+  dialogParams: EnergySettingsGridPowerDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-grid-settings",
-    dialogImport: () => import("./dialog-energy-grid-settings"),
+    dialogTag: "dialog-energy-grid-power-settings",
+    dialogImport: () => import("./dialog-energy-grid-power-settings"),
     dialogParams: dialogParams,
   });
 };

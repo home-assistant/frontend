@@ -8,8 +8,6 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-dialog";
 import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 
 @customElement("hui-dialog-delete-card")
@@ -18,25 +16,17 @@ export class HuiDialogDeleteCard extends LitElement {
 
   @state() private _params?: DeleteCardDialogParams;
 
-  @state() private _open = false;
-
   @state() private _cardConfig?: LovelaceCardConfig;
 
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {
     this._params = params;
     this._cardConfig = params.cardConfig;
-    this._open = true;
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._open = false;
     this._params = undefined;
     this._cardConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -49,12 +39,9 @@ export class HuiDialogDeleteCard extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.lovelace.cards.confirm_delete"
-        )}
-        @closed=${this._dialogClosed}
+        open
+        @closed=${this.closeDialog}
+        .heading=${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
       >
         <div>
           ${this._cardConfig
@@ -69,23 +56,17 @@ export class HuiDialogDeleteCard extends LitElement {
               `
             : ""}
         </div>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-            autofocus
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            slot="primaryAction"
-            class="warning"
-            @click=${this._delete}
-          >
-            ${this.hass!.localize("ui.common.delete")}
-          </ha-button>
-        </ha-dialog-footer>
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button slot="primaryAction" class="warning" @click=${this._delete}>
+          ${this.hass!.localize("ui.common.delete")}
+        </ha-button>
       </ha-dialog>
     `;
   }

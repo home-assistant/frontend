@@ -1,11 +1,11 @@
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FrontendLocaleData } from "../data/translation";
-import type { ValueChangedEvent } from "../types";
 import "./ha-base-time-input";
-import type { HaBaseTimeInput, TimeChangedEvent } from "./ha-base-time-input";
+import type { TimeChangedEvent } from "./ha-base-time-input";
+import type { ValueChangedEvent } from "../types";
 
 @customElement("ha-time-input")
 export class HaTimeInput extends LitElement {
@@ -25,12 +25,6 @@ export class HaTimeInput extends LitElement {
   public enableSecond = false;
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
-
-  @query("ha-base-time-input") private _input?: HaBaseTimeInput;
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
-  }
 
   protected render() {
     const useAMPM = useAmPm(this.locale);

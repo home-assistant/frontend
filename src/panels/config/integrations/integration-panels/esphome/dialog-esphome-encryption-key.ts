@@ -1,4 +1,4 @@
-import { mdiContentCopy } from "@mdi/js";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,8 +6,9 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
@@ -36,13 +37,27 @@ class DialogESPHomeEncryptionKey extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
         @closed=${this.closeDialog}
         header-title=${this.hass.localize(
           "ui.panel.config.devices.esphome.encryption_key_title"
         )}
       >
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title">
+            ${this.hass.localize(
+              "ui.panel.config.devices.esphome.encryption_key_title"
+            )}
+          </span>
+        </ha-dialog-header>
+
         <div class="content">
           <p>
             ${this.hass.localize(
@@ -65,7 +80,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

@@ -262,6 +262,8 @@ export class HaConfigAppsInstalled extends LitElement {
     }
 
     .card-content {
+      display: flex;
+      justify-content: space-between;
       padding: var(--ha-space-4);
     }
 

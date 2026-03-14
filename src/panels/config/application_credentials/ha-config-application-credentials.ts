@@ -106,11 +106,12 @@ export class HaConfigApplicationCredentials extends LitElement {
           filterable: true,
         },
         actions: {
-          lastFixed: true,
           title: "",
           label: localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
+          hideable: false,
+          moveable: false,
           template: (credential) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}

@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -169,8 +170,11 @@ export class HaDeviceEntitiesCard extends LitElement {
     const element = createRowElement(config);
     if (this.hass) {
       element.hass = this.hass;
+      const stateObj = this.hass.states[entry.entity_id];
 
-      let name = entry.stateName || this.deviceName;
+      let name =
+        computeEntityName(stateObj, this.hass.entities, this.hass.devices) ||
+        this.deviceName;
 
       if (entry.hidden_by) {
         name += ` (${this.hass.localize(

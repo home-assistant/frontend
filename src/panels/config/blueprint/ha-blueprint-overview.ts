@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDownload,
   mdiEye,
-  mdiHelpCircleOutline,
+  mdiHelpCircle,
   mdiOpenInNew,
   mdiPlus,
   mdiShareVariant,
@@ -232,11 +232,12 @@ class HaBlueprintOverview extends LitElement {
         hidden: true,
       },
       actions: {
-        lastFixed: true,
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
         showNarrow: true,
+        moveable: false,
+        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
@@ -374,7 +375,7 @@ class HaBlueprintOverview extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircleOutline}
+          .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-fab

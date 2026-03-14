@@ -1,5 +1,7 @@
+import { convertEntities } from "../../../src/fake_data/entity";
+
 export const mapEntities = () =>
-  Object.values({
+  convertEntities({
     "zone.home": {
       entity_id: "zone.home",
       state: "zoning",
@@ -49,7 +51,7 @@ export const mapEntities = () =>
   });
 
 export const energyEntities = () =>
-  Object.values({
+  convertEntities({
     "sensor.grid_fossil_fuel_percentage": {
       entity_id: "sensor.grid_fossil_fuel_percentage",
       state: "88.6",

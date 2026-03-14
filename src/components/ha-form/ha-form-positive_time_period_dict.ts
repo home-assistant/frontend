@@ -2,7 +2,6 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../ha-duration-input";
-import type { HaDurationInput } from "../ha-duration-input";
 import type { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./types";
 
 @customElement("ha-form-positive_time_period_dict")
@@ -15,15 +14,12 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-duration-input", true) private _input?: HaDurationInput;
+  @query("ha-time-input", true) private _input?: HTMLElement;
 
-  static shadowRootOptions = {
-    ...LitElement.shadowRootOptions,
-    delegatesFocus: true,
-  };
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
+  public focus() {
+    if (this._input) {
+      this._input.focus();
+    }
   }
 
   protected render(): TemplateResult {

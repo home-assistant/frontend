@@ -19,7 +19,7 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type { GenDataTaskResult } from "../../../data/ai_task";
 import type {
   AreaRegistryEntry,
@@ -338,13 +338,12 @@ class DialogAreaDetail
     const isNew = !entry;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.areas.editor.update_area")
           : this.hass.localize("ui.panel.config.areas.editor.create_area")}
-        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-suggest-with-ai-button
@@ -375,13 +374,7 @@ class DialogAreaDetail
                   ${this.hass.localize("ui.common.delete")}
                 </ha-button>
               `
-            : html`<ha-button
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>`}
+            : nothing}
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
@@ -392,7 +385,7 @@ class DialogAreaDetail
               : this.hass.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

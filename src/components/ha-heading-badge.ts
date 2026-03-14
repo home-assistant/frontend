@@ -38,7 +38,7 @@ export class HaBadge extends LitElement {
       font-weight: var(--ha-heading-badge-font-weight, 400);
       line-height: var(--ha-heading-badge-line-height, 20px);
       letter-spacing: 0.1px;
-      --mdc-icon-size: 16px;
+      --mdc-icon-size: 14px;
     }
     ::slotted([slot="icon"]) {
       --ha-icon-display: block;

@@ -14,7 +14,6 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
@@ -26,6 +25,7 @@ import type {
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
 } from "../../heading-badges/types";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_BADGE_TYPES = ["entity", "button"] as const;
 
@@ -321,7 +321,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --ha-icon-button-size: var(--ha-space-9);
+      --mdc-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

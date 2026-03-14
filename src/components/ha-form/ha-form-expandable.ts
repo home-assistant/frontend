@@ -1,9 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
-import "../ha-expansion-panel";
 import "./ha-form";
-import type { HaForm } from "./ha-form";
+import "../ha-expansion-panel";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -35,12 +34,6 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public localizeValue?: (
     key: string
   ) => string;
-
-  @query("ha-form", true) private _form?: HaForm;
-
-  public reportValidity(): boolean {
-    return this._form?.reportValidity() ?? true;
-  }
 
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);

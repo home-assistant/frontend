@@ -4,7 +4,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
@@ -81,7 +81,7 @@ class HaMfaModuleSetupFlow extends LitElement {
       return nothing;
     }
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -164,7 +164,7 @@ class HaMfaModuleSetupFlow extends LitElement {
               >`
             : nothing}
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

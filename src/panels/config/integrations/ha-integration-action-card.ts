@@ -31,14 +31,11 @@ export class HaIntegrationActionCard extends LitElement {
         <div class="card-content">
           <img
             alt=""
-            src=${brandsUrl(
-              {
-                domain: this.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
-            )}
+            src=${brandsUrl({
+              domain: this.domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            })}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
             @error=${this._onImageError}

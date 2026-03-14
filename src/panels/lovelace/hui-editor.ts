@@ -7,20 +7,21 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-button";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon-button";
-import "../../components/ha-top-app-bar-fixed";
-import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
-import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import "../../components/ha-button";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
+import "../../components/ha-top-app-bar-fixed";
+import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -112,7 +113,21 @@ class LovelaceFullConfigEditor extends LitElement {
       oldLovelace.rawConfig !== this.lovelace.rawConfig &&
       !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
-      this.yamlEditor.value = dump(this.lovelace!.rawConfig);
+      showToast(this, {
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.raw_editor.lovelace_changed"
+        ),
+        action: {
+          action: () => {
+            this.yamlEditor.value = dump(this.lovelace!.rawConfig);
+          },
+          text: this.hass!.localize(
+            "ui.panel.lovelace.editor.raw_editor.reload"
+          ),
+        },
+        duration: -1,
+        dismissable: false,
+      });
     }
   }
 

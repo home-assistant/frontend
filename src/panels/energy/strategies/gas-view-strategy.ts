@@ -13,22 +13,13 @@ export class GasViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const collectionKey =
-      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
-
     const view: LovelaceViewConfig = {
       type: "sections",
-      max_columns: 3,
-      sections: [{ type: "grid", cards: [], column_span: 3 }],
-      footer: {
-        card: {
-          type: "energy-date-selection",
-          collection_key: collectionKey,
-          opening_direction: "right",
-          vertical_opening_direction: "up",
-        },
-      },
+      sections: [{ type: "grid", cards: [] }],
     };
+
+    const collectionKey =
+      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
@@ -58,9 +49,6 @@ export class GasViewStrategy extends ReactiveElement {
       title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
       type: "energy-gas-graph",
       collection_key: collectionKey,
-      grid_options: {
-        columns: 24,
-      },
     });
 
     section.cards!.push({
@@ -68,9 +56,6 @@ export class GasViewStrategy extends ReactiveElement {
       type: "energy-sources-table",
       collection_key: collectionKey,
       types: ["gas"],
-      grid_options: {
-        columns: 12,
-      },
     });
 
     return view;

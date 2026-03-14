@@ -5,24 +5,17 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
 import type { Action } from "../../../../src/data/script";
 import { describeAction } from "../../../../src/data/script_i18n";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
-  {
-    entity_id: "scene.kitchen_morning",
-    state: "scening",
-    attributes: {
-      friendly_name: "Kitchen Morning",
-    },
-  },
-  {
-    entity_id: "media_player.kitchen",
-    state: "playing",
-    attributes: {
-      friendly_name: "Sonos Kitchen",
-    },
-  },
+  getEntity("scene", "kitchen_morning", "scening", {
+    friendly_name: "Kitchen Morning",
+  }),
+  getEntity("media_player", "kitchen", "playing", {
+    friendly_name: "Sonos Kitchen",
+  }),
 ];
 
 const ACTIONS = [

@@ -1,5 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiChartLine, mdiHelpCircleOutline, mdiShape } from "@mdi/js";
+import { mdiChartLine, mdiHelpCircle, mdiShape } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -163,7 +163,7 @@ export class HaStatisticPicker extends LitElement {
         primary: this.hass.localize(
           "ui.components.statistic-picker.missing_entity"
         ),
-        icon_path: mdiHelpCircleOutline,
+        icon_path: mdiHelpCircle,
       },
     ];
   }

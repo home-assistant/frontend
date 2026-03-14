@@ -173,14 +173,11 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl(
-                {
-                  domain: configEntry.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
+              src=${brandsUrl({
+                domain: configEntry.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
             />`
           : nothing}
         <span slot="headline">${primary}</span>
@@ -198,14 +195,11 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl(
-                {
-                  domain: item.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
+              src=${brandsUrl({
+                domain: item.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes.darkMode,
+              })}
             />
           `
         : nothing}

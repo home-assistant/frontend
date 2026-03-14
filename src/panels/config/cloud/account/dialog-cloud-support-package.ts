@@ -5,7 +5,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-markdown-element";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-textarea";
@@ -39,7 +39,7 @@ export class DialogSupportPackage extends LitElement {
 
   protected render() {
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="full"
@@ -76,7 +76,7 @@ export class DialogSupportPackage extends LitElement {
             </ha-button>
           </ha-dialog-footer>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

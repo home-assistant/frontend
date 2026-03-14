@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -56,7 +56,7 @@ class DialogAutomationSaveTimeout extends LitElement {
     );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._opened}
         header-title=${title}
@@ -105,7 +105,7 @@ class DialogAutomationSaveTimeout extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

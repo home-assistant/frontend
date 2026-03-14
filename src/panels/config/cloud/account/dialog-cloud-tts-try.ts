@@ -16,7 +16,7 @@ import type {
 } from "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import { showAutomationEditor } from "../../../../data/automation";
 import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
@@ -91,12 +91,13 @@ export class DialogTryTts extends LitElement {
     });
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.cloud.account.tts.dialog.header"
         )}
+        width="medium"
         @closed=${this._dialogClosed}
       >
         <div>
@@ -152,7 +153,7 @@ export class DialogTryTts extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

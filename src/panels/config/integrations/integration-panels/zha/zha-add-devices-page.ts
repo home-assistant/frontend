@@ -6,10 +6,11 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-textarea";
 import type { ZHADevice } from "../../../../../data/zha";
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
+import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
 
 @customElement("zha-add-devices-page")
@@ -73,10 +74,11 @@ class ZHAAddDevicesPage extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.zha.add_device")}
+        .route=${this.route!}
+        .tabs=${zhaTabs}
       >
         <ha-button
           appearance="plain"
@@ -166,7 +168,7 @@ class ZHAAddDevicesPage extends LitElement {
             >
             </ha-textarea>`
           : ""}
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 

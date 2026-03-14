@@ -1,4 +1,4 @@
-import { mdiFlask, mdiHelpCircleOutline, mdiOpenInNew } from "@mdi/js";
+import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -109,15 +109,18 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       >
         ${sortedFeatures.length
           ? html`
-              <ha-icon-button
+              <a
                 slot="toolbar-icon"
-                .href=${documentationUrl(this.hass, "/integrations/labs/")}
+                href=${documentationUrl(this.hass, "/integrations/labs/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 .title=${this.hass.localize("ui.common.help")}
-                .label=${this.hass.localize("ui.common.help")}
-                .path=${mdiHelpCircleOutline}
-              ></ha-icon-button>
+              >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircle}
+                ></ha-icon-button>
+              </a>
             `
           : nothing}
         <div class="content">
@@ -208,14 +211,11 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
           <div class="card-header">
             <img
               alt=""
-              src=${brandsUrl(
-                {
-                  domain: preview_feature.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
+              src=${brandsUrl({
+                domain: preview_feature.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
@@ -396,7 +396,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         height: 100%;
       }
 
-      ha-icon-button[slot="toolbar-icon"] {
+      a[slot="toolbar-icon"] {
         color: var(--sidebar-icon-color);
       }
 

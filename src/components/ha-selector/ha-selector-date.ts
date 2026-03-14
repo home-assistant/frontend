@@ -1,9 +1,8 @@
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { DateSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-date-input";
-import type { HaDateInput } from "../ha-date-input";
 
 @customElement("ha-selector-date")
 export class HaDateSelector extends LitElement {
@@ -20,12 +19,6 @@ export class HaDateSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
-
-  @query("ha-date-input", true) private _input?: HaDateInput;
-
-  public reportValidity(): boolean {
-    return this._input?.reportValidity() ?? true;
-  }
 
   protected render() {
     return html`

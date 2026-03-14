@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-wa-dialog";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import type { ZeroconfDiscoveryInfoDialogParams } from "./show-dialog-zeroconf-discovery-info";
@@ -51,7 +51,7 @@ class DialogZeroconfDiscoveryInfo extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -109,7 +109,7 @@ class DialogZeroconfDiscoveryInfo extends LitElement {
             ${this.hass.localize("ui.panel.config.zeroconf.copy_to_clipboard")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 }

@@ -38,18 +38,6 @@ export const getEntityContext = (
   return getEntityEntryContext(entry, entities, devices, areas, floors);
 };
 
-export const getEntityAreaId = (
-  entityId: string,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
-): string | undefined => {
-  const entry = entities[entityId];
-  if (!entry) return undefined;
-  const deviceId = entry.device_id;
-  const device = deviceId ? devices[deviceId] : undefined;
-  return entry.area_id || device?.area_id || undefined;
-};
-
 export const getEntityEntryContext = (
   entry:
     | EntityRegistryDisplayEntry

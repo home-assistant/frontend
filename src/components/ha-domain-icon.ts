@@ -61,14 +61,11 @@ export class HaDomainIcon extends LitElement {
       `;
     }
     if (this.brandFallback) {
-      const image = brandsUrl(
-        {
-          domain: this.domain!,
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        },
-        this.hass.auth.data.hassUrl
-      );
+      const image = brandsUrl({
+        domain: this.domain!,
+        type: "icon",
+        darkOptimized: this.hass.themes?.darkMode,
+      });
       return html`
         <img
           alt=""

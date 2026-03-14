@@ -8,7 +8,7 @@ import type { YamlIntegrationDialogParams } from "./show-add-integration-dialog"
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 
 @customElement("dialog-yaml-integration")
 export class DialogYamlIntegration extends LitElement {
@@ -41,7 +41,7 @@ export class DialogYamlIntegration extends LitElement {
       ? documentationUrl(this.hass, `/integrations/${manifest.domain}`)
       : manifest.documentation;
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -85,7 +85,7 @@ export class DialogYamlIntegration extends LitElement {
                 ${this.hass.localize("ui.common.ok")}
               </ha-button>`}
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -97,7 +97,7 @@ export class DialogYamlIntegration extends LitElement {
     a {
       text-decoration: none;
     }
-    ha-dialog {
+    ha-wa-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }

@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
@@ -57,7 +57,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -69,7 +69,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
               ) || this._params.entry.domain,
           }
         )}
-        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -143,7 +142,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

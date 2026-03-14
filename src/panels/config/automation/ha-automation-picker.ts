@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircleOutline,
+  mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -80,7 +80,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -96,7 +96,10 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import { createLabelRegistryEntry } from "../../../data/label/label_registry";
+import {
+  createLabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label/label_registry";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
@@ -183,13 +186,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
-  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels: LabelRegistryEntry[] = [];
+  _labels!: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg: EntityRegistryEntry[] = [];
+  _entityReg!: EntityRegistryEntry[];
 
   @state() private _overflowAutomation?: AutomationItem;
 
@@ -271,9 +273,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || [])
-            .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
-            .filter(Boolean),
+          label_entries: (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+          ),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -343,11 +345,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           `,
         },
         actions: {
-          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "icon-button",
           showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (automation) => html`
             <ha-icon-button
               .automation=${automation}
@@ -401,6 +404,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           this._categories = categories;
         }
       ),
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
     ];
   }
 
@@ -473,7 +479,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircleOutline}
+          .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas
@@ -842,8 +848,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
       } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          getEntityVoiceAssistantsIds(this._entityReg || [], entityId).some(
-            (va) => (filter.value as string[]).includes(va)
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
         );
       }

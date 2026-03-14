@@ -29,10 +29,6 @@ export class HaDateTimeSelector extends LitElement {
 
   @query("ha-time-input") private _timeInput!: HaTimeInput;
 
-  public reportValidity(): boolean {
-    return this._dateInput.reportValidity() && this._timeInput.reportValidity();
-  }
-
   protected render() {
     const values =
       typeof this.value === "string" ? this.value.split(" ") : undefined;

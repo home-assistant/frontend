@@ -216,6 +216,9 @@ export class CloudTTSPref extends LitElement {
   }
 
   static styles = css`
+    a {
+      color: var(--primary-color);
+    }
     .example {
       position: absolute;
       right: 16px;
@@ -225,11 +228,20 @@ export class CloudTTSPref extends LitElement {
     }
     .row {
       display: flex;
-      gap: var(--ha-space-2);
     }
     .row > * {
       flex: 1;
       width: 0;
+    }
+    .row > *:first-child {
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+    }
+    .row > *:last-child {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
     }
     .card-actions {
       display: flex;
@@ -245,7 +257,7 @@ export class CloudTTSPref extends LitElement {
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
       --mdc-icon-size: 14px;
-      --ha-icon-button-size: 24px;
+      --mdc-icon-button-size: 24px;
     }
     :host([narrow]) .voice-id {
       flex-direction: column;

@@ -2,7 +2,7 @@ import {
   mdiChartBox,
   mdiCog,
   mdiFolder,
-  mdiInformationOutline,
+  mdiInformation,
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
@@ -507,7 +507,7 @@ class HaBackupConfigData extends LitElement {
           ${this.hass.localize("ui.panel.config.backup.data.estimated_size")}
           <ha-svg-icon
             id="estimated-size-info"
-            .path=${mdiInformationOutline}
+            .path=${mdiInformation}
           ></ha-svg-icon>
           <ha-tooltip for="estimated-size-info" placement="right">
             ${this.hass.localize(

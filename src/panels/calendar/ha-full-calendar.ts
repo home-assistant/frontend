@@ -488,7 +488,7 @@ export class HAFullCalendar extends LitElement {
 
         .prev,
         .next {
-          --ha-icon-button-size: 32px;
+          --mdc-icon-button-size: 32px;
         }
 
         ha-fab {

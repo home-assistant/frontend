@@ -102,12 +102,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "light"),
             icon: HOME_SUMMARIES_ICONS.light,
-            tap_action: hass.panels.light
-              ? {
-                  action: "navigate",
-                  navigation_path: "/light?historyBack=1",
-                }
-              : undefined,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/light?historyBack=1",
+            },
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
@@ -122,12 +120,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "climate"),
             icon: HOME_SUMMARIES_ICONS.climate,
-            tap_action: hass.panels.climate
-              ? {
-                  action: "navigate",
-                  navigation_path: "/climate?historyBack=1",
-                }
-              : undefined,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/climate?historyBack=1",
+            },
           } satisfies HeadingCardConfig,
           ...climate.map(computeTileCard),
         ],
@@ -142,12 +138,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "security"),
             icon: HOME_SUMMARIES_ICONS.security,
-            tap_action: hass.panels.security
-              ? {
-                  action: "navigate",
-                  navigation_path: "/security?historyBack=1",
-                }
-              : undefined,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/security?historyBack=1",
+            },
           } satisfies HeadingCardConfig,
           ...security.map(computeTileCard),
         ],

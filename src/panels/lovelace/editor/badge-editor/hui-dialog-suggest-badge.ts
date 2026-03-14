@@ -5,8 +5,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-dialog";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -26,8 +24,6 @@ export class HuiDialogSuggestBadge extends LitElement {
 
   @state() private _params?: SuggestBadgeDialogParams;
 
-  @state() private _open = false;
-
   @state() private _badgeConfig?: LovelaceBadgeConfig[];
 
   @state() private _saving = false;
@@ -37,7 +33,6 @@ export class HuiDialogSuggestBadge extends LitElement {
   public showDialog(params: SuggestBadgeDialogParams): void {
     this._params = params;
     this._badgeConfig = params.badgeConfig;
-    this._open = true;
     if (!Object.isFrozen(this._badgeConfig)) {
       this._badgeConfig = deepFreeze(this._badgeConfig);
     }
@@ -47,11 +42,6 @@ export class HuiDialogSuggestBadge extends LitElement {
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._open = false;
     this._params = undefined;
     this._badgeConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -82,12 +72,12 @@ export class HuiDialogSuggestBadge extends LitElement {
     }
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass!.localize(
+        open
+        scrimClickAction
+        @closed=${this.closeDialog}
+        .heading=${this.hass!.localize(
           "ui.panel.lovelace.editor.suggest_badge.header"
         )}
-        @closed=${this._dialogClosed}
       >
         <div>
           ${this._renderPreview()}
@@ -97,37 +87,34 @@ export class HuiDialogSuggestBadge extends LitElement {
                   <ha-yaml-editor
                     .hass=${this.hass}
                     .defaultValue=${this._badgeConfig}
-                    in-dialog
                   ></ha-yaml-editor>
                 </div>
               `
             : nothing}
         </div>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-            autofocus
-          >
-            ${this._params.yaml
-              ? this.hass!.localize("ui.common.close")
-              : this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-          ${!this._params.yaml
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.suggest_badge.add"
-                  )}
-                </ha-button>
-              `
-            : nothing}
-        </ha-dialog-footer>
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
+          ${this._params.yaml
+            ? this.hass!.localize("ui.common.close")
+            : this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        ${!this._params.yaml
+          ? html`
+              <ha-button
+                slot="primaryAction"
+                @click=${this._save}
+                .loading=${this._saving}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_badge.add"
+                )}
+              </ha-button>
+            `
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -136,7 +123,20 @@ export class HuiDialogSuggestBadge extends LitElement {
     return [
       haStyleDialog,
       css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+        @media all and (min-width: 850px) {
+          ha-dialog {
+            width: 845px;
+          }
+        }
         ha-dialog {
+          max-width: 845px;
           --dialog-z-index: 6;
         }
         .hidden {

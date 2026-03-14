@@ -84,11 +84,13 @@ export class HaMarkdown extends LitElement {
     ha-markdown-element > :is(ol, ul) {
       padding-inline-start: var(--markdown-list-indent, revert);
     }
-    li:has(input[type="checkbox"]) {
-      list-style: none;
-    }
-    li:has(input[type="checkbox"]) > input[type="checkbox"] {
-      margin-left: 0;
+    li {
+      &:has(input[type="checkbox"]) {
+        list-style: none;
+        & > input[type="checkbox"] {
+          margin-left: 0;
+        }
+      }
     }
     svg {
       background-color: var(--markdown-svg-background-color, none);
@@ -135,10 +137,10 @@ export class HaMarkdown extends LitElement {
       --markdown-table-border-width: 0;
       --markdown-table-padding-inline: 0;
       --markdown-table-padding-block: 0;
-    }
-    table[role="presentation"] th,
-    table[role="presentation"] td {
-      vertical-align: middle;
+      th,
+      td {
+        vertical-align: middle;
+      }
     }
     table[role="presentation"] td[valign="top"],
     table[role="presentation"] th[valign="top"] {

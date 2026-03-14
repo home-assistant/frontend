@@ -147,7 +147,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg: EntityRegistryEntry[] = [];
+  _entityReg!: EntityRegistryEntry[];
 
   private _logbookTime = { recent: 86400 };
 
@@ -364,14 +364,11 @@ export class HaConfigDevicePage extends LitElement {
             <img
               slot="graphic"
               alt=${domainToName(this.hass.localize, integration.domain)}
-              src=${brandsUrl(
-                {
-                  domain: integration.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
+              src=${brandsUrl({
+                domain: integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
@@ -766,14 +763,11 @@ export class HaConfigDevicePage extends LitElement {
                       this.hass.localize,
                       integrations[0].domain
                     )}
-                    src=${brandsUrl(
-                      {
-                        domain: integrations[0].domain,
-                        type: "logo",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
+                    src=${brandsUrl({
+                      domain: integrations[0].domain,
+                      type: "logo",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}

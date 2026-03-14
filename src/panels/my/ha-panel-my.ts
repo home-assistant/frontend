@@ -102,14 +102,6 @@ export const getMyRedirects = (): Redirects => ({
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
-  config_matter: {
-    component: "matter",
-    redirect: "/config/matter/dashboard",
-  },
-  config_thread: {
-    component: "thread",
-    redirect: "/config/thread",
-  },
   add_zigbee_device: {
     component: "zha",
     redirect: "/config/zha/add",
@@ -147,7 +139,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   config_energy: {
     component: "energy",
-    redirect: "/config/energy",
+    redirect: "/config/energy/dashboard",
   },
   config_ssdp: {
     component: "ssdp",
@@ -295,9 +287,6 @@ export const getMyRedirects = (): Redirects => ({
   history: {
     component: "history",
     redirect: "/history",
-  },
-  overview: {
-    redirect: "/home/overview",
   },
   media_browser: {
     component: "media_source",

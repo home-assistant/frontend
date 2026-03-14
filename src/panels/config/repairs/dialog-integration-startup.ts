@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./integrations-startup-time";
@@ -32,7 +32,7 @@ class DialogIntegrationStartup extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -44,14 +44,14 @@ class DialogIntegrationStartup extends LitElement {
           .hass=${this.hass}
           narrow
         ></integrations-startup-time>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
   static styles: CSSResultGroup = [
     haStyleDialog,
     css`
-      ha-dialog {
+      ha-wa-dialog {
         --dialog-content-padding: 0;
       }
     `,

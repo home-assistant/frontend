@@ -109,7 +109,7 @@ export class HaIconButtonToolbar extends LitElement {
 
     .icon-toolbar-button {
       color: var(--secondary-text-color);
-      --ha-icon-button-size: var(--icon-button-toolbar-button);
+      --mdc-icon-button-size: var(--icon-button-toolbar-button);
       --mdc-icon-size: var(--icon-button-toolbar-icon);
       /* Ensure button is clickable on iOS */
       cursor: pointer;

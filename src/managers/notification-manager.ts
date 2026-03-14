@@ -5,6 +5,7 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
+import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -31,12 +32,11 @@ class NotificationManager extends LitElement {
 
   @state() private _parameters?: ShowToastParams;
 
-  @query("ha-toast")
-  private _toast!: HTMLElementTagNameMap["ha-toast"] | undefined;
+  @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
     if (!parameters.id || this._parameters?.id !== parameters.id) {
-      await this._toast?.hide();
+      this._toast?.close();
     }
 
     if (!parameters || parameters.duration === 0) {
@@ -57,7 +57,7 @@ class NotificationManager extends LitElement {
     this._toast?.show();
   }
 
-  private _toastClosed(_ev: HTMLElementEventMap["toast-closed"]) {
+  private _toastClosed() {
     this._parameters = undefined;
   }
 
@@ -67,6 +67,7 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-toast
+        leading
         .labelText=${typeof this._parameters.message !== "string"
           ? this.hass.localize(
               this._parameters.message.translationKey,
@@ -74,7 +75,7 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
-        @toast-closed=${this._toastClosed}
+        @MDCSnackbar:closed=${this._toastClosed}
       >
         ${this._parameters?.action
           ? html`
@@ -98,8 +99,8 @@ class NotificationManager extends LitElement {
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.close")}
                 .path=${mdiClose}
+                dialogAction="close"
                 slot="dismiss"
-                @click=${this._dismissClicked}
               ></ha-icon-button>
             `
           : nothing}
@@ -108,14 +109,10 @@ class NotificationManager extends LitElement {
   }
 
   private _buttonClicked() {
-    this._toast?.hide("action");
+    this._toast?.close("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
-  }
-
-  private _dismissClicked() {
-    this._toast?.hide("dismiss");
   }
 }
 

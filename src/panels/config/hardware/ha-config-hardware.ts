@@ -229,15 +229,12 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
       boardId = boardData.board!.hassio_board_id;
       boardName = boardData.name;
       documentationURL = boardData.url;
-      imageURL = hardwareBrandsUrl(
-        {
-          category: "boards",
-          manufacturer: boardData.board!.manufacturer,
-          model: boardData.board!.model,
-          darkOptimized: this.hass.themes?.darkMode,
-        },
-        this.hass.auth.data.hassUrl
-      );
+      imageURL = hardwareBrandsUrl({
+        category: "boards",
+        manufacturer: boardData.board!.manufacturer,
+        model: boardData.board!.model,
+        darkOptimized: this.hass.themes?.darkMode,
+      });
     } else if (this._OSData?.board) {
       boardId = this._OSData.board;
       boardName = BOARD_NAMES[this._OSData.board];

@@ -185,10 +185,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
-    if (this._hoursToShow < 1) {
-      // Statistics are hourly aggregates, not useful for sub-hour windows
-      return;
-    }
     const now = new Date();
     const start = new Date();
     start.setHours(start.getHours() - this._hoursToShow - 1);
@@ -359,7 +355,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       padding-bottom: 0;
     }
     .card-header ha-icon-next {
-      --ha-icon-button-size: 24px;
+      --mdc-icon-button-size: 24px;
       line-height: 24px;
       color: var(--primary-text-color);
     }

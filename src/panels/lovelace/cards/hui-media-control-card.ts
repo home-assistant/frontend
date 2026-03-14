@@ -749,7 +749,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     .controls ha-icon-button {
-      --ha-icon-button-size: 44px;
+      --mdc-icon-button-size: 44px;
       --mdc-icon-size: 30px;
     }
 
@@ -759,7 +759,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ha-icon-button[action="media_stop"],
     ha-icon-button[action="turn_on"],
     ha-icon-button[action="turn_off"] {
-      --ha-icon-button-size: 56px;
+      --mdc-icon-button-size: 56px;
       --mdc-icon-size: 40px;
     }
 
@@ -837,7 +837,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     .narrow ha-icon-button {
-      --ha-icon-button-size: 40px;
+      --mdc-icon-button-size: 40px;
       --mdc-icon-size: 28px;
     }
 
@@ -845,7 +845,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     .narrow ha-icon-button[action="media_play_pause"],
     .narrow ha-icon-button[action="media_pause"],
     .narrow ha-icon-button[action="turn_on"] {
-      --ha-icon-button-size: 50px;
+      --mdc-icon-button-size: 50px;
       --mdc-icon-size: 36px;
     }
 

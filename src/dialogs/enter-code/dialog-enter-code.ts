@@ -7,7 +7,7 @@ import "../../components/ha-button";
 import "../../components/ha-control-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-textfield";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import type { HaTextField } from "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
@@ -111,7 +111,7 @@ export class DialogEnterCode
 
     if (isText) {
       return html`
-        <ha-dialog
+        <ha-wa-dialog
           .hass=${this.hass}
           .open=${this._open}
           header-title=${this._dialogParams.title ??
@@ -144,12 +144,12 @@ export class DialogEnterCode
               this.hass.localize("ui.common.submit")}
             </ha-button>
           </ha-dialog-footer>
-        </ha-dialog>
+        </ha-wa-dialog>
       `;
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._dialogParams.title ?? "Enter code"}
@@ -203,12 +203,12 @@ export class DialogEnterCode
             )}
           </div>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
   static styles = css`
-    ha-dialog {
+    ha-wa-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }

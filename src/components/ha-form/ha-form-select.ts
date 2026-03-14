@@ -1,16 +1,16 @@
+import memoizeOne from "memoize-one";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-selector/ha-selector-select";
 import type {
   HaFormElement,
   HaFormSelectData,
   HaFormSelectSchema,
 } from "./types";
+import type { SelectSelector } from "../../data/selector";
+import "../ha-selector/ha-selector-select";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -40,13 +40,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
       },
     })
   );
-
-  public reportValidity(): boolean {
-    if (!this.schema.required || this.data) {
-      return true;
-    }
-    return false;
-  }
 
   protected render(): TemplateResult {
     return html`

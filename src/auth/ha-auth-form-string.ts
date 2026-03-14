@@ -12,10 +12,6 @@ export class HaAuthFormString extends HaFormString {
     return this;
   }
 
-  public reportValidity(): boolean {
-    return this.querySelector("ha-auth-textfield")?.reportValidity() ?? true;
-  }
-
   protected render(): TemplateResult {
     return html`
       <style>
@@ -35,7 +31,7 @@ export class HaAuthFormString extends HaFormString {
           right: 8px;
           inset-inline-start: initial;
           inset-inline-end: 8px;
-          --ha-icon-button-size: 40px;
+          --mdc-icon-button-size: 40px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           direction: var(--direction);

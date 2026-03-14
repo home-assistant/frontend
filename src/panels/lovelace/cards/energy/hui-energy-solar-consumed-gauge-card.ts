@@ -1,4 +1,4 @@
-import { mdiInformationOutline } from "@mdi/js";
+import { mdiInformation } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,7 +12,6 @@ import {
   calculateSolarConsumedGauge,
   getEnergyDataCollection,
   getSummedData,
-  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -30,24 +29,9 @@ class HuiEnergySolarGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
-  public static async getConfigElement() {
-    await import("../../editor/config-elements/hui-energy-graph-card-editor");
-    return document.createElement("hui-energy-graph-card-editor");
-  }
-
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySolarGaugeCardConfig;
-
-  public static getStubConfig(
-    _hass: HomeAssistant,
-    _entities: string[],
-    _entitiesFill: string[]
-  ): EnergySolarGaugeCardConfig {
-    return {
-      type: "energy-solar-consumed-gauge",
-    };
-  }
 
   @state() private _data?: EnergyData;
 
@@ -68,9 +52,6 @@ class HuiEnergySolarGaugeCard
   }
 
   public setConfig(config: EnergySolarGaugeCardConfig): void {
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key);
-    }
     this._config = config;
   }
 
@@ -121,10 +102,7 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <ha-tooltip for="info" placement="left">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"

@@ -204,15 +204,12 @@ class HaConfigBackupDetails extends LitElement {
                                       `
                                     : html`
                                         <img
-                                          .src=${brandsUrl(
-                                            {
-                                              domain,
-                                              type: "icon",
-                                              darkOptimized:
-                                                this.hass.themes?.darkMode,
-                                            },
-                                            this.hass.auth.data.hassUrl
-                                          )}
+                                          .src=${brandsUrl({
+                                            domain,
+                                            type: "icon",
+                                            darkOptimized:
+                                              this.hass.themes?.darkMode,
+                                          })}
                                           crossorigin="anonymous"
                                           referrerpolicy="no-referrer"
                                           alt=${`${domain} logo`}

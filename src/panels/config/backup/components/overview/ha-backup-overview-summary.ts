@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiCalendar, mdiInformationOutline } from "@mdi/js";
+import { mdiBackupRestore, mdiCalendar, mdiInformation } from "@mdi/js";
 import { addHours, differenceInDays, isToday, isTomorrow } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -58,7 +58,7 @@ class HaBackupOverviewBackups extends LitElement {
 
   private _renderSummaryCard(
     heading: string,
-    status: "error" | "info" | "warning" | "loading" | "success" | "none",
+    status: "error" | "info" | "warning" | "loading" | "success",
     headline: string | null,
     description?: string | null,
     lastCompletedDate?: Date
@@ -87,7 +87,7 @@ class HaBackupOverviewBackups extends LitElement {
                       @click=${this._createAdditionalBackupDescription(
                         lastCompletedDate
                       )}
-                      .path=${mdiInformationOutline}
+                      .path=${mdiInformation}
                     ></ha-icon-button>`
                   : nothing}
               </ha-md-list-item>`
@@ -103,7 +103,7 @@ class HaBackupOverviewBackups extends LitElement {
     if (this.fetching) {
       return this._renderSummaryCard(
         this.hass.localize("ui.panel.config.backup.overview.summary.loading"),
-        "none",
+        "loading",
         null,
         null
       );

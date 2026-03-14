@@ -3,19 +3,16 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
+import { getEntity } from "../../../../src/fake_data/entity";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
 
 const ENTITIES = [
-  {
-    entity_id: "timer.timer",
-    state: "idle",
-    attributes: {
-      friendly_name: "Timer",
-      duration: "0:05:00",
-    },
-  },
+  getEntity("timer", "timer", "idle", {
+    friendly_name: "Timer",
+    duration: "0:05:00",
+  }),
 ];
 
 @customElement("demo-more-info-timer")
@@ -28,7 +25,7 @@ class DemoMoreInfoTimer extends LitElement {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${ENTITIES.map((ent) => ent.entity_id)}
+        .entities=${ENTITIES.map((ent) => ent.entityId)}
       ></demo-more-infos>
     `;
   }

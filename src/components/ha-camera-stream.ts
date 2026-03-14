@@ -2,7 +2,6 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
-import { STATE_RUNNING } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -59,22 +58,12 @@ export class HaCameraStream extends LitElement {
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
   public willUpdate(changedProps: PropertyValues): void {
-    const entityChanged =
+    if (
       changedProps.has("stateObj") &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id;
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const backendStarted =
-      changedProps.has("hass") &&
-      this.hass &&
-      this.stateObj &&
-      oldHass &&
-      this.hass.config.state === STATE_RUNNING &&
-      oldHass.config?.state !== STATE_RUNNING;
-
-    if (entityChanged || backendStarted) {
+        this.stateObj.entity_id
+    ) {
       this._getCapabilities();
       this._getPosterUrl();
     }

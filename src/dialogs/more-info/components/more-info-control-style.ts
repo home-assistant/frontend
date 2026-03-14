@@ -12,8 +12,6 @@ export const moreInfoControlStyle = css`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    flex: 1;
   }
 
   .controls:not(:last-child) {

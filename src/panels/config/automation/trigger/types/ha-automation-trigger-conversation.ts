@@ -3,9 +3,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
+import "../../../../../components/ha-icon-button";
 import type { ConversationTrigger } from "../../../../../data/automation";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../types";
@@ -163,7 +163,7 @@ export class HaConversationTrigger
     ha-textfield > ha-icon-button {
       position: relative;
       right: -8px;
-      --ha-icon-button-size: 36px;
+      --mdc-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       inset-inline-start: initial;

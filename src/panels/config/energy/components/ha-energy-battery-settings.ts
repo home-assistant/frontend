@@ -57,7 +57,7 @@ export class EnergyBatterySettings extends LitElement {
     });
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.battery.title")}
@@ -83,58 +83,56 @@ export class EnergyBatterySettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-          ${batterySources.length > 0
-            ? html`
-                <div class="items-container">
-                  ${batterySources.map((source) => {
-                    const toEntityState =
-                      this.hass.states[source.stat_energy_to];
-                    return html`
-                      <div class="row" .source=${source}>
-                        ${toEntityState?.attributes.icon
-                          ? html`<ha-icon
-                              .icon=${toEntityState.attributes.icon}
-                            ></ha-icon>`
-                          : html`<ha-svg-icon
-                              .path=${mdiBatteryHigh}
-                            ></ha-svg-icon>`}
-                        <div class="content">
-                          <span class="label"
-                            >${getStatisticLabel(
-                              this.hass,
-                              source.stat_energy_from,
-                              this.statsMetadata?.[source.stat_energy_from]
-                            )}</span
-                          >
-                          <span class="label"
-                            >${getStatisticLabel(
-                              this.hass,
-                              source.stat_energy_to,
-                              this.statsMetadata?.[source.stat_energy_to]
-                            )}</span
-                          >
-                        </div>
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            "ui.panel.config.energy.battery.edit_battery_system"
-                          )}
-                          @click=${this._editSource}
-                          .path=${mdiPencil}
-                        ></ha-icon-button>
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            "ui.panel.config.energy.battery.delete_battery_system"
-                          )}
-                          @click=${this._deleteSource}
-                          .path=${mdiDelete}
-                        ></ha-icon-button>
-                      </div>
-                    `;
-                  })}
+
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.battery.battery_systems"
+            )}
+          </h3>
+          ${batterySources.map((source) => {
+            const toEntityState = this.hass.states[source.stat_energy_to];
+            return html`
+              <div class="row" .source=${source}>
+                ${toEntityState?.attributes.icon
+                  ? html`<ha-icon
+                      .icon=${toEntityState.attributes.icon}
+                    ></ha-icon>`
+                  : html`<ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>`}
+                <div class="content">
+                  <span class="label"
+                    >${getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_from,
+                      this.statsMetadata?.[source.stat_energy_from]
+                    )}</span
+                  >
+                  <span class="label"
+                    >${getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_to,
+                      this.statsMetadata?.[source.stat_energy_to]
+                    )}</span
+                  >
                 </div>
-              `
-            : ""}
-          <div class="row">
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.battery.edit_battery_system"
+                  )}
+                  @click=${this._editSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.battery.delete_battery_system"
+                  )}
+                  @click=${this._deleteSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
+              </div>
+            `;
+          })}
+          <div class="row border-bottom">
+            <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
             <ha-button
               @click=${this._addSource}
               appearance="filled"

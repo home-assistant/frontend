@@ -1,4 +1,5 @@
 import "@lit-labs/virtualizer";
+import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -13,12 +14,12 @@ import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
-import { haStyle, haStyleScrollbar } from "../../../resources/styles";
+import { haStyle } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -35,8 +36,6 @@ class DialogExposeEntity extends LitElement {
 
   @state() private _params?: ExposeEntityDialogParams;
 
-  @state() private _open = false;
-
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
@@ -49,14 +48,9 @@ class DialogExposeEntity extends LitElement {
 
   public async showDialog(params: ExposeEntityDialogParams): Promise<void> {
     this._params = params;
-    this._open = true;
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this._params = undefined;
     this._selected = [];
     this._filter = undefined;
@@ -71,14 +65,6 @@ class DialogExposeEntity extends LitElement {
     const header = this.hass.localize(
       "ui.panel.config.voice_assistants.expose.expose_dialog.header"
     );
-    const subtitle = this.hass.localize(
-      "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
-      {
-        assistants: this._params.filterAssistants
-          .map((ass) => voiceAssistants[ass].name)
-          .join(", "),
-      }
-    );
 
     const entities = this._filterEntities(
       this._params.exposedEntities,
@@ -86,19 +72,33 @@ class DialogExposeEntity extends LitElement {
     );
 
     return html`
-      <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${header}
-        header-subtitle=${subtitle}
-        prevent-scrim-close
-        @closed=${this._dialogClosed}
-      >
-        <search-input
-          .hass=${this.hass}
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-        ></search-input>
+      <ha-dialog open @closed=${this.closeDialog} .heading=${header}>
+        <ha-dialog-header slot="heading" show-border>
+          <h2 class="header" slot="title">
+            ${header}
+            <span class="subtitle">
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
+                {
+                  assistants: this._params.filterAssistants
+                    .map((ass) => voiceAssistants[ass].name)
+                    .join(", "),
+                }
+              )}
+            </span>
+          </h2>
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+            dialogAction="close"
+            slot="navigationIcon"
+          ></ha-icon-button>
+          <search-input
+            .hass=${this.hass}
+            .filter=${this._filter}
+            @value-changed=${this._filterChanged}
+          ></search-input>
+        </ha-dialog-header>
         <ha-list multi>
           <lit-virtualizer
             scroller
@@ -109,25 +109,23 @@ class DialogExposeEntity extends LitElement {
           >
           </lit-virtualizer>
         </ha-list>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            slot="primaryAction"
-            @click=${this._expose}
-            .disabled=${this._selected.length === 0}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
-              { count: this._selected.length }
-            )}
-          </ha-button>
-        </ha-dialog-footer>
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._expose}
+          .disabled=${this._selected.length === 0}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
+            { count: this._selected.length }
+          )}
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -261,10 +259,11 @@ class DialogExposeEntity extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleScrollbar,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
+          --mdc-dialog-min-width: 500px;
+          --mdc-dialog-max-width: 600px;
         }
         ha-list {
           position: relative;
@@ -278,6 +277,23 @@ class DialogExposeEntity extends LitElement {
           box-sizing: border-box;
           margin-top: var(--ha-space-2);
           --text-field-suffix-padding-left: 8px;
+        }
+        .header {
+          margin: 0;
+          pointer-events: auto;
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          font-weight: inherit;
+          font-size: inherit;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          margin: calc(var(--ha-space-1) * -1) 0;
+        }
+        .subtitle {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
         }
         lit-virtualizer {
           width: 100%;
@@ -311,6 +327,14 @@ class DialogExposeEntity extends LitElement {
           }
         }
         @media all and (max-width: 500px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
+            --mdc-dialog-min-height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --vertical-align-dialog: flex-end;
+            --ha-dialog-border-radius: var(--ha-border-radius-square);
+          }
           lit-virtualizer {
             height: calc(
               100vh -

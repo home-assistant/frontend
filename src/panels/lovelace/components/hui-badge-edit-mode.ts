@@ -15,7 +15,6 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -31,6 +30,7 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -304,7 +304,7 @@ export class HuiBadgeEditMode extends LitElement {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
-          --ha-icon-button-size: 24px;
+          --mdc-icon-button-size: 24px;
           --mdc-icon-size: 16px;
         }
       `,

@@ -4,7 +4,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
-  mdiHelpCircleOutline,
+  mdiHelpCircle,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -21,7 +21,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { stringCompare } from "../../../common/string/compare";
@@ -38,7 +37,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-combo-box-item";
 import { CONDITION_ICONS } from "../../../components/ha-condition-icon";
-import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-floor-icon";
@@ -53,6 +51,7 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
@@ -475,7 +474,7 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         width="large"
         .open=${this._open}
@@ -483,7 +482,7 @@ class DialogAddAutomationElement
         flexcontent
       >
         ${this._renderContent()}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -757,16 +756,19 @@ class DialogAddAutomationElement
         ${this._renderDialogSubtitle()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
-                )}
+              <a
                 slot="actionItems"
                 href=${docUrl}
                 target="_blank"
                 rel="noreferrer"
-              ></ha-icon-button>
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
+                  .label=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                  )}
+                ></ha-icon-button>
+              </a>
             `
           : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
@@ -1819,31 +1821,6 @@ class DialogAddAutomationElement
     this._getItemsByTarget();
   };
 
-  private _getDefaultStateItems(
-    type: "trigger" | "condition"
-  ): AddAutomationElementListItem[] {
-    const items: AddAutomationElementListItem[] = [
-      this._convertToItem("state", {}, type, this.hass.localize),
-    ];
-
-    const entityId = this._selectedTarget?.entity_id;
-    if (entityId) {
-      const NUMERIC_DOMAINS = ["counter", "input_number", "number", "sensor"];
-      const domain = computeDomain(entityId);
-      const stateObj = this.hass.states[entityId];
-      if (
-        NUMERIC_DOMAINS.includes(domain) ||
-        (stateObj && isNumericState(stateObj))
-      ) {
-        items.push(
-          this._convertToItem("numeric_state", {}, type, this.hass.localize)
-        );
-      }
-    }
-
-    return items;
-  }
-
   private async _getItemsByTarget() {
     if (!this._selectedTarget) {
       return;
@@ -1856,19 +1833,10 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        const grouped = this._getDomainGroupedTriggerListItems(
+        this._targetItems = this._getDomainGroupedTriggerListItems(
           this.hass.localize,
           items
         );
-        if (this._selectedTarget.entity_id) {
-          grouped.push({
-            title: this.hass.localize(
-              `ui.panel.config.automation.editor.triggers.groups.entity.label` as LocalizeKeys
-            ),
-            items: this._getDefaultStateItems("trigger"),
-          });
-        }
-        this._targetItems = grouped;
         return;
       }
       if (this._params!.type === "condition") {
@@ -1877,19 +1845,10 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        const grouped = this._getDomainGroupedConditionListItems(
+        this._targetItems = this._getDomainGroupedConditionListItems(
           this.hass.localize,
           items
         );
-        if (this._selectedTarget.entity_id) {
-          grouped.push({
-            title: this.hass.localize(
-              `ui.panel.config.automation.editor.conditions.groups.entity.label` as LocalizeKeys
-            ),
-            items: this._getDefaultStateItems("condition"),
-          });
-        }
-        this._targetItems = grouped;
         return;
       }
 
@@ -2118,7 +2077,7 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
             800px,
@@ -2141,7 +2100,7 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        ha-dialog ha-icon-button[slot="actionItems"] {
+        ha-wa-dialog a[slot="actionItems"] {
           color: var(--secondary-text-color);
         }
 
@@ -2231,7 +2190,7 @@ class DialogAddAutomationElement
           overflow: clip;
         }
 
-        ha-dialog ha-automation-add-items {
+        ha-wa-dialog ha-automation-add-items {
           margin-top: var(--ha-space-3);
         }
 

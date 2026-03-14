@@ -169,95 +169,100 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergyCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
+  type: "energy-distribution";
+  title?: string;
+  link_dashboard?: boolean;
+}
+export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
+  type: "energy-usage-graph";
   title?: string;
 }
 
-export interface EnergyCardSankeyConfig extends EnergyCardConfig {
-  layout?: "auto" | "vertical" | "horizontal";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
-}
-
-export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
-  vertical_opening_direction?: "auto" | "up" | "down";
-  opening_direction?: "auto" | "right" | "left" | "center" | "inline";
-  disable_compare?: boolean;
-}
-
-export interface EnergyDistributionCardConfig extends EnergyCardConfig {
-  type: "energy-distribution";
-  link_dashboard?: boolean;
-}
-export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
-  type: "energy-usage-graph";
-}
-
-export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
+export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-graph";
+  title?: string;
 }
 
-export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
+export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-gas-graph";
+  title?: string;
 }
 
-export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
+export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-water-graph";
+  title?: string;
 }
 
-export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
+export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
+  title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
+  title?: string;
   max_devices?: number;
 }
 
-export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
+export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
+  title?: string;
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
 }
 
-export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
+export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-consumed-gauge";
+  title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
+  title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
+  title?: string;
 }
 
-export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
+export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-carbon-consumed-gauge";
+  title?: string;
 }
 
-export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
+export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
+  type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
+  title?: string;
   show_legend?: boolean;
 }
 
-export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
-  type: "energy-sankey";
-}
-
-export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
+export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
   type: "power-sankey";
-}
-
-export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
-  type: "water-sankey";
-}
-
-export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
-  type: "water-flow-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -385,7 +390,6 @@ export interface MapEntityConfig extends EntityConfig {
   unit?: string;
   focus?: boolean;
   name?: string;
-  color?: string;
 }
 
 export interface GeoLocationSourceConfig {
@@ -474,17 +478,16 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   expand_legend?: boolean;
 }
 
-export interface StatisticCardConfig extends EnergyCardBaseConfig {
+export interface StatisticCardConfig extends LovelaceCardConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {
         fixed_period?: { start: string; end: string };
-        calendar?: { period: string; offset?: number };
+        calendar?: { period: string; offset: number };
         rolling_window?: { duration: HaDurationData; offset: HaDurationData };
       }
-    | "energy_date_selection"; // Maintained for legacy compatibility, use new key instead.
-  energy_date_selection?: boolean;
+    | "energy_date_selection";
   stat_type: keyof Statistic;
   theme?: string;
 }
@@ -660,13 +663,6 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-}
-
-export interface ToggleGroupCardConfig extends LovelaceCardConfig {
-  title: string;
-  entities: string[];
-  color?: string;
-  vertical?: boolean;
 }
 
 export interface DistributionEntityConfig extends EntityConfig {

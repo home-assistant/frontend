@@ -18,7 +18,7 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   reorderAreaRegistryEntries,
@@ -86,7 +86,7 @@ class DialogAreasFloorsOrder extends LitElement {
     );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
@@ -125,7 +125,7 @@ class DialogAreasFloorsOrder extends LitElement {
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -392,13 +392,13 @@ class DialogAreasFloorsOrder extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           max-height: 90%;
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
 
         @media all and (max-width: 580px), all and (max-height: 500px) {
-          ha-dialog {
+          ha-wa-dialog {
             min-width: 100%;
             min-height: 100%;
           }

@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-hls-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -43,7 +43,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     const mediaType = this._params.sourceType.split("/", 1)[0];
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="large"
@@ -93,7 +93,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
                 : html`${this.hass.localize(
                     "ui.components.media-browser.media_not_supported"
                   )}`}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

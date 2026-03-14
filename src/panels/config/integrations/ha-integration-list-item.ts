@@ -30,6 +30,8 @@ export class HaIntegrationListItem extends ListItemBase {
   // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) hasMeta = true;
 
+  @property({ type: Boolean }) brand = false;
+
   // @ts-expect-error
   protected override renderSingleLine() {
     if (!this.integration) {
@@ -62,14 +64,12 @@ export class HaIntegrationListItem extends ListItemBase {
         : html`<img
             alt=""
             loading="lazy"
-            src=${brandsUrl(
-              {
-                domain: this.integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
-            )}
+            src=${brandsUrl({
+              domain: this.integration.domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+              brand: this.brand,
+            })}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />`}

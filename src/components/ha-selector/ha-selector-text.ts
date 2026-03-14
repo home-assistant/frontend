@@ -1,6 +1,6 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
@@ -32,18 +32,11 @@ export class HaTextSelector extends LitElement {
 
   @state() private _unmaskedPassword = false;
 
-  @query("ha-textfield, ha-textarea") private _input?: HTMLInputElement;
-
   public async focus() {
     await this.updateComplete;
-    this._input?.focus();
-  }
-
-  public reportValidity(): boolean {
-    if (this.selector.text?.multiple) {
-      return true;
-    }
-    return this._input?.reportValidity() ?? true;
+    (
+      this.renderRoot.querySelector("ha-textarea, ha-textfield") as HTMLElement
+    )?.focus();
   }
 
   protected render() {
@@ -148,7 +141,7 @@ export class HaTextSelector extends LitElement {
       right: 8px;
       inset-inline-start: initial;
       inset-inline-end: 8px;
-      --ha-icon-button-size: 40px;
+      --mdc-icon-button-size: 40px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

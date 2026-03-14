@@ -11,11 +11,11 @@ export const canOverrideAlphanumericInput = (composedPath: EventTarget[]) => {
 
   const el = composedPath[0] as Element;
 
-  if (
-    el.tagName === "TEXTAREA" ||
-    el.parentElement?.tagName === "HA-SELECT" ||
-    el.parentElement?.tagName === "HA-DROPDOWN"
-  ) {
+  if (el.tagName === "TEXTAREA") {
+    return false;
+  }
+
+  if (el.parentElement?.tagName === "HA-SELECT") {
     return false;
   }
 
