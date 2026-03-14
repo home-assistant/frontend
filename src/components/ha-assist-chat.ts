@@ -38,7 +38,7 @@ interface AssistMessage {
     string,
     {
       tool_name: string;
-      tool_args: any;
+      tool_args: Record<string, unknown>;
       result?: any;
     }
   >;
