@@ -20,8 +20,8 @@ import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
-import type { Entity } from "./entity";
-import { getEntity } from "./entity";
+import { getEntity } from "./entities/registry";
+import type { EntityInput } from "./entities/types";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -37,7 +37,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
-  addEntities(entities: Entity | Entity[], replace?: boolean);
+  addEntities(entities: EntityInput | EntityInput[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS<T extends (...args) => any = any>(
@@ -143,12 +143,24 @@ export const provideHass = (
     });
   }
 
-  function addEntities(newEntities, replace = false) {
+  function addEntities(
+    newEntities: EntityInput | EntityInput[],
+    replace = false
+  ) {
     const states = {};
-    ensureArray(newEntities).forEach((ent) => {
+    ensureArray(newEntities).forEach((input) => {
+      const ent = getEntity(input);
       ent.hass = hass();
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
+
+      hass().entities[ent.entityId] = {
+        entity_id: ent.entityId,
+        name: ent.attributes.friendly_name || undefined,
+        icon: undefined,
+        platform: "demo",
+        labels: [],
+      } satisfies EntityRegistryDisplayEntry;
     });
     if (replace) {
       hass().updateHass({
@@ -156,16 +168,6 @@ export const provideHass = (
       });
     } else {
       updateStates(states);
-    }
-
-    for (const ent of ensureArray(newEntities)) {
-      hass().entities[ent.entityId] = {
-        entity_id: ent.entityId,
-        name: ent.attributes.friendly_name || null,
-        icon: ent.icon,
-        platform: "demo",
-        labels: [],
-      } satisfies EntityRegistryDisplayEntry;
     }
 
     updateFormatFunctions();
@@ -176,13 +178,15 @@ export const provideHass = (
   }
 
   mockAPI(/states\/.+/, (_method, path, parameters) => {
-    const [domain, objectId] = path.slice(7).split(".", 2);
-    if (!domain || !objectId) {
+    const entityId = path.slice(7);
+    if (!entityId.includes(".")) {
       return;
     }
-    addEntities(
-      getEntity(domain, objectId, parameters.state, parameters.attributes)
-    );
+    addEntities({
+      entity_id: entityId,
+      state: parameters.state,
+      attributes: parameters.attributes,
+    });
   });
 
   const localLanguage = getLocalLanguage();
@@ -192,7 +196,7 @@ export const provideHass = (
     // Home Assistant properties
     auth: {
       data: {
-        hassUrl: "",
+        hassUrl: location.origin,
       },
     } as any,
     connection: {

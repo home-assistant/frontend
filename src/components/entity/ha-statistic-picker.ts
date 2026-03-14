@@ -1,5 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiChartLine, mdiHelpCircle, mdiShape } from "@mdi/js";
+import { mdiChartLine, mdiHelpCircleOutline, mdiShape } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -156,17 +156,15 @@ export class HaStatisticPicker extends LitElement {
       this.value
     );
 
-  private _getAdditionalItems(): StatisticComboBoxItem[] {
-    return [
-      {
-        id: MISSING_ID,
-        primary: this.hass.localize(
-          "ui.components.statistic-picker.missing_entity"
-        ),
-        icon_path: mdiHelpCircle,
-      },
-    ];
-  }
+  private _getAdditionalItems = (): StatisticComboBoxItem[] => [
+    {
+      id: MISSING_ID,
+      primary: this.hass.localize(
+        "ui.components.statistic-picker.missing_entity"
+      ),
+      icon_path: mdiHelpCircleOutline,
+    },
+  ];
 
   private _getStatisticsItems = memoizeOne(
     (

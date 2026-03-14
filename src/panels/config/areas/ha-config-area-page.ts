@@ -73,7 +73,7 @@ class HaConfigAreaPage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _related?: RelatedResult;
 

@@ -41,7 +41,7 @@ import {
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type {
   HomeAssistant,
@@ -49,7 +49,6 @@ import type {
   ValueChangedEvent,
 } from "../../../../../types";
 import "../../../ha-config-section";
-import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
 
 const icons = {
@@ -116,11 +115,14 @@ class ZWaveJSNodeConfig extends LitElement {
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.header"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -226,7 +228,7 @@ class ZWaveJSNodeConfig extends LitElement {
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

@@ -91,9 +91,10 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
     const updateEntities = this._getUpdateEntities();
 
     // Update visibility based on admin status and updates count
-    const shouldBeHidden =
+    const shouldBeHidden = Boolean(
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && updateEntities.length === 0);
+      (this._config.hide_empty && updateEntities.length === 0)
+    );
 
     if (shouldBeHidden !== this.hidden) {
       this.style.display = shouldBeHidden ? "none" : "";
@@ -103,7 +104,7 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._config || !this.hass || this.hidden) {
+    if (!this._config || !this.hass) {
       return nothing;
     }
 

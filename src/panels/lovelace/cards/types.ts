@@ -4,7 +4,11 @@ import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { Statistic, StatisticType } from "../../../data/recorder";
+import type {
+  Statistic,
+  StatisticPeriod,
+  StatisticType,
+} from "../../../data/recorder";
 import type { MediaSelectorValue } from "../../../data/selector";
 import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
@@ -169,100 +173,95 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
-  type: "energy-distribution";
+export interface EnergyCardConfig extends EnergyCardBaseConfig {
   title?: string;
+}
+
+export interface EnergyCardSankeyConfig extends EnergyCardConfig {
+  layout?: "auto" | "vertical" | "horizontal";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
+  vertical_opening_direction?: "auto" | "up" | "down";
+  opening_direction?: "auto" | "right" | "left" | "center" | "inline";
+  disable_compare?: boolean;
+}
+
+export interface EnergyDistributionCardConfig extends EnergyCardConfig {
+  type: "energy-distribution";
   link_dashboard?: boolean;
 }
-export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
-  title?: string;
 }
 
-export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
-  title?: string;
 }
 
-export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
-  title?: string;
 }
 
-export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
-  title?: string;
 }
 
-export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-graph";
-  title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
-  title?: string;
   max_devices?: number;
 }
 
-export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
+export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
-  title?: string;
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
 }
 
-export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
   type: "energy-solar-consumed-gauge";
-  title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
   type: "energy-self-sufficiency-gauge";
-  title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
-  title?: string;
 }
 
-export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
   type: "energy-carbon-consumed-gauge";
-  title?: string;
 }
 
-export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
-  type: "energy-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
-}
-
-export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
-  type: "water-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
-}
-
-export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
-  title?: string;
   show_legend?: boolean;
 }
 
-export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
+export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "energy-sankey";
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "power-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
+}
+
+export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "water-sankey";
+}
+
+export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "water-flow-sankey";
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -390,6 +389,7 @@ export interface MapEntityConfig extends EntityConfig {
   unit?: string;
   focus?: boolean;
   name?: string;
+  color?: string;
 }
 
 export interface GeoLocationSourceConfig {
@@ -462,11 +462,10 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  title?: string;
   entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
-  period?: "5minute" | "hour" | "day" | "month";
+  period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   min_y_axis?: number;
@@ -478,16 +477,17 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   expand_legend?: boolean;
 }
 
-export interface StatisticCardConfig extends LovelaceCardConfig {
+export interface StatisticCardConfig extends EnergyCardBaseConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {
         fixed_period?: { start: string; end: string };
-        calendar?: { period: string; offset: number };
+        calendar?: { period: string; offset?: number };
         rolling_window?: { duration: HaDurationData; offset: HaDurationData };
       }
-    | "energy_date_selection";
+    | "energy_date_selection"; // Maintained for legacy compatibility, use new key instead.
+  energy_date_selection?: boolean;
   stat_type: keyof Statistic;
   theme?: string;
 }
@@ -663,6 +663,13 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface ToggleGroupCardConfig extends LovelaceCardConfig {
+  title: string;
+  entities: string[];
+  color?: string;
+  vertical?: boolean;
 }
 
 export interface DistributionEntityConfig extends EntityConfig {

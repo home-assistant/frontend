@@ -204,7 +204,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-remote-pref
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-remote-pref>
 

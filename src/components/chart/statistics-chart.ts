@@ -335,7 +335,10 @@ export class StatisticsChart extends LitElement {
       },
       tooltip: {
         trigger: "axis",
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };
@@ -504,7 +507,6 @@ export class StatisticsChart extends LitElement {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
             smooth: this.chartType === "line" ? 0.4 : false,
-            smoothMonotone: "x",
             cursor: "default",
             data: [],
             name: name
@@ -637,11 +639,12 @@ export class StatisticsChart extends LitElement {
             ) {
               // Then push the current state at now
               statTypes.forEach((type, i) => {
-                const val: (number | null)[] = [];
                 if (type === "sum" || type === "change") {
-                  // Skip cumulative types - need special calculation
-                  val.push(null);
-                } else if (
+                  // Skip cumulative types - need special calculation.
+                  return;
+                }
+                const val: (number | null)[] = [];
+                if (
                   type === bandTop &&
                   this.chartType === "line" &&
                   drawBands &&
