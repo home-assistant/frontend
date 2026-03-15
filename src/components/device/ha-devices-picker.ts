@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "./ha-device-picker";
@@ -39,6 +40,22 @@ class HaDevicesPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  /**
+   * List of allowed devices to show.
+   * @type {Array}
+   * @attr include-devices
+   */
+  @property({ type: Array, attribute: "include-devices" })
+  public includeDevices?: string[];
+
+  /**
+   * List of devices to be excluded.
+   * @type {Array}
+   * @attr exclude-devices
+   */
+  @property({ type: Array, attribute: "exclude-devices" })
+  public excludeDevices?: string[];
+
   @property({ attribute: "picked-device-label" })
   public pickedDeviceLabel?: string;
 
@@ -67,6 +84,8 @@ class HaDevicesPicker extends LitElement {
               .entityFilter=${this.entityFilter}
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
+              .includeDevices=${this.includeDevices}
+              .excludeDevices=${this.excludeDevices}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .value=${entityId}
               .label=${this.pickedDeviceLabel}
@@ -84,7 +103,8 @@ class HaDevicesPicker extends LitElement {
           .entityFilter=${this.entityFilter}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
-          .excludeDevices=${currentDevices}
+          .includeDevices=${this.includeDevices}
+          .excludeDevices=${this._excludeDevices(this.value, this.excludeDevices)}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
           .disabled=${this.disabled}
@@ -98,6 +118,18 @@ class HaDevicesPicker extends LitElement {
   private get _currentDevices() {
     return this.value || [];
   }
+
+  private _excludeDevices = memoizeOne(
+    (
+      value: string[] | undefined,
+      excludeDevices: string[] | undefined
+    ): string[] | undefined => {
+      if (value === undefined) {
+        return excludeDevices;
+      }
+      return [...(excludeDevices || []), ...value];
+    }
+  );
 
   private async _updateDevices(devices) {
     fireEvent(this, "value-changed", {

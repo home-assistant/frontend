@@ -75,6 +75,14 @@ export class HaDevicePicker extends LitElement {
   public includeDeviceClasses?: string[];
 
   /**
+   * List of allowed devices to show.
+   * @type {Array}
+   * @attr include-devices
+   */
+  @property({ type: Array, attribute: "include-devices" })
+  public includeDevices?: string[];
+
+  /**
    * List of devices to be excluded.
    * @type {Array}
    * @attr exclude-devices
@@ -104,6 +112,7 @@ export class HaDevicePicker extends LitElement {
       includeDeviceClasses?: string[],
       deviceFilter?: HaDevicePickerDeviceFilterFunc,
       entityFilter?: HaEntityPickerEntityFilterFunc,
+      includeDevices?: string[],
       excludeDevices?: string[],
       value?: string
     ) =>
@@ -115,6 +124,7 @@ export class HaDevicePicker extends LitElement {
         includeDeviceClasses,
         deviceFilter,
         entityFilter,
+        includeDevices,
         excludeDevices,
         value
       )
@@ -141,6 +151,7 @@ export class HaDevicePicker extends LitElement {
       this.includeDeviceClasses,
       this.deviceFilter,
       this.entityFilter,
+      this.includeDevices,
       this.excludeDevices,
       this.value
     );
