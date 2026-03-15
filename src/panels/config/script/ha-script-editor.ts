@@ -20,7 +20,7 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
@@ -59,8 +59,6 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries } from "../../../types";
@@ -81,9 +79,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
-  AutomationScriptEditorMixin<ScriptConfig>(
-    PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
-  )
+  AutomationScriptEditorMixin<ScriptConfig>
 ) {
   @property({ attribute: false }) public scriptId: string | null = null;
 

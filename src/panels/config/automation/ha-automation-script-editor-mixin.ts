@@ -1,6 +1,6 @@
 import { consume } from "@lit/context";
-import type { CSSResult, TemplateResult, LitElement } from "lit";
-import { css, html } from "lit";
+import { LitElement, css, html } from "lit";
+import type { CSSResult, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import { goBack } from "../../../common/navigate";
@@ -9,8 +9,10 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import type { Constructor, HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 
@@ -67,133 +69,124 @@ export const automationScriptEditorStyles: CSSResult = css`
   }
 `;
 
-export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
-  superClass: Constructor<LitElement>
-) => {
-  class AutomationScriptEditorClass extends superClass {
-    @property({ attribute: false }) public hass!: HomeAssistant;
+export class AutomationScriptEditorMixin<
+  TConfig extends BaseEditorConfig,
+> extends PreventUnsavedMixin(KeyboardShortcutMixin(LitElement)) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-    @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-    @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-    @property({ attribute: false }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-    @property({ attribute: false }) public entityId: string | null = null;
+  @property({ attribute: false }) public entityId: string | null = null;
 
-    @state() protected dirty = false;
+  @state() protected dirty = false;
 
-    @state() protected errors?: string;
+  @state() protected errors?: string;
 
-    @state() protected yamlErrors?: string;
+  @state() protected yamlErrors?: string;
 
-    @state() protected currentEntityId?: string;
+  @state() protected currentEntityId?: string;
 
-    @state() protected mode: "gui" | "yaml" = "gui";
+  @state() protected mode: "gui" | "yaml" = "gui";
 
-    @state() protected readOnly = false;
+  @state() protected readOnly = false;
 
-    @state() protected saving = false;
+  @state() protected saving = false;
 
-    @state() protected validationErrors?: (string | TemplateResult)[];
+  @state() protected validationErrors?: (string | TemplateResult)[];
 
-    @state() protected config?: TConfig;
+  @state() protected config?: TConfig;
 
-    @state() protected blueprintConfig?: TConfig;
+  @state() protected blueprintConfig?: TConfig;
 
-    @state()
-    @consume({ context: fullEntitiesContext, subscribe: true })
-    @transform<EntityRegistryEntry[], EntityRegistryEntry>({
-      transformer: function (this: { currentEntityId?: string }, value) {
-        return value.find(
-          ({ entity_id }) => entity_id === this.currentEntityId
-        );
-      },
-      watch: ["currentEntityId"],
-    })
-    protected registryEntry?: EntityRegistryEntry;
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
+    transformer: function (this: { currentEntityId?: string }, value) {
+      return value.find(({ entity_id }) => entity_id === this.currentEntityId);
+    },
+    watch: ["currentEntityId"],
+  })
+  protected registryEntry?: EntityRegistryEntry;
 
-    protected entityRegistryUpdate?: EntityRegistryUpdate;
+  protected entityRegistryUpdate?: EntityRegistryUpdate;
 
-    protected entityRegCreated?: (
-      value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
-    ) => void;
+  protected entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
 
-    protected renderLoading(): TemplateResult {
-      return html`
-        <ha-fade-in .delay=${500}>
-          <ha-spinner size="large"></ha-spinner>
-        </ha-fade-in>
-      `;
-    }
-
-    protected showSettings() {
-      showMoreInfoDialog(this, {
-        entityId: this.currentEntityId!,
-        view: "settings",
-      });
-    }
-
-    protected async switchUiMode() {
-      if (this.yamlErrors) {
-        const result = await showConfirmationDialog(this, {
-          text: html`${this.hass.localize(
-              "ui.panel.config.automation.editor.switch_ui_yaml_error"
-            )}<br /><br />${this.yamlErrors}`,
-          confirmText: this.hass!.localize("ui.common.continue"),
-          destructive: true,
-          dismissText: this.hass!.localize("ui.common.cancel"),
-        });
-        if (!result) {
-          return;
-        }
-      }
-      this.yamlErrors = undefined;
-      this.mode = "gui";
-    }
-
-    protected switchYamlMode() {
-      this.mode = "yaml";
-    }
-
-    protected takeControlSave() {
-      this.readOnly = false;
-      this.dirty = true;
-      this.blueprintConfig = undefined;
-    }
-
-    protected revertBlueprint() {
-      this.config = this.blueprintConfig;
-      if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
-      }
-      this.blueprintConfig = undefined;
-      this.readOnly = false;
-    }
-
-    protected backTapped = async () => {
-      const result = await this.confirmUnsavedChanged();
-      if (result) {
-        afterNextRender(() => goBack("/config"));
-      }
-    };
-
-    protected get isDirty() {
-      return this.dirty;
-    }
-
-    protected async promptDiscardChanges() {
-      return this.confirmUnsavedChanged();
-    }
-
-    /**
-     * Asks whether unsaved changes should be discarded.
-     * Subclasses must override this to show a confirmation dialog.
-     * @returns true to proceed (discard/save changes), false to cancel.
-     */
-    protected confirmUnsavedChanged(): Promise<boolean> {
-      return Promise.resolve(true);
-    }
+  protected renderLoading(): TemplateResult {
+    return html`
+      <ha-fade-in .delay=${500}>
+        <ha-spinner size="large"></ha-spinner>
+      </ha-fade-in>
+    `;
   }
-  return AutomationScriptEditorClass;
-};
+
+  protected showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this.currentEntityId!,
+      view: "settings",
+    });
+  }
+
+  protected async switchUiMode() {
+    if (this.yamlErrors) {
+      const result = await showConfirmationDialog(this, {
+        text: html`${this.hass.localize(
+            "ui.panel.config.automation.editor.switch_ui_yaml_error"
+          )}<br /><br />${this.yamlErrors}`,
+        confirmText: this.hass!.localize("ui.common.continue"),
+        destructive: true,
+        dismissText: this.hass!.localize("ui.common.cancel"),
+      });
+      if (!result) {
+        return;
+      }
+    }
+    this.yamlErrors = undefined;
+    this.mode = "gui";
+  }
+
+  protected switchYamlMode() {
+    this.mode = "yaml";
+  }
+
+  protected takeControlSave() {
+    this.readOnly = false;
+    this.dirty = true;
+    this.blueprintConfig = undefined;
+  }
+
+  protected revertBlueprint() {
+    this.config = this.blueprintConfig;
+    if (this.mode === "yaml") {
+      this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+    }
+    this.blueprintConfig = undefined;
+    this.readOnly = false;
+  }
+
+  protected backTapped = async () => {
+    const result = await this.promptDiscardChanges();
+    if (result) {
+      afterNextRender(() => goBack("/config"));
+    }
+  };
+
+  protected get isDirty() {
+    return this.dirty;
+  }
+
+  /**
+   * Asks whether unsaved changes should be discarded.
+   * Subclasses must override this to show a confirmation dialog.
+   * @returns true to proceed (discard/save changes), false to cancel.
+   */
+  protected confirmUnsavedChanged(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+}

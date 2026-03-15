@@ -23,7 +23,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
@@ -69,8 +69,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
@@ -110,9 +108,7 @@ declare global {
 }
 
 @customElement("ha-automation-editor")
-export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>(
-  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
-) {
+export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig> {
   @property({ attribute: false }) public automationId: string | null = null;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
