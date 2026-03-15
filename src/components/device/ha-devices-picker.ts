@@ -104,7 +104,10 @@ class HaDevicesPicker extends LitElement {
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeDevices=${this.includeDevices}
-          .excludeDevices=${this._excludeDevices(this.value, this.excludeDevices)}
+          .excludeDevices=${this._excludeDevices(
+            this.value,
+            this.excludeDevices
+          )}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
           .disabled=${this.disabled}
