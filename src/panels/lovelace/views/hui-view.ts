@@ -275,10 +275,7 @@ export class HUIView extends ReactiveElement {
     };
   }
 
-  private async _setConfig(
-    viewConfig: LovelaceViewConfig,
-    isStrategy: boolean
-  ) {
+  private _setConfig(viewConfig: LovelaceViewConfig, isStrategy: boolean) {
     if (isStrategy && deepEqual(viewConfig, this._config)) {
       return;
     }
@@ -291,6 +288,8 @@ export class HUIView extends ReactiveElement {
     if (!this._layoutElement || this._layoutElementType !== viewConfig.type) {
       addLayoutElement = true;
       this._createLayoutElement(viewConfig);
+    } else {
+      this._layoutElement.setConfig(viewConfig);
     }
     this._createBadges(viewConfig);
     this._createCards(viewConfig);
@@ -328,7 +327,7 @@ export class HUIView extends ReactiveElement {
       "ll-rebuild",
       (ev: Event) => {
         ev.stopPropagation();
-        // Force recreation of the layout element (e.g. custom view just loaded)
+        // Force recreation of the layout element
         this._layoutElementType = undefined;
         this._initializeConfig();
       },
