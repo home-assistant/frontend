@@ -245,22 +245,6 @@ export class HaInput extends LitElement {
     return valid;
   }
 
-  protected override async updated(
-    changedProperties: PropertyValues
-  ): Promise<void> {
-    super.updated(changedProperties);
-
-    // wa-input doesn't set aria-invalid on its internal <input>, so we do it manually
-    // TODO: fix upstream in wa-input
-    if (
-      this._input?.input &&
-      (changedProperties.has("invalid") || changedProperties.has("_invalid"))
-    ) {
-      const isInvalid = this.invalid || this._invalid;
-      this._input.input.setAttribute("aria-invalid", String(isInvalid));
-    }
-  }
-
   protected override async firstUpdated(
     changedProperties: PropertyValues
   ): Promise<void> {
