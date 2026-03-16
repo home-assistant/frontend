@@ -103,8 +103,10 @@ export class CloudWebhooks extends LitElement {
                                 )}
                               </ha-button>
                             `
-                          : html`<ha-switch slot="end">
+                          : html`<ha-switch
+                              slot="end"
                               @click=${this._enableWebhook}
+                            >
                             </ha-switch>`}
                     </ha-md-list-item>
                   `
