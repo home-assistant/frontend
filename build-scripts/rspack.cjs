@@ -255,10 +255,6 @@ const createRspackConfig = ({
           "@formatjs/intl-relativetimeformat/should-polyfill.js",
         "@formatjs/intl-relativetimeformat/polyfill-force":
           "@formatjs/intl-relativetimeformat/polyfill-force.js",
-        "@home-assistant/webawesome/dist/internal/slot": path.resolve(
-          __dirname,
-          "../node_modules/@home-assistant/webawesome/dist/internal/slot.js"
-        ),
       },
     },
     output: {

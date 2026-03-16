@@ -275,9 +275,7 @@ export class HaInput extends LitElement {
         .readonly=${this.readonly}
         .passwordToggle=${this.passwordToggle}
         .passwordVisible=${this.passwordVisible}
-        without-spin-buttons=${ifDefined(
-          this.withoutSpinButtons ? "true" : undefined
-        )}
+        .withoutSpinButtons=${this.withoutSpinButtons}
         .required=${this.required}
         .pattern=${this.pattern}
         .minlength=${this.minlength}
