@@ -34,11 +34,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
 
   protected render(): TemplateResult {
     const repo = this.repo;
-    let _addons = this.addons;
-    if (!this.hass.userData?.showAdvanced) {
-      _addons = _addons.filter((addon) => !addon.advanced);
-    }
-    const addons = this._getAddons(_addons, this.filter);
+    const addons = this._getAddons(this.addons, this.filter);
 
     if (this.filter && addons.length < 1) {
       return html`
