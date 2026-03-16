@@ -76,6 +76,15 @@ describe("computeEntityEntryName", () => {
     expect(computeEntityEntryName(entry)).toBeUndefined();
   });
 
+  it("returns empty string if name is empty (does not fallback to original_name)", () => {
+    const entry = mockEntityEntry({
+      entity_id: "light.kitchen",
+      name: "",
+      original_name: "Old Name",
+    });
+    expect(computeEntityEntryName(entry)).toBe("");
+  });
+
   it("returns original_name if present", () => {
     const entry = mockEntityEntry({
       entity_id: "light.kitchen",
