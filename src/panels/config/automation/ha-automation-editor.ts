@@ -678,9 +678,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         await showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.automation.editor.load_error_unknown",
-            { err_no: err.status_code }
+            { err_no: err.status_code ?? "unknown" }
           ),
-          text: html`<pre>${err.body}</pre>`,
+          text: html`<pre>${err.body?.message || err.error || err.body || "Unknown error"}</pre>`,
         });
         goBack("/config");
         return;
