@@ -30,6 +30,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./components/supervisor-apps-card-content";
+import { supervisorAppsStyle } from "./resources/supervisor-apps-style";
 
 @customElement("ha-config-apps-installed")
 export class HaConfigAppsInstalled extends LitElement {
@@ -123,6 +124,7 @@ export class HaConfigAppsInstalled extends LitElement {
                         <supervisor-apps-card-content
                           .hass=${this.hass}
                           .title=${addon.name}
+                          .stage=${addon.stage}
                           .description=${addon.description}
                           available
                           .showTopbar=${addon.update_available}
@@ -225,66 +227,65 @@ export class HaConfigAppsInstalled extends LitElement {
     navigate("/config/apps/available");
   }
 
-  static styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      height: 100%;
-      background-color: var(--primary-background-color);
-    }
+  static styles: CSSResultGroup = [
+    supervisorAppsStyle,
+    css`
+      :host {
+        display: block;
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
 
-    ha-card {
-      cursor: pointer;
-      overflow: hidden;
-      direction: ltr;
-    }
+      ha-card {
+        cursor: pointer;
+        overflow: hidden;
+        direction: ltr;
+      }
 
-    .search {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
+      .search {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
 
-    search-input {
-      display: block;
-      --mdc-text-field-fill-color: var(--sidebar-background-color);
-      --mdc-text-field-idle-line-color: var(--divider-color);
-    }
+      search-input {
+        display: block;
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
+      }
 
-    .content {
-      padding: var(--ha-space-4);
-      margin-bottom: var(--ha-space-18);
-    }
+      .content {
+        padding: var(--ha-space-4);
+        margin-bottom: var(--ha-space-18);
+      }
 
-    .card-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      grid-gap: var(--ha-space-2);
-    }
+      .card-content {
+        padding: var(--ha-space-4);
+      }
 
-    .card-content {
-      padding: var(--ha-space-4);
-    }
+      button.link {
+        color: var(--primary-color);
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        text-decoration: underline;
+        cursor: pointer;
+      }
 
-    button.link {
-      color: var(--primary-color);
-      background: none;
-      border: none;
-      padding: 0;
-      font: inherit;
-      text-align: left;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    ha-fab {
-      position: fixed;
-      right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
-      inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      inset-inline-start: initial;
-      z-index: 1;
-    }
-  `;
+      ha-fab {
+        position: fixed;
+        right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
+        bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
+        inset-inline-end: calc(
+          var(--ha-space-4) + var(--safe-area-inset-right)
+        );
+        inset-inline-start: initial;
+        z-index: 1;
+      }
+    `,
+  ];
 }
 
 declare global {
