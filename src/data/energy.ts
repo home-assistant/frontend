@@ -40,7 +40,19 @@ import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
 
-const energyCollectionKeys: (string | undefined)[] = [];
+export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
+
+// All collection keys created this session
+const energyCollectionKeys = new Set<string | undefined>();
+
+// Validate that a string is a valid energy collection key.
+export function validateEnergyCollectionKey(key: string | undefined) {
+  if (!key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
+    throw new Error(
+      `Collection keys must start with ${ENERGY_COLLECTION_KEY_PREFIX}.`
+    );
+  }
+}
 
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
@@ -693,6 +705,7 @@ export interface EnergyCollection extends Collection<EnergyData> {
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
+  isActive(): boolean;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -700,10 +713,12 @@ export interface EnergyCollection extends Collection<EnergyData> {
 
 const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   energyCollectionKeys.forEach((key) => {
-    const energyCollection = getEnergyDataCollection(hass, { key });
-    energyCollection.clearPrefs();
-    if (energyCollection._active) {
-      energyCollection.refresh();
+    const energyCollection = findEnergyDataCollection(hass, key);
+    if (energyCollection) {
+      energyCollection.clearPrefs();
+      if (energyCollection.isActive()) {
+        energyCollection.refresh();
+      }
     }
   });
 };
@@ -730,23 +745,47 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   }
 };
 
+const convertCollectionKeyToConnection = (
+  hass: HomeAssistant,
+  collectionKey: string | undefined
+): [string, string | undefined] => {
+  let key = "_energy";
+  if (collectionKey) {
+    validateEnergyCollectionKey(collectionKey);
+    key = `_${collectionKey}`;
+  } else if (hass.panelUrl) {
+    const defaultKey = ENERGY_COLLECTION_KEY_PREFIX + hass.panelUrl;
+    key = `_${defaultKey}`;
+    collectionKey = defaultKey;
+  }
+  return [key, collectionKey];
+};
+
+const findEnergyDataCollection = (
+  hass: HomeAssistant,
+  collectionKey: string | undefined
+): EnergyCollection | undefined => {
+  // Lookup the connection key and default key name
+  const [key, _collectionKey] = convertCollectionKeyToConnection(
+    hass,
+    collectionKey
+  );
+  return (hass.connection as any)[key];
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
   options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
-  let key = "_energy";
-  if (options.key) {
-    if (!options.key.startsWith("energy_")) {
-      throw new Error("Key need to start with energy_");
-    }
-    key = `_${options.key}`;
-  }
-
+  const [key, collectionKey] = convertCollectionKeyToConnection(
+    hass,
+    options.key
+  );
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
 
-  energyCollectionKeys.push(options.key);
+  energyCollectionKeys.add(collectionKey);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
@@ -832,6 +871,7 @@ export const getEnergyDataCollection = (
   };
   scheduleUpdatePeriod();
 
+  collection.isActive = () => !!collection._active;
   collection.clearPrefs = () => {
     collection.prefs = undefined;
   };

@@ -12,6 +12,7 @@ import {
   calculateSolarConsumedGauge,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -29,9 +30,24 @@ class HuiEnergySolarGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySolarGaugeCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySolarGaugeCardConfig {
+    return {
+      type: "energy-solar-consumed-gauge",
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -52,6 +68,9 @@ class HuiEnergySolarGaugeCard
   }
 
   public setConfig(config: EnergySolarGaugeCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
