@@ -166,6 +166,21 @@ const formatDateMonthMem = memoizeOne(
     })
 );
 
+// Aug
+export const formatDateMonthShort = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateMonthShortMem(locale, config.time_zone).format(dateObj);
+
+const formatDateMonthShortMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      month: "short",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
 // 2021
 export const formatDateYear = (
   dateObj: Date,

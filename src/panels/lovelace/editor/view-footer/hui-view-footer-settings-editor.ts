@@ -1,14 +1,30 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { LovelaceViewFooterConfig } from "../../../../data/lovelace/config/view";
+import {
+  DEFAULT_FOOTER_MAX_WIDTH_PX,
+  type LovelaceViewFooterConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+
+const SCHEMA = [
+  {
+    name: "max_width",
+    selector: {
+      number: {
+        min: 100,
+        max: 1600,
+        step: 10,
+        unit_of_measurement: "px",
+      },
+    },
+  },
+] as const satisfies HaFormSchema[];
 
 @customElement("hui-view-footer-settings-editor")
 export class HuiViewFooterSettingsEditor extends LitElement {
@@ -16,38 +32,17 @@ export class HuiViewFooterSettingsEditor extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewFooterConfig;
 
-  @property({ attribute: false }) public maxColumns = 4;
-
-  private _schema = memoizeOne(
-    (maxColumns: number) =>
-      [
-        {
-          name: "column_span",
-          selector: {
-            number: {
-              min: 1,
-              max: maxColumns,
-              slider_ticks: true,
-            },
-          },
-        },
-      ] as const satisfies HaFormSchema[]
-  );
-
   protected render() {
     const data = {
-      column_span: this.config?.column_span || 1,
+      max_width: this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH_PX,
     };
-
-    const schema = this._schema(this.maxColumns);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabel}
-        .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -65,19 +60,10 @@ export class HuiViewFooterSettingsEditor extends LitElement {
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
     this.hass.localize(
       `ui.panel.lovelace.editor.edit_view_footer.settings.${schema.name}`
     );
-
-  private _computeHelper = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
-    this.hass.localize(
-      `ui.panel.lovelace.editor.edit_view_footer.settings.${schema.name}_helper`
-    ) || "";
 }
 
 declare global {

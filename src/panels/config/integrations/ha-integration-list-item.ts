@@ -62,11 +62,14 @@ export class HaIntegrationListItem extends ListItemBase {
         : html`<img
             alt=""
             loading="lazy"
-            src=${brandsUrl({
-              domain: this.integration.domain,
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
+            src=${brandsUrl(
+              {
+                domain: this.integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />`}

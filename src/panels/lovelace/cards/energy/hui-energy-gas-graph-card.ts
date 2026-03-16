@@ -14,7 +14,10 @@ import type {
   EnergyData,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -37,9 +40,24 @@ export class HuiEnergyGasGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyGasGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyGasGraphCardConfig {
+    return {
+      type: "energy-gas-graph",
+    };
+  }
 
   @state() private _chartData: BarSeriesOption[] = [];
 
@@ -70,6 +88,9 @@ export class HuiEnergyGasGraphCard
   }
 
   public setConfig(config: EnergyGasGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 

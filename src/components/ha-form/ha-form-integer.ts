@@ -2,10 +2,11 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-slider";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-input-helper-text";
+import "../ha-slider";
 import "../ha-textfield";
 import type { HaTextField } from "../ha-textfield";
 import type {
@@ -13,7 +14,6 @@ import type {
   HaFormIntegerData,
   HaFormIntegerSchema,
 } from "./types";
-import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
@@ -29,24 +29,39 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-textfield ha-slider") private _input?:
+  @query("ha-textfield, ha-slider", true) private _input?:
     | HaTextField
     | HTMLInputElement;
 
   private _lastValue?: HaFormIntegerData;
 
-  public focus() {
-    if (this._input) {
-      this._input.focus();
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    const showSlider = this._showSlider();
+    if (showSlider && this.schema.required && isNaN(Number(this.data))) {
+      return false;
     }
+
+    if (!showSlider) {
+      return this._input?.reportValidity() ?? true;
+    }
+    return true;
   }
 
-  protected render(): TemplateResult {
-    if (
+  private _showSlider(): boolean {
+    return (
       this.schema.valueMin !== undefined &&
       this.schema.valueMax !== undefined &&
       this.schema.valueMax - this.schema.valueMin < 256
-    ) {
+    );
+  }
+
+  protected render(): TemplateResult {
+    if (this._showSlider()) {
       return html`
         <div>
           ${this.label}

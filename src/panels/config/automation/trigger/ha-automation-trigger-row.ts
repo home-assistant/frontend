@@ -168,7 +168,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   get selected() {
     return this._selected;

@@ -147,7 +147,7 @@ export const manualEditorStyles = css`
   }
 
   .content {
-    padding-top: 24px;
+    padding-top: var(--ha-space-3);
     padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }

@@ -279,7 +279,7 @@ export default class HaAutomationSidebarAction extends LitElement {
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
             </ha-dropdown-item>
-            <wa-divider></wa-divider>`
+            <wa-divider slot="menu-items"></wa-divider>`
         : nothing}
       <ha-dropdown-item
         slot="menu-items"

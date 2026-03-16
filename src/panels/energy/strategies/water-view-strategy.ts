@@ -14,13 +14,22 @@ export class WaterViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const view: LovelaceViewConfig = {
-      type: "sections",
-      sections: [{ type: "grid", cards: [] }],
-    };
-
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      max_columns: 3,
+      sections: [{ type: "grid", cards: [], column_span: 3 }],
+      footer: {
+        card: {
+          type: "energy-date-selection",
+          collection_key: collectionKey,
+          opening_direction: "right",
+          vertical_opening_direction: "up",
+        },
+      },
+    };
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
@@ -52,6 +61,9 @@ export class WaterViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
         type: "energy-water-graph",
         collection_key: collectionKey,
+        grid_options: {
+          columns: 24,
+        },
       });
       section.cards!.push({
         title: hass.localize(
@@ -60,6 +72,9 @@ export class WaterViewStrategy extends ReactiveElement {
         type: "energy-sources-table",
         collection_key: collectionKey,
         types: ["water"],
+        grid_options: {
+          columns: 12,
+        },
       });
     }
 
@@ -76,6 +91,9 @@ export class WaterViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
+        grid_options: {
+          columns: 24,
+        },
       });
     }
 

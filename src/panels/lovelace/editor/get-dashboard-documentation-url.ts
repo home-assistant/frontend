@@ -7,8 +7,9 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
-const NON_STANDARD_URLS = {
+const NON_STANDARD_CARD_URLS = {
   "energy-date-selection": "energy/#energy-date-picker",
+  "energy-compare": "energy/#energy-compare-alert",
   "energy-usage-graph": "energy/#energy-usage-graph",
   "energy-solar-graph": "energy/#solar-production-graph",
   "energy-gas-graph": "energy/#gas-consumption-graph",
@@ -25,6 +26,12 @@ const NON_STANDARD_URLS = {
   "power-sources-graph": "energy/#power-sources-graph",
 };
 
+const NON_STANDARD_BADGE_URLS = {
+  "power-total": "energy/#power-consumption-badge",
+  "water-total": "energy/#water-flow-rate-badge",
+  "gas-total": "energy/#gas-flow-rate-badge",
+};
+
 export const getCardDocumentationURL = (
   hass: HomeAssistant,
   type: string
@@ -33,7 +40,7 @@ export const getCardDocumentationURL = (
     return getCustomCardEntry(stripCustomPrefix(type))?.documentationURL;
   }
 
-  return `${documentationUrl(hass, "/dashboards/")}${NON_STANDARD_URLS[type] || type}`;
+  return `${documentationUrl(hass, "/dashboards/")}${NON_STANDARD_CARD_URLS[type] || type}`;
 };
 
 export const getBadgeDocumentationURL = (
@@ -44,5 +51,5 @@ export const getBadgeDocumentationURL = (
     return getCustomBadgeEntry(stripCustomPrefix(type))?.documentationURL;
   }
 
-  return `${documentationUrl(hass, "/dashboards/badges")}`;
+  return `${documentationUrl(hass, "/dashboards/")}${NON_STANDARD_BADGE_URLS[type] || "badges"}`;
 };

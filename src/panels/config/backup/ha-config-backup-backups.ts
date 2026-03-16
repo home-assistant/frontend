@@ -227,11 +227,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 return html`
                   <img
                     title=${name}
-                    .src=${brandsUrl({
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    .src=${brandsUrl(
+                      {
+                        domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     height="24"
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"

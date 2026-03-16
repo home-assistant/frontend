@@ -1,8 +1,10 @@
 import {
+  mdiBackupRestore,
   mdiChartBoxOutline,
   mdiClose,
   mdiCodeBraces,
   mdiCogOutline,
+  mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
   mdiFormatListBulletedSquare,
@@ -49,8 +51,18 @@ import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
-import { lightSupportsFavoriteColors } from "../../data/light";
+import {
+  getExtendedEntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../data/entity/entity_registry";
+import type { LightColor } from "../../data/light";
+import {
+  LightColorMode,
+  lightSupportsColor,
+  computeDefaultFavoriteColors,
+  lightSupportsColorMode,
+  lightSupportsFavoriteColors,
+} from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -75,6 +87,9 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { showFormDialog } from "../form/show-form-dialog";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -83,6 +98,7 @@ export interface MoreInfoDialogParams {
   tab?: View;
   large?: boolean;
   data?: Record<string, any>;
+  parentElement?: LitElement;
 }
 
 type View = "info" | "history" | "settings" | "related" | "add_to";
@@ -118,6 +134,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @state() private _parentEntityIds: string[] = [];
 
   @query(".content") private _contentElement?: HTMLDivElement;
+
+  @query("ha-adaptive-dialog") private _dialogElement?: HTMLElement;
 
   @state() private _entityId?: string | null;
 
@@ -177,6 +195,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   public closeDialog() {
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
     this._open = false;
   }
 
@@ -254,6 +276,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goBack() {
     if (this._childView) {
+      const dialog =
+        this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+      if (dialog) {
+        fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
       this._childView = undefined;
       this._detailsYamlMode = false;
       return;
@@ -320,6 +347,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _toggleDetailsYamlMode() {
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
     this._detailsYamlMode = !this._detailsYamlMode;
   }
 
@@ -343,6 +374,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       case "toggle_edit":
         this._toggleInfoEditMode();
         break;
+      case "reset_favorites":
+        this._resetFavorites();
+        break;
+      case "copy_favorites":
+        this._copyFavorites();
+        break;
       case "related":
         this._goToRelated();
         break;
@@ -358,6 +395,36 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     }
   }
 
+  private async _resetFavorites() {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.dialogs.more_info_control.light.reset_favorites"
+        ),
+        text: this.hass!.localize(
+          "ui.dialogs.more_info_control.light.reset_favorites_text"
+        ),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        confirmText: this.hass!.localize("ui.common.reset"),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+
+    const result = await updateEntityRegistryEntry(
+      this.hass,
+      this._entry!.entity_id,
+      {
+        options_domain: "light",
+        options: {
+          favorite_colors: undefined,
+        },
+      }
+    );
+    this._entry = result.entity_entry;
+  }
+
   private _showDetails(): void {
     import("./ha-more-info-details");
     this._childView = {
@@ -365,6 +432,79 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       viewTitle: this.hass.localize("ui.dialogs.more_info_control.details"),
       viewParams: { entityId: this._entityId },
     };
+  }
+
+  private async _copyFavorites() {
+    const entityId = this._entityId;
+    const stateObj =
+      entityId && (this.hass.states[entityId] as HassEntity | undefined);
+    let favorites: LightColor[] | undefined;
+    if (this._entry!.options?.light?.favorite_colors) {
+      favorites = this._entry!.options.light.favorite_colors;
+    } else if (stateObj) {
+      favorites = computeDefaultFavoriteColors(stateObj);
+    }
+    if (!favorites) return;
+
+    const favoriteTypes = [...new Set(favorites.map((o) => Object.keys(o)[0]))];
+
+    const compatibleLights = Object.values(this.hass.states).filter(
+      (s) =>
+        s.entity_id !== entityId &&
+        computeStateDomain(s) === "light" &&
+        favoriteTypes.every((type) =>
+          type === "color_temp_kelvin"
+            ? lightSupportsColorMode(s, LightColorMode.COLOR_TEMP)
+            : type === "hs_color" || type === "rgb_color"
+              ? lightSupportsColor(s)
+              : type === "rgbw_color"
+                ? lightSupportsColorMode(s, LightColorMode.RGBW)
+                : type === "rgbww_color"
+                  ? lightSupportsColorMode(s, LightColorMode.RGBWW)
+                  : false
+        )
+    );
+
+    const schema = [
+      {
+        name: "entity",
+        selector: {
+          entity: {
+            include_entities: compatibleLights.map((l) => l.entity_id),
+            multiple: true,
+          },
+        },
+        required: true,
+      },
+    ];
+
+    const computeLabel = () =>
+      this.hass.localize(
+        "ui.dialogs.more_info_control.light.copy_favorites_entities"
+      );
+    const computeHelper = () =>
+      this.hass.localize(
+        "ui.dialogs.more_info_control.light.copy_favorites_helper"
+      );
+
+    const selected = await showFormDialog(this, {
+      title: this.hass.localize(
+        "ui.dialogs.more_info_control.light.copy_favorites"
+      ),
+      schema,
+      computeLabel,
+      computeHelper,
+      data: {},
+    });
+
+    selected?.entity.forEach((id) => {
+      updateEntityRegistryEntry(this.hass, id, {
+        options_domain: "light",
+        options: {
+          favorite_colors: favorites,
+        },
+      });
+    });
   }
 
   private _goToAddEntityTo(ev) {
@@ -451,7 +591,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
-        ?prevent-scrim-close=${!this._isEscapeEnabled}
+        .preventScrimClose=${this._currView === "settings" ||
+        !this._isEscapeEnabled}
         flexcontent
       >
         ${showCloseIcon
@@ -576,6 +717,28 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 : this.hass.localize(
                                     `ui.dialogs.more_info_control.${domain}.edit_mode`
                                   )}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item
+                              value="reset_favorites"
+                              .disabled=${!this._entry.options?.light
+                                ?.favorite_colors}
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiBackupRestore}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                `ui.dialogs.more_info_control.light.reset_favorites`
+                              )}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item value="copy_favorites">
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiContentDuplicate}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                `ui.dialogs.more_info_control.light.copy_favorites`
+                              )}
                             </ha-dropdown-item>
                           `
                         : nothing}
@@ -749,6 +912,21 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    const previousChildView = changedProps.get("_childView") as
+      | ChildView
+      | undefined;
+
+    if (
+      previousChildView?.viewTag === "ha-more-info-details" &&
+      this._childView?.viewTag !== "ha-more-info-details"
+    ) {
+      const dialog =
+        this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+      if (dialog) {
+        fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
+    }
+
     if (changedProps.has("_currView")) {
       this._childView = undefined;
       this._infoEditMode = false;

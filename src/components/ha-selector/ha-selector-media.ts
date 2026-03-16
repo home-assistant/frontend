@@ -79,11 +79,14 @@ export class HaMediaSelector extends LitElement {
       if (thumbnail && isBrandUrl(thumbnail)) {
         // The backend is not aware of the theme used by the users,
         // so we rewrite the URL to show a proper icon
-        this._thumbnailUrl = brandsUrl({
-          domain: extractDomainFromBrandUrl(thumbnail),
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        });
+        this._thumbnailUrl = brandsUrl(
+          {
+            domain: extractDomainFromBrandUrl(thumbnail),
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          },
+          this.hass.auth.data.hassUrl
+        );
       } else if (thumbnail && thumbnail.startsWith("/")) {
         this._thumbnailUrl = undefined;
         // Thumbnails served by local API require authentication
