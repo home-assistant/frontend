@@ -196,14 +196,6 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     ha-dialog {
       --dialog-content-padding: 0;
     }
-    .bottom-actions {
-      display: flex;
-      gap: var(--ha-space-4);
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      margin-bottom: var(--ha-space-1);
-    }
     calendar-date {
       width: 100%;
     }
