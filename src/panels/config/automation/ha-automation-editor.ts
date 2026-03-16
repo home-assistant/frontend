@@ -675,12 +675,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this._checkValidation();
     } catch (err: any) {
       if (err.status_code !== 404) {
+        const alertText =
+          err.body?.message || err.error || err.body || "Unknown error";
         await showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.automation.editor.load_error_unknown",
             { err_no: err.status_code ?? "unknown" }
           ),
-          text: html`<pre>${err.body?.message || err.error || err.body || "Unknown error"}</pre>`,
+          text: html`<pre>${alertText}</pre>`,
         });
         goBack("/config");
         return;
