@@ -324,6 +324,16 @@ export class HUIView extends ReactiveElement {
   private _createLayoutElement(config: LovelaceViewConfig): void {
     this._layoutElement = createViewElement(config) as LovelaceViewElement;
     this._layoutElementType = config.type;
+    this._layoutElement.addEventListener(
+      "ll-rebuild",
+      (ev: Event) => {
+        ev.stopPropagation();
+        // Force recreation of the layout element (e.g. custom view just loaded)
+        this._layoutElementType = undefined;
+        this._initializeConfig();
+      },
+      { once: true }
+    );
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
