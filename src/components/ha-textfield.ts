@@ -207,42 +207,11 @@ export class HaTextField extends LitElement {
     }
   }
 
-  private _mapType(
-    type: string
-  ):
-    | "text"
-    | "search"
-    | "tel"
-    | "url"
-    | "email"
-    | "password"
-    | "date"
-    | "datetime-local"
-    | "number"
-    | "time" {
-    // mwc-textfield supports "color", "month", "week" which ha-input doesn't
-    switch (type) {
-      case "text":
-      case "search":
-      case "tel":
-      case "url":
-      case "email":
-      case "password":
-      case "date":
-      case "datetime-local":
-      case "number":
-      case "time":
-        return type;
-      default:
-        return "text";
-    }
-  }
-
   protected override render(): TemplateResult {
     const errorMsg = this.errorMessage || this.validationMessage;
     return html`
       <ha-input
-        .type=${this._mapType(this.type)}
+        .type=${this.type}
         .value=${this.value || undefined}
         .label=${this.label}
         .placeholder=${this.placeholder}
@@ -259,13 +228,14 @@ export class HaTextField extends LitElement {
         .autocomplete=${this.autocomplete}
         .autocorrect=${this.autocorrect}
         .spellcheck=${this.inputSpellcheck === "true"}
-        .inputmode=${this._mapInputMode(this.inputMode)}
+        .inputmode=${this.inputMode}
         .autocapitalize=${this.autocapitalize || ""}
         .invalid=${this.invalid}
         .validationMessage=${errorMsg || ""}
         .autoValidate=${this.autoValidate}
         .hint=${this.helper}
         .withoutSpinButtons=${this.type === "number"}
+        .insetLabel=${this.prefix}
         @input=${this._onInput}
         @change=${this._onChange}
       >
@@ -283,33 +253,6 @@ export class HaTextField extends LitElement {
           : nothing}
       </ha-input>
     `;
-  }
-
-  private _mapInputMode(
-    mode: string
-  ):
-    | "none"
-    | "text"
-    | "decimal"
-    | "numeric"
-    | "tel"
-    | "search"
-    | "email"
-    | "url"
-    | "" {
-    switch (mode) {
-      case "none":
-      case "text":
-      case "decimal":
-      case "numeric":
-      case "tel":
-      case "search":
-      case "email":
-      case "url":
-        return mode;
-      default:
-        return "";
-    }
   }
 
   private _onInput(): void {
@@ -338,12 +281,8 @@ export class HaTextField extends LitElement {
     }
 
     .prefix {
+      padding-top: var(--ha-space-3);
       margin-inline-end: var(--text-field-prefix-padding-right);
-    }
-
-    /* Edge, hide reveal password icon */
-    ::-ms-reveal {
-      display: none;
     }
   `;
 }

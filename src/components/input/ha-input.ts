@@ -5,6 +5,7 @@ import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -13,8 +14,7 @@ import "../ha-tooltip";
 
 @customElement("ha-input")
 export class HaInput extends LitElement {
-  /** The type of input. */
-  @property()
+  @property({ reflect: true })
   public type:
     | "date"
     | "datetime-local"
@@ -27,17 +27,8 @@ export class HaInput extends LitElement {
     | "time"
     | "url" = "text";
 
-  /** The current value of the input. */
   @property()
   public value?: string;
-
-  /** The input's size. */
-  @property()
-  public size: "small" | "medium" | "large" = "medium";
-
-  /** The input's visual appearance. */
-  @property()
-  public appearance: "filled" | "outlined" | "filled-outlined" = "outlined";
 
   /** Draws a pill-style input with rounded edges. */
   @property({ type: Boolean })
@@ -179,6 +170,9 @@ export class HaInput extends LitElement {
   @property({ type: Boolean })
   public invalid = false;
 
+  @property({ type: Boolean, attribute: "inset-label" })
+  public insetLabel = false;
+
   @state()
   private _invalid = false;
 
@@ -188,7 +182,8 @@ export class HaInput extends LitElement {
   private readonly _hasSlotController = new HasSlotController(
     this,
     "label",
-    "hint"
+    "hint",
+    "input"
   );
 
   static shadowRootOptions: ShadowRootInit = {
@@ -250,34 +245,31 @@ export class HaInput extends LitElement {
     return valid;
   }
 
-  protected override updated(changedProperties: PropertyValues): void {
+  protected override async updated(
+    changedProperties: PropertyValues
+  ): Promise<void> {
     super.updated(changedProperties);
-
-    const nativeInput = this._input?.input;
-    if (!nativeInput) return;
-
-    // wa-input hardcodes aria-describedby="hint" pointing to its internal hint slot wrapper.
-    // We remove it and use aria-description instead to properly convey our hint or error text.
-    // TODO: fix upstream in wa-input
-    nativeInput.removeAttribute("aria-describedby");
 
     // wa-input doesn't set aria-invalid on its internal <input>, so we do it manually
     // TODO: fix upstream in wa-input
-    if (changedProperties.has("invalid") || changedProperties.has("_invalid")) {
+    if (
+      this._input?.input &&
+      (changedProperties.has("invalid") || changedProperties.has("_invalid"))
+    ) {
       const isInvalid = this.invalid || this._invalid;
-      nativeInput.setAttribute("aria-invalid", String(isInvalid));
+      this._input.input.setAttribute("aria-invalid", String(isInvalid));
     }
+  }
 
-    // Expose hint or validation error to screen readers on the input itself
-    const description =
-      this.invalid || this._invalid
-        ? this.validationMessage || this._input?.validationMessage
-        : this.hint;
+  protected override async firstUpdated(
+    changedProperties: PropertyValues
+  ): Promise<void> {
+    super.firstUpdated(changedProperties);
 
-    if (description) {
-      nativeInput.setAttribute("aria-description", description);
-    } else {
-      nativeInput.removeAttribute("aria-description");
+    if (!this.insetLabel) {
+      // Wait for wa-input to finish its first render
+      await this._input?.updateComplete;
+      this._syncStartSlotWidth();
     }
   }
 
@@ -289,20 +281,19 @@ export class HaInput extends LitElement {
     const hasHintSlot = this.hint
       ? false
       : this._hasSlotController.test("hint");
+
     return html`
       <wa-input
         .type=${this.type}
         .value=${this.value ?? null}
-        .size=${this.size}
-        .appearance=${this.appearance}
         .withClear=${this.withClear}
-        .placeholder=${!this.placeholder || this.label || !this.required
-          ? this.placeholder
-          : this._placeholderWithRequiredMarker(this.placeholder)}
+        .placeholder=${this.placeholder && this.label ? this.placeholder : ""}
         .readonly=${this.readonly}
         .passwordToggle=${this.passwordToggle}
         .passwordVisible=${this.passwordVisible}
-        .withoutSpinButtons=${this.withoutSpinButtons}
+        without-spin-buttons=${ifDefined(
+          this.withoutSpinButtons ? "true" : undefined
+        )}
         .required=${this.required}
         .pattern=${this.pattern}
         .minlength=${this.minlength}
@@ -319,16 +310,30 @@ export class HaInput extends LitElement {
         .inputmode=${this.inputmode || undefined}
         .name=${this.name}
         .disabled=${this.disabled}
-        class=${this.invalid || this._invalid ? "invalid" : ""}
+        class=${classMap({
+          invalid: this.invalid || this._invalid,
+          "label-raised": this.value || this.placeholder,
+        })}
         @input=${this._handleInput}
         @change=${this._handleChange}
         @blur=${this._handleBlur}
         @wa-invalid=${this._handleInvalid}
+        exportparts="base:wa-base, hint:wa-hint, input:wa-input"
       >
         ${this.label || hasLabelSlot
-          ? html`<slot name="label" slot="label">${this.label}</slot>`
+          ? html`<slot name="label" slot="label"
+              >${this._renderLabel(
+                this.label,
+                this.placeholder,
+                this.required
+              )}</slot
+            >`
           : nothing}
-        <slot name="start" slot="start"></slot>
+        <slot
+          name="start"
+          slot="start"
+          @slotchange=${this._syncStartSlotWidth}
+        ></slot>
         <slot name="end" slot="end"></slot>
         <slot name="clear-icon" slot="clear-icon">
           <ha-icon-button .path=${mdiClose}></ha-icon-button>
@@ -381,25 +386,53 @@ export class HaInput extends LitElement {
     this._invalid = true;
   }
 
-  private _placeholderWithRequiredMarker = memoizeOne((placeholder: string) => {
-    let marker = getComputedStyle(this).getPropertyValue(
-      "--ha-input-required-marker"
-    );
-
-    if (!marker) {
-      marker = "*";
+  private _syncStartSlotWidth = () => {
+    const startEl = this._input?.shadowRoot?.querySelector(
+      '[part~="start"]'
+    ) as HTMLElement | null;
+    const startWidth = startEl?.offsetWidth ?? 0;
+    if (startWidth > 0 && !this.insetLabel) {
+      this.style.setProperty(
+        "--start-slot-width",
+        `calc(${startWidth}px + var(--ha-space-1))`
+      );
+      this.style.setProperty(
+        "--input-padding-inline-start",
+        `var(--ha-space-1)`
+      );
+    } else {
+      this.style.removeProperty("--start-slot-width");
+      this.style.removeProperty("--input-padding-inline-start");
     }
+  };
 
-    if (marker.startsWith('"') && marker.endsWith('"')) {
-      marker = marker.slice(1, -1);
+  private _renderLabel = memoizeOne(
+    (label: string, placeholder: string, required: boolean) => {
+      // fallback to placeholder if no label is provided
+      const text = label || placeholder;
+      if (!required) {
+        return text;
+      }
+
+      let marker = getComputedStyle(this).getPropertyValue(
+        "--ha-input-required-marker"
+      );
+
+      if (!marker) {
+        marker = "*";
+      }
+
+      if (marker.startsWith('"') && marker.endsWith('"')) {
+        marker = marker.slice(1, -1);
+      }
+
+      if (!marker) {
+        return text;
+      }
+
+      return `${text}${marker}`;
     }
-
-    if (!marker) {
-      return placeholder;
-    }
-
-    return `${placeholder}${marker}`;
-  });
+  );
 
   static styles = css`
     :host {
@@ -414,53 +447,109 @@ export class HaInput extends LitElement {
       min-width: 0;
       height: 76px;
       --wa-transition-fast: var(--wa-transition-normal);
+      position: relative;
+    }
+
+    wa-input::part(label) {
+      position: absolute;
+      top: 0;
+      font-weight: var(--ha-font-weight-normal);
+      font-family: var(--ha-font-family-body);
+      transition: all var(--wa-transition-normal) ease-in-out;
+      color: var(--secondary-text-color);
+      line-height: var(--ha-line-height-condensed);
+      z-index: 1;
+      padding-inline-start: calc(
+        var(--start-slot-width, 0px) + var(--ha-space-4)
+      );
+      padding-inline-end: var(--ha-space-4);
+      padding-top: var(--ha-space-5);
+      font-size: var(--ha-font-size-m);
+    }
+
+    :host(:focus-within) wa-input::part(label) {
+      color: var(--primary-color);
+    }
+
+    :host(:focus-within) wa-input.invalid::part(label),
+    wa-input.invalid:not([disabled])::part(label) {
+      color: var(--ha-color-fill-danger-loud-resting);
+    }
+
+    wa-input.label-raised::part(label),
+    :host(:focus-within) wa-input::part(label) {
+      padding-top: var(--ha-space-3);
+      font-size: var(--ha-font-size-xs);
+      padding-top: var(--ha-space-3);
     }
 
     wa-input::part(base) {
-      height: 32px;
-      background-color: var(--mdc-text-field-fill-color, whitesmoke);
-      border-radius: var(--ha-border-radius-square);
+      height: 56px;
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-bottom-left-radius: var(--ha-border-radius-square);
+      border-bottom-right-radius: var(--ha-border-radius-square);
       border: none;
       padding: 0 var(--ha-space-4);
-      border-bottom: 1px solid
-        var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
-      transform: border 180ms ease-in-out;
+      position: relative;
+      transition: background-color var(--wa-transition-normal) ease-in-out;
+    }
+
+    wa-input::part(base)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: var(--ha-color-border-neutral-loud);
+      transition:
+        height var(--wa-transition-normal) ease-in-out,
+        background-color var(--wa-transition-normal) ease-in-out;
+    }
+
+    :host(:focus-within) wa-input::part(base)::after {
+      height: 2px;
+      background-color: var(--primary-color);
+    }
+
+    :host(:focus-within) wa-input.invalid::part(base)::after,
+    wa-input.invalid:not([disabled])::part(base)::after {
+      background-color: var(--ha-color-border-danger-normal);
+    }
+
+    wa-input::part(input) {
+      padding-top: var(--ha-space-3);
+      padding-inline-start: var(--input-padding-inline-start, 0);
+    }
+    :host([type="color"]) wa-input::part(input) {
+      padding-top: var(--ha-space-6);
+    }
+    wa-input::part(input)::placeholder {
+      color: var(--ha-color-neutral-60);
     }
 
     :host(:focus-within) wa-input::part(base) {
-      border-width: 2px;
-      border-color: var(--primary-color);
+      outline: none;
     }
 
-    :host(:focus-within) wa-input.invalid::part(base),
-    wa-input.invalid:not([disabled])::part(base) {
-      border-color: var(--ha-color-border-danger-normal);
+    wa-input::part(base):hover {
+      background-color: var(--ha-color-fill-neutral-quiet-hover);
     }
 
     wa-input:disabled::part(base) {
       background-color: var(--ha-color-fill-disabled-quiet-resting);
     }
 
-    wa-input::part(label) {
-      background-color: var(--mdc-text-field-fill-color, whitesmoke);
-      border-top-left-radius: var(--ha-border-radius-sm);
-      border-top-right-radius: var(--ha-border-radius-sm);
-      padding: 0 var(--ha-space-4);
-
-      color: var(--secondary-text-color);
-      line-height: var(--ha-line-height-condensed);
-      font-size: var(--ha-font-size-xs);
-      font-weight: var(--ha-font-weight-normal);
-      font-family: var(--ha-font-family-body);
-      padding-top: var(--ha-space-3);
-      margin-bottom: 0;
-    }
-
     wa-input::part(hint) {
       height: var(--ha-space-5);
       margin-block-start: 0;
-      font-size: var(--ha-font-size-s);
       margin-inline-start: var(--ha-space-3);
+      font-size: var(--ha-font-size-xs);
+      display: flex;
+      align-items: center;
+      color: var(--ha-color-text-secondary);
     }
 
     .error {
