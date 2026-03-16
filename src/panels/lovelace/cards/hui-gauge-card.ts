@@ -84,7 +84,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._config = { min: DEFAULT_MIN, max: DEFAULT_MAX, ...config };
   }
 
-  private _handleMoreInfo() {
+  private _handleMoreInfo(ev: Event) {
+    ev.stopPropagation();
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
@@ -157,7 +158,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        <p class="title">${name}</p>
+        <p class="title" .title=${name}>${name}</p>
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
@@ -329,7 +330,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       width: 100%;
       font-size: var(--ha-font-size-l);
       line-height: var(--ha-line-height-expanded);
-      padding: 8px 30px 8px 30px;
+      padding: 8px 30px 0px 30px;
       margin: 0;
       text-align: center;
       box-sizing: border-box;
