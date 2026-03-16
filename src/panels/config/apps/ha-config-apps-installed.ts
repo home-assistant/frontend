@@ -93,9 +93,6 @@ export class HaConfigAppsInstalled extends LitElement {
             suffix
             .filter=${this._filter}
             @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.search"
-            )}
           >
           </search-input>
         </div>
