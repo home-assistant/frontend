@@ -137,6 +137,7 @@ class SupervisorAppsCardContent extends LitElement {
     }
     .addition {
       color: var(--secondary-text-color);
+      margin-top: var(--ha-space-1);
       overflow: hidden;
       position: relative;
       height: 2.4em;
