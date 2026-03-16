@@ -197,7 +197,7 @@ class SupervisorAppInfo extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
-            ${!this.narrow ? this.addon.name : nothing}
+            ${!this.narrow ? this._displayName : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
@@ -490,7 +490,7 @@ class SupervisorAppInfo extends LitElement {
                   href=${this.addon.url!}
                   target="_blank"
                   rel="noreferrer"
-                  >${this.addon.name}</a
+                  >${this._displayName}</a
                 >`,
               }
             )}
@@ -1223,7 +1223,7 @@ class SupervisorAppInfo extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.title",
         {
-          name: this.addon.name,
+          name: this._displayName,
         }
       ),
       text: html`
@@ -1279,6 +1279,14 @@ class SupervisorAppInfo extends LitElement {
     (addon: HassioAddonDetails | StoreAddonDetails) =>
       "system_managed" in addon && addon.system_managed
   );
+
+  private get _displayName(): string {
+    if (this.addon.stage !== "deprecated") {
+      return this.addon.name;
+    }
+
+    return this.addon.name.replace(/\s*\[deprecated\]\s*$/i, "");
+  }
 
   static get styles(): CSSResultGroup {
     return [
