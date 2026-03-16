@@ -21,6 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { stringCompare } from "../../../common/string/compare";
@@ -1818,6 +1819,31 @@ class DialogAddAutomationElement
     this._getItemsByTarget();
   };
 
+  private _getDefaultStateItems(
+    type: "trigger" | "condition"
+  ): AddAutomationElementListItem[] {
+    const items: AddAutomationElementListItem[] = [
+      this._convertToItem("state", {}, type, this.hass.localize),
+    ];
+
+    const entityId = this._selectedTarget?.entity_id;
+    if (entityId) {
+      const NUMERIC_DOMAINS = ["counter", "input_number", "number", "sensor"];
+      const domain = computeDomain(entityId);
+      const stateObj = this.hass.states[entityId];
+      if (
+        NUMERIC_DOMAINS.includes(domain) ||
+        (stateObj && isNumericState(stateObj))
+      ) {
+        items.push(
+          this._convertToItem("numeric_state", {}, type, this.hass.localize)
+        );
+      }
+    }
+
+    return items;
+  }
+
   private async _getItemsByTarget() {
     if (!this._selectedTarget) {
       return;
@@ -1830,10 +1856,19 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedTriggerListItems(
+        const grouped = this._getDomainGroupedTriggerListItems(
           this.hass.localize,
           items
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.triggers.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("trigger"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
       if (this._params!.type === "condition") {
@@ -1842,10 +1877,19 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedConditionListItems(
+        const grouped = this._getDomainGroupedConditionListItems(
           this.hass.localize,
           items
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("condition"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
 

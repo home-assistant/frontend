@@ -203,6 +203,7 @@ export class HuiDialogEditCard
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
+              in-dialog
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
@@ -297,7 +298,9 @@ export class HuiDialogEditCard
   }
 
   private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
+    withViewTransition(() => {
+      this._cardEditorEl?.toggleMode();
+    });
   }
 
   private _opened() {

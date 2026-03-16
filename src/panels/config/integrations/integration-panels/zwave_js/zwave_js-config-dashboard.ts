@@ -18,6 +18,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -28,7 +29,6 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { goBack } from "../../../../../common/navigate";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -56,6 +56,7 @@ import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
@@ -144,6 +145,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.navigation.general"
         )}
+        back-path="/config"
         has-fab
       >
         <ha-icon-button
@@ -241,6 +243,20 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   : nothing}
               </small>
             </div>
+            <img
+              class="logo"
+              alt="Z-Wave"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "zwave_js",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
           </div>
         </div>
       </ha-card>
@@ -900,6 +916,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           column-gap: var(--ha-space-4);
         }
 
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
+        }
+
         .network-status div.heading .icon {
           position: relative;
           border-radius: var(--ha-border-radius-2xl);
@@ -967,7 +990,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];

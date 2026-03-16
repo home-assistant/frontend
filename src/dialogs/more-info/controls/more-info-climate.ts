@@ -9,6 +9,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -38,6 +39,38 @@ class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public stateObj?: ClimateEntity;
 
   @state() private _mainControl: MainControl = "temperature";
+
+  private _renderPresetModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="preset_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
+  private _renderFanModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="fan_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
+  private _renderSwingModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="swing_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
+  private _renderSwingHorizontalModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="swing_horizontal_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
 
   protected willUpdate(changedProps: PropertyValues): void {
     if (
@@ -205,12 +238,8 @@ class MoreInfoClimate extends LitElement {
                     "preset_mode",
                     mode
                   ),
-                  attributeIcon: {
-                    stateObj,
-                    attribute: "preset_mode",
-                    attributeValue: mode,
-                  },
                 }))}
+                .renderIcon=${this._renderPresetModeIcon}
               >
                 <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
               </ha-control-select-menu>
@@ -234,12 +263,8 @@ class MoreInfoClimate extends LitElement {
                     "fan_mode",
                     mode
                   ),
-                  attributeIcon: {
-                    stateObj,
-                    attribute: "fan_mode",
-                    attributeValue: mode,
-                  },
                 }))}
+                .renderIcon=${this._renderFanModeIcon}
               >
                 <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
               </ha-control-select-menu>
@@ -263,12 +288,8 @@ class MoreInfoClimate extends LitElement {
                     "swing_mode",
                     mode
                   ),
-                  attributeIcon: {
-                    stateObj,
-                    attribute: "swing_mode",
-                    attributeValue: mode,
-                  },
                 }))}
+                .renderIcon=${this._renderSwingModeIcon}
               >
                 <ha-svg-icon
                   slot="icon"
@@ -297,13 +318,9 @@ class MoreInfoClimate extends LitElement {
                       "swing_horizontal_mode",
                       mode
                     ),
-                    attributeIcon: {
-                      stateObj,
-                      attribute: "swing_horizontal_mode",
-                      attributeValue: mode,
-                    },
                   })
                 )}
+                .renderIcon=${this._renderSwingHorizontalModeIcon}
               >
                 <ha-svg-icon
                   slot="icon"

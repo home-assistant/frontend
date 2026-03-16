@@ -32,6 +32,7 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
@@ -158,6 +159,7 @@ export class BluetoothConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.bluetooth.title")}
+        back-path="/config"
       >
         <div class="container">
           <ha-card class="content network-status">
@@ -177,6 +179,20 @@ export class BluetoothConfigDashboard extends LitElement {
                     )}
                   </small>
                 </div>
+                <img
+                  class="logo"
+                  alt="Bluetooth"
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl(
+                    {
+                      domain: "bluetooth",
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
+                />
               </div>
             </div>
           </ha-card>
@@ -293,6 +309,13 @@ export class BluetoothConfigDashboard extends LitElement {
           display: flex;
           align-items: center;
           column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
         }
 
         .network-status div.heading .icon {

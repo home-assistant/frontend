@@ -49,6 +49,7 @@ export const mapEntitiesConfigStruct = union([
     unit: optional(string()),
     focus: optional(boolean()),
     name: optional(string()),
+    color: optional(string()),
   }),
   string(),
 ]);
@@ -86,6 +87,7 @@ const themeModes = ["auto", "light", "dark"] as const;
 const SUB_SCHEMA = [
   { name: "entity", selector: { entity: {} }, required: true },
   { name: "name", selector: { text: {} } },
+  { name: "color", selector: { ui_color: {} } },
 ] as const;
 
 @customElement("hui-map-card-editor")
