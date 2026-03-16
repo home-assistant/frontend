@@ -70,6 +70,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                   <supervisor-apps-card-content
                     .hass=${this.hass}
                     .title=${addon.name}
+                    .stage=${addon.stage}
                     .description=${addon.description}
                     .available=${addon.available}
                     .icon=${addon.installed && addon.update_available

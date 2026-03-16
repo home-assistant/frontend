@@ -1,8 +1,9 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
+import type { AddonStage } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("supervisor-apps-card-content")
@@ -11,6 +12,8 @@ class SupervisorAppsCardContent extends LitElement {
 
   // eslint-disable-next-line lit/no-native-attributes
   @property() public title!: string;
+
+  @property() public stage: AddonStage = "stable";
 
   @property() public description?: string;
 
@@ -29,6 +32,13 @@ class SupervisorAppsCardContent extends LitElement {
   @property({ attribute: false }) public iconImage?: string;
 
   protected render(): TemplateResult {
+    const stageLabel =
+      this.stage !== "stable"
+        ? this.hass.localize(
+            `ui.panel.config.apps.dashboard.capability.stages.${this.stage}`
+          )
+        : undefined;
+
     return html`
       ${this.showTopbar
         ? html` <div class="topbar ${this.topbarClass}"></div> `
@@ -52,7 +62,12 @@ class SupervisorAppsCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">${this.title}</div>
+        <div class="title-row">
+          <div class="title">${this._displayTitle}</div>
+          ${stageLabel
+            ? html` <span class="stage ${this.stage}"> ${stageLabel} </span> `
+            : nothing}
+        </div>
         <div class="addition">
           ${this.description}
           ${
@@ -91,10 +106,34 @@ class SupervisorAppsCardContent extends LitElement {
       color: var(--error-color);
     }
     .title {
+      flex: 1;
+      min-width: 0;
       color: var(--primary-text-color);
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+    }
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      min-width: 0;
+    }
+    .stage {
+      flex: none;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    .stage.experimental {
+      color: var(--warning-color);
+      background-color: rgba(var(--rgb-warning-color), 0.12);
+    }
+    .stage.deprecated {
+      color: var(--error-color);
+      background-color: rgba(var(--rgb-error-color), 0.12);
     }
     .addition {
       color: var(--secondary-text-color);
@@ -142,6 +181,14 @@ class SupervisorAppsCardContent extends LitElement {
       background-color: var(--error-color);
     }
   `;
+
+  private get _displayTitle(): string {
+    if (this.stage !== "deprecated") {
+      return this.title;
+    }
+
+    return this.title.replace(/\s*\[deprecated\]\s*$/i, "");
+  }
 }
 
 declare global {
