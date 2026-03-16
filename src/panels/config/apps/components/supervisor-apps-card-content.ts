@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
 import type { AddonStage } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
+import { getAppDisplayName } from "../common/app";
 
 @customElement("supervisor-apps-card-content")
 class SupervisorAppsCardContent extends LitElement {
@@ -63,7 +64,7 @@ class SupervisorAppsCardContent extends LitElement {
           `}
       <div>
         <div class="title-row">
-          <div class="title">${this._displayTitle}</div>
+          <div class="title">${getAppDisplayName(this.title, this.stage)}</div>
           ${stageLabel
             ? html` <span class="stage ${this.stage}"> ${stageLabel} </span> `
             : nothing}
@@ -182,14 +183,6 @@ class SupervisorAppsCardContent extends LitElement {
       background-color: var(--error-color);
     }
   `;
-
-  private get _displayTitle(): string {
-    if (this.stage !== "deprecated") {
-      return this.title;
-    }
-
-    return this.title.replace(/\s*\[deprecated\]\s*$/i, "");
-  }
 }
 
 declare global {

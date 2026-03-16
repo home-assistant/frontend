@@ -76,6 +76,7 @@ import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-s
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
+import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-card-content";
 import "../components/supervisor-app-metric";
 import { extractChangelog } from "../util/supervisor-app";
@@ -197,7 +198,9 @@ class SupervisorAppInfo extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
-            ${!this.narrow ? this._displayName : nothing}
+            ${!this.narrow
+              ? getAppDisplayName(this.addon.name, this.addon.stage)
+              : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
@@ -490,7 +493,7 @@ class SupervisorAppInfo extends LitElement {
                   href=${this.addon.url!}
                   target="_blank"
                   rel="noreferrer"
-                  >${this._displayName}</a
+                  >${getAppDisplayName(this.addon.name, this.addon.stage)}</a
                 >`,
               }
             )}
@@ -1223,7 +1226,7 @@ class SupervisorAppInfo extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.title",
         {
-          name: this._displayName,
+          name: getAppDisplayName(this.addon.name, this.addon.stage),
         }
       ),
       text: html`
@@ -1279,14 +1282,6 @@ class SupervisorAppInfo extends LitElement {
     (addon: HassioAddonDetails | StoreAddonDetails) =>
       "system_managed" in addon && addon.system_managed
   );
-
-  private get _displayName(): string {
-    if (this.addon.stage !== "deprecated") {
-      return this.addon.name;
-    }
-
-    return this.addon.name.replace(/\s*\[deprecated\]\s*$/i, "");
-  }
 
   static get styles(): CSSResultGroup {
     return [
