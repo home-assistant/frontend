@@ -34,6 +34,7 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     iframe: () => import("./iframe/iframe-dashboard-strategy"),
     areas: () => import("./areas/areas-dashboard-strategy"),
     home: () => import("./home/home-dashboard-strategy"),
+    energy: () => import("../../energy/strategies/energy-dashboard-strategy"),
   },
   view: {
     "original-states": () =>
