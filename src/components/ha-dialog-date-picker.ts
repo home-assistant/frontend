@@ -64,7 +64,9 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     super.connectedCallback();
 
     if (this.params) {
-      const date = this.params.value ? new Date(this.params.value) : new Date();
+      const date = this.params.value
+        ? new Date(`${this.params.value.split("T")[0]}T00:00:00`)
+        : new Date();
 
       this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
       this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
