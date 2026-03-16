@@ -23,11 +23,15 @@ export const computeEntityName = (
 
 export const computeEntityEntryName = (
   entry: EntityRegistryDisplayEntry | EntityRegistryEntry
-): string | undefined =>
-  entry.name ||
-  ("original_name" in entry && entry.original_name != null
-    ? String(entry.original_name)
-    : undefined);
+): string | undefined => {
+  if (entry.name != null) {
+    return entry.name;
+  }
+  if ("original_name" in entry && entry.original_name != null) {
+    return String(entry.original_name);
+  }
+  return undefined;
+};
 
 export const entityUseDeviceName = (
   stateObj: HassEntity,
