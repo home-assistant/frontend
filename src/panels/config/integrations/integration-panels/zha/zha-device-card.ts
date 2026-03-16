@@ -18,7 +18,7 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { EntityRegistryDisplayEntry } from "../../../devices/ha-config-device-page";
+import type { EntityRegistryEntryWithDisplayName } from "../../../devices/ha-config-device-page";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -34,7 +34,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryDisplayEntry[] =>
+    ): EntityRegistryEntryWithDisplayName[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({

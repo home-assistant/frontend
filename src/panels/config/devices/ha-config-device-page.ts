@@ -95,7 +95,7 @@ import {
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
 
-export interface EntityRegistryDisplayEntry extends EntityRegistryEntry {
+export interface EntityRegistryEntryWithDisplayName extends EntityRegistryEntry {
   display_name?: string | null;
 }
 
@@ -216,7 +216,7 @@ export class HaConfigDevicePage extends LitElement {
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
   private _entityIds = memoizeOne(
-    (entries: EntityRegistryDisplayEntry[]): string[] =>
+    (entries: EntityRegistryEntryWithDisplayName[]): string[] =>
       entries.map((entry) => entry.entity_id)
   );
 
@@ -249,7 +249,7 @@ export class HaConfigDevicePage extends LitElement {
         | "assist"
         | "notify"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
-        EntityRegistryDisplayEntry[]
+        EntityRegistryEntryWithDisplayName[]
       >;
       for (const key of [
         "assist",

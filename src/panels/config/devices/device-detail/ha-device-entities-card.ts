@@ -23,7 +23,7 @@ import type {
   LovelaceRow,
   LovelaceRowConfig,
 } from "../../../lovelace/entity-rows/types";
-import type { EntityRegistryDisplayEntry } from "../ha-config-device-page";
+import type { EntityRegistryEntryWithDisplayName } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -34,7 +34,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public entities!: EntityRegistryDisplayEntry[];
+  public entities!: EntityRegistryEntryWithDisplayName[];
 
   @property({ attribute: "show-hidden", type: Boolean })
   public showHidden = false;
@@ -137,7 +137,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     this.showHidden = !this.showHidden;
   }
 
-  private _renderEntity(entry: EntityRegistryDisplayEntry): TemplateResult {
+  private _renderEntity(
+    entry: EntityRegistryEntryWithDisplayName
+  ): TemplateResult {
     const config: LovelaceRowConfig = {
       entity: entry.entity_id,
     };
@@ -162,7 +164,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     return html` <div>${element}</div> `;
   }
 
-  private _renderEntry(entry: EntityRegistryDisplayEntry): TemplateResult {
+  private _renderEntry(
+    entry: EntityRegistryEntryWithDisplayName
+  ): TemplateResult {
     const name = entry.display_name || this.deviceName;
 
     const icon = until(entryIcon(this.hass, entry));
