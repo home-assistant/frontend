@@ -36,9 +36,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
     const repo = this.repo;
     let _addons = this.addons;
     if (!this.hass.userData?.showAdvanced) {
-      _addons = _addons.filter(
-        (addon) => !addon.advanced && addon.stage === "stable"
-      );
+      _addons = _addons.filter((addon) => !addon.advanced);
     }
     const addons = this._getAddons(_addons, this.filter);
 
