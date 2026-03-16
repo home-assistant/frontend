@@ -52,7 +52,11 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .catchInteraction=${false}
+      >
         <div
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
