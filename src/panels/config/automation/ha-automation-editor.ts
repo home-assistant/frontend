@@ -674,6 +674,17 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
+      if (err.status_code !== 404) {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.automation.editor.load_error_unknown",
+            { err_no: err.status_code }
+          ),
+          text: html`<pre>${err.body}</pre>`,
+        });
+        goBack("/config");
+        return;
+      }
       const entity = this._entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
@@ -685,15 +696,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         return;
       }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_not_editable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_unknown",
-                { err_no: err.status_code }
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.automation.editor.load_error_not_editable"
+        ),
       });
       goBack("/config");
     }
