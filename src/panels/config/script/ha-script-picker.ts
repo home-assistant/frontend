@@ -146,8 +146,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _selected: string[] = [];
@@ -933,7 +931,7 @@ ${rejected
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this.entityRegistry.find((e) => e.entity_id === ev.detail.id);
+    const entry = this._entityReg.find((e) => e.entity_id === ev.detail.id);
     if (entry) {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
@@ -950,9 +948,7 @@ ${rejected
   }
 
   private _runScript = async (script: any) => {
-    const entry = this.entityRegistry.find(
-      (e) => e.entity_id === script.entity_id
-    );
+    const entry = this._entityReg.find((e) => e.entity_id === script.entity_id);
     if (!entry) {
       return;
     }
@@ -981,9 +977,7 @@ ${rejected
   }
 
   private _showTrace(script: any) {
-    const entry = this.entityRegistry.find(
-      (e) => e.entity_id === script.entity_id
-    );
+    const entry = this._entityReg.find((e) => e.entity_id === script.entity_id);
     if (entry) {
       navigate(`/config/script/trace/${entry.unique_id}`);
     }
@@ -1009,7 +1003,7 @@ ${rejected
 
   private async _duplicate(script: any) {
     try {
-      const entry = this.entityRegistry.find(
+      const entry = this._entityReg.find(
         (e) => e.entity_id === script.entity_id
       );
       if (!entry) {
@@ -1058,7 +1052,7 @@ ${rejected
 
   private async _delete(script: any) {
     try {
-      const entry = this.entityRegistry.find(
+      const entry = this._entityReg.find(
         (e) => e.entity_id === script.entity_id
       );
       if (entry) {
