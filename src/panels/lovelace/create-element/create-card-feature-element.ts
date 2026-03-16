@@ -10,6 +10,7 @@ import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-position-preset-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
+import "../card-features/hui-cover-tilt-preset-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
 import "../card-features/hui-date-set-card-feature";
 import "../card-features/hui-fan-direction-card-feature";
@@ -21,6 +22,7 @@ import "../card-features/hui-humidifier-toggle-card-feature";
 import "../card-features/hui-lawn-mower-commands-card-feature";
 import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
+import "../card-features/hui-light-color-favorites-card-feature";
 import "../card-features/hui-lock-commands-card-feature";
 import "../card-features/hui-lock-open-door-card-feature";
 import "../card-features/hui-media-player-playback-card-feature";
@@ -60,6 +62,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "cover-open-close",
   "cover-position",
   "cover-position-preset",
+  "cover-tilt-preset",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -72,6 +75,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "light-color-favorites",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",

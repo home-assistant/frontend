@@ -118,7 +118,7 @@ class HaLandingPage extends LandingPageBaseElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    makeDialogManager(this, this.shadowRoot!);
+    makeDialogManager(this);
 
     if (window.innerWidth > 450) {
       import("../../src/resources/particles");

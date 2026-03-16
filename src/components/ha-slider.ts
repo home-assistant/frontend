@@ -54,10 +54,17 @@ export class HaSlider extends Slider {
             var(--ha-border-radius-sm)
           );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
+          --wa-tooltip-border-width: 0px;
           --wa-z-index-tooltip: 1000;
           min-width: 100px;
           min-inline-size: 100px;
           width: 200px;
+        }
+
+        /* Expand slider touch target to 32px */
+        #slider {
+          padding-block: 14px;
+          margin-block: -14px;
         }
 
         #thumb {

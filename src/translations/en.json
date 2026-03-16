@@ -1612,6 +1612,11 @@
         },
         "light": {
           "edit_mode": "Edit favorite colors",
+          "reset_favorites": "Reset favorite colors",
+          "reset_favorites_text": "Do you want to reset all favorite colors for this light back to default?",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more lights to receive the copied favorites from this light (must support same color modes).",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "toggle": "Toggle",
           "color": "Color",
           "color_temp": "Temperature",
@@ -3270,7 +3275,8 @@
                   "finishing_file": "Finishing backup file",
                   "folders": "Backing up folders",
                   "home_assistant": "Backing up Home Assistant",
-                  "upload_to_agents": "Uploading to locations"
+                  "upload_to_agents": "Uploading to locations",
+                  "cleaning_up": "Cleaning up"
                 },
                 "restore_backup": {
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
@@ -3292,6 +3298,17 @@
                   "receive_file": "Receiving file",
                   "upload_to_agents": "Uploading to locations"
                 }
+              },
+              "segments": {
+                "home_assistant": "Home Assistant",
+                "apps": "Apps",
+                "media": "Media",
+                "upload": "Uploading backup",
+                "cleaning_up": "Cleaning up"
+              },
+              "agent_status": {
+                "uploading": "Uploading...",
+                "uploaded": "Uploaded"
               }
             },
             "summary": {
@@ -3299,7 +3316,7 @@
               "next_automatic_backup": "Next automatic backup {day} at {time}",
               "today": "today",
               "tomorrow": "tomorrow",
-              "loading": "Loading backups...",
+              "loading": "Loading backups",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
@@ -5675,6 +5692,8 @@
             "override_title": "This blueprint already exists",
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
+            "source_warning_title": "Review this blueprint source",
+            "source_warning_description": "This blueprint is not imported from GitHub or an official Home Assistant website. Only continue if you trust this source.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint path"
           }
@@ -6112,11 +6131,11 @@
           "update": "Update",
           "no_devices": "No devices",
           "enabled_label": "Enable {type}",
-          "enabled_cause": "The {type} is disabled by {cause}.",
+          "enabled_cause": "The {type} is disabled by {cause}",
           "disabled_by": {
-            "user": "User",
-            "integration": "Integration",
-            "config_entry": "Config entry"
+            "user": "user",
+            "integration": "integration",
+            "config_entry": "config entry"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
@@ -7143,7 +7162,6 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
-            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "update_firmware": "Update",
@@ -7549,84 +7567,6 @@
             "3": "Z-Wave 100 kbps",
             "4": "Long Range 100 kbps"
           },
-          "node_installer": {
-            "header": "Installer settings",
-            "introduction": "Configure your device installer settings.",
-            "endpoint": "Endpoint",
-            "no_settings": "This device does not have any installer settings.",
-            "command_class": "Command class",
-            "capability_controls": {
-              "thermostat_setback": {
-                "title": "Thermostat setback",
-                "setback_state_label": "Setback in Kelvin",
-                "setback_state_helper": "Min: -12.8, max: 12.0",
-                "setback_special_state": {
-                  "label": "Setback special state",
-                  "frost_protection": "Frost protection",
-                  "energy_saving": "Energy saving",
-                  "unused": "Unused"
-                },
-                "setback_type": {
-                  "label": "Setback type",
-                  "none": "None",
-                  "temporary": "Temporary",
-                  "permanent": "Permanent"
-                },
-                "get_setback_failed": "Failed to get setback state. {error}",
-                "save_setback_failed": "Failed to save setback state. {error}"
-              },
-              "multilevel_switch": {
-                "title": "Transition",
-                "direction": "Direction",
-                "up": "Up",
-                "down": "Down",
-                "ignore_start_level": "Ignore start level",
-                "start_level": "Start level",
-                "start_transition": "Start transition",
-                "stop_transition": "Stop transition",
-                "control_failed": "Failed to control transition. {error}"
-              },
-              "door_lock": {
-                "title": "Door lock",
-                "twist_assist": "Twist assist",
-                "block_to_block": "Block to block",
-                "auto_relock_time": "Autorelock time",
-                "hold_release_time": "Hold and release time",
-                "operation_type": "Operation type",
-                "operation_types": {
-                  "1": "Constant",
-                  "2": "Timed"
-                },
-                "mode": "Mode",
-                "modes": {
-                  "0": "Unsecured",
-                  "1": "Unsecured with timeout",
-                  "16": "Inside unsecured",
-                  "17": "Inside unsecured with timeout",
-                  "32": "Outside unsecured",
-                  "33": "Outside unsecured with timeout",
-                  "254": "Unknown",
-                  "255": "Secured"
-                },
-                "lock_timeout": "Lock timeout",
-                "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
-              },
-              "color_switch": {
-                "color_component": "Color component",
-                "colors": {
-                  "0": "Warm white",
-                  "1": "Cold white",
-                  "2": "Red",
-                  "3": "Green",
-                  "4": "Blue",
-                  "5": "Amber",
-                  "6": "Cyan",
-                  "7": "Purple",
-                  "8": "Index"
-                }
-              }
-            }
-          },
           "picker": {
             "title": "Select Z-Wave network",
             "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
@@ -7716,6 +7656,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
+            "manage_lock": "Manage lock",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7756,6 +7697,102 @@
             "success": "Your device is ready to be added to another Matter platform.",
             "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
             "copy_code": "Copy code"
+          },
+          "lock": {
+            "manage": "Manage lock",
+            "dialog_title": "Manage lock",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "name": "Name",
+              "status": "Status",
+              "type": "Type",
+              "credential_rule": "Credential rule",
+              "credentials": "Credentials",
+              "no_users": "No users configured",
+              "user_status": {
+                "available": "Available",
+                "occupied_enabled": "Enabled",
+                "occupied_disabled": "Disabled"
+              },
+              "user_type": {
+                "unrestricted_user": "Unrestricted",
+                "year_day_schedule_user": "Day-of-the-year schedule",
+                "week_day_schedule_user": "Day-of-the-week schedule",
+                "programming_user": "Programming",
+                "non_access_user": "Non-access",
+                "forced_user": "Forced",
+                "disposable_user": "Disposable",
+                "expiring_user": "Expiring",
+                "schedule_restricted_user": "Schedule-restricted",
+                "remote_only_user": "Remote-only"
+              },
+              "credential_rules": {
+                "single": "Single credential",
+                "dual": "Dual credentials",
+                "tri": "Triple credentials"
+              },
+              "user_types": {
+                "unrestricted_user": {
+                  "label": "Full access",
+                  "description": "Can lock/unlock anytime, 24/7"
+                },
+                "disposable_user": {
+                  "label": "One-time access",
+                  "description": "Code works once, then is deleted"
+                }
+              }
+            },
+            "credentials": {
+              "add": "Add credential",
+              "edit": "Edit credential",
+              "delete": "Delete credential",
+              "type": "Type",
+              "data": "PIN code",
+              "pin": "PIN",
+              "types": {
+                "pin": "PIN code",
+                "rfid": "RFID",
+                "fingerprint": "Fingerprint",
+                "finger_vein": "Finger vein",
+                "face": "Face",
+                "aliro_credential": "Aliro credential",
+                "aliro_evictable": "Aliro evictable",
+                "aliro_non_evictable": "Aliro non-evictable"
+              }
+            },
+            "events": {
+              "title": "Recent lock events",
+              "types": {
+                "lock": "Locked",
+                "unlock": "Unlocked",
+                "lock_jammed": "Lock jammed",
+                "lock_failure": "Lock failure",
+                "invalid_pin": "Invalid PIN"
+              },
+              "sources": {
+                "manual": "Manual",
+                "pin": "PIN",
+                "remote": "Remote",
+                "auto": "Auto"
+              },
+              "no_events": "No recent events"
+            },
+            "errors": {
+              "load_failed": "Failed to load lock information",
+              "save_failed": "Failed to save changes",
+              "not_supported": "This feature is not supported by your lock",
+              "user_not_found": "User not found",
+              "name_required": "Please enter a name for this user.",
+              "pin_required": "Please enter a PIN code.",
+              "pin_length": "PIN code must be {min}-{max} digits.",
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "pin_placeholder": "{min}-{max} digits"
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_credential": "Are you sure you want to delete this credential?"
           }
         },
         "tips": {
@@ -8263,7 +8300,8 @@
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
               "compare_previous_year": "Compare previous year",
-              "compare_previous_period": "Compare previous period"
+              "compare_previous_period": "Compare previous period",
+              "compare_preview": "Card preview"
             },
             "power_total_title": "Power usage",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
@@ -8883,6 +8921,122 @@
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
             },
+            "energy-date-selection": {
+              "name": "Energy date picker",
+              "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
+              "disable_compare": "Disable data comparison",
+              "vertical_opening_direction": "Vertical opening direction",
+              "vertical_opening_directions": {
+                "auto": "Automatic",
+                "up": "Up",
+                "down": "Down"
+              },
+              "opening_direction": "Horizontal opening direction",
+              "opening_directions": {
+                "auto": "Automatic",
+                "right": "Right",
+                "left": "Left",
+                "center": "Center"
+              }
+            },
+            "energy-distribution": {
+              "name": "Energy distribution",
+              "description": "This card shows how the energy flowed between energy sources and the home.",
+              "link_dashboard": "Link to energy dashboard"
+            },
+            "energy-usage-graph": {
+              "name": "Energy usage graph",
+              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came."
+            },
+            "energy-solar-graph": {
+              "name": "Solar production graph",
+              "description": "This card shows the amount of energy your solar panels have produced."
+            },
+            "energy-gas-graph": {
+              "name": "Gas consumption graph",
+              "description": "This card shows the amount of gas consumed per source."
+            },
+            "energy-water-graph": {
+              "name": "Water consumption graph",
+              "description": "This card shows the amount of water consumed per source."
+            },
+            "power-sources-graph": {
+              "name": "Power sources graph",
+              "description": "This card shows historical power data.",
+              "show_legend": "Show legend"
+            },
+            "energy-devices-graph": {
+              "name": "Device energy graph",
+              "description": "This card shows the energy usage per device, it is sorted by usage.",
+              "max_devices": "Maximum devices allowed",
+              "hide_compound_stats": "Hide upstream devices",
+              "modes": "Chart display mode",
+              "mode_options": {
+                "bar": "Bar",
+                "pie": "Pie"
+              }
+            },
+            "energy-sources-table": {
+              "name": "Energy sources table",
+              "description": "This card shows all your energy sources and the corresponding amount of energy for each.",
+              "show_only_totals": "Show only totals",
+              "types": "Types",
+              "type_options": {
+                "grid": "Grid",
+                "solar": "Solar",
+                "battery": "Battery",
+                "gas": "Gas",
+                "water": "Water"
+              }
+            },
+            "energy-compare": {
+              "name": "Energy compare alert",
+              "description": "This card shows which date ranges are being compared. It is hidden if comparison is disabled."
+            },
+            "energy-devices-detail-graph": {
+              "name": "Device energy detail graph",
+              "description": "This card shows energy usage per device over time."
+            },
+            "energy-sankey": {
+              "name": "Electrical energy Sankey graph",
+              "description": "This card shows the distribution of energy in your home on a Sankey graph.",
+              "group_by_floor": "Group entities by floor",
+              "group_by_area": "Group entities by area",
+              "layout": "Graph direction",
+              "layout_directions": {
+                "auto": "Automatic",
+                "vertical": "Vertical",
+                "horizontal": "Horizontal"
+              }
+            },
+            "power-sankey": {
+              "name": "Power Sankey graph",
+              "description": "This card shows the real-time flow of power in your home."
+            },
+            "water-sankey": {
+              "name": "Water Sankey graph",
+              "description": "This card shows the distribution of water consumption in your home on a Sankey graph."
+            },
+            "water-flow-sankey": {
+              "name": "Water flow Sankey graph",
+              "description": "This card shows the real-time flow of water in your home."
+            },
+            "energy-solar-consumed-gauge": {
+              "name": "Solar consumed gauge",
+              "description": "This card shows how much of the solar energy was used by your home and was not returned to the grid."
+            },
+            "energy-self-sufficiency-gauge": {
+              "name": "Self-sufficiency gauge",
+              "description": "This card shows how self-sufficient from the grid your home is."
+            },
+            "energy-grid-neutrality-gauge": {
+              "name": "Grid neutrality gauge",
+              "description": "This card shows your energy dependency on the grid."
+            },
+            "energy-carbon-consumed-gauge": {
+              "name": "Carbon consumed gauge",
+              "description": "This card shows how much of the energy consumed by your home was generated using non-fossil fuels."
+            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "This card allows you to display a graph of the statistics for each of the entities listed.",
@@ -8903,16 +9057,18 @@
                 "bar": "Bar"
               },
               "periods": {
+                "auto": "Auto",
+                "5minute": "5 minutes",
                 "hour": "Hour",
                 "day": "Day",
-                "month": "Month",
                 "week": "Week",
-                "year": "Year",
-                "5minute": "5 minutes"
+                "month": "Month",
+                "year": "Year"
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
               "hide_legend": "Hide legend",
+              "expand_legend": "Expanded legend",
               "logarithmic_scale": "Logarithmic scale",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
@@ -8976,6 +9132,9 @@
                 "auto": "Auto",
                 "live": "Live"
               },
+              "energy_date_selection": "Link to energy card collection",
+              "collection_key": "Energy card collection key",
+              "collection_key_description": "Optionally connect a collection of date picker, statistics graph and energy cards. Cards with matching key will respond to any connected date picker card. Any energy card on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
@@ -8989,6 +9148,7 @@
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
               "icon": "Icon",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "icon_height": "Icon height",
               "image": "Image path",
               "maximum": "Maximum",
@@ -9014,7 +9174,8 @@
               "search": "Search",
               "state_color": "Show state color",
               "suggested_cards": "Suggested cards",
-              "other_cards": "Other cards",
+              "core_cards": "Core cards",
+              "energy_cards": "Energy cards",
               "custom_cards": "Custom cards",
               "round_temperature": "Round temperature",
               "features": "Features",
@@ -9359,6 +9520,12 @@
               "cover-tilt": {
                 "label": "Cover tilt"
               },
+              "cover-tilt-preset": {
+                "label": "Cover tilt preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
+              },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
               },
@@ -9389,6 +9556,9 @@
               },
               "light-brightness": {
                 "label": "Light brightness"
+              },
+              "light-color-favorites": {
+                "label": "Light color favorites"
               },
               "light-color-temp": {
                 "label": "Light color temperature"

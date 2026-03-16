@@ -7,12 +7,15 @@ import { MockFanEntity } from "./fan-entity";
 import { MockGroupEntity } from "./group-entity";
 import { MockHumidifierEntity } from "./humidifier-entity";
 import { MockInputNumberEntity } from "./input-number-entity";
+import { MockLawnMowerEntity } from "./lawn-mower-entity";
 import { MockInputSelectEntity } from "./input-select-entity";
 import { MockInputTextEntity } from "./input-text-entity";
 import { MockLightEntity } from "./light-entity";
 import { MockLockEntity } from "./lock-entity";
 import { MockMediaPlayerEntity } from "./media-player-entity";
 import { MockToggleEntity } from "./toggle-entity";
+import { MockVacuumEntity } from "./vacuum-entity";
+import { MockValveEntity } from "./valve-entity";
 import { MockWaterHeaterEntity } from "./water-heater-entity";
 
 type EntityConstructor = new (input: EntityInput) => MockBaseEntity;
@@ -29,10 +32,13 @@ const TYPES: Record<string, EntityConstructor> = {
   input_number: MockInputNumberEntity,
   input_text: MockInputTextEntity,
   input_select: MockInputSelectEntity,
+  lawn_mower: MockLawnMowerEntity,
   light: MockLightEntity,
   lock: MockLockEntity,
   media_player: MockMediaPlayerEntity,
   switch: MockToggleEntity,
+  vacuum: MockVacuumEntity,
+  valve: MockValveEntity,
   water_heater: MockWaterHeaterEntity,
 };
 

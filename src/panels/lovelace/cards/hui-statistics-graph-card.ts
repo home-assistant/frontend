@@ -11,6 +11,7 @@ import "../../../components/ha-tooltip";
 import {
   getEnergyDataCollection,
   getSuggestedPeriod,
+  validateEnergyCollectionKey,
 } from "../../../data/energy";
 import type {
   Statistics,
@@ -157,6 +158,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
+    if (config.energy_date_selection && config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
+
     this._entities = config.entities
       ? processConfigEntities(config.entities, false)
       : [];
@@ -265,12 +270,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private get _period() {
-    return (
-      this._config?.period ??
-      (this._energyStart && this._energyEnd
-        ? getSuggestedPeriod(this._energyStart, this._energyEnd)
-        : undefined)
-    );
+    const period = this._config?.period;
+    const autoMode = period === "auto";
+    return this._energyStart && this._energyEnd && (!period || autoMode)
+      ? getSuggestedPeriod(this._energyStart, this._energyEnd)
+      : autoMode
+        ? undefined
+        : period;
   }
 
   protected render() {

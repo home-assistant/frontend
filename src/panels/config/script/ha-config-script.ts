@@ -38,7 +38,7 @@ class HaConfigScript extends HassRouterPage {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
