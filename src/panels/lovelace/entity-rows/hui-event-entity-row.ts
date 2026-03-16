@@ -81,6 +81,8 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
