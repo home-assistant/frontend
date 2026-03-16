@@ -3,11 +3,14 @@ import type { CSSResult, TemplateResult, LitElement } from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
-import { goBack } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
@@ -67,6 +70,13 @@ export const automationScriptEditorStyles: CSSResult = css`
   }
 `;
 
+export interface EditorDomainHooks<TConfig> {
+  fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
+  normalizeConfig(raw: TConfig): TConfig;
+  checkValidation(): Promise<void>;
+  domain: "automation" | "script";
+}
+
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
@@ -80,6 +90,10 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @property({ attribute: false }) public route!: Route;
 
     @property({ attribute: false }) public entityId: string | null = null;
+
+    @state()
+    @consume({ context: fullEntitiesContext, subscribe: true })
+    entityRegistry!: EntityRegistryEntry[];
 
     @state() protected dirty = false;
 
@@ -114,6 +128,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected registryEntry?: EntityRegistryEntry;
 
     protected entityRegistryUpdate?: EntityRegistryUpdate;
+
+    protected domainHooks!: EditorDomainHooks<TConfig>;
 
     protected entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
@@ -193,6 +209,47 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
      */
     protected confirmUnsavedChanged(): Promise<boolean> {
       return Promise.resolve(true);
+    }
+
+    protected async loadConfig(id: string) {
+      const hooks = this.domainHooks;
+      const domain = hooks.domain;
+      try {
+        const config = await hooks.fetchFileConfig(this.hass, id);
+        this.dirty = false;
+        this.readOnly = false;
+        this.config = hooks.normalizeConfig(config);
+        hooks.checkValidation();
+      } catch (err: any) {
+        if (err.status_code !== 404) {
+          const alertText =
+            err.body?.message || err.body || err.error || "Unknown error";
+          await showAlertDialog(this, {
+            title: this.hass.localize(
+              `ui.panel.config.${domain}.editor.load_error_unknown`,
+              { err_no: err.status_code ?? "unknown" }
+            ),
+            text: html`<pre>${alertText}</pre>`,
+          });
+          goBack("/config");
+          return;
+        }
+        const entity = this.entityRegistry.find(
+          (ent) => ent.platform === domain && ent.unique_id === id
+        );
+        if (entity) {
+          navigate(`/config/${domain}/show/${entity.entity_id}`, {
+            replace: true,
+          });
+          return;
+        }
+        await showAlertDialog(this, {
+          text: this.hass.localize(
+            `ui.panel.config.${domain}.editor.load_error_not_editable`
+          ),
+        });
+        goBack("/config");
+      }
     }
   }
   return AutomationScriptEditorClass;
