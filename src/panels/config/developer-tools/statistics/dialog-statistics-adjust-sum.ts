@@ -87,6 +87,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._open = false;
   }
 
+  private _adjustDataAndCloseInputDialog(): void {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._clearChosenStatistic();
+    this._fetchStats();
+  }
+
   private _dialogClosed(): void {
     this._open = false;
     this._params = undefined;
@@ -97,7 +103,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._amount = undefined;
     this._chosenStat = undefined;
     this._busy = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
@@ -120,7 +125,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
             "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
           )}
         </ha-button>
-        <ha-button slot="primaryAction" data-dialog="close">
+        <ha-button slot="primaryAction" @click=${this.closeDialog}>
           ${this.hass.localize("ui.common.close")}
         </ha-button>
       `;
@@ -482,6 +487,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this._amount! - this._origAmount!,
         unit || null
       );
+      this._busy = false;
     } catch (err: any) {
       this._busy = false;
       showAlertDialog(this, {
@@ -497,7 +503,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this.closeDialog();
+    this._adjustDataAndCloseInputDialog();
   }
 
   static get styles(): CSSResultGroup {
