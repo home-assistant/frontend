@@ -1,11 +1,6 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-control-button";
+import { customElement, property } from "lit/decorators";
 import type { CoverEntity } from "../../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
@@ -15,34 +10,15 @@ import {
 } from "../../../../data/cover";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity/entity_attributes";
-import type {
-  CoverEntityOptions,
-  ExtEntityRegistryEntry,
-} from "../../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
-import {
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
-import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
+import {
+  NumericMoreInfoFavoritesController,
+  type NumericFavoriteLocalizeKey,
+} from "../numeric-more-info-favorites-controller";
 
 type FavoriteKind = "position" | "tilt";
-
-type FavoriteLocalizeKey =
-  | "set"
-  | "edit"
-  | "delete"
-  | "delete_confirm_title"
-  | "delete_confirm_text"
-  | "delete_confirm_action"
-  | "add"
-  | "edit_title"
-  | "add_title";
-
-const favoriteKindFromEvent = (ev: Event): FavoriteKind =>
-  (ev.currentTarget as HTMLElement).dataset.kind as FavoriteKind;
 
 @customElement("ha-more-info-cover-favorite-positions")
 export class HaMoreInfoCoverFavoritePositions extends LitElement {
@@ -54,35 +30,57 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   @property({ attribute: false }) public editMode?: boolean;
 
-  @state() private _favoritePositions: number[] = [];
+  private readonly _positionFavorites =
+    new NumericMoreInfoFavoritesController<CoverEntity>(this, {
+      getHass: () => this.hass,
+      getStateObj: () => this.stateObj,
+      getEntry: () => this.entry,
+      getEditMode: () => this.editMode ?? false,
+      domain: "cover",
+      option: "favorite_positions",
+      defaultFavorites: DEFAULT_COVER_FAVORITE_POSITIONS,
+      getStoredFavorites: (entry) => entry.options?.cover?.favorite_positions,
+      normalizeFavorites: normalizeCoverFavoritePositions,
+      getCurrentValue: (stateObj) => {
+        const current = stateObj.attributes.current_position;
 
-  @state() private _favoriteTiltPositions: number[] = [];
+        return current == null ? undefined : Math.round(current);
+      },
+      setPositionService: "set_cover_position",
+      serviceDataKey: "position",
+      localize: (key, values) =>
+        this._localizeFavorite("position", key, values),
+      getInputLabel: () => this.hass.localize("ui.card.cover.position"),
+      inputSuffix: DOMAIN_ATTRIBUTES_UNITS.cover.current_position,
+    });
 
-  protected updated(changedProps: PropertyValues<this>): void {
-    if (
-      (changedProps.has("entry") || changedProps.has("stateObj")) &&
-      this.entry &&
-      this.stateObj
-    ) {
-      const options = this.entry.options?.cover;
+  private readonly _tiltFavorites =
+    new NumericMoreInfoFavoritesController<CoverEntity>(this, {
+      getHass: () => this.hass,
+      getStateObj: () => this.stateObj,
+      getEntry: () => this.entry,
+      getEditMode: () => this.editMode ?? false,
+      domain: "cover",
+      option: "favorite_tilt_positions",
+      defaultFavorites: DEFAULT_COVER_FAVORITE_POSITIONS,
+      getStoredFavorites: (entry) =>
+        entry.options?.cover?.favorite_tilt_positions,
+      normalizeFavorites: normalizeCoverFavoritePositions,
+      getCurrentValue: (stateObj) => {
+        const current = stateObj.attributes.current_tilt_position;
 
-      this._favoritePositions = coverSupportsPosition(this.stateObj)
-        ? normalizeCoverFavoritePositions(
-            options?.favorite_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
-          )
-        : [];
-
-      this._favoriteTiltPositions = coverSupportsTiltPosition(this.stateObj)
-        ? normalizeCoverFavoritePositions(
-            options?.favorite_tilt_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
-          )
-        : [];
-    }
-  }
+        return current == null ? undefined : Math.round(current);
+      },
+      setPositionService: "set_cover_tilt_position",
+      serviceDataKey: "tilt_position",
+      localize: (key, values) => this._localizeFavorite("tilt", key, values),
+      getInputLabel: () => this.hass.localize("ui.card.cover.tilt_position"),
+      inputSuffix: DOMAIN_ATTRIBUTES_UNITS.cover.current_position,
+    });
 
   private _localizeFavorite(
     kind: FavoriteKind,
-    key: FavoriteLocalizeKey,
+    key: NumericFavoriteLocalizeKey,
     values?: Record<string, string | number>
   ): string {
     return this.hass.localize(
@@ -91,277 +89,15 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     );
   }
 
-  private _getFavorites(kind: FavoriteKind): number[] {
-    return kind === "position"
-      ? this._favoritePositions
-      : this._favoriteTiltPositions;
-  }
-
-  private _getCurrentValue(kind: FavoriteKind): number | undefined {
-    const current =
-      kind === "position"
-        ? this.stateObj.attributes.current_position
-        : this.stateObj.attributes.current_tilt_position;
-
-    return current == null ? undefined : Math.round(current);
-  }
-
-  private async _save(options: CoverEntityOptions): Promise<void> {
-    if (!this.entry) {
-      return;
-    }
-
-    const currentOptions: CoverEntityOptions = {
-      ...(this.entry.options?.cover ?? {}),
-    };
-
-    if (coverSupportsPosition(this.stateObj)) {
-      currentOptions.favorite_positions = this._favoritePositions;
-    }
-
-    if (coverSupportsTiltPosition(this.stateObj)) {
-      currentOptions.favorite_tilt_positions = this._favoriteTiltPositions;
-    }
-
-    const result = await updateEntityRegistryEntry(
-      this.hass,
-      this.entry.entity_id,
-      {
-        options_domain: "cover",
-        options: {
-          ...currentOptions,
-          ...options,
-        },
-      }
-    );
-
-    fireEvent(this, "entity-entry-updated", result.entity_entry);
-  }
-
-  private async _setFavorites(
-    kind: FavoriteKind,
-    favorites: number[]
-  ): Promise<void> {
-    const normalized = normalizeCoverFavoritePositions(favorites);
-
-    if (kind === "position") {
-      this._favoritePositions = normalized;
-      await this._save({ favorite_positions: normalized });
-      return;
-    }
-
-    this._favoriteTiltPositions = normalized;
-    await this._save({ favorite_tilt_positions: normalized });
-  }
-
-  private _move(kind: FavoriteKind, index: number, newIndex: number): void {
-    const favorites = this._getFavorites(kind).concat();
-    const moved = favorites.splice(index, 1)[0];
-    favorites.splice(newIndex, 0, moved);
-    this._setFavorites(kind, favorites);
-  }
-
-  private _applyFavorite(kind: FavoriteKind, index: number): void {
-    const favorite = this._getFavorites(kind)[index];
-
-    if (favorite === undefined) {
-      return;
-    }
-
-    if (kind === "position") {
-      this.hass.callService("cover", "set_cover_position", {
-        entity_id: this.stateObj.entity_id,
-        position: favorite,
-      });
-      return;
-    }
-
-    this.hass.callService("cover", "set_cover_tilt_position", {
-      entity_id: this.stateObj.entity_id,
-      tilt_position: favorite,
-    });
-  }
-
-  private async _promptFavoriteValue(
-    kind: FavoriteKind,
-    value?: number
-  ): Promise<number | undefined> {
-    const response = await showPromptDialog(this, {
-      title: this._localizeFavorite(
-        kind,
-        value === undefined ? "add_title" : "edit_title"
-      ),
-      inputLabel: this.hass.localize(
-        kind === "position"
-          ? "ui.card.cover.position"
-          : "ui.card.cover.tilt_position"
-      ),
-      inputType: "number",
-      inputMin: "0",
-      inputMax: "100",
-      inputSuffix: DOMAIN_ATTRIBUTES_UNITS.cover.current_position,
-      defaultValue: value === undefined ? undefined : String(value),
-    });
-
-    if (response === null || response.trim() === "") {
-      return undefined;
-    }
-
-    const number = Number(response);
-
-    if (isNaN(number)) {
-      return undefined;
-    }
-
-    return Math.max(0, Math.min(100, Math.round(number)));
-  }
-
-  private async _addFavorite(kind: FavoriteKind): Promise<void> {
-    const value = await this._promptFavoriteValue(kind);
-
-    if (value === undefined) {
-      return;
-    }
-
-    await this._setFavorites(kind, [...this._getFavorites(kind), value]);
-  }
-
-  private async _editFavorite(
-    kind: FavoriteKind,
-    index: number
-  ): Promise<void> {
-    const favorites = this._getFavorites(kind);
-    const current = favorites[index];
-
-    if (current === undefined) {
-      return;
-    }
-
-    const value = await this._promptFavoriteValue(kind, current);
-
-    if (value === undefined) {
-      return;
-    }
-
-    const updated = [...favorites];
-    updated[index] = value;
-    await this._setFavorites(kind, updated);
-  }
-
-  private async _deleteFavorite(
-    kind: FavoriteKind,
-    index: number
-  ): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      destructive: true,
-      title: this._localizeFavorite(kind, "delete_confirm_title"),
-      text: this._localizeFavorite(kind, "delete_confirm_text"),
-      confirmText: this._localizeFavorite(kind, "delete_confirm_action"),
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    await this._setFavorites(
-      kind,
-      this._getFavorites(kind).filter((_, itemIndex) => itemIndex !== index)
-    );
-  }
-
-  private _renderFavoriteButton =
-    (kind: FavoriteKind): HaMoreInfoFavorites["renderItem"] =>
-    (favorite, _index, editMode) => {
-      const currentValue = this._getCurrentValue(kind);
-      const active = currentValue === favorite;
-      const label = this._localizeFavorite(kind, editMode ? "edit" : "set", {
-        value: `${favorite as number}%`,
-      });
-
-      return html`
-        <ha-control-button
-          class=${classMap({
-            active,
-          })}
-          style=${styleMap({
-            "--control-button-border-radius": "var(--ha-border-radius-pill)",
-            width: "72px",
-            height: "36px",
-          })}
-          .label=${label}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
-        >
-          ${favorite as number}%
-        </ha-control-button>
-      `;
-    };
-
-  private _deleteLabel =
-    (kind: FavoriteKind): HaMoreInfoFavorites["deleteLabel"] =>
-    (index) =>
-      this._localizeFavorite(kind, "delete", {
-        number: index + 1,
-      });
-
-  private _handleFavoriteAction = (
-    ev: HASSDomEvent<HASSDomEvents["favorite-item-action"]>
-  ): void => {
-    ev.stopPropagation();
-    const kind = favoriteKindFromEvent(ev);
-
-    const { action, index } = ev.detail;
-
-    if (action === "hold" && this.hass.user?.is_admin) {
-      fireEvent(this, "toggle-edit-mode", true);
-      return;
-    }
-
-    if (this.editMode) {
-      this._editFavorite(kind, index);
-      return;
-    }
-
-    this._applyFavorite(kind, index);
-  };
-
-  private _handleFavoriteMoved = (
-    ev: HASSDomEvent<HASSDomEvents["favorite-item-moved"]>
-  ): void => {
-    ev.stopPropagation();
-    const kind = favoriteKindFromEvent(ev);
-    this._move(kind, ev.detail.oldIndex, ev.detail.newIndex);
-  };
-
-  private _handleFavoriteDelete = (
-    ev: HASSDomEvent<HASSDomEvents["favorite-item-delete"]>
-  ): void => {
-    ev.stopPropagation();
-    const kind = favoriteKindFromEvent(ev);
-    this._deleteFavorite(kind, ev.detail.index);
-  };
-
-  private _handleFavoriteAdd = (
-    ev: HASSDomEvent<HASSDomEvents["favorite-item-add"]>
-  ): void => {
-    ev.stopPropagation();
-    const kind = favoriteKindFromEvent(ev);
-    this._addFavorite(kind);
-  };
-
-  private _handleFavoriteDone = (
-    ev: HASSDomEvent<HASSDomEvents["favorite-item-done"]>
-  ): void => {
-    ev.stopPropagation();
-    fireEvent(this, "toggle-edit-mode", false);
-  };
-
   private _renderKindSection(
-    kind: FavoriteKind,
     label: string,
-    favorites: number[],
+    controller: NumericMoreInfoFavoritesController<CoverEntity>,
+    addLabel: string,
     showDone: boolean,
     showLabel: boolean
   ): TemplateResult | typeof nothing {
+    const favorites = controller.favorites;
+
     if (!this.editMode && favorites.length === 0) {
       return nothing;
     }
@@ -370,23 +106,22 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       <section class="group">
         ${showLabel ? html`<h4>${label}</h4>` : nothing}
         <ha-more-info-favorites
-          data-kind=${kind}
           .items=${favorites}
-          .renderItem=${this._renderFavoriteButton(kind)}
-          .deleteLabel=${this._deleteLabel(kind)}
+          .renderItem=${controller.renderItem}
+          .deleteLabel=${controller.deleteLabel}
           .editMode=${this.editMode ?? false}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           .isAdmin=${Boolean(this.hass.user?.is_admin)}
           .showDone=${showDone}
-          .addLabel=${this._localizeFavorite(kind, "add")}
+          .addLabel=${addLabel}
           .doneLabel=${this.hass.localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
-          @favorite-item-action=${this._handleFavoriteAction}
-          @favorite-item-moved=${this._handleFavoriteMoved}
-          @favorite-item-delete=${this._handleFavoriteDelete}
-          @favorite-item-add=${this._handleFavoriteAdd}
-          @favorite-item-done=${this._handleFavoriteDone}
+          @favorite-item-action=${controller.handleAction}
+          @favorite-item-moved=${controller.handleMoved}
+          @favorite-item-delete=${controller.handleDelete}
+          @favorite-item-add=${controller.handleAdd}
+          @favorite-item-done=${controller.handleDone}
         ></ha-more-info-favorites>
       </section>
     `;
@@ -400,10 +135,10 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     const supportsPosition = coverSupportsPosition(this.stateObj);
     const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
     const showPositionSection = supportsPosition
-      ? this.editMode || this._favoritePositions.length > 0
+      ? this.editMode || this._positionFavorites.favorites.length > 0
       : false;
     const showTiltSection = supportsTiltPosition
-      ? this.editMode || this._favoriteTiltPositions.length > 0
+      ? this.editMode || this._tiltFavorites.favorites.length > 0
       : false;
     const showLabels =
       [showPositionSection, showTiltSection].filter(Boolean).length > 1;
@@ -414,18 +149,18 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       <div class="groups">
         ${supportsPosition
           ? this._renderKindSection(
-              "position",
               this.hass.localize("ui.card.cover.position"),
-              this._favoritePositions,
+              this._positionFavorites,
+              this._localizeFavorite("position", "add"),
               showDoneOnPosition,
               showLabels
             )
           : nothing}
         ${supportsTiltPosition
           ? this._renderKindSection(
-              "tilt",
               this.hass.localize("ui.card.cover.tilt_position"),
-              this._favoriteTiltPositions,
+              this._tiltFavorites,
+              this._localizeFavorite("tilt", "add"),
               true,
               showLabels
             )
