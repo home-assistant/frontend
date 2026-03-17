@@ -2157,7 +2157,7 @@ class DialogAddAutomationElement
         ha-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100vh - max(
                   var(--safe-area-inset-bottom),
@@ -2166,7 +2166,7 @@ class DialogAddAutomationElement
             )
           );
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100dvh - max(
                   var(--safe-area-inset-bottom),
