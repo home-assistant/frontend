@@ -139,6 +139,12 @@ const TYPES = {
   },
 };
 
+export interface CollectionGroup {
+  collectionIndex: number;
+  titleKey?: LocalizeKeys;
+  groups: AddAutomationElementListItem[];
+}
+
 export interface AutomationItemComboBoxItem extends PickerComboBoxItem {
   renderedIcon?: TemplateResult;
   type: "trigger" | "condition" | "action" | "block";
@@ -167,6 +173,8 @@ const ENTITY_DOMAINS_OTHER = new Set([
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+
+const GENERIC_GROUPS = new Set(["device", "entity"]);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -663,7 +671,7 @@ class DialogAddAutomationElement
                         <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
-                    (collection, index) => html`
+                    (collection) => html`
                       ${collection.titleKey && collection.groups.length
                         ? html`<ha-section-title>
                             ${this.hass.localize(collection.titleKey)}
@@ -677,7 +685,7 @@ class DialogAddAutomationElement
                             interactive
                             type="button"
                             .value=${item.key}
-                            .index=${index}
+                            .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
                             class=${item.key === this._selectedGroup
                               ? "selected"
@@ -901,11 +909,12 @@ class DialogAddAutomationElement
     collectionIndex?: number
   ): AutomationElementGroup => {
     if (group && collectionIndex !== undefined) {
-      return (
-        TYPES[type].collections[collectionIndex].groups[group].members || {
-          [group]: {},
-        }
-      );
+      const selectedGroup =
+        TYPES[type].collections[collectionIndex]?.groups[group] ??
+        TYPES[type].collections.find((collection) => group in collection.groups)
+          ?.groups[group];
+
+      return selectedGroup?.members || { [group]: selectedGroup || {} };
     }
 
     return TYPES[type].collections.reduce(
@@ -955,13 +964,10 @@ class DialogAddAutomationElement
       triggerDescriptions: TriggerDescriptions,
       conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
-    ): {
-      titleKey?: LocalizeKeys;
-      groups: AddAutomationElementListItem[];
-    }[] => {
-      const generatedCollections: any = [];
+    ): CollectionGroup[] => {
+      const generatedCollections: CollectionGroup[] = [];
 
-      collections.forEach((collection) => {
+      collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
 
@@ -1043,6 +1049,7 @@ class DialogAddAutomationElement
         );
 
         generatedCollections.push({
+          collectionIndex: index,
           titleKey: collection.titleKey,
           groups: groups.sort((a, b) => {
             // make sure device is always on top
@@ -1056,7 +1063,36 @@ class DialogAddAutomationElement
           }),
         });
       });
-      return generatedCollections;
+
+      return !["trigger", "condition"].includes(type)
+        ? generatedCollections
+        : generatedCollections.flatMap(
+            (collection: CollectionGroup): CollectionGroup[] => {
+              const genericGroups = collection.groups.filter((group) =>
+                GENERIC_GROUPS.has(group.key)
+              );
+
+              const mainGroups = collection.groups.filter(
+                (group) => !GENERIC_GROUPS.has(group.key)
+              );
+
+              return [
+                ...(mainGroups.length
+                  ? [
+                      {
+                        ...collection,
+                        groups: mainGroups,
+                      },
+                    ]
+                  : []),
+                {
+                  collectionIndex: collection.collectionIndex,
+                  titleKey: "ui.panel.config.automation.editor.generic",
+                  groups: genericGroups,
+                },
+              ];
+            }
+          );
     }
   );
 
