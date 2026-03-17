@@ -88,7 +88,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   private _adjustDataAndCloseInputDialog(): void {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._clearChosenStatistic();
     this._fetchStats();
   }
@@ -103,6 +102,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._amount = undefined;
     this._chosenStat = undefined;
     this._busy = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
