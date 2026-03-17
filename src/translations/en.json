@@ -9637,6 +9637,10 @@
               "valve-open-close": {
                 "label": "Valve open/close"
               },
+              "valve-position-favorite": {
+                "label": "Valve favorite positions",
+                "description": "This feature uses the valve's favorite positions. To edit them, open the valve's more info dialog and press and hold a favorite."
+              },
               "valve-position": {
                 "label": "Valve position"
               },

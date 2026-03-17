@@ -194,6 +194,10 @@ export interface ValvePositionCardFeatureConfig {
   type: "valve-position";
 }
 
+export interface ValvePositionFavoriteCardFeatureConfig {
+  type: "valve-position-favorite";
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -288,6 +292,7 @@ export type LovelaceCardFeatureConfig =
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig
+  | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig
