@@ -1603,9 +1603,37 @@
           "create_zone": "Create zone from current location"
         },
         "cover": {
+          "edit_mode": "Edit favorites",
+          "reset_favorites": "Reset favorites",
+          "reset_favorites_text": "Do you want to reset all favorites for this cover back to default?",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more covers to receive the copied favorites from this cover. Covers must support the same position controls.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
             "button": "Switch to button mode",
             "position": "Switch to position mode"
+          },
+          "favorite_position": {
+            "set": "Set position to {value}",
+            "edit": "Set position to {value}",
+            "delete": "Delete favorite position {number}",
+            "delete_confirm_title": "Delete favorite position?",
+            "delete_confirm_text": "This favorite position will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite position",
+            "edit_title": "Edit favorite position",
+            "add_title": "Add favorite position"
+          },
+          "favorite_tilt_position": {
+            "set": "Set tilt position to {value}",
+            "edit": "Set tilt position to {value}",
+            "delete": "Delete favorite tilt position {number}",
+            "delete_confirm_title": "Delete favorite tilt position?",
+            "delete_confirm_text": "This favorite tilt position will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite tilt position",
+            "edit_title": "Edit favorite tilt position",
+            "add_title": "Add favorite tilt position"
           }
         },
         "zone": {
@@ -9512,20 +9540,16 @@
               "cover-position": {
                 "label": "Cover position"
               },
-              "cover-position-preset": {
-                "label": "Cover position preset",
-                "position": "Position",
-                "add_position": "Add position",
-                "remove_position": "Remove position"
+              "cover-position-favorite": {
+                "label": "Cover favorite positions",
+                "description": "This feature uses the cover's favorite positions. To edit them, open the cover's more info dialog and press and hold a favorite."
               },
               "cover-tilt": {
                 "label": "Cover tilt"
               },
-              "cover-tilt-preset": {
-                "label": "Cover tilt preset",
-                "position": "Position",
-                "add_position": "Add position",
-                "remove_position": "Remove position"
+              "cover-tilt-favorite": {
+                "label": "Cover favorite tilt positions",
+                "description": "This feature uses the cover's favorite tilt positions. To edit them, open the cover's more info dialog and press and hold a favorite."
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
