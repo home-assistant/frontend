@@ -31,6 +31,12 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../data/light";
+import type { ValveEntity } from "../../data/valve";
+import {
+  DEFAULT_VALVE_FAVORITE_POSITIONS,
+  normalizeValveFavoritePositions,
+  valveSupportsPosition,
+} from "../../data/valve";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showFormDialog } from "../form/show-form-dialog";
@@ -266,12 +272,48 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
   },
 };
 
+const valveFavoritesHandler: FavoritesDialogHandler = {
+  domain: "valve",
+  supports: (stateObj) => valveSupportsPosition(stateObj as ValveEntity),
+  hasCustomFavorites: (entry) =>
+    hasCustomFavoriteOptionValues(entry.options?.valve?.favorite_positions),
+  getResetOptions: () => ({
+    favorite_positions: undefined,
+  }),
+  getLabels: (hass) => getFavoritesDialogLabels(hass, "valve"),
+  copy: async ({ entry, hass, host, stateObj }) => {
+    const valveStateObj = stateObj as ValveEntity;
+    const favoritePositions = normalizeValveFavoritePositions(
+      entry.options?.valve?.favorite_positions ??
+        DEFAULT_VALVE_FAVORITE_POSITIONS
+    );
+
+    const compatibleValves = Object.values(hass.states).filter(
+      (candidate) =>
+        candidate.entity_id !== valveStateObj.entity_id &&
+        computeStateDomain(candidate) === "valve" &&
+        valveSupportsPosition(candidate as ValveEntity)
+    );
+
+    await copyFavoriteOptionsToEntities(
+      host,
+      hass,
+      "valve",
+      compatibleValves.map((valve) => valve.entity_id),
+      {
+        favorite_positions: [...favoritePositions],
+      }
+    );
+  },
+};
+
 const FAVORITES_DIALOG_HANDLERS: Record<
   FavoritesDomain,
   FavoritesDialogHandler
 > = {
   cover: coverFavoritesHandler,
   light: lightFavoritesHandler,
+  valve: valveFavoritesHandler,
 };
 
 export const getFavoritesDialogHandler = (

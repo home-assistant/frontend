@@ -1688,9 +1688,26 @@
           "dock": "Return to dock"
         },
         "valve": {
+          "edit_mode": "[%key:ui::dialogs::more_info_control::cover::edit_mode%]",
+          "reset_favorites": "[%key:ui::dialogs::more_info_control::cover::reset_favorites%]",
+          "reset_favorites_text": "Do you want to reset all favorites for this valve back to default?",
+          "copy_favorites": "[%key:ui::dialogs::more_info_control::cover::copy_favorites%]",
+          "copy_favorites_helper": "Select one or more valves to receive the copied favorites from this valve.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
             "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
             "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
+          },
+          "favorite_position": {
+            "set": "[%key:ui::dialogs::more_info_control::cover::favorite_position::set%]",
+            "edit": "[%key:ui::dialogs::more_info_control::cover::favorite_position::edit%]",
+            "delete": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete%]",
+            "delete_confirm_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_title%]",
+            "delete_confirm_text": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_text%]",
+            "delete_confirm_action": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_action%]",
+            "add": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add%]",
+            "edit_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::edit_title%]",
+            "add_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add_title%]"
           }
         },
         "camera": {
