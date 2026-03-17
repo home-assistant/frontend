@@ -22,6 +22,7 @@ type DialogType =
   | "basic-subtitle-below"
   | "basic-subtitle-above"
   | "allow-mode-change"
+  | "popover"
   | "form"
   | "actions"
   | "large"
@@ -32,6 +33,8 @@ export class DemoHaAdaptiveDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
   @state() private _hass?: HomeAssistant;
+
+  @state() private _dialogAnchor?: HTMLElement;
 
   protected firstUpdated() {
     const hass = provideHass(this);
@@ -68,6 +71,9 @@ export class DemoHaAdaptiveDialog extends LitElement {
           >
           <ha-button @click=${this._handleOpenDialog("form")}
             >Adaptive dialog with form</ha-button
+          >
+          <ha-button @click=${this._handleOpenDialog("popover")}
+            >Desktop popover adaptive dialog</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("allow-mode-change")}
             >Adaptive dialog with allow mode change</ha-button
@@ -164,6 +170,22 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <ha-adaptive-dialog
           .hass=${this._hass}
+          .open=${this._openDialog === "popover"}
+          desktop-mode="popover"
+          .dialogAnchor=${this._dialogAnchor}
+          header-title="Desktop popover adaptive dialog"
+          header-subtitle="Uses the opener as the popover anchor"
+          @closed=${this._handleClosed}
+        >
+          <div>
+            On desktop, this opens as an anchored popover. On narrow screens, it
+            still falls back to a bottom sheet.
+          </div>
+        </ha-adaptive-dialog>
+
+        <ha-adaptive-dialog
+          .hass=${this._hass}
+          .open=${this._openDialog === "allow-mode-change"}
           .allowModeChange=${this._openDialog === "allow-mode-change"}
           header-title="Adaptive dialog with allow mode change"
           header-subtitle="Resize the window while this dialog is open"
@@ -196,7 +218,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <p>
           The <code>ha-adaptive-dialog</code> component automatically switches
-          between two modes based on screen size:
+          between modes based on screen size:
         </p>
 
         <ul>
@@ -206,6 +228,11 @@ export class DemoHaAdaptiveDialog extends LitElement {
             <code>ha-dialog</code>.
           </li>
           <li>
+            <strong>Desktop popover mode:</strong> Set
+            <code>desktop-mode="popover"</code> and pass a
+            <code>dialogAnchor</code> to render an anchored desktop popover.
+          </li>
+          <li>
             <strong>Bottom sheet mode:</strong> Used on mobile devices and
             smaller screens (width ≤ 870px or height ≤ 500px). Renders as a
             drawer from the bottom using <code>ha-bottom-sheet</code>.
@@ -213,7 +240,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ul>
 
         <p>
-          By default, the mode is determined at mount time and then stays fixed
+          By default, the mode is determined when opened and then stays fixed
           while the dialog is open. To allow switching modes while the viewport
           changes, use the <code>allow-mode-change</code> attribute.
         </p>
@@ -442,14 +469,20 @@ export class DemoHaAdaptiveDialog extends LitElement {
             <tr>
               <td><code>width</code></td>
               <td>
-                Preferred dialog width preset (dialog mode only, ignored in
-                bottom sheet mode).
+                Preferred dialog width preset (dialog and popover mode only,
+                ignored in bottom sheet mode).
               </td>
               <td><code>medium</code></td>
               <td>
                 <code>small</code>, <code>medium</code>, <code>large</code>,
                 <code>full</code>
               </td>
+            </tr>
+            <tr>
+              <td><code>desktop-mode</code></td>
+              <td>Desktop presentation mode.</td>
+              <td><code>dialog</code></td>
+              <td><code>dialog</code>, <code>popover</code></td>
             </tr>
             <tr>
               <td><code>header-title</code></td>
@@ -578,19 +611,15 @@ export class DemoHaAdaptiveDialog extends LitElement {
           <tbody>
             <tr>
               <td><code>opened</code></td>
-              <td>
-                Fired when the adaptive dialog is shown (dialog mode only).
-              </td>
+              <td>Fired when the adaptive dialog is shown.</td>
             </tr>
             <tr>
               <td><code>closed</code></td>
-              <td>
-                Fired after the adaptive dialog is hidden (dialog mode only).
-              </td>
+              <td>Fired after the adaptive dialog is hidden.</td>
             </tr>
             <tr>
               <td><code>after-show</code></td>
-              <td>Fired after show animation completes (dialog mode only).</td>
+              <td>Fired after show animation completes.</td>
             </tr>
           </tbody>
         </table>
@@ -614,11 +643,13 @@ export class DemoHaAdaptiveDialog extends LitElement {
     `;
   }
 
-  private _handleOpenDialog = (dialog: DialogType) => () => {
+  private _handleOpenDialog = (dialog: DialogType) => (ev?: Event) => {
+    this._dialogAnchor = ev?.currentTarget as HTMLElement | undefined;
     this._openDialog = dialog;
   };
 
   private _handleClosed = () => {
+    this._dialogAnchor = undefined;
     this._openDialog = false;
   };
 

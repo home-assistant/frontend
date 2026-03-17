@@ -48,7 +48,8 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
           (showEv as HASSDomEvent<unknown>).detail,
           dialogImport,
           undefined,
-          addHistory
+          addHistory,
+          undefined
         );
       });
     }

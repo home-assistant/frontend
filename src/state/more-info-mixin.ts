@@ -42,7 +42,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           data: ev.detail.data,
         },
         () => import("../dialogs/more-info/ha-more-info-dialog"),
-        ev.detail.parentElement
+        ev.detail.parentElement,
+        true,
+        undefined
       );
     }
   };
