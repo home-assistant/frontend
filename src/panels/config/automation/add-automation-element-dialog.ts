@@ -54,6 +54,7 @@ import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
 import "../../../components/search-input";
+import { haStyleScrollbar } from "../../../resources/styles";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
@@ -599,10 +600,13 @@ class DialogAddAutomationElement
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
-                class=${this._getAddFromTargetHidden(
-                  this._narrow,
-                  this._selectedTarget
-                )}
+                class=${classMap({
+                  "ha-scrollbar": true,
+                  [this._getAddFromTargetHidden(
+                    this._narrow,
+                    this._selectedTarget
+                  )]: true,
+                })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
@@ -610,6 +614,7 @@ class DialogAddAutomationElement
                   class=${classMap({
                     groups: true,
                     hidden: hideCollections,
+                    "ha-scrollbar": true,
                   })}
                 >
                   ${this._params!.clipboardItem
@@ -2108,6 +2113,7 @@ class DialogAddAutomationElement
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;

@@ -890,8 +890,6 @@ class DialogZWaveJSAddNode extends LitElement {
       this._step = "rename_device";
       const nameChanged = this._device.name !== this._deviceOptions?.name;
       if (nameChanged || this._deviceOptions?.area) {
-        const oldDeviceName = this._device.name;
-        const newDeviceName = this._deviceOptions!.name;
         try {
           await updateDeviceRegistryEntry(this.hass, this._device.id, {
             name_by_user: this._deviceOptions!.name,
@@ -899,8 +897,6 @@ class DialogZWaveJSAddNode extends LitElement {
           });
 
           if (nameChanged) {
-            // rename entities
-
             const entities = this._entities.filter(
               (entity) => entity.device_id === this._device!.id
             );
@@ -912,33 +908,14 @@ class DialogZWaveJSAddNode extends LitElement {
 
             await Promise.all(
               entities.map((entity) => {
-                const name = entity.name;
-                let newName: string | null | undefined;
                 const newEntityId = entityIdsMapping[entity.entity_id];
 
-                if (entity.has_entity_name && !entity.name) {
-                  newName = undefined;
-                } else if (
-                  entity.has_entity_name &&
-                  (entity.name === oldDeviceName ||
-                    entity.name === newDeviceName)
-                ) {
-                  // clear name if it matches the device name and it uses the device name (entity naming)
-                  newName = null;
-                } else if (name && name.includes(oldDeviceName)) {
-                  newName = name.replace(oldDeviceName, newDeviceName);
-                }
-
-                if (
-                  (newName === undefined && !newEntityId) ||
-                  newEntityId === entity.entity_id
-                ) {
+                if (!newEntityId || newEntityId === entity.entity_id) {
                   return undefined;
                 }
 
                 return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  name: newName || name,
-                  new_entity_id: newEntityId || undefined,
+                  new_entity_id: newEntityId,
                 });
               })
             );

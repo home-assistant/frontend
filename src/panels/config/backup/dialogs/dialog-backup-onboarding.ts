@@ -13,7 +13,6 @@ import "../../../../components/ha-icon-next";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-password-field";
 import "../../../../components/ha-svg-icon";
 import type {
   BackupConfig,
