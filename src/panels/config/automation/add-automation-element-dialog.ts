@@ -1089,8 +1089,7 @@ class DialogAddAutomationElement
                   ? [
                       {
                         collectionIndex: collection.collectionIndex,
-                        titleKey:
-                          "ui.panel.config.automation.editor.generic",
+                        titleKey: "ui.panel.config.automation.editor.generic",
                         groups: genericGroups,
                       },
                     ]
