@@ -8257,10 +8257,10 @@
               "self_sufficiency_could_not_calc": "Self-sufficiency couldn't be calculated"
             },
             "grid_neutrality_gauge": {
-              "energy_dependency": "This card indicates your net energy usage.",
-              "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
-              "net_returned_grid": "Net returned to the grid",
-              "net_consumed_grid": "Net consumed from the grid",
+              "energy_dependency": "This card indicates your grid energy usage.",
+              "color_explain": "If the needle is in the purple, you exported more energy to the grid than you imported from it. If it's in the blue, you imported more energy from the grid than you exported.",
+              "net_returned_grid": "Net exported to the grid",
+              "net_consumed_grid": "Net imported from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
             "energy_distribution": {
