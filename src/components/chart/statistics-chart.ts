@@ -613,10 +613,10 @@ export class StatisticsChart extends LitElement {
         }
       });
 
-      // Close out the last stat segment at prevEndTime
+      // For line charts, close out the last stat segment at prevEndTime
       const lastEndTime = prevEndTime;
       const lastValues = prevValues;
-      if (lastEndTime && lastValues) {
+      if (this.chartType === "line" && lastEndTime && lastValues) {
         statDataSets.forEach((d, i) => {
           d.data!.push(
             this._transformDataValue([lastEndTime, ...lastValues[i]!])
