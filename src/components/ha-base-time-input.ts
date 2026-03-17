@@ -179,6 +179,7 @@ export class HaBaseTimeInput extends LitElement {
             inputmode="numeric"
             .value=${this.hours.toFixed()}
             .label=${this.hourLabel}
+            name="hours"
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
             without-spin-buttons

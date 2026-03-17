@@ -462,7 +462,6 @@ export class HaInput extends LitElement {
     :host(:focus-within) wa-input::part(label) {
       padding-top: var(--ha-space-3);
       font-size: var(--ha-font-size-xs);
-      padding-top: var(--ha-space-3);
     }
 
     wa-input::part(base) {

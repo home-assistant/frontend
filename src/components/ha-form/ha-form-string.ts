@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
@@ -31,8 +31,6 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() protected unmaskedPassword = false;
-
   @query("ha-input") private _input?: HaInput;
 
   static shadowRootOptions = {
@@ -48,7 +46,6 @@ export class HaFormString extends LitElement implements HaFormElement {
     return html`
       <ha-input
         .passwordToggle=${this.isPassword}
-        .passwordVisible=${this.unmaskedPassword}
         .type=${!this.isPassword ? this.stringType : "password"}
         .label=${this.label}
         .value=${this.data || ""}
