@@ -5,10 +5,11 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
-  computeDefaultFavoriteColors,
+  applyLightFavoriteColor,
   type LightEntity,
   type LightColor,
   lightSupportsFavoriteColors,
+  resolveLightFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
@@ -128,17 +129,12 @@ class HuiLightColorFavoritesCardFeature
 
     if (changedProps.has("_entry") || changedProps.has("_maxVisible")) {
       if (this._entry) {
-        if (this._entry.options?.light?.favorite_colors) {
-          this._favoriteColors =
-            this._entry.options.light.favorite_colors.slice(
-              0,
-              this._maxVisible
-            );
-        } else if (this._stateObj) {
-          this._favoriteColors = computeDefaultFavoriteColors(
-            this._stateObj
-          ).slice(0, this._maxVisible);
-        }
+        this._favoriteColors = this._stateObj
+          ? resolveLightFavoriteColors(
+              this._stateObj,
+              this._entry.options?.light?.favorite_colors
+            ).slice(0, this._maxVisible)
+          : [];
       }
     }
   }
@@ -199,10 +195,7 @@ class HuiLightColorFavoritesCardFeature
     const index = (ev.target! as any).index!;
 
     const favorite = this._favoriteColors[index];
-    this.hass!.callService("light", "turn_on", {
-      entity_id: this._stateObj!.entity_id,
-      ...favorite,
-    });
+    applyLightFavoriteColor(this.hass!, this._stateObj!, favorite);
   }
 
   static get styles() {

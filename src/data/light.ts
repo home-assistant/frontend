@@ -3,6 +3,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { temperature2rgb } from "../common/color/convert-light-color";
+import type { HomeAssistant } from "../types";
 
 export const enum LightEntityFeature {
   EFFECT = 4,
@@ -159,5 +160,20 @@ export const computeDefaultFavoriteColors = (
 
   return colors;
 };
+
+export const resolveLightFavoriteColors = (
+  stateObj: LightEntity,
+  favoriteColors?: LightColor[] | null
+): LightColor[] => favoriteColors ?? computeDefaultFavoriteColors(stateObj);
+
+export const applyLightFavoriteColor = (
+  hass: HomeAssistant,
+  stateObj: LightEntity,
+  favorite: LightColor
+) =>
+  hass.callService("light", "turn_on", {
+    entity_id: stateObj.entity_id,
+    ...favorite,
+  });
 
 export const formatTempColor = (value: number) => `${value} K`;

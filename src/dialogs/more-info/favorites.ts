@@ -26,10 +26,10 @@ import {
 import type { LightColor, LightEntity } from "../../data/light";
 import {
   LightColorMode,
-  computeDefaultFavoriteColors,
+  lightSupportsFavoriteColors,
   lightSupportsColor,
   lightSupportsColorMode,
-  lightSupportsFavoriteColors,
+  resolveLightFavoriteColors,
 } from "../../data/light";
 import type { ValveEntity } from "../../data/valve";
 import {
@@ -256,9 +256,10 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
   getLabels: (hass) => getFavoritesDialogLabels(hass, "light"),
   copy: async ({ entry, hass, host, stateObj }) => {
     const lightStateObj = stateObj as LightEntity;
-    const favorites: LightColor[] =
-      entry.options?.light?.favorite_colors ??
-      computeDefaultFavoriteColors(lightStateObj);
+    const favorites: LightColor[] = resolveLightFavoriteColors(
+      lightStateObj,
+      entry.options?.light?.favorite_colors
+    );
 
     const favoriteTypes = [
       ...new Set(favorites.map((item) => Object.keys(item)[0])),
@@ -268,6 +269,7 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
       (candidate) =>
         candidate.entity_id !== lightStateObj.entity_id &&
         computeStateDomain(candidate) === "light" &&
+        favoriteTypes.length > 0 &&
         favoriteTypes.every((type) =>
           type === "color_temp_kelvin"
             ? lightSupportsColorMode(
