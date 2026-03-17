@@ -1,10 +1,10 @@
 import {
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiChevronLeft,
   mdiChevronRight,
   mdiDotsVertical,
   mdiDownload,
-  mdiCheckboxBlankOutline,
-  mdiCheckboxOutline,
   mdiHomeClock,
 } from "@mdi/js";
 import {
@@ -30,8 +30,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { mainWindow } from "../../../common/dom/get_main_window";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   calcDate,
   calcDateDifferenceProperty,
@@ -47,13 +45,15 @@ import {
   formatDateVeryShort,
   formatDateYear,
 } from "../../../common/datetime/format_date";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-button";
-import "../../../components/ha-date-range-picker";
+import "../../../components/date-picker/ha-date-range-picker";
 import type {
   DateRangePickerRanges,
   HaDateRangePicker,
-} from "../../../components/ha-date-range-picker";
+} from "../../../components/date-picker/ha-date-range-picker";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-ripple";
@@ -88,6 +88,10 @@ interface OverflowMenuItem {
   action: () => void;
 }
 
+type VerticalOpeningDirection = "up" | "down";
+
+type OpeningDirection = "right" | "left" | "center" | "inline";
+
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -102,10 +106,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     true;
 
   @property({ attribute: "vertical-opening-direction" })
-  public verticalOpeningDirection?: "up" | "down";
+  public verticalOpeningDirection?: VerticalOpeningDirection;
 
   @property({ attribute: "opening-direction" })
-  public openingDirection?: "right" | "left" | "center" | "inline";
+  public openingDirection?: OpeningDirection;
 
   @state() _datepickerOpen = false;
 
@@ -175,7 +179,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       RANGE_KEYS.forEach((key) => {
         this._ranges[
           this.hass.localize(`ui.components.date-range-picker.ranges.${key}`)
-        ] = calcDateRange(this.hass, key);
+        ] = calcDateRange(this.hass.locale, this.hass.config, key);
       });
     }
   }
@@ -269,7 +273,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         <div class="content">
           <section class="date-picker-icon">
             <ha-date-range-picker
-              .hass=${this.hass}
               .startDate=${this._startDate}
               .endDate=${this._endDate || new Date()}
               .ranges=${this._ranges}
@@ -277,9 +280,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               @preset-selected=${this._presetSelected}
               @toggle=${this._handleDatepickerToggle}
               minimal
-              header-position
-              .verticalOpeningDirection=${this.verticalOpeningDirection}
-              .openingDirection=${this.openingDirection}
+              backdrop
+              .popoverPlacement=${this._getDatePickerPlacement(
+                this.verticalOpeningDirection,
+                this.openingDirection
+              )}
             ></ha-date-range-picker>
           </section>
           <section class="date-range" @click=${this._openDatePicker}>
@@ -527,16 +532,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     );
     const today = new Date();
     if (range === "month") {
-      [this._startDate, this._endDate] = calcDateRange(this.hass, "this_month");
+      [this._startDate, this._endDate] = calcDateRange(
+        this.hass.locale,
+        this.hass.config,
+        "this_month"
+      );
     } else if (range === "quarter") {
       [this._startDate, this._endDate] = calcDateRange(
-        this.hass,
+        this.hass.locale,
+        this.hass.config,
         "this_quarter"
       );
     } else if (range === "year") {
-      [this._startDate, this._endDate] = calcDateRange(this.hass, "this_year");
+      [this._startDate, this._endDate] = calcDateRange(
+        this.hass.locale,
+        this.hass.config,
+        "this_year"
+      );
     } else if (range === "12month") {
-      [this._startDate, this._endDate] = calcDateRange(this.hass, "now-12m");
+      [this._startDate, this._endDate] = calcDateRange(
+        this.hass.locale,
+        this.hass.config,
+        "now-12m"
+      );
     } else if (range === "months") {
       // Custom month range
       const difference = calcDateDifferenceProperty(
@@ -587,7 +605,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       ) {
         // Pick current week
         [this._startDate, this._endDate] = calcDateRange(
-          this.hass,
+          this.hass.locale,
+          this.hass.config,
           "this_week"
         );
       } else {
@@ -671,6 +690,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     );
     energyCollection.refresh();
   }
+
+  private _getDatePickerPlacement = memoizeOne(
+    (
+      verticalOpeningDirection: VerticalOpeningDirection | undefined,
+      openingDirection: OpeningDirection | undefined
+    ): HaDateRangePicker["popoverPlacement"] => {
+      const vertical = verticalOpeningDirection === "up" ? "top" : "bottom";
+      if (openingDirection === "center" || openingDirection === "inline") {
+        return vertical;
+      }
+      const horizontal = openingDirection === "left" ? "end" : "start";
+      return `${vertical}-${horizontal}`;
+    }
+  );
 
   static styles = css`
     :host {

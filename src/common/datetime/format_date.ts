@@ -261,3 +261,22 @@ const formatDateWeekdayShortDateMem = memoizeOne(
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
+
+// 2021-08-10
+export const formatISODateOnly = (
+  dateObj: Date,
+  locale?: FrontendLocaleData,
+  config?: HassConfig
+) => {
+  if (locale && config) {
+    const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone,
+    });
+    return formatter.format(dateObj);
+  }
+  return dateObj.toISOString().substring(0, 10);
+};

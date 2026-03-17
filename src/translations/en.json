@@ -992,6 +992,8 @@
         "end_date": "End date",
         "select": "Select",
         "select_date_range": "Select time period",
+        "time_from": "Time from",
+        "time_to": "Time to",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",

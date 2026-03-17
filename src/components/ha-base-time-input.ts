@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-select";
@@ -263,6 +264,7 @@ export class HaBaseTimeInput extends LitElement {
                 .disabled=${this.disabled}
                 .name=${"amPm"}
                 @selected=${this._valueChanged}
+                @wa-after-hide=${stopPropagation}
                 .options=${["AM", "PM"]}
               >
               </ha-select>`}

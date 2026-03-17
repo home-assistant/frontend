@@ -11,7 +11,8 @@ import "./ha-svg-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
-const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
+const loadDatePickerDialog = () =>
+  import("./date-picker/ha-dialog-date-picker");
 
 export interface DatePickerDialogParams {
   value?: string;
