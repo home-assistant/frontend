@@ -134,24 +134,30 @@ export class DateRangePicker extends LitElement {
             ></ha-icon-button-next>
             <calendar-month></calendar-month>
           </calendar-range>
-          <div class="times">
-            <ha-time-input
-              .value=${`${this._timeValue.from.hours}:${this._timeValue.from.minutes}`}
-              .locale=${this.locale}
-              @value-changed=${this._handleChangeTime}
-              .label=${this.localize(
-                "ui.components.date-range-picker.time_from"
-              )}
-              id="from"
-            ></ha-time-input>
-            <ha-time-input
-              .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
-              .locale=${this.locale}
-              @value-changed=${this._handleChangeTime}
-              .label=${this.localize("ui.components.date-range-picker.time_to")}
-              id="to"
-            ></ha-time-input>
-          </div>
+          ${this.timePicker
+            ? html`
+                <div class="times">
+                  <ha-time-input
+                    .value=${`${this._timeValue.from.hours}:${this._timeValue.from.minutes}`}
+                    .locale=${this.locale}
+                    @value-changed=${this._handleChangeTime}
+                    .label=${this.localize(
+                      "ui.components.date-range-picker.time_from"
+                    )}
+                    id="from"
+                  ></ha-time-input>
+                  <ha-time-input
+                    .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
+                    .locale=${this.locale}
+                    @value-changed=${this._handleChangeTime}
+                    .label=${this.localize(
+                      "ui.components.date-range-picker.time_to"
+                    )}
+                    id="to"
+                  ></ha-time-input>
+                </div>
+              `
+            : nothing}
         </div>
       </div>
       <div class="footer">
