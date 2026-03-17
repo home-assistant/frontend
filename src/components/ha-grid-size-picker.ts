@@ -32,12 +32,6 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public step = 1;
 
-  @property({ type: Boolean, attribute: "rows-disabled" })
-  public rowsDisabled?: boolean;
-
-  @property({ type: Boolean, attribute: "columns-disabled" })
-  public columnsDisabled?: boolean;
-
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
   protected willUpdate(changedProperties) {
@@ -47,15 +41,14 @@ export class HaGridSizeEditor extends LitElement {
   }
 
   protected render() {
-    const disabledColumns =
-      this.columnsDisabled ||
-      (this.columnMin !== undefined && this.columnMin === this.columnMax);
-    const disabledRows =
-      this.rowsDisabled ||
-      (this.rowMin !== undefined && this.rowMin === this.rowMax);
-
     const autoHeight = this._localValue?.rows === "auto";
     const fullWidth = this._localValue?.columns === "full";
+
+    const disabledColumns =
+      this.columnMin !== undefined && this.columnMin === this.columnMax;
+    const disabledRows =
+      autoHeight ||
+      (this.rowMin !== undefined && this.rowMin === this.rowMax);
 
     const rowMin = this.rowMin ?? 1;
     const rowMax = this.rowMax ?? this.rows;

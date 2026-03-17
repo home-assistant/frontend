@@ -134,10 +134,26 @@ export class HuiCardLayoutEditor extends LitElement {
               .rowMax=${gridOptions.max_rows}
               .columnMin=${gridOptions.min_columns}
               .columnMax=${gridOptions.max_columns}
-              .rowsDisabled=${this._defaultGridOptions?.fixed_rows}
-              .columnsDisabled=${this._defaultGridOptions?.fixed_columns}
               .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
             ></ha-grid-size-picker>
+            <ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.auto_height"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.auto_height_helper"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                @change=${this._autoHeightChanged}
+                .checked=${options.rows === "auto"}
+                name="auto-height"
+              ></ha-switch>
+            </ha-md-list-item>
             <ha-md-list-item>
               <span slot="headline"
                 >${this.hass.localize(
@@ -269,6 +285,15 @@ export class HuiCardLayoutEditor extends LitElement {
     this._updateGridOptions({
       ...this.config.grid_options,
       columns: value ? "full" : undefined,
+    });
+  }
+
+  private _autoHeightChanged(ev): void {
+    ev.stopPropagation();
+    const value = ev.target.checked;
+    this._updateGridOptions({
+      ...this.config.grid_options,
+      rows: value ? "auto" : undefined,
     });
   }
 

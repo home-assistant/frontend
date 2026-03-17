@@ -145,7 +145,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
