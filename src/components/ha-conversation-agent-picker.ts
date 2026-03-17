@@ -43,30 +43,6 @@ export class HaConversationAgentPicker extends LitElement {
       return nothing;
     }
     let value = this.value;
-    if (!value && this.required) {
-      // Select Home Assistant conversation agent if it supports the language
-      for (const agent of this._agents) {
-        if (
-          agent.id === "conversation.home_assistant" &&
-          agent.supported_languages.includes(this.language!)
-        ) {
-          value = agent.id;
-          break;
-        }
-      }
-      if (!value) {
-        // Select the first agent that supports the language
-        for (const agent of this._agents) {
-          if (
-            agent.supported_languages === "*" &&
-            agent.supported_languages.includes(this.language!)
-          ) {
-            value = agent.id;
-            break;
-          }
-        }
-      }
-    }
     if (!value) {
       value = NONE;
     }
@@ -169,6 +145,39 @@ export class HaConversationAgentPicker extends LitElement {
     );
 
     this._agents = agents;
+
+    if (!this.value && this.required) {
+      let defaultValue: string | undefined;
+      // Select Home Assistant conversation agent if it supports the language
+      for (const agent of this._agents) {
+        if (
+          agent.id === "conversation.home_assistant" &&
+          (!this.language ||
+            agent.supported_languages === "*" ||
+            agent.supported_languages.includes(this.language))
+        ) {
+          defaultValue = agent.id;
+          break;
+        }
+      }
+      if (!defaultValue) {
+        // Select the first agent that supports the language
+        for (const agent of this._agents) {
+          if (
+            agent.supported_languages === "*" ||
+            !this.language ||
+            agent.supported_languages.includes(this.language)
+          ) {
+            defaultValue = agent.id;
+            break;
+          }
+        }
+      }
+      if (defaultValue) {
+        this.value = defaultValue;
+        fireEvent(this, "value-changed", { value: this.value });
+      }
+    }
 
     if (!this.value) {
       return;
