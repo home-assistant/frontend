@@ -114,8 +114,8 @@ export class EnergyDeviceSettings extends LitElement {
                               .path=${mdiPencil}
                             ></ha-icon-button>
                             <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              @click=${this._deleteDevice}
+                              .label=${this.hass.localize("ui.common.remove")}
+                              @click=${this._removeDevice}
                               .device=${device}
                               .path=${mdiDelete}
                             ></ha-icon-button>
@@ -204,13 +204,20 @@ export class EnergyDeviceSettings extends LitElement {
     });
   }
 
-  private async _deleteDevice(ev) {
-    const deviceToDelete: DeviceConsumptionEnergyPreference =
+  private async _removeDevice(ev) {
+    const deviceToRemove: DeviceConsumptionEnergyPreference =
       ev.currentTarget.device;
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+        title: this.hass.localize(
+          "ui.panel.config.energy.device_consumption.remove_device_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.device_consumption.remove_device_text"
+        ),
+        confirmText: this.hass.localize("ui.common.remove"),
+        destructive: true,
       }))
     ) {
       return;
@@ -220,7 +227,7 @@ export class EnergyDeviceSettings extends LitElement {
       const newPrefs = {
         ...this.preferences,
         device_consumption: this.preferences.device_consumption.filter(
-          (device) => device !== deviceToDelete
+          (device) => device !== deviceToRemove
         ),
       };
       this._sanitizeParents(newPrefs);

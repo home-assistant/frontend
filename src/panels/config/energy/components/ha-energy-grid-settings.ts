@@ -149,9 +149,9 @@ export class EnergyGridSettings extends LitElement {
                         ></ha-icon-button>
                         <ha-icon-button
                           .label=${this.hass.localize(
-                            "ui.panel.config.energy.grid.delete_connection"
+                            "ui.panel.config.energy.grid.remove_connection"
                           )}
-                          @click=${this._deleteSource}
+                          @click=${this._removeSource}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>
@@ -248,7 +248,14 @@ export class EnergyGridSettings extends LitElement {
     const entryId = ev.currentTarget.closest(".row").entry.entry_id;
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_integration"),
+        title: this.hass.localize(
+          "ui.panel.config.energy.grid.delete_co2_signal_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.grid.delete_co2_signal_text"
+        ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return;
@@ -302,13 +309,20 @@ export class EnergyGridSettings extends LitElement {
     });
   }
 
-  private async _deleteSource(ev) {
+  private async _removeSource(ev) {
     const row = ev.currentTarget.closest(".row");
     const sourceIndex: number = row.sourceIndex;
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+        title: this.hass.localize(
+          "ui.panel.config.energy.grid.remove_connection_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.grid.remove_connection_text"
+        ),
+        confirmText: this.hass.localize("ui.common.remove"),
+        destructive: true,
       }))
     ) {
       return;

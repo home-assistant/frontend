@@ -123,9 +123,9 @@ export class EnergyBatterySettings extends LitElement {
                         ></ha-icon-button>
                         <ha-icon-button
                           .label=${this.hass.localize(
-                            "ui.panel.config.energy.battery.delete_battery_system"
+                            "ui.panel.config.energy.battery.remove_battery_system"
                           )}
-                          @click=${this._deleteSource}
+                          @click=${this._removeSource}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>
@@ -184,13 +184,20 @@ export class EnergyBatterySettings extends LitElement {
     });
   }
 
-  private async _deleteSource(ev) {
-    const sourceToDelete: BatterySourceTypeEnergyPreference =
+  private async _removeSource(ev) {
+    const sourceToRemove: BatterySourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+        title: this.hass.localize(
+          "ui.panel.config.energy.battery.remove_battery_system_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.battery.remove_battery_system_text"
+        ),
+        confirmText: this.hass.localize("ui.common.remove"),
+        destructive: true,
       }))
     ) {
       return;
@@ -200,7 +207,7 @@ export class EnergyBatterySettings extends LitElement {
       await this._savePreferences({
         ...this.preferences,
         energy_sources: this.preferences.energy_sources.filter(
-          (source) => source !== sourceToDelete
+          (source) => source !== sourceToRemove
         ),
       });
     } catch (err: any) {

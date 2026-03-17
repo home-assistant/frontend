@@ -111,9 +111,9 @@ export class EnergyGasSettings extends LitElement {
                         ></ha-icon-button>
                         <ha-icon-button
                           .label=${this.hass.localize(
-                            "ui.panel.config.energy.gas.delete_gas_source"
+                            "ui.panel.config.energy.gas.remove_gas_source"
                           )}
-                          @click=${this._deleteSource}
+                          @click=${this._removeSource}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>
@@ -184,13 +184,20 @@ export class EnergyGasSettings extends LitElement {
     });
   }
 
-  private async _deleteSource(ev) {
-    const sourceToDelete: GasSourceTypeEnergyPreference =
+  private async _removeSource(ev) {
+    const sourceToRemove: GasSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+        title: this.hass.localize(
+          "ui.panel.config.energy.gas.remove_gas_source_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.gas.remove_gas_source_text"
+        ),
+        confirmText: this.hass.localize("ui.common.remove"),
+        destructive: true,
       }))
     ) {
       return;
@@ -200,7 +207,7 @@ export class EnergyGasSettings extends LitElement {
       await this._savePreferences({
         ...this.preferences,
         energy_sources: this.preferences.energy_sources.filter(
-          (source) => source !== sourceToDelete
+          (source) => source !== sourceToRemove
         ),
       });
     } catch (err: any) {
