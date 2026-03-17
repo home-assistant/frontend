@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
@@ -13,15 +12,13 @@ import {
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
+import { createFavoritesEntityRegistryEntryController } from "./common/favorites-entity-registry-entry-controller";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LightColorFavoritesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
-import {
-  type EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import "../../../dialogs/more-info/components/lights/ha-favorite-color-button";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { debounce } from "../../../common/util/debounce";
@@ -49,7 +46,7 @@ class HuiLightColorFavoritesCardFeature
 
   @state() private _config?: LightColorFavoritesCardFeatureConfig;
 
-  @state() private _entry?: EntityRegistryEntry | null;
+  @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _favoriteColors: LightColor[] = [];
 
@@ -59,44 +56,27 @@ class HuiLightColorFavoritesCardFeature
 
   private _resizeObserver?: ResizeObserver;
 
-  private _unsubEntityRegistry?: UnsubscribeFunc;
+  constructor() {
+    super();
+
+    createFavoritesEntityRegistryEntryController(this, {
+      getHass: () => this.hass,
+      getEntityId: () => this.context?.entity_id,
+      getEntry: () => this._entry,
+      setEntry: (entry) => {
+        this._entry = entry;
+      },
+    });
+  }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._subscribeEntityEntry();
     this.updateComplete.then(() => this._attachObserver());
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeEntityRegistry();
     this._resizeObserver?.disconnect();
-  }
-
-  private _unsubscribeEntityRegistry() {
-    if (this._unsubEntityRegistry) {
-      this._unsubEntityRegistry();
-      this._unsubEntityRegistry = undefined;
-    }
-  }
-
-  private _subscribeEntityEntry() {
-    if (this.hass && this.context?.entity_id) {
-      const id = this.context.entity_id;
-      try {
-        this._unsubEntityRegistry = subscribeEntityRegistry(
-          this.hass!.connection,
-          (entries) => {
-            const entry = entries.find((e) => e.entity_id === id);
-            if (entry) {
-              this._entry = entry;
-            }
-          }
-        );
-      } catch (_e) {
-        this._entry = null;
-      }
-    }
   }
 
   private _measure() {
@@ -122,11 +102,6 @@ class HuiLightColorFavoritesCardFeature
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("context")) {
-      this._unsubscribeEntityRegistry();
-      this._subscribeEntityEntry();
-    }
-
     if (changedProps.has("_entry") || changedProps.has("_maxVisible")) {
       if (this._entry) {
         this._favoriteColors = this._stateObj
