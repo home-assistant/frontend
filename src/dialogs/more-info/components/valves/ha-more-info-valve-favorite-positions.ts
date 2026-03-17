@@ -285,34 +285,41 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
     fireEvent(this, "toggle-edit-mode", false);
   };
 
-  protected render(): TemplateResult | typeof nothing {
-    if (!this.stateObj || !this.entry) {
-      return nothing;
-    }
-
+  private _renderSection(): TemplateResult | typeof nothing {
     if (!this.editMode && this._favoritePositions.length === 0) {
       return nothing;
     }
 
     return html`
-      <ha-more-info-favorites
-        .items=${this._favoritePositions}
-        .renderItem=${this._renderFavorite}
-        .deleteLabel=${this._deleteLabel}
-        .editMode=${this.editMode ?? false}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
-        .isAdmin=${Boolean(this.hass.user?.is_admin)}
-        .addLabel=${this._localizeFavorite("add")}
-        .doneLabel=${this.hass.localize(
-          "ui.dialogs.more_info_control.exit_edit_mode"
-        )}
-        @favorite-item-action=${this._handleFavoriteAction}
-        @favorite-item-moved=${this._handleFavoriteMoved}
-        @favorite-item-delete=${this._handleFavoriteDelete}
-        @favorite-item-add=${this._handleFavoriteAdd}
-        @favorite-item-done=${this._handleFavoriteDone}
-      ></ha-more-info-favorites>
+      <section class="group">
+        <ha-more-info-favorites
+          .items=${this._favoritePositions}
+          .renderItem=${this._renderFavorite}
+          .deleteLabel=${this._deleteLabel}
+          .editMode=${this.editMode ?? false}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          .isAdmin=${Boolean(this.hass.user?.is_admin)}
+          .showDone=${true}
+          .addLabel=${this._localizeFavorite("add")}
+          .doneLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.exit_edit_mode"
+          )}
+          @favorite-item-action=${this._handleFavoriteAction}
+          @favorite-item-moved=${this._handleFavoriteMoved}
+          @favorite-item-delete=${this._handleFavoriteDelete}
+          @favorite-item-add=${this._handleFavoriteAdd}
+          @favorite-item-done=${this._handleFavoriteDone}
+        ></ha-more-info-favorites>
+      </section>
     `;
+  }
+
+  protected render(): TemplateResult | typeof nothing {
+    if (!this.stateObj || !this.entry) {
+      return nothing;
+    }
+
+    return html` <div class="groups">${this._renderSection()}</div> `;
   }
 
   static styles = css`
@@ -321,7 +328,20 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       width: 100%;
     }
 
-    ha-more-info-favorites {
+    .groups {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
+    .group {
+      width: 100%;
+      max-width: 384px;
+      margin: 0;
+    }
+
+    .group ha-more-info-favorites {
       --favorite-items-max-width: 384px;
       --favorite-item-active-background-color: var(--state-valve-active-color);
     }
