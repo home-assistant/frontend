@@ -8432,14 +8432,11 @@
                 }
               },
               "type_image": "Image",
-              "type_gradient": "Gradient",
+              "type_gradient": "Custom",
               "gradient": {
-                "mode_solid": "Solid color",
-                "mode_random": "Random gradient",
-                "color": "Color",
-                "base_color_1": "Color 1",
-                "base_color_2": "Color 2",
-                "base_color_3": "Color 3 (optional)",
+                "color_label": "Color {number}",
+                "add_color": "Add color",
+                "remove_color": "Remove color",
                 "randomize": "Randomize"
               }
             },

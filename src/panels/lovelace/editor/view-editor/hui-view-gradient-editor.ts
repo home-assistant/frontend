@@ -1,104 +1,44 @@
-import { mdiRefresh } from "@mdi/js";
-import memoizeOne from "memoize-one";
+import { mdiDelete, mdiPlus, mdiRefresh } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { hex2rgb, rgb2hex } from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-toggle-group";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { ToggleButton } from "../../../../types";
 
-type GradientSubMode = "solid" | "random";
+const MAX_COLORS = 5;
 
-interface GradientBlob {
-  color: string;
-  opacity: number;
-  size: number;
-  x: number;
-  y: number;
-}
-
-function _hslToHex(h: number, s: number, l: number): string {
-  const sNorm = s / 100;
-  const lNorm = l / 100;
-  const a = sNorm * Math.min(lNorm, 1 - lNorm);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = lNorm - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, "0");
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-function _randomVariant(baseHex: string): string {
-  const [r, g, b] = hex2rgb(baseHex);
-  const shift = () => Math.min(255, Math.max(0, Math.round((Math.random() - 0.5) * 80)));
-  return rgb2hex([
-    Math.min(255, Math.max(0, r + shift())),
-    Math.min(255, Math.max(0, g + shift())),
-    Math.min(255, Math.max(0, b + shift())),
-  ]);
-}
-
-function _generateBlobs(colors: string[]): {
-  blobs: GradientBlob[];
-  baseColor: string;
-} {
+function _generateGradientString(colors: string[]): string {
   const count = 3 + Math.floor(Math.random() * 4);
-  const baseR = Math.floor(Math.random() * 20);
-  const baseG = Math.floor(Math.random() * 20);
-  const baseB = Math.floor(Math.random() * 25);
-  const baseColor = rgb2hex([baseR, baseG, baseB]);
+  const baseColor = rgb2hex([
+    Math.floor(Math.random() * 20),
+    Math.floor(Math.random() * 20),
+    Math.floor(Math.random() * 25),
+  ]);
 
-  const palette = colors.filter((c) => c !== "");
-  const blobs: GradientBlob[] = [];
+  const parts: string[] = [];
   for (let i = 0; i < count; i++) {
-    const seedColor =
-      palette.length > 0
-        ? palette[i % palette.length]
-        : _hslToHex(
-            Math.floor(Math.random() * 360),
-            70 + Math.floor(Math.random() * 30),
-            40 + Math.floor(Math.random() * 30)
-          );
-    blobs.push({
-      color: palette.length > 0 ? _randomVariant(seedColor) : seedColor,
-      opacity: +(0.15 + Math.random() * 0.65).toFixed(2),
-      size: 35 + Math.floor(Math.random() * 55),
-      x: Math.round(Math.random() * 80 + 10),
-      y: Math.round(Math.random() * 80 + 10),
-    });
+    const [r, g, b] = hex2rgb(colors[i % colors.length]).map((c) =>
+      Math.min(255, Math.max(0, c + Math.round((Math.random() - 0.5) * 80)))
+    );
+    const opacity = (0.15 + Math.random() * 0.65).toFixed(2);
+    const size = 35 + Math.floor(Math.random() * 55);
+    const x = Math.round(Math.random() * 80 + 10);
+    const y = Math.round(Math.random() * 80 + 10);
+    parts.push(
+      `radial-gradient(at ${x}% ${y}%, rgba(${r},${g},${b},${opacity}) 0px, transparent ${size}%)`
+    );
   }
-  return { blobs, baseColor };
-}
-
-function _buildGradientString(blobs: GradientBlob[], baseColor: string): string {
-  const parts = blobs.map((b) => {
-    const [r, g, bVal] = hex2rgb(b.color);
-    return `radial-gradient(at ${b.x}% ${b.y}%, rgba(${r},${g},${bVal},${b.opacity.toFixed(2)}) 0px, transparent ${b.size}%)`;
-  });
   parts.push(baseColor);
   return parts.join(",\n  ");
 }
 
-function _detectSubMode(bg: unknown): GradientSubMode {
-  if (typeof bg === "string" && bg.includes("radial-gradient")) {
-    return "random";
-  }
-  return "solid";
-}
-
 function _parseGradientColors(bg: string): string[] {
   const colors: string[] = [];
-  const regex =
-    /radial-gradient\(\s*at\s+\d+%\s+\d+%\s*,\s*rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,/g;
-
+  const regex = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,/g;
   let match = regex.exec(bg);
   while (match) {
     const hex = rgb2hex([
@@ -106,27 +46,17 @@ function _parseGradientColors(bg: string): string[] {
       parseInt(match[2], 10),
       parseInt(match[3], 10),
     ]);
-    if (!colors.includes(hex)) {
-      colors.push(hex);
-    }
+    if (!colors.includes(hex)) colors.push(hex);
     match = regex.exec(bg);
   }
-  return colors.slice(0, 3);
+  return colors.slice(0, MAX_COLORS);
 }
 
 @customElement("hui-view-gradient-editor")
 export class HuiViewGradientEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _subMode: GradientSubMode = "random";
-
-  @state() private _solidColor = "#3a5f8c";
-
-  @state() private _color1 = "#ec7a41";
-
-  @state() private _color2 = "#4169e1";
-
-  @state() private _color3 = "";
+  @state() private _colors: string[] = ["#3a5f8c"];
 
   @state() private _gradientString = "";
 
@@ -139,177 +69,130 @@ export class HuiViewGradientEditor extends LitElement {
   }
 
   set config(config: LovelaceViewConfig) {
-    const oldConfig = this._config;
-    this._config = config;
-
-    if (oldConfig !== config && !this._initialized) {
-      this._initFromConfig(config);
+    if (this._config !== config) {
+      this._config = config;
+      if (!this._initialized) {
+        this._initFromConfig(config);
+        this._initialized = true;
+      }
     }
   }
 
   private _initFromConfig(config: LovelaceViewConfig) {
     const bg = config?.background;
-    this._subMode = _detectSubMode(bg);
-
-    if (this._subMode === "random" && typeof bg === "string") {
+    if (typeof bg === "string" && bg.includes("radial-gradient")) {
       this._gradientString = bg;
-      const colors = _parseGradientColors(bg);
-      if (colors.length > 0) this._color1 = colors[0];
-      if (colors.length > 1) this._color2 = colors[1];
-      if (colors.length > 2) this._color3 = colors[2];
+      const parsed = _parseGradientColors(bg);
+      if (parsed.length > 0) this._colors = parsed;
     } else if (typeof bg === "string" && bg.startsWith("#")) {
-      this._solidColor = bg;
+      this._colors = [bg];
     }
-
-    this._initialized = true;
   }
 
-  private _subModeButtons = memoizeOne(
-    (localize: LocalizeFunc): ToggleButton[] => [
-      {
-        value: "solid",
-        label: localize(
-          "ui.panel.lovelace.editor.edit_view.background.gradient.mode_solid"
-        ),
-      },
-      {
-        value: "random",
-        label: localize(
-          "ui.panel.lovelace.editor.edit_view.background.gradient.mode_random"
-        ),
-      },
-    ]
-  );
+  private get _previewBackground(): string {
+    if (this._colors.length === 1) return this._colors[0];
+    return this._gradientString || this._colors[0];
+  }
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
+    if (!this.hass) return nothing;
 
     return html`
       <div class="gradient-editor">
-        <ha-button-toggle-group
-          size="small"
-          variant="neutral"
-          .buttons=${this._subModeButtons(this.hass.localize)}
-          .active=${this._subMode}
-          @value-changed=${this._subModeChanged}
-        ></ha-button-toggle-group>
+        <div
+          class="preview"
+          style="background: ${this._previewBackground}"
+        ></div>
 
-        ${this._subMode === "solid"
-          ? this._renderSolidEditor()
-          : this._renderRandomEditor()}
-      </div>
-    `;
-  }
-
-  private _renderSolidEditor() {
-    return html`
-      <div
-        class="preview"
-        style="background: ${this._solidColor}"
-      ></div>
-      <div class="color-picker-row">
-        <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.color")}</label>
-        <input
-          type="color"
-          .value=${this._solidColor}
-          @input=${this._solidColorChanged}
-        />
-      </div>
-    `;
-  }
-
-  private _renderRandomEditor() {
-    const previewBg = this._gradientString || this._solidColor;
-
-    return html`
-      <div
-        class="preview"
-        style="background: ${previewBg}"
-      ></div>
-      <div class="color-pickers">
-        <div class="color-picker-row">
-          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_1")}</label>
-          <input
-            type="color"
-            .value=${this._color1}
-            data-index="0"
-            @input=${this._baseColorInputChanged}
-          />
-        </div>
-        <div class="color-picker-row">
-          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_2")}</label>
-          <input
-            type="color"
-            .value=${this._color2}
-            data-index="1"
-            @input=${this._baseColorInputChanged}
-          />
-        </div>
-        <div class="color-picker-row">
-          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_3")}</label>
-          <input
-            type="color"
-            .value=${this._color3 || "#ffffff"}
-            data-index="2"
-            @input=${this._baseColorInputChanged}
-          />
-        </div>
-      </div>
-      <div class="randomize-row">
-        <ha-button @click=${this._randomize}>
-          <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.background.gradient.randomize"
+        <div class="color-list">
+          ${this._colors.map(
+            (color, i) => html`
+              <div class="color-row">
+                <label>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_view.background.gradient.color_label",
+                    { number: i + 1 }
+                  )}
+                </label>
+                <input
+                  type="color"
+                  .value=${color}
+                  data-index=${i}
+                  @input=${this._colorChanged}
+                />
+                ${this._colors.length > 1
+                  ? html`<ha-icon-button
+                      .path=${mdiDelete}
+                      .label=${this.hass.localize(
+                        "ui.panel.lovelace.editor.edit_view.background.gradient.remove_color"
+                      )}
+                      data-index=${i}
+                      @click=${this._removeColor}
+                    ></ha-icon-button>`
+                  : nothing}
+              </div>
+            `
           )}
-        </ha-button>
+        </div>
+
+        <div class="actions">
+          ${this._colors.length < MAX_COLORS
+            ? html`<ha-icon-button
+                .path=${mdiPlus}
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_view.background.gradient.add_color"
+                )}
+                @click=${this._addColor}
+              ></ha-icon-button>`
+            : nothing}
+          ${this._colors.length >= 2
+            ? html`<ha-button @click=${this._randomize}>
+                <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_view.background.gradient.randomize"
+                )}
+              </ha-button>`
+            : nothing}
+        </div>
       </div>
     `;
   }
 
-  private _subModeChanged(ev: CustomEvent) {
-    const newMode = ev.detail.value as GradientSubMode;
-    if (newMode === this._subMode) return;
-    this._subMode = newMode;
-
-    if (newMode === "solid") {
-      this._fireConfigChanged(this._solidColor);
-    } else if (this._gradientString) {
-      this._fireConfigChanged(this._gradientString);
+  private _colorChanged(ev: Event) {
+    const target = ev.target as HTMLInputElement;
+    const index = parseInt(target.dataset.index!, 10);
+    this._colors = this._colors.map((c, i) =>
+      i === index ? target.value : c
+    );
+    if (this._colors.length === 1) {
+      this._fireConfigChanged(this._colors[0]);
     }
   }
 
-  private _solidColorChanged(ev: Event) {
-    this._solidColor = (ev.target as HTMLInputElement).value;
-    this._fireConfigChanged(this._solidColor);
+  private _addColor() {
+    if (this._colors.length >= MAX_COLORS) return;
+    this._colors = [...this._colors, "#ffffff"];
   }
 
-  private _baseColorInputChanged(ev: Event) {
-    const target = ev.target as HTMLInputElement;
+  private _removeColor(ev: Event) {
+    const target = ev.currentTarget as HTMLElement;
     const index = parseInt(target.dataset.index!, 10);
-    const value = target.value;
-
-    if (index === 0) this._color1 = value;
-    else if (index === 1) this._color2 = value;
-    else if (index === 2) this._color3 = value;
+    this._colors = this._colors.filter((_, i) => i !== index);
+    if (this._colors.length === 1) {
+      this._gradientString = "";
+      this._fireConfigChanged(this._colors[0]);
+    }
   }
 
   private _randomize() {
-    const colors = [this._color1, this._color2, this._color3].filter(
-      (c) => c !== ""
-    );
-    const { blobs, baseColor } = _generateBlobs(colors);
-    this._gradientString = _buildGradientString(blobs, baseColor);
+    this._gradientString = _generateGradientString(this._colors);
     this._fireConfigChanged(this._gradientString);
   }
 
   private _fireConfigChanged(background: string) {
-    const config: LovelaceViewConfig = {
-      ...this._config,
-      background,
-    };
-    fireEvent(this, "view-config-changed", { config });
+    fireEvent(this, "view-config-changed", {
+      config: { ...this._config, background },
+    });
   }
 
   static styles = css`
@@ -323,11 +206,6 @@ export class HuiViewGradientEditor extends LitElement {
       gap: var(--ha-space-3);
     }
 
-    .gradient-editor > ha-button-toggle-group {
-      align-self: center;
-      margin-top: var(--ha-space-6);
-    }
-
     .preview {
       width: 100%;
       height: 200px;
@@ -335,25 +213,25 @@ export class HuiViewGradientEditor extends LitElement {
       border: 1px solid var(--divider-color);
     }
 
-    .color-pickers {
+    .color-list {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-2);
     }
 
-    .color-picker-row {
+    .color-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: var(--ha-space-3);
     }
 
-    .color-picker-row label {
+    .color-row label {
+      flex: 1;
       font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
     }
 
-    .color-picker-row input[type="color"] {
+    .color-row input[type="color"] {
       -webkit-appearance: none;
       appearance: none;
       width: 48px;
@@ -365,18 +243,20 @@ export class HuiViewGradientEditor extends LitElement {
       padding: 2px;
     }
 
-    .color-picker-row input[type="color"]::-webkit-color-swatch-wrapper {
+    .color-row input[type="color"]::-webkit-color-swatch-wrapper {
       padding: 0;
     }
 
-    .color-picker-row input[type="color"]::-webkit-color-swatch {
+    .color-row input[type="color"]::-webkit-color-swatch {
       border: none;
       border-radius: 4px;
     }
 
-    .randomize-row {
+    .actions {
       display: flex;
+      align-items: center;
       justify-content: center;
+      gap: var(--ha-space-2);
     }
 
     ha-button {

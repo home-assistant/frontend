@@ -7,9 +7,8 @@ import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { ToggleButton } from "../../../../types";
+import type { HomeAssistant, ToggleButton } from "../../../../types";
 
 import {
   isMediaSourceContentId,
@@ -38,6 +37,8 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   @state() private _mode: BackgroundMode = "image";
 
+  @state() private _gradientLoaded = false;
+
   private _cachedBackground: Record<BackgroundMode, any> = {
     image: undefined,
     gradient: undefined,
@@ -52,10 +53,18 @@ export class HuiViewBackgroundEditor extends LitElement {
       this._mode = _detectMode(config);
       this._cachedBackground[this._mode] = config.background;
       if (this._mode === "gradient") {
-        import("./hui-view-gradient-editor");
+        this._loadGradientEditor();
       }
     }
     this._config = config;
+  }
+
+  private _loadGradientEditor() {
+    if (!this._gradientLoaded) {
+      import("./hui-view-gradient-editor").then(() => {
+        this._gradientLoaded = true;
+      });
+    }
   }
 
   private _localizeValueCallback = (key: string) =>
@@ -214,13 +223,16 @@ export class HuiViewBackgroundEditor extends LitElement {
         @value-changed=${this._modeChanged}
       ></ha-button-toggle-group>
 
-      ${this._mode === "gradient"
+      ${this._gradientLoaded
         ? html`<hui-view-gradient-editor
             .hass=${this.hass}
             .config=${this._config}
+            ?hidden=${this._mode !== "gradient"}
             @view-config-changed=${this._gradientConfigChanged}
           ></hui-view-gradient-editor>`
-        : this._renderImageEditor()}
+        : nothing}
+
+      ${this._mode === "image" ? this._renderImageEditor() : nothing}
     `;
   }
 
@@ -296,7 +308,7 @@ export class HuiViewBackgroundEditor extends LitElement {
     this._mode = newMode;
 
     if (this._mode === "gradient") {
-      import("./hui-view-gradient-editor");
+      this._loadGradientEditor();
     }
 
     const cachedBg = this._cachedBackground[this._mode];
@@ -364,7 +376,10 @@ export class HuiViewBackgroundEditor extends LitElement {
       --file-upload-image-border-radius: var(--ha-border-radius-sm);
     }
     ha-button-toggle-group {
-      margin-bottom: var(--ha-space-4);
+      margin-bottom: var(--ha-space-6);
+    }
+    hui-view-gradient-editor[hidden] {
+      display: none;
     }
     .previewContainer {
       width: 100%;
