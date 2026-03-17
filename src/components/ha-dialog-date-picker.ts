@@ -154,7 +154,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   }
 
   private _updateValue(value?: string, setFocusDay = false) {
-    const date = value ? new Date(value) : new Date();
+    const date = value ? new Date(`${value.split("T")[0]}T00:00:00`) : new Date();
     this._value = {
       year: formatDateYear(date, this.locale, this.hassConfig),
       title: formatDateShort(date, this.locale, this.hassConfig),
