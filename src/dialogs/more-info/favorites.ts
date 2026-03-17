@@ -66,6 +66,13 @@ export interface FavoritesDialogHandler {
   copy: (ctx: FavoritesDialogContext) => Promise<void>;
 }
 
+interface NumericFavoritesSpec<TEntity extends HassEntity> {
+  option: FavoriteOption;
+  supports: (stateObj: TEntity) => boolean;
+  getStoredFavorites: (entry: ExtEntityRegistryEntry) => number[] | undefined;
+  getFavorites: (entry: ExtEntityRegistryEntry, stateObj: TEntity) => number[];
+}
+
 const getFavoritesDialogLabels = (
   hass: HomeAssistant,
   domain: FavoritesDomain
@@ -148,72 +155,95 @@ ${rejected
   }
 };
 
-const coverFavoritesHandler: FavoritesDialogHandler = {
-  domain: "cover",
-  supports: (stateObj) => coverSupportsAnyPosition(stateObj as CoverEntity),
+const createNumericFavoritesDialogHandler = <TEntity extends HassEntity>({
+  domain,
+  supports,
+  specs,
+}: {
+  domain: FavoritesDomain;
+  supports: (stateObj: TEntity) => boolean;
+  specs: NumericFavoritesSpec<TEntity>[];
+}): FavoritesDialogHandler => ({
+  domain,
+  supports: (stateObj) => supports(stateObj as TEntity),
   hasCustomFavorites: (entry) =>
-    hasCustomFavoriteOptionValues(entry.options?.cover?.favorite_positions) ||
-    hasCustomFavoriteOptionValues(
-      entry.options?.cover?.favorite_tilt_positions
+    specs.some((spec) =>
+      hasCustomFavoriteOptionValues(spec.getStoredFavorites(entry))
     ),
-  getResetOptions: (stateObj) => ({
-    ...(coverSupportsPosition(stateObj as CoverEntity)
-      ? { favorite_positions: undefined }
-      : {}),
-    ...(coverSupportsTiltPosition(stateObj as CoverEntity)
-      ? { favorite_tilt_positions: undefined }
-      : {}),
-  }),
-  getLabels: (hass) => getFavoritesDialogLabels(hass, "cover"),
+  getResetOptions: (stateObj) =>
+    specs.reduce<Partial<Record<FavoriteOption, undefined>>>(
+      (options, spec) => {
+        if (spec.supports(stateObj as TEntity)) {
+          options[spec.option] = undefined;
+        }
+
+        return options;
+      },
+      {}
+    ),
+  getLabels: (hass) => getFavoritesDialogLabels(hass, domain),
   copy: async ({ entry, hass, host, stateObj }) => {
-    const coverStateObj = stateObj as CoverEntity;
+    const sourceStateObj = stateObj as TEntity;
 
-    const favoritePositions = coverSupportsPosition(coverStateObj)
-      ? normalizeCoverFavoritePositions(
-          entry.options?.cover?.favorite_positions ??
-            DEFAULT_COVER_FAVORITE_POSITIONS
+    const compatibleEntities = Object.values(hass.states).filter(
+      (candidate) =>
+        candidate.entity_id !== sourceStateObj.entity_id &&
+        computeStateDomain(candidate) === domain &&
+        specs.every(
+          (spec) =>
+            !spec.supports(sourceStateObj) ||
+            spec.supports(candidate as TEntity)
         )
-      : undefined;
+    );
 
-    const favoriteTiltPositions = coverSupportsTiltPosition(coverStateObj)
-      ? normalizeCoverFavoritePositions(
-          entry.options?.cover?.favorite_tilt_positions ??
-            DEFAULT_COVER_FAVORITE_POSITIONS
-        )
-      : undefined;
+    const options = specs.reduce<Partial<Record<FavoriteOption, number[]>>>(
+      (result, spec) => {
+        if (spec.supports(sourceStateObj)) {
+          result[spec.option] = [...spec.getFavorites(entry, sourceStateObj)];
+        }
 
-    const compatibleCovers = Object.values(hass.states).filter((candidate) => {
-      if (
-        candidate.entity_id === coverStateObj.entity_id ||
-        computeStateDomain(candidate) !== "cover"
-      ) {
-        return false;
-      }
-
-      return (
-        (!coverSupportsPosition(coverStateObj) ||
-          coverSupportsPosition(candidate as CoverEntity)) &&
-        (!coverSupportsTiltPosition(coverStateObj) ||
-          coverSupportsTiltPosition(candidate as CoverEntity))
-      );
-    });
+        return result;
+      },
+      {}
+    );
 
     await copyFavoriteOptionsToEntities(
       host,
       hass,
-      "cover",
-      compatibleCovers.map((cover) => cover.entity_id),
-      {
-        ...(favoritePositions !== undefined
-          ? { favorite_positions: [...favoritePositions] }
-          : {}),
-        ...(favoriteTiltPositions !== undefined
-          ? { favorite_tilt_positions: [...favoriteTiltPositions] }
-          : {}),
-      }
+      domain,
+      compatibleEntities.map((entity) => entity.entity_id),
+      options
     );
   },
-};
+});
+
+const coverFavoritesHandler = createNumericFavoritesDialogHandler<CoverEntity>({
+  domain: "cover",
+  supports: coverSupportsAnyPosition,
+  specs: [
+    {
+      option: "favorite_positions",
+      supports: coverSupportsPosition,
+      getStoredFavorites: (entry) => entry.options?.cover?.favorite_positions,
+      getFavorites: (entry) =>
+        normalizeCoverFavoritePositions(
+          entry.options?.cover?.favorite_positions ??
+            DEFAULT_COVER_FAVORITE_POSITIONS
+        ),
+    },
+    {
+      option: "favorite_tilt_positions",
+      supports: coverSupportsTiltPosition,
+      getStoredFavorites: (entry) =>
+        entry.options?.cover?.favorite_tilt_positions,
+      getFavorites: (entry) =>
+        normalizeCoverFavoritePositions(
+          entry.options?.cover?.favorite_tilt_positions ??
+            DEFAULT_COVER_FAVORITE_POSITIONS
+        ),
+    },
+  ],
+});
 
 const lightFavoritesHandler: FavoritesDialogHandler = {
   domain: "light",
@@ -272,40 +302,22 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
   },
 };
 
-const valveFavoritesHandler: FavoritesDialogHandler = {
+const valveFavoritesHandler = createNumericFavoritesDialogHandler<ValveEntity>({
   domain: "valve",
-  supports: (stateObj) => valveSupportsPosition(stateObj as ValveEntity),
-  hasCustomFavorites: (entry) =>
-    hasCustomFavoriteOptionValues(entry.options?.valve?.favorite_positions),
-  getResetOptions: () => ({
-    favorite_positions: undefined,
-  }),
-  getLabels: (hass) => getFavoritesDialogLabels(hass, "valve"),
-  copy: async ({ entry, hass, host, stateObj }) => {
-    const valveStateObj = stateObj as ValveEntity;
-    const favoritePositions = normalizeValveFavoritePositions(
-      entry.options?.valve?.favorite_positions ??
-        DEFAULT_VALVE_FAVORITE_POSITIONS
-    );
-
-    const compatibleValves = Object.values(hass.states).filter(
-      (candidate) =>
-        candidate.entity_id !== valveStateObj.entity_id &&
-        computeStateDomain(candidate) === "valve" &&
-        valveSupportsPosition(candidate as ValveEntity)
-    );
-
-    await copyFavoriteOptionsToEntities(
-      host,
-      hass,
-      "valve",
-      compatibleValves.map((valve) => valve.entity_id),
-      {
-        favorite_positions: [...favoritePositions],
-      }
-    );
-  },
-};
+  supports: valveSupportsPosition,
+  specs: [
+    {
+      option: "favorite_positions",
+      supports: valveSupportsPosition,
+      getStoredFavorites: (entry) => entry.options?.valve?.favorite_positions,
+      getFavorites: (entry) =>
+        normalizeValveFavoritePositions(
+          entry.options?.valve?.favorite_positions ??
+            DEFAULT_VALVE_FAVORITE_POSITIONS
+        ),
+    },
+  ],
+});
 
 const FAVORITES_DIALOG_HANDLERS: Record<
   FavoritesDomain,
