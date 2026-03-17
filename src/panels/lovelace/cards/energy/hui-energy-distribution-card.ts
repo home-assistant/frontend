@@ -1002,7 +1002,7 @@ class HuiEnergyDistrubutionCard
       fill: var(--energy-solar-color);
     }
     .battery .circle {
-      border-color: var(--energy-battery-in-color);
+      border-color: var(--energy-battery-out-color);
     }
     circle.battery,
     path.battery {
