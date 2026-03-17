@@ -13,7 +13,6 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";

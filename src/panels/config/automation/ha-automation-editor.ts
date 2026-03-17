@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiCog,
@@ -24,7 +23,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -57,7 +56,6 @@ import {
 } from "../../../data/automation";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
-import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
@@ -78,6 +76,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "./blueprint-automation-editor";
+import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
   automationScriptEditorStyles,
@@ -113,10 +112,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityRegistry!: EntityRegistryEntry[];
-
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
 
@@ -129,6 +124,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _newAutomationId?: string;
 
+  protected domainHooks: EditorDomainHooks<AutomationConfig> = {
+    domain: "automation",
+    fetchFileConfig: fetchAutomationFileConfig,
+    normalizeConfig: normalizeAutomationConfig,
+    checkValidation: () => this._checkValidation(),
+  };
+
   private _undoRedoController = new UndoRedoController<AutomationConfig>(this, {
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => this.config!,
@@ -140,9 +142,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (
       this.entityRegCreated &&
       this._newAutomationId &&
-      changedProps.has("_entityRegistry")
+      changedProps.has("entityRegistry")
     ) {
-      const automation = this._entityRegistry.find(
+      const automation = this.entityRegistry.find(
         (entity: EntityRegistryEntry) =>
           entity.platform === "automation" &&
           entity.unique_id === this._newAutomationId
@@ -572,7 +574,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       oldAutomationId !== this.automationId
     ) {
       this._setEntityId();
-      this._loadConfig();
+      this.loadConfig(this.automationId);
     }
 
     if (
@@ -657,42 +659,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             )}:
             ${value.error}<br />`
     );
-  }
-
-  private async _loadConfig() {
-    try {
-      const config = await fetchAutomationFileConfig(
-        this.hass,
-        this.automationId as string
-      );
-      this.dirty = false;
-      this.readOnly = false;
-      this.config = normalizeAutomationConfig(config);
-      this._checkValidation();
-    } catch (err: any) {
-      const entity = this._entityRegistry.find(
-        (ent) =>
-          ent.platform === "automation" && ent.unique_id === this.automationId
-      );
-      if (entity) {
-        navigate(`/config/automation/show/${entity.entity_id}`, {
-          replace: true,
-        });
-        return;
-      }
-      await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_not_editable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_unknown",
-                { err_no: err.status_code }
-              ),
-      });
-      goBack("/config");
-    }
   }
 
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
