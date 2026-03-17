@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
@@ -28,7 +29,6 @@ import {
   migrateLayoutToGridOptions,
 } from "../../common/compute-card-grid-size";
 import type { LovelaceGridOptions } from "../../types";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
@@ -281,19 +281,43 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _fullWidthChanged(ev): void {
     ev.stopPropagation();
-    const value = ev.target.checked;
+    const checked = ev.target.checked;
+
+    let columns: number | "full" | undefined;
+    if (checked) {
+      columns = "full";
+    } else if (this._defaultGridOptions?.columns === "full") {
+      // Default is full width, so we need to set a specific value
+      const columnSpan = this.sectionConfig.column_span ?? 1;
+      const gridTotalColumns = 12 * columnSpan;
+      columns = this._defaultGridOptions?.max_columns ?? gridTotalColumns;
+    } else {
+      columns = undefined;
+    }
+
     this._updateGridOptions({
       ...this.config.grid_options,
-      columns: value ? "full" : undefined,
+      columns,
     });
   }
 
   private _autoHeightChanged(ev): void {
     ev.stopPropagation();
-    const value = ev.target.checked;
+    const checked = ev.target.checked;
+
+    let rows: number | "auto" | undefined;
+    if (checked) {
+      rows = "auto";
+    } else if (this._defaultGridOptions?.rows === "auto") {
+      // Default is auto height, so we need to set a specific value
+      rows = this._defaultGridOptions?.min_rows ?? 1;
+    } else {
+      rows = undefined;
+    }
+
     this._updateGridOptions({
       ...this.config.grid_options,
-      rows: value ? "auto" : undefined,
+      rows,
     });
   }
 

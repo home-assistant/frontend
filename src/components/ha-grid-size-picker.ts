@@ -45,7 +45,8 @@ export class HaGridSizeEditor extends LitElement {
     const fullWidth = this._localValue?.columns === "full";
 
     const disabledColumns =
-      this.columnMin !== undefined && this.columnMin === this.columnMax;
+      fullWidth ||
+      (this.columnMin !== undefined && this.columnMin === this.columnMax);
     const disabledRows =
       autoHeight ||
       (this.rowMin !== undefined && this.rowMin === this.rowMax);
