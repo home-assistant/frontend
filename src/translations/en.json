@@ -1524,6 +1524,12 @@
       "more_info_control": {
         "settings": "Settings",
         "edit": "Edit entity",
+        "edit_domain": {
+          "automation": "Edit automation",
+          "script": "Edit script",
+          "scene": "Edit scene",
+          "person": "Edit person"
+        },
         "details": "Details",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
