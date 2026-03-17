@@ -5,7 +5,6 @@ import {
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -32,6 +31,10 @@ import {
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
+import {
+  type FuseWeightedKey,
+  multiTermSearch,
+} from "../../../resources/fuseMultiTerm";
 import { showScriptEditor } from "../../../data/script";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -44,6 +47,13 @@ const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
   community: mdiAccount,
   homeassistant: mdiHomeAssistant,
 };
+
+const BLUEPRINT_SEARCH_KEYS: FuseWeightedKey[] = [
+  { name: "name", weight: 10 },
+  { name: "description", weight: 7 },
+  { name: "author", weight: 5 },
+  { name: "sourceType", weight: 3 },
+];
 
 @customElement("ha-dialog-new-automation")
 class DialogNewAutomation extends LitElement {
@@ -110,29 +120,22 @@ class DialogNewAutomation extends LitElement {
     );
   });
 
+  private _blueprintFuseIndex = memoizeOne(
+    (blueprints: ReturnType<DialogNewAutomation["_processedBlueprints"]>) =>
+      Fuse.createIndex(BLUEPRINT_SEARCH_KEYS, blueprints)
+  );
+
   private _filteredBlueprints = memoizeOne(
     (
       blueprints: ReturnType<DialogNewAutomation["_processedBlueprints"]>,
       filter: string
-    ) => {
-      const search = filter.trim();
-
-      if (!search) {
-        return blueprints;
-      }
-
-      const options: IFuseOptions<(typeof blueprints)[0]> = {
-        keys: ["name", "description", "author", "sourceType"],
-        isCaseSensitive: false,
-        threshold: 0.3,
-        ignoreLocation: true,
-        minMatchCharLength: Math.min(search.length, 2),
-      };
-
-      return new Fuse(blueprints, options)
-        .search(search)
-        .map((result) => result.item);
-    }
+    ) =>
+      multiTermSearch(
+        blueprints,
+        filter,
+        BLUEPRINT_SEARCH_KEYS,
+        this._blueprintFuseIndex(blueprints)
+      )
   );
 
   protected render() {
