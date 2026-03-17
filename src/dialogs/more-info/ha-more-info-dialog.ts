@@ -38,6 +38,7 @@ import {
 } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-adaptive-dialog";
@@ -66,6 +67,7 @@ import {
 } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
@@ -74,14 +76,13 @@ import {
   computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
+import type { FavoritesDialogContext } from "./favorites";
+import { getFavoritesDialogHandler } from "./favorites";
 import "./ha-more-info-add-to";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
-import type { FavoritesDialogContext } from "./favorites";
-import { getFavoritesDialogHandler } from "./favorites";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -719,6 +720,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 .path=${mdiPencilOutline}
                               ></ha-svg-icon>
                               ${this.hass.localize(
+                                `ui.dialogs.more_info_control.edit_domain.${domain}` as LocalizeKeys
+                              ) ||
+                              this.hass.localize(
                                 "ui.dialogs.more_info_control.edit"
                               )}
                             </ha-dropdown-item>
