@@ -262,22 +262,18 @@ class DialogNewAutomation extends LitElement {
                               )}
                             </div>
                           `
-                        : html`
-                            <ha-tip .hass=${this.hass}>
-                              <a
-                                href=${documentationUrl(
-                                  this.hass,
-                                  "/get-blueprints"
-                                )}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                              >
-                                ${this.hass.localize(
-                                  `ui.panel.config.${this._mode}.dialog_new.discover_blueprint_tip`
-                                )}
-                              </a>
-                            </ha-tip>
-                          `}
+                        : nothing}
+                    <ha-tip .hass=${this.hass}>
+                      <a
+                        href=${documentationUrl(this.hass, "/get-blueprints")}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.config.${this._mode}.dialog_new.discover_blueprint_tip`
+                        )}
+                      </a>
+                    </ha-tip>
                   `}
             </div>
           </div>
