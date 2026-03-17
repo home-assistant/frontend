@@ -4,9 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-password-field";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/input/ha-input";
 import {
   canDecryptBackupOnDownload,
   getPreferredAgentForDownload,
@@ -85,12 +85,14 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
           )}
         </p>
 
-        <ha-password-field
+        <ha-input
+          type="password"
+          password-toggle
           .label=${this.hass.localize(
             "ui.panel.config.backup.dialogs.download.encryption_key"
           )}
           @input=${this._keyChanged}
-        ></ha-password-field>
+        ></ha-input>
 
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`

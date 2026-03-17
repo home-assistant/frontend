@@ -8,8 +8,8 @@ import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-select";
 import type { HaSelectSelectEvent } from "./ha-select";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
 export interface TimeChangedEvent {
   days?: number;
@@ -133,7 +133,7 @@ export class HaBaseTimeInput extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
-  @queryAll("ha-textfield") private _inputs?: HaTextField[];
+  @queryAll("ha-input") private _inputs?: HaInput[];
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -153,7 +153,7 @@ export class HaBaseTimeInput extends LitElement {
         <div class="time-input-wrap">
           ${this.enableDay
             ? html`
-                <ha-textfield
+                <ha-input
                   id="day"
                   type="number"
                   inputmode="numeric"
@@ -162,19 +162,18 @@ export class HaBaseTimeInput extends LitElement {
                   name="days"
                   @change=${this._valueChanged}
                   @focusin=${this._onFocus}
-                  no-spinner
+                  without-spin-buttons
                   .required=${this.required}
                   .autoValidate=${this.autoValidate}
                   min="0"
                   .disabled=${this.disabled}
-                  suffix=":"
-                  class="hasSuffix"
                 >
-                </ha-textfield>
+                </ha-input>
+                <div class="time-separator">:</div>
               `
             : nothing}
 
-          <ha-textfield
+          <ha-input
             id="hour"
             type="number"
             inputmode="numeric"
@@ -183,18 +182,17 @@ export class HaBaseTimeInput extends LitElement {
             name="hours"
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
-            no-spinner
+            without-spin-buttons
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
             max=${ifDefined(this._hourMax)}
             min="0"
             .disabled=${this.disabled}
-            suffix=":"
-            class="hasSuffix"
           >
-          </ha-textfield>
-          <ha-textfield
+          </ha-input>
+          <div class="time-separator">:</div>
+          <ha-input
             id="min"
             type="number"
             inputmode="numeric"
@@ -203,41 +201,43 @@ export class HaBaseTimeInput extends LitElement {
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
             name="minutes"
-            no-spinner
+            without-spin-buttons
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
             max="59"
             min="0"
             .disabled=${this.disabled}
-            .suffix=${this.enableSecond ? ":" : ""}
-            class=${this.enableSecond ? "has-suffix" : ""}
           >
-          </ha-textfield>
+          </ha-input>
           ${this.enableSecond
-            ? html`<ha-textfield
-                id="sec"
-                type="number"
-                inputmode="decimal"
-                step="any"
-                .value=${this._formatValue(this.seconds)}
-                .label=${this.secLabel}
-                @change=${this._valueChanged}
-                @focusin=${this._onFocus}
-                name="seconds"
-                no-spinner
-                .required=${this.required}
-                .autoValidate=${this.autoValidate}
-                max="59"
-                min="0"
-                .disabled=${this.disabled}
-                .suffix=${this.enableMillisecond ? ":" : ""}
-                class=${this.enableMillisecond ? "has-suffix" : ""}
-              >
-              </ha-textfield>`
+            ? html`<div class="time-separator">:</div>`
+            : nothing}
+          ${this.enableSecond
+            ? html`<ha-input
+                  id="sec"
+                  type="number"
+                  inputmode="decimal"
+                  step="any"
+                  .value=${this._formatValue(this.seconds)}
+                  .label=${this.secLabel}
+                  @change=${this._valueChanged}
+                  @focusin=${this._onFocus}
+                  name="seconds"
+                  without-spin-buttons
+                  .required=${this.required}
+                  .autoValidate=${this.autoValidate}
+                  max="59"
+                  min="0"
+                  .disabled=${this.disabled}
+                >
+                </ha-input>
+                ${this.enableMillisecond
+                  ? html`<div class="time-separator">:</div>`
+                  : nothing}`
             : nothing}
           ${this.enableMillisecond
-            ? html`<ha-textfield
+            ? html`<ha-input
                 id="millisec"
                 type="number"
                 .value=${this._formatValue(this.milliseconds, 3)}
@@ -245,7 +245,7 @@ export class HaBaseTimeInput extends LitElement {
                 @change=${this._valueChanged}
                 @focusin=${this._onFocus}
                 name="milliseconds"
-                no-spinner
+                without-spin-buttons
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
                 maxlength="3"
@@ -253,8 +253,19 @@ export class HaBaseTimeInput extends LitElement {
                 min="0"
                 .disabled=${this.disabled}
               >
-              </ha-textfield>`
+              </ha-input>`
             : nothing}
+          ${this.format === 24
+            ? nothing
+            : html`<ha-select
+                .required=${this.required}
+                .value=${this.amPm}
+                .disabled=${this.disabled}
+                .name=${"amPm"}
+                @selected=${this._valueChanged}
+                .options=${["AM", "PM"]}
+              >
+              </ha-select>`}
           ${this.clearable && !this.required && !this.disabled
             ? html`<ha-icon-button
                 label="clear"
@@ -263,18 +274,6 @@ export class HaBaseTimeInput extends LitElement {
               ></ha-icon-button>`
             : nothing}
         </div>
-
-        ${this.format === 24
-          ? nothing
-          : html`<ha-select
-              .required=${this.required}
-              .value=${this.amPm}
-              .disabled=${this.disabled}
-              .name=${"amPm"}
-              @selected=${this._valueChanged}
-              .options=${["AM", "PM"]}
-            >
-            </ha-select>`}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
@@ -289,8 +288,8 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   private _valueChanged(ev: InputEvent | HaSelectSelectEvent): void {
-    const textField = ev.currentTarget as HaTextField;
-    this[textField.name] =
+    const textField = ev.currentTarget as HaInput;
+    this[textField.name || ""] =
       textField.name === "amPm"
         ? (ev as HaSelectSelectEvent).detail.value
         : Number(textField.value);
@@ -312,7 +311,7 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   private _onFocus(ev: FocusEvent) {
-    (ev.currentTarget as HaTextField).select();
+    (ev.currentTarget as HaInput).select();
   }
 
   /**
@@ -354,45 +353,74 @@ export class HaBaseTimeInput extends LitElement {
       direction: ltr;
       padding-right: 3px;
     }
-    ha-textfield {
+    ha-input {
+      height: 56px;
+      padding: 0;
       width: 60px;
       flex-grow: 1;
-      text-align: center;
-      --mdc-shape-small: 0;
-      --text-field-appearance: none;
-      --text-field-padding-top: 0;
-      --text-field-padding-bottom: 0;
-      --text-field-padding-start: 4px;
-      --text-field-padding-end: 4px;
-
-      --text-field-suffix-padding-left: 2px;
-      --text-field-suffix-padding-right: 0;
-      --text-field-text-align: center;
     }
-    ha-textfield.hasSuffix {
-      --text-field-padding: 0 0 0 4px;
-    }
-    ha-textfield:first-child {
+    ha-input:first-child {
       --text-field-border-top-left-radius: var(--mdc-shape-medium);
     }
-    ha-textfield:last-child {
+    ha-input:last-child {
       --text-field-border-top-right-radius: var(--mdc-shape-medium);
     }
+
+    ha-input::part(wa-base) {
+      padding: var(--ha-space-1);
+    }
+
+    ha-input:first-child::part(wa-base) {
+      padding-inline-start: var(--ha-space-4);
+    }
+
+    ha-input:last-child::part(wa-base) {
+      padding-inline-end: var(--ha-space-4);
+    }
+
+    ha-input::part(wa-hint) {
+      height: 0;
+    }
+
+    ha-input::part(wa-input) {
+      text-align: center;
+    }
+
+    .time-separator,
+    ha-icon-button {
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      color: var(--ha-color-text-secondary);
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+      box-sizing: border-box;
+      height: 56px;
+      margin-inline-start: calc(var(--ha-space-1) * -1);
+    }
+
+    .time-separator {
+      width: 12px;
+      margin-inline-end: calc(var(--ha-space-1) * -1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     :host([clearable]) .mdc-select__anchor {
       padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
       position: relative;
       --ha-icon-button-size: 36px;
+      border-start-end-radius: var(--ha-border-radius-sm);
       --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color: var(--mdc-text-field-fill-color, whitesmoke);
-      border-bottom-style: solid;
-      border-bottom-width: 1px;
     }
+
+    ha-select {
+      margin-inline: calc(var(--ha-space-1) * -1);
+    }
+
     label {
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);
