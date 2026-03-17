@@ -684,6 +684,26 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
     );
     expect(result).toBe("$12.00");
   });
+
+  it("Should format negative monetary device_class", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "number.test",
+      {
+        device_class: "monetary",
+        unit_of_measurement: "USD",
+      },
+      "-12"
+    );
+    expect(result).toBe("-$12.00");
+  });
 });
 
 describe("computeStateDisplayFromEntityAttributes datetime device calss", () => {
