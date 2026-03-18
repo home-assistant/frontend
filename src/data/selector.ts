@@ -240,6 +240,7 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
+  unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
 }
 
@@ -811,6 +812,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -841,6 +843,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }
