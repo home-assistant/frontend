@@ -13,6 +13,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -44,6 +45,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { fullEntitiesContext } from "../../../data/context";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -59,7 +61,9 @@ export class HaScriptTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -346,7 +350,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = this.entityRegistry.find(
+    this._entityId = this._entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -363,7 +367,7 @@ export class HaScriptTrace extends LitElement {
       if (this.scriptId) {
         this._loadTraces();
 
-        this._entityId = this.entityRegistry.find(
+        this._entityId = this._entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         )?.entity_id;
       }

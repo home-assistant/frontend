@@ -24,6 +24,8 @@ export class HuiEntityEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public required = true;
+
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
 
   private _entityKeys = new WeakMap<EntityConfig, string>();
@@ -40,8 +42,7 @@ export class HuiEntityEditor extends LitElement {
     const stateObj = this.hass.states[item.entity];
 
     const useDeviceName =
-      stateObj &&
-      entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
+      stateObj && entityUseDeviceName(stateObj, this.hass.entities);
 
     const isRTL = computeRTL(this.hass);
 
@@ -125,10 +126,11 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
-          " (" +
-          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
-          ")"}
+        `${this.hass.localize("ui.panel.lovelace.editor.card.generic.entities")}${
+          this.required
+            ? ` (${this.hass.localize("ui.panel.lovelace.editor.card.config.required")})`
+            : ""
+        }`}
       </h3>
       ${this.canEdit
         ? html`
@@ -146,7 +148,7 @@ export class HuiEntityEditor extends LitElement {
               </ha-sortable>
             </div>
           `
-        : html` <ha-sortable
+        : html`<ha-sortable
             handle-selector=".handle"
             @item-moved=${this._entityMoved}
           >

@@ -178,6 +178,12 @@ export class LazyContextProvider<
     originalCallback: (value: T, unsubscribe?: () => void) => void
   ): (value: T, unsubscribe?: () => void) => void {
     let tracked = false;
+    // Keep stable references so ContextConsumer doesn't think the
+    // subscription changed and call the old disposer (which removes
+    // the subscription from the inner provider's map).
+    let cachedDisposer: (() => void) | undefined;
+    let cachedWrappedDisposer: (() => void) | undefined;
+
     return (value: T, disposer?: () => void) => {
       if (!tracked && disposer) {
         // First call with a disposer — this consumer is now subscribed.
@@ -186,20 +192,23 @@ export class LazyContextProvider<
         this._clearTeardownTimer();
       }
 
-      const wrappedDisposer = disposer
-        ? () => {
-            if (tracked) {
-              tracked = false;
-              this._subscriberCount--;
-              if (this._subscriberCount === 0 && this._loaded) {
-                this._scheduleTeardown();
+      if (disposer !== cachedDisposer) {
+        cachedDisposer = disposer;
+        cachedWrappedDisposer = disposer
+          ? () => {
+              if (tracked) {
+                tracked = false;
+                this._subscriberCount--;
+                if (this._subscriberCount === 0 && this._loaded) {
+                  this._scheduleTeardown();
+                }
               }
+              disposer();
             }
-            disposer();
-          }
-        : undefined;
+          : undefined;
+      }
 
-      originalCallback(value, wrappedDisposer);
+      originalCallback(value, cachedWrappedDisposer);
     };
   }
 

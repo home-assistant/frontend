@@ -1,10 +1,15 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { Statistic, StatisticType } from "../../../data/recorder";
+import type {
+  Statistic,
+  StatisticPeriod,
+  StatisticType,
+} from "../../../data/recorder";
 import type { MediaSelectorValue } from "../../../data/selector";
 import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
@@ -166,11 +171,14 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 }
 
 export interface EnergyCardBaseConfig extends LovelaceCardConfig {
-  title?: string;
   collection_key?: string;
 }
 
-export interface EnergyCardSankeyConfig extends EnergyCardBaseConfig {
+export interface EnergyCardConfig extends EnergyCardBaseConfig {
+  title?: string;
+}
+
+export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
@@ -182,61 +190,61 @@ export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   disable_compare?: boolean;
 }
 
-export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDistributionCardConfig extends EnergyCardConfig {
   type: "energy-distribution";
   link_dashboard?: boolean;
 }
-export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
 }
 
-export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
 }
 
-export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
 }
 
-export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
 }
 
-export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-graph";
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
   max_devices?: number;
 }
 
-export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
+export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
 }
 
-export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
   type: "energy-solar-consumed-gauge";
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
   type: "energy-self-sufficiency-gauge";
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
 }
 
-export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
   type: "energy-carbon-consumed-gauge";
 }
 
-export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
 }
@@ -377,7 +385,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 }
 
 export interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "attribute" | "name";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus?: boolean;
@@ -387,7 +395,7 @@ export interface MapEntityConfig extends EntityConfig {
 
 export interface GeoLocationSourceConfig {
   source: string;
-  label_mode?: "name" | "state" | "attribute" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus?: boolean;
@@ -400,6 +408,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
+  show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
   hours_to_show?: number;
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
@@ -455,11 +464,10 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  title?: string;
   entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
-  period?: "5minute" | "hour" | "day" | "month";
+  period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   min_y_axis?: number;
@@ -471,16 +479,17 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   expand_legend?: boolean;
 }
 
-export interface StatisticCardConfig extends LovelaceCardConfig {
+export interface StatisticCardConfig extends EnergyCardBaseConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {
         fixed_period?: { start: string; end: string };
-        calendar?: { period: string; offset: number };
+        calendar?: { period: string; offset?: number };
         rolling_window?: { duration: HaDurationData; offset: HaDurationData };
       }
-    | "energy_date_selection";
+    | "energy_date_selection"; // Maintained for legacy compatibility, use new key instead.
+  energy_date_selection?: boolean;
   stat_type: keyof Statistic;
   theme?: string;
 }

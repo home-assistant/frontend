@@ -417,8 +417,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           margin-top: 0;
         }
         .header {
-          margin-top: 16px;
-
           display: flex;
           align-items: center;
         }

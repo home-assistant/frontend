@@ -19,7 +19,7 @@ import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
-  EnergyCardBaseConfig,
+  EnergyCardConfig,
   EnergyDevicesDetailGraphCardConfig,
   EnergyDevicesGraphCardConfig,
 } from "../../cards/types";
@@ -44,7 +44,7 @@ const cardConfigStruct = assign(
 const chartModeOpts = ["bar", "pie"] as const;
 
 type EnergyDevicesCardConfig =
-  | EnergyCardBaseConfig
+  | EnergyCardConfig
   | EnergyDevicesGraphCardConfig
   | EnergyDevicesDetailGraphCardConfig;
 @customElement("hui-energy-devices-card-editor")
