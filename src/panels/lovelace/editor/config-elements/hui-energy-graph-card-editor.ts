@@ -17,6 +17,7 @@ import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
   EnergyCardBaseConfig,
+  EnergyCardConfig,
   EnergyDistributionCardConfig,
   PowerSourcesGraphCardConfig,
 } from "../../cards/types";
@@ -46,10 +47,6 @@ const cardConfigStruct = assign(
   })
 );
 
-type EnergyGraphCardConfig =
-  | EnergyCardBaseConfig
-  | EnergyDistributionCardConfig
-  | PowerSourcesGraphCardConfig;
 @customElement("hui-energy-graph-card-editor")
 export class HuiEnergyGraphCardEditor
   extends LitElement
@@ -57,16 +54,28 @@ export class HuiEnergyGraphCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EnergyGraphCardConfig;
+  @state() private _config?:
+    | EnergyCardBaseConfig
+    | EnergyCardConfig
+    | EnergyDistributionCardConfig
+    | PowerSourcesGraphCardConfig;
 
-  public setConfig(config: EnergyGraphCardConfig): void {
+  public setConfig(
+    config:
+      | EnergyCardBaseConfig
+      | EnergyCardConfig
+      | EnergyDistributionCardConfig
+      | PowerSourcesGraphCardConfig
+  ): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
 
   private _schema = memoizeOne((type: string) => {
     const schema: HaFormSchema[] = [
-      { name: "title", selector: { text: {} } },
+      ...(type !== "energy-compare"
+        ? [{ name: "title", selector: { text: {} } }]
+        : []),
       ...(type === "power-sources-graph"
         ? [
             {

@@ -42,8 +42,7 @@ export class HuiEntityEditor extends LitElement {
     const stateObj = this.hass.states[item.entity];
 
     const useDeviceName =
-      stateObj &&
-      entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
+      stateObj && entityUseDeviceName(stateObj, this.hass.entities);
 
     const isRTL = computeRTL(this.hass);
 

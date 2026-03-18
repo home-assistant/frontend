@@ -196,7 +196,7 @@ export const provideHass = (
     // Home Assistant properties
     auth: {
       data: {
-        hassUrl: "",
+        hassUrl: location.origin,
       },
     } as any,
     connection: {

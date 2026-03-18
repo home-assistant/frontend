@@ -53,7 +53,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  @state() private _aliases?: string[];
+  @state() private _aliases?: (string | null)[];
 
   @state() private _googleEntity?: GoogleEntity;
 
@@ -289,7 +289,9 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           </ha-alert>`
         : html`<ha-aliases-editor
             .hass=${this.hass}
-            .aliases=${this._aliases ?? this.entry.aliases}
+            .aliases=${(this._aliases ?? this.entry.aliases).filter(
+              (a): a is string => a !== null
+            )}
             @value-changed=${this._aliasesChanged}
             @blur=${this._saveAliases}
           ></ha-aliases-editor>`}
@@ -324,10 +326,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     if (!this._aliases) {
       return;
     }
+    const nullAliases = (this.entry?.aliases ?? []).filter((a) => a === null);
+    const stringAliases = this._aliases
+      .filter((a): a is string => a !== null)
+      .map((alias) => alias.trim())
+      .filter((alias) => alias);
     const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
-      aliases: this._aliases
-        .map((alias) => alias.trim())
-        .filter((alias) => alias),
+      aliases: [...nullAliases, ...stringAliases],
     });
     fireEvent(this, "entity-entry-updated", result.entity_entry);
   }

@@ -11,7 +11,6 @@ import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-password-field";
 import {
   downloadEmergencyKit,
   generateEncryptionKey,
