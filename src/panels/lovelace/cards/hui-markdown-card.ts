@@ -10,6 +10,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
+import "../../../components/ha-ripple";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
@@ -143,11 +144,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           "text-only": this._config.text_only ?? false,
           action: this._interactive,
         })}
-        tabindex=${ifDefined(
-          !this._config.tap_action || hasAction(this._config.tap_action)
-            ? "0"
-            : undefined
-        )}
+        tabindex=${ifDefined(this._interactive ? "0" : undefined)}
+        role=${ifDefined(this._interactive ? "button" : undefined)}
         @action=${safeHandleAction}
         .actionHandler=${safeActionHandler}
       >
