@@ -16,6 +16,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { actionHandler } from "../../../panels/lovelace/common/directives/action-handler-directive";
 
 const SORTABLE_OPTIONS = {
@@ -156,23 +157,27 @@ export class HaMoreInfoFavorites extends LitElement {
           ${this.editMode && this.showAdd
             ? html`
                 <ha-outlined-icon-button
+                  id="add-btn"
                   class="button"
                   @click=${this._handleAdd}
                   .label=${this.addLabel}
                 >
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                 </ha-outlined-icon-button>
+                <ha-tooltip for="add-btn">${this.addLabel}</ha-tooltip>
               `
             : nothing}
           ${this.editMode && this.showDone
             ? html`
                 <ha-outlined-icon-button
+                  id="done-btn"
                   @click=${this._handleDone}
                   class="button"
                   .label=${this.doneLabel}
                 >
                   <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
                 </ha-outlined-icon-button>
+                <ha-tooltip for="done-btn">${this.doneLabel}</ha-tooltip>
               `
             : nothing}
         </div>
