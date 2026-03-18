@@ -9237,7 +9237,7 @@
                 "card": "Card",
                 "text-only": "Text only"
               },
-              "actions_warning": "Warning: adding an action disables the default processing of weblinks in a content.",
+              "actions_warning": "Adding an action will disable links in the content.",
               "description": "This card is used to render Markdown."
             },
             "clock": {
