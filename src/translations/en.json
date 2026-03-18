@@ -3932,7 +3932,7 @@
             "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
-            "stat_return_to_grid": "Solar energy returned to the grid",
+            "stat_return_to_grid": "Solar energy exported to the grid",
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
@@ -8253,7 +8253,7 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total returned {num} kWh",
+              "total_returned": "Total exported {num} kWh",
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
@@ -8284,7 +8284,7 @@
               "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "solar_consumed_gauge": {
-              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",
+              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being exported to the grid.",
               "card_indicates_solar_energy_used_charge_home_bat": "If this number is typically very low, indicating excess solar production, you might want to consider charging a home battery or electric car from your solar panels at times of high solar production.",
               "self_consumed_solar_energy": "Self-consumed solar energy",
               "not_produced_solar_energy": "You have not produced any solar energy",
@@ -9062,7 +9062,7 @@
             },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
-              "description": "This card shows how much of the solar energy was used by your home and was not returned to the grid."
+              "description": "This card shows how much of the solar energy was used by your home and was not exported to the grid."
             },
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
