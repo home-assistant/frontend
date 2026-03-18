@@ -311,6 +311,7 @@
         }
       },
       "valve": {
+        "position": "[%key:ui::card::cover::position%]",
         "open_valve": "Open valve",
         "close_valve": "Close valve",
         "stop_valve": "Stop valve"
