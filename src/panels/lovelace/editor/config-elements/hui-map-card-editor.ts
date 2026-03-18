@@ -30,10 +30,7 @@ import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
-import {
-  type MapCardConfig,
-  type MapEntityConfig,
-} from "../../cards/types";
+import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../hui-sub-element-editor";
 import type {
