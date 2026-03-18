@@ -9201,6 +9201,7 @@
                 "cover": "Cover",
                 "fill": "Fill"
               },
+              "focus": "Focus",
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -9208,6 +9209,7 @@
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "icon_height": "Icon height",
               "image": "Image path",
+              "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
               "manual_description": "Need to add a custom card or just want to manually write the YAML?",
@@ -9283,7 +9285,18 @@
                 "dark": "Dark"
               },
               "default_zoom": "Default zoom",
+              "auto_fit": "Auto fit",
+              "fit_zones": "Fit zones",
+              "cluster": "Cluster markers",
+              "show_all": "Show all",
+              "show_all_helper": "Automatically add all entities with coordinates",
               "source": "Source",
+              "label_modes": {
+                "name": "Name",
+                "icon": "Icon",
+                "state": "State",
+                "attribute": "Attribute"
+              },
               "description": "This card allows you to display entities on a map."
             },
             "markdown": {
