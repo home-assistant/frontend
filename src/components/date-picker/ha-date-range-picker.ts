@@ -203,6 +203,7 @@ export class HaDateRangePicker extends LitElement {
                 <wa-popover
                   .open=${this._pickerWrapperOpen}
                   style="--body-width: ${this._popoverWidth}px;"
+                  class=${this._opened ? "open" : ""}
                   without-arrow
                   distance="0"
                   .placement=${this.popoverPlacement}
@@ -210,6 +211,7 @@ export class HaDateRangePicker extends LitElement {
                   auto-size="vertical"
                   auto-size-padding="16"
                   @wa-after-show=${this._dialogOpened}
+                  @wa-hide=${this._handlePopoverHide}
                   @wa-after-hide=${this._hidePicker}
                   trap-focus
                 >
@@ -265,6 +267,10 @@ export class HaDateRangePicker extends LitElement {
   private _dialogOpened = () => {
     this._opened = true;
     this._setTextareaFocusStyle(true);
+  };
+
+  private _handlePopoverHide = () => {
+    this._opened = false;
   };
 
   private _handleNext(ev: MouseEvent): void {
@@ -359,6 +365,15 @@ export class HaDateRangePicker extends LitElement {
 
       wa-popover {
         --wa-space-l: 0;
+      }
+
+      wa-popover::part(dialog)::backdrop {
+        opacity: 0;
+        transition: opacity var(--ha-animation-duration-normal) ease-out;
+      }
+
+      wa-popover.open::part(dialog)::backdrop {
+        opacity: 1;
       }
 
       :host(:not([backdrop])) wa-popover::part(dialog)::backdrop {
