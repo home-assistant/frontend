@@ -6,9 +6,9 @@ import "cally";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
+  formatCallyDateRange,
   formatDateMonth,
   formatDateYear,
-  formatISODateOnly,
 } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -74,7 +74,12 @@ export class DateRangePicker extends LitElement {
 
     this._dateValue =
       this.startDate && this.endDate
-        ? `${formatISODateOnly(this.startDate!, this.locale, this.hassConfig)}/${formatISODateOnly(this.endDate!, this.locale, this.hassConfig)}`
+        ? formatCallyDateRange(
+            this.startDate,
+            this.endDate,
+            this.locale,
+            this.hassConfig
+          )
         : undefined;
     this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
     this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
@@ -251,7 +256,12 @@ export class DateRangePicker extends LitElement {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
-    this._dateValue = `${formatISODateOnly(dateRange[0], this.locale, this.hassConfig)}/${formatISODateOnly(dateRange[1], this.locale, this.hassConfig)}`;
+    this._dateValue = formatCallyDateRange(
+      dateRange[0],
+      dateRange[1],
+      this.locale,
+      this.hassConfig
+    );
     fireEvent(this, "value-changed", {
       value: {
         startDate: dateRange[0],

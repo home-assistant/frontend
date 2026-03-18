@@ -8,6 +8,7 @@ import {
   formatDateMonth,
   formatDateShort,
   formatDateYear,
+  formatISODateOnly,
 } from "../../common/datetime/format_date";
 import {
   configContext,
@@ -80,7 +81,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
         ? {
             year: this._pickerYear,
             title: formatDateShort(date, this.locale, this.hassConfig),
-            dateString: this.params.value.substring(0, 10),
+            dateString: formatISODateOnly(date, this.locale, this.hassConfig),
           }
         : undefined;
     }
@@ -165,7 +166,8 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     this._value = {
       year: formatDateYear(date, this.locale, this.hassConfig),
       title: formatDateShort(date, this.locale, this.hassConfig),
-      dateString: value || date.toISOString().substring(0, 10),
+      dateString:
+        value || formatISODateOnly(date, this.locale, this.hassConfig),
     };
 
     if (setFocusDay) {

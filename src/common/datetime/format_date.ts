@@ -262,7 +262,11 @@ const formatDateWeekdayShortDateMem = memoizeOne(
     })
 );
 
-// 2021-08-10
+/**
+ * Format a date as YYYY-MM-DD. Uses "en-CA" because it's the only
+ * Intl locale that natively outputs ISO 8601 date format.
+ * Locale/config are only used to resolve the time zone.
+ */
 export const formatISODateOnly = (
   dateObj: Date,
   locale?: FrontendLocaleData,
@@ -278,5 +282,19 @@ export const formatISODateOnly = (
     });
     return formatter.format(dateObj);
   }
+  // Fallback to UTC when no locale/config is available
   return dateObj.toISOString().substring(0, 10);
+};
+
+// 2026-08-10/2026-08-15
+export const formatCallyDateRange = (
+  start: Date,
+  end: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
+  const startDate = formatISODateOnly(start, locale, config);
+  const endDate = formatISODateOnly(end, locale, config);
+
+  return `${startDate}/${endDate}`;
 };
