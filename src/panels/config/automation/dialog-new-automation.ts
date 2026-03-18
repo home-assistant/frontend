@@ -161,7 +161,7 @@ class DialogNewAutomation extends LitElement {
       >
         <div class="content-wrapper">
           ${processedBlueprints.length > 5
-            ? html` <search-input
+            ? html`<search-input
                 autofocus
                 .hass=${this.hass}
                 .filter=${this._filter}
@@ -363,6 +363,7 @@ class DialogNewAutomation extends LitElement {
         }
         search-input {
           display: block;
+          --ha-input-padding-top: 0;
         }
         .blueprints-list {
           overflow-y: auto;
