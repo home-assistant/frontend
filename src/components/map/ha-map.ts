@@ -25,7 +25,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
 import { filterXSS } from "../../common/util/xss";
-import type { MapCardMarkerLabelMode } from "../../panels/lovelace/cards/types";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -54,6 +53,15 @@ export interface HaMapPaths {
   gradualOpacity?: number;
   fullDatetime?: boolean;
 }
+
+export const MAP_CARD_MARKER_LABEL_MODES = [
+  "name",
+  "state",
+  "attribute",
+  "icon",
+] as const;
+export type MapCardMarkerLabelMode =
+  (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
 
 export interface HaMapEntity {
   entity_id: string;
