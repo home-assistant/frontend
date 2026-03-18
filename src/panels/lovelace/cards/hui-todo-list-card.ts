@@ -9,11 +9,15 @@ import {
   mdiSort,
 } from "@mdi/js";
 import {
+  add,
   addDays,
   addMonths,
   addWeeks,
   addYears,
   endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
   isSameDay,
 } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -26,6 +30,9 @@ import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { calcDate } from "../../../common/datetime/calc_date";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
+import type { HaDurationData } from "../../../components/ha-duration-input";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -188,7 +195,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             this._filterItems(
               items,
               TodoItemStatus.Completed,
-              this._config?.period
+              this._config?.due_date_period
             ),
             sort
           )
@@ -202,7 +209,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             this._filterItems(
               items,
               TodoItemStatus.NeedsAction,
-              this._config?.period
+              this._config?.due_date_period
             ),
             sort
           )
@@ -214,12 +221,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     status: TodoItemStatus,
     period?: {
       calendar?: { period: string; offset: number };
+      rolling_window?: {
+        offset: HaDurationData;
+      };
     }
   ): TodoItem[] {
     const endDate =
       period && period.calendar && period.calendar.period
         ? this._addPeriod(new Date(), period.calendar)
-        : undefined;
+        : period && period.rolling_window
+          ? this._addRollingWindow(new Date(), period.rolling_window)
+          : undefined;
 
     return items.filter((item) => {
       if (item.status !== status) {
@@ -236,18 +248,39 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _addPeriod(
     date: Date,
     calendar: { period: string; offset: number }
-  ): Date {
+  ): Date | undefined {
+    const locale = this.hass!.locale;
+    const config = this.hass!.config;
+    const offset = calendar.offset || 0;
     switch (calendar.period) {
       case "day":
-        return addDays(date, calendar.offset);
-      case "week":
-        return addWeeks(date, calendar.offset);
+        return addDays(calcDate(date, endOfDay, locale, config), offset);
+      case "week": {
+        const weekStartsOn = firstWeekdayIndex(locale);
+        return addWeeks(
+          calcDate(date, endOfWeek, locale, config, {
+            weekStartsOn,
+          }),
+          offset
+        );
+      }
       case "month":
-        return addMonths(date, calendar.offset);
+        return addMonths(calcDate(date, endOfMonth, locale, config), offset);
       case "year":
+        return addYears(calcDate(date, endOfYear, locale, config), offset);
       default:
-        return addYears(date, calendar.offset);
+        return undefined;
     }
+  }
+
+  private _addRollingWindow(
+    date: Date,
+    rolling_window: { offset: HaDurationData }
+  ): Date | undefined {
+    if (!rolling_window.offset) {
+      return undefined;
+    }
+    return add(date, rolling_window.offset);
   }
 
   private _getItemsWithoutStatus = memoizeOne(
