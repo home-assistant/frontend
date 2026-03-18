@@ -5,11 +5,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import { formatNumber } from "../../../../common/number/format_number";
+import type { EnergyData } from "../../../../data/energy";
 import {
-  formatFlowRateShort,
+  computeTotalFlowRate,
   getEnergyDataCollection,
-  getFlowRateFromState,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -66,37 +66,18 @@ export class HuiWaterTotalBadge
     return false;
   }
 
-  private _getCurrentFlowRate(entityId: string): number {
-    this._entities.add(entityId);
-    return getFlowRateFromState(this.hass.states[entityId]) ?? 0;
-  }
-
-  private _computeTotalFlowRate(prefs: EnergyPreferences): number {
-    this._entities.clear();
-
-    let totalFlow = 0;
-
-    prefs.energy_sources.forEach((source) => {
-      if (source.type === "water" && source.stat_rate) {
-        const value = this._getCurrentFlowRate(source.stat_rate);
-        if (value > 0) totalFlow += value;
-      }
-    });
-
-    return Math.max(0, totalFlow);
-  }
-
   protected render() {
     if (!this._config || !this._data) {
       return nothing;
     }
 
-    const flowRate = this._computeTotalFlowRate(this._data.prefs);
-    const displayValue = formatFlowRateShort(
-      this.hass.locale,
-      this.hass.config.unit_system.length,
-      flowRate
+    const { value, unit } = computeTotalFlowRate(
+      "water",
+      this._data.prefs,
+      this.hass.states,
+      this._entities
     );
+    const displayValue = `${formatNumber(value, this.hass.locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
       this._config.title ||

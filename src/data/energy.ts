@@ -1421,7 +1421,7 @@ export const calculateSolarConsumedGauge = (
 /** Exact number of liters in one US gallon */
 const LITERS_PER_GALLON = 3.785411784;
 
-const FLOW_RATE_TO_LMIN: Record<string, number> = {
+export const FLOW_RATE_TO_LMIN: Record<string, number> = {
   "m³/h": 1000 / 60,
   "m³/min": 1000,
   "m³/s": 60000,
@@ -1456,6 +1456,71 @@ export const getFlowRateFromState = (
     return value;
   }
   return value * factor;
+};
+
+/**
+ * Compute the total flow rate across all energy sources of a given type.
+ * Used by gas and water total badges.
+ */
+export const computeTotalFlowRate = (
+  sourceType: "gas" | "water",
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"],
+  entities: Set<string>
+): { value: number; unit: string } => {
+  entities.clear();
+
+  let targetUnit: string | undefined;
+  let totalFlow = 0;
+
+  prefs.energy_sources.forEach((source) => {
+    if (source.type !== sourceType || !source.stat_rate) {
+      return;
+    }
+
+    const entityId = source.stat_rate;
+    entities.add(entityId);
+
+    const stateObj = states[entityId];
+    if (!stateObj) {
+      return;
+    }
+
+    const rawValue = parseFloat(stateObj.state);
+    if (isNaN(rawValue) || rawValue <= 0) {
+      return;
+    }
+
+    const entityUnit = stateObj.attributes.unit_of_measurement;
+    if (!entityUnit) {
+      return;
+    }
+
+    if (targetUnit === undefined) {
+      targetUnit = entityUnit;
+      totalFlow += rawValue;
+      return;
+    }
+
+    if (entityUnit === targetUnit) {
+      totalFlow += rawValue;
+      return;
+    }
+
+    const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
+    const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
+
+    if (sourceFactor !== undefined && targetFactor !== undefined) {
+      totalFlow += (rawValue * sourceFactor) / targetFactor;
+    } else {
+      totalFlow += rawValue;
+    }
+  });
+
+  return {
+    value: Math.max(0, totalFlow),
+    unit: targetUnit ?? "",
+  };
 };
 
 /**
