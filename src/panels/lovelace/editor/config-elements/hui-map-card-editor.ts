@@ -509,6 +509,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       // ideally should be taken from a schema
       "entity",
       "name",
+      "color",
       "label_mode",
       "attribute",
       "unit",
