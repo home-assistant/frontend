@@ -38,10 +38,7 @@ import {
 } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type {
-  MapCardConfig,
-  MapEntityConfig,
-} from "./types";
+import type { MapCardConfig, MapEntityConfig } from "./types";
 import {
   addEntityToCondition,
   checkConditionsMet,
