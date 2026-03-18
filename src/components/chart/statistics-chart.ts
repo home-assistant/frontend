@@ -27,6 +27,7 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
+  isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
 import type { ECOption } from "../../resources/echarts/echarts";
@@ -628,8 +629,8 @@ export class StatisticsChart extends LitElement {
       // allow 10m of leeway for "now", because stats are 5 minute aggregated
       const isUpToNow = now.getTime() - endTime.getTime() <= 600000;
       if (isUpToNow) {
-        // Skip external statistics (they have ":" in the ID)
-        if (!statistic_id.includes(":")) {
+        // Skip external statistics
+        if (!isExternalStatistic(statistic_id)) {
           const stateObj = this.hass.states[statistic_id];
           if (stateObj) {
             const currentValue = parseFloat(stateObj.state);
