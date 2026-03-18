@@ -1499,6 +1499,71 @@ export const getFlowRateFromState = (
 };
 
 /**
+ * Compute the total flow rate across all energy sources of a given type.
+ * Used by gas and water total badges.
+ */
+export const computeTotalFlowRate = (
+  sourceType: "gas" | "water",
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"],
+  entities: Set<string>
+): { value: number; unit: string } => {
+  entities.clear();
+
+  let targetUnit: string | undefined;
+  let totalFlow = 0;
+
+  prefs.energy_sources.forEach((source) => {
+    if (source.type !== sourceType || !source.stat_rate) {
+      return;
+    }
+
+    const entityId = source.stat_rate;
+    entities.add(entityId);
+
+    const stateObj = states[entityId];
+    if (!stateObj) {
+      return;
+    }
+
+    const rawValue = parseFloat(stateObj.state);
+    if (isNaN(rawValue) || rawValue <= 0) {
+      return;
+    }
+
+    const entityUnit = stateObj.attributes.unit_of_measurement;
+    if (!entityUnit) {
+      return;
+    }
+
+    if (targetUnit === undefined) {
+      targetUnit = entityUnit;
+      totalFlow += rawValue;
+      return;
+    }
+
+    if (entityUnit === targetUnit) {
+      totalFlow += rawValue;
+      return;
+    }
+
+    const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
+    const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
+
+    if (sourceFactor !== undefined && targetFactor !== undefined) {
+      totalFlow += (rawValue * sourceFactor) / targetFactor;
+    } else {
+      totalFlow += rawValue;
+    }
+  });
+
+  return {
+    value: Math.max(0, totalFlow),
+    unit: targetUnit ?? "",
+  };
+};
+
+/**
  * Format a flow rate value (in L/min) to a human-readable string using
  * the preferred unit system: metric → L/min, imperial → gal/min.
  */

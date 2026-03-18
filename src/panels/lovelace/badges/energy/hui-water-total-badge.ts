@@ -6,9 +6,9 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import type { EnergyData } from "../../../../data/energy";
 import {
-  FLOW_RATE_TO_LMIN,
+  computeTotalFlowRate,
   getEnergyDataCollection,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -66,71 +66,17 @@ export class HuiWaterTotalBadge
     return false;
   }
 
-  private _computeTotalFlowRate(prefs: EnergyPreferences): {
-    value: number;
-    unit: string;
-  } {
-    this._entities.clear();
-
-    let targetUnit: string | undefined;
-    let totalFlow = 0;
-
-    prefs.energy_sources.forEach((source) => {
-      if (source.type !== "water" || !source.stat_rate) {
-        return;
-      }
-
-      const entityId = source.stat_rate;
-      this._entities.add(entityId);
-
-      const stateObj = this.hass.states[entityId];
-      if (!stateObj) {
-        return;
-      }
-
-      const rawValue = parseFloat(stateObj.state);
-      if (isNaN(rawValue) || rawValue <= 0) {
-        return;
-      }
-
-      const entityUnit = stateObj.attributes.unit_of_measurement;
-      if (!entityUnit) {
-        return;
-      }
-
-      if (targetUnit === undefined) {
-        targetUnit = entityUnit;
-        totalFlow += rawValue;
-        return;
-      }
-
-      if (entityUnit === targetUnit) {
-        totalFlow += rawValue;
-        return;
-      }
-
-      const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
-      const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
-
-      if (sourceFactor !== undefined && targetFactor !== undefined) {
-        totalFlow += (rawValue * sourceFactor) / targetFactor;
-      } else {
-        totalFlow += rawValue;
-      }
-    });
-
-    return {
-      value: Math.max(0, totalFlow),
-      unit: targetUnit ?? "",
-    };
-  }
-
   protected render() {
     if (!this._config || !this._data) {
       return nothing;
     }
 
-    const { value, unit } = this._computeTotalFlowRate(this._data.prefs);
+    const { value, unit } = computeTotalFlowRate(
+      "water",
+      this._data.prefs,
+      this.hass.states,
+      this._entities
+    );
     const displayValue = `${formatNumber(value, this.hass.locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
