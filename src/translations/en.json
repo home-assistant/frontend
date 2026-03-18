@@ -311,6 +311,7 @@
         }
       },
       "valve": {
+        "position": "[%key:ui::card::cover::position%]",
         "open_valve": "Open valve",
         "close_valve": "Close valve",
         "stop_valve": "Stop valve"
@@ -1506,7 +1507,8 @@
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the Assist pipeline"
+        "not_found_error_load_assist": "Cannot find the Assist pipeline",
+        "show_details": "Show details"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
@@ -1524,6 +1526,12 @@
       "more_info_control": {
         "settings": "Settings",
         "edit": "Edit entity",
+        "edit_domain": {
+          "automation": "Edit automation",
+          "script": "Edit script",
+          "scene": "Edit scene",
+          "person": "Edit person"
+        },
         "details": "Details",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
@@ -1688,9 +1696,26 @@
           "dock": "Return to dock"
         },
         "valve": {
+          "edit_mode": "[%key:ui::dialogs::more_info_control::cover::edit_mode%]",
+          "reset_favorites": "[%key:ui::dialogs::more_info_control::cover::reset_favorites%]",
+          "reset_favorites_text": "Do you want to reset all favorites for this valve back to default?",
+          "copy_favorites": "[%key:ui::dialogs::more_info_control::cover::copy_favorites%]",
+          "copy_favorites_helper": "Select one or more valves to receive the copied favorites from this valve.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
             "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
             "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
+          },
+          "favorite_position": {
+            "set": "[%key:ui::dialogs::more_info_control::cover::favorite_position::set%]",
+            "edit": "[%key:ui::dialogs::more_info_control::cover::favorite_position::edit%]",
+            "delete": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete%]",
+            "delete_confirm_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_title%]",
+            "delete_confirm_text": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_text%]",
+            "delete_confirm_action": "[%key:ui::dialogs::more_info_control::cover::favorite_position::delete_confirm_action%]",
+            "add": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add%]",
+            "edit_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::edit_title%]",
+            "add_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add_title%]"
           }
         },
         "camera": {
@@ -3925,7 +3950,7 @@
             "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
-            "stat_return_to_grid": "Solar energy returned to the grid",
+            "stat_return_to_grid": "Solar energy exported to the grid",
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
@@ -4865,6 +4890,7 @@
               "none_entities": "No entities",
               "template": "Template"
             },
+            "generic": "Generic",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -8245,7 +8271,7 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total returned {num} kWh",
+              "total_returned": "Total exported {num} kWh",
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
@@ -8276,7 +8302,7 @@
               "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "solar_consumed_gauge": {
-              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",
+              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being exported to the grid.",
               "card_indicates_solar_energy_used_charge_home_bat": "If this number is typically very low, indicating excess solar production, you might want to consider charging a home battery or electric car from your solar panels at times of high solar production.",
               "self_consumed_solar_energy": "Self-consumed solar energy",
               "not_produced_solar_energy": "You have not produced any solar energy",
@@ -9054,7 +9080,7 @@
             },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
-              "description": "This card shows how much of the solar energy was used by your home and was not returned to the grid."
+              "description": "This card shows how much of the solar energy was used by your home and was not exported to the grid."
             },
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
@@ -9175,6 +9201,7 @@
                 "cover": "Cover",
                 "fill": "Fill"
               },
+              "focus": "Focus",
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -9182,6 +9209,7 @@
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "icon_height": "Icon height",
               "image": "Image path",
+              "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
               "manual_description": "Need to add a custom card or just want to manually write the YAML?",
@@ -9257,7 +9285,18 @@
                 "dark": "Dark"
               },
               "default_zoom": "Default zoom",
+              "auto_fit": "Auto fit",
+              "fit_zones": "Fit zones",
+              "cluster": "Cluster markers",
+              "show_all": "Show all",
+              "show_all_helper": "Automatically add all entities with coordinates",
               "source": "Source",
+              "label_modes": {
+                "name": "Name",
+                "icon": "Icon",
+                "state": "State",
+                "attribute": "Attribute"
+              },
               "description": "This card allows you to display entities on a map."
             },
             "markdown": {
@@ -9619,6 +9658,10 @@
               },
               "valve-open-close": {
                 "label": "Valve open/close"
+              },
+              "valve-position-favorite": {
+                "label": "Valve favorite positions",
+                "description": "This feature uses the valve's favorite positions. To edit them, open the valve's more info dialog and press and hold a favorite."
               },
               "valve-position": {
                 "label": "Valve position"
