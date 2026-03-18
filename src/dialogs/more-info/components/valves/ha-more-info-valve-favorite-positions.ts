@@ -137,7 +137,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       title: this._localizeFavorite(
         value === undefined ? "add_title" : "edit_title"
       ),
-      inputLabel: this.hass.localize("ui.card.cover.position"),
+      inputLabel: this.hass.localize("ui.card.valve.position"),
       inputType: "number",
       inputMin: "0",
       inputMax: "100",
