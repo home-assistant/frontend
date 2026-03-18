@@ -486,20 +486,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   // remove "label_mode", "attribute" & "unit" options when needed
   private _deleteOptions(config: MapEntityConfig): MapEntityConfig {
-    const cfg = { ...config };
-    if (cfg.color) {
-      delete cfg.color;
-    }
-    if (cfg.label_mode) {
-      delete cfg.label_mode;
-    }
-    if (cfg.attribute) {
-      delete cfg.attribute;
-    }
-    if (cfg.unit) {
-      delete cfg.unit;
-    }
-    return cfg;
+    const { color, label_mode, attribute, unit, ...rest } = config;
+    return rest as MapEntityConfig;
   }
 
   // normalize a generated yaml code by placing lines in a consistent order
