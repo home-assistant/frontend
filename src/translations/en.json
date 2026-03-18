@@ -1508,7 +1508,8 @@
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the Assist pipeline"
+        "not_found_error_load_assist": "Cannot find the Assist pipeline",
+        "show_details": "Show details"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
@@ -1526,6 +1527,12 @@
       "more_info_control": {
         "settings": "Settings",
         "edit": "Edit entity",
+        "edit_domain": {
+          "automation": "Edit automation",
+          "script": "Edit script",
+          "scene": "Edit scene",
+          "person": "Edit person"
+        },
         "details": "Details",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
@@ -4745,6 +4752,7 @@
             "header": "Create automation",
             "create_empty": "Create new automation",
             "create_empty_description": "Start with an empty automation from scratch",
+            "no_blueprints_match_search": "No matching blueprints",
             "create_blueprint": "Create from blueprint",
             "create_blueprint_description": "Discover community blueprints",
             "blueprint_source": {
@@ -4866,6 +4874,7 @@
               "none_entities": "No entities",
               "template": "Template"
             },
+            "generic": "Generic",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -5764,6 +5773,7 @@
             "header": "Create script",
             "create_empty": "Create new script",
             "create_empty_description": "Start with an empty script from scratch",
+            "no_blueprints_match_search": "[%key:ui::panel::config::automation::dialog_new::no_blueprints_match_search%]",
             "create_blueprint": "[%key:ui::panel::config::automation::dialog_new::create_blueprint%]",
             "create_blueprint_description": "[%key:ui::panel::config::automation::dialog_new::create_blueprint_description%]",
             "blueprint_source": {
