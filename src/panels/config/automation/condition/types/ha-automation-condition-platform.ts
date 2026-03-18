@@ -432,6 +432,20 @@ export class HaPlatformCondition extends LitElement {
           options,
         },
       });
+    } else if (
+      this._resolvedTargetEntityCount !== undefined &&
+      this._resolvedTargetEntityCount > 1 &&
+      this.condition.options?.behavior === undefined
+    ) {
+      const behaviorDefault = this.description?.fields?.behavior?.default;
+      if (behaviorDefault !== undefined) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.condition,
+            options: { ...this.condition.options, behavior: behaviorDefault },
+          },
+        });
+      }
     }
   }
 

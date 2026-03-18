@@ -469,6 +469,20 @@ export class HaPlatformTrigger extends LitElement {
           options,
         },
       });
+    } else if (
+      this._resolvedTargetEntityCount !== undefined &&
+      this._resolvedTargetEntityCount > 1 &&
+      this.trigger.options?.behavior === undefined
+    ) {
+      const behaviorDefault = this.description?.fields?.behavior?.default;
+      if (behaviorDefault !== undefined) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: { ...this.trigger.options, behavior: behaviorDefault },
+          },
+        });
+      }
     }
   }
 
