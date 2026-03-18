@@ -64,8 +64,15 @@ export const getResolvedTargetEntityCount = async (
     return undefined;
   }
 
-  const result = await extractFromTarget(hass, target, true);
-  return result.referenced_entities.length;
+  try {
+    return (await extractFromTarget(hass, target, true)).referenced_entities
+      .length;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("Error resolving target entity count", err);
+  }
+
+  return undefined;
 };
 
 export const getTriggersForTarget = async (
