@@ -116,6 +116,7 @@ class DialogBox extends LitElement {
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
+                  .suffix=${this._params.inputSuffix}
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}

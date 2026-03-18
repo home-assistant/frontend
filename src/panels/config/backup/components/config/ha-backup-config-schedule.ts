@@ -9,7 +9,6 @@ import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-time-input";
 import "../../../../../components/ha-tip";

@@ -11,6 +11,7 @@ import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
+import { getResolvedTargetEntityCount } from "../../../../../data/target";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -47,6 +48,8 @@ export class HaPlatformTrigger extends LitElement {
   @state() private _checkedKeys = new Set();
 
   @state() private _manifest?: IntegrationManifest;
+
+  @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformTrigger {
     return { trigger: "" };
@@ -142,6 +145,10 @@ export class HaPlatformTrigger extends LitElement {
           },
         });
       }
+    }
+
+    if (oldValue?.target !== this.trigger?.target) {
+      this._updateResolvedTargetEntityCount(this.trigger?.target);
     }
   }
 
@@ -250,51 +257,58 @@ export class HaPlatformTrigger extends LitElement {
 
     const showOptional = showOptionalToggle(dataField);
 
-    return dataField.selector
-      ? html`<ha-settings-row narrow>
-          ${!showOptional
-            ? hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing
-            : html`<ha-checkbox
-                .key=${fieldName}
-                .checked=${this._checkedKeys.has(fieldName) ||
-                (this.trigger?.options &&
-                  this.trigger.options[fieldName] !== undefined)}
-                .disabled=${this.disabled}
-                @change=${this._checkboxChanged}
-                slot="prefix"
-              ></ha-checkbox>`}
-          <span slot="heading"
-            >${this.hass.localize(
-              `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-            ) || triggerName}</span
-          >
-          <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
-            )}</span
-          >
-          <ha-selector
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(fieldName) &&
-              (!this.trigger?.options ||
-                this.trigger.options[fieldName] === undefined))}
-            .hass=${this.hass}
-            .selector=${selector}
-            .context=${this._generateContext(dataField)}
+    if (!dataField.selector) {
+      return nothing;
+    }
+
+    // Hide behavior when the target is a single direct entity.
+    if (fieldName === "behavior" && this._resolvedTargetEntityCount === 1) {
+      return nothing;
+    }
+
+    return html`<ha-settings-row narrow>
+      ${!showOptional
+        ? hasOptional
+          ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+          : nothing
+        : html`<ha-checkbox
             .key=${fieldName}
-            @value-changed=${this._dataChanged}
-            .value=${this.trigger?.options
-              ? this.trigger.options[fieldName]
-              : undefined}
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            .required=${dataField.required}
-          ></ha-selector>
-        </ha-settings-row>`
-      : nothing;
+            .checked=${this._checkedKeys.has(fieldName) ||
+            (this.trigger?.options &&
+              this.trigger.options[fieldName] !== undefined)}
+            .disabled=${this.disabled}
+            @change=${this._checkboxChanged}
+            slot="prefix"
+          ></ha-checkbox>`}
+      <span slot="heading"
+        >${this.hass.localize(
+          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
+        ) || triggerName}</span
+      >
+      <span slot="description"
+        >${this.hass.localize(
+          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
+        )}</span
+      >
+      <ha-selector
+        .disabled=${this.disabled ||
+        (showOptional &&
+          !this._checkedKeys.has(fieldName) &&
+          (!this.trigger?.options ||
+            this.trigger.options[fieldName] === undefined))}
+        .hass=${this.hass}
+        .selector=${selector}
+        .context=${this._generateContext(dataField)}
+        .key=${fieldName}
+        @value-changed=${this._dataChanged}
+        .value=${this.trigger?.options
+          ? this.trigger.options[fieldName]
+          : undefined}
+        .placeholder=${dataField.default}
+        .localizeValue=${this._localizeValueCallback}
+        .required=${dataField.required}
+      ></ha-selector>
+    </ha-settings-row>`;
   };
 
   private _generateContext(
@@ -428,6 +442,47 @@ export class HaPlatformTrigger extends LitElement {
       // eslint-disable-next-line no-console
       console.log(`Unable to fetch integration manifest for ${integration}`);
       // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
+  }
+
+  private _resolveTargetEntityCount = memoizeOne(
+    async (target: PlatformTrigger["target"]) =>
+      getResolvedTargetEntityCount(this.hass, target)
+  );
+
+  private async _updateResolvedTargetEntityCount(
+    target: PlatformTrigger["target"]
+  ) {
+    this._resolvedTargetEntityCount =
+      await this._resolveTargetEntityCount(target);
+
+    if (
+      this._resolvedTargetEntityCount === 1 &&
+      this.trigger.options?.behavior !== undefined
+    ) {
+      const options = { ...this.trigger.options };
+      delete options.behavior;
+
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.trigger,
+          options,
+        },
+      });
+    } else if (
+      this._resolvedTargetEntityCount !== undefined &&
+      this._resolvedTargetEntityCount > 1 &&
+      this.trigger.options?.behavior === undefined
+    ) {
+      const behaviorDefault = this.description?.fields?.behavior?.default;
+      if (behaviorDefault !== undefined) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: { ...this.trigger.options, behavior: behaviorDefault },
+          },
+        });
+      }
     }
   }
 

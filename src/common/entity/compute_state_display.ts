@@ -144,6 +144,7 @@ const computeStateToPartsFromEntityAttributes = (
           fraction: "value",
           literal: "literal",
           currency: "unit",
+          minusSign: "value",
         };
 
         const valueParts: ValuePart[] = [];

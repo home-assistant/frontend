@@ -1,13 +1,15 @@
-import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
+import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
+import "./ha-sortable";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -40,40 +42,65 @@ class HaMultiTextField extends LitElement {
 
   @property({ type: Number }) public max?: number;
 
+  @property({ type: Boolean }) public sortable = false;
+
+  @property({ type: Boolean, attribute: "update-on-blur" })
+  public updateOnBlur = false;
+
   protected render() {
     return html`
-      ${this._items.map((item, index) => {
-        const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
-        return html`
-          <div class="layout horizontal center-center row">
-            <ha-textfield
-              .suffix=${this.inputSuffix}
-              .prefix=${this.inputPrefix}
-              .type=${this.inputType}
-              .autocomplete=${this.autocomplete}
-              .disabled=${this.disabled}
-              dialogInitialFocus=${index}
-              .index=${index}
-              class="flex-auto"
-              .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
-              .value=${item}
-              ?data-last=${index === this._items.length - 1}
-              @input=${this._editItem}
-              @keydown=${this._keyDown}
-            ></ha-textfield>
-            <ha-icon-button
-              .disabled=${this.disabled}
-              .index=${index}
-              slot="navigationIcon"
-              .label=${this.removeLabel ??
-              this.hass?.localize("ui.common.remove") ??
-              "Remove"}
-              @click=${this._removeItem}
-              .path=${mdiDeleteOutline}
-            ></ha-icon-button>
-          </div>
-        `;
-      })}
+      <ha-sortable
+        handle-selector=".handle"
+        draggable-selector=".row"
+        .disabled=${!this.sortable || this.disabled}
+        @item-moved=${this._itemMoved}
+      >
+        <div class="items">
+          ${repeat(
+            this._items,
+            (item, index) => `${item}-${index}`,
+            (item, index) => {
+              const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
+              return html`
+                <div class="layout horizontal center-center row">
+                  <ha-textfield
+                    .suffix=${this.inputSuffix}
+                    .prefix=${this.inputPrefix}
+                    .type=${this.inputType}
+                    .autocomplete=${this.autocomplete}
+                    .disabled=${this.disabled}
+                    dialogInitialFocus=${index}
+                    .index=${index}
+                    class="flex-auto"
+                    .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
+                    .value=${item}
+                    ?data-last=${index === this._items.length - 1}
+                    @input=${this._editItem}
+                    @change=${this._editItem}
+                    @keydown=${this._keyDown}
+                  ></ha-textfield>
+                  <ha-icon-button
+                    .disabled=${this.disabled}
+                    .index=${index}
+                    slot="navigationIcon"
+                    .label=${this.removeLabel ??
+                    this.hass?.localize("ui.common.remove") ??
+                    "Remove"}
+                    @click=${this._removeItem}
+                    .path=${mdiDeleteOutline}
+                  ></ha-icon-button>
+                  ${this.sortable
+                    ? html`<ha-svg-icon
+                        class="handle"
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>`
+                    : nothing}
+                </div>
+              `;
+            }
+          )}
+        </div>
+      </ha-sortable>
       <div class="layout horizontal">
         <ha-button
           size="small"
@@ -118,6 +145,12 @@ class HaMultiTextField extends LitElement {
   }
 
   private async _editItem(ev: Event) {
+    if (this.updateOnBlur && ev.type === "input") {
+      return;
+    }
+    if (!this.updateOnBlur && ev.type === "change") {
+      return;
+    }
     const index = (ev.target as any).index;
     const items = [...this._items];
     items[index] = (ev.target as any).value;
@@ -129,6 +162,15 @@ class HaMultiTextField extends LitElement {
       ev.stopPropagation();
       this._addItem();
     }
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    const items = [...this._items];
+    const [moved] = items.splice(oldIndex, 1);
+    items.splice(newIndex, 0, moved);
+    this._fireChanged(items);
   }
 
   private async _removeItem(ev: Event) {
@@ -155,6 +197,11 @@ class HaMultiTextField extends LitElement {
         }
         ha-icon-button {
           display: block;
+        }
+        .handle {
+          cursor: grab;
+          padding: 8px;
+          margin: -8px;
         }
       `,
     ];

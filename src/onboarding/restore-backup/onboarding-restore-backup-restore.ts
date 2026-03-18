@@ -1,25 +1,25 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import "../../components/ha-button";
+import { customElement, property, query, state } from "lit/decorators";
+import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import "../../components/ha-alert";
+import "../../components/ha-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
-import "../../components/buttons/ha-progress-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-password-field";
-import "../../panels/config/backup/components/ha-backup-data-picker";
-import "../../panels/config/backup/components/ha-backup-formfield-label";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/input/ha-input";
 import {
   getPreferredAgentForDownload,
   type BackupContentExtended,
   type BackupData,
 } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
-import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
-import { fireEvent } from "../../common/dom/fire_event";
+import "../../panels/config/backup/components/ha-backup-data-picker";
+import "../../panels/config/backup/components/ha-backup-formfield-label";
 import { onBoardingStyles } from "../styles";
-import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
@@ -170,7 +170,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
                 `ui.panel.page-onboarding.restore.details.restore.encryption.description${this.mode === "cloud" ? "_cloud" : ""}`
               )}
             </span>
-            <ha-password-field
+            <ha-input
               .disabled=${this._loading}
               @input=${this._encryptionKeyChanged}
               .label=${this.localize(
@@ -178,13 +178,11 @@ class OnboardingRestoreBackupRestore extends LitElement {
               )}
               .value=${this._encryptionKey}
               @keydown=${this._keyDown}
-              .errorMessage=${this._encryptionKeyWrong
-                ? this.localize(
-                    "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
-                  )
-                : ""}
+              .validationMessage=${this.localize(
+                "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
+              )}
               .invalid=${this._encryptionKeyWrong}
-            ></ha-password-field>
+            ></ha-input>
           </div>`
         : nothing}
 
@@ -353,7 +351,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         .encryption {
           margin-bottom: 32px;
         }
-        .encryption ha-password-field {
+        .encryption ha-input {
           margin-top: 24px;
         }
         .actions {

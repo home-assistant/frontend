@@ -5,15 +5,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-generic-picker";
 import "../../../components/ha-markdown";
-import "../../../components/ha-password-field";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
 import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -69,6 +68,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._params = params;
     this._domain = params.selectedDomain;
     this._manifest = params.manifest;
+    this._invalid = false;
     this._name = "";
     this._description = "";
     this._clientId = "";
@@ -195,7 +195,7 @@ export class DialogAddApplicationCredential extends LitElement {
                       .content=${this._description}
                     ></ha-markdown>`
                   : nothing}
-                <ha-textfield
+                <ha-input
                   class="name"
                   name="name"
                   .label=${this.hass.localize(
@@ -205,12 +205,12 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._name}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
-                ></ha-textfield>
-                <ha-textfield
+                ></ha-input>
+                <ha-input
                   class="clientId"
                   name="clientId"
                   .label=${this.hass.localize(
@@ -220,16 +220,17 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._clientId}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
-                  .helper=${this.hass.localize(
+                  .hint=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_id_helper"
                   )}
-                  helperPersistent
-                ></ha-textfield>
-                <ha-password-field
+                ></ha-input>
+                <ha-input
+                  type="password"
+                  password-toggle
                   .label=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_secret"
                   )}
@@ -238,14 +239,13 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._clientSecret}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
-                  .helper=${this.hass.localize(
+                  .hint=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_secret_helper"
                   )}
-                  helperPersistent
-                ></ha-password-field>
+                ></ha-input>
               </div>
 
               <ha-dialog-footer slot="footer">
@@ -376,11 +376,6 @@ export class DialogAddApplicationCredential extends LitElement {
         .row {
           display: flex;
           padding: var(--ha-space-2) 0;
-        }
-        ha-textfield {
-          display: block;
-          margin-top: var(--ha-space-4);
-          margin-bottom: var(--ha-space-4);
         }
         a {
           text-decoration: none;
