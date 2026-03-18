@@ -26,6 +26,7 @@ import type {
   HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
+  MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -40,7 +41,6 @@ import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type {
   MapCardConfig,
   MapEntityConfig,
-  MapCardMarkerLabelMode,
 } from "./types";
 import {
   addEntityToCondition,
