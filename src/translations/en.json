@@ -8637,7 +8637,8 @@
               "auto_height": "Auto height",
               "auto_height_helper": "Adjust the card height based on its content",
               "precise_mode": "Precise mode",
-              "precise_mode_helper": "Change the card width with more precision"
+              "precise_mode_helper": "Change the card width with more precision",
+              "no_grid_support": "This card does not fully support resizing yet and may not display correctly with custom sizes."
             }
           },
           "edit_badge": {

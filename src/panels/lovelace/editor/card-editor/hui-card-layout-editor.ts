@@ -1,10 +1,11 @@
 import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -24,6 +25,7 @@ import type { HuiCard } from "../../cards/hui-card";
 import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
   computeCardGridSize,
+  DEFAULT_GRID_SIZE,
   GRID_COLUMN_MULTIPLIER,
   isPreciseMode,
   migrateLayoutToGridOptions,
@@ -50,6 +52,7 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _mergedOptions = memoizeOne(
     (options?: LovelaceGridOptions, defaultOptions?: LovelaceGridOptions) => ({
+      ...DEFAULT_GRID_SIZE,
       ...defaultOptions,
       ...options,
     })
@@ -86,12 +89,17 @@ export class HuiCardLayoutEditor extends LitElement {
     const gridTotalColumns = 12 * columnSpan;
 
     return html`
+      ${this._defaultGridOptions &&
+      Object.keys(this._defaultGridOptions).length === 0
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.layout.no_grid_support"
+              )}
+            </ha-alert>
+          `
+        : nothing}
       <div class="header">
-        <p class="intro">
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_card.layout.explanation"
-          )}
-        </p>
         <ha-dropdown
           slot="icons"
           @wa-select=${this._handleAction}
@@ -284,13 +292,17 @@ export class HuiCardLayoutEditor extends LitElement {
     const checked = ev.target.checked;
 
     let columns: number | "full" | undefined;
+    const defaultGridOptions = {
+      ...DEFAULT_GRID_SIZE,
+      ...this._defaultGridOptions,
+    };
     if (checked) {
       columns = "full";
-    } else if (this._defaultGridOptions?.columns === "full") {
+    } else if (defaultGridOptions.columns === "full") {
       // Default is full width, so we need to set a specific value
       const columnSpan = this.sectionConfig.column_span ?? 1;
       const gridTotalColumns = 12 * columnSpan;
-      columns = this._defaultGridOptions?.max_columns ?? gridTotalColumns;
+      columns = defaultGridOptions.max_columns ?? gridTotalColumns;
     } else {
       columns = undefined;
     }
@@ -306,11 +318,15 @@ export class HuiCardLayoutEditor extends LitElement {
     const checked = ev.target.checked;
 
     let rows: number | "auto" | undefined;
+    const defaultGridOptions = {
+      ...DEFAULT_GRID_SIZE,
+      ...this._defaultGridOptions,
+    };
     if (checked) {
       rows = "auto";
-    } else if (this._defaultGridOptions?.rows === "auto") {
+    } else if (defaultGridOptions.rows === "auto") {
       // Default is auto height, so we need to set a specific value
-      rows = this._defaultGridOptions?.min_rows ?? 1;
+      rows = defaultGridOptions.min_rows ?? 1;
     } else {
       rows = undefined;
     }
@@ -368,11 +384,7 @@ export class HuiCardLayoutEditor extends LitElement {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
-      }
-      .header .intro {
-        flex: 1;
-        margin: 0;
-        color: var(--secondary-text-color);
+        justify-content: flex-end;
       }
       .header ha-dropdown {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
