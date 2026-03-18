@@ -24,6 +24,7 @@ import type { HuiCard } from "../../cards/hui-card";
 import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
   computeCardGridSize,
+  DEFAULT_GRID_SIZE,
   GRID_COLUMN_MULTIPLIER,
   isPreciseMode,
   migrateLayoutToGridOptions,
@@ -50,6 +51,7 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _mergedOptions = memoizeOne(
     (options?: LovelaceGridOptions, defaultOptions?: LovelaceGridOptions) => ({
+      ...DEFAULT_GRID_SIZE,
       ...defaultOptions,
       ...options,
     })
@@ -284,13 +286,17 @@ export class HuiCardLayoutEditor extends LitElement {
     const checked = ev.target.checked;
 
     let columns: number | "full" | undefined;
+    const defaultGridOptions = {
+      ...DEFAULT_GRID_SIZE,
+      ...this._defaultGridOptions,
+    };
     if (checked) {
       columns = "full";
-    } else if (this._defaultGridOptions?.columns === "full") {
+    } else if (defaultGridOptions.columns === "full") {
       // Default is full width, so we need to set a specific value
       const columnSpan = this.sectionConfig.column_span ?? 1;
       const gridTotalColumns = 12 * columnSpan;
-      columns = this._defaultGridOptions?.max_columns ?? gridTotalColumns;
+      columns = defaultGridOptions.max_columns ?? gridTotalColumns;
     } else {
       columns = undefined;
     }
@@ -306,11 +312,15 @@ export class HuiCardLayoutEditor extends LitElement {
     const checked = ev.target.checked;
 
     let rows: number | "auto" | undefined;
+    const defaultGridOptions = {
+      ...DEFAULT_GRID_SIZE,
+      ...this._defaultGridOptions,
+    };
     if (checked) {
       rows = "auto";
-    } else if (this._defaultGridOptions?.rows === "auto") {
+    } else if (defaultGridOptions.rows === "auto") {
       // Default is auto height, so we need to set a specific value
-      rows = this._defaultGridOptions?.min_rows ?? 1;
+      rows = defaultGridOptions.min_rows ?? 1;
     } else {
       rows = undefined;
     }
