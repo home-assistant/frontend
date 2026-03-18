@@ -361,8 +361,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())
       .filter((alias) => alias);
-    // eslint-disable-next-line no-console
-    console.log("Saving aliases:", [...nullAliases, ...stringAliases]);
     const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
       aliases: [...nullAliases, ...stringAliases],
     });
