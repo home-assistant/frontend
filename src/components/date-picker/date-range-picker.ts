@@ -57,10 +57,9 @@ export class DateRangePicker extends LitElement {
   /** used to show year in calendar-date header */
   @state() private _pickerYear?: string;
 
-  /** used for today to navigate focus in cally-calendar-date  */
+  /** used for today to navigate focus in calendar-range  */
   @state() private _focusDate?: string;
 
-  /** used for today to navigate focus in cally-calendar-date  */
   @state() private _dateValue?: string;
 
   @state() private _timeValue = {
