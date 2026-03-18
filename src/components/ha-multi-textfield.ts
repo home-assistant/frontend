@@ -2,7 +2,7 @@ import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -56,49 +56,45 @@ class HaMultiTextField extends LitElement {
         @item-moved=${this._itemMoved}
       >
         <div class="items">
-          ${repeat(
-            this._items,
-            (_item, index) => index,
-            (item, index) => {
-              const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
-              return html`
-                <div class="layout horizontal center-center row">
-                  <ha-textfield
-                    .suffix=${this.inputSuffix}
-                    .prefix=${this.inputPrefix}
-                    .type=${this.inputType}
-                    .autocomplete=${this.autocomplete}
-                    .disabled=${this.disabled}
-                    dialogInitialFocus=${index}
-                    .index=${index}
-                    class="flex-auto"
-                    .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
-                    .value=${item}
-                    ?data-last=${index === this._items.length - 1}
-                    @input=${this._editItem}
-                    @change=${this._editItem}
-                    @keydown=${this._keyDown}
-                  ></ha-textfield>
-                  <ha-icon-button
-                    .disabled=${this.disabled}
-                    .index=${index}
-                    slot="navigationIcon"
-                    .label=${this.removeLabel ??
-                    this.hass?.localize("ui.common.remove") ??
-                    "Remove"}
-                    @click=${this._removeItem}
-                    .path=${mdiDeleteOutline}
-                  ></ha-icon-button>
-                  ${this.sortable
-                    ? html`<ha-svg-icon
-                        class="handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>`
-                    : nothing}
-                </div>
-              `;
-            }
-          )}
+          ${this._items.map((item, index) => {
+            const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
+            return html`
+              <div class="layout horizontal center-center row">
+                <ha-textfield
+                  .suffix=${this.inputSuffix}
+                  .prefix=${this.inputPrefix}
+                  .type=${this.inputType}
+                  .autocomplete=${this.autocomplete}
+                  .disabled=${this.disabled}
+                  dialogInitialFocus=${index}
+                  .index=${index}
+                  class="flex-auto"
+                  .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
+                  .value=${item}
+                  ?data-last=${index === this._items.length - 1}
+                  @input=${this._editItem}
+                  @change=${this._editItem}
+                  @keydown=${this._keyDown}
+                ></ha-textfield>
+                <ha-icon-button
+                  .disabled=${this.disabled}
+                  .index=${index}
+                  slot="navigationIcon"
+                  .label=${this.removeLabel ??
+                  this.hass?.localize("ui.common.remove") ??
+                  "Remove"}
+                  @click=${this._removeItem}
+                  .path=${mdiDeleteOutline}
+                ></ha-icon-button>
+                ${this.sortable
+                  ? html`<ha-svg-icon
+                      class="handle"
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>`
+                  : nothing}
+              </div>
+            `;
+          })}
         </div>
       </ha-sortable>
       <div class="layout horizontal">
