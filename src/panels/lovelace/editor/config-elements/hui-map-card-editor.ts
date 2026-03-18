@@ -95,7 +95,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  private _disabledOptions = (entityId: string) =>
+  private _shouldDisableOptions = (entityId: string) =>
     computeDomain(entityId) === "zone";
 
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
@@ -167,7 +167,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         { name: "name", selector: { text: {} } },
         {
           name: "color",
-          disabled: this._disabledOptions(entityId),
+          disabled: this._shouldDisableOptions(entityId),
           selector: { ui_color: {} },
         },
         {
@@ -176,7 +176,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           schema: [
             {
               name: "label_mode",
-              disabled: this._disabledOptions(entityId),
+              disabled: this._shouldDisableOptions(entityId),
               selector: {
                 select: {
                   mode: "dropdown",
@@ -191,7 +191,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             },
             {
               name: "attribute",
-              disabled: this._disabledOptions(entityId),
+              disabled: this._shouldDisableOptions(entityId),
               selector: {
                 attribute: {
                   entity_id: entityId,
@@ -201,7 +201,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             },
             {
               name: "unit",
-              disabled: this._disabledOptions(entityId),
+              disabled: this._shouldDisableOptions(entityId),
               selector: { text: {} },
             },
             { name: "focus", default: true, selector: { boolean: {} } },
@@ -326,7 +326,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     // get updated entity config
     let newEntityConfig = ev.detail.config as MapEntityConfig;
     const entityId = newEntityConfig.entity;
-    if (this._disabledOptions(entityId)) {
+    if (this._shouldDisableOptions(entityId)) {
       // remove unused "color", "label_mode" etc options
       newEntityConfig = this._deleteOptions(newEntityConfig);
     }
