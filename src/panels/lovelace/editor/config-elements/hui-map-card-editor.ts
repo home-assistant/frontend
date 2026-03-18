@@ -27,11 +27,8 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
 import type { SelectSelector } from "../../../../data/selector";
-import {
-  type HomeAssistant,
-  type ValueChangedEvent,
-  THEME_MODES,
-} from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import { THEME_MODES } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import {
   type MapCardConfig,
