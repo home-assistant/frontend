@@ -76,15 +76,10 @@ export class HaDeviceEntitiesCard extends LitElement {
             `
           : nothing}
         ${disabledEntities.length
-          ? html`<div
-              class=${classMap({ "move-up": !enabledEntities.length })}
-            >
+          ? html`<div class=${classMap({ "move-up": !enabledEntities.length })}>
               ${!this.showHidden
                 ? html`
-                    <button
-                      class="show-more"
-                      @click=${this._toggleShowHidden}
-                    >
+                    <button class="show-more" @click=${this._toggleShowHidden}>
                       ${this.hass.localize(
                         "ui.panel.config.devices.entities.disabled_entities",
                         { count: disabledEntities.length }
@@ -97,10 +92,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                         this._renderUnavailableEntity(entry)
                       )}
                     </ha-list>
-                    <button
-                      class="show-more"
-                      @click=${this._toggleShowHidden}
-                    >
+                    <button class="show-more" @click=${this._toggleShowHidden}>
                       ${this.hass.localize(
                         "ui.panel.config.devices.entities.show_less"
                       )}
