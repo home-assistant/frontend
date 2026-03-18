@@ -92,16 +92,24 @@ export interface LightEntityOptions {
   favorite_colors?: LightColor[];
 }
 
+export interface ValveEntityOptions {
+  favorite_positions?: number[];
+}
+
 export type FavoriteOption =
   | "favorite_colors"
   | "favorite_positions"
   | "favorite_tilt_positions";
 
-export type FavoritesDomain = "light" | "cover";
+export type FavoritesDomain = "light" | "cover" | "valve";
 
 export type FavoriteOptionValue = LightColor[] | number[];
 
-export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = ["light", "cover"];
+export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = [
+  "light",
+  "cover",
+  "valve",
+];
 
 export const isFavoritesDomain = (domain: string): domain is FavoritesDomain =>
   DOMAINS_WITH_FAVORITES.includes(domain as FavoritesDomain);
@@ -162,6 +170,7 @@ export interface EntityRegistryOptions {
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
   cover?: CoverEntityOptions;
+  valve?: ValveEntityOptions;
   vacuum?: VacuumEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
@@ -187,6 +196,7 @@ export interface EntityRegistryEntryUpdateParams {
     | WeatherEntityOptions
     | LightEntityOptions
     | CoverEntityOptions
+    | ValveEntityOptions
     | VacuumEntityOptions;
   aliases?: (string | null)[];
   labels?: string[];
