@@ -22,6 +22,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/ha-map"
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
@@ -35,7 +36,6 @@ import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import {
   type MapCardConfig,
   type MapEntityConfig,
-  MAP_CARD_MARKER_LABEL_MODES,
 } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../hui-sub-element-editor";
