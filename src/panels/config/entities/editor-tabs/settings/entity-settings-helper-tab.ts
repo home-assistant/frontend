@@ -35,7 +35,7 @@ export class EntitySettingsHelperTab extends LitElement {
 
   @state() private _item?: Helper | null;
 
-  @state() private _submitting?: boolean;
+  @state() private _submitting = false;
 
   @state() private _componentLoaded?: boolean;
 
