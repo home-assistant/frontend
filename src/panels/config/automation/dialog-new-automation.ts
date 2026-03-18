@@ -160,13 +160,15 @@ class DialogNewAutomation extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div class="content-wrapper">
-          <search-input
-            autofocus
-            .hass=${this.hass}
-            .filter=${this._filter}
-            .label=${this.hass.localize("ui.common.search")}
-            @value-changed=${this._handleSearchChange}
-          ></search-input>
+          ${processedBlueprints.length > 5
+            ? html` <search-input
+                autofocus
+                .hass=${this.hass}
+                .filter=${this._filter}
+                .label=${this.hass.localize("ui.common.search")}
+                @value-changed=${this._handleSearchChange}
+              ></search-input>`
+            : nothing}
           <ha-list>
             <ha-list-item
               hasmeta
