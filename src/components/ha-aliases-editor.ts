@@ -12,6 +12,8 @@ class AliasesEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public sortable = false;
+
   protected render() {
     if (!this.aliases) {
       return nothing;
@@ -22,6 +24,7 @@ class AliasesEditor extends LitElement {
         .hass=${this.hass}
         .value=${this.aliases}
         .disabled=${this.disabled}
+        .sortable=${this.sortable}
         .label=${this.hass!.localize("ui.dialogs.aliases.label")}
         .removeLabel=${this.hass!.localize("ui.dialogs.aliases.remove")}
         .addLabel=${this.hass!.localize("ui.dialogs.aliases.add")}
@@ -32,8 +35,9 @@ class AliasesEditor extends LitElement {
     `;
   }
 
-  private _aliasesChanged(value) {
-    fireEvent(this, "value-changed", { value });
+  private _aliasesChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 }
 
