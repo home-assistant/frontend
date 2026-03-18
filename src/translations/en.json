@@ -9203,7 +9203,6 @@
                 "cover": "Cover",
                 "fill": "Fill"
               },
-              "focus": "Focus",
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -9279,6 +9278,8 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "no_geo_location_sources": "No geolocation sources available",
+              "focus": "Focus",
+              "focus_helper": "Include this entity when calculating the autofit",
               "appearance": "Appearance",
               "theme_mode": "Theme mode",
               "theme_modes": {
