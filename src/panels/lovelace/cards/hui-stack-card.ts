@@ -48,7 +48,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
