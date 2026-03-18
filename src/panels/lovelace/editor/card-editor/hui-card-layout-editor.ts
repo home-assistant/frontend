@@ -1,6 +1,6 @@
 import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -89,12 +89,17 @@ export class HuiCardLayoutEditor extends LitElement {
     const gridTotalColumns = 12 * columnSpan;
 
     return html`
+      ${this._defaultGridOptions &&
+      Object.keys(this._defaultGridOptions).length === 0
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.layout.no_grid_support"
+              )}
+            </ha-alert>
+          `
+        : nothing}
       <div class="header">
-        <p class="intro">
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_card.layout.explanation"
-          )}
-        </p>
         <ha-dropdown
           slot="icons"
           @wa-select=${this._handleAction}
@@ -115,16 +120,6 @@ export class HuiCardLayoutEditor extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
       </div>
-      ${this._defaultGridOptions &&
-      Object.keys(this._defaultGridOptions).length === 0
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.edit_card.layout.no_grid_support"
-              )}
-            </ha-alert>
-          `
-        : ""}
       ${this._yamlMode
         ? html`
             <ha-yaml-editor
@@ -389,11 +384,7 @@ export class HuiCardLayoutEditor extends LitElement {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
-      }
-      .header .intro {
-        flex: 1;
-        margin: 0;
-        color: var(--secondary-text-color);
+        justify-content: flex-end;
       }
       .header ha-dropdown {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
