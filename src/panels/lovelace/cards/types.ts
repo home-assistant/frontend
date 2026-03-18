@@ -1,6 +1,7 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -375,15 +376,6 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   theme?: string;
   state_filter?: string[];
 }
-
-export const MAP_CARD_MARKER_LABEL_MODES = [
-  "name",
-  "state",
-  "attribute",
-  "icon",
-] as const;
-export type MapCardMarkerLabelMode =
-  (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
 
 export interface MapEntityConfig extends EntityConfig {
   label_mode?: MapCardMarkerLabelMode;
