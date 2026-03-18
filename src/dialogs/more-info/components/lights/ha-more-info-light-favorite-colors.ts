@@ -5,7 +5,10 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import {
+  hasCustomFavoriteOptionValues,
+  updateEntityRegistryEntry,
+} from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import { computeDefaultFavoriteColors } from "../../../../data/light";
 import type { HomeAssistant } from "../../../../types";
@@ -211,11 +214,22 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         .editMode=${this.editMode}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         .isAdmin=${Boolean(this.hass.user?.is_admin)}
+        .showReset=${true}
+        .showCopy=${true}
         .addLabel=${this.hass.localize(
           "ui.dialogs.more_info_control.light.favorite_color.add"
         )}
         .doneLabel=${this.hass.localize(
           "ui.dialogs.more_info_control.exit_edit_mode"
+        )}
+        .resetLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.light.reset_favorites"
+        )}
+        .copyLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.light.copy_favorites"
+        )}
+        .resetDisabled=${!hasCustomFavoriteOptionValues(
+          this.entry?.options?.light?.favorite_colors
         )}
         @favorite-item-action=${this._handleFavoriteAction}
         @favorite-item-moved=${this._handleFavoriteMoved}

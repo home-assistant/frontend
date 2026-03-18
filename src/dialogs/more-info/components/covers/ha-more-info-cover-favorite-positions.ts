@@ -19,7 +19,10 @@ import type {
   CoverEntityOptions,
   ExtEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import {
+  hasCustomFavoriteOptionValues,
+  updateEntityRegistryEntry,
+} from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
 import {
   showConfirmationDialog,
@@ -360,7 +363,9 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     label: string,
     favorites: number[],
     showDone: boolean,
-    showLabel: boolean
+    showLabel: boolean,
+    showResetCopy: boolean,
+    resetDisabled: boolean
   ): TemplateResult | typeof nothing {
     if (!this.editMode && favorites.length === 0) {
       return nothing;
@@ -378,10 +383,19 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
           .disabled=${this.stateObj.state === UNAVAILABLE}
           .isAdmin=${Boolean(this.hass.user?.is_admin)}
           .showDone=${showDone}
+          .showReset=${showResetCopy}
+          .showCopy=${showResetCopy}
           .addLabel=${this._localizeFavorite(kind, "add")}
           .doneLabel=${this.hass.localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
+          .resetLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.cover.reset_favorites"
+          )}
+          .copyLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.cover.copy_favorites"
+          )}
+          .resetDisabled=${resetDisabled}
           @favorite-item-action=${this._handleFavoriteAction}
           @favorite-item-moved=${this._handleFavoriteMoved}
           @favorite-item-delete=${this._handleFavoriteDelete}
@@ -410,6 +424,14 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     const showDoneOnPosition = supportsPosition && !supportsTiltPosition;
 
+    const resetDisabled =
+      !hasCustomFavoriteOptionValues(
+        this.entry?.options?.cover?.favorite_positions
+      ) &&
+      !hasCustomFavoriteOptionValues(
+        this.entry?.options?.cover?.favorite_tilt_positions
+      );
+
     return html`
       <div class="groups">
         ${supportsPosition
@@ -418,7 +440,9 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
               this.hass.localize("ui.card.cover.position"),
               this._favoritePositions,
               showDoneOnPosition,
-              showLabels
+              showLabels,
+              showDoneOnPosition,
+              resetDisabled
             )
           : nothing}
         ${supportsTiltPosition
@@ -427,7 +451,9 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
               this.hass.localize("ui.card.cover.tilt_position"),
               this._favoriteTiltPositions,
               true,
-              showLabels
+              showLabels,
+              true,
+              resetDisabled
             )
           : nothing}
       </div>

@@ -1,4 +1,10 @@
-import { mdiCheck, mdiMinus, mdiPlus } from "@mdi/js";
+import {
+  mdiBackupRestore,
+  mdiCheck,
+  mdiContentDuplicate,
+  mdiMinus,
+  mdiPlus,
+} from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -6,6 +12,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -40,9 +47,19 @@ export class HaMoreInfoFavorites extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public showDone = true;
 
+  @property({ type: Boolean, attribute: false }) public showReset = false;
+
+  @property({ type: Boolean, attribute: false }) public showCopy = false;
+
   @property({ attribute: false }) public addLabel = "";
 
   @property({ attribute: false }) public doneLabel = "";
+
+  @property({ attribute: false }) public resetLabel = "";
+
+  @property({ attribute: false }) public copyLabel = "";
+
+  @property({ type: Boolean, attribute: false }) public resetDisabled = false;
 
   private _itemMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
@@ -76,6 +93,16 @@ export class HaMoreInfoFavorites extends LitElement {
   private _handleDone = (ev: MouseEvent): void => {
     ev.stopPropagation();
     fireEvent(this, "favorite-item-done");
+  };
+
+  private _handleReset = (ev: MouseEvent): void => {
+    ev.stopPropagation();
+    fireEvent(this, "favorite-reset");
+  };
+
+  private _handleCopy = (ev: MouseEvent): void => {
+    ev.stopPropagation();
+    fireEvent(this, "favorite-copy");
   };
 
   protected render(): TemplateResult {
@@ -150,6 +177,43 @@ export class HaMoreInfoFavorites extends LitElement {
             : nothing}
         </div>
       </ha-sortable>
+      ${this.editMode && (this.showReset || this.showCopy)
+        ? html`
+            <div class="actions">
+              ${this.showReset
+                ? html`
+                    <ha-button
+                      appearance="outlined"
+                      variant="neutral"
+                      @click=${this._handleReset}
+                      .disabled=${this.resetDisabled}
+                    >
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiBackupRestore}
+                      ></ha-svg-icon>
+                      ${this.resetLabel}
+                    </ha-button>
+                  `
+                : nothing}
+              ${this.showCopy
+                ? html`
+                    <ha-button
+                      appearance="outlined"
+                      variant="neutral"
+                      @click=${this._handleCopy}
+                    >
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiContentDuplicate}
+                      ></ha-svg-icon>
+                      ${this.copyLabel}
+                    </ha-button>
+                  `
+                : nothing}
+            </div>
+          `
+        : nothing}
     `;
   }
 
@@ -241,6 +305,15 @@ export class HaMoreInfoFavorites extends LitElement {
         --favorite-item-active-background-color
       );
     }
+
+    .actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--ha-space-2);
+      margin-top: var(--ha-space-2);
+      flex-wrap: wrap;
+    }
   `;
 }
 
@@ -255,6 +328,8 @@ declare global {
     };
     "favorite-item-add";
     "favorite-item-done";
+    "favorite-reset";
+    "favorite-copy";
     "favorite-item-moved": {
       oldIndex: number;
       newIndex: number;

@@ -1,10 +1,8 @@
 import {
-  mdiBackupRestore,
   mdiChartBoxOutline,
   mdiClose,
   mdiCodeBraces,
   mdiCogOutline,
-  mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
   mdiFormatListBulletedSquare,
@@ -388,12 +386,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       case "toggle_edit":
         this._toggleInfoEditMode();
         break;
-      case "reset_favorites":
-        this._resetFavorites();
-        break;
-      case "copy_favorites":
-        this._copyFavorites();
-        break;
       case "related":
         this._goToRelated();
         break;
@@ -569,11 +561,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
     const supportsFavorites = Boolean(favoritesHandler && favoritesContext);
 
-    const resetFavoritesDisabled =
-      favoritesContext && favoritesHandler
-        ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
-        : false;
-
     const isRTL = computeRTL(this.hass);
 
     return html`
@@ -671,23 +658,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                     "ui.dialogs.more_info_control.exit_edit_mode"
                                   )
                                 : favoritesLabels?.editMode}
-                            </ha-dropdown-item>
-                            <ha-dropdown-item
-                              value="reset_favorites"
-                              .disabled=${resetFavoritesDisabled}
-                            >
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiBackupRestore}
-                              ></ha-svg-icon>
-                              ${favoritesLabels?.reset}
-                            </ha-dropdown-item>
-                            <ha-dropdown-item value="copy_favorites">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiContentDuplicate}
-                              ></ha-svg-icon>
-                              ${favoritesLabels?.copy}
                             </ha-dropdown-item>
                             <wa-divider></wa-divider>
                           `
@@ -823,6 +793,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                 @entity-entry-updated=${this._entryUpdated}
                 @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
                 @hass-more-info=${this._handleMoreInfoEvent}
+                @favorite-reset=${this._resetFavorites}
+                @favorite-copy=${this._copyFavorites}
               >
                 ${cache(
                   this._childView

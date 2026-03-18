@@ -12,7 +12,10 @@ import type {
   ExtEntityRegistryEntry,
   ValveEntityOptions,
 } from "../../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import {
+  hasCustomFavoriteOptionValues,
+  updateEntityRegistryEntry,
+} from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
 import type { ValveEntity } from "../../../../data/valve";
 import {
@@ -290,6 +293,10 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       return nothing;
     }
 
+    const resetDisabled = !hasCustomFavoriteOptionValues(
+      this.entry?.options?.valve?.favorite_positions
+    );
+
     return html`
       <section class="group">
         <ha-more-info-favorites
@@ -300,10 +307,19 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
           .disabled=${this.stateObj.state === UNAVAILABLE}
           .isAdmin=${Boolean(this.hass.user?.is_admin)}
           .showDone=${true}
+          .showReset=${true}
+          .showCopy=${true}
           .addLabel=${this._localizeFavorite("add")}
           .doneLabel=${this.hass.localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
+          .resetLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.valve.reset_favorites"
+          )}
+          .copyLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.valve.copy_favorites"
+          )}
+          .resetDisabled=${resetDisabled}
           @favorite-item-action=${this._handleFavoriteAction}
           @favorite-item-moved=${this._handleFavoriteMoved}
           @favorite-item-delete=${this._handleFavoriteDelete}
