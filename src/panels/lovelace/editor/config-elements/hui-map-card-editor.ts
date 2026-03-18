@@ -54,11 +54,11 @@ export const mapEntitiesConfigStruct = union([
   object({
     entity: string(),
     name: optional(string()),
+    color: optional(string()),
     label_mode: optional(string()),
     attribute: optional(string()),
     unit: optional(string()),
     focus: optional(boolean()),
-    color: optional(string()),
   }),
   string(),
 ]);
