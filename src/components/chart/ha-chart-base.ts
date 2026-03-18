@@ -578,7 +578,10 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "none",
+      // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
+      // It rescales the Y-axis to the visible data while keeping one point
+      // just outside each boundary to avoid line gaps at the zoom edges.
+      filterMode: "boundaryFilter" as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
