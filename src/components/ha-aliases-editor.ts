@@ -25,6 +25,7 @@ class AliasesEditor extends LitElement {
         .value=${this.aliases}
         .disabled=${this.disabled}
         .sortable=${this.sortable}
+        update-on-blur
         .label=${this.hass!.localize("ui.dialogs.aliases.label")}
         .removeLabel=${this.hass!.localize("ui.dialogs.aliases.remove")}
         .addLabel=${this.hass!.localize("ui.dialogs.aliases.add")}

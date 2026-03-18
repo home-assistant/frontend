@@ -44,6 +44,9 @@ class HaMultiTextField extends LitElement {
 
   @property({ type: Boolean }) public sortable = false;
 
+  @property({ type: Boolean, attribute: "update-on-blur" })
+  public updateOnBlur = false;
+
   protected render() {
     return html`
       <ha-sortable
@@ -73,6 +76,7 @@ class HaMultiTextField extends LitElement {
                     .value=${item}
                     ?data-last=${index === this._items.length - 1}
                     @input=${this._editItem}
+                    @change=${this._editItem}
                     @keydown=${this._keyDown}
                   ></ha-textfield>
                   <ha-icon-button
@@ -141,6 +145,12 @@ class HaMultiTextField extends LitElement {
   }
 
   private async _editItem(ev: Event) {
+    if (this.updateOnBlur && ev.type === "input") {
+      return;
+    }
+    if (!this.updateOnBlur && ev.type === "change") {
+      return;
+    }
     const index = (ev.target as any).index;
     const items = [...this._items];
     items[index] = (ev.target as any).value;

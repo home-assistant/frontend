@@ -313,7 +313,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               )}
               sortable
               @value-changed=${this._aliasesChanged}
-              @blur=${this._saveAliases}
             ></ha-aliases-editor>
           `}
     `;
@@ -336,16 +335,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const nullAliases: (string | null)[] = hasNull ? [null] : [];
     const newStringAliases: string[] = ev.detail.value;
 
-    const currentLength = currentAliases.filter(
-      (a): a is string => a !== null
-    ).length;
-
     this._aliases = [...nullAliases, ...newStringAliases];
-
-    // if an entry was deleted or reordered, then save changes
-    if (currentLength > newStringAliases.length) {
-      this._saveAliases();
-    }
+    this._saveAliases();
   }
 
   private async _2faChanged(ev) {
@@ -370,6 +361,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())
       .filter((alias) => alias);
+    // eslint-disable-next-line no-console
+    console.log("Saving aliases:", [...nullAliases, ...stringAliases]);
     const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
       aliases: [...nullAliases, ...stringAliases],
     });
