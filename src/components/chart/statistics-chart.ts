@@ -544,7 +544,7 @@ export class StatisticsChart extends LitElement {
               (series as LineSeriesOption).areaStyle = undefined;
             } else {
               series.stackOrder = "seriesAsc";
-              if (drawBands && type === bandTop) {
+              if (type === bandTop) {
                 (series as LineSeriesOption).areaStyle = {
                   color: color + "3F",
                 };
