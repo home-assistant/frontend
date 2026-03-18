@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -114,6 +115,16 @@ export class HuiCardLayoutEditor extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
       </div>
+      ${this._defaultGridOptions &&
+      Object.keys(this._defaultGridOptions).length === 0
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.layout.no_grid_support"
+              )}
+            </ha-alert>
+          `
+        : ""}
       ${this._yamlMode
         ? html`
             <ha-yaml-editor
