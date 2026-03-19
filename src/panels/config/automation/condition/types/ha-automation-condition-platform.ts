@@ -95,7 +95,12 @@ export class HaPlatformCondition extends LitElement {
           loadDefaults &&
           field.selector &&
           field.default !== undefined &&
-          updatedOptions[key] === undefined
+          updatedOptions[key] === undefined &&
+          !(
+            key === "behavior" &&
+            this.description?.target &&
+            !this.condition?.target
+          )
         ) {
           updatedDefaultValue = true;
           updatedOptions[key] = field.default;
@@ -225,7 +230,13 @@ export class HaPlatformCondition extends LitElement {
       return nothing;
     }
 
-    if (fieldName === "behavior" && this._resolvedTargetEntityCount === 1) {
+    if (
+      fieldName === "behavior" &&
+      this.description?.target &&
+      (!this.condition?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
       return nothing;
     }
 
@@ -420,7 +431,9 @@ export class HaPlatformCondition extends LitElement {
       await this._resolveTargetEntityCount(target);
 
     if (
-      this._resolvedTargetEntityCount === 1 &&
+      (!target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1)) &&
       this.condition.options?.behavior !== undefined
     ) {
       const options = { ...this.condition.options };
@@ -433,6 +446,7 @@ export class HaPlatformCondition extends LitElement {
         },
       });
     } else if (
+      target &&
       this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
       this.condition.options?.behavior === undefined
