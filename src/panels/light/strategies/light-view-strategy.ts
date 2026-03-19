@@ -17,7 +17,7 @@ import {
   SMALL_SCREEN_CONDITION,
 } from "../../lovelace/strategies/helpers/screen-conditions";
 import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
-import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
+import { computeLightToggleHeadingBadges } from "../../lovelace/strategies/helpers/light-toggle-badges";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -51,15 +51,21 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
-      // Visibility condition: any light is on
-      const anyOnCondition = {
-        condition: "or" as const,
-        conditions: areaLights.map((entityId) => ({
-          condition: "state" as const,
-          entity: entityId,
-          state: "on",
-        })),
-      };
+      const lightToggleBadges = computeLightToggleHeadingBadges(
+        areaLights,
+        { area_id: area.area_id },
+        {
+          icon: "mdi:power",
+          turnOnText: hass.localize(
+            "ui.panel.lovelace.strategy.light.off"
+          ),
+          turnOffText: hass.localize(
+            "ui.panel.lovelace.strategy.light.on"
+          ),
+          turnOffColor: "orange",
+          extraVisibility: [SMALL_SCREEN_CONDITION],
+        }
+      );
 
       cards.push({
         heading_style: "subtitle",
@@ -71,42 +77,7 @@ const processAreasForLight = (
               navigation_path: `/home/areas-${area.area_id}`,
             }
           : undefined,
-        badges: [
-          // Toggle buttons for mobile
-          {
-            type: "button",
-            icon: "mdi:power",
-            text: hass.localize("ui.panel.lovelace.strategy.light.off"),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_on",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [
-              SMALL_SCREEN_CONDITION,
-              {
-                condition: "not",
-                conditions: [anyOnCondition],
-              },
-            ],
-          } satisfies ButtonHeadingBadgeConfig,
-          {
-            type: "button",
-            icon: "mdi:power",
-            color: "orange",
-            text: hass.localize("ui.panel.lovelace.strategy.light.on"),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_off",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
-          } satisfies ButtonHeadingBadgeConfig,
-        ] satisfies LovelaceCardConfig[],
+        badges: lightToggleBadges satisfies LovelaceCardConfig[],
       });
 
       // Toggle group card for desktop

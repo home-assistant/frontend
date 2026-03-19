@@ -8,7 +8,7 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
-import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
+import { computeLightToggleHeadingBadges } from "../helpers/light-toggle-badges";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   computeAreaTileCardConfig,
@@ -97,50 +97,12 @@ export class AreaViewStrategy extends ReactiveElement {
         hass
       );
 
-      const lightBadges: ButtonHeadingBadgeConfig[] = [];
-
-      if (lightControlEntities.light.length > 0) {
-        const anyOnCondition = {
-          condition: "or" as const,
-          conditions: lightControlEntities.light.map((entityId) => ({
-            condition: "state" as const,
-            entity: entityId,
-            state: "on",
-          })),
-        };
-
-        lightBadges.push(
-          {
-            type: "button",
-            icon: "mdi:lightbulb",
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_on",
-              target: {
-                entity_id: lightControlEntities.light,
-              },
-            },
-            visibility: [
-              {
-                condition: "not",
-                conditions: [anyOnCondition],
-              },
-            ],
-          },
-          {
-            type: "button",
-            icon: "mdi:lightbulb",
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_off",
-              target: {
-                entity_id: lightControlEntities.light,
-              },
-            },
-            visibility: [anyOnCondition],
-          }
-        );
-      }
+      const lightBadges =
+        lightControlEntities.light.length > 0
+          ? computeLightToggleHeadingBadges(lightControlEntities.light, {
+              entity_id: lightControlEntities.light,
+            })
+          : [];
 
       sections.push({
         type: "grid",
