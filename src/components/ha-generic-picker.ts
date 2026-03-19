@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import {
   css,
@@ -14,7 +13,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { authContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import "./ha-bottom-sheet";
@@ -112,9 +110,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
-  @state()
-  @consume({ context: authContext, subscribe: true })
-  private auth?: ContextType<typeof authContext>;
+  // disabled till iOS app fix the "focus_element" implementation
+  // @state()
+  // @consume({ context: authContext, subscribe: true })
+  // private auth?: ContextType<typeof authContext>;
 
   @state() private _opened = false;
 
