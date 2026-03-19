@@ -134,6 +134,9 @@ export class HaBaseTimeInput extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
+  @property({ attribute: "placeholder-labels", type: Boolean })
+  public placeholderLabels = false;
+
   @queryAll("ha-input") private _inputs?: HaInput[];
 
   static shadowRootOptions = {
@@ -159,7 +162,8 @@ export class HaBaseTimeInput extends LitElement {
                   type="number"
                   inputmode="numeric"
                   .value=${this.days.toFixed()}
-                  .label=${this.dayLabel}
+                  .label=${!this.placeholderLabels ? this.dayLabel : ""}
+                  .placeholder=${this.placeholderLabels ? this.dayLabel : ""}
                   name="days"
                   @change=${this._valueChanged}
                   @focusin=${this._onFocus}
@@ -179,7 +183,8 @@ export class HaBaseTimeInput extends LitElement {
             type="number"
             inputmode="numeric"
             .value=${this.hours.toFixed()}
-            .label=${this.hourLabel}
+            .label=${!this.placeholderLabels ? this.hourLabel : ""}
+            .placeholder=${this.placeholderLabels ? this.hourLabel : ""}
             name="hours"
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
@@ -198,7 +203,8 @@ export class HaBaseTimeInput extends LitElement {
             type="number"
             inputmode="numeric"
             .value=${this._formatValue(this.minutes)}
-            .label=${this.minLabel}
+            .label=${!this.placeholderLabels ? this.minLabel : ""}
+            .placeholder=${this.placeholderLabels ? this.minLabel : ""}
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
             name="minutes"
@@ -221,7 +227,8 @@ export class HaBaseTimeInput extends LitElement {
                   inputmode="decimal"
                   step="any"
                   .value=${this._formatValue(this.seconds)}
-                  .label=${this.secLabel}
+                  .label=${!this.placeholderLabels ? this.secLabel : ""}
+                  .placeholder=${this.placeholderLabels ? this.secLabel : ""}
                   @change=${this._valueChanged}
                   @focusin=${this._onFocus}
                   name="seconds"
@@ -242,7 +249,8 @@ export class HaBaseTimeInput extends LitElement {
                 id="millisec"
                 type="number"
                 .value=${this._formatValue(this.milliseconds, 3)}
-                .label=${this.millisecLabel}
+                .label=${!this.placeholderLabels ? this.millisecLabel : ""}
+                .placeholder=${this.placeholderLabels ? this.millisecLabel : ""}
                 @change=${this._valueChanged}
                 @focusin=${this._onFocus}
                 name="milliseconds"

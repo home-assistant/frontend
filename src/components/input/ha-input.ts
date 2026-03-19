@@ -271,7 +271,7 @@ export class HaInput extends LitElement {
         .type=${this.type}
         .value=${this.value ?? null}
         .withClear=${this.withClear}
-        .placeholder=${this.placeholder && this.label ? this.placeholder : ""}
+        .placeholder=${this.placeholder}
         .readonly=${this.readonly}
         .passwordToggle=${this.passwordToggle}
         .passwordVisible=${this.passwordVisible}
@@ -294,7 +294,8 @@ export class HaInput extends LitElement {
         .disabled=${this.disabled}
         class=${classMap({
           invalid: this.invalid || this._invalid,
-          "label-raised": this.value || this.placeholder,
+          "label-raised": this.value || (this.label && this.placeholder),
+          "no-label": !this.label,
         })}
         @input=${this._handleInput}
         @change=${this._handleChange}
@@ -304,11 +305,7 @@ export class HaInput extends LitElement {
       >
         ${this.label || hasLabelSlot
           ? html`<slot name="label" slot="label"
-              >${this._renderLabel(
-                this.label,
-                this.placeholder,
-                this.required
-              )}</slot
+              >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
         <slot
@@ -388,33 +385,29 @@ export class HaInput extends LitElement {
     }
   };
 
-  private _renderLabel = memoizeOne(
-    (label: string, placeholder: string, required: boolean) => {
-      // fallback to placeholder if no label is provided
-      const text = label || placeholder;
-      if (!required) {
-        return text;
-      }
-
-      let marker = getComputedStyle(this).getPropertyValue(
-        "--ha-input-required-marker"
-      );
-
-      if (!marker) {
-        marker = "*";
-      }
-
-      if (marker.startsWith('"') && marker.endsWith('"')) {
-        marker = marker.slice(1, -1);
-      }
-
-      if (!marker) {
-        return text;
-      }
-
-      return `${text}${marker}`;
+  private _renderLabel = memoizeOne((label: string, required: boolean) => {
+    if (!required) {
+      return label;
     }
-  );
+
+    let marker = getComputedStyle(this).getPropertyValue(
+      "--ha-input-required-marker"
+    );
+
+    if (!marker) {
+      marker = "*";
+    }
+
+    if (marker.startsWith('"') && marker.endsWith('"')) {
+      marker = marker.slice(1, -1);
+    }
+
+    if (!marker) {
+      return label;
+    }
+
+    return `${label}${marker}`;
+  });
 
   static styles = css`
     :host {
@@ -503,6 +496,9 @@ export class HaInput extends LitElement {
     wa-input::part(input) {
       padding-top: var(--ha-space-3);
       padding-inline-start: var(--input-padding-inline-start, 0);
+    }
+    wa-input.no-label::part(input) {
+      padding-top: 0;
     }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);

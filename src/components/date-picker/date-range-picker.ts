@@ -150,6 +150,7 @@ export class DateRangePicker extends LitElement {
                       "ui.components.date-range-picker.time_from"
                     )}
                     id="from"
+                    placeholder-labels
                   ></ha-time-input>
                   <ha-time-input
                     .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
@@ -159,6 +160,7 @@ export class DateRangePicker extends LitElement {
                       "ui.components.date-range-picker.time_to"
                     )}
                     id="to"
+                    placeholder-labels
                   ></ha-time-input>
                 </div>
               `
@@ -308,7 +310,6 @@ export class DateRangePicker extends LitElement {
         align-items: center;
         flex: 1;
         padding: var(--ha-space-3);
-        gap: var(--ha-space-4);
       }
 
       .times {
