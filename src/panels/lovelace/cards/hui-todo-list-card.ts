@@ -220,7 +220,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     items: TodoItem[],
     status: TodoItemStatus,
     period?: {
-      calendar?: { period: string; offset: number };
+      calendar?: { period: string; offset?: number };
       rolling_window?: {
         offset: HaDurationData;
       };
@@ -247,7 +247,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _addPeriod(
     date: Date,
-    calendar: { period: string; offset: number }
+    calendar: { period: string; offset?: number }
   ): Date | undefined {
     const locale = this.hass!.locale;
     const config = this.hass!.config;
