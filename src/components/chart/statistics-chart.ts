@@ -405,13 +405,11 @@ export class StatisticsChart extends LitElement {
       statisticsData.forEach(([statistic_id, _stats]) => {
         const meta = statisticsMetaData?.[statistic_id];
         const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
-        if (!this.unit) {
-          if (unit === undefined) {
-            unit = statisticUnit;
-          } else if (unit !== null && unit !== statisticUnit) {
-            // Clear unit if not all statistics have same unit
-            unit = null;
-          }
+        if (unit === undefined) {
+          unit = statisticUnit;
+        } else if (unit !== null && unit !== statisticUnit) {
+          // Clear unit if not all statistics have same unit
+          unit = null;
         }
       });
       if (unit) {
