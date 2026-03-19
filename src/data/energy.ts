@@ -3,27 +3,30 @@ import {
   addHours,
   addMilliseconds,
   addMonths,
+  addYears,
   differenceInDays,
   differenceInMonths,
   endOfDay,
-  startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-  addYears,
+  startOfDay,
 } from "date-fns";
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import {
   calcDate,
-  calcDateProperty,
   calcDateDifferenceProperty,
+  calcDateProperty,
 } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { formatTime24h } from "../common/datetime/format_time";
+import { formatNumber } from "../common/number/format_number";
+import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
-import { fileDownload } from "../util/file_download";
 import type { HomeAssistant } from "../types";
+import { fileDownload } from "../util/file_download";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -36,9 +39,6 @@ import {
   getStatisticMetadata,
   VOLUME_UNITS,
 } from "./recorder";
-import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
-import { formatNumber } from "../common/number/format_number";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -841,7 +841,7 @@ export const getEnergyDataCollection = (
   const period =
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
-  const [start, end] = calcDateRange(hass, period);
+  const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
   collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 

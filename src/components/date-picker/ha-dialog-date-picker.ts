@@ -8,16 +8,22 @@ import {
   formatDateMonth,
   formatDateShort,
   formatDateYear,
-} from "../common/datetime/format_date";
-import { configContext, localeContext, localizeContext } from "../data/context";
-import { DialogMixin } from "../dialogs/dialog-mixin";
-import "./ha-button";
-import type { DatePickerDialogParams } from "./ha-date-input";
-import "./ha-dialog";
-import "./ha-dialog-footer";
-import "./ha-icon-button";
-import "./ha-icon-button-next";
-import "./ha-icon-button-prev";
+  formatISODateOnly,
+} from "../../common/datetime/format_date";
+import {
+  configContext,
+  localeContext,
+  localizeContext,
+} from "../../data/context";
+import { DialogMixin } from "../../dialogs/dialog-mixin";
+import "../ha-button";
+import type { DatePickerDialogParams } from "../ha-date-input";
+import "../ha-dialog";
+import "../ha-dialog-footer";
+import "../ha-icon-button";
+import "../ha-icon-button-next";
+import "../ha-icon-button-prev";
+import { datePickerStyles } from "./styles";
 
 type CalendarDate = HTMLElementTagNameMap["calendar-date"];
 
@@ -75,7 +81,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
         ? {
             year: this._pickerYear,
             title: formatDateShort(date, this.locale, this.hassConfig),
-            dateString: this.params.value.substring(0, 10),
+            dateString: formatISODateOnly(date, this.locale, this.hassConfig),
           }
         : undefined;
     }
@@ -160,7 +166,8 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     this._value = {
       year: formatDateYear(date, this.locale, this.hassConfig),
       title: formatDateShort(date, this.locale, this.hassConfig),
-      dateString: value || date.toISOString().substring(0, 10),
+      dateString:
+        value || formatISODateOnly(date, this.locale, this.hassConfig),
     };
 
     if (setFocusDay) {
@@ -196,81 +203,14 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     this.closeDialog();
   }
 
-  static styles = css`
-    ha-dialog {
-      --dialog-content-padding: 0;
-    }
-    calendar-date {
-      width: 100%;
-    }
-    calendar-date::part(button) {
-      border: none;
-      background-color: unset;
-      border-radius: var(--ha-border-radius-circle);
-      outline-offset: -2px;
-      outline-color: var(--ha-color-neutral-60);
-    }
-
-    calendar-month {
-      width: 100%;
-      margin: 0 auto;
-      min-height: calc(42px * 7);
-    }
-
-    calendar-month::part(heading) {
-      display: none;
-    }
-    calendar-month::part(day) {
-      color: var(--disabled-text-color);
-      font-size: var(--ha-font-size-m);
-      font-family: var(--ha-font-body);
-    }
-    calendar-month::part(button),
-    calendar-month::part(selected):focus-visible {
-      color: var(--primary-text-color);
-      height: 32px;
-      width: 32px;
-      margin: var(--ha-space-1);
-      border-radius: var(--ha-border-radius-circle);
-    }
-    calendar-month::part(button):focus-visible {
-      background-color: inherit;
-      outline: 1px solid var(--ha-color-neutral-60);
-      outline-offset: 2px;
-    }
-    calendar-month::part(button):hover {
-      background-color: var(--ha-color-fill-primary-quiet-hover);
-    }
-    calendar-month::part(today) {
-      color: var(--primary-color);
-    }
-    calendar-month::part(selected),
-    calendar-month::part(selected):hover {
-      color: var(--text-primary-color);
-      background-color: var(--primary-color);
-      height: 40px;
-      width: 40px;
-      margin: 0;
-    }
-    calendar-month::part(selected):focus-visible {
-      background-color: var(--primary-color);
-      color: var(--text-primary-color);
-    }
-
-    .heading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-    }
-    .month-year {
-      flex: 1;
-      text-align: center;
-      margin-left: 48px;
-    }
-  `;
+  static styles = [
+    datePickerStyles,
+    css`
+      ha-dialog {
+        --dialog-content-padding: 0;
+      }
+    `,
+  ];
 }
 
 declare global {
