@@ -89,15 +89,26 @@ const groupByIntegration = (
   return result;
 };
 
+const getLocalizedDomainName = (
+  entry: ConfigEntryExtended,
+  manifests: Record<string, IntegrationManifest>,
+  localize: HomeAssistant["localize"]
+): string =>
+  entry.localized_domain_name && entry.localized_domain_name !== entry.domain
+    ? entry.localized_domain_name
+    : domainToName(localize, entry.domain, manifests[entry.domain]);
+
 const sortConfigEntriesByName = (
   entries: ConfigEntryExtended[],
+  manifests: Record<string, IntegrationManifest>,
+  localize: HomeAssistant["localize"],
   language: string
 ): ConfigEntryExtended[] =>
   entries.sort(
     (entryA, entryB) =>
       caseInsensitiveStringCompare(
-        entryA.localized_domain_name || entryA.domain,
-        entryB.localized_domain_name || entryB.domain,
+        getLocalizedDomainName(entryA, manifests, localize),
+        getLocalizedDomainName(entryB, manifests, localize),
         language
       ) ||
       caseInsensitiveStringCompare(
@@ -221,7 +232,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       const nonConfigEntry: ConfigEntryExtended[] = [...domains].map(
         (domain) => ({
           domain,
-          localized_domain_name: domainToName(localize, domain),
+          localized_domain_name: domainToName(
+            localize,
+            domain,
+            manifests[domain]
+          ),
           title: domain,
           source: "yaml",
           state: "loaded",
@@ -288,8 +303,18 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
             this.hass.locale.language
           )
         ),
-        sortConfigEntriesByName(ignored, this.hass.locale.language),
-        sortConfigEntriesByName(disabled, this.hass.locale.language),
+        sortConfigEntriesByName(
+          ignored,
+          this._manifests,
+          this.hass.localize,
+          this.hass.locale.language
+        ),
+        sortConfigEntriesByName(
+          disabled,
+          this._manifests,
+          this.hass.localize,
+          this.hass.locale.language
+        ),
       ];
     }
   );
