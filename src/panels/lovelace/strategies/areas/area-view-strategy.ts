@@ -97,20 +97,50 @@ export class AreaViewStrategy extends ReactiveElement {
         hass
       );
 
-      const lightToggleBadge: ButtonHeadingBadgeConfig | undefined =
-        lightControlEntities.light.length > 0
-          ? {
-              type: "button",
-              icon: "mdi:lightbulb",
-              tap_action: {
-                action: "perform-action",
-                perform_action: "light.toggle",
-                target: {
-                  entity_id: lightControlEntities.light,
-                },
+      const lightBadges: ButtonHeadingBadgeConfig[] = [];
+
+      if (lightControlEntities.light.length > 0) {
+        const anyOnCondition = {
+          condition: "or" as const,
+          conditions: lightControlEntities.light.map((entityId) => ({
+            condition: "state" as const,
+            entity: entityId,
+            state: "on",
+          })),
+        };
+
+        lightBadges.push(
+          {
+            type: "button",
+            icon: "mdi:lightbulb",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_on",
+              target: {
+                entity_id: lightControlEntities.light,
               },
-            }
-          : undefined;
+            },
+            visibility: [
+              {
+                condition: "not",
+                conditions: [anyOnCondition],
+              },
+            ],
+          },
+          {
+            type: "button",
+            icon: "mdi:lightbulb",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_off",
+              target: {
+                entity_id: lightControlEntities.light,
+              },
+            },
+            visibility: [anyOnCondition],
+          }
+        );
+      }
 
       sections.push({
         type: "grid",
@@ -121,8 +151,8 @@ export class AreaViewStrategy extends ReactiveElement {
               "ui.panel.lovelace.strategy.areas.groups.lights"
             ),
             icon: AREA_STRATEGY_GROUP_ICONS.lights,
-            ...(lightToggleBadge
-              ? { badges: [lightToggleBadge] }
+            ...(lightBadges.length > 0
+              ? { badges: lightBadges }
               : {}),
           } satisfies HeadingCardConfig,
           ...lights.map(computeTileCard),
