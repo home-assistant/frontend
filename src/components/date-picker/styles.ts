@@ -1,9 +1,10 @@
 import { css } from "lit";
 
 export const datePickerStyles = css`
-  calendar-date,
+  calendar-range,
   calendar-date {
     width: 100%;
+    min-width: 300px;
   }
   calendar-date::part(button),
   calendar-range::part(button) {
@@ -15,7 +16,7 @@ export const datePickerStyles = css`
   }
 
   calendar-month {
-    width: 100%;
+    width: calc(40px * 7);
     margin: 0 auto;
     min-height: calc(42px * 7);
   }
@@ -139,20 +140,5 @@ export const dateRangePickerStyles = css`
   calendar-month::part(range-end):hover,
   calendar-month::part(range-inner):hover {
     color: var(--primary-text-color);
-  }
-`;
-
-export const singleDatePickerStyles = css`
-  calendar-month::part(selected),
-  calendar-month::part(selected):hover {
-    color: var(--text-primary-color);
-    background-color: var(--primary-color);
-    height: 40px;
-    width: 40px;
-    margin: 0;
-  }
-  calendar-month::part(selected):focus-visible {
-    background-color: var(--primary-color);
-    color: var(--text-primary-color);
   }
 `;

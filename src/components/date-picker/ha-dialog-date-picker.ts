@@ -23,7 +23,7 @@ import "../ha-dialog-footer";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
 import "../ha-icon-button-prev";
-import { datePickerStyles, singleDatePickerStyles } from "./styles";
+import { datePickerStyles } from "./styles";
 
 type CalendarDate = HTMLElementTagNameMap["calendar-date"];
 
@@ -205,7 +205,6 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
 
   static styles = [
     datePickerStyles,
-    singleDatePickerStyles,
     css`
       ha-dialog {
         --dialog-content-padding: 0;

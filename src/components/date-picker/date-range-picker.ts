@@ -9,6 +9,7 @@ import {
   formatCallyDateRange,
   formatDateMonth,
   formatDateYear,
+  formatISODateOnly,
 } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -176,7 +177,7 @@ export class DateRangePicker extends LitElement {
 
   private _focusToday() {
     const date = new Date();
-    this._focusDate = date.toISOString().substring(0, 10);
+    this._focusDate = formatISODateOnly(date, this.locale, this.hassConfig);
     this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
     this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
   }
@@ -191,8 +192,8 @@ export class DateRangePicker extends LitElement {
     }
 
     const dates = this._dateValue.split("/");
-    let startDate = new Date(dates[0]);
-    let endDate = new Date(dates[1]);
+    let startDate = new Date(`${dates[0]}T00:00:00`);
+    let endDate = new Date(`${dates[1]}T23:59:00`);
 
     if (this.timePicker) {
       startDate.setHours(this._timeValue.from.hours);

@@ -269,21 +269,17 @@ const formatDateWeekdayShortDateMem = memoizeOne(
  */
 export const formatISODateOnly = (
   dateObj: Date,
-  locale?: FrontendLocaleData,
-  config?: HassConfig
+  locale: FrontendLocaleData,
+  config: HassConfig
 ) => {
-  if (locale && config) {
-    const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
-    const formatter = new Intl.DateTimeFormat("en-CA", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      timeZone,
-    });
-    return formatter.format(dateObj);
-  }
-  // Fallback to UTC when no locale/config is available
-  return dateObj.toISOString().substring(0, 10);
+  const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone,
+  });
+  return formatter.format(dateObj);
 };
 
 // 2026-08-10/2026-08-15
