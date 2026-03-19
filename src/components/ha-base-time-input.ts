@@ -413,6 +413,7 @@ export class HaBaseTimeInput extends LitElement {
 
     .time-separator {
       width: 12px;
+      padding-top: var(--ha-base-time-input-separator-padding-top, 0);
       margin-inline-end: calc(var(--ha-space-1) * -1);
       display: flex;
       align-items: center;

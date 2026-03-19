@@ -639,6 +639,7 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-time-input {
           --ha-base-time-input-margin-top: var(--ha-space-2);
+          --ha-base-time-input-separator-padding-top: var(--ha-space-3);
           margin-left: 16px;
           margin-inline-start: 16px;
           margin-inline-end: initial;
