@@ -71,6 +71,16 @@ import type { TodoListCardConfig } from "./types";
 export const ITEM_TAP_ACTION_EDIT = "edit";
 export const ITEM_TAP_ACTION_TOGGLE = "toggle";
 
+interface TodoDueDatePeriod {
+  calendar?: {
+    period: string;
+    offset?: number;
+  };
+  rolling_window?: {
+    offset: HaDurationData;
+  };
+}
+
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -176,12 +186,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _getUncheckedAndItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod
+    ): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter(
-              (item) =>
-                item.status === TodoItemStatus.NeedsAction || !item.status
+            this._filterItems(
+              items,
+              [null, TodoItemStatus.NeedsAction],
+              due_date_period
             ),
             sort
           )
@@ -189,13 +204,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   );
 
   private _getCheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod
+    ): TodoItem[] =>
       items
         ? this._sortItems(
             this._filterItems(
               items,
-              TodoItemStatus.Completed,
-              this._config?.due_date_period
+              [TodoItemStatus.Completed],
+              due_date_period
             ),
             sort
           )
@@ -203,14 +222,32 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   );
 
   private _getUncheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod
+    ): TodoItem[] =>
       items
         ? this._sortItems(
             this._filterItems(
               items,
-              TodoItemStatus.NeedsAction,
-              this._config?.due_date_period
+              [TodoItemStatus.NeedsAction],
+              due_date_period
             ),
+            sort
+          )
+        : []
+  );
+
+  private _getItemsWithoutStatus = memoizeOne(
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod
+    ): TodoItem[] =>
+      items
+        ? this._sortItems(
+            this._filterItems(items, [null], due_date_period),
             sort
           )
         : []
@@ -218,13 +255,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _filterItems(
     items: TodoItem[],
-    status: TodoItemStatus,
-    period?: {
-      calendar?: { period: string; offset?: number };
-      rolling_window?: {
-        offset: HaDurationData;
-      };
-    }
+    status: (TodoItemStatus | null)[],
+    period?: TodoDueDatePeriod
   ): TodoItem[] {
     const endDate =
       period && period.calendar && period.calendar.period
@@ -234,7 +266,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           : undefined;
 
     return items.filter((item) => {
-      if (item.status !== status) {
+      if (!status.includes(item.status || null)) {
         return false;
       }
       if (!endDate) {
@@ -282,16 +314,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     return add(date, rolling_window.offset);
   }
-
-  private _getItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
-      items
-        ? this._sortItems(
-            items.filter((item) => !item.status),
-            sort
-          )
-        : []
-  );
 
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
@@ -345,22 +367,26 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const checkedItems = this._getCheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period
     );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period
     );
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
           this._items,
-          this._config.display_order
+          this._config.display_order,
+          this._config.due_date_period
         )
       : undefined;
 
