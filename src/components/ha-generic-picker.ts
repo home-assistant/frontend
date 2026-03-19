@@ -17,7 +17,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { authContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
-import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
@@ -316,15 +315,16 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._comboBox?.setFieldValue(this._initialFieldValue);
         this._initialFieldValue = undefined;
       }
-      if (this.auth?.external && isIosApp(this.auth.external)) {
-        this.auth.external.fireMessage({
-          type: "focus_element",
-          payload: {
-            element_id: "combo-box",
-          },
-        });
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this.auth?.external && isIosApp(this.auth.external)) {
+      //   this.auth.external.fireMessage({
+      //     type: "focus_element",
+      //     payload: {
+      //       element_id: "combo-box",
+      //     },
+      //   });
+      //   return;
+      // }
 
       this._comboBox?.focus();
     });
