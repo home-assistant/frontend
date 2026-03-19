@@ -30,6 +30,7 @@ export class HaSelectorUiColor extends LitElement {
         .includeNone=${this.selector.ui_color?.include_none}
         .includeState=${this.selector.ui_color?.include_state}
         .defaultColor=${this.selector.ui_color?.default_color}
+        .extraOptions=${this.selector.ui_color?.extra_options}
         @value-changed=${this._valueChanged}
       ></ha-color-picker>
     `;

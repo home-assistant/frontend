@@ -8732,7 +8732,13 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "background": "Background options",
+              "background_enabled": "Background",
+              "background_enabled_helper": "Display a colored background behind the section",
+              "background_color": "Color",
+              "background_color_default": "Default",
+              "background_opacity": "Opacity"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."

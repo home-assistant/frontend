@@ -1,6 +1,7 @@
-import type {
-  LovelaceSectionConfig,
-  LovelaceStrategySectionConfig,
+import {
+  isStrategySection,
+  type LovelaceSectionConfig,
+  type LovelaceStrategySectionConfig,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type {
@@ -256,7 +257,7 @@ export const expandLovelaceConfigStrategies = async (
       if (newView.sections) {
         newView.sections = await Promise.all(
           newView.sections.map(async (section) => {
-            const newSection = isStrategyView(section)
+            const newSection = isStrategySection(section)
               ? await generateLovelaceSectionStrategy(section, hass)
               : { ...section };
             return newSection;
