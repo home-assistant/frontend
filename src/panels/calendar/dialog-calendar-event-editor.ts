@@ -622,17 +622,17 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-textarea {
           display: block;
         }
         ha-textarea {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-formfield {
           display: block;
-          padding: 16px 0;
+          padding: var(--ha-space-4) 0;
         }
         ha-date-input {
           flex-grow: 1;
@@ -640,13 +640,13 @@ class DialogCalendarEventEditor extends LitElement {
         ha-time-input {
           --ha-base-time-input-margin-top: var(--ha-space-2);
           --ha-base-time-input-separator-padding-top: var(--ha-space-3);
-          margin-left: 16px;
-          margin-inline-start: 16px;
+          margin-left: var(--ha-space-4);
+          margin-inline-start: var(--ha-space-4);
           margin-inline-end: initial;
         }
         ha-recurrence-rule-editor {
           display: block;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         .flex {
           display: flex;
@@ -665,8 +665,8 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-svg-icon {
           width: 40px;
-          margin-right: 8px;
-          margin-inline-end: 8px;
+          margin-right: var(--ha-space-2);
+          margin-inline-end: var(--ha-space-2);
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;

@@ -421,7 +421,10 @@ export class HaBaseTimeInput extends LitElement {
     }
 
     :host([clearable]) .mdc-select__anchor {
-      padding-inline-end: var(--select-selected-text-padding-end, 12px);
+      padding-inline-end: var(
+        --select-selected-text-padding-end,
+        var(--ha-space-3)
+      );
     }
     ha-icon-button {
       position: relative;
@@ -460,12 +463,12 @@ export class HaBaseTimeInput extends LitElement {
       text-decoration: var(--mdc-typography-body2-text-decoration, inherit);
       text-transform: var(--mdc-typography-body2-text-transform, inherit);
       color: var(--mdc-theme-text-primary-on-background, rgba(0, 0, 0, 0.87));
-      padding-left: 4px;
-      padding-inline-start: 4px;
+      padding-left: var(--ha-space-1);
+      padding-inline-start: var(--ha-space-1);
       padding-inline-end: initial;
     }
     ha-input-helper-text {
-      padding-top: 8px;
+      padding-top: var(--ha-space-2);
       line-height: var(--ha-line-height-condensed);
     }
   `;
