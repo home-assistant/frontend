@@ -3,11 +3,15 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import {
+  shouldShowFavoriteOptions,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import type { ValveEntity } from "../../../data/valve";
 import {
+  valveSupportsPosition,
   ValveEntityFeature,
   computeValvePositionStateDisplay,
 } from "../../../data/valve";
@@ -15,6 +19,7 @@ import "../../../state-control/valve/ha-state-control-valve-buttons";
 import "../../../state-control/valve/ha-state-control-valve-position";
 import "../../../state-control/valve/ha-state-control-valve-toggle";
 import type { HomeAssistant } from "../../../types";
+import "../components/valves/ha-more-info-valve-favorite-positions";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -25,6 +30,10 @@ class MoreInfoValve extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: ValveEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
 
   @state() private _mode?: Mode;
 
@@ -38,10 +47,7 @@ class MoreInfoValve extends LitElement {
       const entityId = this.stateObj.entity_id;
       const oldEntityId = changedProps.get("stateObj")?.entity_id;
       if (!this._mode || entityId !== oldEntityId) {
-        this._mode = supportsFeature(
-          this.stateObj,
-          ValveEntityFeature.SET_POSITION
-        )
+        this._mode = valveSupportsPosition(this.stateObj)
           ? "position"
           : "button";
       }
@@ -67,9 +73,15 @@ class MoreInfoValve extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = supportsFeature(
-      this.stateObj,
-      ValveEntityFeature.SET_POSITION
+    const supportsPosition = valveSupportsPosition(this.stateObj);
+
+    const showFavoriteControls = Boolean(
+      this.entry &&
+      (this.editMode ||
+        (supportsPosition &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.valve?.favorite_positions
+          )))
     );
 
     const supportsOpenClose =
@@ -154,12 +166,19 @@ class MoreInfoValve extends LitElement {
               : nothing
           }
         </div>
+        ${
+          showFavoriteControls
+            ? html`
+                <ha-more-info-valve-favorite-positions
+                  .hass=${this.hass}
+                  .stateObj=${this.stateObj}
+                  .entry=${this.entry}
+                  .editMode=${this.editMode}
+                ></ha-more-info-valve-favorite-positions>
+              `
+            : nothing
+        }
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="current_position,current_tilt_position"
-      ></ha-attributes>
     `;
   }
 
@@ -173,7 +192,7 @@ class MoreInfoValve extends LitElement {
           align-items: center;
         }
         .main-control > * {
-          margin: 0 8px;
+          margin: 0 var(--ha-space-2);
         }
       `,
     ];

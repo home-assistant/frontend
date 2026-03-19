@@ -5,10 +5,9 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
-import { stringCompare } from "../../../common/string/compare";
+import { orderCompare, stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
-import { areaCompare } from "../../../data/area_registry";
 import type {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
@@ -369,6 +368,7 @@ export const generateViewConfig = (
   path: string,
   title: string | undefined,
   icon: string | undefined,
+  show_icon_and_title: boolean | undefined,
   entities: HassEntities
 ): LovelaceViewConfig => {
   const ungroupedEntitites: Record<string, string[]> = {};
@@ -498,6 +498,9 @@ export const generateViewConfig = (
   if (icon) {
     view.icon = icon;
   }
+  if (show_icon_and_title) {
+    view.show_icon_and_title = show_icon_and_title;
+  }
 
   return view;
 };
@@ -518,6 +521,7 @@ export const generateDefaultViewConfig = (
   const path = "default_view";
   const title = "Home";
   const icon = undefined;
+  const show_icon_and_title = undefined;
 
   // In the case of a default view, we want to use the group order attribute
   const groupOrders = {};
@@ -567,18 +571,27 @@ export const generateDefaultViewConfig = (
     path,
     title,
     icon,
+    show_icon_and_title,
     splittedByGroups.ungrouped
   );
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  const sortedAreas = Object.keys(splittedByAreaDevice.areasWithEntities).sort(
-    areaCompare(areaEntries, areasPrefs?.order)
-  );
+  const areaIds = Object.keys(areaEntries);
 
-  for (const areaId of sortedAreas) {
+  if (areasPrefs?.order) {
+    const areaOrder = areasPrefs.order;
+    areaIds.sort(orderCompare(areaOrder));
+  }
+
+  for (const areaId of areaIds) {
+    // Skip areas with no entities
+    if (!(areaId in splittedByAreaDevice.areasWithEntities)) {
+      continue;
+    }
     const areaEntities = splittedByAreaDevice.areasWithEntities[areaId];
     const area = areaEntries[areaId];
+
     areaCards.push(
       ...computeCards(
         hass,
@@ -631,7 +644,7 @@ export const generateDefaultViewConfig = (
       (source) => source.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
 
-    if (grid && grid.flow_from.length > 0) {
+    if (grid && grid.stat_energy_from) {
       energyCard = {
         title: localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.title_today"

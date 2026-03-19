@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
@@ -15,6 +16,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -32,25 +34,25 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
+import "../../../../components/ha-condition-icon";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-md-menu-item";
 import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
+  PlatformCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import {
-  CONDITION_BUILDING_BLOCKS,
-  CONDITION_ICONS,
-} from "../../../../data/condition";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { DeviceCondition } from "../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -60,6 +62,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -73,37 +76,13 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
   expandAll?: () => void;
   collapseAll?: () => void;
 }
-
-export const handleChangeEvent = (
-  element: ConditionElement,
-  ev: CustomEvent
-) => {
-  ev.stopPropagation();
-  const name = (ev.currentTarget as any)?.name;
-  if (!name) {
-    return;
-  }
-  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
-
-  if ((element.condition[name] || "") === newVal) {
-    return;
-  }
-
-  let newCondition: Condition;
-  if (!newVal) {
-    newCondition = { ...element.condition };
-    delete newCondition[name];
-  } else {
-    newCondition = { ...element.condition, [name]: newVal };
-  }
-  fireEvent(element, "value-changed", { value: newCondition });
-};
 
 @customElement("ha-automation-condition-row")
 export default class HaAutomationConditionRow extends LitElement {
@@ -130,6 +109,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @property({ attribute: false })
+  public conditionDescriptions: ConditionDescriptions = {};
+
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
@@ -151,7 +133,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @query("ha-automation-condition-editor")
   public conditionEditor?: HaAutomationConditionEditor;
@@ -178,29 +160,35 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderRow() {
+    const target =
+      "target" in (this.conditionDescriptions[this.condition.condition] || {})
+        ? (this.condition as PlatformCondition).target
+        : "device_id" in this.condition &&
+            (this.condition as DeviceCondition).device_id
+          ? { device_id: [(this.condition as DeviceCondition).device_id] }
+          : undefined;
+
     return html`
-      <ha-svg-icon
+      <ha-condition-icon
         slot="leading-icon"
-        class="condition-icon"
-        .path=${CONDITION_ICONS[this.condition.condition]}
-      ></ha-svg-icon>
+        .hass=${this.hass}
+        .condition=${this.condition.condition}
+      ></ha-condition-icon>
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
 
-      <ha-md-button-menu
-        quick
+      <ha-dropdown
         slot="icons"
         @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}
-        @closed=${stopPropagation}
-        positioning="fixed"
-        anchor-corner="end-end"
-        menu-corner="start-end"
+        @wa-select=${this._handleDropdownSelect}
+        placement="bottom-end"
       >
         <ha-icon-button
           slot="trigger"
@@ -209,34 +197,28 @@ export default class HaAutomationConditionRow extends LitElement {
         >
         </ha-icon-button>
 
-        <ha-md-menu-item .clickAction=${this._testCondition}>
-          <ha-svg-icon slot="start" .path=${mdiFlask}></ha-svg-icon>
+        <ha-dropdown-item value="test">
+          <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.conditions.test"
             )
           )}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${this._renameCondition}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+        </ha-dropdown-item>
+        <ha-dropdown-item value="rename" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.conditions.rename"
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item
-          .clickAction=${this._duplicateCondition}
-          .disabled=${this.disabled}
-        >
+        <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${mdiPlusCircleMultipleOutline}
           ></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -244,13 +226,10 @@ export default class HaAutomationConditionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.duplicate"
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._copyCondition}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon
+        <ha-dropdown-item value="copy" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon
           >${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.copy"
@@ -259,7 +238,6 @@ export default class HaAutomationConditionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -270,13 +248,10 @@ export default class HaAutomationConditionRow extends LitElement {
               <span>C</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._cutCondition}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon
+        <ha-dropdown-item value="cut" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon
           >${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.cut"
@@ -285,7 +260,6 @@ export default class HaAutomationConditionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -296,48 +270,45 @@ export default class HaAutomationConditionRow extends LitElement {
               <span>X</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
         ${!this.optionsInSidebar
           ? html`
-              <ha-md-menu-item
-                .clickAction=${this._moveUp}
-                .disabled=${this.disabled || this.first}
+              <ha-dropdown-item
+                value="move_up"
+                .disabled=${this.disabled || !!this.first}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_up"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowUp}></ha-svg-icon
-              ></ha-md-menu-item>
-              <ha-md-menu-item
-                .clickAction=${this._moveDown}
-                .disabled=${this.disabled || this.last}
+                <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
+              ></ha-dropdown-item>
+              <ha-dropdown-item
+                value="move_down"
+                .disabled=${this.disabled || !!this.last}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_down"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon
-              ></ha-md-menu-item>
+                <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
+              ></ha-dropdown-item>
             `
           : nothing}
 
-        <ha-md-menu-item .clickAction=${this._toggleYamlMode}>
-          <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <ha-dropdown-item value="toggle_yaml_mode">
+          <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item
-          .clickAction=${this._onDisable}
-          .disabled=${this.disabled}
-        >
+        <ha-dropdown-item value="disable" .disabled=${this.disabled}>
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${this.condition.enabled === false
               ? mdiPlayCircleOutline
               : mdiStopCircleOutline}
@@ -348,15 +319,15 @@ export default class HaAutomationConditionRow extends LitElement {
               `ui.panel.config.automation.editor.actions.${this.condition.enabled === false ? "enable" : "disable"}`
             )
           )}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          class="warning"
-          .clickAction=${this._onDelete}
+        </ha-dropdown-item>
+        <ha-dropdown-item
+          variant="danger"
+          value="delete"
           .disabled=${this.disabled}
         >
           <ha-svg-icon
             class="warning"
-            slot="start"
+            slot="icon"
             .path=${mdiDelete}
           ></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -367,7 +338,6 @@ export default class HaAutomationConditionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -382,8 +352,8 @@ export default class HaAutomationConditionRow extends LitElement {
               >
             </span>`
           )}
-        </ha-md-menu-item>
-      </ha-md-button-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
       ${!this.optionsInSidebar
         ? html`${this._warnings
               ? html`<ha-automation-editor-warning
@@ -395,9 +365,14 @@ export default class HaAutomationConditionRow extends LitElement {
             <ha-automation-condition-editor
               .hass=${this.hass}
               .condition=${this.condition}
+              .description=${this.conditionDescriptions[
+                this.condition.condition
+              ]}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
-              .uiSupported=${this._uiSupported(this.condition.condition)}
+              .uiSupported=${this._uiSupported(
+                this._getType(this.condition, this.conditionDescriptions)
+              )}
               .narrow=${this.narrow}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-condition-editor>`
@@ -476,7 +451,9 @@ export default class HaAutomationConditionRow extends LitElement {
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported(this.condition.condition)}
+            .uiSupported=${this._uiSupported(
+              this._getType(this.condition, this.conditionDescriptions)
+            )}
             indent
             .selected=${this._selected}
             .narrow=${this.narrow}
@@ -485,6 +462,14 @@ export default class HaAutomationConditionRow extends LitElement {
         : nothing}
     `;
   }
+
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -786,7 +771,10 @@ export default class HaAutomationConditionRow extends LitElement {
       cut: this._cutCondition,
       test: this._testCondition,
       config: sidebarCondition,
-      uiSupported: this._uiSupported(sidebarCondition.condition),
+      uiSupported: this._uiSupported(
+        this._getType(sidebarCondition, this.conditionDescriptions)
+      ),
+      description: this.conditionDescriptions[sidebarCondition.condition],
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
@@ -802,6 +790,16 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  private _getType = memoizeOne(
+    (condition: Condition, conditionDescriptions: ConditionDescriptions) => {
+      if (condition.condition in conditionDescriptions) {
+        return "platform";
+      }
+
+      return condition.condition;
+    }
+  );
+
   private _uiSupported = memoizeOne(
     (type: string) =>
       customElements.get(`ha-automation-condition-${type}`) !== undefined
@@ -813,6 +811,48 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public focus() {
     this._automationRowElement?.focus();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.stopPropagation();
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "test":
+        this._testCondition();
+        break;
+      case "rename":
+        this._renameCondition();
+        break;
+      case "duplicate":
+        this._duplicateCondition();
+        break;
+      case "copy":
+        this._copyCondition();
+        break;
+      case "cut":
+        this._cutCondition();
+        break;
+      case "move_up":
+        this._moveUp();
+        break;
+      case "move_down":
+        this._moveDown();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "disable":
+        this._onDisable();
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {

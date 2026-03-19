@@ -2,7 +2,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
 
 export interface AreaRegistryDetailDialogParams {
   entry?: AreaRegistryEntry;

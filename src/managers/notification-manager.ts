@@ -1,11 +1,10 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
-import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -26,16 +25,18 @@ export interface ToastActionParams {
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
 }
 
+@customElement("notification-manager")
 class NotificationManager extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _parameters?: ShowToastParams;
 
-  @query("ha-toast") private _toast!: HaToast | undefined;
+  @query("ha-toast")
+  private _toast!: HTMLElementTagNameMap["ha-toast"] | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
     if (!parameters.id || this._parameters?.id !== parameters.id) {
-      this._toast?.close();
+      await this._toast?.hide();
     }
 
     if (!parameters || parameters.duration === 0) {
@@ -56,7 +57,7 @@ class NotificationManager extends LitElement {
     this._toast?.show();
   }
 
-  private _toastClosed() {
+  private _toastClosed(_ev: HTMLElementEventMap["toast-closed"]) {
     this._parameters = undefined;
   }
 
@@ -66,7 +67,6 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-toast
-        leading
         .labelText=${typeof this._parameters.message !== "string"
           ? this.hass.localize(
               this._parameters.message.translationKey,
@@ -74,7 +74,7 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
-        @MDCSnackbar:closed=${this._toastClosed}
+        @toast-closed=${this._toastClosed}
       >
         ${this._parameters?.action
           ? html`
@@ -98,8 +98,8 @@ class NotificationManager extends LitElement {
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.close")}
                 .path=${mdiClose}
-                dialogAction="close"
                 slot="dismiss"
+                @click=${this._dismissClicked}
               ></ha-icon-button>
             `
           : nothing}
@@ -108,14 +108,16 @@ class NotificationManager extends LitElement {
   }
 
   private _buttonClicked() {
-    this._toast?.close("action");
+    this._toast?.hide("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
   }
-}
 
-customElements.define("notification-manager", NotificationManager);
+  private _dismissClicked() {
+    this._toast?.hide("dismiss");
+  }
+}
 
 declare global {
   interface HTMLElementTagNameMap {

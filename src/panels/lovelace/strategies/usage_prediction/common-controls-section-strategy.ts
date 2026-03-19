@@ -5,17 +5,23 @@ import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/sec
 import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
 
 const DEFAULT_LIMIT = 8;
 
 export interface CommonControlSectionStrategyConfig {
   type: "common-controls";
-  title?: string;
-  icon?: string;
   limit?: number;
   exclude_entities?: string[];
   include_entities?: string[];
   hide_empty?: boolean;
+  heading?: HeadingCardConfig;
+  /** @deprecated Use `heading` instead */
+  icon?: string;
+  /** @deprecated Use `heading` instead */
+  title?: string;
+  /** @deprecated Use `heading` instead */
+  title_visibilty?: Condition[];
 }
 
 @customElement("common-controls-section-strategy")
@@ -29,11 +35,14 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       cards: [],
     };
 
-    if (config.title) {
+    if (config.heading) {
+      section.cards?.push(config.heading);
+    } else if (config.title) {
       section.cards?.push({
         type: "heading",
         heading: config.title,
         icon: config.icon,
+        visibility: config.title_visibilty,
       } satisfies HeadingCardConfig);
     }
 
@@ -49,9 +58,17 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     }
 
     const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities.filter(
-      (entity) => entity in hass.states
-    );
+    let predictedEntities = predictedCommonControl.entities.filter((entity) => {
+      if (!(entity in hass.states)) {
+        return false;
+      }
+      const entityEntry = hass.entities[entity];
+      // Filter out hidden entities (respects user/integration/device hidden_by)
+      if (entityEntry?.hidden) {
+        return false;
+      }
+      return true;
+    });
 
     if (config.exclude_entities?.length) {
       predictedEntities = predictedEntities.filter(
@@ -80,6 +97,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
             ({
               type: "tile",
               entity: entityId,
+              state_content: ["state", "area_name"],
               show_entity_picture: true,
             }) satisfies TileCardConfig
         )

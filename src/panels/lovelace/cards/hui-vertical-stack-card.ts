@@ -1,8 +1,10 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
+import { customElement } from "lit/decorators";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
+@customElement("hui-vertical-stack-card")
 class HuiVerticalStackCard extends HuiStackCard {
   public async getCardSize() {
     if (!this._cards) {
@@ -24,10 +26,16 @@ class HuiVerticalStackCard extends HuiStackCard {
     return [
       super.sharedStyles,
       css`
-        #root {
+        :host {
           display: flex;
           flex-direction: column;
           height: 100%;
+        }
+        #root {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
           gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
         }
       `,
@@ -40,5 +48,3 @@ declare global {
     "hui-vertical-stack-card": HuiVerticalStackCard;
   }
 }
-
-customElements.define("hui-vertical-stack-card", HuiVerticalStackCard);

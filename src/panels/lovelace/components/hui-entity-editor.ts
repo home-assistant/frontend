@@ -9,7 +9,7 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
-import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
 
@@ -23,6 +23,8 @@ export class HuiEntityEditor extends LitElement {
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property() public label?: string;
+
+  @property({ type: Boolean }) public required = true;
 
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
 
@@ -40,8 +42,7 @@ export class HuiEntityEditor extends LitElement {
     const stateObj = this.hass.states[item.entity];
 
     const useDeviceName =
-      stateObj &&
-      entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
+      stateObj && entityUseDeviceName(stateObj, this.hass.entities);
 
     const isRTL = computeRTL(this.hass);
 
@@ -125,10 +126,11 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
-          " (" +
-          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
-          ")"}
+        `${this.hass.localize("ui.panel.lovelace.editor.card.generic.entities")}${
+          this.required
+            ? ` (${this.hass.localize("ui.panel.lovelace.editor.card.config.required")})`
+            : ""
+        }`}
       </h3>
       ${this.canEdit
         ? html`
@@ -146,7 +148,7 @@ export class HuiEntityEditor extends LitElement {
               </ha-sortable>
             </div>
           `
-        : html` <ha-sortable
+        : html`<ha-sortable
             handle-selector=".handle"
             @item-moved=${this._entityMoved}
           >
@@ -167,7 +169,6 @@ export class HuiEntityEditor extends LitElement {
                       .index=${index}
                       .entityFilter=${this.entityFilter}
                       @value-changed=${this._valueChanged}
-                      allow-custom-entity
                     ></ha-entity-picker>
                   </div>
                 `
@@ -247,6 +248,7 @@ export class HuiEntityEditor extends LitElement {
     }
     ha-md-list {
       gap: 8px;
+      padding-top: 0;
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);

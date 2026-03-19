@@ -1,14 +1,16 @@
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
-import { html, LitElement, nothing, css } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-switch";
 import "../../../components/ha-svg-icon";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   canClose,
   canOpen,
@@ -16,15 +18,13 @@ import {
   ValveEntityFeature,
   type ValveEntity,
 } from "../../../data/valve";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  ValveOpenCloseCardFeatureConfig,
   LovelaceCardFeatureContext,
+  ValveOpenCloseCardFeatureConfig,
 } from "./types";
-import "../../../components/ha-control-switch";
 
 export const supportsValveOpenCloseCardFeature = (
   hass: HomeAssistant,

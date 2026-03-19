@@ -8,9 +8,10 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -22,7 +23,7 @@ import type {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -46,7 +47,6 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
-import { slugify } from "../../../common/string/slugify";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {

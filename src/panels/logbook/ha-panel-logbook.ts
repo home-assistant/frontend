@@ -14,13 +14,13 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/entity/ha-entity-picker";
-import "../../components/ha-date-range-picker";
+import "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -95,7 +95,6 @@ export class HaPanelLogbook extends LitElement {
         <div class="content">
           <div class="filters">
             <ha-date-range-picker
-              .hass=${this.hass}
               .startDate=${this._time.range[0]}
               .endDate=${this._time.range[1]}
               @value-changed=${this._dateRangeChanged}
@@ -303,6 +302,9 @@ export class HaPanelLogbook extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --ha-generic-picker-max-width: 400px;
+        }
         ha-logbook {
           height: calc(
             100vh -

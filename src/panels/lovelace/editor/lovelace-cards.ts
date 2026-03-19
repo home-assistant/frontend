@@ -38,6 +38,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "distribution",
+    showElement: true,
+  },
+  {
     type: "statistics-graph",
     showElement: false,
   },
@@ -132,5 +136,84 @@ export const coreCards: Card[] = [
   {
     type: "heading",
     showElement: true,
+  },
+];
+
+export const energyCards: Card[] = [
+  {
+    type: "energy-date-selection",
+    showElement: true,
+  },
+  {
+    type: "energy-distribution",
+    showElement: false,
+  },
+  {
+    type: "energy-usage-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-solar-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-gas-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-water-graph",
+    showElement: false,
+  },
+  {
+    type: "power-sources-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-sources-table",
+    showElement: false,
+  },
+  {
+    type: "energy-devices-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-devices-detail-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-sankey",
+    showElement: false,
+  },
+  {
+    type: "power-sankey",
+    showElement: false,
+  },
+  {
+    type: "water-sankey",
+    showElement: false,
+  },
+  {
+    type: "water-flow-sankey",
+    showElement: false,
+  },
+  {
+    type: "energy-solar-consumed-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-self-sufficiency-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-grid-neutrality-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-carbon-consumed-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-compare",
+    showElement: false,
   },
 ];

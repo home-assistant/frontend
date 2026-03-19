@@ -5,13 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 
 @customElement("hui-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -90,7 +90,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
+  private _timeChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const stateObj = this.hass!.states[this._config!.entity];
       const dateObj = new Date(stateObj.state);
@@ -101,7 +101,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const stateObj = this.hass!.states[this._config!.entity];
       const dateObj = new Date(stateObj.state);

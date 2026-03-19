@@ -2,9 +2,7 @@ import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
@@ -20,9 +18,9 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false, type: Number }) public index!: number;
+  @property({ attribute: false }) public index!: number;
 
-  @property({ attribute: false, type: Number }) public viewIndex!: number;
+  @property({ attribute: false }) public viewIndex!: number;
 
   protected render(): TemplateResult {
     return html`
@@ -126,7 +124,7 @@ export class HuiSectionEditMode extends LitElement {
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
           background: var(--secondary-background-color);
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--primary-text-color);
         }

@@ -16,10 +16,11 @@ import {
   fetchConfigFlowInProgress,
   handleConfigFlowStep,
 } from "../../data/config_flow";
+import { listAgents } from "../../data/conversation";
 import {
   type ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import {
   fetchHassioAddonsInfo,
   installHassioAddon,
@@ -32,7 +33,6 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { listAgents } from "../../data/conversation";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {
@@ -349,7 +349,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     });
     if (step.type !== "create_entry") {
       throw new Error(
-        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
       );
     }
   }

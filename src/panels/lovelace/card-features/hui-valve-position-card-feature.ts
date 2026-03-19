@@ -8,15 +8,15 @@ import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-slider";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import { ValveEntityFeature, type ValveEntity } from "../../../data/valve";
-import { UNAVAILABLE } from "../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  ValvePositionCardFeatureConfig,
   LovelaceCardFeatureContext,
+  ValvePositionCardFeatureConfig,
 } from "./types";
 
 export const supportsValvePositionCardFeature = (

@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { extractSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-button";
@@ -24,6 +25,8 @@ import type { HomeAssistant } from "../../../../types";
 import { AudioRecorder } from "../../../../util/audio-recorder";
 import { fileDownload } from "../../../../util/file_download";
 import "./assist-render-pipeline-run";
+import type { ChatLog } from "../../../../data/chat_log";
+import { subscribeChatLog } from "../../../../data/chat_log";
 
 @customElement("assist-pipeline-run-debug")
 export class AssistPipelineRunDebug extends LitElement {
@@ -45,6 +48,13 @@ export class AssistPipelineRunDebug extends LitElement {
 
   @state() private _pipelineId?: string =
     extractSearchParam("pipeline") || undefined;
+
+  @state() private _chatLog?: ChatLog;
+
+  private _chatLogSubscription: {
+    conversationId: string;
+    unsub: Promise<UnsubscribeFunc>;
+  } | null = null;
 
   protected render(): TemplateResult {
     return html`
@@ -178,12 +188,21 @@ export class AssistPipelineRunDebug extends LitElement {
                   <assist-render-pipeline-run
                     .hass=${this.hass}
                     .pipelineRun=${run}
+                    .chatLog=${this._chatLog}
                   ></assist-render-pipeline-run>
                 `
           )}
         </div>
       </hass-subpage>
     `;
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._chatLogSubscription) {
+      this._chatLogSubscription.unsub.then((unsub) => unsub());
+      this._chatLogSubscription = null;
+    }
   }
 
   private get conversationId(): string | null {
@@ -408,6 +427,32 @@ export class AssistPipelineRunDebug extends LitElement {
             added = true;
           }
           callback(updatedRun);
+
+          const conversationId = this.conversationId;
+          if (
+            !this._chatLog &&
+            conversationId &&
+            (!this._chatLogSubscription ||
+              this._chatLogSubscription.conversationId !== conversationId)
+          ) {
+            if (this._chatLogSubscription) {
+              this._chatLogSubscription.unsub.then((unsub) => unsub());
+            }
+            this._chatLogSubscription = {
+              conversationId,
+              unsub: subscribeChatLog(this.hass, conversationId, (chatLog) => {
+                if (chatLog) {
+                  this._chatLog = chatLog;
+                } else {
+                  this._chatLogSubscription?.unsub.then((unsub) => unsub());
+                  this._chatLogSubscription = null;
+                }
+              }),
+            };
+            this._chatLogSubscription.unsub.catch(() => {
+              this._chatLogSubscription = null;
+            });
+          }
         },
         {
           ...options,

@@ -20,6 +20,7 @@ import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -73,6 +74,7 @@ const SUB_SCHEMA = [
         default_action: "more-info",
       },
     },
+    context: ACTION_RELATED_CONTEXT,
   },
   {
     name: "",
@@ -85,6 +87,7 @@ const SUB_SCHEMA = [
           default_action: "none" as const,
         },
       },
+      context: ACTION_RELATED_CONTEXT,
     })),
   },
 ] as const;

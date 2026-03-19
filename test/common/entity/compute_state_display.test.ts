@@ -1,20 +1,20 @@
 import type { HassConfig } from "home-assistant-js-websocket";
-import { assert, describe, it, beforeEach, expect } from "vitest";
+import { assert, beforeEach, describe, expect, it } from "vitest";
 import {
   computeStateDisplay,
   computeStateDisplayFromEntityAttributes,
 } from "../../../src/common/entity/compute_state_display";
-import { UNKNOWN } from "../../../src/data/entity";
+import { UNKNOWN } from "../../../src/data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../src/data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../../src/data/translation";
 import {
+  DateFormat,
+  FirstWeekday,
   NumberFormat,
   TimeFormat,
-  FirstWeekday,
-  DateFormat,
   TimeZone,
 } from "../../../src/data/translation";
 import { demoConfig } from "../../../src/fake_data/demo_config";
-import type { EntityRegistryDisplayEntry } from "../../../src/data/entity_registry";
 
 let localeData: FrontendLocaleData;
 
@@ -643,7 +643,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "12"
     );
-    expect(result).toBe("12.00 min");
+    expect(result).toBe("12m");
   });
   it("Should format duration sensor with seconds", () => {
     const result = computeStateDisplayFromEntityAttributes(
@@ -678,11 +678,31 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       "number.test",
       {
         device_class: "monetary",
-        unit_of_measurement: "$",
+        unit_of_measurement: "USD",
       },
       "12"
     );
-    expect(result).toBe("12 $");
+    expect(result).toBe("$12.00");
+  });
+
+  it("Should format negative monetary device_class", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "number.test",
+      {
+        device_class: "monetary",
+        unit_of_measurement: "USD",
+      },
+      "-12"
+    );
+    expect(result).toBe("-$12.00");
   });
 });
 

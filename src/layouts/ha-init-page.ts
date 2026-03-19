@@ -1,9 +1,10 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../components/ha-spinner";
 import "../components/ha-button";
 
+@customElement("ha-init-page")
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
@@ -119,8 +120,6 @@ class HaInitPage extends LitElement {
     }
   `;
 }
-
-customElements.define("ha-init-page", HaInitPage);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -11,7 +11,7 @@ import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE, isUnavailableState } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
 import { lightSupportsBrightness } from "../../../data/light";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -314,7 +314,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      --mdc-icon-button-size: 100%;
+      --ha-icon-button-size: 100%;
       --mdc-icon-size: 100%;
     }
 

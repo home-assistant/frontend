@@ -10,12 +10,12 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -244,14 +244,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           display: block;
         }
         .container {
-          padding: 8px 24px 20px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-5)
+            var(--ha-space-6);
         }
         .buttons {
           box-sizing: border-box;
           display: flex;
-          padding: 16px;
+          padding: var(--ha-space-4);
           justify-content: space-between;
-          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
           background-color: var(--mdc-theme-surface, #fff);
           border-top: 1px solid var(--divider-color);
           position: sticky;

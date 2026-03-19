@@ -6,7 +6,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { UpdateEntity } from "../../../data/update";
 import { UpdateEntityFeature, updateIsInstalling } from "../../../data/update";
 import { showUpdateBackupDialogParams } from "../../../dialogs/update_backup/show-update-backup-dialog";
@@ -56,9 +56,7 @@ class HuiUpdateActionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-update-actions-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-update-actions-card-feature-editor");
     return document.createElement("hui-update-actions-card-feature-editor");
   }
 

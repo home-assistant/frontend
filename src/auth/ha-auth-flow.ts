@@ -2,8 +2,8 @@
 import { genClientId } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
-import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
@@ -23,6 +23,7 @@ import type {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
+import type { HaAuthForm } from "./ha-auth-form";
 
 type State = "loading" | "error" | "step";
 
@@ -52,6 +53,8 @@ export class HaAuthFlow extends LitElement {
 
   @state() private _submitting = false;
 
+  @query("ha-auth-form") private _form?: HaAuthForm;
+
   createRenderRoot() {
     return this;
   }
@@ -59,7 +62,8 @@ export class HaAuthFlow extends LitElement {
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated && this.clientId === genClientId()) {
+      // Preselect store token when logging in to own instance
       this._storeToken = this.initStoreToken;
     }
 
@@ -116,6 +120,9 @@ export class HaAuthFlow extends LitElement {
         ha-auth-form {
           display: block;
           margin-top: 16px;
+        }
+        .action ha-button {
+          width: 100%;
         }
       </style>
       <form>${this._renderForm()}</form>
@@ -175,7 +182,7 @@ export class HaAuthFlow extends LitElement {
           <div class="action">
             <ha-button
               @click=${this._handleSubmit}
-              .disabled=${this._submitting}
+              .loading=${this._submitting}
             >
               ${this.step.type === "form"
                 ? this.localize("ui.panel.page-authorize.form.next")
@@ -366,6 +373,11 @@ export class HaAuthFlow extends LitElement {
       this._providerChanged(this.authProvider);
       return;
     }
+
+    if (!this._form?.reportValidity()) {
+      return;
+    }
+
     this._submitting = true;
 
     const postData = { ...this._stepData, client_id: this.clientId };

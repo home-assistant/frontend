@@ -13,8 +13,8 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type {
   IntegrationLogInfo,
   IntegrationManifest,

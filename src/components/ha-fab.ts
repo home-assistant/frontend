@@ -39,7 +39,7 @@ export class HaFab extends FabBase {
       }
       :disabled {
         --mdc-theme-secondary: var(--disabled-text-color);
-        pointer-events: none;
+        cursor: not-allowed !important;
       }
     `,
     // safari workaround - must be explicit

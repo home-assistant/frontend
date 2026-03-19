@@ -1,15 +1,25 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import type { ItemType, RelatedResult } from "../../data/search";
+import { closeDialog } from "../make-dialog-manager";
 
-export const enum QuickBarMode {
-  Command = "command",
-  Device = "device",
-  Entity = "entity",
+export type QuickBarSection =
+  | "entity"
+  | "device"
+  | "area"
+  | "navigate"
+  | "command";
+
+export interface QuickBarContextItem {
+  itemType: ItemType;
+  itemId: string;
 }
 
 export interface QuickBarParams {
   entityFilter?: string;
-  mode?: QuickBarMode;
-  hint?: string;
+  mode?: QuickBarSection;
+  showHint?: boolean;
+  contextItem?: QuickBarContextItem;
+  related?: RelatedResult;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");
@@ -24,4 +34,8 @@ export const showQuickBar = (
     dialogParams,
     addHistory: false,
   });
+};
+
+export const closeQuickBar = (): void => {
+  closeDialog("ha-quick-bar");
 };

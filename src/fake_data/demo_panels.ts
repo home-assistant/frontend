@@ -3,10 +3,18 @@ import type { Panels } from "../types";
 export const demoPanels: Panels = {
   lovelace: {
     component_name: "lovelace",
-    icon: null,
-    title: null,
+    icon: "mdi:view-dashboard",
+    title: "demo",
     config: { mode: "storage" },
     url_path: "lovelace",
+  },
+  home: {
+    component_name: "home",
+    icon: "mdi:home",
+    title: "home",
+    default_visible: false,
+    config: null,
+    url_path: "home",
   },
   "dev-state": {
     component_name: "dev-state",

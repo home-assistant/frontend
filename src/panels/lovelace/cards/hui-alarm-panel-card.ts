@@ -21,12 +21,12 @@ import {
   FORMAT_NUMBER,
   callAlarmAction,
 } from "../../../data/alarm_control_panel";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";

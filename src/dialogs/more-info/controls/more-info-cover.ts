@@ -3,12 +3,18 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import {
+  shouldShowFavoriteOptions,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import type { CoverEntity } from "../../../data/cover";
 import {
   CoverEntityFeature,
+  coverSupportsAnyPosition,
+  coverSupportsPosition,
+  coverSupportsTiltPosition,
   computeCoverPositionStateDisplay,
 } from "../../../data/cover";
 import "../../../state-control/cover/ha-state-control-cover-buttons";
@@ -16,6 +22,7 @@ import "../../../state-control/cover/ha-state-control-cover-position";
 import "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import "../../../state-control/cover/ha-state-control-cover-toggle";
 import type { HomeAssistant } from "../../../types";
+import "../components/covers/ha-more-info-cover-favorite-positions";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -26,6 +33,10 @@ class MoreInfoCover extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
 
   @state() private _mode?: Mode;
 
@@ -39,11 +50,9 @@ class MoreInfoCover extends LitElement {
       const entityId = this.stateObj.entity_id;
       const oldEntityId = changedProps.get("stateObj")?.entity_id;
       if (!this._mode || entityId !== oldEntityId) {
-        this._mode =
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
-            ? "position"
-            : "button";
+        this._mode = coverSupportsAnyPosition(this.stateObj)
+          ? "position"
+          : "button";
       }
     }
   }
@@ -67,14 +76,21 @@ class MoreInfoCover extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = supportsFeature(
-      this.stateObj,
-      CoverEntityFeature.SET_POSITION
-    );
+    const supportsPosition = coverSupportsPosition(this.stateObj);
 
-    const supportsTiltPosition = supportsFeature(
-      this.stateObj,
-      CoverEntityFeature.SET_TILT_POSITION
+    const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
+
+    const showFavoriteControls = Boolean(
+      this.entry &&
+      (this.editMode ||
+        (coverSupportsPosition(this.stateObj) &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.cover?.favorite_positions
+          )) ||
+        (coverSupportsTiltPosition(this.stateObj) &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.cover?.favorite_tilt_positions
+          )))
     );
 
     const supportsOpenClose =
@@ -175,12 +191,19 @@ class MoreInfoCover extends LitElement {
               : nothing
           }
         </div>
+        ${
+          showFavoriteControls
+            ? html`
+                <ha-more-info-cover-favorite-positions
+                  .hass=${this.hass}
+                  .stateObj=${this.stateObj}
+                  .entry=${this.entry}
+                  .editMode=${this.editMode}
+                ></ha-more-info-cover-favorite-positions>
+              `
+            : nothing
+        }
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="current_position,current_tilt_position"
-      ></ha-attributes>
     `;
   }
 
@@ -194,7 +217,7 @@ class MoreInfoCover extends LitElement {
           align-items: center;
         }
         .main-control > * {
-          margin: 0 8px;
+          margin: 0 var(--ha-space-2);
         }
       `,
     ];

@@ -13,6 +13,8 @@ export class HuiGraphBase extends LitElement {
 
   @state() private _path?: string;
 
+  private _uniqueId = `graph-${Math.random().toString(36).substring(2, 9)}`;
+
   protected render(): TemplateResult {
     const width = this.clientWidth || 500;
     const height = this.clientHeight || width / 5;
@@ -21,15 +23,15 @@ export class HuiGraphBase extends LitElement {
       ${this._path
         ? svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
           <g>
-            <mask id="fill">
+            <mask id="${this._uniqueId}-fill">
               <path
                 class='fill'
                 fill='white'
                 d="${this._path} L ${width}, ${yAxisOrigin} L 0, ${yAxisOrigin} z"
               />
             </mask>
-            <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
-            <mask id="line">
+            <rect height="100%" width="100%" fill="var(--accent-color)" mask="url(#${this._uniqueId}-fill)"></rect>
+            <mask id="${this._uniqueId}-line">
               <path
                 vector-effect="non-scaling-stroke"
                 class='line'
@@ -41,7 +43,7 @@ export class HuiGraphBase extends LitElement {
                 d=${this._path}
               ></path>
             </mask>
-            <rect height="100%" width="100%" id="rect" fill="var(--accent-color)" mask="url(#line)"></rect>
+            <rect height="100%" width="100%" fill="var(--accent-color)" mask="url(#${this._uniqueId}-line)"></rect>
           </g>
         </svg>`
         : svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}"></svg>`}

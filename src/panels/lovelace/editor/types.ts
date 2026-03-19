@@ -43,8 +43,9 @@ export interface ConfigError {
   message: string;
 }
 
-export interface EntitiesEditorEvent<T extends EntityConfig = EntityConfig>
-  extends CustomEvent {
+export interface EntitiesEditorEvent<
+  T extends EntityConfig = EntityConfig,
+> extends CustomEvent {
   detail: {
     entities?: T[];
     item?: any;
@@ -68,6 +69,7 @@ export interface Card {
   showElement?: boolean;
   isCustom?: boolean;
   isSuggested?: boolean;
+  isEnergy?: boolean;
 }
 
 export interface Badge {

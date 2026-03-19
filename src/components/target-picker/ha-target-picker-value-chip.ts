@@ -23,7 +23,7 @@ import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
@@ -203,11 +203,14 @@ export class HaTargetPickerValueChip extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl({
-        domain: domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      this._iconImg = brandsUrl(
+        {
+          domain: domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
 
       this._setDomainName(domain);
     } catch {
@@ -215,7 +218,7 @@ export class HaTargetPickerValueChip extends LitElement {
     }
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -223,7 +226,7 @@ export class HaTargetPickerValueChip extends LitElement {
     });
   }
 
-  private _handleExpand(ev) {
+  private _handleExpand(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "expand-target-item", {
       type: this.type,
@@ -247,7 +250,7 @@ export class HaTargetPickerValueChip extends LitElement {
       cursor: default;
     }
     .mdc-chip ha-icon-button {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       display: flex;
       align-items: center;
       outline: none;
@@ -278,8 +281,8 @@ export class HaTargetPickerValueChip extends LitElement {
       direction: var(--direction);
     }
     .expand-btn {
-      margin-right: var(--ha-space-0);
-      margin-inline-end: var(--ha-space-0);
+      margin-right: 0;
+      margin-inline-end: 0;
       margin-inline-start: initial;
     }
     .mdc-chip.area:not(.add),

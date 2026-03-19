@@ -188,6 +188,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       layout: physicsEnabled ? "force" : "none",
       draggable: true,
       roam: true,
+      roamTrigger: "global",
       selectedMode: "single",
       label: {
         show: showLabels,

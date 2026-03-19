@@ -8,7 +8,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -57,9 +57,7 @@ class HuiNumericInputCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-numeric-input-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
     return document.createElement("hui-numeric-input-card-feature-editor");
   }
 

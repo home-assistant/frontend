@@ -36,14 +36,26 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         );
         padding-top: var(--safe-area-inset-top);
         padding-right: var(--safe-area-inset-right);
+        transition:
+          width var(--ha-animation-duration-normal) ease,
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-right var(--ha-animation-duration-normal) ease;
       }
       :host([narrow]) .mdc-top-app-bar {
         padding-left: var(--safe-area-inset-left);
       }
+      @media (prefers-reduced-motion: reduce) {
+        .mdc-top-app-bar {
+          transition: 1ms;
+        }
+      }
       .mdc-top-app-bar__title {
         font-size: var(--ha-font-size-xl);
-        padding-inline-start: 24px;
+        padding-inline-start: var(--ha-space-6);
         padding-inline-end: initial;
+      }
+      :host([narrow]) .mdc-top-app-bar__title {
+        padding-inline-start: var(--ha-space-2);
       }
     `,
   ];

@@ -1,7 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../../common/array/ensure-array";
-import type { EntityNameItem } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  DEFAULT_ENTITY_NAME,
+  type EntityNameItem,
+} from "../../../../common/entity/compute_entity_name_display";
 import type { HomeAssistant } from "../../../../types";
 
 /**
@@ -17,15 +19,14 @@ export const computeLovelaceEntityName = (
   stateObj: HassEntity | undefined,
   config: string | EntityNameItem | EntityNameItem[] | undefined
 ): string => {
-  // If no config is provided, fall back to the default state name
-  if (!config) {
-    return stateObj ? computeStateName(stateObj) : "";
-  }
   if (typeof config === "string") {
     return config;
   }
   if (stateObj) {
-    return hass.formatEntityName(stateObj, config);
+    return hass.formatEntityName(stateObj, config ?? DEFAULT_ENTITY_NAME);
+  }
+  if (!config) {
+    return "";
   }
   // If entity is not found, fall back to text parts in config
   // This allows for static names even when the entity is missing

@@ -1,10 +1,11 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 export const PASTE_VALUE = "__paste__";
 
 export interface AddAutomationElementDialogParams {
   type: "trigger" | "condition" | "action";
-  add: (key: string) => void;
+  add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
 }
 const loadDialog = () => import("./add-automation-element-dialog");

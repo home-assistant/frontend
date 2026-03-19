@@ -27,6 +27,7 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
+  isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
 import type { ECOption } from "../../resources/echarts/echarts";
@@ -62,14 +63,14 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType: "line" | "bar" = "line";
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
@@ -184,17 +185,11 @@ export class StatisticsChart extends LitElement {
   }
 
   private _datasetHidden(ev: CustomEvent) {
-    if (!this._legendData) {
-      return;
-    }
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    if (!this._legendData) {
-      return;
-    }
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
@@ -341,7 +336,10 @@ export class StatisticsChart extends LitElement {
       },
       tooltip: {
         trigger: "axis",
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };
@@ -401,7 +399,23 @@ export class StatisticsChart extends LitElement {
       endTime = new Date();
     }
 
-    let unit: string | undefined | null;
+    // Try to determine chart unit if it has not already been set explicitly
+    if (!this.unit) {
+      let unit: string | undefined | null;
+      statisticsData.forEach(([statistic_id, _stats]) => {
+        const meta = statisticsMetaData?.[statistic_id];
+        const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
+        if (unit === undefined) {
+          unit = statisticUnit;
+        } else if (unit !== null && unit !== statisticUnit) {
+          // Clear unit if not all statistics have same unit
+          unit = null;
+        }
+      });
+      if (unit) {
+        this.unit = unit;
+      }
+    }
 
     const names = this.names || {};
     statisticsData.forEach(([statistic_id, stats]) => {
@@ -409,18 +423,6 @@ export class StatisticsChart extends LitElement {
       let name = names[statistic_id];
       if (name === undefined) {
         name = getStatisticLabel(this.hass, statistic_id, meta);
-      }
-
-      if (!this.unit) {
-        if (unit === undefined) {
-          unit = getDisplayUnit(this.hass, statistic_id, meta);
-        } else if (
-          unit !== null &&
-          unit !== getDisplayUnit(this.hass, statistic_id, meta)
-        ) {
-          // Clear unit if not all statistics have same unit
-          unit = null;
-        }
       }
 
       // array containing [value1, value2, etc]
@@ -510,7 +512,6 @@ export class StatisticsChart extends LitElement {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
             smooth: this.chartType === "line" ? 0.4 : false,
-            smoothMonotone: "x",
             cursor: "default",
             data: [],
             name: name
@@ -521,7 +522,9 @@ export class StatisticsChart extends LitElement {
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
             symbol: "none",
-            sampling: "minmax",
+            // minmax sampling operates independently per series, breaking stacking alignment
+            // https://github.com/apache/echarts/issues/11879
+            sampling: band && drawBands ? "lttb" : "minmax",
             animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
@@ -539,10 +542,17 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            if (drawBands && type === bandTop) {
-              (series as LineSeriesOption).areaStyle = {
-                color: color + "3F",
-              };
+            if (this._hiddenStats.has(`${statistic_id}-${bandBottom}`)) {
+              // changing the stackOrder forces echarts to render the stacked series that are not hidden #28472
+              series.stackOrder = "seriesDesc";
+              (series as LineSeriesOption).areaStyle = undefined;
+            } else {
+              series.stackOrder = "seriesAsc";
+              if (type === bandTop) {
+                (series as LineSeriesOption).areaStyle = {
+                  color: color + "3F",
+                };
+              }
             }
           }
           if (!this.hideLegend) {
@@ -569,6 +579,7 @@ export class StatisticsChart extends LitElement {
       let firstSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
+        const endDate = new Date(stat.end);
         if (prevDate === startDate) {
           return;
         }
@@ -586,7 +597,8 @@ export class StatisticsChart extends LitElement {
           } else if (
             type === bandTop &&
             this.chartType === "line" &&
-            drawBands
+            drawBands &&
+            !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
           ) {
             const top = stat[bandTop] || 0;
             val.push(Math.abs(top - (stat[bandBottom] || 0)));
@@ -597,18 +609,77 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(startDate, new Date(stat.end), dataValues);
+          pushData(
+            startDate,
+            endDate.getTime() < endTime.getTime() ? endDate : endTime,
+            dataValues
+          );
         }
       });
+
+      // For line charts, close out the last stat segment at prevEndTime
+      const lastEndTime = prevEndTime;
+      const lastValues = prevValues;
+      if (this.chartType === "line" && lastEndTime && lastValues) {
+        statDataSets.forEach((d, i) => {
+          d.data!.push(
+            this._transformDataValue([lastEndTime, ...lastValues[i]!])
+          );
+        });
+      }
+
+      // Check if we need to display most recent data. Allow 10m of leeway for "now",
+      // because stats are 5 minute aggregated
+      const now = new Date();
+      const displayCurrentState = now.getTime() - endTime.getTime() <= 600000;
+
+      // Show current state if required, and units match (or are unknown)
+      const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
+      if (
+        displayCurrentState &&
+        (!this.unit || !statisticUnit || this.unit === statisticUnit)
+      ) {
+        // Skip external statistics
+        if (!isExternalStatistic(statistic_id)) {
+          const stateObj = this.hass.states[statistic_id];
+          if (stateObj) {
+            const currentValue = parseFloat(stateObj.state);
+            if (
+              isFinite(currentValue) &&
+              !this._hiddenStats.has(statistic_id)
+            ) {
+              // Then push the current state at now
+              statTypes.forEach((type, i) => {
+                if (type === "sum" || type === "change") {
+                  // Skip cumulative types - need special calculation.
+                  return;
+                }
+                const val: (number | null)[] = [];
+                if (
+                  type === bandTop &&
+                  this.chartType === "line" &&
+                  drawBands &&
+                  !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
+                ) {
+                  // For band chart, current value is both min and max, so diff is 0
+                  val.push(0);
+                  val.push(currentValue);
+                } else {
+                  val.push(currentValue);
+                }
+                statDataSets[i].data!.push(
+                  this._transformDataValue([now, ...val])
+                );
+              });
+            }
+          }
+        }
+      }
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
       Array.prototype.push.apply(legendData, statLegendData);
     });
-
-    if (unit) {
-      this.unit = unit;
-    }
 
     legendData.forEach(({ id, name, color, borderColor }) => {
       // Add an empty series for the legend

@@ -47,6 +47,7 @@ export class HaDomainIcon extends LitElement {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }
+
       return this._renderFallback();
     });
 
@@ -60,11 +61,14 @@ export class HaDomainIcon extends LitElement {
       `;
     }
     if (this.brandFallback) {
-      const image = brandsUrl({
-        domain: this.domain!,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      const image = brandsUrl(
+        {
+          domain: this.domain!,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
       return html`
         <img
           alt=""

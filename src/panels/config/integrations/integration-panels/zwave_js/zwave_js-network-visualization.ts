@@ -14,7 +14,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSNodeStatus,
@@ -24,10 +24,9 @@ import {
   NodeStatus,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -72,11 +71,14 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.navigation.visualization"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -86,8 +88,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           )}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph
-      ></hass-tabs-subpage>
+        ></ha-network-graph>
+      </hass-subpage>
     `;
   }
 

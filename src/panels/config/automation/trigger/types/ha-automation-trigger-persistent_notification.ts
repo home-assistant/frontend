@@ -3,7 +3,6 @@ import memoizeOne from "memoize-one";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";

@@ -6,7 +6,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import { goBack, navigate } from "../../../../../../common/navigate";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";

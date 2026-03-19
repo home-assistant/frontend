@@ -2,12 +2,13 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type { MatterNodeDiagnostics } from "../../../../../../data/matter";
 import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
+import "./ha-device-info-matter-lock";
 
 @customElement("ha-device-info-matter")
 export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
@@ -51,7 +52,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
     return html`
       <ha-expansion-panel
         .header=${this.hass.localize(
-          "ui.panel.config.matter.device_info.device_info"
+          "ui.panel.config.matter.device_info.matter_info"
         )}
       >
         <div class="row">
@@ -124,6 +125,10 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           >
         </div>
       </ha-expansion-panel>
+      <ha-device-info-matter-lock
+        .hass=${this.hass}
+        .device=${this.device}
+      ></ha-device-info-matter-lock>
     `;
   }
 

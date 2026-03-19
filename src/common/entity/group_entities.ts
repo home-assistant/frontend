@@ -1,14 +1,16 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "./compute_state_domain";
-import { isUnavailableState, UNAVAILABLE } from "../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
+import { computeStateDomain } from "./compute_state_domain";
 
 export const computeGroupEntitiesState = (states: HassEntity[]): string => {
   if (!states.length) {
     return UNAVAILABLE;
   }
 
-  const validState = states.filter((stateObj) => isUnavailableState(stateObj));
+  const validState = states.some(
+    (stateObj) => !isUnavailableState(stateObj.state)
+  );
 
   if (!validState) {
     return UNAVAILABLE;

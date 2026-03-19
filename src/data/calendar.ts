@@ -1,8 +1,13 @@
+import {
+  computeCssColor,
+  isValidColorString,
+} from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { isUnavailableState } from "./entity";
+import { isUnavailableState } from "./entity/entity";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
 
 export interface Calendar {
   entity_id: string;
@@ -31,6 +36,7 @@ export interface CalendarEventData {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
 }
 
 export interface CalendarEventMutableParams {
@@ -39,6 +45,7 @@ export interface CalendarEventMutableParams {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
 }
 
 // The scope of a delete/update for a recurring event
@@ -100,8 +107,16 @@ export const fetchCalendarEvents = async (
   return { events: calEvents, errors };
 };
 
-export const getCalendars = (hass: HomeAssistant): Calendar[] =>
-  Object.keys(hass.states)
+export const getCalendars = (
+  hass: HomeAssistant,
+  element: Element,
+  entityRegistry?: EntityRegistryEntry[]
+): Calendar[] => {
+  const computedStyles = getComputedStyle(element);
+  const entityOptionsMap = new Map(
+    entityRegistry?.map((entry) => [entry.entity_id, entry.options]) ?? []
+  );
+  return Object.keys(hass.states)
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
@@ -109,11 +124,24 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
         hass.entities[eid]?.hidden !== true
     )
     .sort()
-    .map((eid, idx) => ({
-      ...hass.states[eid],
-      name: computeStateName(hass.states[eid]),
-      backgroundColor: getColorByIndex(idx),
-    }));
+    .map((eid, idx) => {
+      const stateObj = hass.states[eid];
+      const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
+      let backgroundColor: string;
+      // Validate and use the color from entity registry if valid
+      if (entityColor && isValidColorString(entityColor)) {
+        backgroundColor = computeCssColor(entityColor);
+      } else {
+        // Fall back to default color by index
+        backgroundColor = getColorByIndex(idx, computedStyles);
+      }
+      return {
+        ...stateObj,
+        name: computeStateName(stateObj),
+        backgroundColor,
+      };
+    });
+};
 
 export const createCalendarEvent = (
   hass: HomeAssistant,

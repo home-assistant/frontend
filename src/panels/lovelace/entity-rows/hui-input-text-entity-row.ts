@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-textfield";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";

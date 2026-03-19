@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
@@ -10,6 +11,7 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -36,15 +38,37 @@ class HuiEnergySankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: EnergySankeyCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySankeyCardConfig {
+    return {
+      type: "energy-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
 
   @state() private _data?: EnergyData;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: EnergySankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 
@@ -105,9 +129,7 @@ class HuiEnergySankeyCard
 
     const homeNode: Node = {
       id: "home",
-      label: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_distribution.home"
-      ),
+      label: this.hass.config.location_name,
       value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -208,7 +230,7 @@ class HuiEnergySankeyCard
     }
 
     // Add grid return if available
-    if (types.grid && types.grid[0].flow_to) {
+    if (types.grid && types.grid[0].stat_energy_to) {
       const totalToGrid = summedData.total.to_grid ?? 0;
 
       nodes.push({
@@ -385,7 +407,14 @@ class HuiEnergySankeyCard
       (this._config.layout !== "horizontal" && this._isMobileSize);
 
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card
+        .header=${this._config.title}
+        class=${classMap({
+          "is-grid": this.layout === "grid",
+          "is-panel": this.layout === "panel",
+          "is-vertical": vertical,
+        })}
+      >
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
@@ -402,7 +431,9 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
+    `<div style="direction:ltr; display: inline;">
+      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
+      kWh</div>`;
 
   protected _groupByFloorAndArea(deviceNodes: Node[]) {
     const areas: Record<string, { value: number; devices: Node[] }> = {
@@ -508,17 +539,18 @@ class HuiEnergySankeyCard
   }
 
   static styles = css`
-    :host {
-      display: block;
-      height: calc(
-        var(--row-size, 8) *
-          (var(--row-height, 50px) + var(--row-gap, 0px)) - var(--row-gap, 0px)
-      );
-    }
     ha-card {
-      height: 100%;
+      height: 400px;
       display: flex;
       flex-direction: column;
+      --chart-max-height: none;
+    }
+    ha-card.is-vertical {
+      height: 500px;
+    }
+    ha-card.is-grid,
+    ha-card.is-panel {
+      height: 100%;
     }
     .card-content {
       flex: 1;

@@ -13,7 +13,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -24,21 +24,20 @@ import {
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-divider";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-md-menu-item";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { fetchDiagnosticHandler } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type {
   IntegrationLogInfo,
@@ -65,6 +64,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import "./ha-config-entry-row";
+import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
@@ -134,6 +134,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _domainEntities: Record<string, string[]> = {};
 
+  @queryAll("ha-config-entry-row")
+  private _configEntryRows!: NodeListOf<HaConfigEntryRow>;
+
+  private _handleHashChange = () => {
+    this._searchParms = new URLSearchParams(window.location.hash.substring(1));
+  };
+
   private _domainConfigEntries = memoizeOne(
     (domain: string, configEntries?: ConfigEntry[]): ConfigEntry[] =>
       configEntries
@@ -150,6 +157,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ? configEntries.filter((entry) => entry.handler === domain)
         : []
   );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("hashchange", this._handleHashChange);
+    this._handleHashChange();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("hashchange", this._handleHashChange);
+  }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -169,6 +187,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("domain")) {
       this.hass.loadBackendTranslation("title", [this.domain]);
+      this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
       this._fetchManifest();
@@ -196,8 +215,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     super.updated(changed);
     if (
       this._searchParms.has("config_entry") &&
-      changed.has("configEntries") &&
-      !changed.get("configEntries") &&
+      ((changed.has("configEntries") && !changed.get("configEntries")) ||
+        changed.has("_searchParms")) &&
       this.configEntries
     ) {
       this._highlightEntry();
@@ -316,7 +335,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             `
           : nothing}
         ${this._manifest?.config_flow || this._logInfo
-          ? html`<ha-md-button-menu positioning="popover" slot="toolbar-icon">
+          ? html`<ha-dropdown slot="toolbar-icon">
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass.localize("ui.common.menu")}
@@ -325,28 +344,39 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${this._manifest &&
               (this._manifest.is_built_in || this._manifest.issue_tracker)
                 ? html`
-                    <ha-md-menu-item
-                      .href=${integrationIssuesUrl(this.domain, this._manifest)}
+                    <a
+                      href=${integrationIssuesUrl(this.domain, this._manifest)}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.known_issues"
-                      )}
-                      <ha-svg-icon slot="start" .path=${mdiBug}></ha-svg-icon>
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </ha-md-menu-item>
+                      <ha-dropdown-item>
+                        <ha-svg-icon slot="icon" .path=${mdiBug}></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.known_issues"
+                        )}
+                        <ha-svg-icon
+                          slot="details"
+                          .path=${mdiOpenInNew}
+                        ></ha-svg-icon>
+                      </ha-dropdown-item>
+                    </a>
                   `
                 : nothing}
               ${this._logInfo
-                ? html`<ha-md-menu-item
+                ? html`<ha-dropdown-item
                     @click=${this._logInfo.level === LogSeverity.DEBUG
                       ? this._handleDisableDebugLogging
                       : this._handleEnableDebugLogging}
                   >
+                    <ha-svg-icon
+                      slot="icon"
+                      .variant=${this._logInfo.level === LogSeverity.DEBUG
+                        ? "danger"
+                        : "default"}
+                      .path=${this._logInfo.level === LogSeverity.DEBUG
+                        ? mdiBugStop
+                        : mdiBugPlay}
+                    ></ha-svg-icon>
                     ${this._logInfo.level === LogSeverity.DEBUG
                       ? this.hass.localize(
                           "ui.panel.config.integrations.config_entry.disable_debug_logging"
@@ -354,18 +384,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.integrations.config_entry.enable_debug_logging"
                         )}
-                    <ha-svg-icon
-                      slot="start"
-                      class=${this._logInfo.level === LogSeverity.DEBUG
-                        ? "warning"
-                        : ""}
-                      .path=${this._logInfo.level === LogSeverity.DEBUG
-                        ? mdiBugStop
-                        : mdiBugPlay}
-                    ></ha-svg-icon>
-                  </ha-md-menu-item>`
+                  </ha-dropdown-item>`
                 : nothing}
-            </ha-md-button-menu>`
+            </ha-dropdown>`
           : nothing}
 
         <div class="container">
@@ -374,11 +395,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="logo-container">
                 <img
                   alt=${domainToName(this.hass.localize, this.domain)}
-                  src=${brandsUrl({
-                    domain: this.domain,
-                    type: "icon@2x",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain: this.domain,
+                      type: "icon@2x",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @load=${this._onImageLoad}
@@ -533,13 +557,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     .appearance=${canAddDevice ? "filled" : "accent"}
                     @click=${this._addIntegration}
                   >
-                    ${this._manifest?.integration_type
+                    ${this.hass.localize(
+                      `component.${this.domain}.config.initiate_flow.user`
+                    ) ||
+                    (this._manifest?.integration_type
                       ? this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                         )
                       : this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_entry`
-                        )}
+                        ))}
                   </ha-button>`
                 : nothing}
               ${Array.from(supportedSubentryTypes).map(
@@ -717,9 +744,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private async _highlightEntry() {
     await nextRender();
     const entryId = this._searchParms.get("config_entry")!;
-    const row = this.shadowRoot!.querySelector(
-      `[data-entry-id="${entryId}"]`
-    ) as any;
+    this._configEntryRows.forEach((entry) =>
+      entry.classList.remove("highlight")
+    );
+    const row = Array.from(this._configEntryRows).find(
+      (entry) => entry.dataset.entryId === entryId
+    );
     if (row) {
       row.scrollIntoView({
         block: "center",
@@ -870,6 +900,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this.domain,
+      navigateToResult: true,
     });
   }
 
@@ -1087,9 +1118,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         a {
           text-decoration: none;
-        }
-        .highlight::after {
-          background-color: var(--info-color);
         }
         .warning {
           color: var(--error-color);

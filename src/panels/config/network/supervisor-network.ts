@@ -4,21 +4,22 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,
@@ -231,7 +232,9 @@ export class HassioNetwork extends LitElement {
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <ha-password-field
+                            <ha-input
+                              type="password"
+                              password-toggle
                               id="psk"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
@@ -239,7 +242,7 @@ export class HassioNetwork extends LitElement {
                               .version=${"wifi"}
                               @change=${this._handleInputValueChangedWifi}
                             >
-                            </ha-password-field>
+                            </ha-input>
                           `
                         : nothing}
                     `
@@ -386,7 +389,7 @@ export class HassioNetwork extends LitElement {
                   const { ip, mask, prefix } = parseAddress(address);
                   return html`
                     <div class="address-row">
-                      <ha-textfield
+                      <ha-input
                         id="address"
                         .label=${this.hass.localize(
                           "ui.panel.config.network.supervisor.ip"
@@ -397,10 +400,10 @@ export class HassioNetwork extends LitElement {
                         @change=${this._handleInputValueChanged}
                         .disabled=${disableInputs}
                       >
-                      </ha-textfield>
+                      </ha-input>
                       ${version === "ipv6"
                         ? html`
-                            <ha-textfield
+                            <ha-input
                               id="prefix"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.prefix"
@@ -411,10 +414,10 @@ export class HassioNetwork extends LitElement {
                               @change=${this._handleInputValueChanged}
                               .disabled=${disableInputs}
                             >
-                            </ha-textfield>
+                            </ha-input>
                           `
                         : html`
-                            <ha-textfield
+                            <ha-input
                               id="netmask"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.netmask"
@@ -425,7 +428,7 @@ export class HassioNetwork extends LitElement {
                               @change=${this._handleInputValueChanged}
                               .disabled=${disableInputs}
                             >
-                            </ha-textfield>
+                            </ha-input>
                           `}
                       ${this._interface![version].address.length > 1 &&
                       !disableInputs
@@ -459,7 +462,7 @@ export class HassioNetwork extends LitElement {
                     </ha-button>
                   `
                 : nothing}
-              <ha-textfield
+              <ha-input
                 id="gateway"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.gateway"
@@ -469,25 +472,26 @@ export class HassioNetwork extends LitElement {
                 @change=${this._handleInputValueChanged}
                 .disabled=${disableInputs}
               >
-              </ha-textfield>
+              </ha-input>
               <div class="nameservers">
                 ${nameservers.map(
                   (nameserver: string, index: number) => html`
                     <div class="address-row">
-                      <ha-textfield
+                      <ha-input
                         id="nameserver"
-                        .label=${this.hass.localize(
+                        .label=${`${this.hass.localize(
                           "ui.panel.config.network.supervisor.dns_server"
-                        )}
+                        )}${this._getPredefinedDnsName(nameserver, version)}`}
                         .version=${version}
                         .value=${nameserver}
                         .index=${index}
                         @change=${this._handleInputValueChanged}
                       >
-                      </ha-textfield>
+                      </ha-input>
                       ${this._interface![version].nameservers?.length > 1
                         ? html`
                             <ha-icon-button
+                              slot="end"
                               .label=${this.hass.localize("ui.common.delete")}
                               .path=${mdiDeleteOutline}
                               .version=${version}
@@ -500,13 +504,12 @@ export class HassioNetwork extends LitElement {
                   `
                 )}
               </div>
-              <ha-button-menu
-                @opened=${this._handleDNSMenuOpened}
-                @closed=${this._handleDNSMenuClosed}
+              <ha-dropdown
+                @wa-show=${this._handleDNSMenuOpened}
+                @wa-hide=${this._handleDNSMenuClosed}
                 .version=${version}
+                @wa-select=${this._handleDropdownSelect}
                 class="add-nameserver"
-                appearance="filled"
-                size="small"
               >
                 <ha-button appearance="filled" size="small" slot="trigger">
                   ${this.hass.localize(
@@ -519,25 +522,36 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${Object.entries(PREDEFINED_DNS[version]).map(
                   ([name, addresses]) => html`
-                    <ha-list-item
-                      @click=${this._addPredefinedDNS}
+                    <ha-dropdown-item
+                      value="add_predefined"
                       .version=${version}
                       .addresses=${addresses}
                     >
                       ${name}
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   `
                 )}
-                <ha-list-item @click=${this._addCustomDNS} .version=${version}>
+                <ha-dropdown-item value="add_custom" .version=${version}>
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.custom_dns"
                   )}
-                </ha-list-item>
-              </ha-button-menu>
+                </ha-dropdown-item>
+              </ha-dropdown>
             `
           : nothing}
       </ha-expansion-panel>
     `;
+  }
+
+  private _getPredefinedDnsName(nameserver: string, version: string) {
+    for (const [name, addresses] of Object.entries(
+      PREDEFINED_DNS[version as "ipv4" | "ipv6"]
+    )) {
+      if (addresses.includes(nameserver)) {
+        return ` - ${name}`;
+      }
+    }
+    return "";
   }
 
   private async _updateNetwork() {
@@ -665,12 +679,13 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleInputValueChanged(ev: Event): void {
-    const source = ev.target as HaTextField;
+    const source = ev.target as HaInput;
     const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
     const id = source.id;
 
     if (!value || !this._interface?.[version]) {
+      source.reportValidity();
       return;
     }
 
@@ -706,7 +721,7 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleInputValueChangedWifi(ev: Event): void {
-    const source = ev.target as HaTextField;
+    const source = ev.target as HaInput;
     const value = source.value;
     const id = source.id;
 
@@ -715,6 +730,7 @@ export class HassioNetwork extends LitElement {
       !this._wifiConfiguration ||
       this._wifiConfiguration![id] === value
     ) {
+      source.reportValidity();
       return;
     }
     this._dirty = true;
@@ -747,10 +763,7 @@ export class HassioNetwork extends LitElement {
     this._dnsMenuOpen = false;
   }
 
-  private _addPredefinedDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
-    const addresses = source.addresses as string[];
+  private _addPredefinedDNS(version: "ipv4" | "ipv6", addresses: string[]) {
     if (!this._interface![version]!.nameservers) {
       this._interface![version]!.nameservers = [];
     }
@@ -759,9 +772,7 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _addCustomDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
+  private _addCustomDNS(version: "ipv4" | "ipv6") {
     if (!this._interface![version]!.nameservers) {
       this._interface![version]!.nameservers = [];
     }
@@ -777,6 +788,22 @@ export class HassioNetwork extends LitElement {
     this._interface![version]!.nameservers!.splice(index, 1);
     this._dirty = true;
     this.requestUpdate("_interface");
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "add_predefined") {
+      this._addPredefinedDNS(
+        (ev.detail.item as any).version,
+        (ev.detail.item as any).addresses
+      );
+      return;
+    }
+
+    if (action === "add_custom") {
+      this._addCustomDNS((ev.detail.item as any).version);
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -796,27 +823,30 @@ export class HassioNetwork extends LitElement {
           --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;
         }
-        ha-textfield {
-          display: block;
-          margin-top: 16px;
-        }
         .address-row {
           display: flex;
           flex-direction: row;
           gap: var(--ha-space-2);
           align-items: center;
         }
-        .address-row ha-textfield {
+        .address-row ha-input {
           flex: 1;
         }
         .address-row #prefix {
           flex: none;
           width: 95px;
         }
-        .address-row ha-icon-button {
-          --mdc-icon-button-size: 36px;
-          margin-top: 16px;
+        ha-icon-button {
+          color: var(--secondary-text-color);
         }
+        .address-row ha-icon-button {
+          --ha-icon-button-size: 36px;
+          margin-top: var(--ha-space-5);
+        }
+        ha-dropdown {
+          display: block;
+        }
+
         .add-address,
         .add-nameserver {
           margin-top: 16px;

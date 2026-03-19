@@ -1,17 +1,14 @@
 import { mdiTuneVariant } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FanEntity } from "../../../data/fan";
 import { FanEntityFeature } from "../../../data/fan";
 import type { HomeAssistant } from "../../../types";
@@ -50,8 +47,13 @@ class HuiFanPresetModesCardFeature
 
   @state() _currentPresetMode?: string;
 
-  @query("ha-control-select-menu", true)
-  private _haSelect?: HaControlSelectMenu;
+  private _renderPresetModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this._stateObj}
+      attribute="preset_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -68,9 +70,7 @@ class HuiFanPresetModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-fan-preset-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-fan-preset-modes-card-feature-editor");
     return document.createElement("hui-fan-preset-modes-card-feature-editor");
   }
 
@@ -94,27 +94,16 @@ class HuiFanPresetModesCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (this._haSelect && changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        this.hass &&
-        this.hass.formatEntityAttributeValue !==
-          oldHass?.formatEntityAttributeValue
-      ) {
-        this._haSelect.layoutOptions();
-      }
-    }
-  }
-
-  private async _valueChanged(ev: CustomEvent) {
-    const presetMode =
-      (ev.detail as any).value ?? ((ev.target as any).value as string);
+  private async _valueChanged(
+    ev: CustomEvent<{ value?: string; item?: { value: string } }>
+  ) {
+    const presetMode = ev.detail.value ?? ev.detail.item?.value;
 
     const oldPresetMode = this._stateObj!.attributes.preset_mode;
 
-    if (presetMode === oldPresetMode) return;
+    if (presetMode === oldPresetMode || !presetMode) {
+      return;
+    }
 
     this._currentPresetMode = presetMode;
 
@@ -148,26 +137,28 @@ class HuiFanPresetModesCardFeature
     const options = filterModes(
       stateObj.attributes.preset_modes,
       this._config!.preset_modes
-    ).map<ControlSelectOption>((mode) => ({
+    ).map((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
         this._stateObj!,
         "preset_mode",
         mode
       ),
-      icon: html`<ha-attribute-icon
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        attribute="preset_mode"
-        .attributeValue=${mode}
-      ></ha-attribute-icon>`,
     }));
 
     if (this._config.style === "icons") {
       return html`
         <ha-control-select
-          .options=${options}
+          .options=${options.map((option) => ({
+            ...option,
+            icon: html`<ha-attribute-icon
+              slot="graphic"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              attribute="preset_mode"
+              .attributeValue=${option.value}
+            ></ha-attribute-icon>`,
+          }))}
           .value=${this._currentPresetMode}
           @value-changed=${this._valueChanged}
           hide-option-label
@@ -183,34 +174,17 @@ class HuiFanPresetModesCardFeature
 
     return html`
       <ha-control-select-menu
+        .hass=${this.hass}
         show-arrow
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "preset_mode")}
         .value=${this._currentPresetMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
-        fixedMenuPosition
-        naturalMenuWidth
-        @selected=${this._valueChanged}
-        @closed=${stopPropagation}
+        @wa-select=${this._valueChanged}
+        .options=${options}
+        .renderIcon=${this._renderPresetModeIcon}
       >
-        ${this._currentPresetMode
-          ? html`<ha-attribute-icon
-              slot="icon"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-              attribute="preset_mode"
-              .attributeValue=${this._currentPresetMode}
-            ></ha-attribute-icon>`
-          : html`
-              <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
-            `}
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option.value} graphic="icon">
-              ${option.icon}${option.label}
-            </ha-list-item>
-          `
-        )}
+        <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
       </ha-control-select-menu>
     `;
   }

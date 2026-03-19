@@ -117,6 +117,7 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
 export interface ConversationChatLogAssistantDelta {
   role: "assistant";
   content: string;
+  thinking_content?: string;
   tool_calls: {
     id: string;
     tool_name: string;
@@ -214,6 +215,8 @@ export interface PipelineRun {
   stage: "ready" | "wake_word" | "stt" | "intent" | "tts" | "done" | "error";
   run: PipelineRunStartEvent["data"];
   error?: PipelineErrorEvent["data"];
+  started: Date;
+  finished?: Date;
   wake_word?: PipelineWakeWordStartEvent["data"] &
     Partial<PipelineWakeWordEndEvent["data"]> & { done: boolean };
   stt?: PipelineSTTStartEvent["data"] &
@@ -235,6 +238,7 @@ export const processEvent = (
       stage: "ready",
       run: event.data,
       events: [event],
+      started: new Date(event.timestamp),
     };
     return run;
   }
@@ -290,9 +294,14 @@ export const processEvent = (
       tts: { ...run.tts!, ...event.data, done: true },
     };
   } else if (event.type === "run-end") {
-    run = { ...run, stage: "done" };
+    run = { ...run, finished: new Date(event.timestamp), stage: "done" };
   } else if (event.type === "error") {
-    run = { ...run, stage: "error", error: event.data };
+    run = {
+      ...run,
+      finished: new Date(event.timestamp),
+      stage: "error",
+      error: event.data,
+    };
   } else {
     run = { ...run };
   }

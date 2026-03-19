@@ -206,7 +206,7 @@ class HcCast extends LitElement {
   }
 
   private async _handlePickView(ev: CustomEvent<ActionDetail>) {
-    const path = this.lovelaceViews![ev.detail.index].path ?? ev.detail.index;
+    const path = this.lovelaceViews?.[ev.detail.index]?.path ?? ev.detail.index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }

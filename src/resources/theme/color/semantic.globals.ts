@@ -15,27 +15,27 @@ export const semanticColorStyles = css`
     --ha-color-text-disabled: var(--ha-color-neutral-60);
     --ha-color-text-link: var(--ha-color-primary-40);
     /* border primary */
-    --ha-color-border-primary-quiet: var(--ha-color-primary-80);
+    --ha-color-border-primary-quiet: var(--ha-color-primary-90);
     --ha-color-border-primary-normal: var(--ha-color-primary-70);
     --ha-color-border-primary-loud: var(--ha-color-primary-40);
 
     /* border neutral */
-    --ha-color-border-neutral-quiet: var(--ha-color-neutral-80);
+    --ha-color-border-neutral-quiet: var(--ha-color-neutral-90);
     --ha-color-border-neutral-normal: var(--ha-color-neutral-60);
     --ha-color-border-neutral-loud: var(--ha-color-neutral-40);
 
     /* border danger */
-    --ha-color-border-danger-quiet: var(--ha-color-red-80);
+    --ha-color-border-danger-quiet: var(--ha-color-red-90);
     --ha-color-border-danger-normal: var(--ha-color-red-70);
     --ha-color-border-danger-loud: var(--ha-color-red-40);
 
     /* border warning */
-    --ha-color-border-warning-quiet: var(--ha-color-orange-80);
+    --ha-color-border-warning-quiet: var(--ha-color-orange-90);
     --ha-color-border-warning-normal: var(--ha-color-orange-70);
     --ha-color-border-warning-loud: var(--ha-color-orange-40);
 
     /* border success */
-    --ha-color-border-success-quiet: var(--ha-color-green-80);
+    --ha-color-border-success-quiet: var(--ha-color-green-90);
     --ha-color-border-success-normal: var(--ha-color-green-70);
     --ha-color-border-success-loud: var(--ha-color-green-40);
 
@@ -155,6 +155,10 @@ export const semanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-95);
+    --ha-color-on-surface-default: var(--ha-color-neutral-05);
+
+    /* Scrollable fade */
+    --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
   }
 `;
 
@@ -286,5 +290,6 @@ export const darkSemanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
+    --ha-color-on-surface-default: var(--ha-color-neutral-95);
   }
 `;

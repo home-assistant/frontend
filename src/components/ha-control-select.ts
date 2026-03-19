@@ -11,6 +11,7 @@ import "./ha-svg-icon";
 export interface ControlSelectOption {
   value: string;
   label?: string;
+  ariaLabel?: string;
   icon?: TemplateResult;
   path?: string;
 }
@@ -161,8 +162,8 @@ export class HaControlSelect extends LitElement {
         tabindex=${isSelected ? "0" : "-1"}
         .value=${option.value}
         aria-checked=${isSelected ? "true" : "false"}
-        aria-label=${ifDefined(option.label)}
-        title=${ifDefined(option.label)}
+        aria-label=${ifDefined(option.ariaLabel ?? option.label)}
+        title=${ifDefined(option.ariaLabel ?? option.label)}
         @click=${this._handleOptionClick}
         @focus=${this._handleOptionFocus}
         @mousedown=${this._handleOptionMouseDown}
@@ -202,6 +203,7 @@ export class HaControlSelect extends LitElement {
       color: var(--primary-text-color);
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      border-radius: var(--control-select-border-radius);
     }
     :host([vertical]) {
       width: var(--control-select-thickness);
@@ -211,7 +213,6 @@ export class HaControlSelect extends LitElement {
       position: relative;
       height: 100%;
       width: 100%;
-      border-radius: var(--control-select-border-radius);
       transform: translateZ(0);
       display: flex;
       flex-direction: row;

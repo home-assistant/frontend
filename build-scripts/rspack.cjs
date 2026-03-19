@@ -40,7 +40,6 @@ const createRspackConfig = ({
   latestBuild,
   isStatsBuild,
   isTestBuild,
-  isHassioBuild,
   isLandingPageBuild,
   dontHash,
 }) => {
@@ -168,12 +167,12 @@ const createRspackConfig = ({
           );
         },
       }),
-      new rspack.NormalModuleReplacementPlugin(
-        new RegExp(
-          bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).join("|")
-        ),
-        path.resolve(paths.root_dir, "src/util/empty.js")
-      ),
+      bundle.emptyPackages({ isLandingPageBuild }).length
+        ? new rspack.NormalModuleReplacementPlugin(
+            new RegExp(bundle.emptyPackages({ isLandingPageBuild }).join("|")),
+            path.resolve(paths.root_dir, "src/util/empty.js")
+          )
+        : false,
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
         new StatsWriterPlugin({
@@ -201,6 +200,7 @@ const createRspackConfig = ({
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
         "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/ref$": "lit/directives/ref.js",
         "lit/directives/class-map$": "lit/directives/class-map.js",
         "lit/directives/style-map$": "lit/directives/style-map.js",
         "lit/directives/if-defined$": "lit/directives/if-defined.js",
@@ -209,7 +209,9 @@ const createRspackConfig = ({
         "lit/directives/join$": "lit/directives/join.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
-        "lit/directives/keyed$": "lit/directives/keyed.js",
+        "lit/directives/keyed$": latestBuild
+          ? "lit/directives/keyed.js"
+          : path.resolve(__dirname, "../src/common/lit/keyed-es5.ts"),
         "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
@@ -217,6 +219,42 @@ const createRspackConfig = ({
           "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
         "@lit-labs/observers/resize-controller":
           "@lit-labs/observers/resize-controller.js",
+        "@formatjs/intl-durationformat/should-polyfill$":
+          "@formatjs/intl-durationformat/should-polyfill.js",
+        "@formatjs/intl-durationformat/polyfill-force$":
+          "@formatjs/intl-durationformat/polyfill-force.js",
+        "@formatjs/intl-datetimeformat/should-polyfill":
+          "@formatjs/intl-datetimeformat/should-polyfill.js",
+        "@formatjs/intl-datetimeformat/polyfill-force":
+          "@formatjs/intl-datetimeformat/polyfill-force.js",
+        "@formatjs/intl-displaynames/should-polyfill":
+          "@formatjs/intl-displaynames/should-polyfill.js",
+        "@formatjs/intl-displaynames/polyfill-force":
+          "@formatjs/intl-displaynames/polyfill-force.js",
+        "@formatjs/intl-getcanonicallocales/should-polyfill":
+          "@formatjs/intl-getcanonicallocales/should-polyfill.js",
+        "@formatjs/intl-getcanonicallocales/polyfill-force":
+          "@formatjs/intl-getcanonicallocales/polyfill-force.js",
+        "@formatjs/intl-listformat/should-polyfill":
+          "@formatjs/intl-listformat/should-polyfill.js",
+        "@formatjs/intl-listformat/polyfill-force":
+          "@formatjs/intl-listformat/polyfill-force.js",
+        "@formatjs/intl-locale/should-polyfill":
+          "@formatjs/intl-locale/should-polyfill.js",
+        "@formatjs/intl-locale/polyfill-force":
+          "@formatjs/intl-locale/polyfill-force.js",
+        "@formatjs/intl-numberformat/should-polyfill":
+          "@formatjs/intl-numberformat/should-polyfill.js",
+        "@formatjs/intl-numberformat/polyfill-force":
+          "@formatjs/intl-numberformat/polyfill-force.js",
+        "@formatjs/intl-pluralrules/should-polyfill":
+          "@formatjs/intl-pluralrules/should-polyfill.js",
+        "@formatjs/intl-pluralrules/polyfill-force":
+          "@formatjs/intl-pluralrules/polyfill-force.js",
+        "@formatjs/intl-relativetimeformat/should-polyfill":
+          "@formatjs/intl-relativetimeformat/should-polyfill.js",
+        "@formatjs/intl-relativetimeformat/polyfill-force":
+          "@formatjs/intl-relativetimeformat/polyfill-force.js",
       },
     },
     output: {
@@ -260,7 +298,6 @@ const createRspackConfig = ({
       ),
     },
     experiments: {
-      layers: true,
       outputModule: true,
     },
   };
@@ -284,21 +321,6 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({
-  isProdBuild,
-  latestBuild,
-  isStatsBuild,
-  isTestBuild,
-}) =>
-  createRspackConfig(
-    bundle.config.hassio({
-      isProdBuild,
-      latestBuild,
-      isStatsBuild,
-      isTestBuild,
-    })
-  );
-
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
@@ -309,7 +331,6 @@ module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
-  createHassioConfig,
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,

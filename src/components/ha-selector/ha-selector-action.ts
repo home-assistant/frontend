@@ -1,23 +1,18 @@
-import { consume, ContextProvider } from "@lit/context";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fullEntitiesContext } from "../../data/context";
-import {
-  subscribeEntityRegistry,
-  type EntityRegistryEntry,
-} from "../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { Action } from "../../data/script";
 import { migrateAutomationAction } from "../../data/script";
 import type { ActionSelector } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import "../../panels/config/automation/action/ha-automation-action";
 import type HaAutomationAction from "../../panels/config/automation/action/ha-automation-action";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
-export class HaActionSelector extends SubscribeMixin(LitElement) {
+export class HaActionSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -34,12 +29,8 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] | undefined;
 
-  @state() private _entitiesContext;
-
   @query("ha-automation-action")
   private _actionElement?: HaAutomationAction;
-
-  protected hassSubscribeRequiredHostProps = ["_entitiesContext"];
 
   private _actions = memoizeOne((action: Action | undefined) => {
     if (!action) {
@@ -47,23 +38,6 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
     }
     return migrateAutomationAction(action);
   });
-
-  protected firstUpdated() {
-    if (!this._entityReg) {
-      this._entitiesContext = new ContextProvider(this, {
-        context: fullEntitiesContext,
-        initialValue: [],
-      });
-    }
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entitiesContext.setValue(entities);
-      }),
-    ];
-  }
 
   public expandAll() {
     this._actionElement?.expandAll();

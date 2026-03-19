@@ -15,18 +15,18 @@ import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { indentStyle, overflowStyles } from "../automation/styles";
+import { showToast } from "../../../util/toast";
+import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
-import { showToast } from "../../../util/toast";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -34,8 +34,7 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property() public key!: string;
 
-  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
-    [];
+  @property({ attribute: false }) public excludeKeys: string[] = [];
 
   @property({ attribute: false }) public field!: Field;
 
@@ -65,48 +64,47 @@ export default class HaScriptFieldRow extends LitElement {
   private _selectorRowElement?: HaAutomationRow;
 
   protected render() {
+    const hasSelector =
+      this.field.selector && typeof this.field.selector === "object";
     return html`
       <ha-card outlined>
         <ha-automation-row
           .disabled=${this.disabled}
           @click=${this._toggleSidebar}
           .selected=${this._selected}
-          left-chevron
+          .leftChevron=${hasSelector}
           @toggle-collapsed=${this._toggleCollapse}
           .collapsed=${this._collapsed}
           .highlight=${this.highlight}
           @delete-row=${this._onDelete}
         >
-          <ha-md-button-menu
-            quick
+          <ha-dropdown
             slot="icons"
             @click=${preventDefaultStopPropagation}
             @keydown=${stopPropagation}
-            @closed=${stopPropagation}
-            positioning="fixed"
-            anchor-corner="end-end"
-            menu-corner="start-end"
+            @wa-select=${this._handleDropdownSelect}
+            placement="bottom-end"
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-md-menu-item .clickAction=${this._toggleYamlMode}>
-              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            <ha-dropdown-item value="toggle_yaml_mode">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
-            </ha-md-menu-item>
-            <ha-md-menu-item
-              .clickAction=${this._onDelete}
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              value="delete"
               .disabled=${this.disabled}
-              class="warning"
+              variant="danger"
             >
-              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
@@ -116,7 +114,6 @@ export default class HaScriptFieldRow extends LitElement {
                       <span
                         >${isMac
                           ? html`<ha-svg-icon
-                              slot="start"
                               .path=${mdiAppleKeyboardCommand}
                             ></ha-svg-icon>`
                           : this.hass.localize(
@@ -132,125 +129,122 @@ export default class HaScriptFieldRow extends LitElement {
                     </span>`
                   : nothing}
               </div>
-            </ha-md-menu-item>
-          </ha-md-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
 
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
         </ha-automation-row>
       </ha-card>
-      <div
-        class=${classMap({
-          "selector-row": true,
-          "parent-selected": this._selected,
-          hidden: this._collapsed,
-        })}
-      >
-        <ha-card>
-          <ha-automation-row
-            .selected=${this._selectorRowSelected}
-            @click=${this._toggleSelectorSidebar}
-            .collapsed=${this._selectorRowCollapsed}
-            @toggle-collapsed=${this._toggleSelectorRowCollapse}
-            .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
-              Object.keys(this.field.selector)[0]
-            )}
-            .highlight=${this.highlight}
-          >
-            <h3 slot="header">
-              ${this.hass.localize(
-                `ui.components.selectors.selector.types.${Object.keys(this.field.selector)[0]}` as LocalizeKeys
-              )}
-              ${this.hass.localize(
-                "ui.panel.config.script.editor.field.selector"
-              )}
-            </h3>
-            <ha-md-button-menu
-              quick
-              slot="icons"
-              @click=${preventDefaultStopPropagation}
-              @keydown=${stopPropagation}
-              @closed=${stopPropagation}
-              positioning="fixed"
-              anchor-corner="end-end"
-              menu-corner="start-end"
+      ${hasSelector
+        ? html`
+            <div
+              class=${classMap({
+                "selector-row": true,
+                "parent-selected": this._selected,
+                hidden: this._collapsed,
+              })}
             >
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              ></ha-icon-button>
-              <ha-md-menu-item
-                .clickAction=${this._toggleYamlMode}
-                selector-row
-              >
-                <ha-svg-icon
-                  slot="start"
-                  .path=${mdiPlaylistEdit}
-                ></ha-svg-icon>
-                <div class="overflow-label">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              <ha-card>
+                <ha-automation-row
+                  .selected=${this._selectorRowSelected}
+                  @click=${this._toggleSelectorSidebar}
+                  .collapsed=${this._selectorRowCollapsed}
+                  @toggle-collapsed=${this._toggleSelectorRowCollapse}
+                  .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+                    Object.keys(this.field.selector)[0]
                   )}
-                  <span
-                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
-                  ></span>
-                </div>
-              </ha-md-menu-item>
-              <ha-md-menu-item
-                .clickAction=${this._onDelete}
-                .disabled=${this.disabled}
-                class="warning"
-              >
-                <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
-                <div class="overflow-label">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.delete"
-                  )}
-                  ${!this.narrow
-                    ? html`<span class="shortcut">
+                  .highlight=${this.highlight}
+                >
+                  <h3 slot="header">
+                    ${this.hass.localize(
+                      `ui.components.selectors.selector.types.${Object.keys(this.field.selector)[0]}` as LocalizeKeys
+                    )}
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.field.selector"
+                    )}
+                  </h3>
+                  <ha-dropdown
+                    slot="icons"
+                    @click=${preventDefaultStopPropagation}
+                    @keydown=${stopPropagation}
+                    @wa-select=${this._handleDropdownSelect}
+                    placement="bottom-end"
+                  >
+                    <ha-icon-button
+                      slot="trigger"
+                      .label=${this.hass.localize("ui.common.menu")}
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+                    <ha-dropdown-item value="toggle_yaml_mode" selector-row>
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiPlaylistEdit}
+                      ></ha-svg-icon>
+                      <div class="overflow-label">
+                        ${this.hass.localize(
+                          `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                        )}
                         <span
-                          >${isMac
-                            ? html`<ha-svg-icon
-                                slot="start"
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )}</span
-                        >
-                        <span>+</span>
-                        <span
-                          >${this.hass.localize(
-                            "ui.panel.config.automation.editor.del"
-                          )}</span
-                        >
-                      </span>`
-                    : nothing}
-                </div>
-              </ha-md-menu-item>
-            </ha-md-button-menu>
-          </ha-automation-row>
-        </ha-card>
-        ${typeof this.field.selector === "object" &&
-        SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
-          Object.keys(this.field.selector)[0]
-        )
-          ? html`
-              <ha-script-field-selector-editor
-                class=${this._selectorRowCollapsed ? "hidden" : ""}
-                .selected=${this._selectorRowSelected}
-                .hass=${this.hass}
-                .field=${this.field}
-                .disabled=${this.disabled}
-                indent
-                @value-changed=${this._selectorValueChanged}
-                .narrow=${this.narrow}
-              ></ha-script-field-selector-editor>
-            `
-          : nothing}
-      </div>
+                          class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                        ></span>
+                      </div>
+                    </ha-dropdown-item>
+                    <ha-dropdown-item
+                      value="delete"
+                      .disabled=${this.disabled}
+                      variant="danger"
+                    >
+                      <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                      <div class="overflow-label">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.delete"
+                        )}
+                        ${!this.narrow
+                          ? html`<span class="shortcut">
+                              <span
+                                >${isMac
+                                  ? html`<ha-svg-icon
+                                      .path=${mdiAppleKeyboardCommand}
+                                    ></ha-svg-icon>`
+                                  : this.hass.localize(
+                                      "ui.panel.config.automation.editor.ctrl"
+                                    )}</span
+                              >
+                              <span>+</span>
+                              <span
+                                >${this.hass.localize(
+                                  "ui.panel.config.automation.editor.del"
+                                )}</span
+                              >
+                            </span>`
+                          : nothing}
+                      </div>
+                    </ha-dropdown-item>
+                  </ha-dropdown>
+                </ha-automation-row>
+              </ha-card>
+              ${typeof this.field.selector === "object" &&
+              SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+                Object.keys(this.field.selector)[0]
+              )
+                ? html`
+                    <ha-script-field-selector-editor
+                      class=${this._selectorRowCollapsed ? "hidden" : ""}
+                      .selected=${this._selectorRowSelected}
+                      .hass=${this.hass}
+                      .field=${this.field}
+                      .disabled=${this.disabled}
+                      indent
+                      @value-changed=${this._selectorValueChanged}
+                      .narrow=${this.narrow}
+                    ></ha-script-field-selector-editor>
+                  `
+                : nothing}
+            </div>
+          `
+        : nothing}
     `;
   }
 
@@ -411,66 +405,29 @@ export default class HaScriptFieldRow extends LitElement {
     this._selectorRowElement?.focus();
   }
 
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      rowStyles,
       indentStyle,
       overflowStyles,
       css`
-        .disabled {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-        .hidden {
-          display: none;
-        }
-        h3 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        .action-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .action-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
-          }
-        }
-        .card-content {
-          padding: 16px;
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-        }
-
-        .warning ul {
-          margin: 4px 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
-        }
         .selector-row {
           padding-top: 12px;
           padding-bottom: 16px;

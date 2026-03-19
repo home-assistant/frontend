@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -15,6 +15,7 @@ import type { Lovelace } from "../types";
 
 let editCodeLoaded = false;
 
+@customElement("hui-panel-view")
 export class PanelView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -153,5 +154,3 @@ declare global {
     "hui-panel-view": PanelView;
   }
 }
-
-customElements.define("hui-panel-view", PanelView);

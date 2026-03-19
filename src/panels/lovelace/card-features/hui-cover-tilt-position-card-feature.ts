@@ -5,11 +5,10 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { CoverEntity } from "../../../data/cover";
-import { CoverEntityFeature } from "../../../data/cover";
-import { UNAVAILABLE } from "../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
+import { coverSupportsTiltPosition } from "../../../data/cover";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
@@ -31,8 +30,7 @@ export const supportsCoverTiltPositionCardFeature = (
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
-    domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION)
+    domain === "cover" && coverSupportsTiltPosition(stateObj as CoverEntity)
   );
 };
 

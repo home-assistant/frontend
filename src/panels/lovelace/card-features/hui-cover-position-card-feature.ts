@@ -6,11 +6,10 @@ import { computeAttributeNameDisplay } from "../../../common/entity/compute_attr
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-slider";
-import { CoverEntityFeature, type CoverEntity } from "../../../data/cover";
-import { UNAVAILABLE } from "../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
+import { coverSupportsPosition, type CoverEntity } from "../../../data/cover";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -28,10 +27,7 @@ export const supportsCoverPositionCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)
-  );
+  return domain === "cover" && coverSupportsPosition(stateObj);
 };
 
 @customElement("hui-cover-position-card-feature")
@@ -47,11 +43,11 @@ class HuiCoverPositionCardFeature
 
   @state() private _config?: CoverPositionCardFeatureConfig;
 
-  private get _stateObj() {
+  private get _stateObj(): CoverEntity | undefined {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
+    return this.hass.states[this.context.entity_id!];
   }
 
   static getStubConfig(): CoverPositionCardFeatureConfig {

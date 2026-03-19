@@ -1,20 +1,22 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
 import { domainToName } from "../data/integration";
-import type { ValueChangedEvent, HomeAssistant } from "../types";
-import { brandsUrl } from "../util/brands-url";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
+import "./ha-domain-icon";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
-export interface ConfigEntryExtended extends ConfigEntry {
-  localized_domain_name?: string;
-}
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "secondary", weight: 8 },
+  { name: "icon", weight: 5 },
+];
 
 @customElement("ha-config-entry-picker")
 class HaConfigEntryPicker extends LitElement {
@@ -28,119 +30,106 @@ class HaConfigEntryPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @state() private _configEntries?: ConfigEntryExtended[];
+  @state() private _configEntries?: PickerComboBoxItem[];
 
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
-  @query("ha-combo-box") private _comboBox!: HaComboBox;
+  @query("ha-generic-picker") private _picker!: HaGenericPicker;
 
   public open() {
-    this._comboBox?.open();
+    this._picker?.open();
   }
 
   public focus() {
-    this._comboBox?.focus();
+    this._picker?.focus();
   }
 
   protected firstUpdated() {
     this._getConfigEntries();
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ConfigEntryExtended> = (
-    item
-  ) => html`
-    <ha-combo-box-item type="button">
-      <span slot="headline">
-        ${item.title ||
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.unnamed_entry"
-        )}
-      </span>
-      <span slot="supporting-text">${item.localized_domain_name}</span>
-      <img
-        alt=""
-        slot="start"
-        src=${brandsUrl({
-          domain: item.domain,
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        })}
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-        @error=${this._onImageError}
-        @load=${this._onImageLoad}
-      />
-    </ha-combo-box-item>
-  `;
-
   protected render() {
     if (!this._configEntries) {
       return nothing;
     }
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
         .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.config-entry-picker.config_entry")
           : this.label}
-        .value=${this._value}
+        .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
-        .renderer=${this._rowRenderer}
-        .items=${this._configEntries}
-        item-value-path="entry_id"
-        item-id-path="entry_id"
-        item-label-path="title"
+        .rowRenderer=${this._rowRenderer}
+        .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
+        .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
-      ></ha-combo-box>
+      ></ha-generic-picker>
     `;
   }
 
-  private _onImageLoad(ev) {
-    ev.target.style.visibility = "initial";
-  }
-
-  private _onImageError(ev) {
-    ev.target.style.visibility = "hidden";
-  }
+  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
+    <ha-combo-box-item type="button">
+      <span slot="headline">${item.primary}</span>
+      <span slot="supporting-text">${item.secondary}</span>
+      <ha-domain-icon
+        slot="start"
+        .hass=${this.hass}
+        .domain=${item.icon!}
+        brand-fallback
+      ></ha-domain-icon>
+    </ha-combo-box-item>
+  `;
 
   private async _getConfigEntries() {
     getConfigEntries(this.hass, {
       type: ["device", "hub", "service"],
       domain: this.integration,
     }).then((configEntries) => {
-      this._configEntries = configEntries
-        .map(
-          (entry: ConfigEntry): ConfigEntryExtended => ({
-            ...entry,
-            localized_domain_name: domainToName(
-              this.hass.localize,
-              entry.domain
+      this._configEntries = configEntries.map((entry: ConfigEntry) => {
+        const domainName = domainToName(this.hass.localize, entry.domain);
+        return {
+          id: entry.entry_id,
+          icon: entry.domain,
+          primary:
+            entry.title ||
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.unnamed_entry"
             ),
-          })
-        )
-        .sort((conf1, conf2) =>
-          caseInsensitiveStringCompare(
-            conf1.localized_domain_name + conf1.title,
-            conf2.localized_domain_name + conf2.title,
-            this.hass.locale.language
-          )
-        );
+          secondary: domainName,
+          sorting_label: [entry.title, domainName].filter(Boolean).join("_"),
+        };
+      });
     });
   }
 
-  private get _value() {
-    return this.value || "";
-  }
+  private _valueRenderer = (itemId: string) => {
+    const item = this._configEntries!.find((entry) => entry.id === itemId);
+    return html`<span
+      style="display: flex; align-items: center; gap: var(--ha-space-2);"
+      slot="headline"
+      >${item?.icon
+        ? html`<ha-domain-icon
+            .hass=${this.hass}
+            .domain=${item.icon!}
+            brand-fallback
+          ></ha-domain-icon>`
+        : nothing}${item?.primary || "Unknown"}</span
+    >`;
+  };
+
+  private _getItems = () => this._configEntries!;
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    if (newValue !== this._value) {
+    if (newValue !== this.value) {
       this._setValue(newValue);
     }
   }

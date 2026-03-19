@@ -10,7 +10,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -96,8 +96,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const entityState = Number(stateObj.state);
-
     if (stateObj.state === UNAVAILABLE) {
       return html`
         <hui-warning
@@ -164,7 +162,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(entityState),
+            "--gauge-color": this._computeSeverity(Number(valueToDisplay)),
           })}
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
@@ -305,7 +303,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     ha-gauge {
       width: 100%;
-      max-width: 250px;
     }
 
     .name {
@@ -314,7 +311,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
       width: 100%;
       font-size: var(--ha-font-size-m);
-      margin-top: 8px;
     }
   `;
 }

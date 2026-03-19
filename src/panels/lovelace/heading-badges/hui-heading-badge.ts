@@ -4,10 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { checkConditionsMet } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
@@ -21,7 +18,9 @@ declare global {
 }
 
 @customElement("hui-heading-badge")
-export class HuiHeadingBadge extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceHeadingBadgeConfig;
@@ -52,7 +51,7 @@ export class HuiHeadingBadge extends ConditionalListenerMixin(ReactiveElement) {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceHeadingBadgeConfig) {
+  protected _updateElement(config: LovelaceHeadingBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -133,22 +132,7 @@ export class HuiHeadingBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
   }
 
-  protected setupConditionalListeners() {
-    if (!this.config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this.config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateVisibility(conditionsMet);
-      }
-    );
-  }
-
-  private _updateVisibility(forceVisible?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -158,11 +142,20 @@ export class HuiHeadingBadge extends ConditionalListenerMixin(ReactiveElement) {
       return;
     }
 
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

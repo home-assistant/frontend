@@ -16,6 +16,8 @@ export interface RecorderInfo {
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
+export type StatisticPeriod = "5minute" | "hour" | "day" | "week" | "month";
+
 export type Statistics = Record<string, StatisticValue[]>;
 
 export interface StatisticValue {
@@ -174,7 +176,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
+  period: StatisticPeriod = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
 ) =>
@@ -193,7 +195,7 @@ export const fetchStatistic = (
   statistic_id: string,
   period: {
     fixed_period?: { start: string | Date; end: string | Date };
-    calendar?: { period: string; offset: number };
+    calendar?: { period: string; offset?: number };
     rolling_window?: { duration: HaDurationData; offset: HaDurationData };
   },
   units?: StatisticsUnitConfiguration

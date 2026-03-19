@@ -3,30 +3,35 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { isHelperDomain } from "../panels/config/helpers/const";
-import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import type {
+  ActionRelatedContext,
+  UiAction,
+} from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
 import {
   type DeviceRegistryEntry,
   getDeviceIntegrationLookup,
-} from "./device_registry";
+} from "./device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity_registry";
-import type { EntitySources } from "./entity_sources";
-import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
+} from "./entity/entity_registry";
+import type { EntitySources } from "./entity/entity_sources";
 
 export type Selector =
   | ActionSelector
   | AddonSelector
+  | AppSelector
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
+  | ChooseSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -64,6 +69,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TimezoneSelector
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
@@ -79,7 +85,11 @@ export interface ActionSelector {
 }
 
 export interface AddonSelector {
-  addon: {
+  addon: AppSelector["app"];
+}
+
+export interface AppSelector {
+  app: {
     name?: string;
     slug?: string;
   } | null;
@@ -90,6 +100,7 @@ export interface AreaSelector {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
+    reorder?: boolean;
   } | null;
 }
 
@@ -114,6 +125,13 @@ export interface ButtonToggleSelector {
     translation_key?: string;
     sort?: boolean;
   } | null;
+}
+
+export interface ChooseSelector {
+  choose: {
+    choices: Record<string, { selector: Selector }>;
+    translation_key?: string;
+  };
 }
 
 export interface ColorRGBSelector {
@@ -213,6 +231,8 @@ export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
+    allow_negative?: boolean;
+    enable_second?: boolean;
   } | null;
 }
 
@@ -220,6 +240,7 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
+  unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
 }
 
@@ -284,6 +305,10 @@ export interface LanguageSelector {
   } | null;
 }
 
+export interface TimezoneSelector {
+  timezone: {} | null;
+}
+
 export interface LocationSelector {
   location: {
     radius?: boolean;
@@ -323,7 +348,7 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  navigation: {} | null;
+  navigation: ActionRelatedContext | null;
 }
 
 export interface NumberSelector {
@@ -368,7 +393,7 @@ interface SelectBoxOptionImage {
 }
 
 export interface SelectOption {
-  value: any;
+  value: string;
   label: string;
   description?: string;
   image?: string | SelectBoxOptionImage;
@@ -451,7 +476,9 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  template: {} | null;
+  template: {
+    preview?: boolean;
+  } | null;
 }
 
 export interface ThemeSelector {
@@ -492,6 +519,7 @@ export interface UiStateContentSelector {
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;
+    allow_context?: boolean;
   } | null;
 }
 
@@ -784,6 +812,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -814,6 +843,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }
@@ -921,13 +962,13 @@ export const resolveEntityIDs = (
   targetPickerValue: HassServiceTarget,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"]
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector = { target: {} }
 ): string[] => {
   if (!targetPickerValue) {
     return [];
   }
 
-  const targetSelector = { target: {} };
   const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
   const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
   const targetAreas = new Set(ensureArray(targetPickerValue.area_id));

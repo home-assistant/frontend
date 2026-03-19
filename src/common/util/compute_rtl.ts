@@ -35,10 +35,6 @@ export function setDirectionStyles(direction: string, element: LitElement) {
     direction === "ltr" ? "right" : "left"
   );
   element.style.setProperty(
-    "--margin-title",
-    direction === "ltr" ? "var(--margin-title-ltr)" : "var(--margin-title-rtl)"
-  );
-  element.style.setProperty(
     "--scale-direction",
     direction === "ltr" ? "1" : "-1"
   );

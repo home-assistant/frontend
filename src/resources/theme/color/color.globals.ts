@@ -20,6 +20,7 @@ export const colorStyles = css`
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
     --outline-hover-color: rgba(0, 0, 0, 0.24);
+    --shadow-color: rgba(0, 0, 0, 0.16);
 
     /* rgb */
     --rgb-primary-color: 0, 154, 199;
@@ -90,6 +91,62 @@ export const colorStyles = css`
     --blue-grey-color: #607d8b;
     --black-color: #000000;
     --white-color: #ffffff;
+
+    /* colors - used for graphs, calendars, maps, etc */
+    --color-1: #4269d0;
+    --color-2: #f4bd4a;
+    --color-3: #ff725c;
+    --color-4: #6cc5b0;
+    --color-5: #a463f2;
+    --color-6: #ff8ab7;
+    --color-7: #9c6b4e;
+    --color-8: #97bbf5;
+    --color-9: #01ab63;
+    --color-10: #094bad;
+    --color-11: #c99000;
+    --color-12: #d84f3e;
+    --color-13: #49a28f;
+    --color-14: #048732;
+    --color-15: #d96895;
+    --color-16: #8043ce;
+    --color-17: #7599d1;
+    --color-18: #7a4c31;
+    --color-19: #6989f4;
+    --color-20: #ffd444;
+    --color-21: #ff957c;
+    --color-22: #8fe9d3;
+    --color-23: #62cc71;
+    --color-24: #ffadda;
+    --color-25: #c884ff;
+    --color-26: #badeff;
+    --color-27: #bf8b6d;
+    --color-28: #927acc;
+    --color-29: #97ee3f;
+    --color-30: #bf3947;
+    --color-31: #9f5b00;
+    --color-32: #f48758;
+    --color-33: #8caed6;
+    --color-34: #f2b94f;
+    --color-35: #eff26e;
+    --color-36: #e43872;
+    --color-37: #d9b100;
+    --color-38: #9d7a00;
+    --color-39: #698cff;
+    --color-40: #00d27e;
+    --color-41: #d06800;
+    --color-42: #009f82;
+    --color-43: #c49200;
+    --color-44: #cbe8ff;
+    --color-45: #fecddf;
+    --color-46: #c27eb6;
+    --color-47: #8cd2ce;
+    --color-48: #c4b8d9;
+    --color-49: #f883b0;
+    --color-50: #a49100;
+    --color-51: #f48800;
+    --color-52: #27d0df;
+    --color-53: #a04a9b;
+    --color-54: #4269d0;
 
     /* history colors */
     --history-unavailable-color: transparent;
@@ -224,7 +281,7 @@ export const colorStyles = css`
     --table-row-alternative-background-color: var(--secondary-background-color);
     --data-table-background-color: var(--card-background-color);
     --markdown-code-background-color: var(--primary-background-color);
-    --bar-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+    --bar-box-shadow: 0 2px 12px var(--shadow-color);
 
     /* https://github.com/material-components/material-web/blob/master/docs/theming.md */
     --mdc-theme-primary: var(--primary-color);
@@ -240,8 +297,9 @@ export const colorStyles = css`
     --mdc-theme-text-hint-on-background: var(--secondary-text-color);
     --mdc-theme-text-icon-on-background: var(--secondary-text-color);
     --mdc-theme-error: var(--error-color);
-    --app-header-text-color: var(--text-primary-color);
-    --app-header-background-color: var(--primary-color);
+    --app-header-text-color: var(--sidebar-text-color);
+    --app-header-background-color: var(--sidebar-background-color);
+    --app-header-border-bottom: 1px solid var(--divider-color);
     --app-theme-color: var(--app-header-background-color);
     --mdc-checkbox-unchecked-color: rgba(var(--rgb-primary-text-color), 0.54);
     --mdc-checkbox-disabled-color: var(--disabled-text-color);
@@ -282,12 +340,6 @@ export const colorStyles = css`
     --ha-assist-chip-filled-container-color: rgba(var(--rgb-primary-text-color), 0.15);
     --ha-assist-chip-active-container-color: rgba(var(--rgb-primary-color), 0.15);
     --chip-background-color: rgba(var(--rgb-primary-text-color), 0.15);
-
-    /* Vaadin */
-    --material-body-text-color: var(--primary-text-color);
-    --material-background-color: var(--card-background-color);
-    --material-secondary-background-color: var(--secondary-background-color);
-    --material-secondary-text-color: var(--secondary-text-color);
   }
 `;
 
@@ -300,13 +352,15 @@ export const darkColorStyles = css`
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;
     --disabled-text-color: #6f6f6f;
-    --app-header-text-color: #e1e1e1;
-    --app-header-background-color: #101e24;
     --switch-unchecked-button-color: #999999;
     --switch-unchecked-track-color: #9b9b9b;
     --divider-color: rgba(225, 225, 225, 0.12);
     --outline-color: rgba(225, 225, 225, 0.12);
     --outline-hover-color: rgba(225, 225, 225, 0.24);
+    --shadow-color: rgba(0, 0, 0, 0.48);
+
+    --scrollbar-thumb-color: rgb(110, 110, 110);
+
     --mdc-ripple-color: #aaaaaa;
     --mdc-linear-progress-buffer-color: rgba(255, 255, 255, 0.1);
 
@@ -350,7 +404,7 @@ export const darkColorStyles = css`
     --ha-button-neutral-color: #d9dae0;
     --ha-button-neutral-light-color: #6a7081;
 
-    --bar-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.48);
+    --bar-box-shadow: 0 2px 12px var(--shadow-color);
   }
 `;
 

@@ -11,11 +11,13 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../../../types";
@@ -89,7 +91,7 @@ class HaConfigSubEntryRow extends LitElement {
               </ha-icon-button>
             `
           : nothing}
-        <ha-md-button-menu positioning="popover" slot="end">
+        <ha-dropdown slot="end" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -97,71 +99,75 @@ class HaConfigSubEntryRow extends LitElement {
           ></ha-icon-button>
           ${devices.length || services.length
             ? html`
-                <ha-md-menu-item
+                <a
                   href=${devices.length === 1
                     ? `/config/devices/device/${devices[0].id}`
                     : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
                 >
-                  <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.devices`,
-                    { count: devices.length }
-                  )}
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-menu-item>
+                  <ha-dropdown-item value="devices">
+                    <ha-svg-icon .path=${mdiDevices} slot="icon"></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.devices`,
+                      { count: devices.length }
+                    )}
+                    <ha-icon-next slot="details"></ha-icon-next>
+                  </ha-dropdown-item>
+                </a>
               `
             : nothing}
           ${services.length
-            ? html`<ha-md-menu-item
-                href=${services.length === 1
-                  ? `/config/devices/device/${services[0].id}`
-                  : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
-              >
-                <ha-svg-icon
-                  .path=${mdiHandExtendedOutline}
-                  slot="start"
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.services`,
-                  { count: services.length }
-                )}
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-menu-item> `
+            ? html`
+                <a
+                  href=${services.length === 1
+                    ? `/config/devices/device/${services[0].id}`
+                    : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
+                >
+                  <ha-dropdown-item value="services">
+                    <ha-svg-icon
+                      .path=${mdiHandExtendedOutline}
+                      slot="icon"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.services`,
+                      { count: services.length }
+                    )}
+                    <ha-icon-next slot="details"></ha-icon-next>
+                  </ha-dropdown-item>
+                </a>
+              `
             : nothing}
           ${entities.length
             ? html`
-                <ha-md-menu-item
+                <a
                   href=${`/config/entities?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
                 >
-                  <ha-svg-icon
-                    .path=${mdiShapeOutline}
-                    slot="start"
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entities`,
-                    { count: entities.length }
-                  )}
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-menu-item>
+                  <ha-dropdown-item value="entities">
+                    <ha-svg-icon
+                      .path=${mdiShapeOutline}
+                      slot="icon"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.entities`,
+                      { count: entities.length }
+                    )}
+                    <ha-icon-next slot="details"></ha-icon-next>
+                  </ha-dropdown-item>
+                </a>
               `
             : nothing}
-          <ha-md-menu-item @click=${this._handleRenameSub}>
-            <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+          <ha-dropdown-item value="rename">
+            <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
-          </ha-md-menu-item>
-          <ha-md-menu-item class="warning" @click=${this._handleDeleteSub}>
-            <ha-svg-icon
-              slot="start"
-              class="warning"
-              .path=${mdiDelete}
-            ></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item variant="danger" value="delete">
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.delete"
             )}
-          </ha-md-menu-item>
-        </ha-md-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </ha-md-list-item>
       ${this._expanded
         ? html`
@@ -222,7 +228,20 @@ class HaConfigSubEntryRow extends LitElement {
     });
   }
 
-  private async _handleRenameSub(): Promise<void> {
+  private _handleMenuAction = (ev: CustomEvent) => {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "rename":
+        this._handleRenameSub();
+        break;
+      case "delete":
+        this._handleDeleteSub();
+        break;
+      // devices, services, entities are handled by href navigation
+    }
+  };
+
+  private _handleRenameSub = async (): Promise<void> => {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.common.rename"),
       defaultValue: this.subEntry.title,
@@ -239,9 +258,9 @@ class HaConfigSubEntryRow extends LitElement {
       this.subEntry.subentry_id,
       { title: newName }
     );
-  }
+  };
 
-  private async _handleDeleteSub(): Promise<void> {
+  private _handleDeleteSub = async (): Promise<void> => {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
@@ -263,7 +282,7 @@ class HaConfigSubEntryRow extends LitElement {
       this.entry.entry_id,
       this.subEntry.subentry_id
     );
-  }
+  };
 
   static styles = css`
     .expand-button {
@@ -282,6 +301,9 @@ class HaConfigSubEntryRow extends LitElement {
     }
     ha-md-list-item.has-subentries {
       border-bottom: 1px solid var(--divider-color);
+    }
+    ha-dropdown a {
+      text-decoration: none;
     }
   `;
 }

@@ -11,14 +11,14 @@ import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceCapabilities,
   DeviceCondition,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
   fetchDeviceConditionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
@@ -35,7 +35,7 @@ export class HaDeviceCondition extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origCondition?: DeviceCondition;
 

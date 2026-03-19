@@ -1,5 +1,6 @@
+import { consume } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -8,12 +9,9 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import {
-  subscribeLabelRegistry,
-  updateLabelRegistryEntry,
-} from "../data/label_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { updateLabelRegistryEntry } from "../data/label/label_registry";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
@@ -24,7 +22,7 @@ import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
-export class HaLabelsPicker extends SubscribeMixin(LitElement) {
+export class HaLabelsPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -80,7 +78,9 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: Record<string, LabelRegistryEntry>;
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
@@ -94,26 +94,20 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     await this.labelPicker?.focus();
   }
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        const lookUp = {};
-        labels.forEach((label) => {
-          lookUp[label.label_id] = label;
-        });
-        this._labels = lookUp;
-      }),
-    ];
-  }
-
   private _sortedLabels = memoizeOne(
     (
       value: string[] | undefined,
-      labels: Record<string, LabelRegistryEntry> | undefined,
+      labels: LabelRegistryEntry[] | undefined,
       language: string
     ) =>
       value
-        ?.map((id) => labels?.[id])
+        ?.map(
+          (id) =>
+            labels?.find((label) => label.label_id === id) || {
+              label_id: id,
+              name: id,
+            }
+        )
         .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
   );
 
@@ -140,16 +134,17 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 labels,
                 (label) => label?.label_id,
                 (label) => {
-                  const color = label?.color
+                  if (!label) return nothing;
+                  const color = label.color
                     ? computeCssColor(label.color)
                     : undefined;
                   const elementId = "label-" + label.label_id;
                   return html`
                     <ha-tooltip
                       .for=${elementId}
-                      .disabled=${!label?.description?.trim()}
+                      .disabled=${!label.description?.trim()}
                     >
-                      ${label?.description}
+                      ${label.description}
                     </ha-tooltip>
                     <ha-input-chip
                       .item=${label}
@@ -157,11 +152,11 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                       @remove=${this._removeItem}
                       @click=${this._openDetail}
                       .disabled=${this.disabled}
-                      .label=${label?.name}
+                      .label=${label.name}
                       selected
                       style=${color ? `--color: ${color}` : ""}
                     >
-                      ${label?.icon
+                      ${label.icon
                         ? html`<ha-icon
                             slot="icon"
                             .icon=${label.icon}
@@ -231,7 +226,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   static styles = css`
     ha-chip-set {
-      margin-bottom: 8px;
       background-color: var(--mdc-text-field-fill-color);
       border-bottom: 1px solid var(--ha-color-border-neutral-normal);
       border-top-right-radius: var(--ha-border-radius-sm);

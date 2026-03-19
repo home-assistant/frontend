@@ -1,9 +1,10 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import memoizeOne from "memoize-one";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -14,6 +15,7 @@ import type {
 } from "./show-dialog-schedule-block-info";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 
+@customElement("dialog-schedule-block-info")
 class DialogScheduleBlockInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -22,6 +24,8 @@ class DialogScheduleBlockInfo extends LitElement {
   @state() private _data?: ScheduleBlockInfo;
 
   @state() private _params?: ScheduleBlockInfoDialogParams;
+
+  @state() private _open = false;
 
   private _expand = false;
 
@@ -56,9 +60,14 @@ class DialogScheduleBlockInfo extends LitElement {
     this._error = undefined;
     this._data = params.block;
     this._expand = !!params.block?.data;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -71,17 +80,16 @@ class DialogScheduleBlockInfo extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass!.localize(
-            "ui.dialogs.helper_settings.schedule.edit_schedule_block"
-          )
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass!.localize(
+          "ui.dialogs.helper_settings.schedule.edit_schedule_block"
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           <ha-form
+            autofocus
             .hass=${this.hass}
             .schema=${this._schema(this._expand)}
             .data=${this._data}
@@ -90,17 +98,19 @@ class DialogScheduleBlockInfo extends LitElement {
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
-        <ha-button
-          slot="secondaryAction"
-          @click=${this._deleteBlock}
-          appearance="plain"
-          variant="danger"
-        >
-          ${this.hass!.localize("ui.common.delete")}
-        </ha-button>
-        <ha-button slot="primaryAction" @click=${this._updateBlock}>
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            @click=${this._deleteBlock}
+            appearance="filled"
+            variant="danger"
+          >
+            ${this.hass!.localize("ui.common.delete")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._updateBlock}>
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -156,5 +166,3 @@ declare global {
     "dialog-schedule-block-info": DialogScheduleBlockInfo;
   }
 }
-
-customElements.define("dialog-schedule-block-info", DialogScheduleBlockInfo);

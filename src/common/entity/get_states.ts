@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "./compute_state_domain";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { UNAVAILABLE_STATES } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
-import { computeDomain } from "./compute_domain";
 import { stringCompare } from "../string/compare";
+import { computeDomain } from "./compute_domain";
+import { computeStateDomain } from "./compute_state_domain";
 
 export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [

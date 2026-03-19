@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   boolean,
@@ -11,14 +12,13 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateCondition } from "../../../../../data/automation";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
-import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity_attributes";
 
 const numericStateConditionStruct = object({
   alias: optional(string()),

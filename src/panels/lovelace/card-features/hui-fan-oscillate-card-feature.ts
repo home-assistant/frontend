@@ -5,9 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FanEntity } from "../../../data/fan";
 import { FanEntityFeature } from "../../../data/fan";
 import type { HomeAssistant } from "../../../types";
@@ -17,7 +18,6 @@ import type {
   FanOscillateCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 export const supportsFanOscilatteCardFeature = (
   hass: HomeAssistant,

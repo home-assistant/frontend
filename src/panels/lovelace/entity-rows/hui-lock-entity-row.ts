@@ -1,15 +1,15 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity";
+import "../../../components/ha-button";
+import { isUnavailableState } from "../../../data/entity/entity";
+import { callProtectedLockService } from "../../../data/lock";
 import type { HomeAssistant } from "../../../types";
+import { confirmAction } from "../common/confirm-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../../../components/ha-button";
 import type { ConfirmableRowConfig, LovelaceRow } from "./types";
-import { callProtectedLockService } from "../../../data/lock";
-import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {

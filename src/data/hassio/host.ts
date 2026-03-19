@@ -196,6 +196,7 @@ export const fetchHostDisksUsage = async (hass: HomeAssistant) => {
       endpoint: "/host/disks/default/usage",
       method: "get",
       timeout: 3600, // seconds. This can take a while
+      params: { max_depth: 3 },
     });
   }
 

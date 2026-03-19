@@ -14,6 +14,12 @@ export const rowStyles = css`
   h3 {
     font-size: inherit;
     font-weight: inherit;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    padding: var(--ha-space-2) 0;
+    min-height: 32px;
   }
 
   ha-card {
@@ -33,9 +39,6 @@ export const rowStyles = css`
   }
   .warning ul {
     margin: 4px 0;
-  }
-  ha-md-menu-item > ha-svg-icon {
-    --mdc-icon-size: 24px;
   }
   ha-tooltip {
     cursor: default;
@@ -144,7 +147,7 @@ export const manualEditorStyles = css`
   }
 
   .content {
-    padding-top: 24px;
+    padding-top: var(--ha-space-3);
     padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }
@@ -265,8 +268,5 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
-  }
-  ha-md-menu-item {
-    --mdc-icon-size: 24px;
   }
 `;

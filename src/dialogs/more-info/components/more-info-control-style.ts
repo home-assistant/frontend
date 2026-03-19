@@ -12,25 +12,27 @@ export const moreInfoControlStyle = css`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    flex: 1;
   }
 
   .controls:not(:last-child) {
-    margin-bottom: 24px;
+    margin-bottom: var(--ha-space-6);
   }
 
   .controls > *:not(:last-child) {
-    margin-bottom: 24px;
+    margin-bottom: var(--ha-space-6);
   }
 
   .buttons {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: var(--ha-space-3);
   }
 
   .buttons > * {
-    margin: 8px;
+    margin: var(--ha-space-2);
   }
 
   ha-attributes {
@@ -38,6 +40,6 @@ export const moreInfoControlStyle = css`
     width: 100%;
   }
   ha-more-info-control-select-container + ha-attributes:not([empty]) {
-    margin-top: 16px;
+    margin-top: var(--ha-space-4);
   }
 `;
