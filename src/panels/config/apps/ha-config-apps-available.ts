@@ -135,11 +135,9 @@ export class HaConfigAppsAvailable extends LitElement {
           <ha-dropdown-item value="repositories">
             ${this.hass.localize("ui.panel.config.apps.store.repositories")}
           </ha-dropdown-item>
-          ${this.hass.userData?.showAdvanced
-            ? html`<ha-dropdown-item value="registries">
-                ${this.hass.localize("ui.panel.config.apps.store.registries")}
-              </ha-dropdown-item>`
-            : nothing}
+          <ha-dropdown-item value="registries">
+            ${this.hass.localize("ui.panel.config.apps.store.registries")}
+          </ha-dropdown-item>
         </ha-dropdown>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
