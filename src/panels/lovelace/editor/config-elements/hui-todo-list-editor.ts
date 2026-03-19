@@ -43,7 +43,10 @@ const cardConfigStruct = assign(
     hide_section_headers: optional(boolean()),
     display_order: optional(string()),
     item_tap_action: optional(string()),
-    due_date_period: optional(any()),
+    due_date_period: optional(object({
+      calendar: optional(object({ period: string(), offset: optional(number()) })),
+      rolling_window: optional(object({ offset: optional(any()) })),
+    })),
   })
 );
 
