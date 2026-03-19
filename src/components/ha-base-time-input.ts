@@ -273,6 +273,7 @@ export class HaBaseTimeInput extends LitElement {
                 .name=${"amPm"}
                 @selected=${this._valueChanged}
                 @wa-after-hide=${stopPropagation}
+                @wa-hide=${stopPropagation}
                 .options=${["AM", "PM"]}
               >
               </ha-select>`}
