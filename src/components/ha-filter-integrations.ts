@@ -15,7 +15,8 @@ import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
 import "./ha-list";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -52,12 +53,11 @@ export class HaFilterIntegrations extends LitElement {
             : nothing}
         </div>
         ${this._manifests && this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 class="ha-scrollbar"
                 @click=${this._handleItemClick}
@@ -175,8 +175,9 @@ export class HaFilterIntegrations extends LitElement {
     });
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   static get styles(): CSSResultGroup {
@@ -221,7 +222,7 @@ export class HaFilterIntegrations extends LitElement {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

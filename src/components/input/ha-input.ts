@@ -10,10 +10,17 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
+import "../ha-svg-icon";
 import "../ha-tooltip";
 
 @customElement("ha-input")
 export class HaInput extends LitElement {
+  @property({ reflect: true }) appearance: "material" | "outlined" = "material";
+
+  @property({ attribute: "icon-start" }) iconStart?: string;
+
+  @property({ attribute: "icon-end" }) iconEnd?: string;
+
   @property({ reflect: true })
   public type:
     | "date"
@@ -314,12 +321,19 @@ export class HaInput extends LitElement {
               >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
-        <slot
-          name="start"
-          slot="start"
-          @slotchange=${this._syncStartSlotWidth}
-        ></slot>
-        <slot name="end" slot="end"></slot>
+        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
+          ${this.iconStart
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${this.iconStart}
+              ></ha-svg-icon>`
+            : nothing}
+        </slot>
+        <slot name="end" slot="end">
+          ${this.iconEnd
+            ? html`<ha-svg-icon slot="end" .path=${this.iconEnd}></ha-svg-icon>`
+            : nothing}
+        </slot>
         <slot name="clear-icon" slot="clear-icon">
           <ha-icon-button .path=${mdiClose}></ha-icon-button>
         </slot>
@@ -425,6 +439,9 @@ export class HaInput extends LitElement {
       padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
       text-align: var(--ha-input-text-align, start);
     }
+    :host([appearance="outlined"]) {
+      padding-bottom: var(--ha-input-padding-bottom);
+    }
     wa-input {
       flex: 1;
       min-width: 0;
@@ -450,7 +467,7 @@ export class HaInput extends LitElement {
       font-size: var(--ha-font-size-m);
     }
 
-    :host(:focus-within) wa-input::part(label) {
+    :host([appearance="material"]:focus-within) wa-input::part(label) {
       color: var(--primary-color);
     }
 
@@ -478,7 +495,19 @@ export class HaInput extends LitElement {
       transition: background-color var(--wa-transition-normal) ease-in-out;
     }
 
-    wa-input::part(base)::after {
+    :host([appearance="outlined"]) wa-input.no-label::part(base) {
+      height: 32px;
+      padding: 0 var(--ha-space-2);
+    }
+
+    :host([appearance="outlined"]) wa-input::part(base) {
+      border: 1px solid var(--ha-color-border-neutral-quiet);
+      background-color: var(--card-background-color);
+      border-radius: var(--ha-border-radius-lg);
+      transition: border-color var(--wa-transition-normal) ease-in-out;
+    }
+
+    :host([appearance="material"]) ::part(base)::after {
       content: "";
       position: absolute;
       bottom: 0;
@@ -491,13 +520,15 @@ export class HaInput extends LitElement {
         background-color var(--wa-transition-normal) ease-in-out;
     }
 
-    :host(:focus-within) wa-input::part(base)::after {
+    :host([appearance="material"]:focus-within) wa-input::part(base)::after {
       height: 2px;
       background-color: var(--primary-color);
     }
 
-    :host(:focus-within) wa-input.invalid::part(base)::after,
-    wa-input.invalid:not([disabled])::part(base)::after {
+    :host([appearance="material"]:focus-within)
+      wa-input.invalid::part(base)::after,
+    :host([appearance="material"])
+      wa-input.invalid:not([disabled])::part(base)::after {
       background-color: var(--ha-color-border-danger-normal);
     }
 
@@ -505,6 +536,7 @@ export class HaInput extends LitElement {
       padding-top: var(--ha-space-3);
       padding-inline-start: var(--input-padding-inline-start, 0);
     }
+
     wa-input.no-label::part(input) {
       padding-top: 0;
     }
@@ -521,6 +553,13 @@ export class HaInput extends LitElement {
 
     wa-input::part(base):hover {
       background-color: var(--ha-color-form-background-hover);
+    }
+
+    :host([appearance="outlined"]) wa-input::part(base):hover {
+      border-color: var(--ha-color-border-neutral-normal);
+    }
+    :host([appearance="outlined"]:focus-within) wa-input::part(base) {
+      border-color: var(--primary-color);
     }
 
     wa-input:disabled::part(base) {
@@ -547,6 +586,11 @@ export class HaInput extends LitElement {
 
     wa-input::part(end) {
       color: var(--ha-color-text-secondary);
+    }
+
+    :host([appearance="outlined"]) wa-input.no-label {
+      --ha-icon-button-size: 24px;
+      --mdc-icon-size: 18px;
     }
   `;
 }

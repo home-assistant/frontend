@@ -1,7 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume, type ContextType } from "@lit/context";
-import { mdiClose, mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
+import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -30,8 +30,8 @@ import "./ha-combo-box-item";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-svg-icon";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 export const DEFAULT_SEARCH_KEYS: FuseWeightedKey[] = [
   {
@@ -159,7 +159,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
-  @query("ha-textfield") private _searchFieldElement?: HaTextField;
+  @query("ha-input-search") private _searchFieldElement?: HaInputSearch;
 
   @state()
   @consume({ context: localizeContext, subscribe: true })
@@ -226,19 +226,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           "Search | Add custom value")
         : (this.localize?.("ui.common.search") ?? "Search"));
 
-    return html`<ha-textfield
-        .label=${searchLabel}
+    return html`<ha-input-search
+        .placeholder=${searchLabel}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
-        .iconTrailing=${this.clearable && !!this._search}
       >
-        <ha-icon-button
-          @click=${this._clearSearch}
-          slot="trailingIcon"
-          .label=${this.localize?.("ui.common.clear") || "Clear"}
-          .path=${mdiClose}
-        ></ha-icon-button>
-      </ha-textfield>
+      </ha-input-search>
       ${this._renderSectionButtons()}
       ${this.sections?.length
         ? html`
@@ -455,21 +448,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "index-selected", { index, newTab });
   }
 
-  private _clearSearch = () => {
-    if (this._searchFieldElement) {
-      this._searchFieldElement.value = "";
-      this._searchFieldElement.dispatchEvent(new Event("input"));
-    }
-  };
-
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
       Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
   );
 
-  private _filterChanged = (ev: Event) => {
-    const textfield = ev.target as HaTextField;
-    const searchString = textfield.value.trim();
+  private _filterChanged = (ev: InputEvent) => {
+    const textfield = ev.target as HaInputSearch;
+    const searchString = (textfield.value ?? "").trim();
     this._search = searchString;
 
     if (this.sections?.length) {
@@ -810,12 +796,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           --text-field-padding-end: 0;
         }
 
-        ha-textfield {
+        ha-input-search {
           padding: 0 var(--ha-space-3);
           margin-bottom: var(--ha-space-3);
         }
 
-        :host([mode="dialog"]) ha-textfield {
+        :host([mode="dialog"]) ha-input-search {
           padding: 0 var(--ha-space-4);
         }
 
@@ -929,7 +915,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           padding: var(--ha-space-1) var(--ha-space-4);
         }
 
-        :host([mode="dialog"]) ha-textfield {
+        :host([mode="dialog"]) ha-input-search {
           padding: 0 var(--ha-space-4);
         }
 

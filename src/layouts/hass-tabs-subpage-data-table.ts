@@ -12,7 +12,7 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -29,14 +29,15 @@ import type {
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-button";
-import "../components/ha-dialog-footer";
 import "../components/ha-dialog";
+import "../components/ha-dialog-footer";
 import "../components/ha-dropdown";
-import "../components/ha-icon-button";
-import "../components/ha-svg-icon";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
-import "../components/search-input-outlined";
+import "../components/ha-icon-button";
+import "../components/ha-svg-icon";
+import "../components/input/ha-input-search";
+import type { HaInputSearch } from "../components/input/ha-input-search";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
@@ -193,7 +194,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("search-input-outlined") private _searchInput!: HTMLElement;
+  @query("ha-input-search") private _searchInput!: HaInputSearch;
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
@@ -266,14 +267,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
           </ha-assist-chip>`
         : nothing;
 
-    const searchBar = html`<search-input-outlined
-      .hass=${this.hass}
-      .filter=${this.filter}
-      @value-changed=${this._handleSearchChange}
-      .label=${this.searchLabel}
+    const searchBar = html`<ha-input-search
+      .value=${this.filter}
+      @input=${this._handleSearchChange}
       .placeholder=${this.searchLabel}
     >
-    </search-input-outlined>`;
+    </ha-input-search>`;
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
@@ -715,11 +714,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   };
 
-  private _handleSearchChange(ev: CustomEvent) {
-    if (this.filter === ev.detail.value) {
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    if (this.filter === target.value) {
       return;
     }
-    this.filter = ev.detail.value;
+    this.filter = target.value ?? "";
     fireEvent(this, "search-changed", { value: this.filter });
   }
 
@@ -795,7 +795,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       background: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
     }
-    search-input-outlined {
+    ha-input-search {
       flex: 1;
     }
     .search-toolbar {
