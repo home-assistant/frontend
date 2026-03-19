@@ -13,10 +13,10 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
-  AreaCardConfig,
   EmptyStateCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   getSummaryLabel,
@@ -97,6 +97,28 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     } = entitiesBySummary;
 
     if (light.length > 0) {
+      const lightControlEntities = getAreaControlEntities(
+        ["light"],
+        config.area,
+        undefined,
+        hass
+      );
+
+      const lightToggleBadge: ButtonHeadingBadgeConfig | undefined =
+        lightControlEntities.light.length > 0
+          ? {
+              type: "button",
+              icon: "mdi:lightbulb",
+              tap_action: {
+                action: "perform-action",
+                perform_action: "light.toggle",
+                target: {
+                  entity_id: lightControlEntities.light,
+                },
+              },
+            }
+          : undefined;
+
       sections.push({
         type: "grid",
         cards: [
@@ -110,6 +132,9 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                   navigation_path: "/light?historyBack=1",
                 }
               : undefined,
+            ...(lightToggleBadge
+              ? { badges: [lightToggleBadge] }
+              : {}),
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
@@ -422,36 +447,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections[0].column_span = 2;
     }
 
-    const controlEntities = getAreaControlEntities(
-      ["light"],
-      config.area,
-      undefined,
-      hass
-    );
-
-    const hasLights = controlEntities.light.length > 0;
-
     return {
       type: "sections",
       header: {
         badges_position: "bottom",
-        ...(hasLights
-          ? {
-              card: {
-                type: "area",
-                area: config.area,
-                display_type: "compact",
-                features: [
-                  {
-                    type: "area-controls",
-                    controls: ["light"],
-                  },
-                ],
-                features_position: "inline",
-                tap_action: { action: "none" },
-              } satisfies AreaCardConfig,
-            }
-          : {}),
       },
       max_columns: maxColumns,
       sections: sections,
