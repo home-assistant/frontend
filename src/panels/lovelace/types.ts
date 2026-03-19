@@ -14,6 +14,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
   LovelaceCardFeaturePosition,
+  NumericInputConfig,
 } from "./card-features/types";
 import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -176,7 +177,7 @@ export interface LovelaceCardFeature extends HTMLElement {
   /** @deprecated Use `context` instead */
   stateObj?: HassEntity;
   context?: LovelaceCardFeatureContext;
-  setConfig(config: LovelaceCardFeatureConfig);
+  setConfig(config: LovelaceCardFeatureConfig | NumericInputConfig);
   color?: string;
   position?: LovelaceCardFeaturePosition;
 }
@@ -195,7 +196,7 @@ export interface LovelaceCardFeatureConstructor extends Constructor<LovelaceCard
 }
 
 export interface LovelaceCardFeatureEditor extends LovelaceGenericElementEditor {
-  setConfig(config: LovelaceCardFeatureConfig): void;
+  setConfig(config: LovelaceCardFeatureConfig | NumericInputConfig): void;
 }
 
 export interface LovelaceHeadingBadge extends HTMLElement {

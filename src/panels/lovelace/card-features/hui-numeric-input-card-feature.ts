@@ -13,6 +13,7 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   NumericInputCardFeatureConfig,
+  NumericInputConfig,
 } from "./types";
 
 export const supportsNumericInputCardFeature = (
@@ -59,11 +60,15 @@ class HuiNumericInputCardFeature
     return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
-  public setConfig(config: NumericInputCardFeatureConfig): void {
+  public setConfig(config: NumericInputConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
-    this._config = config;
+
+    this._config = {
+      ...this._config,
+      ...config,
+    } as NumericInputCardFeatureConfig;
   }
 
   protected willUpdate(changedProp: PropertyValues): void {

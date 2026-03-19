@@ -12,6 +12,7 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   TargetHumidityCardFeatureConfig,
+  NumericInputConfig,
 } from "./types";
 
 export const supportsTargetHumidityCardFeature = (
@@ -57,14 +58,21 @@ class HuiTargetHumidityCardFeature
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
-    return document.createElement("hui-numeric-input-card-feature-editor");
+    const el = document.createElement(
+      "hui-numeric-input-card-feature-editor"
+    ) as any;
+    el.defaultInputMode = "slider";
+    return el;
   }
 
-  public setConfig(config: TargetHumidityCardFeatureConfig): void {
+  public setConfig(config: NumericInputConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
-    this._config = config;
+    this._config = {
+      ...this._config,
+      ...config,
+    } as TargetHumidityCardFeatureConfig;
   }
 
   protected willUpdate(changedProp: PropertyValues): void {
