@@ -137,7 +137,7 @@ class HuiTargetTemperatureCardFeature
 
   private async _valueChanged(ev: CustomEvent) {
     const eventElement = ev.target as any;
-    const value = eventElement.value;
+    const value = ev.detail.value;
     if (isNaN(value)) return;
     const target = eventElement.target ?? "value";
 
