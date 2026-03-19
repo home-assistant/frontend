@@ -638,6 +638,7 @@ class DialogCalendarEventEditor extends LitElement {
           flex-grow: 1;
         }
         ha-time-input {
+          --ha-base-time-input-margin-top: var(--ha-space-2);
           margin-left: 16px;
           margin-inline-start: 16px;
           margin-inline-end: initial;

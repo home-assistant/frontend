@@ -369,6 +369,7 @@ export class HaBaseTimeInput extends LitElement {
     ha-input {
       height: 56px;
       padding: 0;
+      margin-top: var(--ha-base-time-input-margin-top, 0);
       width: 60px;
       flex-grow: 1;
     }
@@ -406,6 +407,7 @@ export class HaBaseTimeInput extends LitElement {
       border-bottom: 1px solid var(--ha-color-border-neutral-loud);
       box-sizing: border-box;
       height: 56px;
+      margin-top: var(--ha-base-time-input-margin-top, 0);
       margin-inline-start: calc(var(--ha-space-1) * -1);
     }
 
