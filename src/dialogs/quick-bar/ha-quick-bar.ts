@@ -54,7 +54,6 @@ import {
 } from "../../resources/fuseMultiTerm";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
@@ -146,15 +145,16 @@ export class QuickBar extends LitElement {
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass.auth.external)) {
-        this.hass.auth.external!.fireMessage({
-          type: "focus_element",
-          payload: {
-            element_id: "combo-box",
-          },
-        });
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this.hass && isIosApp(this.hass.auth.external)) {
+      //   this.hass.auth.external!.fireMessage({
+      //     type: "focus_element",
+      //     payload: {
+      //       element_id: "combo-box",
+      //     },
+      //   });
+      //   return;
+      // }
       this._comboBox?.focus();
     });
   };
