@@ -314,7 +314,10 @@ export class HuiViewHeader extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
@@ -449,7 +452,10 @@ export class HuiViewHeader extends LitElement {
 
     .container.edit-mode {
       padding: 8px;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -469,7 +475,10 @@ export class HuiViewHeader extends LitElement {
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
       width: auto;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;
