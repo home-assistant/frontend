@@ -5,6 +5,7 @@ import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import {
   formatCallyDateRange,
   formatDateMonth,
@@ -118,6 +119,7 @@ export class DateRangePicker extends LitElement {
             @focusday=${this._focusChanged}
             @change=${this._handleChange}
             show-outside-days
+            .firstDayOfWeek=${firstWeekdayIndex(this.locale)}
           >
             <ha-icon-button-prev
               tabindex="-1"

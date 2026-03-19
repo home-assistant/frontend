@@ -294,6 +294,12 @@ export class HaDateRangePicker extends LitElement {
     );
     this.startDate = start;
     this.endDate = end;
+    fireEvent(this, "value-changed", {
+      value: {
+        startDate: this.startDate,
+        endDate: this.endDate,
+      },
+    });
   }
 
   private _closePicker() {
