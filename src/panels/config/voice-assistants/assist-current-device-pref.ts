@@ -39,7 +39,7 @@ export class AssistCurrentDevicePref extends LitElement {
 
   private _openSettings() {
     this.hass.auth.external!.fireMessage({
-      type: "voice_device_settings/show",
+      type: "assist/settings",
     });
   }
 

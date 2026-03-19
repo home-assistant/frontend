@@ -54,7 +54,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
                 ></assist-pref>
               `
             : nothing}
-          ${this.hass.auth.external?.config.hasVoiceDeviceSettings
+          ${this.hass.auth.external?.config.hasAssistSettings
             ? html`
                 <assist-current-device-pref
                   .hass=${this.hass}
