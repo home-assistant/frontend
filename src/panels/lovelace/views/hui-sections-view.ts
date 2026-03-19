@@ -28,6 +28,7 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
+import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
@@ -164,6 +165,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
 
+    const sectionNeedsMargin = this._computeSectionsWithBackgroundAlignment(
+      sections,
+      contentColumnCount
+    );
+
     return html`
       <div
         class="wrapper ${classMap({
@@ -230,15 +236,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   const rowSpan = section.config.row_span || 1;
 
                   return html`
-                <div
-                  class="section"
-                  style=${styleMap({
-                    "--column-span": columnSpan,
-                    "--row-span": rowSpan,
-                  })}
-                >
-                    ${
-                      editMode
+                    <div
+                      class="section"
+                      style=${styleMap({
+                        "--column-span": columnSpan,
+                        "--row-span": rowSpan,
+                      })}
+                    >
+                      ${editMode
                         ? html`
                             <hui-section-edit-mode
                               .hass=${this.hass}
@@ -246,14 +251,18 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                               .index=${idx}
                               .viewIndex=${this.index}
                             >
-                              ${section}
+                              ${this._renderSection(
+                                section,
+                                sectionNeedsMargin.has(idx)
+                              )}
                             </hui-section-edit-mode>
                           `
-                        : section
-                    }
-                  </div>
-                </div>
-              `;
+                        : this._renderSection(
+                            section,
+                            sectionNeedsMargin.has(idx)
+                          )}
+                    </div>
+                  `;
                 }
               )}
               ${editMode
@@ -387,6 +396,66 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     })
   );
 
+  private _renderSection(section: HuiSection, alignBackground: boolean) {
+    const hasBackground = section.config.background !== undefined;
+
+    return html`
+      <div
+        class="section-container ${classMap({
+          "has-background": hasBackground,
+          "align-background": alignBackground,
+        })}"
+      >
+        ${hasBackground
+          ? html`<hui-section-background
+              .background=${section.config.background}
+            ></hui-section-background>`
+          : nothing}
+        ${section}
+      </div>
+    `;
+  }
+
+  private _computeSectionsWithBackgroundAlignment(
+    sections: HuiSection[],
+    columnCount: number
+  ): Set<number> {
+    const needsMargin = new Set<number>();
+    if (columnCount <= 1) return needsMargin;
+    let rowColumns = 0;
+    let rowHasBackground = false;
+    let rowIndices: number[] = [];
+
+    const flushRow = () => {
+      if (rowHasBackground) {
+        for (const i of rowIndices) {
+          if (sections[i].config.background === undefined) {
+            needsMargin.add(i);
+          }
+        }
+      }
+      rowColumns = 0;
+      rowIndices = [];
+      rowHasBackground = false;
+    };
+
+    sections.forEach((section, idx) => {
+      if (section.hidden) return;
+      const span = Math.min(section.config.column_span || 1, columnCount);
+      if (rowColumns + span > columnCount) {
+        flushRow();
+      }
+      rowColumns += span;
+      rowIndices.push(idx);
+      if (section.config.background !== undefined) {
+        rowHasBackground = true;
+      }
+    });
+    flushRow();
+
+    return needsMargin;
+  }
+
   private _createSection(): void {
     const newConfig = addSection(
       this.lovelace!.config,
@@ -495,6 +564,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .section:has(hui-section[hidden]) {
       display: none;
+    }
+
+    .section-container {
+      position: relative;
+    }
+
+    .section-container.has-background {
+      padding: var(--ha-space-2);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    }
+
+    .section-container.align-background {
+      margin-top: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
     }
 
     .container {

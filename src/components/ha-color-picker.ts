@@ -8,6 +8,7 @@ import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { localizeContext } from "../data/context";
+import type { UiColorExtraOption } from "../data/selector";
 import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
@@ -30,7 +31,23 @@ export class HaColorPicker extends LitElement {
   @property({ type: Boolean, attribute: "include_none" })
   public includeNone = false;
 
+  @property({ attribute: false })
+  public extraOptions?: UiColorExtraOption[];
+
   @property({ type: Boolean }) public disabled = false;
+
+  private _extraOptionsColorMap = memoizeOne(
+    (extraOptions?: UiColorExtraOption[]) => {
+      if (!extraOptions) return undefined;
+      const map = new Map<string, string>();
+      for (const option of extraOptions) {
+        if (option.display_color) {
+          map.set(option.value, option.display_color);
+        }
+      }
+      return map.size > 0 ? map : undefined;
+    }
+  );
 
   @property({ type: Boolean }) public required = false;
 
@@ -71,6 +88,7 @@ export class HaColorPicker extends LitElement {
     const colors = this._getColors(
       this.includeNone,
       this.includeState,
+      this.extraOptions,
       this.defaultColor,
       this.value
     );
@@ -93,6 +111,7 @@ export class HaColorPicker extends LitElement {
     this._getColors(
       this.includeNone,
       this.includeState,
+      this.extraOptions,
       this.defaultColor,
       this.value
     );
@@ -101,6 +120,7 @@ export class HaColorPicker extends LitElement {
     (
       includeNone: boolean,
       includeState: boolean,
+      extraOptions: UiColorExtraOption[] | undefined,
       defaultColor: string | undefined,
       currentValue: string | undefined
     ): PickerComboBoxItem[] => {
@@ -132,6 +152,19 @@ export class HaColorPicker extends LitElement {
         });
       }
 
+      if (extraOptions) {
+        extraOptions.forEach((option) => {
+          items.push({
+            id: option.value,
+            primary: addDefaultSuffix(
+              option.label,
+              defaultColor === option.value
+            ),
+            ...(option.icon ? { icon: option.icon } : {}),
+          });
+        });
+      }
+
       Array.from(THEME_COLORS).forEach((color) => {
         const themeLabel =
           this.localize?.(
@@ -143,14 +176,11 @@ export class HaColorPicker extends LitElement {
         });
       });
 
-      const isSpecial =
-        currentValue === "none" ||
-        currentValue === "state" ||
-        THEME_COLORS.has(currentValue || "");
+      const knownIds = new Set(items.map((item) => item.id));
 
       const hasValue = currentValue && currentValue.length > 0;
 
-      if (hasValue && !isSpecial) {
+      if (hasValue && !knownIds.has(currentValue!)) {
         items.push({
           id: currentValue!,
           primary: currentValue!,
@@ -161,21 +191,27 @@ export class HaColorPicker extends LitElement {
     }
   );
 
+  private _renderItemIcon(item: PickerComboBoxItem) {
+    if (item.icon_path) {
+      return html`<ha-svg-icon
+        slot="start"
+        .path=${item.icon_path}
+      ></ha-svg-icon>`;
+    }
+    if (item.icon) {
+      return html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`;
+    }
+    const color =
+      this._extraOptionsColorMap(this.extraOptions)?.get(item.id) ?? item.id;
+    return html`<span slot="start">${this._renderColorCircle(color)}</span>`;
+  }
+
   private _rowRenderer: (
     item: PickerComboBoxItem,
     index?: number
   ) => ReturnType<typeof html> = (item) => html`
     <ha-combo-box-item type="button" compact>
-      ${item.id === "none"
-        ? html`<ha-svg-icon
-            slot="start"
-            .path=${mdiInvertColorsOff}
-          ></ha-svg-icon>`
-        : item.id === "state"
-          ? html`<ha-svg-icon slot="start" .path=${mdiPalette}></ha-svg-icon>`
-          : html`<span slot="start">
-              ${this._renderColorCircle(item.id)}
-            </span>`}
+      ${this._renderItemIcon(item)}
       <span slot="headline">${item.primary}</span>
       ${item.secondary
         ? html`<span slot="supporting-text">${item.secondary}</span>`
@@ -201,13 +237,23 @@ export class HaColorPicker extends LitElement {
       `;
     }
 
+    const extraOption = this.extraOptions?.find((o) => o.value === value);
+    const label =
+      extraOption?.label ||
+      this.localize?.(
+        `ui.components.color-picker.colors.${value}` as LocalizeKeys
+      ) ||
+      value;
+
+    const color =
+      this._extraOptionsColorMap(this.extraOptions)?.get(value) ?? value;
+    const startSlot = extraOption?.icon
+      ? html`<ha-icon slot="start" .icon=${extraOption.icon}></ha-icon>`
+      : html`<span slot="start">${this._renderColorCircle(color)}</span>`;
+
     return html`
-      <span slot="start">${this._renderColorCircle(value)}</span>
-      <span slot="headline">
-        ${this.localize?.(
-          `ui.components.color-picker.colors.${value}` as LocalizeKeys
-        ) || value}
-      </span>
+      ${startSlot}
+      <span slot="headline">${label}</span>
     `;
   };
 

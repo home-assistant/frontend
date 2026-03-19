@@ -220,7 +220,7 @@ export class HuiBadgeEditMode extends LitElement {
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      path: containerPath as [number],
       badgeConfig,
     });
   }

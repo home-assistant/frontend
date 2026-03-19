@@ -507,11 +507,19 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiColorExtraOption {
+  value: string;
+  label: string;
+  icon?: string;
+  display_color?: string;
+}
+
 export interface UiColorSelector {
   ui_color: {
     default_color?: string;
     include_none?: boolean;
     include_state?: boolean;
+    extra_options?: UiColorExtraOption[];
   } | null;
 }
 
