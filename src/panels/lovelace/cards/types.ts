@@ -598,8 +598,9 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   hide_create?: boolean;
   hide_section_headers?: boolean;
   sort?: string;
-  period?: {
-    calendar?: { period: string; offset: number };
+  due_date_period?: {
+    calendar?: { period: string; offset?: number };
+    rolling_window?: { offset: HaDurationData };
   };
 }
 
