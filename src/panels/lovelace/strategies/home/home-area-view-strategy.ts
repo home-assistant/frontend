@@ -7,11 +7,13 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
+import { getAreaControlEntities } from "../../../../data/area/area_controls";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
+  AreaCardConfig,
   EmptyStateCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
@@ -420,10 +422,36 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections[0].column_span = 2;
     }
 
+    const controlEntities = getAreaControlEntities(
+      ["light"],
+      config.area,
+      undefined,
+      hass
+    );
+
+    const hasLights = controlEntities.light.length > 0;
+
     return {
       type: "sections",
       header: {
         badges_position: "bottom",
+        ...(hasLights
+          ? {
+              card: {
+                type: "area",
+                area: config.area,
+                display_type: "compact",
+                features: [
+                  {
+                    type: "area-controls",
+                    controls: ["light"],
+                  },
+                ],
+                features_position: "inline",
+                tap_action: { action: "none" },
+              } satisfies AreaCardConfig,
+            }
+          : {}),
       },
       max_columns: maxColumns,
       sections: sections,
