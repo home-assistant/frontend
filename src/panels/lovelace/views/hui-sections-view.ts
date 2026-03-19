@@ -30,6 +30,7 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
+import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
@@ -165,7 +166,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
 
-    const sectionNeedsMargin = this._computeSectionsWithBackgroundAlignment(
+    const sectionNeedsMargin = computeSectionsBackgroundAlignment(
       sections,
       contentColumnCount
     );
@@ -414,46 +415,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         ${section}
       </div>
     `;
-  }
-
-  private _computeSectionsWithBackgroundAlignment(
-    sections: HuiSection[],
-    columnCount: number
-  ): Set<number> {
-    const needsMargin = new Set<number>();
-    if (columnCount <= 1) return needsMargin;
-    let rowColumns = 0;
-    let rowHasBackground = false;
-    let rowIndices: number[] = [];
-
-    const flushRow = () => {
-      if (rowHasBackground) {
-        for (const i of rowIndices) {
-          if (sections[i].config.background === undefined) {
-            needsMargin.add(i);
-          }
-        }
-      }
-      rowColumns = 0;
-      rowIndices = [];
-      rowHasBackground = false;
-    };
-
-    sections.forEach((section, idx) => {
-      if (section.hidden) return;
-      const span = Math.min(section.config.column_span || 1, columnCount);
-      if (rowColumns + span > columnCount) {
-        flushRow();
-      }
-      rowColumns += span;
-      rowIndices.push(idx);
-      if (section.config.background !== undefined) {
-        rowHasBackground = true;
-      }
-    });
-    flushRow();
-
-    return needsMargin;
   }
 
   private _createSection(): void {
