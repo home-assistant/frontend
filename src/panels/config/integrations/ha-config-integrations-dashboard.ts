@@ -88,6 +88,25 @@ const groupByIntegration = (
   });
   return result;
 };
+
+const sortConfigEntriesByName = (
+  entries: ConfigEntryExtended[],
+  language: string
+): ConfigEntryExtended[] =>
+  entries.sort(
+    (entryA, entryB) =>
+      caseInsensitiveStringCompare(
+        entryA.localized_domain_name || entryA.domain,
+        entryB.localized_domain_name || entryB.domain,
+        language
+      ) ||
+      caseInsensitiveStringCompare(
+        entryA.title || entryA.domain,
+        entryB.title || entryB.domain,
+        language
+      )
+  );
+
 @customElement("ha-config-integrations-dashboard")
 class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   SubscribeMixin(LitElement)
@@ -269,8 +288,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
             this.hass.locale.language
           )
         ),
-        ignored,
-        disabled,
+        sortConfigEntriesByName(ignored, this.hass.locale.language),
+        sortConfigEntriesByName(disabled, this.hass.locale.language),
       ];
     }
   );
