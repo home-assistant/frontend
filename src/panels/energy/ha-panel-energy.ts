@@ -15,11 +15,6 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
-export {
-  DEFAULT_ENERGY_COLLECTION_KEY,
-  DEFAULT_POWER_COLLECTION_KEY,
-} from "./constants";
-
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
