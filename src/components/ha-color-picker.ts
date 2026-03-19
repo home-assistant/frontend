@@ -10,9 +10,12 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import { localizeContext } from "../data/context";
 import type { UiColorExtraOption } from "../data/selector";
 import type { ValueChangedEvent } from "../types";
+import "./ha-combo-box-item";
 import "./ha-generic-picker";
+import "./ha-icon";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import type { PickerValueRenderer } from "./ha-picker-field";
+import "./ha-svg-icon";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {
