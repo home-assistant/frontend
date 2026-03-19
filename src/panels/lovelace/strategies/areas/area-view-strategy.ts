@@ -1,11 +1,14 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { clamp } from "../../../../common/number/clamp";
+import { getAreaControlEntities } from "../../../../data/area/area_controls";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { HeadingCardConfig } from "../../cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   computeAreaTileCardConfig,
@@ -87,13 +90,41 @@ export class AreaViewStrategy extends ReactiveElement {
     } = groupedEntities;
 
     if (lights.length > 0) {
+      const lightControlEntities = getAreaControlEntities(
+        ["light"],
+        config.area,
+        undefined,
+        hass
+      );
+
+      const lightToggleBadge: ButtonHeadingBadgeConfig | undefined =
+        lightControlEntities.light.length > 0
+          ? {
+              type: "button",
+              icon: "mdi:lightbulb",
+              tap_action: {
+                action: "perform-action",
+                perform_action: "light.toggle",
+                target: {
+                  entity_id: lightControlEntities.light,
+                },
+              },
+            }
+          : undefined;
+
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
-            AREA_STRATEGY_GROUP_ICONS.lights
-          ),
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.areas.groups.lights"
+            ),
+            icon: AREA_STRATEGY_GROUP_ICONS.lights,
+            ...(lightToggleBadge
+              ? { badges: [lightToggleBadge] }
+              : {}),
+          } satisfies HeadingCardConfig,
           ...lights.map(computeTileCard),
         ],
       });

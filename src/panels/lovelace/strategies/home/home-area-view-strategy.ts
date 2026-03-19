@@ -7,7 +7,6 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
-import { getAreaControlEntities } from "../../../../data/area/area_controls";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -16,7 +15,6 @@ import type {
   EmptyStateCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
-import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   getSummaryLabel,
@@ -97,28 +95,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     } = entitiesBySummary;
 
     if (light.length > 0) {
-      const lightControlEntities = getAreaControlEntities(
-        ["light"],
-        config.area,
-        undefined,
-        hass
-      );
-
-      const lightToggleBadge: ButtonHeadingBadgeConfig | undefined =
-        lightControlEntities.light.length > 0
-          ? {
-              type: "button",
-              icon: "mdi:lightbulb",
-              tap_action: {
-                action: "perform-action",
-                perform_action: "light.toggle",
-                target: {
-                  entity_id: lightControlEntities.light,
-                },
-              },
-            }
-          : undefined;
-
       sections.push({
         type: "grid",
         cards: [
@@ -132,9 +108,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                   navigation_path: "/light?historyBack=1",
                 }
               : undefined,
-            ...(lightToggleBadge
-              ? { badges: [lightToggleBadge] }
-              : {}),
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
