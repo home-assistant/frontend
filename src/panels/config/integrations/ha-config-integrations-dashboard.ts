@@ -88,6 +88,7 @@ const groupByIntegration = (
   });
   return result;
 };
+
 @customElement("ha-config-integrations-dashboard")
 class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   SubscribeMixin(LitElement)
@@ -261,6 +262,12 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           integrations.push(entry);
         }
       }
+
+      const configEntryLabel = (entry: ConfigEntryExtended): string =>
+        entry.source === "ignore" && entry.title === "Ignored"
+          ? entry.localized_domain_name || entry.domain
+          : entry.title || entry.localized_domain_name || entry.domain;
+
       return [
         Array.from(groupByIntegration(integrations)).sort((groupA, groupB) =>
           caseInsensitiveStringCompare(
@@ -269,8 +276,20 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
             this.hass.locale.language
           )
         ),
-        ignored,
-        disabled,
+        ignored.sort((a, b) =>
+          caseInsensitiveStringCompare(
+            configEntryLabel(a),
+            configEntryLabel(b),
+            this.hass.locale.language
+          )
+        ),
+        disabled.sort((a, b) =>
+          caseInsensitiveStringCompare(
+            configEntryLabel(a),
+            configEntryLabel(b),
+            this.hass.locale.language
+          )
+        ),
       ];
     }
   );
