@@ -80,7 +80,7 @@ const processAreasForSecurity = (
     const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, area.name, false);
 
     for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));

@@ -48,11 +48,11 @@ const processAreasForClimate = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
     if (!area) continue;
+    const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,

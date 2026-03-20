@@ -311,12 +311,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
               })),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((e) => ({
-            ...computeTileCard(e),
-            name: {
-              type: "entity",
-            },
-          })),
+          ...entities.map((e) => {
+            const tileCard = computeTileCard(e);
+            return {
+              ...tileCard,
+              name: tileCard.name || {
+                type: "entity",
+              },
+            };
+          }),
         ],
       });
     }

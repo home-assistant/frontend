@@ -265,14 +265,15 @@ export const computeAreaTileCardConfig =
     }
 
     const name = computeStateName(stateObj);
-    const stripedName = stripPrefixFromEntityName(name, prefix.toLowerCase());
-
-    return {
+    const data = {
       type: "tile",
       entity: entity,
-      name: stripedName,
       ...additionalCardConfig,
     };
+    if (prefix) {
+      data.name = stripPrefixFromEntityName(name, prefix);
+    }
+    return data;
   };
 
 export const getAreas = (

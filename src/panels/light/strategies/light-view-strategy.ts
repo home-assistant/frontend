@@ -44,7 +44,7 @@ const processAreasForLight = (
     const areaLights = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, area.name, false);
 
     for (const entityId of areaLights) {
       areaCards.push(computeTileCard(entityId));
