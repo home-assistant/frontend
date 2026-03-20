@@ -16,15 +16,20 @@ import type {
   LegacyCondition,
 } from "../../common/validate-condition";
 import "./ha-card-condition-editor";
-import type { HaCardConditionEditor } from "./ha-card-condition-editor";
+import {
+  type HaCardConditionEditor,
+  getConditionClassName,
+} from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-location";
 import "./types/ha-card-condition-not";
 import "./types/ha-card-condition-numeric_state";
+import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -57,6 +62,8 @@ export class HaCardConditionsEditor extends LitElement {
     | Condition
     | LegacyCondition
   )[];
+
+  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
 
   private _focusLastConditionOnChange = false;
 
@@ -101,6 +108,7 @@ export class HaCardConditionsEditor extends LitElement {
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
+              .no_entity=${this.no_entity}
             ></ha-card-condition-editor>
           `
         )}
@@ -125,19 +133,25 @@ export class HaCardConditionsEditor extends LitElement {
                   </ha-dropdown-item>
                 `
               : nothing}
-            ${UI_CONDITION.map(
-              (condition) => html`
-                <ha-dropdown-item .value=${condition}>
-                  ${this.hass!.localize(
-                    `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
-                  ) || condition}
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${ICON_CONDITION[condition]}
-                  ></ha-svg-icon>
-                </ha-dropdown-item>
-              `
-            )}
+            ${UI_CONDITION
+              //     filter(
+              //           (condition) =>
+              //             !this.permittedConditions.length ||
+              //             this.permittedConditions.includes(condition)
+              // ).
+              .map(
+                (condition) => html`
+                  <ha-dropdown-item .value=${condition}>
+                    ${this.hass!.localize(
+                      `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
+                    ) || condition}
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${ICON_CONDITION[condition]}
+                    ></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              )}
           </ha-dropdown>
         </div>
       </div>
@@ -156,13 +170,12 @@ export class HaCardConditionsEditor extends LitElement {
       const newCondition = deepClone(this._clipboard);
       conditions.push(newCondition);
     } else {
-      const elClass = customElements.get(`ha-card-condition-${condition}`) as
-        | LovelaceConditionEditorConstructor
-        | undefined;
+      const elClass = customElements.get(
+        getConditionClassName(condition, this.no_entity)
+      ) as LovelaceConditionEditorConstructor | undefined;
 
-      conditions.push(
-        elClass?.defaultConfig ? { ...elClass.defaultConfig } : { condition }
-      );
+      const defaultConfig = elClass?.defaultConfig;
+      conditions.push(defaultConfig ? { ...defaultConfig } : { condition });
     }
 
     this._focusLastConditionOnChange = true;
