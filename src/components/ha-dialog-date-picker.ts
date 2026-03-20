@@ -269,6 +269,8 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       flex: 1;
       text-align: center;
       margin-left: 48px;
+      margin-inline-start: 48px;
+      margin-inline-end: initial;
     }
   `;
 }

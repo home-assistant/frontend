@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -24,7 +25,7 @@ export class GasViewStrategy extends ReactiveElement {
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
-          opening_direction: "right",
+          opening_direction: computeRTL(hass) ? "left" : "right",
           vertical_opening_direction: "up",
         },
       },
