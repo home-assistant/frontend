@@ -35,6 +35,8 @@ export class HaCardConditionState extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
   }
@@ -57,7 +59,9 @@ export class HaCardConditionState extends LitElement {
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
-        { name: "entity", selector: { entity: {} } },
+        ...(this.no_entity
+          ? []
+          : [{ name: "entity", selector: { entity: {} } }]),
         {
           name: "",
           type: "grid",
@@ -90,9 +94,13 @@ export class HaCardConditionState extends LitElement {
               selector: {
                 state: {},
               },
-              context: {
-                filter_entity: "entity",
-              },
+              ...(this.no_entity
+                ? {}
+                : {
+                    context: {
+                      filter_entity: "entity",
+                    },
+                  }),
             },
           ],
         },
