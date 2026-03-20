@@ -133,25 +133,19 @@ export class HaCardConditionsEditor extends LitElement {
                   </ha-dropdown-item>
                 `
               : nothing}
-            ${UI_CONDITION
-              //     filter(
-              //           (condition) =>
-              //             !this.permittedConditions.length ||
-              //             this.permittedConditions.includes(condition)
-              // ).
-              .map(
-                (condition) => html`
-                  <ha-dropdown-item .value=${condition}>
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
-                    ) || condition}
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${ICON_CONDITION[condition]}
-                    ></ha-svg-icon>
-                  </ha-dropdown-item>
-                `
-              )}
+            ${UI_CONDITION.map(
+              (condition) => html`
+                <ha-dropdown-item .value=${condition}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
+                  ) || condition}
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${ICON_CONDITION[condition]}
+                  ></ha-svg-icon>
+                </ha-dropdown-item>
+              `
+            )}
           </ha-dropdown>
         </div>
       </div>
