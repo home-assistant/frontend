@@ -30,6 +30,8 @@ export class HaCardConditionNumericState extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+
   public static get defaultConfig(): NumericStateCondition {
     return { condition: "numeric_state", entity: "" };
   }
@@ -41,7 +43,9 @@ export class HaCardConditionNumericState extends LitElement {
   private _schema = memoizeOne(
     (stateObj?: HassEntity) =>
       [
-        { name: "entity", selector: { entity: {} } },
+        ...(this.no_entity
+          ? []
+          : [{ name: "entity", selector: { entity: {} } }]),
         {
           name: "",
           type: "grid",
