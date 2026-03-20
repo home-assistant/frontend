@@ -9311,6 +9311,8 @@
                 "state": "State",
                 "attribute": "Attribute"
               },
+              "conditions": "Entity visibility conditions",
+              "conditions_helper": "Every entity out of selected above will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown",
               "description": "This card allows you to display entities on a map."
             },
             "markdown": {
