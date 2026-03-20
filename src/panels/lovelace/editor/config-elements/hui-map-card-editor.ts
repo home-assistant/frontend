@@ -38,8 +38,10 @@ import type {
   SubElementEditorConfig,
   EntitiesEditorEvent,
 } from "../types";
+import type { Condition } from "../../common/validate-condition";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardEditor } from "../../types";
+import "../conditions/ha-card-condition-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
@@ -310,7 +312,42 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           this.hass.localize
         )}
       ></ha-selector-select>
+      ${this.renderConditions()}
     `;
+  }
+
+  renderConditions() {
+    const conditions = this._config?.conditions ?? [];
+    return html`
+      <h3>
+        ${this.hass!.localize("ui.panel.lovelace.editor.card.map.conditions")}
+      </h3>
+      <p class="intro">
+        ${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.map.conditions_helper"
+        )}
+      </p>
+      <ha-card-conditions-editor
+        no-entity
+        .hass=${this.hass!}
+        .conditions=${conditions}
+        @value-changed=${this._conditionsChanged}
+      >
+      </ha-card-conditions-editor>
+    `;
+  }
+
+  private _conditionsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const conditions = ev.detail.value as Condition[];
+    const newConfig: MapCardConfig = {
+      ...this._config!,
+      conditions: conditions,
+    };
+    if (newConfig.conditions?.length === 0) {
+      delete newConfig.conditions;
+    }
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _goBack(): void {
@@ -530,7 +567,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   static get styles(): CSSResultGroup {
-    return [configElementStyle, css``];
+    return [
+      configElementStyle,
+      css`
+        .intro {
+          margin: 0;
+          margin-bottom: var(--ha-space-1);
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
