@@ -52,9 +52,8 @@ export const getConditionClassName = (
 ) => {
   if (NO_ENTITY_CONDITIONS.includes(condition) && no_entity) {
     return `ha-card-condition-${condition}-no_entity`;
-  } else {
-    return `ha-card-condition-${condition}`;
   }
+  return `ha-card-condition-${condition}`;
 };
 
 const isNoEntityCondition = (condition: string, no_entity: boolean): boolean =>
