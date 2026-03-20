@@ -33,6 +33,9 @@ import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   Condition,
   LegacyCondition,
+  OrCondition,
+  AndCondition,
+  NotCondition,
 } from "../../common/validate-condition";
 import {
   checkConditionsMet,
@@ -41,11 +44,39 @@ import {
 import type { LovelaceConditionEditorConstructor } from "./types";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
+const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
+
+export const getConditionClassName = (
+  condition: string,
+  no_entity: boolean
+) => {
+  if (NO_ENTITY_CONDITIONS.includes(condition) && no_entity) {
+    return `ha-card-condition-${condition}-no_entity`;
+  } else {
+    return `ha-card-condition-${condition}`;
+  }
+};
+
+const isNoEntityCondition = (condition: string, no_entity: boolean): boolean =>
+  NO_ENTITY_CONDITIONS.includes(condition) && no_entity;
+
+const containsNoEntityCondition = (
+  condition: Condition,
+  no_entity: boolean
+): boolean =>
+  no_entity &&
+  ["and", "or", "not"].includes(condition.condition) &&
+  (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
+    (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
+  ) === true;
+
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
+
+  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -68,7 +99,7 @@ export class HaCardConditionEditor extends LitElement {
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
-      `ha-card-condition-${this._condition.condition}`
+      getConditionClassName(this._condition.condition, this.no_entity)
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
@@ -139,12 +170,15 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            <ha-dropdown-item value="test">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.condition-editor.test"
-              )}
-              <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
-            </ha-dropdown-item>
+            ${isNoEntityCondition(condition.condition, this.no_entity) ||
+            containsNoEntityCondition(condition, this.no_entity)
+              ? nothing
+              : html`<ha-dropdown-item value="test">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.test"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+                </ha-dropdown-item>`}
 
             <ha-dropdown-item value="duplicate">
               ${this.hass.localize(
@@ -217,10 +251,14 @@ export class HaCardConditionEditor extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  ${dynamicElement(`ha-card-condition-${condition.condition}`, {
-                    hass: this.hass,
-                    condition: condition,
-                  })}
+                  ${dynamicElement(
+                    getConditionClassName(condition.condition, this.no_entity),
+                    {
+                      hass: this.hass,
+                      condition: condition,
+                      ...(this.no_entity ? { no_entity: this.no_entity } : {}),
+                    }
+                  )}
                 `}
           </div>
         </ha-expansion-panel>
