@@ -24,6 +24,8 @@ export class HaCardConditionNumericAnd extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+
   public static get defaultConfig(): AndCondition {
     return { condition: "and", conditions: [] };
   }
@@ -38,6 +40,7 @@ export class HaCardConditionNumericAnd extends LitElement {
         nested
         .hass=${this.hass}
         .conditions=${this.condition.conditions}
+        .no_entity=${this.no_entity}
         @value-changed=${this._valueChanged}
       >
       </ha-card-conditions-editor>
