@@ -43,7 +43,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     if (
       this.hass &&
       this._config &&
-      changedProps.has("hass") &&
+      changedProps.get("hass") &&
       this.hass.states[this._config.entity] !==
         changedProps.get("hass").states[this._config.entity]
     ) {
