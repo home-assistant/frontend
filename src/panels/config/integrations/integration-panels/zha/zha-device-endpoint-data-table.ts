@@ -68,7 +68,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
       narrow
         ? {
             name: {
-              title: "Devices",
+              title: localize("ui.panel.config.zha.groups.members"),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -88,14 +88,14 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               `,
             },
             endpoint_id: {
-              title: "Endpoint",
+              title: localize("ui.panel.config.zha.groups.endpoint"),
               sortable: true,
               filterable: true,
             },
           }
         : {
             name: {
-              title: "Name",
+              title: localize("ui.panel.config.zha.groups.members"),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -108,12 +108,12 @@ export class ZHADeviceEndpointDataTable extends LitElement {
             },
             area: getAreaTableColumn(localize),
             endpoint_id: {
-              title: "Endpoint",
+              title: localize("ui.panel.config.zha.groups.endpoint"),
               sortable: true,
               filterable: true,
             },
             entities: {
-              title: "Associated Entities",
+              title: localize("ui.panel.config.zha.groups.associated_entities"),
               sortable: false,
               filterable: false,
               flex: 2,
@@ -130,7 +130,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                                 ${entity.name || entity.original_name}
                               </div>`
                           )}
-                        <div>And ${device.entities.length - 2} more...</div>`
+                        <div>+${device.entities.length - 2}</div>`
                     : device.entities.map(
                         (entity) =>
                           html`<div
@@ -139,7 +139,9 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                             ${entity.name || entity.original_name}
                           </div>`
                       )
-                  : "This endpoint has no associated entities"}
+                  : localize(
+                      "ui.panel.config.zha.groups.no_associated_entities"
+                    )}
               `,
             },
           }
