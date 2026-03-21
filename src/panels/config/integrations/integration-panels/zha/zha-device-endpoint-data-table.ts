@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/data-table/ha-data-table";
@@ -13,10 +13,13 @@ import type {
   ZHAEntityReference,
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import { getAreaTableColumn } from "../../../common/data-table-columns";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;
   name: string;
+  area: string | undefined;
   model: string;
   manufacturer: string;
   endpoint_id: number;
@@ -39,11 +42,13 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   private _deviceEndpoints = memoizeOne(
     (deviceEndpoints: ZHADeviceEndpoint[]) => {
       const outputDevices: DeviceEndpointRowData[] = [];
-
       deviceEndpoints.forEach((deviceEndpoint) => {
         outputDevices.push({
           name:
             deviceEndpoint.device.user_given_name || deviceEndpoint.device.name,
+          area: deviceEndpoint.device.area_id
+            ? this.hass.areas[deviceEndpoint.device.area_id].name
+            : deviceEndpoint.device.area_id,
           model: deviceEndpoint.device.model,
           manufacturer: deviceEndpoint.device.manufacturer,
           id: deviceEndpoint.device.ieee + "_" + deviceEndpoint.endpoint_id,
@@ -59,7 +64,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
+    (localize: LocalizeFunc, narrow: boolean): DataTableColumnContainer =>
       narrow
         ? {
             name: {
@@ -71,6 +76,14 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
+                  ${device.area
+                    ? html` <br />
+                        <span
+                          style="font-size: var(--ha-font-size-s);color: var(--ha-color-text-secondary);"
+                        >
+                          ${device.area}
+                        </span>`
+                    : nothing}
                 </a>
               `,
             },
@@ -93,6 +106,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                 </a>
               `,
             },
+            area: getAreaTableColumn(localize),
             endpoint_id: {
               title: "Endpoint",
               sortable: true,
@@ -139,7 +153,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
     return html`
       <ha-data-table
         .hass=${this.hass}
-        .columns=${this._columns(this.narrow)}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._deviceEndpoints(this.deviceEndpoints)}
         .selectable=${this.selectable}
         auto-height
