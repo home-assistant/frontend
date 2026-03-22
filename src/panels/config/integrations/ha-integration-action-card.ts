@@ -46,8 +46,10 @@ export class HaIntegrationActionCard extends LitElement {
           />
           <h2>${this.label}</h2>
           <h3>
-            ${this.localizedDomainName ||
-            domainToName(this.hass.localize, this.domain, this.manifest)}
+            ${this.localizedDomainName &&
+            this.localizedDomainName !== this.domain
+              ? this.localizedDomainName
+              : domainToName(this.hass.localize, this.domain, this.manifest)}
           </h3>
         </div>
         <div class="filler"></div>

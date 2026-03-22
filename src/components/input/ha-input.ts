@@ -271,7 +271,7 @@ export class HaInput extends LitElement {
         .type=${this.type}
         .value=${this.value ?? null}
         .withClear=${this.withClear}
-        .placeholder=${this.placeholder && this.label ? this.placeholder : ""}
+        .placeholder=${this.placeholder}
         .readonly=${this.readonly}
         .passwordToggle=${this.passwordToggle}
         .passwordVisible=${this.passwordVisible}
@@ -294,7 +294,9 @@ export class HaInput extends LitElement {
         .disabled=${this.disabled}
         class=${classMap({
           invalid: this.invalid || this._invalid,
-          "label-raised": this.value || this.placeholder,
+          "label-raised": this.value || (this.label && this.placeholder),
+          "no-label": !this.label,
+          "hint-hidden": !this.hint && !hasHintSlot && !this.required,
         })}
         @input=${this._handleInput}
         @change=${this._handleChange}
@@ -304,11 +306,7 @@ export class HaInput extends LitElement {
       >
         ${this.label || hasLabelSlot
           ? html`<slot name="label" slot="label"
-              >${this._renderLabel(
-                this.label,
-                this.placeholder,
-                this.required
-              )}</slot
+              >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
         <slot
@@ -334,7 +332,9 @@ export class HaInput extends LitElement {
         </slot>
         <div
           slot="hint"
-          class=${this.invalid || this._invalid ? "error" : ""}
+          class=${classMap({
+            error: this.invalid || this._invalid,
+          })}
           role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
           aria-live="polite"
         >
@@ -388,46 +388,41 @@ export class HaInput extends LitElement {
     }
   };
 
-  private _renderLabel = memoizeOne(
-    (label: string, placeholder: string, required: boolean) => {
-      // fallback to placeholder if no label is provided
-      const text = label || placeholder;
-      if (!required) {
-        return text;
-      }
-
-      let marker = getComputedStyle(this).getPropertyValue(
-        "--ha-input-required-marker"
-      );
-
-      if (!marker) {
-        marker = "*";
-      }
-
-      if (marker.startsWith('"') && marker.endsWith('"')) {
-        marker = marker.slice(1, -1);
-      }
-
-      if (!marker) {
-        return text;
-      }
-
-      return `${text}${marker}`;
+  private _renderLabel = memoizeOne((label: string, required: boolean) => {
+    if (!required) {
+      return label;
     }
-  );
+
+    let marker = getComputedStyle(this).getPropertyValue(
+      "--ha-input-required-marker"
+    );
+
+    if (!marker) {
+      marker = "*";
+    }
+
+    if (marker.startsWith('"') && marker.endsWith('"')) {
+      marker = marker.slice(1, -1);
+    }
+
+    if (!marker) {
+      return label;
+    }
+
+    return `${label}${marker}`;
+  });
 
   static styles = css`
     :host {
       display: flex;
       align-items: flex-start;
-      padding-top: var(--ha-input-padding-top, var(--ha-space-2));
+      padding-top: var(--ha-input-padding-top);
       padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
       text-align: var(--ha-input-text-align, start);
     }
     wa-input {
       flex: 1;
       min-width: 0;
-      height: 76px;
       --wa-transition-fast: var(--wa-transition-normal);
       position: relative;
     }
@@ -441,6 +436,7 @@ export class HaInput extends LitElement {
       color: var(--secondary-text-color);
       line-height: var(--ha-line-height-condensed);
       z-index: 1;
+      pointer-events: none;
       padding-inline-start: calc(
         var(--start-slot-width, 0px) + var(--ha-space-4)
       );
@@ -466,7 +462,7 @@ export class HaInput extends LitElement {
 
     wa-input::part(base) {
       height: 56px;
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      background-color: var(--ha-color-form-background);
       border-top-left-radius: var(--ha-border-radius-sm);
       border-top-right-radius: var(--ha-border-radius-sm);
       border-bottom-left-radius: var(--ha-border-radius-square);
@@ -504,6 +500,9 @@ export class HaInput extends LitElement {
       padding-top: var(--ha-space-3);
       padding-inline-start: var(--input-padding-inline-start, 0);
     }
+    wa-input.no-label::part(input) {
+      padding-top: 0;
+    }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);
     }
@@ -516,11 +515,11 @@ export class HaInput extends LitElement {
     }
 
     wa-input::part(base):hover {
-      background-color: var(--ha-color-fill-neutral-quiet-hover);
+      background-color: var(--ha-color-form-background-hover);
     }
 
     wa-input:disabled::part(base) {
-      background-color: var(--ha-color-fill-disabled-quiet-resting);
+      background-color: var(--ha-color-form-background-disabled);
     }
 
     wa-input::part(hint) {
@@ -531,6 +530,10 @@ export class HaInput extends LitElement {
       display: flex;
       align-items: center;
       color: var(--ha-color-text-secondary);
+    }
+
+    wa-input.hint-hidden::part(hint) {
+      height: 0;
     }
 
     .error {

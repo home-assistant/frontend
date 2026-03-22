@@ -993,6 +993,8 @@
         "end_date": "End date",
         "select": "Select",
         "select_date_range": "Select time period",
+        "time_from": "Time from",
+        "time_to": "Time to",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
@@ -1885,8 +1887,9 @@
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
-        "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "aliases_description": "Aliases are alternative names to call your entity. Only supported by Assist and Google Assistant.",
         "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
+        "entity_name_alias_description": "Default name. Disable it if you want your voice assistants to ignore it and just use aliases.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
@@ -2212,7 +2215,7 @@
         "new": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
           "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
-          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it. If you're already using the iOS app, make sure your iPhone or iPad is running iOS 16 or newer.",
           "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
           "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
         },
@@ -4171,7 +4174,7 @@
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
           "manage_ha_cloud": "Manage Home Assistant Cloud",
-          "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
+          "external_get_ha_cloud": "If you're looking for a fast and secure way to connect to Home Assistant no matter where you are, start a trial for Home Assistant Cloud today. Every purchase supports the development of Home Assistant.",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
@@ -4501,6 +4504,11 @@
                 "error_pipeline_not_found": "Pipeline not found",
                 "name": "{name} (Copy)"
               }
+            },
+            "current_device": {
+              "title": "This device",
+              "description": "Configure voice assistant settings specific to this device.",
+              "open_settings": "Open device settings"
             },
             "cloud": {
               "title": "Get the best assistant with {home_assistant_cloud}",
@@ -6897,7 +6905,9 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials",
           "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
+          "thread_network_send_credentials_ha_description": "Import Thread network credentials from your phone to Home Assistant. Use this if you already have a Thread network set up through another platform, like Apple Home or Google Home.",
           "thread_network_send_credentials_phone": "Send credentials to phone",
+          "thread_network_send_credentials_phone_description": "Share your Thread network credentials with your phone, allowing it to directly commission new Thread devices onto your network.",
           "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
@@ -8637,7 +8647,8 @@
               "auto_height": "Auto height",
               "auto_height_helper": "Adjust the card height based on its content",
               "precise_mode": "Precise mode",
-              "precise_mode_helper": "Change the card width with more precision"
+              "precise_mode_helper": "Change the card width with more precision",
+              "no_grid_support": "This card does not fully support resizing yet and may not display correctly with custom sizes."
             }
           },
           "edit_badge": {
@@ -8726,7 +8737,13 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "background": "Background options",
+              "background_enabled": "Background",
+              "background_enabled_helper": "Display a colored background behind the section",
+              "background_color": "Color",
+              "background_color_default": "Default",
+              "background_opacity": "Opacity"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -9310,6 +9327,7 @@
                 "card": "Card",
                 "text-only": "Text only"
               },
+              "actions_warning": "Adding an action will disable links in the content.",
               "description": "This card is used to render Markdown."
             },
             "clock": {

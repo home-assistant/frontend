@@ -26,9 +26,15 @@ export class HuiHorizontalStackCard extends HuiStackCard {
     return [
       super.sharedStyles,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
         #root {
           display: flex;
-          height: 100%;
+          flex: 1;
+          min-height: 0;
           gap: var(--horizontal-stack-card-gap, var(--stack-card-gap, 8px));
         }
         #root > hui-card {
