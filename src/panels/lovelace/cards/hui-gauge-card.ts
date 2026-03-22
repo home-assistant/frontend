@@ -1,5 +1,4 @@
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
-import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -158,7 +157,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        <p class="title" .title=${name}>${name}</p>
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
@@ -178,15 +176,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <ha-icon-button
-          class="more-info"
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.cards.show_more_info"
-          )}
-          .path=${mdiDotsVertical}
-          @click=${this._handleMoreInfo}
-          tabindex="0"
-        ></ha-icon-button>
+        <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
   }
@@ -339,18 +329,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       white-space: nowrap;
       flex: none;
       color: var(--primary-text-color);
-    }
-
-    .more-info {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      right: 0;
-      inset-inline-end: 0px;
-      inset-inline-start: initial;
-      border-radius: var(--ha-border-radius-pill);
-      color: var(--secondary-text-color);
-      direction: var(--direction);
     }
 
     ha-gauge {
