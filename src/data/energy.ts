@@ -43,7 +43,14 @@ import {
   UnitOfLength,
   UnitOfPower,
   UnitOfVolume,
+  UnitOfVolumeFlowRate,
 } from "../common/unit-conversion/const";
+import { getUnitConverter } from "../common/unit-conversion/unit-conversion";
+import {
+  LITERS_PER_GALLON,
+  type BaseUnitConverter,
+} from "../common/unit-conversion/converter-classes";
+import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -1442,40 +1449,6 @@ export const calculateSolarConsumedGauge = (
 };
 
 /**
- * Conversion factors from each flow rate unit to L/min.
- * All HA-supported UnitOfVolumeFlowRate values are covered.
- *
- *   m³/h   → 1000/60 = 16.6667 L/min
- *   m³/min → 1000     L/min
- *   m³/s   → 60000    L/min
- *   ft³/min→ 28.3168  L/min
- *   L/h    → 1/60     L/min
- *   L/min  → 1        L/min
- *   L/s    → 60       L/min
- *   gal/h  → 3.78541/60 L/min
- *   gal/min→ 3.78541  L/min
- *   gal/d  → 3.78541/1440 L/min
- *   mL/s   → 0.06     L/min
- */
-
-/** Exact number of liters in one US gallon */
-const LITERS_PER_GALLON = 3.785411784;
-
-export const FLOW_RATE_TO_LMIN: Record<string, number> = {
-  "m³/h": 1000 / 60,
-  "m³/min": 1000,
-  "m³/s": 60000,
-  "ft³/min": 28.316846592,
-  "L/h": 1 / 60,
-  "L/min": 1,
-  "L/s": 60,
-  "gal/h": LITERS_PER_GALLON / 60,
-  "gal/min": LITERS_PER_GALLON,
-  "gal/d": LITERS_PER_GALLON / 1440,
-  "mL/s": 60 / 1000,
-};
-
-/**
  * Get current flow rate from an entity state, converted to L/min.
  * @returns Flow rate in L/min, or undefined if unavailable/invalid.
  */
@@ -1490,12 +1463,13 @@ export const getFlowRateFromState = (
     return undefined;
   }
   const unit = stateObj.attributes.unit_of_measurement;
-  const factor = unit ? FLOW_RATE_TO_LMIN[unit] : undefined;
-  if (factor === undefined) {
-    // Unknown unit – return raw value as-is (best effort)
+  const converter = getUnitConverter(unit);
+  if (!converter?.isValidUnit(UnitOfVolumeFlowRate.LITERS_PER_MINUTE)) {
+    // Unknown unit or unsupported conversion – return raw value as-is (best effort)
     return value;
   }
-  return value * factor;
+  // Convert value to L/min.
+  return converter.convert(value, unit, UnitOfVolumeFlowRate.LITERS_PER_MINUTE);
 };
 
 /**
@@ -1511,6 +1485,7 @@ export const computeTotalFlowRate = (
   entities.clear();
 
   let targetUnit: string | undefined;
+  let converter: BaseUnitConverter | undefined;
   let totalFlow = 0;
 
   prefs.energy_sources.forEach((source) => {
@@ -1546,19 +1521,19 @@ export const computeTotalFlowRate = (
       return;
     }
 
-    if (entityUnit === targetUnit) {
-      totalFlow += rawValue;
-      return;
+    // If units don't match, attempt a conversion. If conversion is not possible,
+    // will continue to use raw value in tally.
+    if (entityUnit !== targetUnit) {
+      if (!converter) {
+        converter = getUnitConverter(targetUnit);
+      }
+
+      if (converter?.isValidUnit(entityUnit)) {
+        rawValue = converter.convert(rawValue, entityUnit, targetUnit);
+      }
     }
 
-    const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
-    const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
-
-    if (sourceFactor !== undefined && targetFactor !== undefined) {
-      totalFlow += (rawValue * sourceFactor) / targetFactor;
-    } else {
-      totalFlow += rawValue;
-    }
+    totalFlow += rawValue;
   });
 
   return {
@@ -1576,12 +1551,12 @@ export const formatFlowRateShort = (
   lengthUnitSystem: string,
   litersPerMin: number
 ): string => {
-  const isMetric = lengthUnitSystem === "km";
-  if (isMetric) {
-    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
-  }
-  const galPerMin = litersPerMin / LITERS_PER_GALLON;
-  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
+  const isMetric = lengthUnitSystem === UnitOfLength.KILOMETERS;
+  const unit = isMetric
+    ? UnitOfVolumeFlowRate.LITERS_PER_MINUTE
+    : UnitOfVolumeFlowRate.GALLONS_PER_MINUTE;
+  const flowRate = isMetric ? litersPerMin : litersPerMin / LITERS_PER_GALLON;
+  return `${formatNumber(flowRate, hassLocale, { maximumFractionDigits: 1 })}${blankBeforeUnit(unit, hassLocale)}${unit}`;
 };
 
 /**
@@ -1614,7 +1589,13 @@ export const formatPowerShort = (
   hass: HomeAssistant,
   powerWatts: number
 ): string => {
-  const units = ["W", "kW", "MW", "GW", "TW"];
+  const units = [
+    UnitOfPower.WATT,
+    UnitOfPower.KILO_WATT,
+    UnitOfPower.MEGA_WATT,
+    UnitOfPower.GIGA_WATT,
+    UnitOfPower.TERA_WATT,
+  ];
   let unitIndex = 0;
   let value = powerWatts;
 
@@ -1624,14 +1605,10 @@ export const formatPowerShort = (
     unitIndex++;
   }
 
-  return (
-    formatNumber(value, hass.locale, {
-      // For watts, show no decimals. For kW and above, always show 3 decimals.
-      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
-    }) +
-    " " +
-    units[unitIndex]
-  );
+  return `${formatNumber(value, hass.locale, {
+    // For watts, show no decimals. For kW and above, always show 3 decimals.
+    maximumFractionDigits: units[unitIndex] === UnitOfPower.WATT ? 0 : 3,
+  })}${blankBeforeUnit(units[unitIndex], hass.locale)}${units[unitIndex]}`;
 };
 
 export function getSuggestedPeriod(

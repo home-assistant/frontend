@@ -100,6 +100,9 @@ const _NITROGEN_MONOXIDE_MOLAR_MASS = 30.0061;
 const _OZONE_MOLAR_MASS = 48.0;
 const _SULPHUR_DIOXIDE_MOLAR_MASS = 64.066;
 
+// Useful conversion factors for HA preferred unit system values
+export const LITERS_PER_GALLON = _GALLON_TO_CUBIC_METER / _L_TO_CUBIC_METER;
+
 export type UnitConversionFunction = ((val: number) => number) | undefined;
 
 export abstract class BaseUnitConverter {
