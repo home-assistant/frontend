@@ -83,13 +83,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._config = { min: DEFAULT_MIN, max: DEFAULT_MAX, ...config };
   }
 
-  private _handleMoreInfo(ev: Event) {
-    ev.stopPropagation();
-    fireEvent(this, "hass-more-info", {
-      entityId: this._config!.entity,
-    });
-  }
-
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
