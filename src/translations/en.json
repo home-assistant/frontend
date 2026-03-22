@@ -4505,6 +4505,11 @@
                 "name": "{name} (Copy)"
               }
             },
+            "current_device": {
+              "title": "This device",
+              "description": "Configure voice assistant settings specific to this device.",
+              "open_settings": "Open device settings"
+            },
             "cloud": {
               "title": "Get the best assistant with {home_assistant_cloud}",
               "features": {
