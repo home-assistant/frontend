@@ -20,6 +20,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 const LEVELS: LevelDefinition[] = [
   { level: -1, stroke: "var(--energy-grid-consumption-color)" },
@@ -130,7 +131,7 @@ class HuiEnergyGridGaugeCard
                 )}
                 .locale=${this.hass!.locale}
                 .levels=${LEVELS}
-                label="kWh"
+                label=${UnitOfEnergy.KILO_WATT_HOUR}
                 needle
               ></ha-gauge>
               <ha-svg-icon

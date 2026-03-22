@@ -37,6 +37,7 @@ import {
 import type { ECOption } from "../../../../resources/echarts/echarts";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -174,7 +175,7 @@ export class HuiEnergySolarGraphCard
         end,
         locale,
         config,
-        "kWh",
+        UnitOfEnergy.KILO_WATT_HOUR,
         compareStart,
         compareEnd,
         this._formatTotal

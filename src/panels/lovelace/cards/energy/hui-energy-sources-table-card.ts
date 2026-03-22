@@ -26,6 +26,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergySourcesTableCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 const colorPropertyMap = {
   grid_return: "--energy-grid-return-color",
@@ -323,7 +324,7 @@ export class HuiEnergySourcesTableCard
     );
 
     const units = {
-      solar: "kWh",
+      solar: UnitOfEnergy.KILO_WATT_HOUR,
       gas: this._data.gasUnit,
       water: this._data.waterUnit,
     };
@@ -548,7 +549,7 @@ export class HuiEnergySourcesTableCard
                   idx,
                   energyFrom,
                   energyFromCompare,
-                  "kWh",
+                  UnitOfEnergy.KILO_WATT_HOUR,
                   null,
                   null,
                   showCosts,
@@ -560,7 +561,7 @@ export class HuiEnergySourcesTableCard
                   idx,
                   -energyTo,
                   -energyToCompare,
-                  "kWh",
+                  UnitOfEnergy.KILO_WATT_HOUR,
                   null,
                   null,
                   showCosts,
@@ -574,7 +575,7 @@ export class HuiEnergySourcesTableCard
                     ),
                     totalBattery,
                     totalBatteryCompare,
-                    "kWh",
+                    UnitOfEnergy.KILO_WATT_HOUR,
                     null,
                     null,
                     showCosts,
@@ -638,7 +639,7 @@ export class HuiEnergySourcesTableCard
                     idx,
                     energy,
                     energyCompare,
-                    "kWh",
+                    UnitOfEnergy.KILO_WATT_HOUR,
                     cost,
                     costCompare,
                     showCosts,
@@ -678,7 +679,7 @@ export class HuiEnergySourcesTableCard
                     idx,
                     -energy,
                     -energyCompare,
-                    "kWh",
+                    UnitOfEnergy.KILO_WATT_HOUR,
                     -cost,
                     -costCompare,
                     showCosts,
@@ -696,7 +697,7 @@ export class HuiEnergySourcesTableCard
                     ),
                     totalGrid,
                     totalGridCompare,
-                    "kWh",
+                    UnitOfEnergy.KILO_WATT_HOUR,
                     hasGridCost ? totalGridCost : null,
                     hasGridCost ? totalGridCostCompare : null,
                     showCosts,

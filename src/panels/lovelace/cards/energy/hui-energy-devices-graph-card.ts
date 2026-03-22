@@ -39,6 +39,7 @@ import { storage } from "../../../../common/decorators/storage";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -235,7 +236,7 @@ export class HuiEnergyDevicesGraphCard
         options.xAxis = {
           show: true,
           type: "value",
-          name: "kWh",
+          name: UnitOfEnergy.KILO_WATT_HOUR,
           axisPointer: {
             show: false,
           },

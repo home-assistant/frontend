@@ -40,8 +40,9 @@ import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
-const UNIT = "kWh";
+const UNIT = UnitOfEnergy.KILO_WATT_HOUR;
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard

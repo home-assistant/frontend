@@ -27,6 +27,10 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
+import {
+  UnitOfEnergy,
+  UnitOfVolume,
+} from "../../../../common/unit-conversion/const";
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];
@@ -269,16 +273,16 @@ export class DialogEnergyGasSettings
                             class: this.hass.localize(
                               "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
                             ),
-                            unit1: "kWh",
-                            unit2: "Wh",
+                            unit1: UnitOfEnergy.KILO_WATT_HOUR,
+                            unit2: UnitOfEnergy.WATT_HOUR,
                           }
                         : {
                             currency: this.hass.config.currency,
                             class: this.hass.localize(
                               "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
                             ),
-                            unit1: "m³",
-                            unit2: "ft³",
+                            unit1: UnitOfVolume.CUBIC_METERS,
+                            unit2: UnitOfVolume.CUBIC_FEET,
                           }
                     )}
                   ></ha-markdown>`

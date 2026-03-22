@@ -41,6 +41,7 @@ import {
   getCompareTransform,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts/echarts";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
@@ -195,7 +196,7 @@ export class HuiEnergyUsageGraphCard
         end,
         locale,
         config,
-        "kWh",
+        UnitOfEnergy.KILO_WATT_HOUR,
         compareStart,
         compareEnd,
         this._formatTotal

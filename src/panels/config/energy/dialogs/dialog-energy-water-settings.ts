@@ -23,6 +23,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
+import { UnitOfVolume } from "../../../../common/unit-conversion/const";
 
 const flowRateUnitClasses = ["volume_flow_rate"];
 
@@ -103,7 +104,9 @@ export class DialogEnergyWaterSettings
     const pickableUnit = this._water_units?.join(", ") || "";
 
     const unitPriceFixed = `${this.hass.config.currency}/${
-      this.hass.config.unit_system.volume === "gal" ? "gal" : "m³"
+      this.hass.config.unit_system.volume === UnitOfVolume.GALLONS
+        ? UnitOfVolume.GALLONS
+        : UnitOfVolume.CUBIC_METERS
     }`;
 
     const externalSource =

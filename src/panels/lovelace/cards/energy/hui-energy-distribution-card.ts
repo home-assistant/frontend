@@ -34,6 +34,7 @@ import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
+import { UnitOfEnergy } from "../../../../common/unit-conversion/const";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
@@ -295,7 +296,11 @@ class HuiEnergyDistrubutionCard
       totalBatteryIn || 0,
       totalBatteryOut || 0
     );
-    const targetEnergyUnit = formatConsumptionShort(this.hass, maxEnergy, "kWh")
+    const targetEnergyUnit = formatConsumptionShort(
+      this.hass,
+      maxEnergy,
+      UnitOfEnergy.KILO_WATT_HOUR
+    )
       .split(" ")
       .pop();
 
@@ -325,7 +330,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           lowCarbonEnergy,
-                          "kWh",
+                          UnitOfEnergy.KILO_WATT_HOUR,
                           targetEnergyUnit
                         )}
                       </a>
@@ -345,7 +350,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           totalSolarProduction,
-                          "kWh",
+                          UnitOfEnergy.KILO_WATT_HOUR,
                           targetEnergyUnit
                         )}
                       </div>
@@ -438,7 +443,7 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             returnedToGrid,
-                            "kWh",
+                            UnitOfEnergy.KILO_WATT_HOUR,
                             targetEnergyUnit
                           )}
                         </span>`
@@ -452,7 +457,7 @@ class HuiEnergyDistrubutionCard
                         : ""}${formatConsumptionShort(
                         this.hass,
                         totalFromGrid,
-                        "kWh",
+                        UnitOfEnergy.KILO_WATT_HOUR,
                         targetEnergyUnit
                       )}
                     </span>
@@ -476,7 +481,7 @@ class HuiEnergyDistrubutionCard
                 ${formatConsumptionShort(
                   this.hass,
                   totalHomeConsumption,
-                  "kWh",
+                  UnitOfEnergy.KILO_WATT_HOUR,
                   targetEnergyUnit
                 )}
                 ${homeSolarCircumference !== undefined ||
@@ -578,7 +583,7 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryIn,
-                            "kWh",
+                            UnitOfEnergy.KILO_WATT_HOUR,
                             targetEnergyUnit
                           )}
                         </span>
@@ -590,7 +595,7 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryOut,
-                            "kWh",
+                            UnitOfEnergy.KILO_WATT_HOUR,
                             targetEnergyUnit
                           )}
                         </span>

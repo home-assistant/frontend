@@ -1326,7 +1326,13 @@ export const formatConsumptionShort = (
   unit: string,
   targetUnit?: string
 ): string => {
-  const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
+  const units = [
+    UnitOfEnergy.WATT_HOUR,
+    UnitOfEnergy.KILO_WATT_HOUR,
+    UnitOfEnergy.MEGA_WATT_HOUR,
+    UnitOfEnergy.GIGA_WATT_HOUR,
+    UnitOfEnergy.TERA_WATT_HOUR,
+  ];
   let pickedUnit = unit;
   let val = consumption || 0;
   let targetUnitIndex = -1;
