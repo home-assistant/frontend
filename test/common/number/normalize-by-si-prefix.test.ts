@@ -46,6 +46,14 @@ describe("normalizeValueBySIPrefix", () => {
     assert.equal(normalizeValueBySIPrefix(20, "°C"), 20);
     assert.equal(normalizeValueBySIPrefix(50, "dB"), 50);
     assert.equal(normalizeValueBySIPrefix(1013, "hPa"), 1013);
+    assert.equal(normalizeValueBySIPrefix(3.2, "m²"), 3.2);
+  });
+
+  it("Returns value unchanged for unsupported units", () => {
+    assert.equal(normalizeValueBySIPrefix(5, "kn"), 5);
+    assert.equal(normalizeValueBySIPrefix(88, "mph"), 88);
+    assert.equal(normalizeValueBySIPrefix(10, "GBP"), 10);
+    assert.equal(normalizeValueBySIPrefix(67, "km²"), 67);
   });
 
   it("Returns value unchanged for empty string", () => {
