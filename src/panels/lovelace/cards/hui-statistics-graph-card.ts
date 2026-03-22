@@ -106,14 +106,17 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return;
     }
     if (this._config?.energy_date_selection) {
-      this._subscribeEnergy();
+      this._subscribeEnergy(true);
     } else if (this._interval === undefined) {
       this._setFetchStatisticsTimer(true);
     }
   }
 
-  private _subscribeEnergy() {
+  private _subscribeEnergy(performFetch = false) {
     if (!this._energySub) {
+      if (performFetch) {
+        this._fetchInitialStatistics();
+      }
       this._energySub = getEnergyDataCollection(this.hass!, {
         key: this._config?.collection_key,
       }).subscribe((data) => {
@@ -215,7 +218,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     if (this.hass) {
       if (this._config.energy_date_selection && !this._energySub) {
-        this._subscribeEnergy();
+        this._subscribeEnergy(true);
         return;
       }
       if (!this._config.energy_date_selection && this._energySub) {
@@ -238,7 +241,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       oldConfig?.entities !== this._config.entities
     ) {
-      this._setFetchStatisticsTimer(true);
+      if (this._config.energy_date_selection) {
+        this._fetchInitialStatistics();
+      } else {
+        this._setFetchStatisticsTimer(true);
+      }
       return;
     }
 
@@ -251,6 +258,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     ) {
       this._setFetchStatisticsTimer();
     }
+  }
+
+  private async _fetchInitialStatistics() {
+    await this._getStatisticsMetaData(this._entityIds);
+    await this._getStatistics();
   }
 
   private async _setFetchStatisticsTimer(fetchMetadata = false) {
