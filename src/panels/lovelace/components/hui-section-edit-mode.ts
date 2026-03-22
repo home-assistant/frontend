@@ -1,4 +1,9 @@
-import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlusCircleMultipleOutline,
+} from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -7,7 +12,7 @@ import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { deleteSection } from "../editor/config-util";
+import { deleteSection, duplicateSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
@@ -37,6 +42,11 @@ export class HuiSectionEditMode extends LitElement {
             .path=${mdiPencil}
           ></ha-icon-button>
           <ha-icon-button
+            .label=${this.hass.localize("ui.common.duplicate")}
+            @click=${this._duplicateSection}
+            .path=${mdiPlusCircleMultipleOutline}
+          ></ha-icon-button>
+          <ha-icon-button
             .label=${this.hass.localize("ui.common.delete")}
             @click=${this._deleteSection}
             .path=${mdiDelete}
@@ -60,6 +70,16 @@ export class HuiSectionEditMode extends LitElement {
       viewIndex: this.viewIndex,
       sectionIndex: this.index,
     });
+  }
+
+  private _duplicateSection(ev: Event): void {
+    ev.stopPropagation();
+    const newConfig = duplicateSection(
+      this.lovelace!.config,
+      this.viewIndex,
+      this.index
+    );
+    this.lovelace!.saveConfig(newConfig);
   }
 
   private async _deleteSection(ev) {
