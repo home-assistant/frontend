@@ -14,11 +14,21 @@ export class HuiFormElementEditor extends HuiElementEditor {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-    if (changedProperties.has("schema") && this._configElement) {
+    if (changedProperties.has("form") && this._configElement) {
       // Propagate schema changes directly to the existing form editor element
       // so dynamic changes (e.g. disabled flags based on selected entity) are
       // reflected without needing to tear down and recreate the editor.
-      (this._configElement as HuiFormEditor).schema = this.schema;
+      const { schema, assertConfig, computeLabel, computeHelper } = this.form;
+      (this._configElement as HuiFormEditor).schema = schema;
+      if (computeLabel) {
+        (this._configElement as HuiFormEditor).computeLabel = computeLabel;
+      }
+      if (computeHelper) {
+        (this._configElement as HuiFormEditor).computeHelper = computeHelper;
+      }
+      if (assertConfig) {
+        (this._configElement as HuiFormEditor).assertConfig = assertConfig;
+      }
     }
   }
 }
