@@ -25,11 +25,6 @@
       "enabled": false
     },
     {
-      "description": "Vue is only used by date range which is only v2",
-      "matchPackageNames": ["vue"],
-      "allowedVersions": "< 3"
-    },
-    {
       "description": "Group MDI packages",
       "groupName": "Material Design Icons",
       "matchPackageNames": ["@mdi/js", "@mdi/svg"]

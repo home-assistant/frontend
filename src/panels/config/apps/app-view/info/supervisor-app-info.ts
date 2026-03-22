@@ -76,6 +76,7 @@ import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-s
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
+import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-card-content";
 import "../components/supervisor-app-metric";
 import { extractChangelog } from "../util/supervisor-app";
@@ -197,7 +198,9 @@ class SupervisorAppInfo extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
-            ${!this.narrow ? this.addon.name : nothing}
+            ${!this.narrow
+              ? getAppDisplayName(this.addon.name, this.addon.stage)
+              : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
@@ -490,7 +493,7 @@ class SupervisorAppInfo extends LitElement {
                   href=${this.addon.url!}
                   target="_blank"
                   rel="noreferrer"
-                  >${this.addon.name}</a
+                  >${getAppDisplayName(this.addon.name, this.addon.stage)}</a
                 >`,
               }
             )}
@@ -556,30 +559,24 @@ class SupervisorAppInfo extends LitElement {
                             </ha-settings-row>
                           `
                         : nothing}
-                      ${this.addon.auto_update ||
-                      this.hass.userData?.showAdvanced
-                        ? html`
-                            <ha-settings-row ?three-line=${this.narrow}>
-                              <span slot="heading">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.title"
-                                )}
-                              </span>
-                              <span slot="description">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.description"
-                                )}
-                              </span>
-                              <ha-switch
-                                .disabled=${systemManaged &&
-                                !this.controlEnabled}
-                                @change=${this._autoUpdateToggled}
-                                .checked=${this.addon.auto_update}
-                                haptic
-                              ></ha-switch>
-                            </ha-settings-row>
-                          `
-                        : nothing}
+                      <ha-settings-row ?three-line=${this.narrow}>
+                        <span slot="heading">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.title"
+                          )}
+                        </span>
+                        <span slot="description">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.description"
+                          )}
+                        </span>
+                        <ha-switch
+                          .disabled=${systemManaged && !this.controlEnabled}
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </ha-settings-row>
                       ${!this._computeCannotIngressSidebar && this.addon.ingress
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -1223,7 +1220,7 @@ class SupervisorAppInfo extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.title",
         {
-          name: this.addon.name,
+          name: getAppDisplayName(this.addon.name, this.addon.stage),
         }
       ),
       text: html`

@@ -64,8 +64,6 @@ export interface LovelaceGridOptions {
   min_columns?: number;
   min_rows?: number;
   max_rows?: number;
-  fixed_rows?: boolean;
-  fixed_columns?: boolean;
 }
 
 export interface LovelaceCard extends HTMLElement {

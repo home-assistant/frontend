@@ -71,6 +71,7 @@ import { showAutomationSaveDialog } from "../automation/automation-save-dialog/s
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
+import type { EditorDomainHooks } from "../automation/ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
   automationScriptEditorStyles,
@@ -87,12 +88,17 @@ export class HaScriptEditor extends SubscribeMixin(
 ) {
   @property({ attribute: false }) public scriptId: string | null = null;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
 
   private _newScriptId?: string;
+
+  protected domainHooks: EditorDomainHooks<ScriptConfig> = {
+    domain: "script",
+    fetchFileConfig: fetchScriptFileConfig,
+    normalizeConfig: normalizeScriptConfig,
+    checkValidation: () => this._checkValidation(),
+  };
 
   private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
     apply: (config) => this._applyUndoRedo(config),
@@ -480,6 +486,13 @@ export class HaScriptEditor extends SubscribeMixin(
     `;
   }
 
+  private _setEntityId() {
+    const entity = this.entityRegistry.find(
+      (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
+    );
+    this.currentEntityId = entity?.entity_id;
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -492,7 +505,8 @@ export class HaScriptEditor extends SubscribeMixin(
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptId)
     ) {
-      this._loadConfig();
+      this._setEntityId();
+      this.loadConfig(this.scriptId);
     }
 
     if (
@@ -500,11 +514,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.scriptId &&
       this.entityRegistry
     ) {
-      // find entity for when script entity id changed
-      const entity = this.entityRegistry.find(
-        (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-      );
-      this.currentEntityId = entity?.entity_id;
+      this._setEntityId();
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
@@ -559,43 +569,6 @@ export class HaScriptEditor extends SubscribeMixin(
               `ui.panel.config.automation.editor.${key}.name`
             )}:
             ${value.error}<br />`
-    );
-  }
-
-  private async _loadConfig() {
-    fetchScriptFileConfig(this.hass, this.scriptId!).then(
-      (config) => {
-        this.dirty = false;
-        this.readOnly = false;
-        this.config = normalizeScriptConfig(config);
-        const entity = this.entityRegistry.find(
-          (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-        );
-        this.currentEntityId = entity?.entity_id;
-        this._checkValidation();
-      },
-      (resp) => {
-        const entity = this.entityRegistry.find(
-          (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-        );
-        if (entity) {
-          navigate(`/config/script/show/${entity.entity_id}`, {
-            replace: true,
-          });
-          return;
-        }
-        alert(
-          resp.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.script.editor.load_error_not_editable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.script.editor.load_error_unknown",
-                { err_no: resp.status_code || resp.code }
-              )
-        );
-        goBack("/config");
-      }
     );
   }
 

@@ -135,11 +135,9 @@ export class HaConfigAppsAvailable extends LitElement {
           <ha-dropdown-item value="repositories">
             ${this.hass.localize("ui.panel.config.apps.store.repositories")}
           </ha-dropdown-item>
-          ${this.hass.userData?.showAdvanced
-            ? html`<ha-dropdown-item value="registries">
-                ${this.hass.localize("ui.panel.config.apps.store.registries")}
-              </ha-dropdown-item>`
-            : nothing}
+          <ha-dropdown-item value="registries">
+            ${this.hass.localize("ui.panel.config.apps.store.registries")}
+          </ha-dropdown-item>
         </ha-dropdown>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
@@ -154,17 +152,6 @@ export class HaConfigAppsAvailable extends LitElement {
 
               ${repos}
             `}
-        ${!this.hass.userData?.showAdvanced
-          ? html`
-              <div class="advanced">
-                <a href="/profile" target="_top">
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.store.missing_apps"
-                  )}
-                </a>
-              </div>
-            `
-          : ""}
       </hass-subpage>
     `;
   }
@@ -295,18 +282,6 @@ export class HaConfigAppsAvailable extends LitElement {
       display: block;
       --mdc-text-field-fill-color: var(--sidebar-background-color);
       --mdc-text-field-idle-line-color: var(--divider-color);
-    }
-    .advanced {
-      padding: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      color: var(--primary-text-color);
-    }
-    .advanced a {
-      margin-left: 0.5em;
-      margin-inline-start: 0.5em;
-      margin-inline-end: initial;
-      color: var(--primary-color);
     }
   `;
 }
