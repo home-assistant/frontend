@@ -3,6 +3,13 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
+import type {
+  UnitOfEnergy,
+  UnitOfPower,
+  UnitOfPressure,
+  UnitOfTemperature,
+  UnitOfVolume,
+} from "../common/unit-conversion/const";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -113,23 +120,12 @@ export interface StatisticsValidationResultMeanTypeChanged {
   };
 }
 
-export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
-
 export interface StatisticsUnitConfiguration {
-  energy?: "Wh" | "kWh" | "MWh" | "GJ";
-  power?: "W" | "kW";
-  pressure?:
-    | "Pa"
-    | "hPa"
-    | "kPa"
-    | "bar"
-    | "cbar"
-    | "mbar"
-    | "inHg"
-    | "psi"
-    | "mmHg";
-  temperature?: "°C" | "°F" | "K";
-  volume?: (typeof VOLUME_UNITS)[number];
+  energy?: UnitOfEnergy;
+  power?: UnitOfPower;
+  pressure?: UnitOfPressure;
+  temperature?: UnitOfTemperature;
+  volume?: UnitOfVolume;
 }
 
 const _statisticTypes = [

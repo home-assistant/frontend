@@ -37,8 +37,13 @@ import {
   fetchStatistics,
   getDisplayUnit,
   getStatisticMetadata,
-  VOLUME_UNITS,
 } from "./recorder";
+import {
+  UnitOfEnergy,
+  UnitOfLength,
+  UnitOfPower,
+  UnitOfVolume,
+} from "../common/unit-conversion/const";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -481,16 +486,13 @@ const getEnergyData = async (
   }
 
   const gasUnit = getEnergyGasUnit(hass, prefs, statsMetadata);
-  const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
 
   const energyUnits: StatisticsUnitConfiguration = {
-    energy: "kWh",
-    volume: gasIsVolume
-      ? (gasUnit as (typeof VOLUME_UNITS)[number])
-      : undefined,
+    energy: UnitOfEnergy.KILO_WATT_HOUR,
+    volume: gasUnit in UnitOfVolume ? (gasUnit as UnitOfVolume) : undefined,
   };
   const powerUnits: StatisticsUnitConfiguration = {
-    power: "kW",
+    power: UnitOfPower.KILO_WATT,
   };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
@@ -933,10 +935,10 @@ const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
-): string => {
+): UnitOfVolume | UnitOfEnergy => {
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
-    return "kWh";
+    return UnitOfEnergy.KILO_WATT_HOUR;
   }
 
   const units = prefs.energy_sources
@@ -950,22 +952,21 @@ const getEnergyGasUnit = (
     );
   if (units.length) {
     const first = units[0];
-    if (
-      VOLUME_UNITS.includes(first as any) &&
-      units.every((u) => u === first)
-    ) {
-      return first as (typeof VOLUME_UNITS)[number];
+    if (first && first in UnitOfVolume && units.every((u) => u === first)) {
+      return first as UnitOfVolume;
     }
   }
 
-  return hass.config.unit_system.length === "km" ? "m³" : "ft³";
+  return hass.config.unit_system.length === UnitOfLength.KILOMETERS
+    ? UnitOfVolume.CUBIC_METERS
+    : UnitOfVolume.CUBIC_FEET;
 };
 
 const getEnergyWaterUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData>
-): (typeof VOLUME_UNITS)[number] => {
+): UnitOfVolume => {
   const units = prefs.energy_sources
     .filter((s) => s.type === "water")
     .map((s) =>
@@ -977,15 +978,14 @@ const getEnergyWaterUnit = (
     );
   if (units.length) {
     const first = units[0];
-    if (
-      VOLUME_UNITS.includes(first as any) &&
-      units.every((u) => u === first)
-    ) {
-      return first as (typeof VOLUME_UNITS)[number];
+    if (first && first in UnitOfVolume && units.every((u) => u === first)) {
+      return first as UnitOfVolume;
     }
   }
 
-  return hass.config.unit_system.length === "km" ? "L" : "gal";
+  return hass.config.unit_system.length === UnitOfLength.KILOMETERS
+    ? UnitOfVolume.LITERS
+    : UnitOfVolume.GALLONS;
 };
 
 export const energyStatisticHelpUrl =
@@ -1666,7 +1666,7 @@ export const downloadEnergyData = (
   }
 
   const gasUnit = energyData.state.gasUnit;
-  const electricUnit = "kWh";
+  const electricUnit = UnitOfEnergy.KILO_WATT_HOUR;
 
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
