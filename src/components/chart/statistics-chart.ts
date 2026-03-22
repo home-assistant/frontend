@@ -34,6 +34,8 @@ import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
+import { getUnitConverter } from "../../common/unit-conversion/unit-conversion";
+import type { BaseUnitConverter } from "../../common/unit-conversion/converter-classes";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -57,7 +59,9 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
-  @property() public unit?: string;
+  @property({ attribute: false }) public unit?: string;
+
+  @property({ attribute: false }) public unitClass?: string;
 
   @property({ attribute: false }) public startTime?: Date;
 
@@ -109,6 +113,10 @@ export class StatisticsChart extends LitElement {
   private _computedStyle?: CSSStyleDeclaration;
 
   private _previousYAxisLabelValue = 0;
+
+  private _displayUnit?: string;
+
+  private _unitConverter?: BaseUnitConverter;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -196,8 +204,8 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
-    const unit = this.unit
-      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
+    const unit = this._displayUnit
+      ? `${blankBeforeUnit(this._displayUnit, this.hass.locale)}${this._displayUnit}`
       : "";
     return params
       .map((param, index: number) => {
@@ -302,7 +310,7 @@ export class StatisticsChart extends LitElement {
       ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
-        name: this.unit,
+        name: this._displayUnit,
         nameGap: 2,
         nameTextStyle: {
           align: "left",
@@ -421,8 +429,11 @@ export class StatisticsChart extends LitElement {
         }
       });
       if (unit) {
-        this.unit = unit;
+        this._displayUnit = unit;
       }
+    } else {
+      this._displayUnit = this.unit;
+      this._unitConverter = getUnitConverter(this.unit, this.unitClass);
     }
 
     const names = this.names || {};
@@ -638,15 +649,21 @@ export class StatisticsChart extends LitElement {
 
       // Show current state if required, and units match (or are unknown)
       const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
-      if (
-        displayCurrentState &&
-        (!this.unit || !statisticUnit || this.unit === statisticUnit)
-      ) {
+      if (displayCurrentState) {
         // Skip external statistics
         if (!isExternalStatistic(statistic_id)) {
           const stateObj = this.hass.states[statistic_id];
           if (stateObj) {
-            const currentValue = parseFloat(stateObj.state);
+            let currentValue = parseFloat(stateObj.state);
+            if (this._displayUnit !== statisticUnit && this._unitConverter) {
+              // If the units don't match and we have a converter, try to
+              // convert the value.
+              currentValue = this._unitConverter.convert(
+                currentValue,
+                statisticUnit,
+                this._displayUnit
+              );
+            }
             if (
               isFinite(currentValue) &&
               !this._hiddenStats.has(statistic_id)

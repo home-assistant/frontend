@@ -73,6 +73,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _unit?: string;
 
+  @state() private _unitClass?: string;
+
   private _entities: EntityConfig[] = [];
 
   private _entityIds: string[] = [];
@@ -346,6 +348,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
+            .unitClass=${this._unitClass}
             .minYAxis=${this._config.min_y_axis}
             .maxYAxis=${this._config.max_y_axis}
             .startTime=${this._energyStart}
@@ -412,6 +415,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
             undefined
           : undefined;
+      }
+      if (this._unit && unitClass) {
+        this._unitClass = unitClass;
+      } else {
+        this._unitClass = undefined;
       }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
       const statistics = await fetchStatistics(
