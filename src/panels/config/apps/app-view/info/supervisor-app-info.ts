@@ -629,7 +629,7 @@ class SupervisorAppInfo extends LitElement {
             </div>
             <div>
               ${this.addon.version && this.addon.state === "started"
-                ? html`<ha-settings-row ?three-line=${this.narrow}>
+                ? html`<ha-settings-row ?three-line=${this.narrow} empty>
                       <span slot="heading">
                         ${this.hass.localize(
                           "ui.panel.config.apps.dashboard.hostname"
@@ -1403,6 +1403,10 @@ class SupervisorAppInfo extends LitElement {
           --markdown-image-text-indent: 0;
           --markdown-image-transition: none;
         }
+        ha-settings-row,
+        supervisor-app-metric {
+          --settings-row-prefix-flex: 2;
+        }
         ha-settings-row {
           padding: 0;
           height: 54px;
@@ -1421,7 +1425,6 @@ class SupervisorAppInfo extends LitElement {
           --settings-row-body-padding-top: 0;
           --settings-row-body-padding-bottom: 0;
           --settings-row-content-padding-block: var(--ha-space-2);
-          --settings-row-prefix-flex: 2;
           --settings-row-switch-padding-block: var(--ha-space-2);
         }
 

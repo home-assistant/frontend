@@ -14,6 +14,8 @@ export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, attribute: "wrap-heading", reflect: true })
   public wrapHeading = false;
 
+  @property({ type: Boolean, reflect: true }) public empty = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="prefix-wrap">
@@ -27,7 +29,9 @@ export class HaSettingsRow extends LitElement {
           <div class="secondary"><slot name="description"></slot></div>
         </div>
       </div>
-      <div class="content"><slot></slot></div>
+      <div class="content">
+        <slot></slot>
+      </div>
     `;
   }
 
@@ -94,6 +98,9 @@ export class HaSettingsRow extends LitElement {
       flex: 1;
       min-width: 0;
       padding: var(--settings-row-content-padding-block, var(--ha-space-4)) 0;
+    }
+    :host([empty]) .content {
+      display: none;
     }
     .content ::slotted(*) {
       width: var(--settings-row-content-width);
