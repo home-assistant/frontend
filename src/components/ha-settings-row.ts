@@ -34,7 +34,7 @@ export class HaSettingsRow extends LitElement {
   static styles = css`
     :host {
       display: flex;
-      padding: 0 16px;
+      padding: 0 var(--ha-space-4);
       align-content: normal;
       align-self: auto;
       align-items: center;
@@ -47,8 +47,8 @@ export class HaSettingsRow extends LitElement {
       );
       padding-left: 0;
       padding-inline-start: 0;
-      padding-right: 16px;
-      padding-inline-end: 16px;
+      padding-right: var(--ha-space-4);
+      padding-inline-end: var(--ha-space-4);
       overflow: hidden;
       display: var(--layout-vertical_-_display, flex);
       flex-direction: var(--layout-vertical_-_flex-direction, column);
@@ -66,7 +66,7 @@ export class HaSettingsRow extends LitElement {
     }
     .body > .secondary {
       display: block;
-      padding-top: 4px;
+      padding-top: var(--ha-space-1);
       font-family: var(
         --mdc-typography-body2-font-family,
         var(--mdc-typography-font-family, var(--ha-font-family-body))
@@ -102,7 +102,7 @@ export class HaSettingsRow extends LitElement {
       align-items: normal;
       flex-direction: column;
       border-top: 1px solid var(--divider-color);
-      padding-bottom: 8px;
+      padding-bottom: var(--ha-space-2);
     }
     ::slotted(ha-switch) {
       padding: var(--settings-row-switch-padding-block, var(--ha-space-4)) 0;

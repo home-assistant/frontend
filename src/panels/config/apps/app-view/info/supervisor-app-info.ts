@@ -1286,7 +1286,7 @@ class SupervisorAppInfo extends LitElement {
         }
         ha-card {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-card.warning {
           background-color: var(--error-color);
@@ -1322,15 +1322,15 @@ class SupervisorAppInfo extends LitElement {
         }
         .errors {
           color: var(--error-color);
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .description {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         img.logo {
           max-width: 100%;
           max-height: 60px;
-          margin: 16px 0;
+          margin: var(--ha-space-4) 0;
           display: block;
         }
 
@@ -1380,7 +1380,7 @@ class SupervisorAppInfo extends LitElement {
           );
         }
         .capabilities {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .card-actions {
           justify-content: space-between;
@@ -1396,7 +1396,7 @@ class SupervisorAppInfo extends LitElement {
           cursor: pointer;
         }
         ha-markdown {
-          padding: 16px;
+          padding: var(--ha-space-4);
           --markdown-image-background-color: transparent;
           --markdown-image-border-radius: 0;
           --markdown-image-min-height: auto;
@@ -1445,7 +1445,7 @@ class SupervisorAppInfo extends LitElement {
 
         :host > ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         a {
@@ -1453,7 +1453,7 @@ class SupervisorAppInfo extends LitElement {
         }
 
         supervisor-app-update-available-card {
-          padding-bottom: 16px;
+          padding-bottom: var(--ha-space-4);
         }
 
         @media (max-width: 720px) {
