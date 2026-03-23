@@ -487,9 +487,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this._amount! - this._origAmount!,
         unit || null
       );
-      this._busy = false;
     } catch (err: any) {
-      this._busy = false;
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
@@ -497,6 +495,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         ),
       });
       return;
+    } finally {
+      this._busy = false;
     }
     showToast(this, {
       message: this.hass.localize(
