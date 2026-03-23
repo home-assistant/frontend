@@ -10706,7 +10706,7 @@
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
       },
-      "windows_98": {
+      "retro": {
         "tip_1": "Try turning your house off and on again.",
         "tip_2": "If your automation doesn't work, just add more YAML.",
         "tip_3": "Talk to your devices. They won't answer, but it helps.",

@@ -1,6 +1,6 @@
 import type { Theme } from "../data/ws-themes";
 
-export const WINDOWS_98_THEME: Theme = {
+export const RETRO_THEME: Theme = {
   // Sharp corners
   "ha-border-radius-sm": "0",
   "ha-border-radius-md": "0",

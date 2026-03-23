@@ -8,7 +8,7 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import { subscribeLabFeature } from "../data/labs";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
-import { WINDOWS_98_THEME } from "./ha-windows-98-theme";
+import { RETRO_THEME } from "./ha-retro-theme";
 
 const TIP_COUNT = 25;
 
@@ -20,7 +20,7 @@ type CasitaExpression =
   | "great-job"
   | "error";
 
-const STORAGE_KEY = "windows-98-position";
+const STORAGE_KEY = "retro-position";
 const DRAG_THRESHOLD = 5;
 const BUBBLE_TIMEOUT = 8000;
 const SLEEP_TIMEOUT = 30000;
@@ -28,8 +28,8 @@ const BSOD_CLICK_COUNT = 5;
 const BSOD_CLICK_TIMEOUT = 3000;
 const BSOD_DISMISS_DELAY = 500;
 
-@customElement("ha-windows-98")
-export class HaWindows98 extends SubscribeMixin(LitElement) {
+@customElement("ha-retro")
+export class HaRetro extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -41,7 +41,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       subscribeLabFeature(
         this.hass!.connection,
         "frontend",
-        "windows_98",
+        "retro",
         (feature) => {
           this._enabled = feature.enabled;
         }
@@ -95,7 +95,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     this._loadPosition();
     this._resetSleepTimer();
-    this._applyWin98Theme();
+    this._applyRetroTheme();
     this._startThemeObserver();
   }
 
@@ -112,8 +112,8 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: Map<string, unknown>): void {
     if (changedProps.has("_enabled")) {
       if (this._enabled) {
-        this.hass!.loadFragmentTranslation("windows_98");
-        this._applyWin98Theme();
+        this.hass!.loadFragmentTranslation("retro");
+        this._applyRetroTheme();
         this._startThemeObserver();
       } else {
         this._stopThemeObserver();
@@ -125,7 +125,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       // Re-apply if darkMode changed
       if (oldHass && oldHass.themes.darkMode !== this.hass!.themes.darkMode) {
         this._themeApplied = false;
-        this._applyWin98Theme();
+        this._applyRetroTheme();
       }
     }
   }
@@ -138,9 +138,9 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       const el = document.documentElement as HTMLElement & {
         __themes?: { cacheKey?: string };
       };
-      if (!el.__themes?.cacheKey?.startsWith("Windows 98")) {
+      if (!el.__themes?.cacheKey?.startsWith("Retro")) {
         this._themeApplied = false;
-        this._applyWin98Theme();
+        this._applyRetroTheme();
       }
     });
     this._themeObserver.observe(document.documentElement, {
@@ -154,7 +154,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
     this._themeObserver = undefined;
   }
 
-  private _applyWin98Theme(): void {
+  private _applyRetroTheme(): void {
     if (!this.hass || this._themeApplied) return;
 
     this._isApplyingTheme = true;
@@ -163,7 +163,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       ...this.hass.themes,
       themes: {
         ...this.hass.themes.themes,
-        "Windows 98": WINDOWS_98_THEME,
+        Retro: RETRO_THEME,
       },
     };
 
@@ -171,7 +171,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
     applyThemesOnElement(
       document.documentElement,
       themes,
-      "Windows 98",
+      "Retro",
       { dark: this.hass.themes.darkMode },
       true
     );
@@ -346,7 +346,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
   private _showTip(): void {
     const tipIndex = Math.floor(Math.random() * TIP_COUNT) + 1;
     this._bubbleText = this.hass!.localize(
-      `ui.panel.windows_98.tip_${tipIndex}` as LocalizeKeys
+      `ui.panel.retro.tip_${tipIndex}` as LocalizeKeys
     );
     this._showBubble = true;
     this._expression = "ok-nabu";
@@ -418,17 +418,15 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
             <div class="bsod" @click=${this._dismissBsod}>
               <div class="bsod-content">
                 <h1 class="bsod-title">
-                  ${this.hass!.localize("ui.panel.windows_98.bsod_title")}
+                  ${this.hass!.localize("ui.panel.retro.bsod_title")}
                 </h1>
+                <p>${this.hass!.localize("ui.panel.retro.bsod_error")}</p>
                 <p>
-                  ${this.hass!.localize("ui.panel.windows_98.bsod_error")}
-                </p>
-                <p>
-                  * ${this.hass!.localize("ui.panel.windows_98.bsod_line_1")}<br />
-                  * ${this.hass!.localize("ui.panel.windows_98.bsod_line_2")}
+                  * ${this.hass!.localize("ui.panel.retro.bsod_line_1")}<br />
+                  * ${this.hass!.localize("ui.panel.retro.bsod_line_2")}
                 </p>
                 <p class="bsod-prompt">
-                  ${this.hass!.localize("ui.panel.windows_98.bsod_continue")}
+                  ${this.hass!.localize("ui.panel.retro.bsod_continue")}
                   <span class="bsod-cursor">_</span>
                 </p>
               </div>
@@ -457,7 +455,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
                   @pointerdown=${this._stopPropagation}
                   @click=${this._dismiss}
                 >
-                  ${this.hass!.localize("ui.panel.windows_98.dismiss")}
+                  ${this.hass!.localize("ui.panel.retro.dismiss")}
                 </button>
                 <div class="bubble-arrow"></div>
               </div>
@@ -680,6 +678,6 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-windows-98": HaWindows98;
+    "ha-retro": HaRetro;
   }
 }

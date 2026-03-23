@@ -52,7 +52,7 @@ export class HomeAssistantMain extends LitElement {
 
     return html`
       <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
-      <ha-windows-98 .hass=${this.hass} .narrow=${this.narrow}></ha-windows-98>
+      <ha-retro .hass=${this.hass} .narrow=${this.narrow}></ha-retro>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
@@ -80,7 +80,7 @@ export class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
     import("../components/ha-snowflakes");
-    import("../components/ha-windows-98");
+    import("../components/ha-retro");
 
     if (this.hass.auth.external) {
       this._externalSidebar =

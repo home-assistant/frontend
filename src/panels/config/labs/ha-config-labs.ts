@@ -47,7 +47,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
       return featuresToSort.sort((a, b) => {
         // Place frontend fun features at the bottom
-        const funFeatures = ["winter_mode", "windows_98"];
+        const funFeatures = ["winter_mode", "retro"];
         const aIsFun =
           a.domain === "frontend" && funFeatures.includes(a.preview_feature);
         const bIsFun =
