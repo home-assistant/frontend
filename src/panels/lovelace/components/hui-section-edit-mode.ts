@@ -1,5 +1,7 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
+  mdiDotsVertical,
   mdiDragHorizontalVariant,
   mdiPencil,
   mdiPlusCircleMultipleOutline,
@@ -7,6 +9,9 @@ import {
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -36,21 +41,32 @@ export class HuiSectionEditMode extends LitElement {
             class="handle"
             .path=${mdiDragHorizontalVariant}
           ></ha-svg-icon>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.edit")}
-            @click=${this._editSection}
-            .path=${mdiPencil}
-          ></ha-icon-button>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.duplicate")}
-            @click=${this._duplicateSection}
-            .path=${mdiPlusCircleMultipleOutline}
-          ></ha-icon-button>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.delete")}
-            @click=${this._deleteSection}
-            .path=${mdiDelete}
-          ></ha-icon-button>
+          <ha-dropdown
+            placement="bottom-end"
+            @wa-select=${this._handleDropdownSelect}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-dropdown-item value="edit">
+              <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+              ${this.hass.localize("ui.common.edit")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="duplicate">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiPlusCircleMultipleOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize("ui.common.duplicate")}
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            <ha-dropdown-item value="delete" variant="danger">
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+              ${this.hass.localize("ui.common.delete")}
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
       </div>
       <div class="section-wrapper">
@@ -59,8 +75,23 @@ export class HuiSectionEditMode extends LitElement {
     `;
   }
 
-  private async _editSection(ev) {
-    ev.stopPropagation();
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent): void {
+    const action = ev.detail?.item?.value;
+    if (!action) return;
+    switch (action) {
+      case "edit":
+        this._editSection();
+        break;
+      case "duplicate":
+        this._duplicateSection();
+        break;
+      case "delete":
+        this._deleteSection();
+        break;
+    }
+  }
+
+  private async _editSection() {
     showEditSectionDialog(this, {
       lovelace: this.lovelace!,
       lovelaceConfig: this.lovelace!.config,
@@ -72,8 +103,7 @@ export class HuiSectionEditMode extends LitElement {
     });
   }
 
-  private _duplicateSection(ev: Event): void {
-    ev.stopPropagation();
+  private _duplicateSection(): void {
     const newConfig = duplicateSection(
       this.lovelace!.config,
       this.viewIndex,
@@ -82,8 +112,7 @@ export class HuiSectionEditMode extends LitElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private async _deleteSection(ev) {
-    ev.stopPropagation();
+  private async _deleteSection() {
     const path = [this.viewIndex, this.index] as [number, number];
 
     const section = findLovelaceContainer(this.lovelace!.config, path);
