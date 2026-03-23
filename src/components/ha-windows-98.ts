@@ -24,6 +24,9 @@ const STORAGE_KEY = "windows-98-position";
 const DRAG_THRESHOLD = 5;
 const BUBBLE_TIMEOUT = 8000;
 const SLEEP_TIMEOUT = 30000;
+const BSOD_CLICK_COUNT = 5;
+const BSOD_CLICK_TIMEOUT = 3000;
+const BSOD_DISMISS_DELAY = 500;
 
 @customElement("ha-windows-98")
 export class HaWindows98 extends SubscribeMixin(LitElement) {
@@ -55,6 +58,12 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
   @state() private _expression: CasitaExpression = "hi";
 
   @state() private _position: { x: number; y: number } | null = null;
+
+  @state() private _showBsod = false;
+
+  private _clickCount = 0;
+
+  private _clickTimer?: ReturnType<typeof setTimeout>;
 
   private _dragging = false;
 
@@ -97,6 +106,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
     this._revertTheme();
     document.removeEventListener("pointermove", this._boundPointerMove);
     document.removeEventListener("pointerup", this._boundPointerUp);
+    document.removeEventListener("keydown", this._boundDismissBsod);
   }
 
   protected willUpdate(changedProps: Map<string, unknown>): void {
@@ -223,7 +233,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
   }
 
   private _onPointerDown(ev: PointerEvent): void {
-    if (ev.button !== 0) return;
+    if (ev.button !== 0 || this._showBsod) return;
 
     this._dragging = true;
     this._dragMoved = false;
@@ -284,11 +294,53 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
   }
 
   private _toggleBubble(): void {
+    this._clickCount++;
+    if (this._clickTimer) {
+      clearTimeout(this._clickTimer);
+    }
+    this._clickTimer = setTimeout(() => {
+      this._clickCount = 0;
+    }, BSOD_CLICK_TIMEOUT);
+
+    if (this._clickCount >= BSOD_CLICK_COUNT) {
+      this._clickCount = 0;
+      this._triggerBsod();
+      return;
+    }
+
     if (this._showBubble) {
       this._hideBubble();
     } else {
       this._showTip();
     }
+  }
+
+  private _boundDismissBsod = this._dismissBsodOnKey.bind(this);
+
+  private _bsodReadyToDismiss = false;
+
+  private _triggerBsod(): void {
+    this._hideBubble();
+    this._showBsod = true;
+    this._bsodReadyToDismiss = false;
+    this._expression = "error";
+    // Delay enabling dismiss so the rapid clicks that triggered the BSOD don't immediately close it
+    setTimeout(() => {
+      this._bsodReadyToDismiss = true;
+      document.addEventListener("keydown", this._boundDismissBsod);
+    }, 500);
+  }
+
+  private _dismissBsod(): void {
+    if (!this._bsodReadyToDismiss) return;
+    this._showBsod = false;
+    this._expression = "hi";
+    this._resetSleepTimer();
+    document.removeEventListener("keydown", this._boundDismissBsod);
+  }
+
+  private _dismissBsodOnKey(): void {
+    this._dismissBsod();
   }
 
   private _showTip(): void {
@@ -344,6 +396,10 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       clearTimeout(this._sleepTimer);
       this._sleepTimer = undefined;
     }
+    if (this._clickTimer) {
+      clearTimeout(this._clickTimer);
+      this._clickTimer = undefined;
+    }
   }
 
   protected render() {
@@ -357,6 +413,28 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       : `right: 16px; bottom: 16px;`;
 
     return html`
+      ${this._showBsod
+        ? html`
+            <div class="bsod" @click=${this._dismissBsod}>
+              <div class="bsod-content">
+                <h1 class="bsod-title">Home Assistant</h1>
+                <p>
+                  A fatal exception 0E has occurred at 0028:C0011E36 in VXD
+                  HAcore(01) + 00010E36. The current automation will be
+                  terminated.
+                </p>
+                <p>
+                  * Don't worry, nothing is actually broken.<br />
+                  * Your automations are still running. Probably.
+                </p>
+                <p class="bsod-prompt">
+                  Press any key or click to continue
+                  <span class="bsod-cursor">_</span>
+                </p>
+              </div>
+            </div>
+          `
+        : nothing}
       <div
         class="casita-container ${this._dragging ? "dragging" : ""}"
         style="width: ${size}px; ${posStyle}"
@@ -520,11 +598,80 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
       }
     }
 
+    .bsod {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0000aa;
+      color: #ffffff;
+      font-family: "Lucida Console", "Courier New", monospace;
+      font-size: 16px;
+      line-height: 1.6;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      animation: bsod-in 100ms ease-out;
+    }
+
+    .bsod-content {
+      max-width: 700px;
+      padding: 32px;
+      text-align: left;
+    }
+
+    .bsod-title {
+      display: inline-block;
+      background: #aaaaaa;
+      color: #0000aa;
+      padding: 2px 12px;
+      font-size: 18px;
+      font-weight: normal;
+      margin: 0 0 24px;
+    }
+
+    .bsod-content p {
+      margin: 16px 0;
+    }
+
+    .bsod-prompt {
+      margin-top: 32px;
+    }
+
+    .bsod-cursor {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes bsod-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .casita-image {
         animation: none;
       }
       .speech-bubble {
+        animation: none;
+      }
+      .bsod {
+        animation: none;
+      }
+      .bsod-cursor {
         animation: none;
       }
     }
