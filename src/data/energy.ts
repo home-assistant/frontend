@@ -1526,9 +1526,13 @@ export const computeTotalFlowRate = (
       return;
     }
 
-    const rawValue = parseFloat(stateObj.state);
-    if (isNaN(rawValue) || rawValue <= 0) {
+    let rawValue = parseFloat(stateObj.state);
+    if (isNaN(rawValue)) {
       return;
+    }
+
+    if (rawValue < 0) {
+      rawValue = 0;
     }
 
     const entityUnit = stateObj.attributes.unit_of_measurement;
