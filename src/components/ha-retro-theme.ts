@@ -18,6 +18,8 @@ export const RETRO_THEME = {
   "ha-font-family-heading":
     "Tahoma, 'MS Sans Serif', 'Microsoft Sans Serif', Arial, sans-serif",
   "ha-font-family-code": "'Courier New', Courier, monospace",
+  "ha-font-family-longform":
+    "Tahoma, 'MS Sans Serif', 'Microsoft Sans Serif', Arial, sans-serif",
 
   // No transparency
   "ha-dialog-scrim-backdrop-filter": "none",
@@ -134,14 +136,14 @@ export const RETRO_THEME = {
 
       // Neutral scale
       "ha-color-neutral-05": "#000000",
-      "ha-color-neutral-10": "#404040",
-      "ha-color-neutral-20": "#606060",
-      "ha-color-neutral-30": "#808080",
-      "ha-color-neutral-40": "#808080",
-      "ha-color-neutral-50": "#A0A0A0",
-      "ha-color-neutral-60": "#B0B0B0",
-      "ha-color-neutral-70": "#C0C0C0",
-      "ha-color-neutral-80": "#C0C0C0",
+      "ha-color-neutral-10": "#2A2A2A",
+      "ha-color-neutral-20": "#404040",
+      "ha-color-neutral-30": "#606060",
+      "ha-color-neutral-40": "#707070",
+      "ha-color-neutral-50": "#808080",
+      "ha-color-neutral-60": "#909090",
+      "ha-color-neutral-70": "#A0A0A0",
+      "ha-color-neutral-80": "#B0B0B0",
       "ha-color-neutral-90": "#C8C8C8",
       "ha-color-neutral-95": "#D0D0D0",
 
@@ -266,8 +268,8 @@ export const RETRO_THEME = {
       "ha-color-primary-60": "#8080E0",
       "ha-color-primary-70": "#A0A0F0",
       "ha-color-primary-80": "#C0C0FF",
-      "ha-color-primary-90": "#3A3A50",
-      "ha-color-primary-95": "#303040",
+      "ha-color-primary-90": "#3A3A58",
+      "ha-color-primary-95": "#303048",
 
       // Neutral scale
       "ha-color-neutral-05": "#1A1A1A",
@@ -275,12 +277,12 @@ export const RETRO_THEME = {
       "ha-color-neutral-20": "#3A3A3A",
       "ha-color-neutral-30": "#4A4A4A",
       "ha-color-neutral-40": "#606060",
-      "ha-color-neutral-50": "#808080",
-      "ha-color-neutral-60": "#A0A0A0",
-      "ha-color-neutral-70": "#B0B0B0",
-      "ha-color-neutral-80": "#C0C0C0",
-      "ha-color-neutral-90": "#4A4A4A",
-      "ha-color-neutral-95": "#505050",
+      "ha-color-neutral-50": "#707070",
+      "ha-color-neutral-60": "#808080",
+      "ha-color-neutral-70": "#909090",
+      "ha-color-neutral-80": "#A0A0A0",
+      "ha-color-neutral-90": "#C0C0C0",
+      "ha-color-neutral-95": "#D0D0D0",
 
       // Codemirror
       "codemirror-keyword": "#8080E0",
