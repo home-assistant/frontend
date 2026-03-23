@@ -10,8 +10,8 @@ import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 
 import { formatDate } from "../../../../common/datetime/format_date";
-import "../../../../components/ha-copy-textfield";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/input/ha-input-copy";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
   connectCloudRemote,
@@ -130,12 +130,12 @@ export class CloudRemotePref extends LitElement {
                 </p>
               `}
 
-          <ha-copy-textfield
-            .hass=${this.hass}
+          <ha-input-copy
+            readonly
             .value=${`https://${remote_domain}`}
             .maskedValue=${obfuscateUrl(`https://${remote_domain}`)}
             .label=${this.hass!.localize("ui.panel.config.common.copy_link")}
-          ></ha-copy-textfield>
+          ></ha-input-copy>
 
           <ha-expansion-panel
             outlined

@@ -12,20 +12,22 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-tooltip";
 
+export type InputType =
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "number"
+  | "password"
+  | "search"
+  | "tel"
+  | "text"
+  | "time"
+  | "url";
+
 @customElement("ha-input")
 export class HaInput extends LitElement {
   @property({ reflect: true })
-  public type:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url" = "text";
+  public type: InputType = "text";
 
   @property()
   public value?: string;
