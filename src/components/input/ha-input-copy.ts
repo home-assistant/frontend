@@ -1,7 +1,6 @@
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-
 import { consume, type ContextType } from "@lit/context";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { localizeContext } from "../../data/context";
