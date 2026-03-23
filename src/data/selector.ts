@@ -241,7 +241,6 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
-  unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
   unit_of_measurement?: string | readonly string[];
 }
@@ -367,6 +366,7 @@ export interface NumberSelector {
 
 export interface NumericThresholdSelector {
   numeric_threshold: {
+    unit_of_measurement?: readonly string[];
     number?: NumberSelector["number"];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
