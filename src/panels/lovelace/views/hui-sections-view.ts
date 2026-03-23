@@ -30,11 +30,11 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
-import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
+import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
