@@ -554,6 +554,16 @@
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"
+        },
+        "numeric_threshold": {
+          "type": "Threshold type",
+          "above": "Above",
+          "below": "Below",
+          "in_range": "In range",
+          "outside_range": "Outside range",
+          "value": "Value",
+          "minimum_value": "Minimum value",
+          "maximum_value": "Maximum value"
         }
       },
       "logbook": {

@@ -56,6 +56,7 @@ export type Selector =
   | MediaSelector
   | NavigationSelector
   | NumberSelector
+  | NumericThresholdSelector
   | ObjectSelector
   | AssistPipelineSelector
   | QRCodeSelector
@@ -242,6 +243,7 @@ interface EntitySelectorFilter {
   device_class?: string | readonly string[];
   unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
+  unit_of_measurement?: string | readonly string[];
 }
 
 export interface EntitySelector {
@@ -360,6 +362,13 @@ export interface NumberSelector {
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
+  } | null;
+}
+
+export interface NumericThresholdSelector {
+  numeric_threshold: {
+    number?: NumberSelector["number"];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
 }
 
