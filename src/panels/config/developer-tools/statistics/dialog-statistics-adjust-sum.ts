@@ -83,10 +83,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._fetchStats();
   }
 
-  public closeDialog(): void {
-    this._open = false;
-  }
-
   private _resetSelectionAndRefreshStatisticData(): void {
     this._clearChosenStatistic();
     this._fetchStats();
@@ -125,7 +121,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
             "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
           )}
         </ha-button>
-        <ha-button slot="primaryAction" @click=${this.closeDialog}>
+        <ha-button slot="primaryAction" data-dialog="close">
           ${this.hass.localize("ui.common.close")}
         </ha-button>
       `;
