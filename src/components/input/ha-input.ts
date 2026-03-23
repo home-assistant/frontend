@@ -296,7 +296,12 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised": this.value || (this.label && this.placeholder),
           "no-label": !this.label,
-          "hint-hidden": !this.hint && !hasHintSlot && !this.required,
+          "hint-hidden":
+            !this.hint &&
+            !hasHintSlot &&
+            !this.required &&
+            !this._invalid &&
+            !this.invalid,
         })}
         @input=${this._handleInput}
         @change=${this._handleChange}
