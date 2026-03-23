@@ -72,6 +72,7 @@ import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
+  type MoreInfoView,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
@@ -86,15 +87,13 @@ import "./more-info-content";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
-  view?: View;
+  view?: MoreInfoView;
   /** @deprecated Use `view` instead */
-  tab?: View;
+  tab?: MoreInfoView;
   large?: boolean;
   data?: Record<string, any>;
   parentElement?: LitElement;
 }
-
-type View = "info" | "history" | "settings" | "related" | "add_to";
 
 interface ChildView {
   viewTag: string;
@@ -112,7 +111,7 @@ declare global {
   }
 }
 
-const DEFAULT_VIEW: View = "info";
+const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
@@ -134,9 +133,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _data?: Record<string, any>;
 
-  @state() private _currView: View = DEFAULT_VIEW;
+  @state() private _currView: MoreInfoView = DEFAULT_VIEW;
 
-  @state() private _initialView: View = DEFAULT_VIEW;
+  @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
 
   @state() private _childView?: ChildView;
 
@@ -253,7 +252,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     return entity?.device_id ?? null;
   }
 
-  private _setView(view: View) {
+  private _setView(view: MoreInfoView) {
     history.replaceState(
       {
         ...history.state,
@@ -276,6 +275,13 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       }
       this._childView = undefined;
       this._detailsYamlMode = false;
+      return;
+    }
+    if (
+      this._initialView !== DEFAULT_VIEW &&
+      this._currView === this._initialView
+    ) {
+      this._resetInitialView();
       return;
     }
     if (this._initialView !== this._currView) {
@@ -512,10 +518,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon =
-      (isDefaultView &&
-        this._parentEntityIds.length === 0 &&
-        !this._childView) ||
-      (isSpecificInitialView && !this._childView);
+      isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
     const context = stateObj
       ? getEntityContext(
