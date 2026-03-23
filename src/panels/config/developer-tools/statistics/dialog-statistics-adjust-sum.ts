@@ -87,7 +87,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._open = false;
   }
 
-  private _adjustDataAndCloseInputDialog(): void {
+  private _resetSelectionAndRefreshStatisticData(): void {
     this._clearChosenStatistic();
     this._fetchStats();
   }
@@ -503,7 +503,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this._adjustDataAndCloseInputDialog();
+    this._resetSelectionAndRefreshStatisticData();
   }
 
   static get styles(): CSSResultGroup {
