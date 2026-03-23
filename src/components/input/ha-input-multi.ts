@@ -15,7 +15,7 @@ import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
 @customElement("ha-input-multi")
-class HaMultiTextField extends LitElement {
+class HaInputMulti extends LitElement {
   @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -81,10 +81,10 @@ class HaMultiTextField extends LitElement {
                     @keydown=${this._keyDown}
                   >
                     ${this.inputSuffix
-                      ? html`<span slot="suffix">${this.inputSuffix}</span>`
+                      ? html`<span slot="start">${this.inputSuffix}</span>`
                       : nothing}
                     ${this.inputPrefix
-                      ? html`<span slot="prefix">${this.inputPrefix}</span>`
+                      ? html`<span slot="end">${this.inputPrefix}</span>`
                       : nothing}
                   </ha-input>
                   <ha-icon-button
@@ -216,6 +216,6 @@ class HaMultiTextField extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-input-multi": HaMultiTextField;
+    "ha-input-multi": HaInputMulti;
   }
 }

@@ -4,7 +4,6 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-icon-button";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
@@ -126,17 +125,6 @@ export class HaTextSelector extends LitElement {
     ha-textarea,
     ha-input {
       width: 100%;
-    }
-    ha-icon-button {
-      position: absolute;
-      top: var(--ha-space-2);
-      right: var(--ha-space-2);
-      inset-inline-start: initial;
-      inset-inline-end: var(--ha-space-2);
-      --ha-icon-button-size: 40px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      direction: var(--direction);
     }
   `;
 }
