@@ -10732,7 +10732,12 @@
         "tip_23": "There are two types of people: those who back up, and those who will.",
         "tip_24": "My favorite color is #008080. Don't ask me why.",
         "tip_25": "Automations are just spicy if-then statements.",
-        "dismiss": "Dismiss me"
+        "dismiss": "Dismiss me",
+        "bsod_title": "Home Assistant",
+        "bsod_error": "A fatal exception 0E has occurred at C0FF:EE15G00D in VXD L1GHT5(01) + 0FF. The current automation will be terminated.",
+        "bsod_line_1": "Don't worry, nothing is actually broken.",
+        "bsod_line_2": "Your automations are still running. Probably.",
+        "bsod_continue": "Press any key or click to continue"
       }
     },
     "tips": {

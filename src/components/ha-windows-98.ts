@@ -328,7 +328,7 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
     setTimeout(() => {
       this._bsodReadyToDismiss = true;
       document.addEventListener("keydown", this._boundDismissBsod);
-    }, 500);
+    }, BSOD_DISMISS_DELAY);
   }
 
   private _dismissBsod(): void {
@@ -417,18 +417,18 @@ export class HaWindows98 extends SubscribeMixin(LitElement) {
         ? html`
             <div class="bsod" @click=${this._dismissBsod}>
               <div class="bsod-content">
-                <h1 class="bsod-title">Home Assistant</h1>
+                <h1 class="bsod-title">
+                  ${this.hass!.localize("ui.panel.windows_98.bsod_title")}
+                </h1>
                 <p>
-                  A fatal exception 0E has occurred at 0028:C0011E36 in VXD
-                  HAcore(01) + 00010E36. The current automation will be
-                  terminated.
+                  ${this.hass!.localize("ui.panel.windows_98.bsod_error")}
                 </p>
                 <p>
-                  * Don't worry, nothing is actually broken.<br />
-                  * Your automations are still running. Probably.
+                  * ${this.hass!.localize("ui.panel.windows_98.bsod_line_1")}<br />
+                  * ${this.hass!.localize("ui.panel.windows_98.bsod_line_2")}
                 </p>
                 <p class="bsod-prompt">
-                  Press any key or click to continue
+                  ${this.hass!.localize("ui.panel.windows_98.bsod_continue")}
                   <span class="bsod-cursor">_</span>
                 </p>
               </div>
