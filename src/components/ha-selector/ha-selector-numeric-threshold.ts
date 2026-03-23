@@ -88,7 +88,6 @@ export class HaNumericThresholdSelector extends LitElement {
     const type = this._type || "above";
     const showSingleValue = type === "above" || type === "below";
     const showRangeValues = type === "between" || type === "outside";
-    const unitOptions = this._getUnitOptions();
 
     const typeOptions = [
       {
@@ -121,107 +120,6 @@ export class HaNumericThresholdSelector extends LitElement {
       },
     ];
 
-    const mappedUnitOptions = unitOptions?.map((unit) => ({
-      value: unit,
-      label: unit,
-    }));
-
-    const unitLabel = this.hass.localize(
-      "ui.components.selectors.numeric_threshold.unit" as any
-    );
-
-    const choiceToggleButtons = [
-      {
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.number" as any
-        ),
-        value: "number",
-      },
-      {
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.entity" as any
-        ),
-        value: "entity",
-      },
-    ];
-
-    const _numberSelector = (unit?: string) => {
-      const effectiveUnit = unit || unitOptions?.[0];
-      return {
-        number: {
-          ...this.selector.numeric_threshold?.number,
-          ...(effectiveUnit ? { unit_of_measurement: effectiveUnit } : {}),
-        },
-      };
-    };
-
-    const _entitySelector = {
-      entity: {
-        filter: this._getEntityFilter(),
-      },
-    };
-
-    const _unitSelect = (
-      entry: ThresholdValueEntry | undefined,
-      handler: (ev: CustomEvent) => void
-    ) =>
-      unitOptions && unitOptions.length > 1
-        ? html`
-            <ha-select
-              class="unit-selector"
-              .label=${unitLabel}
-              .value=${entry?.unit_of_measurement || unitOptions[0]}
-              .options=${mappedUnitOptions}
-              .disabled=${this.disabled}
-              @selected=${handler}
-            ></ha-select>
-          `
-        : nothing;
-
-    const _valueRow = (
-      rowLabel: string,
-      entry: ThresholdValueEntry | undefined,
-      onValueChanged: (ev: CustomEvent) => void,
-      onChoiceChanged: (ev: CustomEvent) => void,
-      onUnitChanged: (ev: CustomEvent) => void
-    ) => {
-      const activeChoice = entry?.active_choice ?? "number";
-      const isEntity = activeChoice === "entity";
-      const showUnit = !isEntity && !!unitOptions && unitOptions.length > 1;
-      const innerValue = isEntity ? entry?.entity : entry?.number;
-      const innerSelector = isEntity
-        ? _entitySelector
-        : _numberSelector(entry?.unit_of_measurement);
-      return html`
-        <div class="value-row">
-          <div class="value-header">
-            <span class="value-label"
-              >${rowLabel}${this.required ? "*" : ""}</span
-            >
-            <ha-button-toggle-group
-              size="small"
-              .buttons=${choiceToggleButtons}
-              .active=${activeChoice}
-              .disabled=${this.disabled}
-              @value-changed=${onChoiceChanged}
-            ></ha-button-toggle-group>
-          </div>
-          <div class="value-inputs">
-            <ha-selector
-              class="value-selector"
-              .hass=${this.hass}
-              .selector=${innerSelector}
-              .value=${innerValue}
-              .disabled=${this.disabled}
-              .required=${this.required}
-              @value-changed=${onValueChanged}
-            ></ha-selector>
-            ${showUnit ? _unitSelect(entry, onUnitChanged) : nothing}
-          </div>
-        </div>
-      `;
-    };
-
     return html`
       <div class="container">
         ${this.label
@@ -239,7 +137,7 @@ export class HaNumericThresholdSelector extends LitElement {
           ></ha-select>
 
           ${showSingleValue
-            ? _valueRow(
+            ? this._renderValueRow(
                 this.hass.localize(
                   type === "above"
                     ? "ui.components.selectors.numeric_threshold.above"
@@ -253,7 +151,7 @@ export class HaNumericThresholdSelector extends LitElement {
             : nothing}
           ${showRangeValues
             ? html`
-                ${_valueRow(
+                ${this._renderValueRow(
                   this.hass.localize(
                     "ui.components.selectors.numeric_threshold.from"
                   ),
@@ -262,7 +160,7 @@ export class HaNumericThresholdSelector extends LitElement {
                   this._valueMinChoiceChanged,
                   this._unitMinChanged
                 )}
-                ${_valueRow(
+                ${this._renderValueRow(
                   this.hass.localize(
                     "ui.components.selectors.numeric_threshold.to"
                   ),
@@ -277,6 +175,102 @@ export class HaNumericThresholdSelector extends LitElement {
         ${this.helper
           ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : nothing}
+      </div>
+    `;
+  }
+
+  private _renderUnitSelect(
+    entry: ThresholdValueEntry | undefined,
+    handler: (ev: CustomEvent) => void
+  ) {
+    const unitOptions = this._getUnitOptions();
+    if (!unitOptions || unitOptions.length <= 1) {
+      return nothing;
+    }
+    const mappedUnitOptions = unitOptions.map((unit) => ({
+      value: unit,
+      label: unit,
+    }));
+    const unitLabel = this.hass.localize(
+      "ui.components.selectors.numeric_threshold.unit" as any
+    );
+    return html`
+      <ha-select
+        class="unit-selector"
+        .label=${unitLabel}
+        .value=${entry?.unit_of_measurement || unitOptions[0]}
+        .options=${mappedUnitOptions}
+        .disabled=${this.disabled}
+        @selected=${handler}
+      ></ha-select>
+    `;
+  }
+
+  private _renderValueRow(
+    rowLabel: string,
+    entry: ThresholdValueEntry | undefined,
+    onValueChanged: (ev: CustomEvent) => void,
+    onChoiceChanged: (ev: CustomEvent) => void,
+    onUnitChanged: (ev: CustomEvent) => void
+  ) {
+    const unitOptions = this._getUnitOptions();
+    const activeChoice = entry?.active_choice ?? "number";
+    const isEntity = activeChoice === "entity";
+    const showUnit = !isEntity && !!unitOptions && unitOptions.length > 1;
+    const innerValue = isEntity ? entry?.entity : entry?.number;
+    const effectiveUnit = entry?.unit_of_measurement || unitOptions?.[0];
+    const numberSelector = {
+      number: {
+        ...this.selector.numeric_threshold?.number,
+        ...(effectiveUnit ? { unit_of_measurement: effectiveUnit } : {}),
+      },
+    };
+    const entitySelector = {
+      entity: {
+        filter: this._getEntityFilter(),
+      },
+    };
+    const innerSelector = isEntity ? entitySelector : numberSelector;
+    const choiceToggleButtons = [
+      {
+        label: this.hass.localize(
+          "ui.components.selectors.numeric_threshold.number" as any
+        ),
+        value: "number",
+      },
+      {
+        label: this.hass.localize(
+          "ui.components.selectors.numeric_threshold.entity" as any
+        ),
+        value: "entity",
+      },
+    ];
+    return html`
+      <div class="value-row">
+        <div class="value-header">
+          <span class="value-label"
+            >${rowLabel}${this.required ? "*" : ""}</span
+          >
+          <ha-button-toggle-group
+            size="small"
+            .buttons=${choiceToggleButtons}
+            .active=${activeChoice}
+            .disabled=${this.disabled}
+            @value-changed=${onChoiceChanged}
+          ></ha-button-toggle-group>
+        </div>
+        <div class="value-inputs">
+          <ha-selector
+            class="value-selector"
+            .hass=${this.hass}
+            .selector=${innerSelector}
+            .value=${innerValue}
+            .disabled=${this.disabled}
+            .required=${this.required}
+            @value-changed=${onValueChanged}
+          ></ha-selector>
+          ${showUnit ? this._renderUnitSelect(entry, onUnitChanged) : nothing}
+        </div>
       </div>
     `;
   }
@@ -303,72 +297,51 @@ export class HaNumericThresholdSelector extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  // Called when the number/entity toggle is switched
-  private _valueChoiceChanged(ev: CustomEvent) {
+  private _choiceChanged(
+    field: "value" | "value_min" | "value_max",
+    ev: CustomEvent
+  ) {
     ev.stopPropagation();
     const choice = ev.detail?.value as string;
     const defaultUnit = this._getUnitOptions()?.[0];
     const entry: ThresholdValueEntry = {
-      ...this.value?.value,
+      ...this.value?.[field],
       active_choice: choice,
     };
     if (choice !== "entity" && !entry.unit_of_measurement && defaultUnit) {
       entry.unit_of_measurement = defaultUnit;
     }
-    fireEvent(this, "value-changed", {
-      value: { ...this.value, type: this._type || "above", value: entry },
-    });
-  }
-
-  private _valueMinChoiceChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const choice = ev.detail?.value as string;
-    const defaultUnit = this._getUnitOptions()?.[0];
-    const entry: ThresholdValueEntry = {
-      ...this.value?.value_min,
-      active_choice: choice,
-    };
-    if (choice !== "entity" && !entry.unit_of_measurement && defaultUnit) {
-      entry.unit_of_measurement = defaultUnit;
-    }
+    const defaultType = field === "value" ? "above" : "between";
     fireEvent(this, "value-changed", {
       value: {
         ...this.value,
-        type: this._type || "between",
-        value_min: entry,
-        value: undefined,
+        type: this._type || defaultType,
+        [field]: entry,
+        ...(field === "value" ? {} : { value: undefined }),
       },
     });
   }
 
-  private _valueMaxChoiceChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const choice = ev.detail?.value as string;
-    const defaultUnit = this._getUnitOptions()?.[0];
-    const entry: ThresholdValueEntry = {
-      ...this.value?.value_max,
-      active_choice: choice,
-    };
-    if (choice !== "entity" && !entry.unit_of_measurement && defaultUnit) {
-      entry.unit_of_measurement = defaultUnit;
-    }
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        type: this._type || "between",
-        value_max: entry,
-        value: undefined,
-      },
-    });
-  }
+  private _valueChoiceChanged = (ev: CustomEvent) =>
+    this._choiceChanged("value", ev);
+
+  private _valueMinChoiceChanged = (ev: CustomEvent) =>
+    this._choiceChanged("value_min", ev);
+
+  private _valueMaxChoiceChanged = (ev: CustomEvent) =>
+    this._choiceChanged("value_max", ev);
 
   // Called when the inner number/entity selector value changes
-  private _valueChanged(ev: CustomEvent) {
+  private _entryChanged(
+    field: "value" | "value_min" | "value_max",
+    ev: CustomEvent
+  ) {
     ev.stopPropagation();
-    const activeChoice = this.value?.value?.active_choice ?? "number";
+    const activeChoice = this.value?.[field]?.active_choice ?? "number";
     const defaultUnit = this._getUnitOptions()?.[0];
     const entry: ThresholdValueEntry = {
-      ...this.value?.value,
+      ...this.value?.[field],
+      active_choice: activeChoice,
       [activeChoice]: ev.detail.value,
     };
     if (
@@ -378,108 +351,56 @@ export class HaNumericThresholdSelector extends LitElement {
     ) {
       entry.unit_of_measurement = defaultUnit;
     }
+    const defaultType = field === "value" ? "above" : "between";
     fireEvent(this, "value-changed", {
       value: {
         ...this.value,
-        type: this._type || "above",
-        value: entry,
-        value_min: undefined,
-        value_max: undefined,
+        type: this._type || defaultType,
+        [field]: entry,
+        ...(field === "value"
+          ? { value_min: undefined, value_max: undefined }
+          : { value: undefined }),
       },
     });
   }
 
-  private _valueMinChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const activeChoice = this.value?.value_min?.active_choice ?? "number";
-    const defaultUnit = this._getUnitOptions()?.[0];
-    const entry: ThresholdValueEntry = {
-      ...this.value?.value_min,
-      [activeChoice]: ev.detail.value,
-    };
-    if (
-      activeChoice !== "entity" &&
-      !entry.unit_of_measurement &&
-      defaultUnit
-    ) {
-      entry.unit_of_measurement = defaultUnit;
-    }
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        type: this._type || "between",
-        value_min: entry,
-        value: undefined,
-      },
-    });
-  }
+  private _valueChanged = (ev: CustomEvent) => this._entryChanged("value", ev);
 
-  private _valueMaxChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const activeChoice = this.value?.value_max?.active_choice ?? "number";
-    const defaultUnit = this._getUnitOptions()?.[0];
-    const entry: ThresholdValueEntry = {
-      ...this.value?.value_max,
-      [activeChoice]: ev.detail.value,
-    };
-    if (
-      activeChoice !== "entity" &&
-      !entry.unit_of_measurement &&
-      defaultUnit
-    ) {
-      entry.unit_of_measurement = defaultUnit;
-    }
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        type: this._type || "between",
-        value_max: entry,
-        value: undefined,
-      },
-    });
-  }
+  private _valueMinChanged = (ev: CustomEvent) =>
+    this._entryChanged("value_min", ev);
 
-  private _unitChanged(ev: CustomEvent) {
+  private _valueMaxChanged = (ev: CustomEvent) =>
+    this._entryChanged("value_max", ev);
+
+  private _unitFieldChanged(
+    field: "value" | "value_min" | "value_max",
+    ev: CustomEvent
+  ) {
     const unit = ev.detail?.value;
-    if (unit === this.value?.value?.unit_of_measurement) return;
+    if (unit === this.value?.[field]?.unit_of_measurement) return;
+    const activeChoice = this.value?.[field]?.active_choice ?? "number";
+    const defaultType = field === "value" ? "above" : "between";
     fireEvent(this, "value-changed", {
       value: {
         ...this.value,
-        type: this._type || "above",
-        value: { ...this.value?.value, unit_of_measurement: unit || undefined },
-      },
-    });
-  }
-
-  private _unitMinChanged(ev: CustomEvent) {
-    const unit = ev.detail?.value;
-    if (unit === this.value?.value_min?.unit_of_measurement) return;
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        type: this._type || "between",
-        value_min: {
-          ...this.value?.value_min,
+        type: this._type || defaultType,
+        [field]: {
+          ...this.value?.[field],
+          active_choice: activeChoice,
           unit_of_measurement: unit || undefined,
         },
       },
     });
   }
 
-  private _unitMaxChanged(ev: CustomEvent) {
-    const unit = ev.detail?.value;
-    if (unit === this.value?.value_max?.unit_of_measurement) return;
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        type: this._type || "between",
-        value_max: {
-          ...this.value?.value_max,
-          unit_of_measurement: unit || undefined,
-        },
-      },
-    });
-  }
+  private _unitChanged = (ev: CustomEvent) =>
+    this._unitFieldChanged("value", ev);
+
+  private _unitMinChanged = (ev: CustomEvent) =>
+    this._unitFieldChanged("value_min", ev);
+
+  private _unitMaxChanged = (ev: CustomEvent) =>
+    this._unitFieldChanged("value_max", ev);
 
   static styles = css`
     .container {
