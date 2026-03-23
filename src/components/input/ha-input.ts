@@ -3,7 +3,14 @@ import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
-import { LitElement, type PropertyValues, css, html, nothing } from "lit";
+import {
+  LitElement,
+  type PropertyValues,
+  type TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -16,10 +23,6 @@ import "../ha-tooltip";
 @customElement("ha-input")
 export class HaInput extends LitElement {
   @property({ reflect: true }) appearance: "material" | "outlined" = "material";
-
-  @property({ attribute: "icon-start" }) iconStart?: string;
-
-  @property({ attribute: "icon-end" }) iconEnd?: string;
 
   @property({ reflect: true })
   public type:
@@ -322,18 +325,9 @@ export class HaInput extends LitElement {
             >`
           : nothing}
         <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
-          ${this.iconStart
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${this.iconStart}
-              ></ha-svg-icon>`
-            : nothing}
+          ${this.renderStartDefault()}
         </slot>
-        <slot name="end" slot="end">
-          ${this.iconEnd
-            ? html`<ha-svg-icon slot="end" .path=${this.iconEnd}></ha-svg-icon>`
-            : nothing}
-        </slot>
+        <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
         <slot name="clear-icon" slot="clear-icon">
           <ha-icon-button .path=${mdiClose}></ha-icon-button>
         </slot>
@@ -364,6 +358,14 @@ export class HaInput extends LitElement {
         </div>
       </wa-input>
     `;
+  }
+
+  protected renderStartDefault(): TemplateResult | typeof nothing {
+    return nothing;
+  }
+
+  protected renderEndDefault(): TemplateResult | typeof nothing {
+    return nothing;
   }
 
   private _handleInput() {

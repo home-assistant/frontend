@@ -255,7 +255,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
     const searchBar = html`<ha-input-search
       .value=${this.filter}
-      @value-changed=${this._handleSearchChange}
+      @input=${this._handleSearchChange}
     >
     </ha-input-search>`;
 

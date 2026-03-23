@@ -22,6 +22,7 @@ import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
 import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends LitElement {
@@ -162,8 +163,9 @@ export class HaFilterLabels extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value ?? "";
+    this._filter = value.toLowerCase();
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {

@@ -1,6 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
 import { mdiMagnify } from "@mdi/js";
-import type { PropertyValues } from "lit";
+import { html, type PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
 import { localizeContext } from "../../data/context";
 import { HaInput } from "./ha-input";
@@ -11,14 +11,14 @@ export class HaInputSearch extends HaInput {
   @consume({ context: localizeContext, subscribe: true })
   private localize!: ContextType<typeof localizeContext>;
 
+  constructor() {
+    super();
+    this.appearance = "outlined";
+    this.withClear = true;
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this.appearance = "outlined";
-      this.withClear = true;
-      this.iconStart = mdiMagnify;
-    }
 
     if (
       !this.placeholder &&
@@ -26,6 +26,10 @@ export class HaInputSearch extends HaInput {
     ) {
       this.placeholder = this.localize("ui.common.search");
     }
+  }
+
+  protected renderStartDefault() {
+    return html`<ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>`;
   }
 }
 
