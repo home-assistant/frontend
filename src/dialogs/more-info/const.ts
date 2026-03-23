@@ -13,6 +13,7 @@ export const MORE_INFO_VIEWS = [
   "settings",
   "related",
   "add_to",
+  "details",
 ] as const;
 
 export type MoreInfoView = (typeof MORE_INFO_VIEWS)[number];
