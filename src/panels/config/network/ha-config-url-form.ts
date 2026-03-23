@@ -184,14 +184,22 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
           ${hasCloud || !isComponentLoaded(this.hass, "cloud")
             ? nothing
             : html`
-                <div class="row">
-                  <div class="flex"></div>
-                  <a href="/config/cloud"
-                    >${this.hass.localize(
-                      "ui.panel.config.url.external_get_ha_cloud"
-                    )}</a
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.url.external_get_ha_cloud"
+                  )}
+                  <ha-button
+                    size="small"
+                    href="/config/cloud/register"
+                    slot="action"
                   >
-                </div>
+                    <span class="no-wrap"
+                      >${this.hass.localize(
+                        "ui.panel.config.cloud.register.start_trial"
+                      )}</span
+                    >
+                  </ha-button>
+                </ha-alert>
               `}
           ${!this._showCustomExternalUrl && hasCloud
             ? html`
@@ -430,7 +438,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
 
     ha-alert {
       display: block;
-      margin: 16px 0;
+      margin: 16px calc(var(--ha-space-4) * -1);
     }
 
     .card-actions {
@@ -474,6 +482,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
       --md-list-item-two-line-container-height: 48px;
+    }
+
+    .no-wrap {
+      white-space: nowrap;
     }
   `;
 }

@@ -8,7 +8,6 @@ import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer"
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
@@ -90,21 +89,22 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass.auth.external)) {
-        const element = this.renderRoot.querySelector("[autofocus]");
-        if (element !== null) {
-          if (!element.id) {
-            element.id = "ha-bottom-sheet-autofocus";
-          }
-          this.hass.auth.external?.fireMessage({
-            type: "focus_element",
-            payload: {
-              element_id: element.id,
-            },
-          });
-        }
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this.hass && isIosApp(this.hass.auth.external)) {
+      //   const element = this.renderRoot.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-bottom-sheet-autofocus";
+      //     }
+      //     this.hass.auth.external?.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
       (
         this.renderRoot.querySelector("[autofocus]") as HTMLElement | null
       )?.focus();

@@ -3,27 +3,30 @@ import {
   addHours,
   addMilliseconds,
   addMonths,
+  addYears,
   differenceInDays,
   differenceInMonths,
   endOfDay,
-  startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-  addYears,
+  startOfDay,
 } from "date-fns";
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import {
   calcDate,
-  calcDateProperty,
   calcDateDifferenceProperty,
+  calcDateProperty,
 } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { formatTime24h } from "../common/datetime/format_time";
+import { formatNumber } from "../common/number/format_number";
+import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
-import { fileDownload } from "../util/file_download";
 import type { HomeAssistant } from "../types";
+import { fileDownload } from "../util/file_download";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -36,9 +39,6 @@ import {
   getStatisticMetadata,
   VOLUME_UNITS,
 } from "./recorder";
-import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
-import { formatNumber } from "../common/number/format_number";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -841,7 +841,7 @@ export const getEnergyDataCollection = (
   const period =
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
-  const [start, end] = calcDateRange(hass, period);
+  const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
   collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 
@@ -1461,7 +1461,7 @@ export const calculateSolarConsumedGauge = (
 /** Exact number of liters in one US gallon */
 const LITERS_PER_GALLON = 3.785411784;
 
-const FLOW_RATE_TO_LMIN: Record<string, number> = {
+export const FLOW_RATE_TO_LMIN: Record<string, number> = {
   "m³/h": 1000 / 60,
   "m³/min": 1000,
   "m³/s": 60000,
@@ -1496,6 +1496,71 @@ export const getFlowRateFromState = (
     return value;
   }
   return value * factor;
+};
+
+/**
+ * Compute the total flow rate across all energy sources of a given type.
+ * Used by gas and water total badges.
+ */
+export const computeTotalFlowRate = (
+  sourceType: "gas" | "water",
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"],
+  entities: Set<string>
+): { value: number; unit: string } => {
+  entities.clear();
+
+  let targetUnit: string | undefined;
+  let totalFlow = 0;
+
+  prefs.energy_sources.forEach((source) => {
+    if (source.type !== sourceType || !source.stat_rate) {
+      return;
+    }
+
+    const entityId = source.stat_rate;
+    entities.add(entityId);
+
+    const stateObj = states[entityId];
+    if (!stateObj) {
+      return;
+    }
+
+    const rawValue = parseFloat(stateObj.state);
+    if (isNaN(rawValue) || rawValue <= 0) {
+      return;
+    }
+
+    const entityUnit = stateObj.attributes.unit_of_measurement;
+    if (!entityUnit) {
+      return;
+    }
+
+    if (targetUnit === undefined) {
+      targetUnit = entityUnit;
+      totalFlow += rawValue;
+      return;
+    }
+
+    if (entityUnit === targetUnit) {
+      totalFlow += rawValue;
+      return;
+    }
+
+    const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
+    const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
+
+    if (sourceFactor !== undefined && targetFactor !== undefined) {
+      totalFlow += (rawValue * sourceFactor) / targetFactor;
+    } else {
+      totalFlow += rawValue;
+    }
+  });
+
+  return {
+    value: Math.max(0, totalFlow),
+    unit: targetUnit ?? "",
+  };
 };
 
 /**

@@ -239,7 +239,9 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("fitYData") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_visualMap") ||
-      changedProps.has("_yWidth")
+      changedProps.has("_yWidth") ||
+      (changedProps.has("hass") &&
+        this._hasEntityStatesChanged(changedProps.get("hass")))
     ) {
       const rtl = computeRTL(this.hass);
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
@@ -296,6 +298,19 @@ export class StateHistoryChartLine extends LitElement {
         legend: {
           type: "custom",
           show: this.showNames,
+          data: this._chartData
+            .map((d, i) => ({ dataset: d, entityId: this._entityIds[i] }))
+            .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
+            .map((item) => {
+              const stateObj = this.hass.states[item.entityId];
+              return {
+                id: item.dataset.id as string,
+                name: item.dataset.name as string,
+                value: stateObj
+                  ? this.hass.formatEntityState(stateObj)
+                  : undefined,
+              };
+            }),
         },
         grid: {
           top: 15,
@@ -314,6 +329,13 @@ export class StateHistoryChartLine extends LitElement {
         },
       };
     }
+  }
+
+  private _hasEntityStatesChanged(oldHass: HomeAssistant): boolean {
+    return this._entityIds.some(
+      (entityId) =>
+        this.hass.states[entityId]?.state !== oldHass.states[entityId]?.state
+    );
   }
 
   private _generateData() {

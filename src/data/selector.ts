@@ -240,6 +240,7 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
+  unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
 }
 
@@ -506,11 +507,19 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiColorExtraOption {
+  value: string;
+  label: string;
+  icon?: string;
+  display_color?: string;
+}
+
 export interface UiColorSelector {
   ui_color: {
     default_color?: string;
     include_none?: boolean;
     include_state?: boolean;
+    extra_options?: UiColorExtraOption[];
   } | null;
 }
 
@@ -811,6 +820,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -841,6 +851,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }

@@ -6,7 +6,7 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,

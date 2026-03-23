@@ -559,30 +559,24 @@ class SupervisorAppInfo extends LitElement {
                             </ha-settings-row>
                           `
                         : nothing}
-                      ${this.addon.auto_update ||
-                      this.hass.userData?.showAdvanced
-                        ? html`
-                            <ha-settings-row ?three-line=${this.narrow}>
-                              <span slot="heading">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.title"
-                                )}
-                              </span>
-                              <span slot="description">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.description"
-                                )}
-                              </span>
-                              <ha-switch
-                                .disabled=${systemManaged &&
-                                !this.controlEnabled}
-                                @change=${this._autoUpdateToggled}
-                                .checked=${this.addon.auto_update}
-                                haptic
-                              ></ha-switch>
-                            </ha-settings-row>
-                          `
-                        : nothing}
+                      <ha-settings-row ?three-line=${this.narrow}>
+                        <span slot="heading">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.title"
+                          )}
+                        </span>
+                        <span slot="description">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.description"
+                          )}
+                        </span>
+                        <ha-switch
+                          .disabled=${systemManaged && !this.controlEnabled}
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </ha-settings-row>
                       ${!this._computeCannotIngressSidebar && this.addon.ingress
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>

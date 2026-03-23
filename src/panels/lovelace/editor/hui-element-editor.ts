@@ -62,7 +62,7 @@ export abstract class HuiElementEditor<
 
   @state() private _config?: T;
 
-  @state() private _configElement?: LovelaceGenericElementEditor;
+  @state() protected _configElement?: LovelaceGenericElementEditor;
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 

@@ -1,4 +1,11 @@
-import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiCommentProcessingOutline,
+  mdiMicrophone,
+  mdiSend,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -24,7 +31,17 @@ import type { HaTextField } from "./ha-textfield";
 
 interface AssistMessage {
   who: string;
-  text?: string | TemplateResult;
+  text: string | TemplateResult;
+  thinking: string;
+  thinking_expanded?: boolean;
+  tool_calls: Record<
+    string,
+    {
+      tool_name: string;
+      tool_args: Record<string, unknown>;
+      result?: any;
+    }
+  >;
   error?: boolean;
 }
 
@@ -70,6 +87,8 @@ export class HaAssistChat extends LitElement {
         {
           who: "hass",
           text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
+          thinking: "",
+          tool_calls: {},
         },
       ];
     }
@@ -127,17 +146,103 @@ export class HaAssistChat extends LitElement {
             `}
         <div class="spacer"></div>
         ${this._conversation!.map(
-          (message) => html`
-            <ha-markdown
-              class="message ${classMap({
-                error: !!message.error,
-                [message.who]: true,
-              })}"
-              breaks
-              cache
-              .content=${message.text}
-            >
-            </ha-markdown>
+          (message, index) => html`
+            <div class="message-container ${classMap({ [message.who]: true })}">
+              ${message.text ||
+              message.error ||
+              message.thinking ||
+              (message.tool_calls && Object.keys(message.tool_calls).length > 0)
+                ? html`
+                    <div
+                      class="message ${classMap({
+                        error: !!message.error,
+                        [message.who]: true,
+                      })}"
+                    >
+                      ${message.thinking ||
+                      (message.tool_calls &&
+                        Object.keys(message.tool_calls).length > 0)
+                        ? html`
+                            <div
+                              class="thinking-wrapper ${classMap({
+                                expanded: !!message.thinking_expanded,
+                              })}"
+                            >
+                              <button
+                                class="thinking-header"
+                                .index=${index}
+                                @click=${this._handleToggleThinking}
+                                aria-expanded=${message.thinking_expanded
+                                  ? "true"
+                                  : "false"}
+                              >
+                                <ha-svg-icon
+                                  .path=${mdiCommentProcessingOutline}
+                                ></ha-svg-icon>
+                                <span class="thinking-label">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.voice_command.show_details"
+                                  )}
+                                </span>
+                                <ha-svg-icon
+                                  .path=${message.thinking_expanded
+                                    ? mdiChevronUp
+                                    : mdiChevronDown}
+                                ></ha-svg-icon>
+                              </button>
+                              <div class="thinking-content">
+                                ${message.thinking
+                                  ? html`<ha-markdown
+                                      .content=${message.thinking}
+                                    ></ha-markdown>`
+                                  : nothing}
+                                ${message.tool_calls &&
+                                Object.keys(message.tool_calls).length > 0
+                                  ? html`
+                                      <div class="tool-calls">
+                                        ${Object.values(message.tool_calls).map(
+                                          (toolCall) => html`
+                                            <div class="tool-call">
+                                              <div class="tool-name">
+                                                ${toolCall.tool_name}
+                                              </div>
+                                              <div class="tool-data">
+                                                <pre>
+${JSON.stringify(toolCall.tool_args, null, 2)}</pre
+                                                >
+                                              </div>
+                                              ${toolCall.result
+                                                ? html`
+                                                    <div class="tool-data">
+                                                      <pre>
+${JSON.stringify(toolCall.result, null, 2)}</pre
+                                                      >
+                                                    </div>
+                                                  `
+                                                : nothing}
+                                            </div>
+                                          `
+                                        )}
+                                      </div>
+                                    `
+                                  : nothing}
+                              </div>
+                            </div>
+                          `
+                        : nothing}
+                      ${message.text
+                        ? html`
+                            <ha-markdown
+                              breaks
+                              cache
+                              .content=${message.text}
+                            ></ha-markdown>
+                          `
+                        : nothing}
+                    </div>
+                  `
+                : nothing}
+            </div>
           `
         )}
       </div>
@@ -268,6 +373,15 @@ export class HaAssistChat extends LitElement {
     }
   }
 
+  private _handleToggleThinking(ev: Event) {
+    const index = (ev.currentTarget as any).index;
+    this._conversation[index] = {
+      ...this._conversation[index],
+      thinking_expanded: !this._conversation[index].thinking_expanded,
+    };
+    this.requestUpdate("_conversation");
+  }
+
   private _addMessage(message: AssistMessage) {
     this._conversation = [...this._conversation!, message];
   }
@@ -296,7 +410,9 @@ export class HaAssistChat extends LitElement {
                   "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
                 )}</a>`,
           }
-        )}`,
+          )}`,
+      thinking: "",
+      tool_calls: {},
     });
   }
 
@@ -317,6 +433,8 @@ export class HaAssistChat extends LitElement {
     const userMessage: AssistMessage = {
       who: "user",
       text: "…",
+      thinking: "",
+      tool_calls: {},
     };
     await this._audioRecorder.start();
 
@@ -448,7 +566,7 @@ export class HaAssistChat extends LitElement {
   private async _processText(text: string) {
     this._unloadAudio();
     this._processing = true;
-    this._addMessage({ who: "user", text });
+    this._addMessage({ who: "user", text, thinking: "", tool_calls: {} });
     const hassMessageProcesser = this._createAddHassMessageProcessor();
     hassMessageProcesser.addMessage();
     try {
@@ -487,17 +605,23 @@ export class HaAssistChat extends LitElement {
     let currentDeltaRole = "";
 
     const progressToNextMessage = () => {
-      if (progress.hassMessage.text === "…") {
+      if (
+        progress.hassMessage.text === "…" &&
+        !progress.hassMessage.thinking &&
+        (!progress.hassMessage.tool_calls ||
+          Object.keys(progress.hassMessage.tool_calls).length === 0)
+      ) {
         return;
       }
-      progress.hassMessage.text = progress.hassMessage.text.substring(
-        0,
-        progress.hassMessage.text.length - 1
-      );
+      if (progress.hassMessage.text?.endsWith("…")) {
+        progress.hassMessage.text = progress.hassMessage.text.slice(0, -1);
+      }
 
       progress.hassMessage = {
         who: "hass",
         text: "…",
+        thinking: "",
+        tool_calls: {},
         error: false,
       };
       this._addMessage(progress.hassMessage);
@@ -513,16 +637,13 @@ export class HaAssistChat extends LitElement {
     ): _delta is ConversationChatLogToolResultDelta =>
       currentDeltaRole === "tool_result";
 
-    const tools: Record<
-      string,
-      ConversationChatLogAssistantDelta["tool_calls"][0]
-    > = {};
-
     const progress = {
       continueConversation: false,
       hassMessage: {
         who: "hass",
         text: "…",
+        thinking: "",
+        tool_calls: {},
         error: false,
       },
       addMessage: () => {
@@ -540,29 +661,37 @@ export class HaAssistChat extends LitElement {
 
           // new message
           if (delta.role) {
-            progressToNextMessage();
             currentDeltaRole = delta.role;
           }
 
           if (isAssistantDelta(delta)) {
             if (delta.content) {
-              progress.hassMessage.text =
-                progress.hassMessage.text.substring(
-                  0,
-                  progress.hassMessage.text.length - 1
-                ) +
-                delta.content +
-                "…";
-              this.requestUpdate("_conversation");
+              if (progress.hassMessage.text.endsWith("…")) {
+                progress.hassMessage.text =
+                  progress.hassMessage.text.substring(
+                    0,
+                    progress.hassMessage.text.length - 1
+                  ) +
+                  delta.content +
+                  "…";
+              } else {
+                progress.hassMessage.text += delta.content + "…";
+              }
+            }
+            if (delta.thinking_content) {
+              progress.hassMessage.thinking += delta.thinking_content;
             }
             if (delta.tool_calls) {
               for (const toolCall of delta.tool_calls) {
-                tools[toolCall.id] = toolCall;
+                progress.hassMessage.tool_calls[toolCall.id] = toolCall;
               }
             }
+            this.requestUpdate("_conversation");
           } else if (isToolResult(delta)) {
-            if (tools[delta.tool_call_id]) {
-              delete tools[delta.tool_call_id];
+            if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
+              progress.hassMessage.tool_calls[delta.tool_call_id].result =
+                delta.tool_result;
+              this.requestUpdate("_conversation");
             }
           }
         } else if (event.type === "intent-end") {
@@ -619,6 +748,17 @@ export class HaAssistChat extends LitElement {
         .spacer {
           flex: 1;
         }
+        .message-container {
+          display: flex;
+          flex-direction: column;
+          margin: var(--ha-space-2) 0;
+        }
+        .message-container.user {
+          align-self: flex-end;
+        }
+        .message-container.hass {
+          align-self: flex-start;
+        }
         .message {
           font-size: var(--ha-font-size-l);
           clear: both;
@@ -665,6 +805,89 @@ export class HaAssistChat extends LitElement {
         .message.error {
           background-color: var(--error-color);
           color: var(--text-primary-color);
+        }
+        .thinking-wrapper {
+          margin: calc(var(--ha-space-2) * -1) calc(var(--ha-space-2) * -1) 0
+            calc(var(--ha-space-2) * -1);
+          overflow: hidden;
+        }
+        .thinking-wrapper:last-child {
+          margin-bottom: calc(var(--ha-space-2) * -1);
+        }
+        .thinking-header {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          width: 100%;
+          background: none;
+          border: none;
+          padding: var(--ha-space-2);
+          cursor: pointer;
+          text-align: left;
+          color: var(--secondary-text-color);
+          transition: color 0.2s;
+        }
+        .thinking-header:hover,
+        .thinking-header:focus {
+          outline: none;
+          color: var(--primary-text-color);
+        }
+        .thinking-label {
+          font-size: var(--ha-font-size-m);
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+        .thinking-header ha-svg-icon {
+          --mdc-icon-size: 16px;
+        }
+        .thinking-content {
+          max-height: 0;
+          overflow: hidden;
+          transition:
+            max-height 0.3s ease-in-out,
+            padding 0.3s;
+          padding: 0 var(--ha-space-2);
+          font-size: var(--ha-font-size-m);
+          color: var(--secondary-text-color);
+        }
+        .thinking-wrapper.expanded .thinking-content {
+          max-height: 500px;
+          padding: var(--ha-space-2);
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
+        }
+        .tool-calls {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-1);
+        }
+        .tool-call {
+          padding: var(--ha-space-1) var(--ha-space-2);
+          border-left: 2px solid var(--divider-color);
+          margin-bottom: var(--ha-space-1);
+        }
+        .tool-name {
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+        }
+        .tool-data {
+          font-family: var(--code-font-family, monospace);
+          font-size: 0.9em;
+          background: var(--markdown-code-background-color);
+          padding: var(--ha-space-1);
+          border-radius: var(--ha-border-radius-s);
+          margin-top: var(--ha-space-1);
+          overflow-x: auto;
+        }
+        .tool-data pre {
+          margin: 0;
+          white-space: pre-wrap;
+          word-break: break-all;
         }
         ha-markdown {
           --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);

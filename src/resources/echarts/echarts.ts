@@ -29,6 +29,8 @@ import { CanvasRenderer } from "echarts/renderers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import LinearGradient from "zrender/lib/graphic/LinearGradient";
 
+import "./axis-proxy-patch";
+
 import type {
   // The series option types are defined with the SeriesOption suffix
   BarSeriesOption,

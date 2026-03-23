@@ -26,6 +26,7 @@ import type {
   HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
+  MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -48,7 +49,7 @@ export const DEFAULT_ZOOM = 14;
 
 interface GeoEntity {
   entity_id: string;
-  label_mode?: "state" | "attribute" | "name" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus: boolean;
