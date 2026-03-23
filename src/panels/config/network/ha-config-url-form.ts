@@ -353,12 +353,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchUrls() {
-    try {
-      this._urls = await getNetworkUrls(this.hass);
-    } catch (err: any) {
-      this._error = err.message || err;
-    }
-
+    this._urls = await getNetworkUrls(this.hass);
     this._cloudChecked =
       this._urls?.cloud === this._urls?.external &&
       !this.hass.config.external_url;
