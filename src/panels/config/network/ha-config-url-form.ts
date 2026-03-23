@@ -1,7 +1,7 @@
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -11,8 +11,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
@@ -47,6 +47,12 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @state() private _unmaskedInternalUrl = false;
 
   @state() private _cloudChecked = false;
+
+  @query('[name="external_url"]')
+  private _externalUrlField?: HaInput;
+
+  @query('[name="internal_url"]')
+  private _internalUrlField?: HaInput;
 
   protected hassSubscribe() {
     return [
@@ -143,9 +149,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             : nothing}
           <div class="url-container">
             <div class="textfield-container">
-              <ha-textfield
+              <ha-input
                 name="external_url"
                 type="url"
+                auto-validate
+                .validationMessage=${this.hass.localize(
+                  "ui.panel.config.url.invalid_url"
+                )}
                 placeholder="https://example.duckdns.org:8123"
                 .value=${this._unmaskedExternalUrl ||
                 (this._showCustomExternalUrl && canEdit)
@@ -153,23 +163,20 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   : obfuscateUrl(externalUrl)}
                 @change=${this._handleChange}
                 .disabled=${disabled || !this._showCustomExternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomExternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedExternalUrl}
-                      .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
+              >
+                ${!this._showCustomExternalUrl || !canEdit
+                  ? html`
+                      <ha-icon-button
+                        slot="end"
+                        .label=${this.hass.localize(
+                          `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
+                        )}
+                        @click=${this._toggleUnmaskedExternalUrl}
+                        .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
+                      ></ha-icon-button>
+                    `
+                  : nothing}
+              </ha-input>
             </div>
             <ha-button
               size="small"
@@ -258,9 +265,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
 
           <div class="url-container">
             <div class="textfield-container">
-              <ha-textfield
+              <ha-input
                 name="internal_url"
                 type="url"
+                auto-validate
+                .validationMessage=${this.hass.localize(
+                  "ui.panel.config.url.invalid_url"
+                )}
                 placeholder=${this.hass.localize(
                   "ui.panel.config.url.internal_url_placeholder"
                 )}
@@ -270,23 +281,20 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   : obfuscateUrl(internalUrl)}
                 @change=${this._handleChange}
                 .disabled=${disabled || !this._showCustomInternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomInternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedInternalUrl}
-                      .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
+              >
+                ${!this._showCustomInternalUrl || !canEdit
+                  ? html`
+                      <ha-icon-button
+                        slot="end"
+                        .label=${this.hass.localize(
+                          `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
+                        )}
+                        @click=${this._toggleUnmaskedInternalUrl}
+                        .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
+                      ></ha-icon-button>
+                    `
+                  : nothing}
+              </ha-input>
             </div>
             <ha-button
               size="small"
@@ -376,11 +384,17 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   }
 
   private _handleChange(ev: ValueChangedEvent<string>) {
-    const target = ev.currentTarget as HaTextField;
+    const target = ev.currentTarget as HaInput;
     this[`_${target.name}`] = target.value || "";
   }
 
   private async _save() {
+    if (
+      this._externalUrlField?.reportValidity() === false ||
+      this._internalUrlField?.reportValidity() === false
+    ) {
+      return;
+    }
     this._working = true;
     this._error = undefined;
     try {
@@ -458,22 +472,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       margin-top: 8px;
     }
     .textfield-container {
-      position: relative;
       flex: 1;
     }
-    .textfield-container ha-textfield {
+    .textfield-container ha-input {
       display: block;
-    }
-    .toggle-unmasked-url {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      inset-inline-start: initial;
-      inset-inline-end: 8px;
-      --ha-icon-button-size: 40px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      direction: var(--direction);
     }
 
     ha-md-list-item {
