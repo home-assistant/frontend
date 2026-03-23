@@ -81,7 +81,7 @@ export class HaGauge extends LitElement {
       : arcLength;
 
     return svg`
-      <svg viewBox="-50 -50 100 60" class="gauge">
+      <svg viewBox="-50 -50 100 55" class="gauge">
         <path
           class="levels-base"
           d="M -40 0 A 40 40 0 0 1 40 0"
