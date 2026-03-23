@@ -1334,9 +1334,6 @@ class SupervisorAppInfo extends LitElement {
           display: block;
         }
 
-        ha-switch {
-          display: flex;
-        }
         ha-svg-icon.running {
           color: var(--success-color);
         }
@@ -1417,6 +1414,15 @@ class SupervisorAppInfo extends LitElement {
         }
         ha-settings-row[three-line] {
           height: 74px;
+        }
+        .addon-options ha-settings-row {
+          padding: 0;
+          width: 100%;
+          --settings-row-body-padding-top: 0;
+          --settings-row-body-padding-bottom: 0;
+          --settings-row-content-padding-block: var(--ha-space-2);
+          --settings-row-prefix-flex: 2;
+          --settings-row-switch-padding-block: var(--ha-space-2);
         }
 
         .addon-options {

@@ -40,8 +40,11 @@ export class HaSettingsRow extends LitElement {
       align-items: center;
     }
     .body {
-      padding-top: 8px;
-      padding-bottom: 8px;
+      padding-top: var(--settings-row-body-padding-top, var(--ha-space-2));
+      padding-bottom: var(
+        --settings-row-body-padding-bottom,
+        var(--ha-space-2)
+      );
       padding-left: 0;
       padding-inline-start: 0;
       padding-right: 16px;
@@ -90,7 +93,7 @@ export class HaSettingsRow extends LitElement {
       justify-content: flex-end;
       flex: 1;
       min-width: 0;
-      padding: 16px 0;
+      padding: var(--settings-row-content-padding-block, var(--ha-space-4)) 0;
     }
     .content ::slotted(*) {
       width: var(--settings-row-content-width);
@@ -102,13 +105,13 @@ export class HaSettingsRow extends LitElement {
       padding-bottom: 8px;
     }
     ::slotted(ha-switch) {
-      padding: 16px 0;
+      padding: var(--settings-row-switch-padding-block, var(--ha-space-4)) 0;
     }
     .secondary {
       white-space: normal;
     }
     .prefix-wrap {
-      flex: 1;
+      flex: var(--settings-row-prefix-flex, 1);
       display: var(--settings-row-prefix-display);
     }
     :host([narrow]) .prefix-wrap {
