@@ -268,6 +268,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         : nothing;
 
     const searchBar = html`<ha-input-search
+      appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
       .placeholder=${this.searchLabel}

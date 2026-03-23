@@ -13,14 +13,15 @@ export class HaInputSearch extends HaInput {
 
   constructor() {
     super();
-    this.appearance = "outlined";
     this.withClear = true;
+    this.autocomplete = this.autocomplete || "off";
   }
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     if (
+      !this.label &&
       !this.placeholder &&
       (!this.hasUpdated || changedProps.has("localize"))
     ) {

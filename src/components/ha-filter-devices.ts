@@ -69,6 +69,7 @@ export class HaFilterDevices extends LitElement {
         </div>
         ${this._shouldRender
           ? html`<ha-input-search
+                appearance="outlined"
                 .value=${this._filter}
                 @input=${this._handleSearchChange}
               >

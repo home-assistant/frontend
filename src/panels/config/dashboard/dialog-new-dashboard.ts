@@ -10,7 +10,8 @@ import type {
   LocalizeKeys,
 } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleScrollbar } from "../../../resources/styles";
@@ -123,15 +124,14 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         @closed=${this._dialogClosed}
       >
         <div class="content-wrapper">
-          <search-input
+          <ha-input-search
             autofocus
-            .hass=${this.hass}
             .label=${this.hass.localize(
               `ui.panel.config.lovelace.dashboards.dialog_new.search_dashboards`
             )}
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
-          ></search-input>
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
+          ></ha-input-search>
           <div class="content ha-scrollbar">
             ${this._filter
               ? html`
@@ -202,8 +202,8 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     `;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _filterStrategies = memoizeOne(
@@ -283,17 +283,12 @@ class DialogNewDashboard extends LitElement implements HassDialog {
             #ffffff00 80%
           );
         }
-        search-input {
+        ha-input-search {
           display: block;
-          --mdc-shape-small: var(--card-picker-search-shape);
-          margin: var(--card-picker-search-margin);
           position: sticky;
           top: 0;
           z-index: 10;
-          background-color: var(
-            --ha-dialog-surface-background,
-            var(--mdc-theme-surface, #fff)
-          );
+          --ha-input-padding-bottom: 0;
         }
         .cards-container {
           display: grid;

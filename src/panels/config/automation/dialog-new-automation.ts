@@ -19,7 +19,8 @@ import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tip";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { showAutomationEditor } from "../../../data/automation";
 import type {
   Blueprint,
@@ -31,11 +32,11 @@ import {
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
+import { showScriptEditor } from "../../../data/script";
 import {
   type FuseWeightedKey,
   multiTermSearch,
 } from "../../../resources/fuseMultiTerm";
-import { showScriptEditor } from "../../../data/script";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -161,13 +162,12 @@ class DialogNewAutomation extends LitElement {
       >
         <div class="content-wrapper">
           ${processedBlueprints.length > 5
-            ? html`<search-input
+            ? html`<ha-input-search
                 autofocus
-                .hass=${this.hass}
-                .filter=${this._filter}
+                .value=${this._filter}
                 .label=${this.hass.localize("ui.common.search")}
-                @value-changed=${this._handleSearchChange}
-              ></search-input>`
+                @input=${this._handleSearchChange}
+              ></ha-input-search>`
             : nothing}
           <ha-list>
             <ha-list-item
@@ -294,8 +294,8 @@ class DialogNewAutomation extends LitElement {
     `;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private async _blueprint(ev) {
@@ -361,9 +361,9 @@ class DialogNewAutomation extends LitElement {
           min-height: 0;
           border-top: 1px solid var(--divider-color);
         }
-        search-input {
+        ha-input-search {
           display: block;
-          --ha-input-padding-top: 0;
+          --ha-input-padding-bottom: 0;
         }
         .blueprints-list {
           overflow-y: auto;

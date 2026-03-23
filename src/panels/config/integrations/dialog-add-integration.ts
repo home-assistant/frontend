@@ -15,11 +15,12 @@ import {
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-list";
 import "../../../components/ha-spinner";
-import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   DISCOVERY_SOURCES,
@@ -534,16 +535,15 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    return html`<search-input
-        .hass=${this.hass}
+    return html`<ha-input-search
         ?autofocus=${!this._narrow}
-        .filter=${this._filter}
-        @value-changed=${this._filterChanged}
+        .value=${this._filter}
+        @input=${this._filterChanged}
         .label=${this.hass.localize(
           "ui.panel.config.integrations.search_brand"
         )}
         @keypress=${this._maybeSubmit}
-      ></search-input>
+      ></ha-input-search>
       ${integrations
         ? html`<ha-list ?autofocus=${this._narrow}>
             <lit-virtualizer
@@ -642,8 +642,8 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _integrationPicked(ev) {
@@ -821,8 +821,7 @@ class AddIntegrationDialog extends LitElement {
       ha-dialog {
         --dialog-content-padding: 0;
       }
-      search-input {
-        display: block;
+      ha-input-search {
         margin: 0 16px;
       }
       .divider {

@@ -21,9 +21,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
+import { isNumericState } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import type {
   LocalizeFunc,
@@ -53,8 +53,8 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
-import "../../../components/search-input";
-import { haStyleScrollbar } from "../../../resources/styles";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
@@ -117,6 +117,7 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
@@ -546,13 +547,12 @@ class DialogAddAutomationElement
         ${this._renderHeader()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
-              <search-input
+              <ha-input-search
                 ?autofocus=${!this._narrow}
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._debounceFilterChanged}
+                .value=${this._filter}
+                @input=${this._handleFilterInput}
                 .label=${this.hass.localize(`ui.common.search`)}
-              ></search-input>
+              ></ha-input-search>
             `
           : nothing}
         ${!this._filter &&
@@ -1961,14 +1961,13 @@ class DialogAddAutomationElement
     }
   }
 
-  private _debounceFilterChanged = debounce(
-    (ev) => this._filterChanged(ev),
-    200
-  );
-
-  private _filterChanged = (ev) => {
-    this._filter = ev.detail.value;
+  private _handleFilterInput = (ev: InputEvent) => {
+    this._debounceFilterChanged((ev.target as HaInputSearch).value ?? "");
   };
+
+  private _debounceFilterChanged = debounce((value: string) => {
+    this._filter = value;
+  }, 200);
 
   private _addClipboard = () => {
     if (this._params?.clipboardItem) {
@@ -2191,8 +2190,9 @@ class DialogAddAutomationElement
           color: var(--secondary-text-color);
         }
 
-        search-input {
+        ha-input-search {
           display: block;
+          --ha-input-padding-bottom: 0;
           margin: 0 var(--ha-space-4);
         }
 

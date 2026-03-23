@@ -507,6 +507,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           ? html`
               <div slot="header" class="header">
                 <ha-input-search
+                  appearance="outlined"
                   .value=${this._filter}
                   @input=${this._handleSearchChange}
                   .placeholder=${this.hass.localize(
@@ -524,6 +525,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
               ></ha-integration-overflow-menu>
               <div class="search">
                 <ha-input-search
+                  appearance="outlined"
                   .value=${this._filter}
                   @input=${this._handleSearchChange}
                   .placeholder=${this.hass.localize(

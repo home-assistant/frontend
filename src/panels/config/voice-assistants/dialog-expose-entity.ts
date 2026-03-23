@@ -6,16 +6,16 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-check-list-item";
-import "../../../components/search-input";
-import "../../../components/ha-dialog";
 import "../../../components/ha-button";
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-state-icon";
 import "../../../components/ha-list";
+import "../../../components/ha-state-icon";
+import "../../../components/input/ha-input-search";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
@@ -94,11 +94,10 @@ class DialogExposeEntity extends LitElement {
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <search-input
-          .hass=${this.hass}
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-        ></search-input>
+        <ha-input-search
+          .value=${this._filter}
+          @input=${this._filterChanged}
+        ></ha-input-search>
         <ha-list multi>
           <lit-virtualizer
             scroller
@@ -149,8 +148,8 @@ class DialogExposeEntity extends LitElement {
     listItem.selected = !listItem.selected;
   }
 
-  private _filterChanged(e) {
-    this._filter = e.detail.value;
+  private _filterChanged(e: InputEvent) {
+    this._filter = (e.target as HTMLInputElement).value;
   }
 
   private _filterEntities = memoizeOne(
@@ -272,12 +271,9 @@ class DialogExposeEntity extends LitElement {
         lit-virtualizer {
           height: 500px;
         }
-        search-input {
+        ha-input-search {
           width: 100%;
-          display: block;
-          box-sizing: border-box;
-          margin-top: var(--ha-space-2);
-          --text-field-suffix-padding-left: 8px;
+          --ha-input-padding-bottom: 0;
         }
         lit-virtualizer {
           width: 100%;
@@ -319,9 +315,6 @@ class DialogExposeEntity extends LitElement {
                   0px
                 )
             );
-          }
-          search-input {
-            --text-field-suffix-padding-left: unset;
           }
           ha-check-list-item ha-state-icon {
             margin-left: var(--ha-space-2);

@@ -11,8 +11,8 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
-import "../../../../components/search-input";
-import { haStyleScrollbar } from "../../../../resources/styles";
+import "../../../../components/input/ha-input";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -22,6 +22,7 @@ import {
   customBadges,
   getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
@@ -130,14 +131,13 @@ export class HuiBadgePicker extends LitElement {
     const customBadgesItems = this._customBadges(this._badges);
 
     return html`
-      <search-input
-        .hass=${this.hass}
-        .filter=${this._filter}
-        @value-changed=${this._handleSearchChange}
+      <ha-input-search
+        .value=${this._filter}
+        @input=${this._handleSearchChange}
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.edit_badge.search_badgess"
         )}
-      ></search-input>
+      ></ha-input-search>
       <div
         id="content"
         class="ha-scrollbar"
@@ -337,8 +337,8 @@ export class HuiBadgePicker extends LitElement {
     )}`;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    const value = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value;
 
     if (!value) {
       // Reset when we no longer filter
@@ -361,7 +361,7 @@ export class HuiBadgePicker extends LitElement {
       }
     }
 
-    this._filter = value;
+    this._filter = value ?? "";
   }
 
   private _badgePicked(ev: Event): void {
@@ -484,11 +484,9 @@ export class HuiBadgePicker extends LitElement {
           overflow: auto;
         }
 
-        search-input {
-          display: block;
+        ha-input-search {
           width: 100%;
-          --mdc-shape-small: var(--badge-picker-search-shape);
-          margin: var(--badge-picker-search-margin);
+          --ha-input-padding-bottom: 0;
         }
 
         .badges-container-header {

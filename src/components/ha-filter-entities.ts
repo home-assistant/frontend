@@ -72,6 +72,7 @@ export class HaFilterEntities extends LitElement {
         ${this._shouldRender
           ? html`
               <ha-input-search
+                appearance="outlined"
                 .value=${this._filter}
                 @input=${this._handleSearchChange}
               >
