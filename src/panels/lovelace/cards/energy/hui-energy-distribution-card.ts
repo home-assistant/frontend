@@ -118,7 +118,8 @@ class HuiEnergyDistrubutionCard
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
-    const hasReturnToGrid = !!types.grid?.[0] && !!types.grid[0].stat_energy_to;
+    const hasReturnToGrid =
+      types.grid?.some((source) => !!source.stat_energy_to) ?? false;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
