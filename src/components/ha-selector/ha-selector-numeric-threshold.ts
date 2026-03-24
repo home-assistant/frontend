@@ -11,6 +11,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { NumericThresholdSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-button-toggle-group";
+import "../ha-input-helper-text";
 import "../ha-select";
 import "./ha-selector";
 
@@ -41,9 +42,6 @@ export class HaNumericThresholdSelector extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
-
-  @property({ attribute: false })
-  public localizeValue?: (key: string) => string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -88,6 +86,7 @@ export class HaNumericThresholdSelector extends LitElement {
     const type = this._type || "above";
     const showSingleValue = type === "above" || type === "below";
     const showRangeValues = type === "between" || type === "outside";
+    const unitOptions = this._getUnitOptions();
 
     const typeOptions = [
       {
@@ -120,6 +119,21 @@ export class HaNumericThresholdSelector extends LitElement {
       },
     ];
 
+    const choiceToggleButtons = [
+      {
+        label: this.hass.localize(
+          "ui.components.selectors.numeric_threshold.number"
+        ),
+        value: "number",
+      },
+      {
+        label: this.hass.localize(
+          "ui.components.selectors.numeric_threshold.entity"
+        ),
+        value: "entity",
+      },
+    ];
+
     return html`
       <div class="container">
         ${this.label
@@ -146,7 +160,9 @@ export class HaNumericThresholdSelector extends LitElement {
                 this.value?.value,
                 this._valueChanged,
                 this._valueChoiceChanged,
-                this._unitChanged
+                this._unitChanged,
+                unitOptions,
+                choiceToggleButtons
               )
             : nothing}
           ${showRangeValues
@@ -158,7 +174,9 @@ export class HaNumericThresholdSelector extends LitElement {
                   this.value?.value_min,
                   this._valueMinChanged,
                   this._valueMinChoiceChanged,
-                  this._unitMinChanged
+                  this._unitMinChanged,
+                  unitOptions,
+                  choiceToggleButtons
                 )}
                 ${this._renderValueRow(
                   this.hass.localize(
@@ -167,7 +185,9 @@ export class HaNumericThresholdSelector extends LitElement {
                   this.value?.value_max,
                   this._valueMaxChanged,
                   this._valueMaxChoiceChanged,
-                  this._unitMaxChanged
+                  this._unitMaxChanged,
+                  unitOptions,
+                  choiceToggleButtons
                 )}
               `
             : nothing}
@@ -181,10 +201,10 @@ export class HaNumericThresholdSelector extends LitElement {
 
   private _renderUnitSelect(
     entry: ThresholdValueEntry | undefined,
-    handler: (ev: CustomEvent) => void
+    handler: (ev: CustomEvent) => void,
+    unitOptions: readonly string[]
   ) {
-    const unitOptions = this._getUnitOptions();
-    if (!unitOptions || unitOptions.length <= 1) {
+    if (unitOptions.length <= 1) {
       return nothing;
     }
     const mappedUnitOptions = unitOptions.map((unit) => ({
@@ -192,7 +212,7 @@ export class HaNumericThresholdSelector extends LitElement {
       label: unit,
     }));
     const unitLabel = this.hass.localize(
-      "ui.components.selectors.numeric_threshold.unit" as any
+      "ui.components.selectors.numeric_threshold.unit"
     );
     return html`
       <ha-select
@@ -211,9 +231,10 @@ export class HaNumericThresholdSelector extends LitElement {
     entry: ThresholdValueEntry | undefined,
     onValueChanged: (ev: CustomEvent) => void,
     onChoiceChanged: (ev: CustomEvent) => void,
-    onUnitChanged: (ev: CustomEvent) => void
+    onUnitChanged: (ev: CustomEvent) => void,
+    unitOptions: readonly string[] | undefined,
+    choiceToggleButtons: { label: string; value: string }[]
   ) {
-    const unitOptions = this._getUnitOptions();
     const activeChoice = entry?.active_choice ?? "number";
     const isEntity = activeChoice === "entity";
     const showUnit = !isEntity && !!unitOptions && unitOptions.length > 1;
@@ -231,20 +252,6 @@ export class HaNumericThresholdSelector extends LitElement {
       },
     };
     const innerSelector = isEntity ? entitySelector : numberSelector;
-    const choiceToggleButtons = [
-      {
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.number" as any
-        ),
-        value: "number",
-      },
-      {
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.entity" as any
-        ),
-        value: "entity",
-      },
-    ];
     return html`
       <div class="value-row">
         <div class="value-header">
@@ -269,7 +276,9 @@ export class HaNumericThresholdSelector extends LitElement {
             .required=${this.required}
             @value-changed=${onValueChanged}
           ></ha-selector>
-          ${showUnit ? this._renderUnitSelect(entry, onUnitChanged) : nothing}
+          ${showUnit
+            ? this._renderUnitSelect(entry, onUnitChanged, unitOptions!)
+            : nothing}
         </div>
       </div>
     `;
@@ -317,7 +326,9 @@ export class HaNumericThresholdSelector extends LitElement {
         ...this.value,
         type: this._type || defaultType,
         [field]: entry,
-        ...(field === "value" ? {} : { value: undefined }),
+        ...(field === "value"
+          ? { value_min: undefined, value_max: undefined }
+          : { value: undefined }),
       },
     });
   }
@@ -415,12 +426,7 @@ export class HaNumericThresholdSelector extends LitElement {
       margin-bottom: var(--ha-space-1);
     }
 
-    .inputs {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-2);
-    }
-
+    .inputs,
     .value-row {
       display: flex;
       flex-direction: column;

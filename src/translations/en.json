@@ -564,11 +564,8 @@
           "unit": "Unit",
           "number": "Number",
           "entity": "Entity",
-          "value": "Value",
           "from": "From",
-          "to": "To",
-          "minimum_value": "Minimum value",
-          "maximum_value": "Maximum value"
+          "to": "To"
         }
       },
       "logbook": {
