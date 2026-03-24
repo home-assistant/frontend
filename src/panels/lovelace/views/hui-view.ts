@@ -333,6 +333,10 @@ export class HUIView extends ReactiveElement {
       this._createLayoutElement(viewConfig);
     }
     this._layoutElementConfig = viewConfig;
+    this.style.setProperty(
+      "--ha-sync-chart-tooltips",
+      viewConfig.sync_chart_tooltips ? "1" : "0"
+    );
     this._createBadges(viewConfig);
     this._createCards(viewConfig);
     this._createSections(viewConfig);

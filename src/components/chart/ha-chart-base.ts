@@ -99,6 +99,11 @@ export class HaChartBase extends LitElement {
 
   private _layoutTransitionActive = false;
 
+  // Guard to prevent sync feedback loops (chart A → event → chart B → event → chart A)
+  private _receivingSync = false;
+
+  private _syncTooltips = false;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
@@ -220,6 +225,42 @@ export class HaChartBase extends LitElement {
         "hass-layout-transition",
         handleLayoutTransition
       )
+    );
+
+    const handleTooltipSync = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail;
+      if (!this._syncTooltips || detail.source === this || !this.chart) {
+        return;
+      }
+      this._receivingSync = true;
+      if (detail.hide) {
+        this.chart.dispatchAction({ type: "hideTip", from: "sync" });
+        this.chart.dispatchAction({ type: "downplay" });
+      } else {
+        const pixel = this.chart.convertToPixel(
+          { xAxisIndex: 0 },
+          detail.value
+        );
+        const chartWidth = this.chart.getWidth();
+        if (
+          pixel != null &&
+          isFinite(pixel) &&
+          pixel >= 0 &&
+          pixel <= chartWidth
+        ) {
+          // y just needs to land inside the chart area; tooltip snaps to nearest x-axis data point
+          this.chart.dispatchAction({
+            type: "showTip",
+            x: pixel,
+            y: this.chart.getHeight() / 2,
+          });
+        }
+      }
+      this._receivingSync = false;
+    };
+    window.addEventListener("ha-chart-tooltip-sync", handleTooltipSync);
+    this._listeners.push(() =>
+      window.removeEventListener("ha-chart-tooltip-sync", handleTooltipSync)
     );
   }
 
@@ -418,6 +459,8 @@ export class HaChartBase extends LitElement {
       }
 
       const style = getComputedStyle(this);
+      this._syncTooltips =
+        style.getPropertyValue("--ha-sync-chart-tooltips").trim() === "1";
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(container, "custom");
@@ -432,6 +475,30 @@ export class HaChartBase extends LitElement {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
       }
       this.chart.on("finished", this._handleChartRenderFinished);
+      this.chart.on("updateAxisPointer", (e: any) => {
+        if (!this._syncTooltips || this._receivingSync) return;
+        const axesInfo = e.axesInfo?.[0];
+        if (!axesInfo) return;
+        window.dispatchEvent(
+          new CustomEvent("ha-chart-tooltip-sync", {
+            detail: {
+              value: axesInfo.value,
+              source: this,
+            },
+          })
+        );
+      });
+      this.chart.getZr().on("globalout", () => {
+        if (!this._syncTooltips || this._receivingSync) return;
+        window.dispatchEvent(
+          new CustomEvent("ha-chart-tooltip-sync", {
+            detail: {
+              hide: true,
+              source: this,
+            },
+          })
+        );
+      });
       if (this._isTouchDevice) {
         this.chart.getZr().on("click", (e: ECElementEvent) => {
           if (!e.zrByTouch) {
@@ -507,8 +574,25 @@ export class HaChartBase extends LitElement {
             this.chart?.dispatchAction({
               type: "downplay",
             });
-          } else if (lastTipX != null && lastTipY != null) {
-            // echarts hides the tip as soon as the drag ends, so we need to show it again
+            if (this._syncTooltips && !this._receivingSync) {
+              window.dispatchEvent(
+                new CustomEvent("ha-chart-tooltip-sync", {
+                  detail: {
+                    hide: true,
+                    source: this,
+                  },
+                })
+              );
+            }
+          } else if (
+            lastTipX != null &&
+            lastTipY != null &&
+            !this._receivingSync
+          ) {
+            // echarts hides the tip as soon as the drag ends, so we need to show it again.
+            // _receivingSync check prevents a cascade: incoming sync showTip saves
+            // lastTipX/Y, then echarts fires hideTip (drag-end), which would re-show
+            // the tip and broadcast another sync event.
             dragJustEnded = true;
             this.chart?.dispatchAction({
               type: "showTip",

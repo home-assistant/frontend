@@ -67,6 +67,7 @@ export interface LovelaceBaseViewConfig {
   max_columns?: number;
   dense_section_placement?: boolean;
   top_margin?: boolean;
+  sync_chart_tooltips?: boolean;
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {

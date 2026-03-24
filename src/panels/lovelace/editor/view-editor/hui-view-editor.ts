@@ -87,6 +87,12 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
+        {
+          name: "sync_chart_tooltips",
+          selector: {
+            boolean: {},
+          },
+        },
         ...(viewType === SECTIONS_VIEW_LAYOUT
           ? ([
               {
@@ -215,6 +221,7 @@ export class HuiViewEditor extends LitElement {
       case "type":
       case "show_icon_and_title":
       case "subview":
+      case "sync_chart_tooltips":
       case "max_columns":
       case "dense_section_placement":
       case "top_margin":
@@ -236,6 +243,7 @@ export class HuiViewEditor extends LitElement {
       case "path":
       case "show_icon_and_title":
       case "subview":
+      case "sync_chart_tooltips":
       case "dense_section_placement":
       case "top_margin":
         return this.hass.localize(
