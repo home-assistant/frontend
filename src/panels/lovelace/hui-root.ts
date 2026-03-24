@@ -70,6 +70,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { isMoreInfoView } from "../../dialogs/more-info/const";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
@@ -716,11 +717,18 @@ class HUIRoot extends LitElement {
       this._showVoiceCommandDialog();
     } else if (searchParams["more-info-entity-id"]) {
       const entityId = searchParams["more-info-entity-id"];
+      const view = searchParams["more-info-view"];
       this._clearParam("more-info-entity-id");
+      if (view) {
+        this._clearParam("more-info-view");
+      }
       // Wait for the next render to ensure the view is fully loaded
       // because the more info dialog is closed when the url changes
       afterNextRender(() => {
-        this._showMoreInfoDialog(entityId);
+        showMoreInfoDialog(this, {
+          entityId,
+          view: isMoreInfoView(view) ? view : undefined,
+        });
       });
     }
   }
@@ -974,10 +982,6 @@ class HUIRoot extends LitElement {
   private _showVoiceCommandDialog = () => {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   };
-
-  private _showMoreInfoDialog(entityId: string): void {
-    showMoreInfoDialog(this, { entityId });
-  }
 
   private _enableEditMode = async () => {
     if (this._yamlMode) {
