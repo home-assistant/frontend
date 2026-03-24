@@ -67,7 +67,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
   public getGridOptions(): LovelaceGridOptions {
     return {
       columns: "full",
-      rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
+      rows: "auto",
       min_columns: 3,
     };
   }
