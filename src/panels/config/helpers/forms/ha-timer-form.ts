@@ -168,7 +168,6 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield,
         ha-duration-input {
           display: block;
           margin: 8px 0;
