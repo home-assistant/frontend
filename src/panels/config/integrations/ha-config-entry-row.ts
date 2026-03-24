@@ -23,6 +23,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { storage } from "../../../common/decorators/storage";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -77,6 +78,9 @@ import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 
+const storageId = (type: "entry" | "devices" | "subentry", id: string) =>
+  `${type}:${id}`;
+
 @customElement("ha-config-entry-row")
 export class HaConfigEntryRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -97,8 +101,16 @@ export class HaConfigEntryRow extends LitElement {
 
   @state() private _subEntries?: SubEntry[];
 
+  @storage({
+    key: "integration-config-row-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _collapsedRows: string[] = [];
+
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("entry")) {
+      this._restoreExpandedState();
       this._fetchSubEntries();
     }
   }
@@ -458,6 +470,13 @@ export class HaConfigEntryRow extends LitElement {
                   .entities=${this.entities}
                   .entry=${item}
                   .subEntry=${subEntry}
+                  .expanded=${this._isRowExpanded(
+                    storageId(
+                      "subentry",
+                      `${item.entry_id}:${subEntry.subentry_id}`
+                    )
+                  )}
+                  @expanded-changed=${this._handleSubEntryExpandedChanged}
                   data-entry-id=${item.entry_id}
                 ></ha-config-sub-entry-row>
               `
@@ -534,10 +553,51 @@ export class HaConfigEntryRow extends LitElement {
 
   private _toggleExpand() {
     this._expanded = !this._expanded;
+    this._storeRowExpanded(
+      storageId("entry", this.entry.entry_id),
+      this._expanded
+    );
   }
 
   private _toggleOwnDevices() {
     this._devicesExpanded = !this._devicesExpanded;
+    this._storeRowExpanded(
+      storageId("devices", this.entry.entry_id),
+      this._devicesExpanded
+    );
+  }
+
+  private _restoreExpandedState() {
+    this._expanded = this._isRowExpanded(
+      storageId("entry", this.entry.entry_id)
+    );
+    this._devicesExpanded = this._isRowExpanded(
+      storageId("devices", this.entry.entry_id)
+    );
+  }
+
+  private _isRowExpanded(id: string): boolean {
+    return !this._collapsedRows.includes(id);
+  }
+
+  private _storeRowExpanded(id: string, value: boolean) {
+    this._collapsedRows = value
+      ? this._collapsedRows.filter((item) => item !== id)
+      : [...this._collapsedRows.filter((item) => item !== id), id];
+  }
+
+  private _handleSubEntryExpandedChanged(
+    ev: CustomEvent<{
+      entryId: string;
+      subEntryId: string;
+      expanded: boolean;
+    }>
+  ) {
+    ev.stopPropagation();
+    this._storeRowExpanded(
+      storageId("subentry", `${ev.detail.entryId}:${ev.detail.subEntryId}`),
+      ev.detail.expanded
+    );
   }
 
   private _handleMenuAction = (ev: HaDropdownSelectEvent) => {

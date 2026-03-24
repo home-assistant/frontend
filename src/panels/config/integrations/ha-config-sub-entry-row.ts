@@ -8,6 +8,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -43,11 +44,23 @@ class HaConfigSubEntryRow extends LitElement {
 
   @property({ attribute: false }) public subEntry!: SubEntry;
 
-  @state() private _expanded = true;
+  @property({ type: Boolean }) public expanded = true;
+
+  @state() private _optimisticExpanded?: boolean;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (
+      changedProps.has("expanded") &&
+      this._optimisticExpanded === this.expanded
+    ) {
+      this._optimisticExpanded = undefined;
+    }
+  }
 
   protected render() {
     const subEntry = this.subEntry;
     const configEntry = this.entry;
+    const expanded = this._optimisticExpanded ?? this.expanded;
 
     const devices = this._getDevices();
     const services = this._getServices();
@@ -62,7 +75,7 @@ class HaConfigSubEntryRow extends LitElement {
       >
         ${devices.length || services.length
           ? html`<ha-icon-button
-              class="expand-button ${classMap({ expanded: this._expanded })}"
+              class="expand-button ${classMap({ expanded })}"
               .path=${mdiChevronDown}
               slot="start"
               @click=${this._toggleExpand}
@@ -169,7 +182,7 @@ class HaConfigSubEntryRow extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
       </ha-md-list-item>
-      ${this._expanded
+      ${expanded
         ? html`
             ${devices.map(
               (device) =>
@@ -197,7 +210,17 @@ class HaConfigSubEntryRow extends LitElement {
   }
 
   private _toggleExpand() {
-    this._expanded = !this._expanded;
+    const expanded = !(this._optimisticExpanded ?? this.expanded);
+    this._optimisticExpanded = expanded;
+    this.dispatchEvent(
+      new CustomEvent("expanded-changed", {
+        detail: {
+          entryId: this.entry.entry_id,
+          subEntryId: this.subEntry.subentry_id,
+          expanded,
+        },
+      })
+    );
   }
 
   private _getEntities = (): EntityRegistryEntry[] =>
