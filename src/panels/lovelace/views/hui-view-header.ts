@@ -334,10 +334,6 @@ export class HuiViewHeader extends LitElement {
       --spacing: 8px;
     }
 
-    .layout.has-heading {
-      margin-top: var(--spacing);
-    }
-
     .heading {
       position: relative;
       flex: 1;
@@ -438,15 +434,10 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column-reverse;
     }
 
-    .layout.badges-top.has-badges {
-      margin-top: 0;
-    }
-
     @media (min-width: 768px) {
       .layout.responsive.badges-top.has-heading {
         flex-direction: row;
         align-items: flex-start;
-        margin-top: var(--spacing);
       }
     }
 
