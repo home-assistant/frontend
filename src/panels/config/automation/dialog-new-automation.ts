@@ -163,9 +163,10 @@ class DialogNewAutomation extends LitElement {
         <div class="content-wrapper">
           ${processedBlueprints.length > 5
             ? html`<ha-input-search
+                appearance="outlined"
                 autofocus
                 .value=${this._filter}
-                .label=${this.hass.localize("ui.common.search")}
+                .placeholder=${this.hass.localize("ui.common.search")}
                 @input=${this._handleSearchChange}
               ></ha-input-search>`
             : nothing}
@@ -362,8 +363,7 @@ class DialogNewAutomation extends LitElement {
           border-top: 1px solid var(--divider-color);
         }
         ha-input-search {
-          display: block;
-          --ha-input-padding-bottom: 0;
+          padding: 0 var(--ha-space-3);
         }
         .blueprints-list {
           overflow-y: auto;

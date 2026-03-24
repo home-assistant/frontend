@@ -221,10 +221,11 @@ export class DialogHelperDetail extends LitElement {
 
       content = html`
         <ha-input-search
+          appearance="outlined"
           autofocus
           .value=${this._filter}
           @input=${this._filterChanged}
-          .label=${this.hass.localize(
+          .placeholder=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
         ></ha-input-search>
@@ -458,7 +459,7 @@ export class DialogHelperDetail extends LitElement {
           padding: var(--ha-space-6);
         }
         ha-input-search {
-          margin: 0 var(--ha-space-4) 0;
+          margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
         ha-list {
           height: calc(60vh - 184px);

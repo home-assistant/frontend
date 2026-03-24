@@ -799,7 +799,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         ha-input-search {
           padding: 0 var(--ha-space-3);
-          margin-bottom: var(--ha-space-3);
         }
 
         :host([mode="dialog"]) ha-input-search {

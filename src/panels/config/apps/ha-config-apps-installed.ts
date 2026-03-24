@@ -89,6 +89,7 @@ export class HaConfigAppsInstalled extends LitElement {
         ></ha-icon-button>
         <div class="search">
           <ha-input-search
+            appearance="outlined"
             .value=${this._filter}
             @input=${this._handleSearchChange}
           >
@@ -244,9 +245,9 @@ export class HaConfigAppsInstalled extends LitElement {
       }
 
       ha-input-search {
-        --ha-color-form-background: var(--sidebar-background-color);
-        --ha-color-border-neutral-loud: var(--divider-color);
-        --ha-input-padding-bottom: 0;
+        padding: var(--ha-space-3) var(--ha-space-2);
+        background: var(--sidebar-background-color);
+        border-bottom: 1px solid var(--divider-color);
       }
 
       .content {

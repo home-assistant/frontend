@@ -95,6 +95,7 @@ class DialogExposeEntity extends LitElement {
         @closed=${this._dialogClosed}
       >
         <ha-input-search
+          appearance="outlined"
           .value=${this._filter}
           @input=${this._filterChanged}
         ></ha-input-search>
@@ -272,8 +273,7 @@ class DialogExposeEntity extends LitElement {
           height: 500px;
         }
         ha-input-search {
-          width: 100%;
-          --ha-input-padding-bottom: 0;
+          padding: 0 var(--ha-space-3);
         }
         lit-virtualizer {
           width: 100%;

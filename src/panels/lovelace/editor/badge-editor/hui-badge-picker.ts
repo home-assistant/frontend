@@ -132,11 +132,9 @@ export class HuiBadgePicker extends LitElement {
 
     return html`
       <ha-input-search
+        appearance="outlined"
         .value=${this._filter}
         @input=${this._handleSearchChange}
-        .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_badge.search_badgess"
-        )}
       ></ha-input-search>
       <div
         id="content"
@@ -485,8 +483,7 @@ export class HuiBadgePicker extends LitElement {
         }
 
         ha-input-search {
-          width: 100%;
-          --ha-input-padding-bottom: 0;
+          padding: var(--ha-space-3) var(--ha-space-3) 0;
         }
 
         .badges-container-header {

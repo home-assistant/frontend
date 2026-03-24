@@ -536,10 +536,11 @@ class AddIntegrationDialog extends LitElement {
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
     return html`<ha-input-search
+        appearance="outlined"
         ?autofocus=${!this._narrow}
         .value=${this._filter}
         @input=${this._filterChanged}
-        .label=${this.hass.localize(
+        .placeholder=${this.hass.localize(
           "ui.panel.config.integrations.search_brand"
         )}
         @keypress=${this._maybeSubmit}
@@ -822,7 +823,7 @@ class AddIntegrationDialog extends LitElement {
         --dialog-content-padding: 0;
       }
       ha-input-search {
-        margin: 0 16px;
+        margin: 0 var(--ha-space-4) var(--ha-space-3);
       }
       .divider {
         border-bottom-color: var(--divider-color);

@@ -548,10 +548,10 @@ class DialogAddAutomationElement
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
               <ha-input-search
+                appearance="outlined"
                 ?autofocus=${!this._narrow}
                 .value=${this._filter}
                 @input=${this._handleFilterInput}
-                .label=${this.hass.localize(`ui.common.search`)}
               ></ha-input-search>
             `
           : nothing}

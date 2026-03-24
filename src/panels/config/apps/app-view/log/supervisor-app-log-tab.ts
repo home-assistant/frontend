@@ -30,9 +30,10 @@ class SupervisorAppLogDashboard extends LitElement {
     return html`
       <div class="search">
         <ha-input-search
+          appearance="outlined"
           @input=${this._filterChanged}
           .value=${this._filter}
-          .label=${this.hass.localize("ui.panel.config.logs.search")}
+          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
         ></ha-input-search>
       </div>
       <div class="content">
@@ -66,8 +67,9 @@ class SupervisorAppLogDashboard extends LitElement {
           z-index: 2;
         }
         ha-input-search {
-          display: block;
-          --ha-input-padding-bottom: 0;
+          padding: var(--ha-space-3) var(--ha-space-2);
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
         }
         @media all and (max-width: 870px) {
           :host {

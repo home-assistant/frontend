@@ -392,8 +392,9 @@ export class HaDataTable extends LitElement {
             ? html`
                 <div class="table-header">
                   <ha-input-search
+                    appearance="outlined"
                     @input=${this._handleSearchChange}
-                    .label=${this.searchLabel}
+                    .placeholder=${this.searchLabel}
                   ></ha-input-search>
                 </div>
               `
@@ -1389,9 +1390,7 @@ export class HaDataTable extends LitElement {
         }
         ha-input-search {
           flex: 1;
-          --ha-color-form-background: var(--sidebar-background-color);
-          --ha-color-border-neutral-loud: transparent;
-          --ha-input-padding-bottom: 0;
+          padding: var(--ha-space-3);
         }
         slot[name="header"] {
           display: block;

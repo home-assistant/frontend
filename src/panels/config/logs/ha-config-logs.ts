@@ -104,19 +104,21 @@ export class HaConfigLogs extends LitElement {
       ? html`
           <div slot="header">
             <ha-input-search
+              appearance="outlined"
               class="header"
               @input=${this._filterChanged}
               .value=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
+              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
             ></ha-input-search>
           </div>
         `
       : html`
           <div class="search">
             <ha-input-search
+              appearance="outlined"
               @input=${this._filterChanged}
               .value=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
+              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
             ></ha-input-search>
           </div>
         `;
@@ -347,15 +349,14 @@ export class HaConfigLogs extends LitElement {
           z-index: 2;
         }
         ha-input-search {
-          display: block;
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: var(--divider-color);
+          padding: var(--ha-space-3);
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
         }
         ha-input-search.header {
-          --mdc-ripple-color: transparant;
-          margin-left: -16px;
-          margin-inline-start: -16px;
-          margin-inline-end: initial;
+          padding-inline-start: 0;
+          background: transparent;
+          border: none;
         }
         .content {
           direction: ltr;

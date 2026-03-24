@@ -148,9 +148,10 @@ export class HuiCardPicker extends LitElement {
 
     return html`
       <ha-input-search
+        appearance="outlined"
         .value=${this._filter}
         @input=${this._handleSearchChange}
-        .label=${this.hass.localize(
+        .placeholder=${this.hass.localize(
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></ha-input-search>
@@ -515,11 +516,10 @@ export class HuiCardPicker extends LitElement {
         }
 
         ha-input-search {
-          width: 100%;
+          padding: var(--ha-space-3) var(--ha-space-4) 0;
           position: sticky;
           top: 0;
           z-index: 10;
-          --ha-input-padding-bottom: 0;
         }
 
         .cards-container-header {

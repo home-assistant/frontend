@@ -99,10 +99,11 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
       >
         <div class="content-container">
           <ha-input-search
+            appearance="outlined"
             autofocus
             .value=${this._filter}
             @input=${this._handleSearchChange}
-            .label=${this.hass.localize(
+            .placeholder=${this.hass.localize(
               "ui.panel.config.hardware.available_hardware.search"
             )}
           >
@@ -204,8 +205,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
           padding: 0.2em 0.4em;
         }
         ha-input-search {
-          margin: 8px 16px 0;
-          display: block;
+          padding: 0 var(--ha-space-5);
         }
         .device-property {
           display: flex;

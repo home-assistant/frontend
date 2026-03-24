@@ -505,7 +505,7 @@ export class HaInput extends LitElement {
     :host([appearance="outlined"]) wa-input::part(base) {
       border: 1px solid var(--ha-color-border-neutral-quiet);
       background-color: var(--card-background-color);
-      border-radius: var(--ha-border-radius-lg);
+      border-radius: var(--ha-border-radius-md);
       transition: border-color var(--wa-transition-normal) ease-in-out;
     }
 

@@ -125,8 +125,9 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       >
         <div class="content-wrapper">
           <ha-input-search
+            appearance="outlined"
             autofocus
-            .label=${this.hass.localize(
+            .placeholder=${this.hass.localize(
               `ui.panel.config.lovelace.dashboards.dialog_new.search_dashboards`
             )}
             .value=${this._filter}
@@ -284,11 +285,10 @@ class DialogNewDashboard extends LitElement implements HassDialog {
           );
         }
         ha-input-search {
-          display: block;
+          padding: 0 var(--ha-space-6);
           position: sticky;
           top: 0;
           z-index: 10;
-          --ha-input-padding-bottom: 0;
         }
         .cards-container {
           display: grid;
