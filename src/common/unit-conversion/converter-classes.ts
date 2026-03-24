@@ -112,14 +112,14 @@ export abstract class BaseUnitConverter {
   protected readonly _unitClass!: string;
 
   // The base unit with conversion ratio of 1 if any.
-  protected readonly _baseUnit: string | undefined;
+  protected readonly _baseUnit!: string;
 
   // All supported units for conversion
-  protected readonly _validUnits!: Set<string>;
+  protected readonly _validUnits!: string[];
 
   protected readonly _unitConversion!: Record<string, number>;
 
-  protected readonly _unitInverses = new Set<string | undefined>();
+  protected readonly _unitInverses: string[] = [];
 
   public convert(
     value: number,
@@ -195,7 +195,7 @@ export abstract class BaseUnitConverter {
 
   public isValidUnit(unit: string | undefined): boolean {
     if (!unit) return false;
-    return this._validUnits.has(unit);
+    return this._validUnits.includes(unit);
   }
 
   protected _checkSupportedUnits(
@@ -221,7 +221,10 @@ export abstract class BaseUnitConverter {
     toUnit: string | undefined
   ): boolean {
     // Return true if one unit is an inverse but not the other.
-    return this._unitInverses.has(fromUnit) !== this._unitInverses.has(toUnit);
+    return (
+      this._unitInverses.includes(fromUnit ?? "") !==
+      this._unitInverses.includes(toUnit ?? "")
+    );
   }
 }
 
@@ -237,7 +240,7 @@ export class ApparentPowerConverter extends BaseUnitConverter {
     [UnitOfApparentPower.KILO_VOLT_AMPERE]: 1 / 1000,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfApparentPower)]);
+  _validUnits = [...Object.values(UnitOfApparentPower)];
 }
 
 export class AreaConverter extends BaseUnitConverter {
@@ -259,14 +262,14 @@ export class AreaConverter extends BaseUnitConverter {
     [UnitOfArea.HECTARES]: 1 / _HECTARE_TO_M2,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfArea)]);
+  _validUnits = [...Object.values(UnitOfArea)];
 }
 
 export class BloodGlucoseConcentrationConverter extends BaseUnitConverter {
   // Utility to convert blood glucose concentration values.
   _unitClass = "blood_glucose_concentration";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfBloodGlucoseConcentration.MILLIMOLE_PER_LITER;
 
   _unitConversion = {
     [UnitOfBloodGlucoseConcentration.MILLIGRAMS_PER_DECILITER]:
@@ -274,9 +277,7 @@ export class BloodGlucoseConcentrationConverter extends BaseUnitConverter {
     [UnitOfBloodGlucoseConcentration.MILLIMOLE_PER_LITER]: 1,
   };
 
-  _validUnits = new Set<string>([
-    ...Object.values(UnitOfBloodGlucoseConcentration),
-  ]);
+  _validUnits = [...Object.values(UnitOfBloodGlucoseConcentration)];
 }
 
 export class CarbonMonoxideConcentrationConverter extends BaseUnitConverter {
@@ -284,23 +285,23 @@ export class CarbonMonoxideConcentrationConverter extends BaseUnitConverter {
   // Using ambient temperature of 20°C and pressure of 1 ATM.
   _unitClass = "carbon_monoxide";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfConcentration.PARTS_PER_BILLION;
 
   _unitConversion = {
-    [UnitOfConcentration.PARTS_PER_BILLION]: 1e9,
-    [UnitOfConcentration.PARTS_PER_MILLION]: 1e6,
+    [UnitOfConcentration.PARTS_PER_BILLION]: 1,
+    [UnitOfConcentration.PARTS_PER_MILLION]: 1e-3,
     [UnitOfConcentration.MILLIGRAMS_PER_CUBIC_METER]:
-      (_CARBON_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e3,
+      (_CARBON_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-6,
     [UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER]:
-      (_CARBON_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e6,
+      (_CARBON_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-3,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.PARTS_PER_MILLION,
     UnitOfConcentration.MILLIGRAMS_PER_CUBIC_METER,
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class ConductivityConverter extends BaseUnitConverter {
@@ -315,7 +316,7 @@ export class ConductivityConverter extends BaseUnitConverter {
     [UnitOfConductivity.SIEMENS_PER_CM]: 1e-6,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfConductivity)]);
+  _validUnits = [...Object.values(UnitOfConductivity)];
 }
 
 export class DataRateConverter extends BaseUnitConverter {
@@ -339,7 +340,7 @@ export class DataRateConverter extends BaseUnitConverter {
     [UnitOfDataRate.GIBIBYTES_PER_SECOND]: 1 / 2 ** 33,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfDataRate)]);
+  _validUnits = [...Object.values(UnitOfDataRate)];
 }
 
 export class DistanceConverter extends BaseUnitConverter {
@@ -360,7 +361,7 @@ export class DistanceConverter extends BaseUnitConverter {
     [UnitOfLength.NAUTICAL_MILES]: 1 / _NAUTICAL_MILE_TO_M,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfLength)]);
+  _validUnits = [...Object.values(UnitOfLength)];
 }
 
 export class DurationConverter extends BaseUnitConverter {
@@ -379,7 +380,7 @@ export class DurationConverter extends BaseUnitConverter {
     [UnitOfTime.WEEKS]: 1 / (7 * _DAYS_TO_SECS),
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfTime.MICROSECONDS,
     UnitOfTime.MILLISECONDS,
     UnitOfTime.SECONDS,
@@ -387,7 +388,7 @@ export class DurationConverter extends BaseUnitConverter {
     UnitOfTime.HOURS,
     UnitOfTime.DAYS,
     UnitOfTime.WEEKS,
-  ]);
+  ];
 }
 
 export class ElectricCurrentConverter extends BaseUnitConverter {
@@ -401,7 +402,7 @@ export class ElectricCurrentConverter extends BaseUnitConverter {
     [UnitOfElectricCurrent.MILLIAMPERE]: 1e3,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfElectricCurrent)]);
+  _validUnits = [...Object.values(UnitOfElectricCurrent)];
 }
 
 export class ElectricPotentialConverter extends BaseUnitConverter {
@@ -418,7 +419,7 @@ export class ElectricPotentialConverter extends BaseUnitConverter {
     [UnitOfElectricPotential.MEGAVOLT]: 1 / 1e6,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfElectricPotential)]);
+  _validUnits = [...Object.values(UnitOfElectricPotential)];
 }
 
 export class EnergyConverter extends BaseUnitConverter {
@@ -444,7 +445,7 @@ export class EnergyConverter extends BaseUnitConverter {
     [UnitOfEnergy.GIGA_CALORIE]: _WH_TO_CAL / 1e6,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfEnergy)]);
+  _validUnits = [...Object.values(UnitOfEnergy)];
 }
 
 export class EnergyDistanceConverter extends BaseUnitConverter {
@@ -461,12 +462,12 @@ export class EnergyDistanceConverter extends BaseUnitConverter {
     [UnitOfEnergyDistance.KM_PER_KILO_WATT_HOUR]: 100,
   };
 
-  _unitInverses = new Set<string | undefined>([
+  _unitInverses = [
     UnitOfEnergyDistance.MILES_PER_KILO_WATT_HOUR,
     UnitOfEnergyDistance.KM_PER_KILO_WATT_HOUR,
-  ]);
+  ];
 
-  _validUnits = new Set<string>([...Object.values(UnitOfEnergyDistance)]);
+  _validUnits = [...Object.values(UnitOfEnergyDistance)];
 }
 
 export class InformationConverter extends BaseUnitConverter {
@@ -499,7 +500,7 @@ export class InformationConverter extends BaseUnitConverter {
     [UnitOfInformation.YOBIBYTES]: 1 / 2 ** 83,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfInformation)]);
+  _validUnits = [...Object.values(UnitOfInformation)];
 }
 
 export class MassConverter extends BaseUnitConverter {
@@ -518,7 +519,7 @@ export class MassConverter extends BaseUnitConverter {
     [UnitOfMass.STONES]: 1 / _STONE_TO_G,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfMass)]);
+  _validUnits = [...Object.values(UnitOfMass)];
 }
 
 export class MassVolumeConcentrationConverter extends BaseUnitConverter {
@@ -533,69 +534,69 @@ export class MassVolumeConcentrationConverter extends BaseUnitConverter {
     [UnitOfConcentration.GRAMS_PER_CUBIC_METER]: 1.0,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
     UnitOfConcentration.MILLIGRAMS_PER_CUBIC_METER,
     UnitOfConcentration.GRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class NitrogenDioxideConcentrationConverter extends BaseUnitConverter {
   // Convert nitrogen dioxide ratio to mass per volume.
   _unitClass = "nitrogen_dioxide";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfConcentration.PARTS_PER_BILLION;
 
   _unitConversion = {
-    [UnitOfConcentration.PARTS_PER_BILLION]: 1e9,
-    [UnitOfConcentration.PARTS_PER_MILLION]: 1e6,
+    [UnitOfConcentration.PARTS_PER_BILLION]: 1,
+    [UnitOfConcentration.PARTS_PER_MILLION]: 1e-3,
     [UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER]:
-      (_NITROGEN_DIOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e6,
+      (_NITROGEN_DIOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-3,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.PARTS_PER_MILLION,
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class NitrogenMonoxideConcentrationConverter extends BaseUnitConverter {
   // Convert nitrogen monoxide ratio to mass per volume.
   _unitClass = "nitrogen_monoxide";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfConcentration.PARTS_PER_BILLION;
 
   _unitConversion = {
-    [UnitOfConcentration.PARTS_PER_BILLION]: 1e9,
+    [UnitOfConcentration.PARTS_PER_BILLION]: 1,
     [UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER]:
-      (_NITROGEN_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e6,
+      (_NITROGEN_MONOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-3,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class OzoneConcentrationConverter extends BaseUnitConverter {
   // Convert ozone ratio to mass per volume.
   _unitClass = "ozone";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfConcentration.PARTS_PER_BILLION;
 
   _unitConversion = {
-    [UnitOfConcentration.PARTS_PER_BILLION]: 1e9,
-    [UnitOfConcentration.PARTS_PER_MILLION]: 1e6,
+    [UnitOfConcentration.PARTS_PER_BILLION]: 1,
+    [UnitOfConcentration.PARTS_PER_MILLION]: 1e-3,
     [UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER]:
-      (_OZONE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e6,
+      (_OZONE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-3,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.PARTS_PER_MILLION,
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class PowerConverter extends BaseUnitConverter {
@@ -614,7 +615,7 @@ export class PowerConverter extends BaseUnitConverter {
     [UnitOfPower.BTU_PER_HOUR]: 1 / 0.29307107,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfPower)]);
+  _validUnits = [...Object.values(UnitOfPower)];
 }
 
 export class PressureConverter extends BaseUnitConverter {
@@ -639,7 +640,7 @@ export class PressureConverter extends BaseUnitConverter {
       1 / (_MM_TO_M * 1000 * _STANDARD_GRAVITY * _MERCURY_DENSITY),
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfPressure)]);
+  _validUnits = [...Object.values(UnitOfPressure)];
 }
 
 export class ReactiveEnergyConverter extends BaseUnitConverter {
@@ -653,7 +654,7 @@ export class ReactiveEnergyConverter extends BaseUnitConverter {
     [UnitOfReactiveEnergy.KILO_VOLT_AMPERE_REACTIVE_HOUR]: 1 / 1e3,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfReactiveEnergy)]);
+  _validUnits = [...Object.values(UnitOfReactiveEnergy)];
 }
 
 export class ReactivePowerConverter extends BaseUnitConverter {
@@ -668,11 +669,11 @@ export class ReactivePowerConverter extends BaseUnitConverter {
     [UnitOfReactivePower.KILO_VOLT_AMPERE_REACTIVE]: 1 / 1000,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfReactivePower.MILLIVOLT_AMPERE_REACTIVE,
     UnitOfReactivePower.VOLT_AMPERE_REACTIVE,
     UnitOfReactivePower.KILO_VOLT_AMPERE_REACTIVE,
-  ]);
+  ];
 }
 
 export class SpeedConverter extends BaseUnitConverter {
@@ -697,7 +698,7 @@ export class SpeedConverter extends BaseUnitConverter {
     [UnitOfSpeed.BEAUFORT]: 1,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfVolumetricFlux.INCHES_PER_DAY,
     UnitOfVolumetricFlux.INCHES_PER_HOUR,
     UnitOfVolumetricFlux.MILLIMETERS_PER_DAY,
@@ -711,7 +712,7 @@ export class SpeedConverter extends BaseUnitConverter {
     UnitOfSpeed.MILES_PER_HOUR,
     UnitOfSpeed.MILLIMETERS_PER_SECOND,
     UnitOfSpeed.BEAUFORT,
-  ]);
+  ];
 
   public converterFactory(
     fromUnit: string | undefined,
@@ -759,18 +760,18 @@ export class SulphurDioxideConcentrationConverter extends BaseUnitConverter {
   // Convert sulphur dioxide ratio to mass per volume.
   _unitClass = "sulphur_dioxide";
 
-  _baseUnit = undefined;
+  _baseUnit = UnitOfConcentration.PARTS_PER_BILLION;
 
   _unitConversion = {
-    [UnitOfConcentration.PARTS_PER_BILLION]: 1e9,
+    [UnitOfConcentration.PARTS_PER_BILLION]: 1,
     [UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER]:
-      (_SULPHUR_DIOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e6,
+      (_SULPHUR_DIOXIDE_MOLAR_MASS / _AMBIENT_IDEAL_GAS_MOLAR_VOLUME) * 1e-3,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.MICROGRAMS_PER_CUBIC_METER,
-  ]);
+  ];
 }
 
 export class TemperatureDeltaConverter extends BaseUnitConverter {
@@ -786,7 +787,7 @@ export class TemperatureDeltaConverter extends BaseUnitConverter {
     [UnitOfTemperature.KELVIN]: 1.0,
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfTemperature)]);
+  _validUnits = [...Object.values(UnitOfTemperature)];
 }
 
 export class TemperatureConverter extends TemperatureDeltaConverter {
@@ -858,12 +859,12 @@ export class UnitlessRatioConverter extends BaseUnitConverter {
     [PERCENTAGE]: 100,
   };
 
-  _validUnits = new Set<string>([
+  _validUnits = [
     "",
     UnitOfConcentration.PARTS_PER_BILLION,
     UnitOfConcentration.PARTS_PER_MILLION,
     PERCENTAGE,
-  ]);
+  ];
 }
 
 export class VolumeConverter extends BaseUnitConverter {
@@ -883,7 +884,7 @@ export class VolumeConverter extends BaseUnitConverter {
     [UnitOfVolume.MILLE_CUBIC_FEET]: 1 / (1000 * _CUBIC_FOOT_TO_CUBIC_METER),
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfVolume)]);
+  _validUnits = [...Object.values(UnitOfVolume)];
 }
 
 export class VolumeFlowRateConverter extends BaseUnitConverter {
@@ -912,5 +913,5 @@ export class VolumeFlowRateConverter extends BaseUnitConverter {
       1 / (_HRS_TO_SECS * _ML_TO_CUBIC_METER),
   };
 
-  _validUnits = new Set<string>([...Object.values(UnitOfVolumeFlowRate)]);
+  _validUnits = [...Object.values(UnitOfVolumeFlowRate)];
 }
