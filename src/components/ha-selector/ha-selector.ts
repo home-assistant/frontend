@@ -39,6 +39,7 @@ const LOAD_ELEMENTS = {
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
+  numeric_threshold: () => import("./ha-selector-numeric-threshold"),
   object: () => import("./ha-selector-object"),
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
