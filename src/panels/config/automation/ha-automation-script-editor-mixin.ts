@@ -1,10 +1,12 @@
 import { consume } from "@lit/context";
-import type { CSSResult, TemplateResult, LitElement } from "lit";
+import type { CSSResult, LitElement, TemplateResult } from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -14,8 +16,6 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
-import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
@@ -119,7 +119,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     @transform<EntityRegistryEntry[], EntityRegistryEntry>({
       transformer: function (this: { currentEntityId?: string }, value) {
-        return value.find(
+        return value?.find(
           ({ entity_id }) => entity_id === this.currentEntityId
         );
       },
