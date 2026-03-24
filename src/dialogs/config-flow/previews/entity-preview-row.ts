@@ -15,6 +15,7 @@ import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
+import "../../../components/input/ha-input";
 import "../../../components/ha-time-input";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -72,7 +73,7 @@ class EntityPreviewRow extends LitElement {
       min-width: 45px;
       text-align: end;
     }
-    ha-textfield {
+    ha-input {
       text-align: end;
       direction: ltr !important;
     }
@@ -273,8 +274,8 @@ class EntityPreviewRow extends LitElement {
                 </span>
               </div>
             `
-          : html` <div class="numberflex numberstate">
-              <ha-textfield
+          : html`<div class="numberflex numberstate">
+              <ha-input
                 autoValidate
                 .disabled=${isUnavailableState(stateObj.state)}
                 pattern="[0-9]+([\\.][0-9]+)?"
@@ -282,9 +283,14 @@ class EntityPreviewRow extends LitElement {
                 .min=${Number(stateObj.attributes.min)}
                 .max=${Number(stateObj.attributes.max)}
                 .value=${stateObj.state}
-                .suffix=${stateObj.attributes.unit_of_measurement}
                 type="number"
-              ></ha-textfield>
+              >
+                ${stateObj.attributes.unit_of_measurement
+                  ? html`<span slot="end"
+                      >${stateObj.attributes.unit_of_measurement}</span
+                    >`
+                  : nothing}
+              </ha-input>
             </div>`}
       `;
     }
@@ -323,7 +329,7 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "text") {
       return html`
-        <ha-textfield
+        <ha-input
           .label=${computeStateName(stateObj)}
           .disabled=${isUnavailableState(stateObj.state)}
           .value=${stateObj.state}
@@ -333,7 +339,7 @@ class EntityPreviewRow extends LitElement {
           .pattern=${stateObj.attributes.pattern}
           .type=${stateObj.attributes.mode}
           placeholder=${this.hass!.localize("ui.card.text.emtpy_value")}
-        ></ha-textfield>
+        ></ha-input>
       `;
     }
 

@@ -1,8 +1,8 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-yaml-editor";
+import "../../../../../components/input/ha-input";
 import "../../../../../components/user/ha-users-picker";
 import type { EventTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
@@ -24,7 +24,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   protected render() {
     const { event_type, event_data, context } = this.trigger;
     return html`
-      <ha-textfield
+      <ha-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.event.event_type"
         )}
@@ -32,7 +32,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         .value=${event_type}
         .disabled=${this.disabled}
         @change=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
       <ha-yaml-editor
         .hass=${this.hass}
         .label=${this.hass.localize(
@@ -94,12 +94,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
       value,
     });
   }
-
-  static styles = css`
-    ha-textfield {
-      display: block;
-    }
-  `;
 }
 
 declare global {
