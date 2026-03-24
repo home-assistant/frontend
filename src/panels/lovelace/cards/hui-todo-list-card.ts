@@ -9,7 +9,6 @@ import {
   mdiSort,
 } from "@mdi/js";
 import {
-  add,
   addDays,
   addMonths,
   addWeeks,
@@ -32,7 +31,6 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
-import type { HaDurationData } from "../../../components/ha-duration-input";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -75,9 +73,6 @@ interface TodoDueDatePeriod {
   calendar?: {
     period: string;
     offset?: number;
-  };
-  rolling_window?: {
-    offset: HaDurationData;
   };
 }
 
@@ -261,9 +256,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const endDate =
       period && period.calendar && period.calendar.period
         ? this._addPeriod(new Date(), period.calendar)
-        : period && period.rolling_window
-          ? this._addRollingWindow(new Date(), period.rolling_window)
-          : undefined;
+        : undefined;
 
     return items.filter((item) => {
       if (!status.includes(item.status || null)) {
@@ -303,16 +296,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       default:
         return undefined;
     }
-  }
-
-  private _addRollingWindow(
-    date: Date,
-    rolling_window: { offset: HaDurationData }
-  ): Date | undefined {
-    if (!rolling_window.offset) {
-      return undefined;
-    }
-    return add(date, rolling_window.offset);
   }
 
   public willUpdate(

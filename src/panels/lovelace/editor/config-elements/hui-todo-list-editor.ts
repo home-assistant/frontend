@@ -3,7 +3,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  any,
   assert,
   assign,
   boolean,
@@ -49,7 +48,6 @@ const cardConfigStruct = assign(
         calendar: optional(
           object({ period: string(), offset: optional(number()) })
         ),
-        rolling_window: optional(object({ offset: optional(any()) })),
       })
     ),
   })

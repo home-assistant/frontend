@@ -600,7 +600,6 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   sort?: string;
   due_date_period?: {
     calendar?: { period: string; offset?: number };
-    rolling_window?: { offset: HaDurationData };
   };
 }
 
