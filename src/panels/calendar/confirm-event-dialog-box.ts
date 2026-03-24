@@ -141,9 +141,6 @@ class ConfirmEventDialogBox extends LitElement {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }
-    ha-textfield {
-      width: 100%;
-    }
   `;
 }
 

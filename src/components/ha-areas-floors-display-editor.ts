@@ -15,7 +15,6 @@ import "./ha-floor-icon";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
-import "./ha-textfield";
 
 export interface AreasFloorsDisplayValue {
   areas_display?: {

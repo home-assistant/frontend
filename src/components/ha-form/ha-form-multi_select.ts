@@ -199,11 +199,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       padding-inline-start: initial;
       direction: var(--direction);
     }
-    ha-textfield {
-      display: block;
-      width: 100%;
-      pointer-events: none;
-    }
     ha-icon-button {
       color: var(--input-dropdown-icon-color);
       position: absolute;
