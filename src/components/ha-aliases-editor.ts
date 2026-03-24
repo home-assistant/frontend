@@ -2,7 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
-import "./ha-multi-textfield";
+import "./input/ha-input-multi";
 
 @customElement("ha-aliases-editor")
 class AliasesEditor extends LitElement {
@@ -20,7 +20,7 @@ class AliasesEditor extends LitElement {
     }
 
     return html`
-      <ha-multi-textfield
+      <ha-input-multi
         .hass=${this.hass}
         .value=${this.aliases}
         .disabled=${this.disabled}
@@ -32,7 +32,7 @@ class AliasesEditor extends LitElement {
         item-index
         @value-changed=${this._aliasesChanged}
       >
-      </ha-multi-textfield>
+      </ha-input-multi>
     `;
   }
 
