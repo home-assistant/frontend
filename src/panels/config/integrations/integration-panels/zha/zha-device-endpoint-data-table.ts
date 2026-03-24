@@ -15,6 +15,7 @@ import type {
 import type { HomeAssistant } from "../../../../../types";
 import { getAreaTableColumn } from "../../../common/data-table-columns";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;
@@ -40,15 +41,18 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _deviceEndpoints = memoizeOne(
-    (deviceEndpoints: ZHADeviceEndpoint[]) => {
+    (
+      deviceEndpoints: ZHADeviceEndpoint[],
+      areas: Record<string, AreaRegistryEntry>
+    ) => {
       const outputDevices: DeviceEndpointRowData[] = [];
       deviceEndpoints.forEach((deviceEndpoint) => {
         outputDevices.push({
           name:
             deviceEndpoint.device.user_given_name || deviceEndpoint.device.name,
           area: deviceEndpoint.device.area_id
-            ? this.hass.areas[deviceEndpoint.device.area_id].name
-            : deviceEndpoint.device.area_id,
+            ? areas[deviceEndpoint.device.area_id].name
+            : undefined,
           model: deviceEndpoint.device.model,
           manufacturer: deviceEndpoint.device.manufacturer,
           id: deviceEndpoint.device.ieee + "_" + deviceEndpoint.endpoint_id,
@@ -156,7 +160,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
       <ha-data-table
         .hass=${this.hass}
         .columns=${this._columns(this.hass.localize, this.narrow)}
-        .data=${this._deviceEndpoints(this.deviceEndpoints)}
+        .data=${this._deviceEndpoints(this.deviceEndpoints, this.hass.areas)}
         .selectable=${this.selectable}
         auto-height
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
