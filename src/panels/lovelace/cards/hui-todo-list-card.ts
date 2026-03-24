@@ -821,12 +821,23 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return this._input;
   }
 
-  private _addItem(ev): void {
+  private async _addItem(ev): Promise<void> {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, {
-        summary: newItem.value!,
-      });
+      if (this._config?.due_date_period) {
+        const item = {
+          summary: newItem.value!,
+          status: TodoItemStatus.NeedsAction,
+        };
+        await showTodoItemEditDialog(this, {
+          entity: this._entityId!,
+          item,
+        });
+      } else {
+        createItem(this.hass!, this._entityId!, {
+          summary: newItem.value!,
+        });
+      }
     }
 
     newItem.value = "";
