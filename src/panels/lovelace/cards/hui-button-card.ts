@@ -92,7 +92,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consume<any>({ context: statesContext, subscribe: true })
   @transform({
     transformer: function (this: HuiButtonCard, value: HassEntities) {
-      return this._config?.entity ? value[this._config?.entity] : undefined;
+      return this._config?.entity ? value?.[this._config?.entity] : undefined;
     },
     watch: ["_config"],
   })
@@ -118,7 +118,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consume<any>({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
     transformer: function (this: HuiButtonCard, value) {
-      return this._config?.entity ? value[this._config?.entity] : undefined;
+      return this._config?.entity ? value?.[this._config?.entity] : undefined;
     },
     watch: ["_config"],
   })
