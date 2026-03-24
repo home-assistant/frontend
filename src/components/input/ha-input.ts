@@ -22,6 +22,7 @@ export type InputType =
   | "tel"
   | "text"
   | "time"
+  | "color"
   | "url";
 
 @customElement("ha-input")
@@ -296,7 +297,9 @@ export class HaInput extends LitElement {
         .disabled=${this.disabled}
         class=${classMap({
           invalid: this.invalid || this._invalid,
-          "label-raised": this.value || (this.label && this.placeholder),
+          "label-raised":
+            (this.value !== undefined && this.value !== "") ||
+            (this.label && this.placeholder),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -512,6 +515,13 @@ export class HaInput extends LitElement {
     }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);
+      cursor: pointer;
+    }
+    :host([type="color"]) wa-input.no-label::part(input) {
+      padding: var(--ha-space-2);
+    }
+    :host([type="color"]) wa-input.no-label::part(base) {
+      padding: 0;
     }
     wa-input::part(input)::placeholder {
       color: var(--ha-color-neutral-60);
