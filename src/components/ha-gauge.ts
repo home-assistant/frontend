@@ -76,10 +76,12 @@ export class HaGauge extends LitElement {
     const arcRadius = 40;
     const arcLength = Math.PI * arcRadius;
     const valueAngle = getAngle(this.value, this.min, this.max);
-    const strokeOffset = arcLength * (1 - valueAngle / 180);
+    const strokeOffset = this._updated
+      ? arcLength * (1 - valueAngle / 180)
+      : arcLength;
 
     return svg`
-      <svg viewBox="-50 -50 100 60" class="gauge">
+      <svg viewBox="-50 -50 100 55" class="gauge">
         <path
           class="levels-base"
           d="M -40 0 A 40 40 0 0 1 40 0"
@@ -181,7 +183,7 @@ export class HaGauge extends LitElement {
         <text
           class="value-text"
           x="0"
-          y="-10"
+          y="-5"
           dominant-baseline="middle"
           text-anchor="middle"
         >
@@ -222,22 +224,22 @@ export class HaGauge extends LitElement {
     .levels-base {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 10;
+      stroke-width: 8;
       stroke-linecap: round;
     }
 
     .level {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 8;
       stroke-linecap: butt;
     }
 
     .value {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 8;
       stroke: var(--gauge-color);
       stroke-linecap: round;
-      transition: all 1s ease 0s;
+      transition: stroke-dashoffset 1s ease 0s;
     }
 
     .needle {
@@ -249,6 +251,7 @@ export class HaGauge extends LitElement {
     }
 
     .value-text {
+      font-size: var(--ha-font-size-l);
       fill: var(--primary-text-color);
       direction: ltr;
     }

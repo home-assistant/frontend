@@ -130,7 +130,12 @@ export class HaPlatformTrigger extends LitElement {
           loadDefaults &&
           field.selector &&
           field.default !== undefined &&
-          updatedOptions[key] === undefined
+          updatedOptions[key] === undefined &&
+          !(
+            key === "behavior" &&
+            this.description?.target &&
+            !this.trigger?.target
+          )
         ) {
           updatedDefaultValue = true;
           updatedOptions[key] = field.default;
@@ -261,8 +266,13 @@ export class HaPlatformTrigger extends LitElement {
       return nothing;
     }
 
-    // Hide behavior when the target is a single direct entity.
-    if (fieldName === "behavior" && this._resolvedTargetEntityCount === 1) {
+    if (
+      fieldName === "behavior" &&
+      this.description?.target &&
+      (!this.trigger?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
       return nothing;
     }
 
@@ -457,7 +467,9 @@ export class HaPlatformTrigger extends LitElement {
       await this._resolveTargetEntityCount(target);
 
     if (
-      this._resolvedTargetEntityCount === 1 &&
+      (!target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1)) &&
       this.trigger.options?.behavior !== undefined
     ) {
       const options = { ...this.trigger.options };
@@ -470,6 +482,7 @@ export class HaPlatformTrigger extends LitElement {
         },
       });
     } else if (
+      target &&
       this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
       this.trigger.options?.behavior === undefined

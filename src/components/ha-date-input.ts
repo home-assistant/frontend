@@ -8,10 +8,11 @@ import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./ha-svg-icon";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
-const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
+const loadDatePickerDialog = () =>
+  import("./date-picker/ha-dialog-date-picker");
 
 export interface DatePickerDialogParams {
   value?: string;
@@ -53,19 +54,17 @@ export class HaDateInput extends LitElement {
 
   @property({ attribute: "can-clear", type: Boolean }) public canClear = false;
 
-  @query("ha-textfield", true) private _input?: HaTextField;
+  @query("ha-input", true) private _input?: HaInput;
 
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
   }
 
   render() {
-    return html`<ha-textfield
-      .label=${this.label}
-      .helper=${this.helper}
+    return html`<ha-input
+      .label=${this.label ?? ""}
+      .hint=${this.helper ?? ""}
       .disabled=${this.disabled}
-      iconTrailing
-      helperPersistent
       readonly
       @click=${this._openDialog}
       @keydown=${this._keyDown}
@@ -81,8 +80,8 @@ export class HaDateInput extends LitElement {
         : ""}
       .required=${this.required}
     >
-      <ha-svg-icon slot="trailingIcon" .path=${mdiCalendar}></ha-svg-icon>
-    </ha-textfield>`;
+      <ha-svg-icon slot="end" .path=${mdiCalendar}></ha-svg-icon>
+    </ha-input>`;
   }
 
   private _openDialog() {
@@ -126,9 +125,6 @@ export class HaDateInput extends LitElement {
   static styles = css`
     ha-svg-icon {
       color: var(--secondary-text-color);
-    }
-    ha-textfield {
-      display: block;
     }
   `;
 }

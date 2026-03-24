@@ -554,6 +554,18 @@
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"
+        },
+        "numeric_threshold": {
+          "type": "Threshold type",
+          "above": "Above",
+          "below": "Below",
+          "in_range": "In range",
+          "outside_range": "Outside range",
+          "unit": "Unit",
+          "number": "Number",
+          "entity": "Entity",
+          "from": "From",
+          "to": "To"
         }
       },
       "logbook": {
@@ -993,6 +1005,8 @@
         "end_date": "End date",
         "select": "Select",
         "select_date_range": "Select time period",
+        "time_from": "Time from",
+        "time_to": "Time to",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
@@ -1823,7 +1837,15 @@
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
           "hidden_explanation": "Hidden entities will not be included in auto-populated dashboards or when their area, device or label is referenced. Their history is still tracked and you can still interact with them with actions.",
           "delete": "Delete",
-          "confirm_delete": "Are you sure you want to delete this entity?",
+          "confirm_delete_title": "Delete entity",
+          "confirm_delete": "Deleting \"{entity_name}\" is an irreversible action. Are you sure you want to continue?",
+          "confirm_delete_related": "This entity is part of {items}. If you delete it, you will need to update those manually.",
+          "confirm_delete_count": {
+            "automation": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "script": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}",
+            "group": "{count} {count, plural,\n  one {group}\n  other {groups}\n}",
+            "scene": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}"
+          },
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
           "use_device_area": "Use device area",
@@ -2213,7 +2235,7 @@
         "new": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
           "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
-          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it. If you're already using the iOS app, make sure your iPhone or iPad is running iOS 16 or newer.",
           "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
           "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
         },
@@ -4172,14 +4194,15 @@
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
           "manage_ha_cloud": "Manage Home Assistant Cloud",
-          "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
+          "external_get_ha_cloud": "If you're looking for a fast and secure way to connect to Home Assistant no matter where you are, start a trial for Home Assistant Cloud today. Every purchase supports the development of Home Assistant.",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
-          "internal_url_placeholder": "http://<some IP address>:8123"
+          "internal_url_placeholder": "http://<some IP address>:8123",
+          "invalid_url": "Invalid URL"
         },
         "hardware": {
           "caption": "Hardware",
@@ -4502,6 +4525,11 @@
                 "error_pipeline_not_found": "Pipeline not found",
                 "name": "{name} (Copy)"
               }
+            },
+            "current_device": {
+              "title": "This device",
+              "description": "Configure voice assistant settings specific to this device.",
+              "open_settings": "Open device settings"
             },
             "cloud": {
               "title": "Get the best assistant with {home_assistant_cloud}",
@@ -8730,7 +8758,13 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "background": "Background options",
+              "background_enabled": "Background",
+              "background_enabled_helper": "Display a colored background behind the section",
+              "background_color": "Color",
+              "background_color_default": "Default",
+              "background_opacity": "Opacity"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -9207,7 +9241,6 @@
                 "cover": "Cover",
                 "fill": "Fill"
               },
-              "focus": "Focus",
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -9283,6 +9316,8 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "no_geo_location_sources": "No geolocation sources available",
+              "focus": "Focus",
+              "focus_helper": "Include this entity when calculating the autofit",
               "appearance": "Appearance",
               "theme_mode": "Theme mode",
               "theme_modes": {
