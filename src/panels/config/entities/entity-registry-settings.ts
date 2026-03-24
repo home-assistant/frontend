@@ -31,12 +31,7 @@ import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 
-const RELATED_ENTITY_DOMAINS = [
-  "automation",
-  "script",
-  "group",
-  "scene",
-];
+const RELATED_ENTITY_DOMAINS = ["automation", "script", "group", "scene"];
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -277,8 +272,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         return mainText;
       }
 
-      return html`${mainText}
-        <br /><br />
+      return html`${mainText} <br /><br />
         ${this.hass.localize(
           "ui.dialogs.entity_registry.editor.confirm_delete_related",
           {
