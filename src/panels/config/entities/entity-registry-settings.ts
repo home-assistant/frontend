@@ -1,7 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -16,6 +17,7 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
+import { findRelated } from "../../../data/search";
 import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -27,6 +29,9 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+
+const RELATED_ENTITY_DOMAINS = ["automation", "script", "group", "scene"];
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -209,11 +214,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _confirmDeleteEntry(): Promise<void> {
+    const confirmationText = await this._getDeleteConfirmationText();
+
     if (
       !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.confirm_delete"
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_title"
         ),
+        text: confirmationText,
         confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
         destructive: true,
@@ -233,6 +241,46 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       fireEvent(this, "close-dialog");
     } finally {
       this._submitting = false;
+    }
+  }
+
+  private async _getDeleteConfirmationText(): Promise<string | TemplateResult> {
+    const mainText = this.hass.localize(
+      "ui.dialogs.entity_registry.editor.confirm_delete",
+      { entity_name: computeEntityEntryName(this.entry) }
+    );
+
+    try {
+      const related = await findRelated(
+        this.hass,
+        "entity",
+        this.entry.entity_id
+      );
+
+      const relatedItems = RELATED_ENTITY_DOMAINS.map((domain) => {
+        const count = related[domain]?.length || 0;
+        if (count === 0) {
+          return undefined;
+        }
+        return this.hass.localize(
+          `ui.dialogs.entity_registry.editor.confirm_delete_count.${domain}`,
+          { count }
+        );
+      }).filter((item): item is string => Boolean(item));
+
+      if (relatedItems.length === 0) {
+        return mainText;
+      }
+
+      return html`${mainText} <br /><br />
+        ${this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_related",
+          {
+            items: formatListWithAnds(this.hass.locale, relatedItems),
+          }
+        )}`;
+    } catch (_err) {
+      return mainText;
     }
   }
 
