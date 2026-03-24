@@ -15,8 +15,8 @@ import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
-import "../../../components/input/ha-input";
 import "../../../components/ha-time-input";
+import "../../../components/input/ha-input";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
@@ -276,7 +276,7 @@ class EntityPreviewRow extends LitElement {
             `
           : html`<div class="numberflex numberstate">
               <ha-input
-                autoValidate
+                auto-validate
                 .disabled=${isUnavailableState(stateObj.state)}
                 pattern="[0-9]+([\\.][0-9]+)?"
                 .step=${Number(stateObj.attributes.step)}
