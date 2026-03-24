@@ -1,5 +1,6 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 
@@ -13,7 +14,6 @@ import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
-import "../search-input-outlined";
 import type { HomeAssistant } from "../../types";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -86,9 +86,9 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     nodeId: string
   ) => string[];
 
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public searchFilter = "";
 
-  @state() private _searchFilter = "";
+  public hass!: HomeAssistant;
 
   @state() private _highlightedNodes?: Set<string>;
 
@@ -148,12 +148,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       height="100%"
       .extraComponents=${[GraphChart]}
     >
-      <search-input-outlined
-        slot="search"
-        .hass=${this.hass}
-        .filter=${this._searchFilter}
-        @value-changed=${this._handleSearchChange}
-      ></search-input-outlined>
+      <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
       <ha-icon-button
         slot="button"
@@ -199,23 +194,25 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     deepEqual
   );
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    const filter = ev.detail.value;
-    this._searchFilter = filter;
-    if (!filter) {
-      this._highlightedNodes = undefined;
-    } else {
-      const lowerFilter = filter.toLowerCase();
-      const matchingIds = new Set<string>();
-      for (const node of this.data.nodes) {
-        if (this._nodeMatchesFilter(node, lowerFilter)) {
-          matchingIds.add(node.id);
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("searchFilter")) {
+      const filter = this.searchFilter;
+      if (!filter) {
+        this._highlightedNodes = undefined;
+      } else {
+        const lowerFilter = filter.toLowerCase();
+        const matchingIds = new Set<string>();
+        for (const node of this.data.nodes) {
+          if (this._nodeMatchesFilter(node, lowerFilter)) {
+            matchingIds.add(node.id);
+          }
         }
+        this._highlightedNodes = matchingIds;
       }
-      this._highlightedNodes = matchingIds;
+      this._applyHighlighting();
+      this._updateMouseoverHandler();
     }
-    this._applyHighlighting();
-    this._updateMouseoverHandler();
   }
 
   private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {

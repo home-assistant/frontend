@@ -2,7 +2,7 @@ import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
@@ -14,6 +14,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/search-input-outlined";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
@@ -49,6 +50,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
+  @state() private _searchFilter = "";
+
   public hassSubscribe() {
     const devices = Object.values(this.hass.devices).filter((device) =>
       device.config_entries.some((entry) => entry === this.configEntryId)
@@ -80,8 +83,18 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         back-path="/config/zwave_js/dashboard?config_entry=${this
           .configEntryId}"
       >
+        ${this.narrow
+          ? html`<div slot="header">
+              <search-input-outlined
+                .hass=${this.hass}
+                .filter=${this._searchFilter}
+                @value-changed=${this._handleSearchChange}
+              ></search-input-outlined>
+            </div>`
+          : nothing}
         <ha-network-graph
           .hass=${this.hass}
+          .searchFilter=${this._searchFilter}
           .data=${this._getNetworkData(
             this._nodeStatuses,
             this._nodeStatistics
@@ -89,7 +102,16 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph>
+        >
+          ${!this.narrow
+            ? html`<search-input-outlined
+                slot="search"
+                .hass=${this.hass}
+                .filter=${this._searchFilter}
+                @value-changed=${this._handleSearchChange}
+              ></search-input-outlined>`
+            : nothing}
+        </ha-network-graph>
       </hass-subpage>
     `;
   }
@@ -126,6 +148,10 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     }
     return attributes;
   };
+
+  private _handleSearchChange(ev: CustomEvent): void {
+    this._searchFilter = ev.detail.value;
+  }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
     const { dataType, data } = params as CallbackDataParams;
@@ -351,6 +377,13 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       css`
         ha-network-graph {
           height: 100%;
+        }
+        [slot="header"] {
+          display: flex;
+          align-items: center;
+        }
+        search-input-outlined {
+          flex: 1;
         }
       `,
     ];
