@@ -504,7 +504,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .wrapper {
       display: flex;
       flex-direction: column;
-      min-height: calc(100% - 2 * var(--row-gap));
+      min-height: 100%;
       padding: 0 var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
