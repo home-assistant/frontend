@@ -280,7 +280,7 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <div class="top-controls">
+        <div class="top-controls ${classMap({ small: this.smallControls })}">
           <slot name="search"></slot>
           <div
             class="chart-controls ${classMap({ small: this.smallControls })}"
@@ -1145,8 +1145,10 @@ export class HaChartBase extends LitElement {
       flex-shrink: 0;
       pointer-events: auto;
     }
-    .chart-controls.small {
+    .top-controls.small {
       top: 0;
+    }
+    .chart-controls.small {
       flex-direction: row;
     }
     .chart-controls ha-icon-button,
