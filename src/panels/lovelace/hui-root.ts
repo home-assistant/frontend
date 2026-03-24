@@ -787,7 +787,7 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (oldLovelace && oldLovelace.config !== this.lovelace!.config) {
-        this._cleanupViewCache(oldLovelace);
+        this._cleanupViewCache();
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -1146,22 +1146,14 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _cleanupViewCache(oldLovelace: Lovelace): void {
-    // Clean up cache entries for views that no longer exist
-    const newViewPaths = new Set(
-      this.lovelace!.config.views.map((v, i) => v.path ?? String(i))
-    );
-    const keys = new Set([
-      ...Object.keys(this._viewCache),
-      ...Object.keys(this._viewScrollPositions),
-    ]);
-    for (const key of keys) {
-      const index = Number(key);
-      const oldPath = oldLovelace.config.views[index]?.path ?? String(index);
-      if (!newViewPaths.has(oldPath)) {
-        delete this._viewCache[key];
-        delete this._viewScrollPositions[key];
-      }
+  private _cleanupViewCache(): void {
+    // Keep only the currently displayed view to avoid UI flash.
+    // All other cached views are cleared and will be recreated on next visit.
+    const currentView =
+      this._curView != null ? this._viewCache[this._curView] : undefined;
+    this._viewCache = {};
+    if (currentView && this._curView != null) {
+      this._viewCache[this._curView] = currentView;
     }
   }
 
