@@ -1,17 +1,25 @@
 import { css, LitElement, nothing, unsafeCSS } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeCssColor } from "../../../common/color/compute-color";
 import {
   DEFAULT_SECTION_BACKGROUND_OPACITY,
   resolveSectionBackground,
   type LovelaceSectionBackgroundConfig,
 } from "../../../data/lovelace/config/section";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("hui-section-background")
 export class HuiSectionBackground extends LitElement {
   @property({ attribute: false })
+  public hass?: HomeAssistant;
+
+  @property({ attribute: false })
   public background?: boolean | LovelaceSectionBackgroundConfig;
+
+  @property({ attribute: false })
+  public theme?: string;
 
   protected render() {
     return nothing;
@@ -27,6 +35,11 @@ export class HuiSectionBackground extends LitElement {
         const opacity =
           resolved.opacity !== undefined ? `${resolved.opacity}%` : null;
         this.style.setProperty("--section-background-opacity", opacity);
+      }
+    }
+    if (changedProperties.has("theme") || changedProperties.has("hass")) {
+      if (this.hass && this.theme) {
+        applyThemesOnElement(this, this.hass.themes, this.theme);
       }
     }
   }
