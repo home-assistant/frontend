@@ -100,7 +100,6 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         inputMode="numeric"
         .label=${this.label}
         .hint=${this.helper}
-        helperPersistent
         .value=${this.data !== undefined ? this.data.toString() : ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}

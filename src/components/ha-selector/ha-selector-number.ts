@@ -109,7 +109,6 @@ export class HaNumberSelector extends LitElement {
           .max=${this.selector.number?.max}
           .value=${this._valueStr ?? ""}
           .step=${this.selector.number?.step ?? 1}
-          helperPersistent
           .hint=${isBox ? this.helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
