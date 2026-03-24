@@ -115,17 +115,21 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
+  private _refreshTimer?: number;
+
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._subscribeItems();
     }
+    this._setRefreshTimer();
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubItems?.then((unsub) => unsub());
     this._unsubItems = undefined;
+    this._clearRefreshTimer();
   }
 
   public getCardSize(): number {
@@ -184,7 +188,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (
       items?: TodoItem[],
       sort?: string | undefined,
-      due_date_period?: TodoDueDatePeriod
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
     ): TodoItem[] =>
       items
         ? this._sortItems(
@@ -202,7 +207,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (
       items?: TodoItem[],
       sort?: string | undefined,
-      due_date_period?: TodoDueDatePeriod
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
     ): TodoItem[] =>
       items
         ? this._sortItems(
@@ -220,7 +226,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (
       items?: TodoItem[],
       sort?: string | undefined,
-      due_date_period?: TodoDueDatePeriod
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
     ): TodoItem[] =>
       items
         ? this._sortItems(
@@ -238,7 +245,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (
       items?: TodoItem[],
       sort?: string | undefined,
-      due_date_period?: TodoDueDatePeriod
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
     ): TodoItem[] =>
       items
         ? this._sortItems(
@@ -298,6 +306,32 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _setRefreshTimer() {
+    this._clearRefreshTimer();
+    if (!this.hass || !this._config?.due_date_period) {
+      return;
+    }
+    const nowDate = new Date();
+    const timeout = calcDate(
+      nowDate,
+      endOfDay,
+      this.hass.locale,
+      this.hass.config
+    );
+    this._refreshTimer = window.setTimeout(() => {
+      this._refreshTimer = undefined;
+      this.requestUpdate();
+    }, timeout.getTime() - nowDate.getTime());
+  }
+
+  private _clearRefreshTimer() {
+    if (this._refreshTimer === undefined) {
+      return;
+    }
+    window.clearTimeout(this._refreshTimer);
+    this._refreshTimer = undefined;
+  }
+
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -309,6 +343,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     } else if (changedProperties.has("_entityId") || !this._items) {
       this._items = undefined;
       this._subscribeItems();
+    }
+
+    if (!this._refreshTimer) {
+      this._setRefreshTimer();
     }
   }
 
@@ -348,28 +386,42 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
+    // Discard memoization when we rollover to a new day, so filters can be recalculated
+    const memoTime = this._config.due_date_period
+      ? calcDate(
+          new Date(),
+          endOfDay,
+          this.hass.locale,
+          this.hass.config
+        ).getTime()
+      : 0;
+
     const checkedItems = this._getCheckedItems(
       this._items,
       this._config.display_order,
-      this._config.due_date_period
+      this._config.due_date_period,
+      memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
       this._config.display_order,
-      this._config.due_date_period
+      this._config.due_date_period,
+      memoTime
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
       this._items,
       this._config.display_order,
-      this._config.due_date_period
+      this._config.due_date_period,
+      memoTime
     );
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
           this._items,
           this._config.display_order,
-          this._config.due_date_period
+          this._config.due_date_period,
+          memoTime
         )
       : undefined;
 
