@@ -168,6 +168,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._data = params.data;
     this._currView = view;
     this._initialView = view;
+    this._childView = undefined;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
 
