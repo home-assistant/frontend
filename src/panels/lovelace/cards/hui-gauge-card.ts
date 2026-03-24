@@ -167,7 +167,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name" .title=${name}>${name}</div>
+        <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
   }
@@ -282,10 +282,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
+    :host {
+      position: relative;
+      display: block;
+      height: 100%;
+    }
     ha-card {
       height: 100%;
       overflow: hidden;
-      padding: 16px;
+      padding: var(--ha-space-3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -301,16 +306,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       outline: none;
     }
 
-    ha-gauge {
+    .title {
       width: 100%;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
+      padding: 0px 0px var(--ha-space-2) 0px;
+      margin: 0;
+      text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: none;
+      color: var(--primary-text-color);
     }
 
-    .name {
-      text-align: center;
-      line-height: initial;
-      color: var(--primary-text-color);
+    ha-gauge {
       width: 100%;
-      font-size: var(--ha-font-size-m);
     }
   `;
 }

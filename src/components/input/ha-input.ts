@@ -12,20 +12,22 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-tooltip";
 
+export type InputType =
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "number"
+  | "password"
+  | "search"
+  | "tel"
+  | "text"
+  | "time"
+  | "url";
+
 @customElement("ha-input")
 export class HaInput extends LitElement {
   @property({ reflect: true })
-  public type:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url" = "text";
+  public type: InputType = "text";
 
   @property()
   public value?: string;
@@ -296,7 +298,12 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised": this.value || (this.label && this.placeholder),
           "no-label": !this.label,
-          "hint-hidden": !this.hint && !hasHintSlot && !this.required,
+          "hint-hidden":
+            !this.hint &&
+            !hasHintSlot &&
+            !this.required &&
+            !this._invalid &&
+            !this.invalid,
         })}
         @input=${this._handleInput}
         @change=${this._handleChange}

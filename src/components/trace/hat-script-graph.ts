@@ -761,6 +761,7 @@ export class HatScriptGraph extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        min-width: fit-content;
       }
       .actions {
         display: flex;

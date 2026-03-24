@@ -21,7 +21,10 @@ import { hasLocation } from "../../../../common/entity/has_location";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
@@ -152,9 +155,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       ] as const
   );
 
-  private _subSchema = memoizeOne(
-    (localize: LocalizeFunc, entityId: string, includeEntities: string[]) =>
-      [
+  private _subForm = memoizeOne(
+    (localize: LocalizeFunc, entityId: string, includeEntities: string[]) => ({
+      schema: [
         {
           name: "entity",
           selector: {
@@ -207,7 +210,20 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             { name: "focus", default: true, selector: { boolean: {} } },
           ],
         },
-      ] as const
+      ] as const,
+      computeLabel: (item: HaFormSchema) => {
+        if (item.name === "focus") {
+          return localize("ui.panel.lovelace.editor.card.map.focus");
+        }
+        return undefined;
+      },
+      computeHelper: (item: HaFormSchema) => {
+        if (item.name === "focus") {
+          return localize("ui.panel.lovelace.editor.card.map.focus_helper");
+        }
+        return undefined;
+      },
+    })
   );
 
   public setConfig(config: MapCardConfig): void {
@@ -258,7 +274,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${this._subSchema(
+          .form=${this._subForm(
             this.hass.localize,
             entityId,
             this._locationEntities

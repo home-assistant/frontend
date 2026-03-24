@@ -1,10 +1,8 @@
-import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -12,14 +10,15 @@ import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/input/ha-input-copy";
+import type { HaInputCopy } from "../../../components/input/ha-input-copy";
 import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { showToast } from "../../../util/toast";
+import type { HomeAssistant } from "../../../types";
 import { obfuscateUrl } from "../../../util/url";
 
 @customElement("ha-config-url-form")
@@ -42,11 +41,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
 
   @state() private _showCustomInternalUrl = false;
 
-  @state() private _unmaskedExternalUrl = false;
-
-  @state() private _unmaskedInternalUrl = false;
-
   @state() private _cloudChecked = false;
+
+  @query('[data-name="external_url"]')
+  private _externalUrlField?: HaInput;
+
+  @query('[data-name="internal_url"]')
+  private _internalUrlField?: HaInput;
 
   protected hassSubscribe() {
     return [
@@ -70,6 +71,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     const internalUrl = this._showCustomInternalUrl
       ? this._internal_url
       : this._urls?.internal || "";
+
     const externalUrl = this._showCustomExternalUrl
       ? this._external_url
       : (this._cloudChecked ? this._urls?.cloud : this._urls?.external) || "";
@@ -142,44 +144,24 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               `
             : nothing}
           <div class="url-container">
-            <div class="textfield-container">
-              <ha-textfield
-                name="external_url"
-                type="url"
-                placeholder="https://example.duckdns.org:8123"
-                .value=${this._unmaskedExternalUrl ||
-                (this._showCustomExternalUrl && canEdit)
-                  ? externalUrl
-                  : obfuscateUrl(externalUrl)}
-                @change=${this._handleChange}
-                .disabled=${disabled || !this._showCustomExternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomExternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedExternalUrl}
-                      .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
-            </div>
-            <ha-button
-              size="small"
-              appearance="plain"
-              .url=${externalUrl}
-              @click=${this._copyURL}
+            <ha-input-copy
+              auto-validate
+              .validationMessage=${this.hass.localize(
+                "ui.panel.config.url.invalid_url"
+              )}
+              data-name="external_url"
+              type="url"
+              .maskedToggle=${!(this._showCustomExternalUrl && canEdit)}
+              placeholder="https://example.duckdns.org:8123"
+              .value=${externalUrl}
+              .maskedValue=${this._showCustomExternalUrl && canEdit
+                ? undefined
+                : obfuscateUrl(externalUrl)}
+              @change=${this._handleChange}
+              .readonly=${!this._showCustomExternalUrl}
+              .disabled=${disabled}
             >
-              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.common.copy_link")}
-            </ha-button>
+            </ha-input-copy>
           </div>
           ${hasCloud || !isComponentLoaded(this.hass, "cloud")
             ? nothing
@@ -257,46 +239,26 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
           </ha-md-list-item>
 
           <div class="url-container">
-            <div class="textfield-container">
-              <ha-textfield
-                name="internal_url"
-                type="url"
-                placeholder=${this.hass.localize(
-                  "ui.panel.config.url.internal_url_placeholder"
-                )}
-                .value=${this._unmaskedInternalUrl ||
-                (this._showCustomInternalUrl && canEdit)
-                  ? internalUrl
-                  : obfuscateUrl(internalUrl)}
-                @change=${this._handleChange}
-                .disabled=${disabled || !this._showCustomInternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomInternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedInternalUrl}
-                      .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
-            </div>
-            <ha-button
-              size="small"
-              appearance="plain"
-              .url=${internalUrl}
-              @click=${this._copyURL}
+            <ha-input-copy
+              auto-validate
+              .validationMessage=${this.hass.localize(
+                "ui.panel.config.url.invalid_url"
+              )}
+              data-name="internal_url"
+              .maskedToggle=${!(this._showCustomInternalUrl && canEdit)}
+              type="url"
+              placeholder=${this.hass.localize(
+                "ui.panel.config.url.internal_url_placeholder"
+              )}
+              .value=${internalUrl}
+              .maskedValue=${this._showCustomInternalUrl && canEdit
+                ? undefined
+                : obfuscateUrl(internalUrl)}
+              @change=${this._handleChange}
+              .readonly=${!this._showCustomInternalUrl}
+              .disabled=${disabled}
             >
-              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.common.copy_link")}
-            </ha-button>
+            </ha-input-copy>
           </div>
           ${
             // If the user has configured a cert, show an error if
@@ -359,28 +321,19 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
   }
 
-  private _toggleUnmaskedInternalUrl() {
-    this._unmaskedInternalUrl = !this._unmaskedInternalUrl;
-  }
-
-  private _toggleUnmaskedExternalUrl() {
-    this._unmaskedExternalUrl = !this._unmaskedExternalUrl;
-  }
-
-  private async _copyURL(ev) {
-    const url = ev.currentTarget.url;
-    await copyToClipboard(url);
-    showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
-    });
-  }
-
-  private _handleChange(ev: ValueChangedEvent<string>) {
-    const target = ev.currentTarget as HaTextField;
-    this[`_${target.name}`] = target.value || "";
+  private _handleChange(ev: InputEvent) {
+    const target = ev.currentTarget as HaInputCopy;
+    const input = ev.composedPath()[0] as HaInput;
+    this[`_${target.dataset.name}`] = input.value || "";
   }
 
   private async _save() {
+    if (
+      this._externalUrlField?.reportValidity() === false ||
+      this._internalUrlField?.reportValidity() === false
+    ) {
+      return;
+    }
     this._working = true;
     this._error = undefined;
     try {
@@ -457,23 +410,9 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       gap: var(--ha-space-2);
       margin-top: 8px;
     }
-    .textfield-container {
-      position: relative;
+
+    ha-input-copy {
       flex: 1;
-    }
-    .textfield-container ha-textfield {
-      display: block;
-    }
-    .toggle-unmasked-url {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      inset-inline-start: initial;
-      inset-inline-end: 8px;
-      --ha-icon-button-size: 40px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      direction: var(--direction);
     }
 
     ha-md-list-item {
