@@ -1124,7 +1124,7 @@ export class HaChartBase extends LitElement {
     .top-controls {
       position: absolute;
       top: var(--ha-space-4);
-      inset-inline: var(--ha-space-4);
+      inset-inline: var(--ha-space-1);
       display: flex;
       align-items: flex-start;
       gap: var(--ha-space-2);
