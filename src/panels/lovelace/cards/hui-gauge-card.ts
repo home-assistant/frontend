@@ -10,7 +10,6 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
-import "../../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
@@ -291,7 +290,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ha-card {
       height: 100%;
       overflow: hidden;
-      padding: 16px;
+      padding: var(--ha-space-3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -311,7 +310,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       width: 100%;
       font-size: var(--ha-font-size-l);
       line-height: var(--ha-line-height-expanded);
-      padding: 0px 0px 8px 0px;
+      padding: 0px 0px var(--ha-space-2) 0px;
       margin: 0;
       text-align: center;
       box-sizing: border-box;
