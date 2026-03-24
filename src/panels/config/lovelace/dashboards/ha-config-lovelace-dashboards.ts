@@ -13,6 +13,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
+import { extractSearchParam } from "../../../../common/url/search-params";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type {
@@ -65,6 +66,7 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { showPanelDetailDialog } from "./show-dialog-panel-detail";
+import { showImportLovelaceViewDialog } from "./show-dialog-import-lovelace-view";
 
 export const PANEL_DASHBOARDS = [
   "home",
@@ -453,6 +455,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._getDashboards();
+
+    if (this.route.path === "/import-view") {
+      const url = extractSearchParam("url");
+      navigate("/config/lovelace/dashboards", { replace: true });
+      if (url) {
+        showImportLovelaceViewDialog(this, { url });
+      }
+    }
   }
 
   private async _getDashboards() {

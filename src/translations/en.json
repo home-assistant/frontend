@@ -4401,6 +4401,20 @@
               "set_default_admin_only_title": "Can't set as default",
               "set_default_admin_only_text": "This dashboard is set to admin-only. Disable this limitation before setting it as default."
             },
+            "import_view": {
+              "header": "Import view",
+              "introduction": "Add a view from a URL to one of your dashboards.",
+              "target_dashboard": "Add to dashboard",
+              "view_title": "View title",
+              "preview_title": "View content",
+              "source_warning": "This configuration is not from GitHub or an official Home Assistant website. Only continue if you trust the source.",
+              "error_fetch": "Could not fetch the configuration. Make sure the URL is publicly accessible.",
+              "error_parse": "Could not parse the file. Make sure it is valid YAML or JSON.",
+              "error_not_a_view": "This file does not look like a view configuration.",
+              "error_strategy_dashboard": "Cannot add a view to a strategy-based dashboard.",
+              "no_dashboards": "No editable dashboards found. Create a dashboard first before importing a view.",
+              "add_btn": "Add view"
+            },
             "panel_detail": {
               "edit_panel": "Edit panel",
               "title": "[%key:ui::panel::config::lovelace::dashboards::detail::title%]",
