@@ -22,6 +22,10 @@ export interface HomeFrontendSystemData {
   welcome_banner_dismissed?: boolean;
 }
 
+export interface MaintenanceFrontendSystemData {
+  battery_attention_threshold?: number;
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -30,6 +34,7 @@ declare global {
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
     home: HomeFrontendSystemData;
+    maintenance: MaintenanceFrontendSystemData;
   }
 }
 

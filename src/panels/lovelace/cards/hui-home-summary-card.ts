@@ -27,6 +27,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import { countMaintenanceDevicesNeedingAttention } from "../../maintenance/maintenance-battery-data";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_FILTERS,
@@ -42,6 +43,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
+  maintenance: "amber",
   energy: "amber",
 };
 
@@ -256,6 +258,21 @@ export class HuiHomeSummaryCard
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
         return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+      }
+      case "maintenance": {
+        const count = countMaintenanceDevicesNeedingAttention(
+          this.hass,
+          this._config.attention_threshold
+        );
+
+        return count > 0
+          ? this.hass.localize(
+              "ui.card.home-summary.count_devices_needing_attention",
+              { count }
+            )
+          : this.hass.localize(
+              "ui.card.home-summary.no_devices_needing_attention"
+            );
       }
     }
     return "";

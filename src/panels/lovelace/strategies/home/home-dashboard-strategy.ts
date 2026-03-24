@@ -16,6 +16,7 @@ import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strate
 export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
+  battery_attention_threshold?: number;
   home_panel?: boolean;
 }
 
@@ -93,6 +94,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
+            battery_attention_threshold: config.battery_attention_threshold,
             home_panel: config.home_panel,
           } satisfies HomeOverviewViewStrategyConfig,
         },

@@ -664,6 +664,7 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  attention_threshold?: number;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

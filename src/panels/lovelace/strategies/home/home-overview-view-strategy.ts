@@ -27,6 +27,7 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
+import { getMaintenanceBatteryDevices } from "../../../maintenance/maintenance-battery-data";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -38,6 +39,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  battery_attention_threshold?: number;
   home_panel?: boolean;
 }
 
@@ -232,6 +234,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
+    const hasMaintenance =
+      hass.panels.maintenance &&
+      getMaintenanceBatteryDevices(hass, config.battery_attention_threshold)
+        .length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -313,6 +319,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
+          },
+        } satisfies HomeSummaryCard),
+      hasMaintenance &&
+        ({
+          type: "home-summary",
+          summary: "maintenance",
+          attention_threshold: config.battery_attention_threshold,
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/maintenance?historyBack=1",
           },
         } satisfies HomeSummaryCard),
       weatherEntity &&

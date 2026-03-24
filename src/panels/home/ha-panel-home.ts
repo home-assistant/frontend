@@ -16,6 +16,7 @@ import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
   type HomeFrontendSystemData,
+  type MaintenanceFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
 import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
@@ -45,6 +46,8 @@ class PanelHome extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _config: FrontendSystemData["home"] = {};
+
+  @state() private _maintenanceConfig: MaintenanceFrontendSystemData = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
@@ -122,15 +125,18 @@ class PanelHome extends LitElement {
   private async _setup() {
     this._updateExtraActionItems();
     try {
-      const [_, data] = await Promise.all([
+      const [_, homeData, maintenanceData] = await Promise.all([
         this.hass.loadFragmentTranslation("lovelace"),
         fetchFrontendSystemData(this.hass.connection, "home"),
+        fetchFrontendSystemData(this.hass.connection, "maintenance"),
       ]);
-      this._config = data || {};
+      this._config = homeData || {};
+      this._maintenanceConfig = maintenanceData || {};
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to load favorites:", err);
       this._config = {};
+      this._maintenanceConfig = {};
     }
     this._setLovelace();
   }
@@ -317,6 +323,8 @@ class PanelHome extends LitElement {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
+        battery_attention_threshold:
+          this._maintenanceConfig.battery_attention_threshold,
         home_panel: true,
       },
     };
