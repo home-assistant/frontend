@@ -28,16 +28,37 @@ const UNIT_CONVERT_TO_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
   [UnitConvertOpType.ROUND]: (val: number, _factor) => Math.round(val),
 };
 
-// Expected typing imported JSON data
+// Expected typing for imported JSON data, along with validation that each unit
+// class imported as a sensible value.
 interface UnitClassConversion {
-  needs_class: boolean;
+  needs_class?: boolean;
   base: string;
   units: Record<string, number | Record<UnitConvertOpType, number>[]>;
 }
-const UNIT_CLASSES = (_unitFactors as any).default as Record<
-  string,
-  UnitClassConversion
->;
+function instanceOfObject(object: any): object is object {
+  return (
+    typeof object === "object" && !Array.isArray(object) && object !== null
+  );
+}
+function instanceOfConversionClass(object: any): object is UnitClassConversion {
+  return (
+    instanceOfObject(object) &&
+    "base" in object &&
+    typeof object.base === "string" &&
+    "units" in object &&
+    instanceOfObject(object.units) &&
+    object.base in object.units
+  );
+}
+const UNIT_CLASSES: Record<string, UnitClassConversion> =
+  "default" in _unitFactors && instanceOfObject(_unitFactors.default)
+    ? Object.entries(_unitFactors.default as Record<string, any>)
+        .map(([key, conv]): Record<string, UnitClassConversion> => {
+          if (instanceOfConversionClass(conv)) return { [key]: conv };
+          return {};
+        })
+        .reduce((arr, cur) => (cur ? { ...arr, ...cur } : arr), {})
+    : {};
 
 // Define unit converter class
 type UnitConvertOpInfo = [UnitConvertOpType, number];
@@ -154,10 +175,10 @@ const UNIT_TO_CLASS = Object.entries(UNIT_CLASSES)
                 [unit]: key,
               })
             )
-            .reduce((arr, cur) => ({ ...arr, ...cur }))
+            .reduce((arr, cur) => ({ ...arr, ...cur }), {})
         : {}
   )
-  .reduce((arr, cur) => ({ ...arr, ...cur }));
+  .reduce((arr, cur) => ({ ...arr, ...cur }), {});
 
 // Create unit converter objects for each class
 const UNIT_CONVERTERS = Object.entries(UNIT_CLASSES)
@@ -166,7 +187,7 @@ const UNIT_CONVERTERS = Object.entries(UNIT_CLASSES)
       [key]: new UnitConverter(key, conv),
     })
   )
-  .reduce((arr, cur) => ({ ...arr, ...cur }));
+  .reduce((arr, cur) => ({ ...arr, ...cur }), {});
 
 // Try to fetch a unit converter for the given unit and/or unit class.
 export function getUnitConverter(
