@@ -5,6 +5,7 @@ interface BaseDialogBoxParams {
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
+  subtitle?: string;
   warning?: boolean;
 }
 

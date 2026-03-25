@@ -5,12 +5,12 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -73,7 +73,6 @@ class DialogBox extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
         ?prevent-scrim-close=${confirmPrompt}
@@ -104,6 +103,9 @@ class DialogBox extends LitElement {
               : nothing}
             ${dialogTitle}
           </span>
+          ${this._params.subtitle
+            ? html`<span slot="subtitle">${this._params.subtitle}</span>`
+            : nothing}
         </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
