@@ -73,6 +73,7 @@ export type InputType =
  * @attr {boolean} without-spin-buttons - Hides the browser's built-in spin buttons for number inputs.
  * @attr {boolean} auto-validate - Validates the input on blur instead of on form submit.
  * @attr {boolean} invalid - Marks the input as invalid.
+ * @attr {boolean} inset-label - Uses an inset label style where the label stays inside the input.
  * @attr {string} validation-message - Custom validation message shown when the input is invalid.
  */
 @customElement("ha-input")
@@ -220,6 +221,9 @@ export class HaInput extends LitElement {
 
   @property({ type: Boolean })
   public invalid = false;
+
+  @property({ type: Boolean, attribute: "inset-label" })
+  public insetLabel = false;
 
   @state()
   private _invalid = false;

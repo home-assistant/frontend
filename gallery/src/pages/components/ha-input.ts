@@ -24,11 +24,15 @@ const LOCALIZE_KEYS: Record<string, string> = {
 
 @customElement("demo-components-ha-input")
 export class DemoHaInput extends LitElement {
-  // Provides localizeContext for ha-input-copy, ha-input-multi and ha-input-search
-  private _localizeProvider = new ContextProvider(this, {
-    context: localizeContext,
-    initialValue: ((key: string) => LOCALIZE_KEYS[key] ?? key) as any,
-  });
+  constructor() {
+    super();
+    // Provides localizeContext for ha-input-copy, ha-input-multi and ha-input-search
+    // eslint-disable-next-line no-new
+    new ContextProvider(this, {
+      context: localizeContext,
+      initialValue: ((key: string) => LOCALIZE_KEYS[key] ?? key) as any,
+    });
+  }
 
   protected render(): TemplateResult {
     return html`
