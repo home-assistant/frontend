@@ -21,7 +21,6 @@ class AliasesEditor extends LitElement {
 
     return html`
       <ha-input-multi
-        .hass=${this.hass}
         .value=${this.aliases}
         .disabled=${this.disabled}
         .sortable=${this.sortable}
