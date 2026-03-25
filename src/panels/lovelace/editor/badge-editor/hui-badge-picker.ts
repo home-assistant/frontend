@@ -11,7 +11,7 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
-import "../../../../components/input/ha-input";
+import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";

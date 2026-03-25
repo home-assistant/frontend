@@ -16,6 +16,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-list";
 import "../../../components/ha-state-icon";
 import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
@@ -150,7 +151,7 @@ class DialogExposeEntity extends LitElement {
   }
 
   private _filterChanged(e: InputEvent) {
-    this._filter = (e.target as HTMLInputElement).value;
+    this._filter = (e.target as HaInputSearch).value;
   }
 
   private _filterEntities = memoizeOne(
