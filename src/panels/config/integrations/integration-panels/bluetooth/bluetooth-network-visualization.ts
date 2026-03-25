@@ -17,7 +17,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/search-input-outlined";
+import "../../../../../components/input/ha-input-search";
 import type {
   BluetoothDeviceData,
   BluetoothScannersDetails,
@@ -130,13 +130,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         back-path="/config/bluetooth/dashboard"
       >
         ${this.narrow
-          ? html`<div slot="header">
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>
-            </div>`
+          ? html`<div slot="header">${this._renderInputSearch()}</div>`
           : nothing}
         <ha-network-graph
           .hass=${this.hass}
@@ -146,17 +140,19 @@ export class BluetoothNetworkVisualization extends LitElement {
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
-          ${!this.narrow
-            ? html`<search-input-outlined
-                slot="search"
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>`
-            : nothing}
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
         </ha-network-graph>
       </hass-subpage>
     `;
+  }
+
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
   }
 
   private _getSearchableAttributes = (nodeId: string): string[] => {
@@ -175,8 +171,8 @@ export class BluetoothNetworkVisualization extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    this._searchFilter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HTMLInputElement).value;
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
@@ -394,7 +390,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           display: flex;
           align-items: center;
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
         }
       `,
