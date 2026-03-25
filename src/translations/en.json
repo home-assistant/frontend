@@ -5492,7 +5492,7 @@
                   "description": {
                     "picker": "Waits for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",
-                    "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
+                    "wait_for_triggers": "Wait for {count, plural,\n one {a trigger}\n other {one of {count} triggers}\n}"
                   }
                 },
                 "condition": {
