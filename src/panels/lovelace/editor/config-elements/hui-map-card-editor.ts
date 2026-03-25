@@ -41,8 +41,8 @@ import type {
   SubElementEditorConfig,
   EntitiesEditorEvent,
 } from "../types";
-import type { Condition } from "../../common/validate-condition";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { Condition } from "../../common/validate-condition";
 import type { LovelaceCardEditor } from "../../types";
 import "../conditions/ha-card-condition-editor";
 import { processEditorEntities } from "../process-editor-entities";
