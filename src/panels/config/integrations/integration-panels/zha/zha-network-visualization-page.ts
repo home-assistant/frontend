@@ -11,6 +11,7 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -127,7 +128,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   };
 
   private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HTMLInputElement).value;
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {

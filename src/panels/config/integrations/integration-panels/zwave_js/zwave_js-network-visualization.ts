@@ -28,6 +28,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -146,7 +147,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
   };
 
   private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HTMLInputElement).value;
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {

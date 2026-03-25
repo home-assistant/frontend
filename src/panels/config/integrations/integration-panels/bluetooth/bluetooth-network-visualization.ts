@@ -18,6 +18,7 @@ import type {
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type {
   BluetoothDeviceData,
   BluetoothScannersDetails,
@@ -172,7 +173,7 @@ export class BluetoothNetworkVisualization extends LitElement {
   };
 
   private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HTMLInputElement).value;
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
