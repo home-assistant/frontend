@@ -7082,7 +7082,10 @@
             "create_group": "Create group",
             "create": "Create group",
             "creating_group": "Creating group",
-            "delete": "Delete group"
+            "delete": "Delete group",
+            "endpoint": "Endpoint",
+            "associated_entities": "Associated entities",
+            "no_associated_entities": "This endpoint has no associated entities"
           },
           "visualization": {
             "header": "Zigbee visualization",
