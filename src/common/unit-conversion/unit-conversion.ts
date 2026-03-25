@@ -112,10 +112,10 @@ export class UnitConverter {
     // Otherwise prepare conversion operations
     const convertOps: UnitConvertOp[] = [
       ...this._unitConversion[fromUnit]
-        .reverse()
         .map(
           ([op, factor]): UnitConvertOp => [UNIT_CONVERT_FROM_OP[op], factor]
-        ),
+        )
+        .reverse(),
       ...this._unitConversion[toUnit].map(
         ([op, factor]): UnitConvertOp => [UNIT_CONVERT_TO_OP[op], factor]
       ),
