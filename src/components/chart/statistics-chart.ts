@@ -34,7 +34,10 @@ import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
-import { getUnitConverter, type UnitConverter } from "../../common/unit-conversion/unit-conversion";
+import {
+  getUnitConverter,
+  type UnitConverter,
+} from "../../common/unit-conversion/unit-conversion";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
