@@ -26,6 +26,9 @@ export class HaTimeInput extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
+  @property({ attribute: "placeholder-labels", type: Boolean })
+  public placeholderLabels = false;
+
   @query("ha-base-time-input") private _input?: HaBaseTimeInput;
 
   public reportValidity(): boolean {
@@ -67,6 +70,7 @@ export class HaTimeInput extends LitElement {
         .required=${this.required}
         .clearable=${this.clearable && this.value !== undefined}
         .helper=${this.helper}
+        .placeholderLabels=${this.placeholderLabels}
         day-label="dd"
         hour-label="hh"
         min-label="mm"

@@ -20,7 +20,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-generic-picker";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -94,31 +95,31 @@ export class HaConfigLogs extends LitElement {
     this._init();
   }
 
-  private async _filterChanged(ev) {
-    this._filter = ev.detail.value;
+  private async _filterChanged(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   protected render(): TemplateResult {
     const search = this.narrow
       ? html`
           <div slot="header">
-            <search-input
+            <ha-input-search
+              appearance="outlined"
               class="header"
-              @value-changed=${this._filterChanged}
-              .hass=${this.hass}
-              .filter=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
-            ></search-input>
+              @input=${this._filterChanged}
+              .value=${this._filter}
+              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+            ></ha-input-search>
           </div>
         `
       : html`
           <div class="search">
-            <search-input
-              @value-changed=${this._filterChanged}
-              .hass=${this.hass}
-              .filter=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
-            ></search-input>
+            <ha-input-search
+              appearance="outlined"
+              @input=${this._filterChanged}
+              .value=${this._filter}
+              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+            ></ha-input-search>
           </div>
         `;
 
@@ -347,16 +348,15 @@ export class HaConfigLogs extends LitElement {
           top: 0;
           z-index: 2;
         }
-        search-input {
-          display: block;
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: var(--divider-color);
+        ha-input-search {
+          padding: var(--ha-space-3);
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
         }
-        search-input.header {
-          --mdc-ripple-color: transparant;
-          margin-left: -16px;
-          margin-inline-start: -16px;
-          margin-inline-end: initial;
+        ha-input-search.header {
+          padding-inline-start: 0;
+          background: transparent;
+          border: none;
         }
         .content {
           direction: ltr;

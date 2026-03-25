@@ -9,7 +9,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonRepository,
   HassioAddonsInfo,
@@ -135,36 +135,23 @@ export class HaConfigAppsAvailable extends LitElement {
           <ha-dropdown-item value="repositories">
             ${this.hass.localize("ui.panel.config.apps.store.repositories")}
           </ha-dropdown-item>
-          ${this.hass.userData?.showAdvanced
-            ? html`<ha-dropdown-item value="registries">
-                ${this.hass.localize("ui.panel.config.apps.store.registries")}
-              </ha-dropdown-item>`
-            : nothing}
+          <ha-dropdown-item value="registries">
+            ${this.hass.localize("ui.panel.config.apps.store.registries")}
+          </ha-dropdown-item>
         </ha-dropdown>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
               <div class="search">
-                <search-input
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._filterChanged}
-                ></search-input>
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._filterChanged}
+                ></ha-input-search>
               </div>
 
               ${repos}
             `}
-        ${!this.hass.userData?.showAdvanced
-          ? html`
-              <div class="advanced">
-                <a href="/profile" target="_top">
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.store.missing_apps"
-                  )}
-                </a>
-              </div>
-            `
-          : ""}
       </hass-subpage>
     `;
   }
@@ -273,8 +260,8 @@ export class HaConfigAppsAvailable extends LitElement {
     }
   };
 
-  private _filterChanged(e) {
-    this._filter = e.detail.value;
+  private _filterChanged(e: InputEvent) {
+    this._filter = (e.target as HTMLInputElement).value;
   }
 
   static styles = css`
@@ -291,22 +278,10 @@ export class HaConfigAppsAvailable extends LitElement {
       top: 0;
       z-index: 2;
     }
-    search-input {
-      display: block;
-      --mdc-text-field-fill-color: var(--sidebar-background-color);
-      --mdc-text-field-idle-line-color: var(--divider-color);
-    }
-    .advanced {
-      padding: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      color: var(--primary-text-color);
-    }
-    .advanced a {
-      margin-left: 0.5em;
-      margin-inline-start: 0.5em;
-      margin-inline-end: initial;
-      color: var(--primary-color);
+    ha-input-search {
+      padding: var(--ha-space-3) var(--ha-space-2);
+      background: var(--sidebar-background-color);
+      border-bottom: 1px solid var(--divider-color);
     }
   `;
 }

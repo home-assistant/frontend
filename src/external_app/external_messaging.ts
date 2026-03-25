@@ -147,6 +147,10 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageAssistSettings extends EMMessage {
+  type: "assist/settings";
+}
+
 interface EMOutgoingMessageImprovScan extends EMMessage {
   type: "improv/scan";
 }
@@ -205,7 +209,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
-  | EMOutgoingMessageFocusElement;
+  | EMOutgoingMessageFocusElement
+  | EMOutgoingMessageAssistSettings;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -343,6 +348,7 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
 }
 
 export interface ExternalEntityAddToAction {

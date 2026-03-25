@@ -3,11 +3,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import {
   cloudLogin,
   cloudRegister,
@@ -30,9 +28,9 @@ export class CloudStepSignup extends LitElement {
 
   @state() private _state?: "VERIFY";
 
-  @query("#email", true) private _emailField!: HaTextField;
+  @query("#email", true) private _emailField!: HaInput;
 
-  @query("#password", true) private _passwordField!: HaPasswordField;
+  @query("#password", true) private _passwordField!: HaInput;
 
   render() {
     return html`<div class="content">
@@ -53,7 +51,7 @@ export class CloudStepSignup extends LitElement {
                 { email: this._email }
               )}
             </p>`
-          : html`<ha-textfield
+          : html`<ha-input
                 autofocus
                 id="email"
                 name="email"
@@ -65,12 +63,14 @@ export class CloudStepSignup extends LitElement {
                 autocomplete="email"
                 required
                 @keydown=${this._keyDown}
-                validationMessage=${this.hass.localize(
+                .validationMessage=${this.hass.localize(
                   "ui.panel.config.cloud.register.email_error_msg"
                 )}
-              ></ha-textfield>
-              <ha-password-field
+              ></ha-input>
+              <ha-input
                 id="password"
+                type="password"
+                password-toggle
                 name="password"
                 .label=${this.hass.localize(
                   "ui.panel.config.cloud.register.password"
@@ -80,10 +80,10 @@ export class CloudStepSignup extends LitElement {
                 minlength="8"
                 required
                 @keydown=${this._keyDown}
-                validationMessage=${this.hass.localize(
+                .validationMessage=${this.hass.localize(
                   "ui.panel.config.cloud.register.password_error_msg"
                 )}
-              ></ha-password-field>`}
+              ></ha-input>`}
       </div>
       <div class="footer side-by-side">
         ${this._state === "VERIFY"
@@ -131,19 +131,26 @@ export class CloudStepSignup extends LitElement {
     const emailField = this._emailField;
     const passwordField = this._passwordField;
 
+    let invalid = false;
+
     if (!emailField.reportValidity()) {
-      passwordField.reportValidity();
+      invalid = true;
       emailField.focus();
-      return;
     }
 
     if (!passwordField.reportValidity()) {
-      passwordField.focus();
+      if (!invalid) {
+        passwordField.focus();
+      }
+      invalid = true;
+    }
+
+    if (invalid) {
       return;
     }
 
-    const email = emailField.value.toLowerCase();
-    const password = passwordField.value;
+    const email = emailField.value!.toLowerCase();
+    const password = passwordField.value!;
 
     this._requestInProgress = true;
 
@@ -210,10 +217,6 @@ export class CloudStepSignup extends LitElement {
     css`
       .content {
         width: 100%;
-      }
-      ha-textfield,
-      ha-password-field {
-        display: block;
       }
     `,
   ];

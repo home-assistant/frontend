@@ -26,14 +26,12 @@ export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
 }
 
-export interface CoverPositionPresetCardFeatureConfig {
-  type: "cover-position-preset";
-  positions?: number[];
+export interface CoverPositionFavoriteCardFeatureConfig {
+  type: "cover-position-favorite";
 }
 
-export interface CoverTiltPresetCardFeatureConfig {
-  type: "cover-tilt-preset";
-  positions?: number[];
+export interface CoverTiltFavoriteCardFeatureConfig {
+  type: "cover-tilt-favorite";
 }
 
 export interface LightBrightnessCardFeatureConfig {
@@ -196,6 +194,10 @@ export interface ValvePositionCardFeatureConfig {
   type: "valve-position";
 }
 
+export interface ValvePositionFavoriteCardFeatureConfig {
+  type: "valve-position-favorite";
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -260,8 +262,8 @@ export type LovelaceCardFeatureConfig =
   | CounterActionsCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
-  | CoverPositionPresetCardFeatureConfig
-  | CoverTiltPresetCardFeatureConfig
+  | CoverPositionFavoriteCardFeatureConfig
+  | CoverTiltFavoriteCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | DateSetCardFeatureConfig
@@ -290,6 +292,7 @@ export type LovelaceCardFeatureConfig =
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig
+  | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig

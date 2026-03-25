@@ -27,7 +27,7 @@ import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
-import "../search-input";
+import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
 
 export interface RowClickedEvent {
@@ -391,11 +391,11 @@ export class HaDataTable extends LitElement {
           ${this._filterable
             ? html`
                 <div class="table-header">
-                  <search-input
-                    .hass=${this.hass}
-                    @value-changed=${this._handleSearchChange}
-                    .label=${this.searchLabel}
-                  ></search-input>
+                  <ha-input-search
+                    appearance="outlined"
+                    @input=${this._handleSearchChange}
+                    .placeholder=${this.searchLabel}
+                  ></ha-input-search>
                 </div>
               `
             : ""}
@@ -970,12 +970,12 @@ export class HaDataTable extends LitElement {
     });
   }
 
-  private _handleSearchChange(ev: CustomEvent): void {
+  private _handleSearchChange(ev: InputEvent): void {
     if (this.filter) {
       return;
     }
     this._lastSelectedRowId = null;
-    this._debounceSearch(ev.detail.value);
+    this._debounceSearch((ev.target as HTMLInputElement).value);
   }
 
   private async _calcTableHeight() {
@@ -1388,11 +1388,9 @@ export class HaDataTable extends LitElement {
         .table-header {
           border-bottom: 1px solid var(--divider-color);
         }
-        search-input {
-          display: block;
+        ha-input-search {
           flex: 1;
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: transparent;
+          padding: var(--ha-space-3);
         }
         slot[name="header"] {
           display: block;

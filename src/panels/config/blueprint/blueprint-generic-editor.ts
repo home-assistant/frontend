@@ -250,7 +250,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .blueprint-picker-container {
           padding: 0 16px 16px;
         }
-        ha-textfield,
         ha-blueprint-picker {
           display: block;
         }

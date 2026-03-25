@@ -56,6 +56,7 @@ export type Selector =
   | MediaSelector
   | NavigationSelector
   | NumberSelector
+  | NumericThresholdSelector
   | ObjectSelector
   | AssistPipelineSelector
   | QRCodeSelector
@@ -241,6 +242,7 @@ interface EntitySelectorFilter {
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
+  unit_of_measurement?: string | readonly string[];
 }
 
 export interface EntitySelector {
@@ -359,6 +361,14 @@ export interface NumberSelector {
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
+  } | null;
+}
+
+export interface NumericThresholdSelector {
+  numeric_threshold: {
+    unit_of_measurement?: readonly string[];
+    number?: NumberSelector["number"];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
 }
 
@@ -506,11 +516,19 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiColorExtraOption {
+  value: string;
+  label: string;
+  icon?: string;
+  display_color?: string;
+}
+
 export interface UiColorSelector {
   ui_color: {
     default_color?: string;
     include_none?: boolean;
     include_state?: boolean;
+    extra_options?: UiColorExtraOption[];
   } | null;
 }
 
@@ -811,6 +829,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -841,6 +860,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }

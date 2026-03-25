@@ -1,7 +1,9 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -76,7 +78,19 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     params: TopLevelFormatterParams
   ) => string;
 
+  /**
+   * Optional callback that returns additional searchable strings for a node.
+   * These are matched against the search filter in addition to the node's name and context.
+   */
+  @property({ attribute: false }) public searchableAttributes?: (
+    nodeId: string
+  ) => string[];
+
+  @property({ attribute: false }) public searchFilter = "";
+
   public hass!: HomeAssistant;
+
+  @state() private _highlightedNodes?: Set<string>;
 
   @state() private _reducedMotion = false;
 
@@ -117,6 +131,9 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
+    const hasHighlightedNodes =
+      this._highlightedNodes && this._highlightedNodes.size > 0;
+
     return html`<ha-chart-base
       .hass=${this.hass}
       .data=${this._getSeries(
@@ -124,12 +141,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         this._physicsEnabled,
         this._reducedMotion,
         this._showLabels,
-        isMobile
+        isMobile,
+        hasHighlightedNodes
       )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
     >
+      <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
       <ha-icon-button
         slot="button"
@@ -165,7 +184,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
           ...category,
           icon: category.symbol,
         })),
-        top: 8,
+        bottom: 8,
       },
       dataZoom: {
         type: "inside",
@@ -175,13 +194,56 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     deepEqual
   );
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("searchFilter")) {
+      const filter = this.searchFilter;
+      if (!filter) {
+        this._highlightedNodes = undefined;
+      } else {
+        const lowerFilter = filter.toLowerCase();
+        const matchingIds = new Set<string>();
+        for (const node of this.data.nodes) {
+          if (this._nodeMatchesFilter(node, lowerFilter)) {
+            matchingIds.add(node.id);
+          }
+        }
+        this._highlightedNodes = matchingIds;
+      }
+      this._applyHighlighting();
+      this._updateMouseoverHandler();
+    }
+  }
+
+  private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
+    if (node.name?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (node.context?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (node.id?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (this.searchableAttributes) {
+      const extraValues = this.searchableAttributes(node.id);
+      for (const value of extraValues) {
+        if (value?.toLowerCase().includes(lowerFilter)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   private _getSeries = memoizeOne(
     (
       data: NetworkData,
       physicsEnabled: boolean,
       reducedMotion: boolean,
       showLabels: boolean,
-      isMobile: boolean
+      isMobile: boolean,
+      hasHighlightedNodes?: boolean
     ) => ({
       id: "network",
       type: "graph",
@@ -214,7 +276,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         },
       },
       emphasis: {
-        focus: isMobile ? "none" : "adjacency",
+        focus: hasHighlightedNodes ? "self" : isMobile ? "none" : "adjacency",
       },
       force: {
         repulsion: [400, 600],
@@ -360,6 +422,68 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         neighborAngle + Math.PI / 2
       );
     });
+  }
+
+  private _applyHighlighting() {
+    const chart = this._baseChart?.chart;
+    if (!chart) {
+      return;
+    }
+    // Reset all nodes to normal opacity first
+    chart.dispatchAction({ type: "downplay" });
+
+    const highlighted = this._highlightedNodes;
+    if (!highlighted || highlighted.size === 0) {
+      return;
+    }
+    const dataIndices: number[] = [];
+    this.data.nodes.forEach((node, index) => {
+      if (highlighted.has(node.id)) {
+        dataIndices.push(index);
+      }
+    });
+    if (dataIndices.length > 0) {
+      chart.dispatchAction({ type: "highlight", dataIndex: dataIndices });
+    }
+  }
+
+  private _emphasisGuardHandler?: () => void;
+
+  private _updateMouseoverHandler() {
+    const chart = this._baseChart?.chart;
+    if (!chart) {
+      return;
+    }
+
+    // When there are highlighted nodes, re-apply highlighting on hover
+    // and mouseout to prevent hover from overriding the search state
+    if (this._highlightedNodes && this._highlightedNodes.size > 0) {
+      if (this._emphasisGuardHandler) {
+        // Guard already set
+        return;
+      }
+      this._emphasisGuardHandler = () => {
+        this._applyHighlighting();
+      };
+      chart.on("mouseover", this._emphasisGuardHandler);
+      chart.on("mouseout", this._emphasisGuardHandler);
+    } else {
+      if (!this._emphasisGuardHandler) {
+        return;
+      }
+      chart.off("mouseover", this._emphasisGuardHandler);
+      chart.off("mouseout", this._emphasisGuardHandler);
+      this._emphasisGuardHandler = undefined;
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._emphasisGuardHandler) {
+      this._baseChart?.chart?.off("mouseover", this._emphasisGuardHandler);
+      this._baseChart?.chart?.off("mouseout", this._emphasisGuardHandler);
+      this._emphasisGuardHandler = undefined;
+    }
   }
 
   private _togglePhysics() {

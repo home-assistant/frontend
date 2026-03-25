@@ -6,7 +6,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import { adminChangePassword } from "../../../data/auth";

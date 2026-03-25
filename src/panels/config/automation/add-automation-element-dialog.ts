@@ -21,9 +21,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
+import { isNumericState } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import type {
   LocalizeFunc,
@@ -53,7 +53,8 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
@@ -116,6 +117,7 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
@@ -138,6 +140,12 @@ const TYPES = {
     icons: ACTION_ICONS,
   },
 };
+
+export interface CollectionGroup {
+  collectionIndex: number;
+  titleKey?: LocalizeKeys;
+  groups: AddAutomationElementListItem[];
+}
 
 export interface AutomationItemComboBoxItem extends PickerComboBoxItem {
   renderedIcon?: TemplateResult;
@@ -167,6 +175,8 @@ const ENTITY_DOMAINS_OTHER = new Set([
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+
+const GENERIC_GROUPS = new Set(["device", "entity"]);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -537,13 +547,12 @@ class DialogAddAutomationElement
         ${this._renderHeader()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
-              <search-input
+              <ha-input-search
+                appearance="outlined"
                 ?autofocus=${!this._narrow}
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._debounceFilterChanged}
-                .label=${this.hass.localize(`ui.common.search`)}
-              ></search-input>
+                .value=${this._filter}
+                @input=${this._handleFilterInput}
+              ></ha-input-search>
             `
           : nothing}
         ${!this._filter &&
@@ -599,10 +608,13 @@ class DialogAddAutomationElement
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
-                class=${this._getAddFromTargetHidden(
-                  this._narrow,
-                  this._selectedTarget
-                )}
+                class=${classMap({
+                  "ha-scrollbar": true,
+                  [this._getAddFromTargetHidden(
+                    this._narrow,
+                    this._selectedTarget
+                  )]: true,
+                })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
@@ -610,6 +622,7 @@ class DialogAddAutomationElement
                   class=${classMap({
                     groups: true,
                     hidden: hideCollections,
+                    "ha-scrollbar": true,
                   })}
                 >
                   ${this._params!.clipboardItem
@@ -663,7 +676,7 @@ class DialogAddAutomationElement
                         <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
-                    (collection, index) => html`
+                    (collection) => html`
                       ${collection.titleKey && collection.groups.length
                         ? html`<ha-section-title>
                             ${this.hass.localize(collection.titleKey)}
@@ -677,7 +690,7 @@ class DialogAddAutomationElement
                             interactive
                             type="button"
                             .value=${item.key}
-                            .index=${index}
+                            .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
                             class=${item.key === this._selectedGroup
                               ? "selected"
@@ -901,11 +914,12 @@ class DialogAddAutomationElement
     collectionIndex?: number
   ): AutomationElementGroup => {
     if (group && collectionIndex !== undefined) {
-      return (
-        TYPES[type].collections[collectionIndex].groups[group].members || {
-          [group]: {},
-        }
-      );
+      const selectedGroup =
+        TYPES[type].collections[collectionIndex]?.groups[group] ??
+        TYPES[type].collections.find((collection) => group in collection.groups)
+          ?.groups[group];
+
+      return selectedGroup?.members || { [group]: selectedGroup || {} };
     }
 
     return TYPES[type].collections.reduce(
@@ -955,13 +969,10 @@ class DialogAddAutomationElement
       triggerDescriptions: TriggerDescriptions,
       conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
-    ): {
-      titleKey?: LocalizeKeys;
-      groups: AddAutomationElementListItem[];
-    }[] => {
-      const generatedCollections: any = [];
+    ): CollectionGroup[] => {
+      const generatedCollections: CollectionGroup[] = [];
 
-      collections.forEach((collection) => {
+      collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
 
@@ -1043,6 +1054,7 @@ class DialogAddAutomationElement
         );
 
         generatedCollections.push({
+          collectionIndex: index,
           titleKey: collection.titleKey,
           groups: groups.sort((a, b) => {
             // make sure device is always on top
@@ -1056,7 +1068,40 @@ class DialogAddAutomationElement
           }),
         });
       });
-      return generatedCollections;
+
+      return !["trigger", "condition"].includes(type)
+        ? generatedCollections
+        : generatedCollections.flatMap(
+            (collection: CollectionGroup): CollectionGroup[] => {
+              const genericGroups = collection.groups.filter((group) =>
+                GENERIC_GROUPS.has(group.key)
+              );
+
+              const mainGroups = collection.groups.filter(
+                (group) => !GENERIC_GROUPS.has(group.key)
+              );
+
+              return [
+                ...(mainGroups.length
+                  ? [
+                      {
+                        ...collection,
+                        groups: mainGroups,
+                      },
+                    ]
+                  : []),
+                ...(genericGroups.length
+                  ? [
+                      {
+                        collectionIndex: collection.collectionIndex,
+                        titleKey: "ui.panel.config.automation.editor.generic",
+                        groups: genericGroups,
+                      } satisfies CollectionGroup,
+                    ]
+                  : []),
+              ];
+            }
+          );
     }
   );
 
@@ -1916,14 +1961,13 @@ class DialogAddAutomationElement
     }
   }
 
-  private _debounceFilterChanged = debounce(
-    (ev) => this._filterChanged(ev),
-    200
-  );
-
-  private _filterChanged = (ev) => {
-    this._filter = ev.detail.value;
+  private _handleFilterInput = (ev: InputEvent) => {
+    this._debounceFilterChanged((ev.target as HaInputSearch).value ?? "");
   };
+
+  private _debounceFilterChanged = debounce((value: string) => {
+    this._filter = value;
+  }, 200);
 
   private _addClipboard = () => {
     if (this._params?.clipboardItem) {
@@ -2108,6 +2152,7 @@ class DialogAddAutomationElement
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;
@@ -2121,7 +2166,7 @@ class DialogAddAutomationElement
         ha-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100vh - max(
                   var(--safe-area-inset-bottom),
@@ -2130,7 +2175,7 @@ class DialogAddAutomationElement
             )
           );
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100dvh - max(
                   var(--safe-area-inset-bottom),
@@ -2145,8 +2190,9 @@ class DialogAddAutomationElement
           color: var(--secondary-text-color);
         }
 
-        search-input {
+        ha-input-search {
           display: block;
+          --ha-input-padding-bottom: 0;
           margin: 0 var(--ha-space-4);
         }
 

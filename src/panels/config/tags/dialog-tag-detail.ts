@@ -35,6 +35,8 @@ class DialogTagDetail
 
   @state() private _open = false;
 
+  @state() private _qrReady = false;
+
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -45,6 +47,11 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    // Defer QR until dialog has had a chance to apply styles
+    requestAnimationFrame(() => {
+      this._qrReady = true;
+    });
   }
 
   public closeDialog(): boolean {
@@ -54,6 +61,7 @@ class DialogTagDetail
 
   private _dialogClosed() {
     this._params = undefined;
+    this._qrReady = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -125,13 +133,17 @@ class DialogTagDetail
                   </p>
                 </div>
                 <div id="qr">
-                  <ha-qr-code
-                    .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
-                    center-image="/static/icons/favicon-192x192.png"
-                    error-correction-level="quartile"
-                    scale="5"
-                  >
-                  </ha-qr-code>
+                  ${this._qrReady
+                    ? html`
+                        <ha-qr-code
+                          .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
+                          center-image="/static/icons/favicon-192x192.png"
+                          error-correction-level="quartile"
+                          scale="5"
+                        >
+                        </ha-qr-code>
+                      `
+                    : nothing}
                 </div>
               `
             : ``}

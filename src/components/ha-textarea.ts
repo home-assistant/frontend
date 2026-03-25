@@ -20,6 +20,9 @@ export class HaTextArea extends TextAreaBase {
     textfieldStyles,
     textareaStyles,
     css`
+      :host {
+        --mdc-text-field-fill-color: var(--ha-color-form-background);
+      }
       :host([autogrow]) .mdc-text-field {
         position: relative;
         min-height: 74px;

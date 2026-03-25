@@ -9,10 +9,10 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/search-input";
-import { haStyleScrollbar } from "../../../../resources/styles";
+import "../../../../components/ha-spinner";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -22,6 +22,7 @@ import {
   customCards,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
@@ -66,7 +67,7 @@ export class HuiCardPicker extends LitElement {
   private _usedEntities?: string[];
 
   public async focus(): Promise<void> {
-    const searchInput = this.renderRoot.querySelector("search-input");
+    const searchInput = this.renderRoot.querySelector("ha-input-search");
     if (searchInput) {
       searchInput.focus();
     } else {
@@ -146,14 +147,14 @@ export class HuiCardPicker extends LitElement {
     const customCardsItems = this._customCards(this._cards);
 
     return html`
-      <search-input
-        .hass=${this.hass}
-        .filter=${this._filter}
-        @value-changed=${this._handleSearchChange}
-        .label=${this.hass.localize(
+      <ha-input-search
+        appearance="outlined"
+        .value=${this._filter}
+        @input=${this._handleSearchChange}
+        .placeholder=${this.hass.localize(
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
-      ></search-input>
+      ></ha-input-search>
       <div id="content" class="ha-scrollbar">
         ${this._filter
           ? html`<div class="cards-container">
@@ -391,8 +392,8 @@ export class HuiCardPicker extends LitElement {
     )}`;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: Event) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _cardPicked(ev: Event): void {
@@ -514,18 +515,11 @@ export class HuiCardPicker extends LitElement {
           overflow: auto;
         }
 
-        search-input {
-          display: block;
-          width: 100%;
-          --mdc-shape-small: var(--card-picker-search-shape);
-          margin: var(--card-picker-search-margin);
+        ha-input-search {
+          padding: var(--ha-space-3) var(--ha-space-4) 0;
           position: sticky;
           top: 0;
           z-index: 10;
-          background-color: var(
-            --ha-dialog-surface-background,
-            var(--mdc-theme-surface, #fff)
-          );
         }
 
         .cards-container-header {
