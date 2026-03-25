@@ -1,9 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { formatListWithAnds } from "../../../common/string/format-list";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import type { ConfigEntry } from "../../../data/config_entries";
@@ -17,7 +19,6 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
-import { findRelated } from "../../../data/search";
 import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -29,9 +30,7 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
-
-const RELATED_ENTITY_DOMAINS = ["automation", "script", "group", "scene"];
+import { getDeleteConfirmationText } from "./get-delete-confirmation-text";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -214,7 +213,25 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _confirmDeleteEntry(): Promise<void> {
-    const confirmationText = await this._getDeleteConfirmationText();
+    let name = computeEntityEntryName(this.entry);
+    if (!name) {
+      const { device } = getEntityEntryContext(
+        this.entry,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+      if (device) {
+        name = computeDeviceName(device);
+      }
+    }
+
+    const confirmationText = await getDeleteConfirmationText(
+      this.hass,
+      this.entry,
+      name
+    );
 
     if (
       !(await showConfirmationDialog(this, {
@@ -241,46 +258,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       fireEvent(this, "close-dialog");
     } finally {
       this._submitting = false;
-    }
-  }
-
-  private async _getDeleteConfirmationText(): Promise<string | TemplateResult> {
-    const mainText = this.hass.localize(
-      "ui.dialogs.entity_registry.editor.confirm_delete",
-      { entity_name: computeEntityEntryName(this.entry) }
-    );
-
-    try {
-      const related = await findRelated(
-        this.hass,
-        "entity",
-        this.entry.entity_id
-      );
-
-      const relatedItems = RELATED_ENTITY_DOMAINS.map((domain) => {
-        const count = related[domain]?.length || 0;
-        if (count === 0) {
-          return undefined;
-        }
-        return this.hass.localize(
-          `ui.dialogs.entity_registry.editor.confirm_delete_count.${domain}`,
-          { count }
-        );
-      }).filter((item): item is string => Boolean(item));
-
-      if (relatedItems.length === 0) {
-        return mainText;
-      }
-
-      return html`${mainText} <br /><br />
-        ${this.hass.localize(
-          "ui.dialogs.entity_registry.editor.confirm_delete_related",
-          {
-            items: formatListWithAnds(this.hass.locale, relatedItems),
-          }
-        )}`;
-    } catch (_err) {
-      return mainText;
     }
   }
 
