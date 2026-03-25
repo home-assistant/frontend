@@ -31,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -122,6 +123,15 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehavior = "first" | "last" | "any" | "all";
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    behaviors?: readonly AutomationBehavior[];
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {

@@ -620,6 +620,14 @@
             "between": "In range",
             "outside": "Outside range"
           }
+        },
+        "automation_behavior": {
+          "options": {
+            "any": "When any entity is in the required state",
+            "all": "When all entities are in the required state",
+            "first": "When the first entity gets in the required state",
+            "last": "When the last entity gets in the required state"
+          }
         }
       },
       "logbook": {

@@ -100,7 +100,8 @@ export class HaPlatformCondition extends LitElement {
           field.default !== undefined &&
           updatedOptions[key] === undefined &&
           !(
-            key === "behavior" &&
+            field.selector &&
+            "automation_behavior" in field.selector &&
             this.description?.target &&
             !this.condition?.target
           )
@@ -227,7 +228,7 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      fieldName === "behavior" &&
+      "automation_behavior" in selector &&
       this.description?.target &&
       (!this.condition?.target ||
         (this._resolvedTargetEntityCount !== undefined &&
@@ -443,14 +444,26 @@ export class HaPlatformCondition extends LitElement {
     this._resolvedTargetEntityCount =
       await this._resolveTargetEntityCount(target);
 
+    const behaviorFieldEntry = Object.entries(
+      this.description?.fields ?? {}
+    ).find(
+      ([, field]) => field.selector && "automation_behavior" in field.selector
+    );
+
+    if (!behaviorFieldEntry) {
+      return;
+    }
+
+    const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+
     if (
       (!target ||
         (this._resolvedTargetEntityCount !== undefined &&
           this._resolvedTargetEntityCount <= 1)) &&
-      this.condition.options?.behavior !== undefined
+      this.condition.options?.[behaviorFieldName] !== undefined
     ) {
       const options = { ...this.condition.options };
-      delete options.behavior;
+      delete options[behaviorFieldName];
 
       fireEvent(this, "value-changed", {
         value: {
@@ -462,14 +475,17 @@ export class HaPlatformCondition extends LitElement {
       target &&
       this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
-      this.condition.options?.behavior === undefined
+      this.condition.options?.[behaviorFieldName] === undefined
     ) {
-      const behaviorDefault = this.description?.fields?.behavior?.default;
+      const behaviorDefault = behaviorField.default;
       if (behaviorDefault !== undefined) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.condition,
-            options: { ...this.condition.options, behavior: behaviorDefault },
+            options: {
+              ...this.condition.options,
+              [behaviorFieldName]: behaviorDefault,
+            },
           },
         });
       }
