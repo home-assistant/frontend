@@ -168,6 +168,13 @@ export class HuiPowerSourcesGraphCard
     this._legendData = [];
 
     const statIds = {
+      battery: {
+        stats: [] as string[],
+        color: "--energy-battery-out-color",
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.power_graph.battery"
+        ),
+      },
       solar: {
         stats: [] as string[],
         color: "--energy-solar-color",
@@ -180,13 +187,6 @@ export class HuiPowerSourcesGraphCard
         color: "--energy-grid-consumption-color",
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.power_graph.grid"
-        ),
-      },
-      battery: {
-        stats: [] as string[],
-        color: "--energy-battery-out-color",
-        name: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.power_graph.battery"
         ),
       },
     };
