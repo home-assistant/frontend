@@ -26,6 +26,9 @@ export class HaToast extends LitElement {
   @query("wa-popup")
   private _popup?: WaPopup;
 
+  @query(".toast")
+  private _toast?: HTMLDivElement;
+
   @state() private _active = false;
 
   @state() private _visible = false;
@@ -69,7 +72,7 @@ export class HaToast extends LitElement {
 
     this._visible = true;
     await this.updateComplete;
-    await this._waitForTransition();
+    await this._waitForTransitionEnd();
 
     if (transitionId !== this._transitionId) {
       return;
@@ -93,7 +96,7 @@ export class HaToast extends LitElement {
     await this.updateComplete;
 
     if (wasVisible) {
-      await this._waitForTransition();
+      await this._waitForTransitionEnd();
     }
 
     if (transitionId !== this._transitionId) {
@@ -121,17 +124,37 @@ export class HaToast extends LitElement {
     }
   }
 
-  private async _waitForTransition(): Promise<void> {
-    const duration = parseAnimationDuration(
-      getComputedStyle(this).getPropertyValue("--ha-animation-duration-fast") ||
-        "150ms"
-    );
-
-    if (duration > 0) {
-      await new Promise((resolve) => {
-        setTimeout(resolve, duration);
-      });
+  private async _waitForTransitionEnd(): Promise<void> {
+    const toastEl = this._toast;
+    if (!toastEl) {
+      return;
     }
+
+    const transitionDuration = getComputedStyle(toastEl).transitionDuration;
+    const firstDuration = transitionDuration.split(",")[0] ?? "0s";
+
+    if (parseAnimationDuration(firstDuration) <= 0) {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      const cleanup = () => {
+        toastEl.removeEventListener("transitionend", onTransitionEnd);
+      };
+
+      const onTransitionEnd = (ev: TransitionEvent) => {
+        if (ev.target !== toastEl) {
+          return;
+        }
+
+        if (ev.propertyName === "opacity" || ev.propertyName === "transform") {
+          cleanup();
+          resolve();
+        }
+      };
+
+      toastEl.addEventListener("transitionend", onTransitionEnd);
+    });
   }
 
   protected render() {
