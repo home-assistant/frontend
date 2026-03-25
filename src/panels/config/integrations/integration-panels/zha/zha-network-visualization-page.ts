@@ -10,7 +10,7 @@ import { getDeviceContext } from "../../../../../common/entity/context/get_devic
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/search-input-outlined";
+import "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -60,11 +60,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
       >
         ${this.narrow
           ? html`<div slot="header">
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>
+              <ha-input-search
+                appearance="outlined"
+                .value=${this._searchFilter}
+                @input=${this._handleSearchChange}
+              ></ha-input-search>
             </div>`
           : nothing}
         <ha-network-graph
@@ -76,12 +76,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
           @chart-click=${this._handleChartClick}
         >
           ${!this.narrow
-            ? html`<search-input-outlined
+            ? html`<ha-input-search
                 slot="search"
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>`
+                appearance="outlined"
+                .value=${this._searchFilter}
+                @input=${this._handleSearchChange}
+              ></ha-input-search>`
             : nothing}
           <ha-icon-button
             slot="button"
@@ -130,8 +130,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    this._searchFilter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HTMLInputElement).value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
@@ -208,7 +208,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           display: flex;
           align-items: center;
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
         }
       `,

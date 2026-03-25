@@ -17,7 +17,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/search-input-outlined";
+import "../../../../../components/input/ha-input-search";
 import type {
   BluetoothDeviceData,
   BluetoothScannersDetails,
@@ -131,11 +131,11 @@ export class BluetoothNetworkVisualization extends LitElement {
       >
         ${this.narrow
           ? html`<div slot="header">
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>
+              <ha-input-search
+                appearance="outlined"
+                .value=${this._searchFilter}
+                @input=${this._handleSearchChange}
+              ></ha-input-search>
             </div>`
           : nothing}
         <ha-network-graph
@@ -147,12 +147,12 @@ export class BluetoothNetworkVisualization extends LitElement {
           @chart-click=${this._handleChartClick}
         >
           ${!this.narrow
-            ? html`<search-input-outlined
+            ? html`<ha-input-search
                 slot="search"
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>`
+                appearance="outlined"
+                .value=${this._searchFilter}
+                @input=${this._handleSearchChange}
+              ></ha-input-search>`
             : nothing}
         </ha-network-graph>
       </hass-subpage>
@@ -175,8 +175,8 @@ export class BluetoothNetworkVisualization extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    this._searchFilter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HTMLInputElement).value ?? "";
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
@@ -394,7 +394,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           display: flex;
           align-items: center;
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
         }
       `,
