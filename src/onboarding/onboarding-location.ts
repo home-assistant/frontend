@@ -16,8 +16,8 @@ import "../components/ha-list";
 import "../components/ha-list-item";
 import "../components/ha-radio";
 import "../components/ha-spinner";
-import "../components/ha-textfield";
-import type { HaTextField } from "../components/ha-textfield";
+import "../components/input/ha-input";
+import type { HaInput } from "../components/input/ha-input";
 import "../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -103,22 +103,20 @@ class OnboardingLocation extends LitElement {
       </p>
 
       <div class="location-search">
-        <ha-textfield
+        <ha-input
           label=${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.address_label"
           )}
           .disabled=${this._working}
-          icon
-          iconTrailing
           @keyup=${this._addressSearch}
         >
-          <ha-svg-icon slot="leadingIcon" .path=${mdiMagnify}></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
           ${this._working
-            ? html` <ha-spinner slot="trailingIcon" size="small"></ha-spinner> `
+            ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
             : html`
                 <ha-icon-button
                   @click=${this._handleButtonClick}
-                  slot="trailingIcon"
+                  slot="end"
                   .disabled=${this._working}
                   .label=${this.onboardingLocalize(
                     this._search
@@ -128,7 +126,7 @@ class OnboardingLocation extends LitElement {
                   .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
                 ></ha-icon-button>
               `}
-        </ha-textfield>
+        </ha-input>
         ${this._places !== undefined
           ? html`
               <ha-list activatable>
@@ -204,10 +202,7 @@ class OnboardingLocation extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    setTimeout(
-      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
-      100
-    );
+    setTimeout(() => this.renderRoot.querySelector("ha-input")!.focus(), 100);
     this.addEventListener("keyup", (ev) => {
       if (ev.key === "Enter") {
         this._save(ev);
@@ -299,11 +294,11 @@ class OnboardingLocation extends LitElement {
 
   private async _addressSearch(ev: KeyboardEvent) {
     ev.stopPropagation();
-    this._search = (ev.currentTarget as HaTextField).value.length > 0;
+    this._search = ((ev.currentTarget as HaInput).value ?? "").length > 0;
     if (ev.key !== "Enter") {
       return;
     }
-    this._searchAddress((ev.currentTarget as HaTextField).value);
+    this._searchAddress((ev.currentTarget as HaInput).value ?? "");
   }
 
   private async _searchAddress(address: string) {
@@ -477,28 +472,6 @@ class OnboardingLocation extends LitElement {
           margin-top: 32px;
           margin-bottom: 32px;
         }
-        ha-textfield {
-          display: block;
-        }
-        ha-textfield > ha-icon-button {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          inset-inline-end: 10px;
-          inset-inline-start: initial;
-          --ha-icon-button-size: 36px;
-          --mdc-icon-size: 20px;
-          color: var(--secondary-text-color);
-          inset-inline-start: initial;
-          inset-inline-end: 10px;
-          direction: var(--direction);
-        }
-        ha-textfield > ha-spinner {
-          position: relative;
-          left: 12px;
-          inset-inline-start: 12px;
-          inset-inline-end: initial;
-        }
         ha-locations-editor {
           display: block;
           height: 300px;
@@ -519,7 +492,7 @@ class OnboardingLocation extends LitElement {
           height: 72px;
         }
         .attribution {
-          /* textfield helper style */
+          /* input helper style */
           margin: 0;
           padding: 4px 16px 12px 16px;
           color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));

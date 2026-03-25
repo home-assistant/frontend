@@ -12,7 +12,7 @@ import "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
 import "../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../components/ha-select";
-import "../../components/ha-textfield";
+import "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
 import type {
   MonthlyRepeatItem,
@@ -231,7 +231,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   renderInterval() {
     return html`
-      <ha-textfield
+      <ha-input
         id="interval"
         label=${this.hass.localize(
           "ui.components.calendar.event.repeat.interval.label"
@@ -239,12 +239,15 @@ export class RecurrenceRuleEditor extends LitElement {
         type="number"
         min="1"
         .value=${this._interval}
-        .suffix=${this.hass.localize(
-          `ui.components.calendar.event.repeat.interval.${this
-            ._freq!}` as LocalizeKeys
-        )}
         @change=${this._onIntervalChange}
-      ></ha-textfield>
+      >
+        <span slot="end">
+          ${this.hass.localize(
+            `ui.components.calendar.event.repeat.interval.${this
+              ._freq!}` as LocalizeKeys
+          )}
+        </span>
+      </ha-input>
     `;
   }
 
@@ -267,7 +270,7 @@ export class RecurrenceRuleEditor extends LitElement {
       </ha-select>
       ${this._end === "after"
         ? html`
-            <ha-textfield
+            <ha-input
               id="after"
               label=${this.hass.localize(
                 "ui.components.calendar.event.repeat.end_after.label"
@@ -275,11 +278,14 @@ export class RecurrenceRuleEditor extends LitElement {
               type="number"
               min="1"
               .value=${this._count!}
-              suffix=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_after.ocurrences"
-              )}
               @change=${this._onCountChange}
-            ></ha-textfield>
+            >
+              <span slot="end">
+                ${this.hass.localize(
+                  "ui.components.calendar.event.repeat.end_after.ocurrences"
+                )}
+              </span>
+            </ha-input>
           `
         : nothing}
       ${this._end === "on"
@@ -452,15 +458,16 @@ export class RecurrenceRuleEditor extends LitElement {
   }
 
   static styles = css`
-    ha-textfield,
+    ha-input,
     ha-select {
       display: block;
       margin-bottom: 16px;
+      --ha-input-padding-bottom: 0;
     }
     .weekdays {
       margin-bottom: 16px;
     }
-    ha-textfield:last-child,
+    ha-input:last-child,
     ha-select:last-child,
     .weekdays:last-child {
       margin-bottom: 0;
