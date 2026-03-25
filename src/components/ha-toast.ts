@@ -4,7 +4,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { parseAnimationDuration } from "../common/util/parse-animation-duration";
 import { nextRender } from "../common/util/render-status";
 
 export type ToastCloseReason =
@@ -130,31 +129,12 @@ export class HaToast extends LitElement {
       return;
     }
 
-    const transitionDuration = getComputedStyle(toastEl).transitionDuration;
-    const firstDuration = transitionDuration.split(",")[0] ?? "0s";
-
-    if (parseAnimationDuration(firstDuration) <= 0) {
+    const animations = toastEl.getAnimations({ subtree: true });
+    if (animations.length === 0) {
       return;
     }
 
-    await new Promise<void>((resolve) => {
-      const cleanup = () => {
-        toastEl.removeEventListener("transitionend", onTransitionEnd);
-      };
-
-      const onTransitionEnd = (ev: TransitionEvent) => {
-        if (ev.target !== toastEl) {
-          return;
-        }
-
-        if (ev.propertyName === "opacity" || ev.propertyName === "transform") {
-          cleanup();
-          resolve();
-        }
-      };
-
-      toastEl.addEventListener("transitionend", onTransitionEnd);
-    });
+    await Promise.allSettled(animations.map((animation) => animation.finished));
   }
 
   protected render() {
