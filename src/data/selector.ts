@@ -22,6 +22,8 @@ import type {
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
 
+export type ThresholdMode = "crossed" | "changed" | "is";
+
 export type Selector =
   | ActionSelector
   | AddonSelector
@@ -366,6 +368,7 @@ export interface NumberSelector {
 
 export interface NumericThresholdSelector {
   numeric_threshold: {
+    mode?: ThresholdMode;
     unit_of_measurement?: readonly string[];
     number?: NumberSelector["number"];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];

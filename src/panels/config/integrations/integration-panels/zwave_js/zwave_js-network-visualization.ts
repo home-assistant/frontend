@@ -14,7 +14,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/search-input-outlined";
+import "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
@@ -28,6 +28,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -84,13 +85,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           .configEntryId}"
       >
         ${this.narrow
-          ? html`<div slot="header">
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>
-            </div>`
+          ? html`<div slot="header">${this._renderInputSearch()}</div>`
           : nothing}
         <ha-network-graph
           .hass=${this.hass}
@@ -103,17 +98,19 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
-          ${!this.narrow
-            ? html`<search-input-outlined
-                slot="search"
-                .hass=${this.hass}
-                .filter=${this._searchFilter}
-                @value-changed=${this._handleSearchChange}
-              ></search-input-outlined>`
-            : nothing}
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
         </ha-network-graph>
       </hass-subpage>
     `;
+  }
+
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
   }
 
   private async _fetchNetworkStatus() {
@@ -149,8 +146,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     return attributes;
   };
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    this._searchFilter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
@@ -382,7 +379,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           display: flex;
           align-items: center;
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
         }
       `,
