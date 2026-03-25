@@ -254,6 +254,7 @@ const computeStateToPartsFromEntityAttributes = (
       "conversation",
       "event",
       "image",
+      "infrared",
       "input_button",
       "notify",
       "scene",

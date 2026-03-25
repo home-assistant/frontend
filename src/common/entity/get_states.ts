@@ -29,6 +29,7 @@ export const FIXED_DOMAIN_STATES = {
   device_tracker: ["home", "not_home"],
   fan: ["on", "off"],
   humidifier: ["on", "off"],
+  infrared: [],
   input_boolean: ["on", "off"],
   input_button: [],
   lawn_mower: ["error", "paused", "mowing", "returning", "docked"],
