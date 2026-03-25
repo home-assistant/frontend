@@ -16,6 +16,7 @@ import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import "../../components/ha-dialog";
+import type { TodoItem } from "../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -109,7 +110,8 @@ class DialogTodoItemEditor extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    const isCreate = this._params.item === undefined;
+    const isCreate =
+      this._params.item === undefined || !("uid" in this._params.item);
     const listName =
       this._params.entity in this.hass.states
         ? computeStateName(this.hass.states[this._params.entity])
@@ -364,7 +366,7 @@ class DialogTodoItemEditor extends LitElement {
 
     try {
       await updateItem(this.hass!, this._params!.entity, {
-        ...entry,
+        ...(entry as TodoItem),
         summary: this._summary,
         description:
           this._description ||
@@ -416,7 +418,9 @@ class DialogTodoItemEditor extends LitElement {
       return;
     }
     try {
-      await deleteItems(this.hass!, this._params!.entity, [entry.uid]);
+      await deleteItems(this.hass!, this._params!.entity, [
+        (entry as TodoItem).uid,
+      ]);
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
       return;
