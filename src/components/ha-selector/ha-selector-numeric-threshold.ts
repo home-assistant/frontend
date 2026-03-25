@@ -9,14 +9,15 @@ import {
   mdiLessThan,
 } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { NumericThresholdSelector } from "../../data/selector";
+import type {
+  NumericThresholdSelector,
+  ThresholdMode,
+} from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-button-toggle-group";
 import "../ha-input-helper-text";
 import "../ha-select";
 import "./ha-selector";
-
-export type ThresholdMode = "crossed" | "changed" | "is";
 
 type ThresholdType = "above" | "below" | "between" | "outside" | "any";
 

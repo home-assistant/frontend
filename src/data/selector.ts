@@ -21,7 +21,8 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
-import type { ThresholdMode } from "../components/ha-selector/ha-selector-numeric-threshold";
+
+export type ThresholdMode = "crossed" | "changed" | "is";
 
 export type Selector =
   | ActionSelector
