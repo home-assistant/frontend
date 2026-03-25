@@ -21,6 +21,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import type { ThresholdMode } from "../components/ha-selector/ha-selector-numeric-threshold";
 
 export type Selector =
   | ActionSelector
@@ -366,7 +367,7 @@ export interface NumberSelector {
 
 export interface NumericThresholdSelector {
   numeric_threshold: {
-    mode?: "crossed" | "changed" | "is";
+    mode?: ThresholdMode;
     unit_of_measurement?: readonly string[];
     number?: NumberSelector["number"];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];

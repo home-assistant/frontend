@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -15,7 +16,7 @@ import "../ha-input-helper-text";
 import "../ha-select";
 import "./ha-selector";
 
-type ThresholdMode = "crossed" | "changed" | "is";
+export type ThresholdMode = "crossed" | "changed" | "is";
 
 type ThresholdType = "above" | "below" | "between" | "outside" | "any";
 
@@ -102,7 +103,7 @@ export class HaNumericThresholdSelector extends LitElement {
     const showRangeValues = type === "between" || type === "outside";
     const unitOptions = this._getUnitOptions();
 
-    const typeOptions = this._buildTypeOptions(mode);
+    const typeOptions = this._buildTypeOptions(this.hass.localize, mode);
 
     const choiceToggleButtons = [
       {
@@ -188,36 +189,38 @@ export class HaNumericThresholdSelector extends LitElement {
     `;
   }
 
-  private _buildTypeOptions(mode: ThresholdMode) {
-    const baseOptions = (
-      [
-        { value: "above", iconPath: mdiGreaterThan },
-        { value: "below", iconPath: mdiLessThan },
-        { value: "between", iconPath: mdiArrowCollapseVertical },
-        { value: "outside", iconPath: mdiArrowExpandVertical },
-      ] as const
-    ).map(({ value, iconPath }) => ({
-      value,
-      iconPath,
-      label: this.hass.localize(
-        `ui.components.selectors.numeric_threshold.${mode}.${value}`
-      ),
-    }));
-
-    if (mode !== "changed") {
-      return baseOptions;
-    }
-
-    return [
-      {
-        value: "any",
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.changed.any"
+  private _buildTypeOptions = memoizeOne(
+    (localize: HomeAssistant["localize"], mode: ThresholdMode) => {
+      const baseOptions = (
+        [
+          { value: "above", iconPath: mdiGreaterThan },
+          { value: "below", iconPath: mdiLessThan },
+          { value: "between", iconPath: mdiArrowCollapseVertical },
+          { value: "outside", iconPath: mdiArrowExpandVertical },
+        ] as const
+      ).map(({ value, iconPath }) => ({
+        value,
+        iconPath,
+        label: localize(
+          `ui.components.selectors.numeric_threshold.${mode}.${value}`
         ),
-      },
-      ...baseOptions,
-    ];
-  }
+      }));
+
+      if (mode !== "changed") {
+        return baseOptions;
+      }
+
+      return [
+        {
+          value: "any",
+          label: localize(
+            "ui.components.selectors.numeric_threshold.changed.any"
+          ),
+        },
+        ...baseOptions,
+      ];
+    }
+  );
 
   private _renderUnitSelect(
     entry: ThresholdValueEntry | undefined,
