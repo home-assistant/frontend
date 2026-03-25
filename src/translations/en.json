@@ -561,7 +561,7 @@
           "entity": "Entity",
           "from": "From",
           "to": "To",
-          "crossed": {
+          "crossed_threshold": {
             "type": "Fire when the value goes",
             "above": "Above",
             "below": "Below",

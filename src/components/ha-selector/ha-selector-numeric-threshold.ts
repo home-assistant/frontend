@@ -15,7 +15,7 @@ import "../ha-input-helper-text";
 import "../ha-select";
 import "./ha-selector";
 
-type ThresholdMode = "crossed" | "changed" | "is";
+type ThresholdMode = "crossed_threshold" | "changed" | "is";
 
 type ThresholdType = "above" | "below" | "between" | "outside" | "any";
 
@@ -34,7 +34,7 @@ interface NumericThresholdValue {
 }
 
 const DEFAULT_TYPE: Record<ThresholdMode, ThresholdType> = {
-  crossed: "above",
+  crossed_threshold: "above",
   changed: "any",
   is: "above",
 };
@@ -58,7 +58,7 @@ export class HaNumericThresholdSelector extends LitElement {
   @state() private _type?: ThresholdType;
 
   private _getMode(): ThresholdMode {
-    return this.selector.numeric_threshold?.mode ?? "crossed";
+    return this.selector.numeric_threshold?.mode ?? "crossed_threshold";
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
