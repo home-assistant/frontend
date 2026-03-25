@@ -34,8 +34,7 @@ import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
-import { getUnitConverter } from "../../common/unit-conversion/unit-conversion";
-import type { BaseUnitConverter } from "../../common/unit-conversion/converter-classes";
+import { getUnitConverter, type UnitConverter } from "../../common/unit-conversion/unit-conversion";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -116,7 +115,7 @@ export class StatisticsChart extends LitElement {
 
   private _displayUnit?: string;
 
-  private _unitConverter?: BaseUnitConverter;
+  private _unitConverter?: UnitConverter;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");

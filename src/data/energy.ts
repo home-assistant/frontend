@@ -48,8 +48,8 @@ import {
 import { getUnitConverter } from "../common/unit-conversion/unit-conversion";
 import {
   LITERS_PER_GALLON,
-  type BaseUnitConverter,
-} from "../common/unit-conversion/converter-classes";
+  type UnitConverter,
+} from "../common/unit-conversion/unit-conversion";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
@@ -1491,7 +1491,7 @@ export const computeTotalFlowRate = (
   entities.clear();
 
   let targetUnit: string | undefined;
-  let converter: BaseUnitConverter | undefined;
+  let converter: UnitConverter | undefined;
   let totalFlow = 0;
 
   prefs.energy_sources.forEach((source) => {
