@@ -5,6 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
+import { nextRender } from "../common/util/render-status";
 
 export type ToastCloseReason =
   | "dismiss"
@@ -60,9 +61,7 @@ export class HaToast extends LitElement {
     }
 
     this._popup?.reposition();
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => resolve());
-    });
+    await nextRender();
 
     if (transitionId !== this._transitionId) {
       return;
