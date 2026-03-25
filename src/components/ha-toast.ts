@@ -198,11 +198,6 @@ export class HaToast extends LitElement {
       pointer-events: none;
     }
 
-    wa-popup {
-      --show-duration: var(--ha-animation-duration-fast, 150ms);
-      --hide-duration: var(--ha-animation-duration-fast, 150ms);
-    }
-
     wa-popup::part(popup) {
       padding: 0;
       border-radius: var(--ha-border-radius-sm);
