@@ -42,30 +42,26 @@ class HaConfigHardwareAll extends LitElement {
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer<HardwareDeviceRow> => ({
       name: {
-        title: localize("ui.panel.config.hardware.available_hardware.name"),
+        title: localize("ui.panel.config.hardware.system_hardware.name"),
         main: true,
         sortable: true,
         filterable: true,
         flex: 2,
       },
       dev_path: {
-        title: localize(
-          "ui.panel.config.hardware.available_hardware.device_path"
-        ),
+        title: localize("ui.panel.config.hardware.system_hardware.device_path"),
         sortable: true,
         filterable: true,
         flex: 2,
       },
       by_id: {
-        title: localize("ui.panel.config.hardware.available_hardware.id"),
+        title: localize("ui.panel.config.hardware.system_hardware.id"),
         sortable: true,
         filterable: true,
         flex: 2,
       },
       subsystem: {
-        title: localize(
-          "ui.panel.config.hardware.available_hardware.subsystem"
-        ),
+        title: localize("ui.panel.config.hardware.system_hardware.subsystem"),
         sortable: true,
         filterable: true,
         flex: 1,
@@ -139,7 +135,7 @@ class HaConfigHardwareAll extends LitElement {
     showAlertDialog(this, {
       title: device.name,
       subtitle: this.hass.localize(
-        "ui.panel.config.hardware.available_hardware.attributes"
+        "ui.panel.config.hardware.system_hardware.attributes"
       ),
       text: html`${until(this._renderHaCodeEditor(device))}`,
     });

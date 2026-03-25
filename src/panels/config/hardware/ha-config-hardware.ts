@@ -10,7 +10,7 @@ export const hardwareTabs = (hass: HomeAssistant): PageNavigation[] => {
   const tabs: PageNavigation[] = [
     {
       path: "/config/hardware/overview",
-      translationKey: "ui.panel.config.hardware.caption",
+      translationKey: "ui.panel.config.hardware.overview",
       iconPath: mdiMemory,
     },
   ];
@@ -18,7 +18,7 @@ export const hardwareTabs = (hass: HomeAssistant): PageNavigation[] => {
   if (isComponentLoaded(hass, "hassio")) {
     tabs.push({
       path: "/config/hardware/all",
-      translationKey: "ui.panel.config.hardware.available_hardware.title",
+      translationKey: "ui.panel.config.hardware.system_hardware.title",
       iconPath: mdiFormatListBulletedType,
     });
   }
