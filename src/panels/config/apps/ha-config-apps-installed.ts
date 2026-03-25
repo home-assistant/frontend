@@ -14,7 +14,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -88,13 +88,12 @@ export class HaConfigAppsInstalled extends LitElement {
           )}
         ></ha-icon-button>
         <div class="search">
-          <search-input
-            .hass=${this.hass}
-            suffix
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
+          <ha-input-search
+            appearance="outlined"
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
           >
-          </search-input>
+          </ha-input-search>
         </div>
         <div class="content">
           <div class="card-group">
@@ -190,8 +189,8 @@ export class HaConfigAppsInstalled extends LitElement {
     }
   );
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HTMLInputElement).value;
   }
 
   private async _loadData(): Promise<void> {
@@ -245,10 +244,10 @@ export class HaConfigAppsInstalled extends LitElement {
         z-index: 2;
       }
 
-      search-input {
-        display: block;
-        --mdc-text-field-fill-color: var(--sidebar-background-color);
-        --mdc-text-field-idle-line-color: var(--divider-color);
+      ha-input-search {
+        padding: var(--ha-space-3) var(--ha-space-2);
+        background: var(--sidebar-background-color);
+        border-bottom: 1px solid var(--divider-color);
       }
 
       .content {

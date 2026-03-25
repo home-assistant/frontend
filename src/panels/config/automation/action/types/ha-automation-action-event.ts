@@ -1,12 +1,13 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-service-picker";
-import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { EventAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
@@ -44,14 +45,14 @@ export class HaEventAction extends LitElement implements ActionElement {
     const { event, event_data } = this.action;
 
     return html`
-      <ha-textfield
+      <ha-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.event.event"
         )}
         .value=${event}
         .disabled=${this.disabled}
         @change=${this._eventChanged}
-      ></ha-textfield>
+      ></ha-input>
       <ha-yaml-editor
         .hass=${this.hass}
         .label=${this.hass.localize(
@@ -74,18 +75,12 @@ export class HaEventAction extends LitElement implements ActionElement {
     handleChangeEvent(this, ev);
   }
 
-  private _eventChanged(ev: CustomEvent): void {
+  private _eventChanged(ev: InputEvent): void {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.action, event: (ev.target as any).value },
+      value: { ...this.action, event: (ev.target as HaInput).value },
     });
   }
-
-  static styles = css`
-    ha-textfield {
-      display: block;
-    }
-  `;
 }
 
 declare global {

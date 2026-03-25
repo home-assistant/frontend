@@ -9,8 +9,8 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
-import "../../components/ha-textfield";
-import type { HaTextField } from "../../components/ha-textfield";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -28,7 +28,7 @@ class DialogBox extends LitElement {
 
   @state() private _validInput = true;
 
-  @query("ha-textfield") private _textField?: HaTextField;
+  @query("ha-input") private _textField?: HaInput;
 
   private _closePromise?: Promise<void>;
 
@@ -111,14 +111,13 @@ class DialogBox extends LitElement {
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
             ? html`
-                <ha-textfield
+                <ha-input
                   autofocus
                   value=${ifDefined(this._params.defaultValue)}
                   .placeholder=${this._params.placeholder}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
-                  .suffix=${this._params.inputSuffix}
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
@@ -126,9 +125,13 @@ class DialogBox extends LitElement {
                   .max=${this._params.inputMax}
                   .disabled=${this._loading}
                   @input=${this._validateInput}
-                ></ha-textfield>
+                >
+                  ${this._params.inputSuffix
+                    ? html`<span slot="end">${this._params.inputSuffix}</span>`
+                    : nothing}
+                </ha-input>
               `
-            : ""}
+            : nothing}
         </div>
         <ha-dialog-footer slot="footer">
           ${confirmPrompt
@@ -242,7 +245,7 @@ class DialogBox extends LitElement {
     .secondary {
       color: var(--secondary-text-color);
     }
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
     .title.alert {

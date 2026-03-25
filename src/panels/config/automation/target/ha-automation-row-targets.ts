@@ -63,7 +63,9 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: configEntriesContext, subscribe: true })
   @transform<ConfigEntry[], Record<string, ConfigEntry>>({
     transformer: function (value) {
-      return Object.fromEntries(value.map((entry) => [entry.entry_id, entry]));
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
     },
   })
   private _configEntryLookup?: Record<string, ConfigEntry>;

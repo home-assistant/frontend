@@ -24,7 +24,8 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/search-input";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -235,35 +236,32 @@ class HaPanelDevState extends LitElement {
         .showAttributes=${this._showAttributes}
         @states-tool-entity-selected=${this._entitySelected}
       >
-        <search-input
+        <ha-input-search
           slot="filter-entities"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_entities"
           )}
           .value=${this._entityFilter}
-          @value-changed=${this._entityFilterChanged}
-        ></search-input>
-        <search-input
+          @input=${this._entityFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-states"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_states"
           )}
           type="search"
           .value=${this._stateFilter}
-          @value-changed=${this._stateFilterChanged}
-        ></search-input>
-        <search-input
+          @input=${this._stateFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-attributes"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_attributes"
           )}
           type="search"
           .value=${this._attributeFilter}
-          @value-changed=${this._attributeFilterChanged}
-        ></search-input>
+          @input=${this._attributeFilterChanged}
+        ></ha-input-search>
       </developer-tools-state-renderer>
     `;
   }
@@ -319,16 +317,16 @@ class HaPanelDevState extends LitElement {
     this._state = ev.target.value;
   }
 
-  private _entityFilterChanged(ev) {
-    this._entityFilter = ev.detail.value;
+  private _entityFilterChanged(ev: InputEvent) {
+    this._entityFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _stateFilterChanged(ev) {
-    this._stateFilter = ev.detail.value;
+  private _stateFilterChanged(ev: InputEvent) {
+    this._stateFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _attributeFilterChanged(ev) {
-    this._attributeFilter = ev.detail.value;
+  private _attributeFilterChanged(ev: InputEvent) {
+    this._attributeFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _getHistoryURL(entityId, inputDate) {
@@ -510,9 +508,9 @@ class HaPanelDevState extends LitElement {
           padding: var(--ha-space-4);
         }
 
-        :host search-input {
-          display: block;
+        :host ha-input-search {
           width: 100%;
+          --ha-input-padding-bottom: 0;
         }
 
         ha-textfield {

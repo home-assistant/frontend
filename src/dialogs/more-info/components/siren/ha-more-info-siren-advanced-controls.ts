@@ -7,13 +7,13 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
 import "../../../../components/ha-control-button";
-import type { HaSelectSelectEvent } from "../../../../components/ha-select";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
+import type { HaSelectSelectEvent } from "../../../../components/ha-select";
+import "../../../../components/input/ha-input";
 import { SirenEntityFeature } from "../../../../data/siren";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -95,27 +95,31 @@ class MoreInfoSirenAdvancedControls extends LitElement {
               : nothing}
             ${supportsVolume
               ? html`
-                  <ha-textfield
+                  <ha-input
                     type="number"
                     .label=${this.hass.localize("ui.components.siren.volume")}
-                    .suffix=${"%"}
-                    .value=${this._volume ? this._volume * 100 : undefined}
+                    .value=${this._volume ? `${this._volume * 100}` : undefined}
                     @change=${this._handleVolumeChange}
                     .min=${0}
                     .max=${100}
                     .step=${1}
-                  ></ha-textfield>
+                  >
+                    <span slot="end">%</span>
+                  </ha-input>
                 `
               : nothing}
             ${supportsDuration
               ? html`
-                  <ha-textfield
+                  <ha-input
                     type="number"
                     .label=${this.hass.localize("ui.components.siren.duration")}
-                    .value=${this._duration}
-                    suffix="s"
+                    .value=${this._duration !== undefined
+                      ? this._duration.toString()
+                      : undefined}
                     @change=${this._handleDurationChange}
-                  ></ha-textfield>
+                  >
+                    <span slot="end">s</span>
+                  </ha-input>
                 `
               : nothing}
           </div>

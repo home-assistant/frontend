@@ -5,10 +5,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-control-button";
-import "../../components/ha-dialog-footer";
-import "../../components/ha-textfield";
 import "../../components/ha-dialog";
-import type { HaTextField } from "../../components/ha-textfield";
+import "../../components/ha-dialog-footer";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { EnterCodeDialogParams } from "./show-enter-code-dialog";
@@ -39,7 +39,7 @@ export class DialogEnterCode
 
   @state() private _open = false;
 
-  @query("#code") private _input?: HaTextField;
+  @query("#code") private _input?: HaInput;
 
   @state() private _showClearButton = false;
 
@@ -97,7 +97,7 @@ export class DialogEnterCode
   }
 
   private _inputValueChange(e) {
-    const field = e.currentTarget as HaTextField;
+    const field = e.currentTarget as HaInput;
     const val = field.value;
     this._showClearButton = !!val;
   }
@@ -119,7 +119,7 @@ export class DialogEnterCode
           width="small"
           @closed=${this._dialogClosed}
         >
-          <ha-textfield
+          <ha-input
             class="input"
             ?autofocus=${!this._narrow}
             id="code"
@@ -129,7 +129,7 @@ export class DialogEnterCode
             validateOnInitialRender
             pattern=${ifDefined(this._dialogParams.codePattern)}
             inputmode="text"
-          ></ha-textfield>
+          ></ha-input>
           <ha-dialog-footer slot="footer">
             <ha-button
               slot="secondaryAction"
@@ -157,14 +157,15 @@ export class DialogEnterCode
         @closed=${this._dialogClosed}
       >
         <div class="container">
-          <ha-textfield
+          <ha-input
             @input=${this._inputValueChange}
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
             inputmode="numeric"
             ?autofocus=${!this._narrow}
-          ></ha-textfield>
+            password-toggle
+          ></ha-input>
           <div class="keypad">
             ${BUTTONS.map((value) =>
               value === ""
@@ -212,7 +213,7 @@ export class DialogEnterCode
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }
-    ha-textfield {
+    ha-input {
       width: 100%;
       margin: auto;
     }

@@ -221,8 +221,6 @@ export class HuiCreateDialogCard
           justify-content: center;
         }
         hui-card-picker {
-          --card-picker-search-shape: 0;
-          --card-picker-search-margin: 0;
           display: flex;
           flex-direction: column;
           min-height: 0;
