@@ -45,6 +45,15 @@ class HaConfigHardware extends HassRouterPage {
         load: () => import("./ha-config-hardware-all"),
       },
     },
+    beforeRender: (page) => {
+      if (
+        page === "all" &&
+        (!this.hass || !isComponentLoaded(this.hass, "hassio"))
+      ) {
+        return "overview";
+      }
+      return undefined;
+    },
   };
 
   protected updatePageEl(pageEl) {

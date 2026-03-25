@@ -8,6 +8,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -78,10 +79,7 @@ class HaConfigHardwareAll extends LitElement {
   );
 
   private _data = memoizeOne(
-    (
-      showAdvanced: boolean,
-      hardware: HassioHardwareInfo
-    ): HardwareDeviceRow[] =>
+    (showAdvanced: boolean, hardware: HassioHardwareInfo): DataTableRowData[] =>
       hardware.devices
         .filter(
           (device) =>
@@ -111,10 +109,10 @@ class HaConfigHardwareAll extends LitElement {
         clickable
         .columns=${this._columns(this.hass.localize)}
         .data=${this._hardware
-          ? (this._data(
+          ? this._data(
               this.hass.userData?.showAdvanced || false,
               this._hardware
-            ) as any)
+            )
           : []}
         .noDataText=${this._error ||
         this.hass.localize("ui.panel.config.hardware.loading_system_data")}
