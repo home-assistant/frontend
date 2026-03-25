@@ -300,17 +300,23 @@ export class StateHistoryChartLine extends LitElement {
           show: this.showNames,
           data: this._chartData
             .map((d, i) => ({ dataset: d, entityId: this._entityIds[i] }))
-            .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
-            .map((item) => {
-              const stateObj = this.hass.states[item.entityId];
-              return {
-                id: item.dataset.id as string,
-                name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
-              };
-            }),
+            .filter((item) => {
+              const id = item.dataset.id as string;
+              // Include climate action modes even if they have areaStyle
+              const isClimateAction =
+                id.endsWith("-heating") ||
+                id.endsWith("-cooling") ||
+                id.endsWith("-drying") ||
+                id.endsWith("-fan");
+              // Include non-area items or climate action items
+              return (
+                !(item.dataset as LineSeriesOption).areaStyle || isClimateAction
+              );
+            })
+            .map((item) => ({
+              id: item.dataset.id as string,
+              name: item.dataset.name as string,
+            })),
         },
         grid: {
           top: 15,
@@ -443,9 +449,25 @@ export class StateHistoryChartLine extends LitElement {
                   entityState.attributes?.hvac_action
                 ] === "cool"
             : (entityState: LineChartState) => entityState.state === "cool";
+        const isDrying =
+          domain === "climate" && hasHvacAction
+            ? (entityState: LineChartState) =>
+                CLIMATE_HVAC_ACTION_TO_MODE[
+                  entityState.attributes?.hvac_action
+                ] === "dry"
+            : (entityState: LineChartState) => entityState.state === "dry";
+        const isFanOnly =
+          domain === "climate" && hasHvacAction
+            ? (entityState: LineChartState) =>
+                CLIMATE_HVAC_ACTION_TO_MODE[
+                  entityState.attributes?.hvac_action
+                ] === "fan_only"
+            : (entityState: LineChartState) => entityState.state === "fan_only";
 
         const hasHeat = states.states.some(isHeating);
         const hasCool = states.states.some(isCooling);
+        const hasDry = states.states.some(isDrying);
+        const hasFan = states.states.some(isFanOnly);
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
@@ -493,6 +515,34 @@ export class StateHistoryChartLine extends LitElement {
           );
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
+        }
+        if (hasDry) {
+          addDataSet(
+            states.entity_id + "-drying",
+            this.showNames
+              ? this.hass.localize("ui.card.climate.drying", { name: name })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.hvac_action.state.drying"
+                ),
+            computedStyles.getPropertyValue("--state-climate-dry-color"),
+            true
+          );
+          // The "drying" series uses steppedArea to shade the area below the current
+          // temperature when the climate entity is in dry mode.
+        }
+        if (hasFan) {
+          addDataSet(
+            states.entity_id + "-fan",
+            this.showNames
+              ? this.hass.localize("ui.card.climate.fan", { name: name })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.hvac_action.state.fan"
+                ),
+            computedStyles.getPropertyValue("--state-climate-fan_only-color"),
+            true
+          );
+          // The "fan" series uses steppedArea to shade the area below the current
+          // temperature when the climate entity is in fan_only mode.
         }
 
         if (hasTargetRange) {
@@ -545,6 +595,12 @@ export class StateHistoryChartLine extends LitElement {
           }
           if (hasCool) {
             series.push(isCooling(entityState) ? curTemp : null);
+          }
+          if (hasDry) {
+            series.push(isDrying(entityState) ? curTemp : null);
+          }
+          if (hasFan) {
+            series.push(isFanOnly(entityState) ? curTemp : null);
           }
           if (hasTargetRange) {
             const targetHigh = safeParseFloat(

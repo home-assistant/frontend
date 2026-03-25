@@ -129,6 +129,8 @@
         "current_temperature": "{name} current temperature",
         "heating": "{name} heating",
         "cooling": "{name} cooling",
+        "drying": "{name} drying",
+        "fan": "{name} fan only",
         "high": "high",
         "low": "low",
         "mode": "Mode",
