@@ -271,6 +271,8 @@ export const getStates = (
         result.push(...state.attributes.preset_modes);
       } else if (attribute === "swing_mode") {
         result.push(...state.attributes.swing_modes);
+      } else if (attribute === "swing_horizontal_mode") {
+        result.push(...state.attributes.swing_horizontal_modes);
       }
       break;
     case "device_tracker":
