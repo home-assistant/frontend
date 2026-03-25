@@ -125,11 +125,17 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
-export type AutomationBehavior = "first" | "last" | "any" | "all";
+export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
 
 export interface AutomationBehaviorSelector {
   automation_behavior: {
-    behaviors?: readonly AutomationBehavior[];
+    mode: "trigger" | "condition";
     translation_key?: string;
   } | null;
 }

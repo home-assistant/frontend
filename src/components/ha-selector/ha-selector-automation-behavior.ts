@@ -1,16 +1,25 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import type {
   AutomationBehavior,
+  AutomationBehaviorConditionMode,
   AutomationBehaviorSelector,
+  AutomationBehaviorTriggerMode,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-input-helper-text";
 import "../ha-radio";
 
-const ALL_BEHAVIORS: AutomationBehavior[] = ["any", "all", "first", "last"];
+const TRIGGER_BEHAVIORS: AutomationBehaviorTriggerMode[] = [
+  "any",
+  "first",
+  "last",
+];
+
+const CONDITION_BEHAVIORS: AutomationBehaviorConditionMode[] = ["any", "all"];
 
 @customElement("ha-selector-automation_behavior")
 export class HaSelectorAutomationBehavior extends LitElement {
@@ -63,14 +72,13 @@ export class HaSelectorAutomationBehavior extends LitElement {
   }
 
   private _behaviors(): AutomationBehavior[] {
-    return (
-      (this.selector.automation_behavior?.behaviors as AutomationBehavior[]) ||
-      ALL_BEHAVIORS
-    );
+    const mode = this.selector.automation_behavior?.mode;
+    return mode === "condition" ? CONDITION_BEHAVIORS : TRIGGER_BEHAVIORS;
   }
 
   private _localizeOption(behavior: AutomationBehavior): string {
-    const translationKey = this.selector.automation_behavior?.translation_key;
+    const { translation_key: translationKey, mode } =
+      this.selector.automation_behavior ?? {};
 
     if (this.localizeValue && translationKey) {
       const translated = this.localizeValue(
@@ -82,7 +90,7 @@ export class HaSelectorAutomationBehavior extends LitElement {
     }
     return (
       this.hass.localize(
-        `ui.components.selectors.automation_behavior.options.${behavior}`
+        `ui.components.selectors.automation_behavior.${mode ?? "trigger"}.options.${behavior}` as LocalizeKeys
       ) || behavior
     );
   }
