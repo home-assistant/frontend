@@ -39,9 +39,6 @@ const UNIT_CLASSES = (_unitFactors as any).default as Record<
   UnitClassConversion
 >;
 
-// Quick conversion factors for specific applications
-export const LITERS_PER_GALLON = (231 * 0.0254 ** 3) / 0.001;
-
 // Define unit converter class
 type UnitConvertOpInfo = [UnitConvertOpType, number];
 export class UnitConverter {

@@ -46,10 +46,7 @@ import {
   UnitOfVolumeFlowRate,
 } from "../common/unit-conversion/const";
 import { getUnitConverter } from "../common/unit-conversion/unit-conversion";
-import {
-  LITERS_PER_GALLON,
-  type UnitConverter,
-} from "../common/unit-conversion/unit-conversion";
+import type { UnitConverter } from "../common/unit-conversion/unit-conversion";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
@@ -1552,6 +1549,8 @@ export const computeTotalFlowRate = (
  * Format a flow rate value (in L/min) to a human-readable string using
  * the preferred unit system: metric → L/min, imperial → gal/min.
  */
+const LITERS_PER_GALLON = (231 * 0.0254 ** 3) / 0.001;
+
 export const formatFlowRateShort = (
   hassLocale: HomeAssistant["locale"],
   lengthUnitSystem: string,
