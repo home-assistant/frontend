@@ -285,13 +285,14 @@ export class HuiEnergyWaterGraphCard
           if (prevStart === point.start) {
             continue;
           }
+          const midpoint = (point.start + point.end) / 2;
           const dataPoint: (Date | string | number)[] = [
-            point.start,
+            midpoint,
             point.change,
+            point.start,
           ];
           if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start));
+            dataPoint[0] = compareTransform(new Date(midpoint));
           }
           waterConsumptionData.push(dataPoint);
           prevStart = point.start;

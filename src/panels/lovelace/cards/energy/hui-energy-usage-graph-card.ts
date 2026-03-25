@@ -482,6 +482,9 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
+    const periodOffset =
+      uniqueKeys.length >= 2 ? (uniqueKeys[1] - uniqueKeys[0]) / 2 : 0;
+
     const compareTransform = getCompareTransform(
       this._start,
       this._compareStart!
@@ -494,13 +497,13 @@ export class HuiEnergyUsageGraphCard
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
           const dataPoint = [
-            new Date(key),
+            new Date(key + periodOffset),
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
               : value,
+            new Date(key),
           ];
           if (compare) {
-            dataPoint[2] = dataPoint[0];
             dataPoint[0] = compareTransform(dataPoint[0] as Date);
           }
           points.push(dataPoint);

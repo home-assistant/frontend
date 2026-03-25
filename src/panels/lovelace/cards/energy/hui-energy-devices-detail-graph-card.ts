@@ -389,9 +389,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
-          (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
-          datapoint[1];
+        totalDeviceConsumption[datapoint[2]] =
+          (totalDeviceConsumption[datapoint[2]] || 0) + datapoint[1];
       });
     });
     const compareTransform = getCompareTransform(
@@ -400,20 +399,23 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.used_total)
-      .sort((a, b) => Number(a) - Number(b))
-      .forEach((time) => {
-        const ts = Number(time);
-        const value =
-          consumptionData.used_total[time] -
-          (totalDeviceConsumption[time] || 0);
-        const dataPoint: number[] = [ts, value];
-        if (compare) {
-          dataPoint[2] = dataPoint[0];
-          dataPoint[0] = compareTransform(new Date(ts)).getTime();
-        }
-        untrackedConsumption.push(dataPoint);
-      });
+    const sortedTimes = Object.keys(consumptionData.used_total).sort(
+      (a, b) => Number(a) - Number(b)
+    );
+    const periodOffset =
+      sortedTimes.length >= 2
+        ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
+        : 0;
+    sortedTimes.forEach((time) => {
+      const ts = Number(time);
+      const value =
+        consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
+      const dataPoint: number[] = [ts + periodOffset, value, ts];
+      if (compare) {
+        dataPoint[0] = compareTransform(new Date(ts + periodOffset)).getTime();
+      }
+      untrackedConsumption.push(dataPoint);
+    });
     // random id to always add untracked at the end
     const order = Date.now();
     const dataset: BarSeriesOption = {
@@ -499,10 +501,10 @@ export class HuiEnergyDevicesDetailGraphCard
               cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
           });
 
-          const dataPoint = [point.start, point.change - sumChildren];
+          const midpoint = (point.start + point.end) / 2;
+          const dataPoint = [midpoint, point.change - sumChildren, point.start];
           if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start)).getTime();
+            dataPoint[0] = compareTransform(new Date(midpoint)).getTime();
           }
           consumptionData.push(dataPoint);
           prevStart = point.start;
