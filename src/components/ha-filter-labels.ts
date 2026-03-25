@@ -10,8 +10,8 @@ import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -21,7 +21,8 @@ import "./ha-icon-button";
 import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends LitElement {
@@ -79,12 +80,12 @@ export class HaFilterLabels extends LitElement {
             : nothing}
         </div>
         ${this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
@@ -163,8 +164,9 @@ export class HaFilterLabels extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value ?? "";
+    this._filter = value.toLowerCase();
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
@@ -261,7 +263,7 @@ export class HaFilterLabels extends LitElement {
           right: 0;
           left: 0;
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

@@ -1,22 +1,21 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../common/dom/fire_event";
-import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-button";
-import "./ha-icon-button";
-import "./ha-input-helper-text";
-import "./ha-sortable";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import { fireEvent } from "../../common/dom/fire_event";
+import { localizeContext } from "../../data/context";
+import { haStyle } from "../../resources/styles";
+import "../ha-button";
+import "../ha-icon-button";
+import "../ha-input-helper-text";
+import "../ha-sortable";
+import "./ha-input";
+import type { HaInput, InputType } from "./ha-input";
 
-@customElement("ha-multi-textfield")
-class HaMultiTextField extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
+@customElement("ha-input-multi")
+class HaInputMulti extends LitElement {
   @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -25,7 +24,7 @@ class HaMultiTextField extends LitElement {
 
   @property({ attribute: false }) public helper?: string;
 
-  @property({ attribute: false }) public inputType?: string;
+  @property({ attribute: false }) public inputType?: InputType;
 
   @property({ attribute: false }) public inputSuffix?: string;
 
@@ -47,6 +46,10 @@ class HaMultiTextField extends LitElement {
   @property({ type: Boolean, attribute: "update-on-blur" })
   public updateOnBlur = false;
 
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize?: ContextType<typeof localizeContext>;
+
   protected render() {
     return html`
       <ha-sortable
@@ -63,9 +66,7 @@ class HaMultiTextField extends LitElement {
               const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
               return html`
                 <div class="layout horizontal center-center row">
-                  <ha-textfield
-                    .suffix=${this.inputSuffix}
-                    .prefix=${this.inputPrefix}
+                  <ha-input
                     .type=${this.inputType}
                     .autocomplete=${this.autocomplete}
                     .disabled=${this.disabled}
@@ -78,13 +79,20 @@ class HaMultiTextField extends LitElement {
                     @input=${this._editItem}
                     @change=${this._editItem}
                     @keydown=${this._keyDown}
-                  ></ha-textfield>
+                  >
+                    ${this.inputPrefix
+                      ? html`<span slot="start">${this.inputPrefix}</span>`
+                      : nothing}
+                    ${this.inputSuffix
+                      ? html`<span slot="end">${this.inputSuffix}</span>`
+                      : nothing}
+                  </ha-input>
                   <ha-icon-button
                     .disabled=${this.disabled}
                     .index=${index}
                     slot="navigationIcon"
                     .label=${this.removeLabel ??
-                    this.hass?.localize("ui.common.remove") ??
+                    this.localize?.("ui.common.remove") ??
                     "Remove"}
                     @click=${this._removeItem}
                     .path=${mdiDeleteOutline}
@@ -112,10 +120,10 @@ class HaMultiTextField extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??
           (this.label
-            ? this.hass?.localize("ui.components.multi-textfield.add_item", {
+            ? this.localize?.("ui.components.multi-textfield.add_item", {
                 item: this.label,
               })
-            : this.hass?.localize("ui.common.add")) ??
+            : this.localize?.("ui.common.add")) ??
           "Add"}
         </ha-button>
       </div>
@@ -138,8 +146,8 @@ class HaMultiTextField extends LitElement {
     const items = [...this._items, ""];
     this._fireChanged(items);
     await this.updateComplete;
-    const field = this.shadowRoot?.querySelector(`ha-textfield[data-last]`) as
-      | HaTextField
+    const field = this.shadowRoot?.querySelector(`ha-input[data-last]`) as
+      | HaInput
       | undefined;
     field?.focus();
   }
@@ -191,9 +199,7 @@ class HaMultiTextField extends LitElement {
       css`
         .row {
           margin-bottom: 8px;
-        }
-        ha-textfield {
-          display: block;
+          --ha-input-padding-bottom: 0;
         }
         ha-icon-button {
           display: block;
@@ -210,6 +216,6 @@ class HaMultiTextField extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-multi-textfield": HaMultiTextField;
+    "ha-input-multi": HaInputMulti;
   }
 }

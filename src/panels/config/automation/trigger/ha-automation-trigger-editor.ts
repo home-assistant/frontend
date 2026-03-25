@@ -4,9 +4,9 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
 import type { Trigger } from "../../../../data/automation";
 import { migrateAutomationTrigger } from "../../../../data/automation";
 import type { TriggerDescription } from "../../../../data/trigger";
@@ -80,14 +80,14 @@ export default class HaAutomationTriggerEditor extends LitElement {
           : html`
               ${showId && !isTriggerList(this.trigger)
                 ? html`
-                    <ha-textfield
+                    <ha-input
                       .label=${this.hass.localize(
                         "ui.panel.config.automation.editor.triggers.id"
                       )}
                       .value=${this.trigger.id || ""}
                       .disabled=${this.disabled}
                       @change=${this._idChanged}
-                    ></ha-textfield>
+                    ></ha-input>
                   `
                 : nothing}
               <div @value-changed=${this._onUiChanged}>
@@ -160,9 +160,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
         }
-        ha-textfield {
-          display: block;
-          margin-bottom: 24px;
+        ha-input {
+          margin-bottom: var(--ha-space-3);
         }
       `,
     ];

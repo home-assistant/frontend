@@ -40,18 +40,24 @@ const convertToJSON = async (
     throw e;
   }
   // Convert to JSON
+  const parts = localeData.split("} else {");
+  const firstBlock = parts[0];
   const obj = INTL_POLYFILLS[pkg];
   const dataRegex = new RegExp(
     `Intl\\.${obj}\\.${addFunc}\\((?<data>.*)\\)`,
     "s"
   );
-  localeData = localeData.match(dataRegex)?.groups?.data;
+  localeData = firstBlock.match(dataRegex)?.groups?.data;
   if (!localeData) {
     throw Error(`Failed to extract data for language ${lang} from ${pkg}`);
   }
   // Parse to validate JSON, then stringify to minify
-  localeData = JSON.stringify(JSON.parse(localeData));
-  await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
+  try {
+    localeData = JSON.stringify(JSON.parse(localeData));
+    await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
+  } catch (e) {
+    throw Error(`Failed to parse JSON for language ${lang} from ${pkg}: ${e}`);
+  }
 };
 
 gulp.task("clean-locale-data", async () => deleteSync([outDir]));

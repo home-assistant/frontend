@@ -22,7 +22,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -72,6 +72,7 @@ import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
+  type MoreInfoView,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
@@ -79,6 +80,7 @@ import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
 import "./ha-more-info-add-to";
+import "./ha-more-info-details";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
@@ -86,15 +88,13 @@ import "./more-info-content";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
-  view?: View;
+  view?: MoreInfoView;
   /** @deprecated Use `view` instead */
-  tab?: View;
+  tab?: MoreInfoView;
   large?: boolean;
   data?: Record<string, any>;
   parentElement?: LitElement;
 }
-
-type View = "info" | "history" | "settings" | "related" | "add_to";
 
 interface ChildView {
   viewTag: string;
@@ -112,7 +112,7 @@ declare global {
   }
 }
 
-const DEFAULT_VIEW: View = "info";
+const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
@@ -134,9 +134,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _data?: Record<string, any>;
 
-  @state() private _currView: View = DEFAULT_VIEW;
+  @state() private _currView: MoreInfoView = DEFAULT_VIEW;
 
-  @state() private _initialView: View = DEFAULT_VIEW;
+  @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
 
   @state() private _childView?: ChildView;
 
@@ -163,10 +163,15 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
+    const view = params.view || params.tab || DEFAULT_VIEW;
+
     this._data = params.data;
-    this._currView = params.view || DEFAULT_VIEW;
-    this._initialView = params.view || DEFAULT_VIEW;
+    this._currView = view;
+    this._initialView = view;
     this._childView = undefined;
+    this._infoEditMode = false;
+    this._detailsYamlMode = false;
+
     this.large = params.large ?? false;
     this._fill = false;
     this._open = true;
@@ -253,7 +258,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     return entity?.device_id ?? null;
   }
 
-  private _setView(view: View) {
+  private _setView(view: MoreInfoView) {
     history.replaceState(
       {
         ...history.state,
@@ -276,6 +281,13 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       }
       this._childView = undefined;
       this._detailsYamlMode = false;
+      return;
+    }
+    if (
+      this._initialView !== DEFAULT_VIEW &&
+      this._currView === this._initialView
+    ) {
+      this._resetInitialView();
       return;
     }
     if (this._initialView !== this._currView) {
@@ -404,7 +416,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         this._resetInitialView();
         break;
       case "details":
-        this._showDetails();
+        this._setView("details");
+        break;
+      default:
         break;
     }
   }
@@ -447,15 +461,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       }
     );
     this._entry = result.entity_entry;
-  }
-
-  private _showDetails(): void {
-    import("./ha-more-info-details");
-    this._childView = {
-      viewTag: "ha-more-info-details",
-      viewTitle: this.hass.localize("ui.dialogs.more_info_control.details"),
-      viewParams: { entityId: this._entityId },
-    };
   }
 
   private async _copyFavorites() {
@@ -509,13 +514,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       (deviceId && this.hass.devices[deviceId].entry_type) || "device";
 
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
-    const isSpecificInitialView =
-      this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon =
-      (isDefaultView &&
-        this._parentEntityIds.length === 0 &&
-        !this._childView) ||
-      (isSpecificInitialView && !this._childView);
+      isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
     const context = stateObj
       ? getEntityContext(
@@ -549,7 +549,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
-    const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
+    const defaultTitle = breadcrumb.pop() || entityId;
+    const title =
+      this._currView === "details"
+        ? this.hass.localize("ui.dialogs.more_info_control.details")
+        : this._childView?.viewTitle || defaultTitle;
 
     const favoritesContext =
       this._entry && stateObj
@@ -774,26 +778,16 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                     `
                   : nothing}
             `
-          : isSpecificInitialView
+          : this._currView === "details"
             ? html`
-                <ha-dropdown
+                <ha-icon-button
                   slot="headerActionItems"
-                  @closed=${stopPropagation}
-                  @wa-select=${this._handleMenuAction}
-                  placement="bottom-end"
-                >
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this.hass.localize("ui.common.menu")}
-                    .path=${mdiDotsVertical}
-                  ></ha-icon-button>
-
-                  <ha-dropdown-item value="info">
-                    <ha-svg-icon slot="icon" .path=${mdiInformationOutline}>
-                    </ha-svg-icon>
-                    ${this.hass.localize("ui.dialogs.more_info_control.info")}
-                  </ha-dropdown-item>
-                </ha-dropdown>
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.toggle_yaml_mode"
+                  )}
+                  .path=${mdiCodeBraces}
+                  @click=${this._toggleDetailsYamlMode}
+                ></ha-icon-button>
               `
             : this._childView?.viewTag === "ha-more-info-details"
               ? html`
@@ -828,12 +822,24 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   this._childView
                     ? html`
                         <div class="child-view">
-                          ${dynamicElement(this._childView.viewTag, {
-                            hass: this.hass,
-                            entry: this._entry,
-                            params: this._childView.viewParams,
-                            yamlMode: this._detailsYamlMode,
-                          })}
+                          ${this._childView.viewTag ===
+                          "ha-more-info-view-voice-assistants"
+                            ? html`
+                                <ha-more-info-view-voice-assistants
+                                  .hass=${this.hass}
+                                  .entry=${this._entry!}
+                                  .params=${this._childView.viewParams}
+                                ></ha-more-info-view-voice-assistants>
+                              `
+                            : this._childView.viewTag ===
+                                "ha-more-info-view-vacuum-segment-mapping"
+                              ? html`
+                                  <ha-more-info-view-vacuum-segment-mapping
+                                    .hass=${this.hass}
+                                    .params=${this._childView.viewParams}
+                                  ></ha-more-info-view-vacuum-segment-mapping>
+                                `
+                              : nothing}
                         </div>
                       `
                     : this._currView === "info"
@@ -879,7 +885,16 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                     @add-to-action-selected=${this._goBack}
                                   ></ha-more-info-add-to>
                                 `
-                              : nothing
+                              : this._currView === "details"
+                                ? html`
+                                    <ha-more-info-details
+                                      .hass=${this.hass}
+                                      .entry=${this._entry}
+                                      .params=${{ entityId }}
+                                      .yamlMode=${this._detailsYamlMode}
+                                    ></ha-more-info-details>
+                                  `
+                                : nothing
                 )}
               </div>
             `
@@ -898,14 +913,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    const previousChildView = changedProps.get("_childView") as
-      | ChildView
+    const previousView = changedProps.get("_currView") as
+      | MoreInfoView
       | undefined;
 
-    if (
-      previousChildView?.viewTag === "ha-more-info-details" &&
-      this._childView?.viewTag !== "ha-more-info-details"
-    ) {
+    if (previousView === "details" && this._currView !== "details") {
       const dialog =
         this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
       if (dialog) {
@@ -914,7 +926,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     }
 
     if (changedProps.has("_currView")) {
-      this._childView = undefined;
       this._infoEditMode = false;
       this._detailsYamlMode = false;
     }
@@ -935,15 +946,25 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     window.addEventListener("show-dialog", this._disableEscapeKeyClose);
   }
 
-  private _handleMoreInfoEvent(ev) {
+  private _handleMoreInfoEvent(ev: HASSDomEvent<MoreInfoDialogParams>) {
     ev.stopPropagation();
     const entityId = ev.detail.entityId;
     if (!entityId) {
       return;
     }
+    const view = ev.detail.view || ev.detail.tab || DEFAULT_VIEW;
+    if (entityId === this._entityId) {
+      this._infoEditMode = false;
+      this._detailsYamlMode = false;
+      this._setView(view);
+      return;
+    }
     this._parentEntityIds = [...this._parentEntityIds, this._entityId!];
     this._entityId = entityId;
-    this._currView = DEFAULT_VIEW;
+    this._currView = view === "details" ? view : DEFAULT_VIEW;
+    this._initialView = view;
+    this._infoEditMode = false;
+    this._detailsYamlMode = false;
     this._childView = undefined;
     this._loadEntityRegistryEntry();
   }
@@ -996,12 +1017,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
             var(--ha-space-14) +
               max(var(--safe-area-inset-bottom), var(--ha-space-4))
           );
-        }
-
-        .child-view {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
         }
 
         ha-more-info-history-and-logbook {

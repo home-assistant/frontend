@@ -35,7 +35,6 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
@@ -70,6 +69,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { isMoreInfoView } from "../../dialogs/more-info/const";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
@@ -156,7 +156,7 @@ class HUIRoot extends LitElement {
 
   private _configChangedByUndo = false;
 
-  private _viewCache?: Record<string, HUIView>;
+  private _viewCache: Record<string, HUIView> = {};
 
   private _viewScrollPositions: Record<string, number> = {};
 
@@ -170,22 +170,9 @@ class HUIRoot extends LitElement {
     }),
   });
 
-  private _debouncedConfigChanged: () => void;
-
   private _conversation = memoizeOne((_components) =>
     isComponentLoaded(this.hass, "conversation")
   );
-
-  constructor() {
-    super();
-    // The view can trigger a re-render when it knows that certain
-    // web components have been loaded.
-    this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
-      100,
-      false
-    );
-  }
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
@@ -632,7 +619,6 @@ class HUIRoot extends LitElement {
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
-          @ll-rebuild=${this._debouncedConfigChanged}
         >
           <hui-view-background .hass=${this.hass} .background=${background}>
           </hui-view-background>
@@ -716,11 +702,18 @@ class HUIRoot extends LitElement {
       this._showVoiceCommandDialog();
     } else if (searchParams["more-info-entity-id"]) {
       const entityId = searchParams["more-info-entity-id"];
+      const view = searchParams["more-info-view"];
       this._clearParam("more-info-entity-id");
+      if (view) {
+        this._clearParam("more-info-view");
+      }
       // Wait for the next render to ensure the view is fully loaded
       // because the more info dialog is closed when the url changes
       afterNextRender(() => {
-        this._showMoreInfoDialog(entityId);
+        showMoreInfoDialog(this, {
+          entityId,
+          view: isMoreInfoView(view) ? view : undefined,
+        });
       });
     }
   }
@@ -762,7 +755,6 @@ class HUIRoot extends LitElement {
     }
 
     let newSelectView;
-    let force = false;
 
     let viewPath: string | undefined = this.route!.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
@@ -794,9 +786,8 @@ class HUIRoot extends LitElement {
         | Lovelace
         | undefined;
 
-      if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        // On config change, recreate the current view from scratch.
-        force = true;
+      if (oldLovelace && oldLovelace.config !== this.lovelace!.config) {
+        this._cleanupViewCache();
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -815,15 +806,12 @@ class HUIRoot extends LitElement {
         }
       }
 
-      if (!force && huiView) {
+      if (huiView) {
         huiView.lovelace = this.lovelace!;
       }
     }
 
-    if (newSelectView !== undefined || force) {
-      if (force && newSelectView === undefined) {
-        newSelectView = this._curView;
-      }
+    if (newSelectView !== undefined) {
       // Will allow for ripples to start rendering
       afterNextRender(() => {
         if (changedProperties.has("route")) {
@@ -835,7 +823,7 @@ class HUIRoot extends LitElement {
             scrollTo({ behavior: "auto", top: position })
           );
         }
-        this._selectView(newSelectView, force);
+        this._selectView(newSelectView);
       });
     }
   }
@@ -974,10 +962,6 @@ class HUIRoot extends LitElement {
   private _showVoiceCommandDialog = () => {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   };
-
-  private _showMoreInfoDialog(entityId: string): void {
-    showMoreInfoDialog(this, { entityId });
-  }
 
   private _enableEditMode = async () => {
     if (this._yamlMode) {
@@ -1162,8 +1146,19 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
-    if (!force && this._curView === viewIndex) {
+  private _cleanupViewCache(): void {
+    // Keep only the currently displayed view to avoid UI flash.
+    // All other cached views are cleared and will be recreated on next visit.
+    const currentView =
+      this._curView != null ? this._viewCache[this._curView] : undefined;
+    this._viewCache = {};
+    if (currentView && this._curView != null) {
+      this._viewCache[this._curView] = currentView;
+    }
+  }
+
+  private _selectView(viewIndex: HUIRoot["_curView"]): void {
+    if (this._curView === viewIndex) {
       return;
     }
 
@@ -1175,11 +1170,6 @@ class HUIRoot extends LitElement {
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
     this._curView = viewIndex;
-
-    if (force) {
-      this._viewCache = {};
-      this._viewScrollPositions = {};
-    }
 
     // Recreate a new element to clear the applied themes.
     const root = this._viewRoot;
@@ -1208,12 +1198,12 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
+    if (this._viewCache[viewIndex]) {
+      view = this._viewCache[viewIndex];
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
+      this._viewCache[viewIndex] = view;
     }
 
     view.lovelace = this.lovelace;

@@ -6,14 +6,14 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/input/ha-input-search";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import "../../../logs/error-log-card";
-import "../../../../../components/search-input";
-import { extractSearchParam } from "../../../../../common/url/search-params";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 
 @customElement("supervisor-app-log-tab")
 class SupervisorAppLogDashboard extends LitElement {
@@ -29,12 +29,12 @@ class SupervisorAppLogDashboard extends LitElement {
     }
     return html`
       <div class="search">
-        <search-input
-          @value-changed=${this._filterChanged}
-          .hass=${this.hass}
-          .filter=${this._filter}
-          .label=${this.hass.localize("ui.panel.config.logs.search")}
-        ></search-input>
+        <ha-input-search
+          appearance="outlined"
+          @input=${this._filterChanged}
+          .value=${this._filter}
+          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+        ></ha-input-search>
       </div>
       <div class="content">
         <error-log-card
@@ -48,8 +48,8 @@ class SupervisorAppLogDashboard extends LitElement {
     `;
   }
 
-  private async _filterChanged(ev) {
-    this._filter = ev.detail.value;
+  private async _filterChanged(ev: InputEvent) {
+    this._filter = (ev.target as HTMLInputElement).value;
   }
 
   static get styles(): CSSResultGroup {
@@ -66,10 +66,10 @@ class SupervisorAppLogDashboard extends LitElement {
           top: 0;
           z-index: 2;
         }
-        search-input {
-          display: block;
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: var(--divider-color);
+        ha-input-search {
+          padding: var(--ha-space-3) var(--ha-space-2);
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
         }
         @media all and (max-width: 870px) {
           :host {

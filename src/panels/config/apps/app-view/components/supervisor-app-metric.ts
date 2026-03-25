@@ -16,7 +16,7 @@ class SupervisorAppMetric extends LitElement {
 
   protected render(): TemplateResult {
     const roundedValue = roundWithOneDecimal(this.value);
-    return html`<ha-settings-row>
+    return html`<ha-settings-row empty>
       <span slot="heading"> ${this.description} </span>
       <div slot="description" .title=${this.tooltip ?? ""}>
         <span class="value"> ${roundedValue} % </span>
@@ -60,9 +60,9 @@ class SupervisorAppMetric extends LitElement {
     }
     .value {
       width: 48px;
-      padding-right: 4px;
+      padding-right: var(--ha-space-1);
       padding-inline-start: initial;
-      padding-inline-end: 4px;
+      padding-inline-end: var(--ha-space-1);
       flex-shrink: 0;
     }
   `;

@@ -6,6 +6,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
@@ -14,8 +15,8 @@ import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type {
   BackupAgent,
   BackupConfig,
@@ -290,7 +291,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const disabledAgentIds = this._disabledAgentIds();
 
     return html`
-      <ha-textfield
+      <ha-input
         name="name"
         .label=${this.hass.localize(
           "ui.panel.config.backup.dialogs.generate.sync.name"
@@ -298,7 +299,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         .value=${this._formData.name}
         @change=${this._nameChanged}
       >
-      </ha-textfield>
+      </ha-input>
       <ha-md-list>
         <ha-md-list-item>
           <span slot="headline">
@@ -385,10 +386,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     };
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._formData = {
       ...this._formData!,
-      name: ev.target.value,
+      name: (ev.target as HaInput).value ?? "",
     };
   }
 
@@ -468,7 +469,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           overflow: hidden;
           white-space: nowrap;
         }
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
         .content {

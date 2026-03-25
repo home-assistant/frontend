@@ -10,7 +10,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { haStyleScrollbar } from "../resources/styles";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   runAssistPipeline,
@@ -21,13 +20,14 @@ import {
 } from "../data/assist_pipeline";
 import { ConversationEntityFeature } from "../data/conversation";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { AudioRecorder } from "../util/audio-recorder";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-alert";
 import "./ha-markdown";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
 interface AssistMessage {
   who: string;
@@ -57,7 +57,7 @@ export class HaAssistChat extends LitElement {
   @property({ attribute: false })
   public startListening?: boolean;
 
-  @query("#message-input") private _messageInput!: HaTextField;
+  @query("#message-input") private _messageInput!: HaInput;
 
   @query(".message:last-child")
   private _lastChatMessage!: LitElement;
@@ -247,14 +247,13 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
         )}
       </div>
       <div class="input" slot="primaryAction">
-        <ha-textfield
+        <ha-input
           id="message-input"
           @keyup=${this._handleKeyUp}
           @input=${this._handleInput}
           .label=${this.hass.localize(`ui.dialogs.voice_command.input_label`)}
-          .iconTrailing=${true}
         >
-          <div slot="trailingIcon">
+          <div slot="end">
             ${this._showSendButton || !supportsSTT
               ? html`
                   <ha-icon-button
@@ -299,7 +298,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
                   </div>
                 `}
           </div>
-        </ha-textfield>
+        </ha-input>
       </div>
     `;
   }
@@ -329,7 +328,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
-    const input = ev.target as HaTextField;
+    const input = ev.target as HaInput;
     if (!this._processing && ev.key === "Enter" && input.value) {
       this._processText(input.value);
       input.value = "";
@@ -338,7 +337,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
   }
 
   private _handleInput(ev: InputEvent) {
-    const value = (ev.target as HaTextField).value;
+    const value = (ev.target as HaInput).value;
     if (value && !this._showSendButton) {
       this._showSendButton = true;
     } else if (!value && this._showSendButton) {
@@ -728,9 +727,10 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
         ha-alert {
           margin-bottom: var(--ha-space-2);
         }
-        ha-textfield {
-          display: block;
+        #message-input::part(wa-base) {
+          padding-right: var(--ha-space-1);
         }
+
         .messages {
           flex: 1 1 400px;
           display: block;
@@ -942,20 +942,6 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
             transform: scale(1);
             -webkit-transform: scale(1);
           }
-        }
-
-        .listening-icon {
-          position: relative;
-          color: var(--secondary-text-color);
-          margin-right: -24px;
-          margin-inline-end: -24px;
-          margin-inline-start: initial;
-          direction: var(--direction);
-          transform: scaleX(var(--scale-direction));
-        }
-
-        .listening-icon[active] {
-          color: var(--primary-color);
         }
 
         .unsupported {

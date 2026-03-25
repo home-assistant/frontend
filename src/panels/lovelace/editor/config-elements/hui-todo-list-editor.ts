@@ -2,7 +2,15 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { mdiGestureTap } from "@mdi/js";
 import {
   ITEM_TAP_ACTION_EDIT,
@@ -35,6 +43,13 @@ const cardConfigStruct = assign(
     hide_section_headers: optional(boolean()),
     display_order: optional(string()),
     item_tap_action: optional(string()),
+    due_date_period: optional(
+      object({
+        calendar: optional(
+          object({ period: string(), offset: optional(number()) })
+        ),
+      })
+    ),
   })
 );
 

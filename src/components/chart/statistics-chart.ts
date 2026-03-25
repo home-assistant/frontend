@@ -399,6 +399,14 @@ export class StatisticsChart extends LitElement {
       endTime = new Date();
     }
 
+    // Check if we need to display most recent data. Allow 10m of leeway for "now",
+    // because stats are 5 minute aggregated.
+    // Use same now point for all statistics even if processing time means the
+    // state value is actually from a slightly later time. Otherwise the points
+    // end up separated slightly and disappear from the tooltips.
+    const now = new Date();
+    const displayCurrentState = now.getTime() - endTime.getTime() <= 600000;
+
     // Try to determine chart unit if it has not already been set explicitly
     if (!this.unit) {
       let unit: string | undefined | null;
@@ -627,11 +635,6 @@ export class StatisticsChart extends LitElement {
           );
         });
       }
-
-      // Check if we need to display most recent data. Allow 10m of leeway for "now",
-      // because stats are 5 minute aggregated
-      const now = new Date();
-      const displayCurrentState = now.getTime() - endTime.getTime() <= 600000;
 
       // Show current state if required, and units match (or are unknown)
       const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
