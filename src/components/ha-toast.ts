@@ -60,7 +60,9 @@ export class HaToast extends LitElement {
     }
 
     this._popup?.reposition();
-    await this._nextFrame();
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
 
     if (transitionId !== this._transitionId) {
       return;
@@ -118,12 +120,6 @@ export class HaToast extends LitElement {
         this.hide("timeout");
       }, this.timeoutMs);
     }
-  }
-
-  private _nextFrame(): Promise<void> {
-    return new Promise((resolve) => {
-      requestAnimationFrame(() => resolve());
-    });
   }
 
   private async _waitForTransition(): Promise<void> {

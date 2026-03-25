@@ -41,7 +41,7 @@ class NotificationManager extends LitElement {
       await this._toast?.hide();
     }
 
-    if (!parameters || parameters.duration === 0) {
+    if (parameters.duration === 0) {
       this._parameters = undefined;
       return;
     }
