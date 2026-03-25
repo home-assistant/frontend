@@ -556,16 +556,33 @@
           "hide_password": "Hide password"
         },
         "numeric_threshold": {
-          "type": "Threshold type",
-          "above": "Above",
-          "below": "Below",
-          "in_range": "In range",
-          "outside_range": "Outside range",
           "unit": "Unit",
           "number": "Number",
           "entity": "Entity",
           "from": "From",
-          "to": "To"
+          "to": "To",
+          "crossed": {
+            "type": "Fire when the value goes",
+            "above": "Above",
+            "below": "Below",
+            "between": "In range",
+            "outside": "Outside range"
+          },
+          "changed": {
+            "type": "Fire when the value changes",
+            "any": "Any change",
+            "above": "Above",
+            "below": "Below",
+            "between": "In range",
+            "outside": "Outside range"
+          },
+          "is": {
+            "type": "Check if the value is",
+            "above": "Above",
+            "below": "Below",
+            "between": "In range",
+            "outside": "Outside range"
+          }
         }
       },
       "logbook": {

@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
+  any,
   array,
   assert,
   assign,
@@ -40,6 +41,10 @@ const stateTriggerStruct = assign(
     from: optional(union([nullable(string()), array(string())])),
     to: optional(union([nullable(string()), array(string())])),
     for: optional(union([number(), string(), forDictStruct])),
+    threshold: any(),
+    threshold1: any(),
+    threshold2: any(),
+    threshold3: any(),
   })
 );
 
@@ -175,6 +180,39 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
         },
         { name: "for", selector: { duration: {} } },
+        {
+          name: "threshold",
+          selector: {
+            numeric_threshold: {
+              mode: "crossed",
+              unit_of_measurement: ["C", "F"],
+            },
+          },
+        },
+        {
+          name: "threshold1",
+          selector: {
+            numeric_threshold: {
+              mode: "changed",
+              unit_of_measurement: ["C", "F"],
+            },
+          },
+        },
+        {
+          name: "threshold2",
+          selector: {
+            numeric_threshold: { mode: "is", unit_of_measurement: ["C", "F"] },
+          },
+        },
+        {
+          name: "threshold3",
+          selector: {
+            numeric_threshold: {
+              mode: "crossed",
+              unit_of_measurement: ["C", "F"],
+            },
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 

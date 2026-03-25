@@ -15,7 +15,9 @@ import "../ha-input-helper-text";
 import "../ha-select";
 import "./ha-selector";
 
-type ThresholdType = "above" | "below" | "between" | "outside";
+type ThresholdMode = "crossed" | "changed" | "is";
+
+type ThresholdType = "above" | "below" | "between" | "outside" | "any";
 
 interface ThresholdValueEntry {
   active_choice?: string;
@@ -30,6 +32,12 @@ interface NumericThresholdValue {
   value_min?: ThresholdValueEntry;
   value_max?: ThresholdValueEntry;
 }
+
+const DEFAULT_TYPE: Record<ThresholdMode, ThresholdType> = {
+  crossed: "above",
+  changed: "any",
+  is: "above",
+};
 
 @customElement("ha-selector-numeric_threshold")
 export class HaNumericThresholdSelector extends LitElement {
@@ -49,9 +57,14 @@ export class HaNumericThresholdSelector extends LitElement {
 
   @state() private _type?: ThresholdType;
 
+  private _getMode(): ThresholdMode {
+    return this.selector.numeric_threshold?.mode ?? "crossed";
+  }
+
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("value")) {
-      this._type = this.value?.type || "above";
+    if (changedProperties.has("value") || changedProperties.has("selector")) {
+      const mode = this._getMode();
+      this._type = this.value?.type || DEFAULT_TYPE[mode];
     }
   }
 
@@ -83,41 +96,13 @@ export class HaNumericThresholdSelector extends LitElement {
   }
 
   protected render() {
-    const type = this._type || "above";
+    const mode = this._getMode();
+    const type = this._type || DEFAULT_TYPE[mode];
     const showSingleValue = type === "above" || type === "below";
     const showRangeValues = type === "between" || type === "outside";
     const unitOptions = this._getUnitOptions();
 
-    const typeOptions = [
-      {
-        value: "above",
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.above"
-        ),
-        iconPath: mdiGreaterThan,
-      },
-      {
-        value: "below",
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.below"
-        ),
-        iconPath: mdiLessThan,
-      },
-      {
-        value: "between",
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.in_range"
-        ),
-        iconPath: mdiArrowCollapseVertical,
-      },
-      {
-        value: "outside",
-        label: this.hass.localize(
-          "ui.components.selectors.numeric_threshold.outside_range"
-        ),
-        iconPath: mdiArrowExpandVertical,
-      },
-    ];
+    const typeOptions = this._buildTypeOptions(mode);
 
     const choiceToggleButtons = [
       {
@@ -134,6 +119,16 @@ export class HaNumericThresholdSelector extends LitElement {
       },
     ];
 
+    // Value-row label for single-value types (above/below).
+    const singleValueLabel = this.hass.localize(
+      `ui.components.selectors.numeric_threshold.${mode}.${type as "above" | "below"}`
+    );
+
+    // Determine which type-select label to use per mode
+    const typeSelectLabel = this.hass.localize(
+      `ui.components.selectors.numeric_threshold.${mode}.type`
+    );
+
     return html`
       <div class="container">
         ${this.label
@@ -141,9 +136,7 @@ export class HaNumericThresholdSelector extends LitElement {
           : nothing}
         <div class="inputs">
           <ha-select
-            .label=${this.hass.localize(
-              "ui.components.selectors.numeric_threshold.type"
-            )}
+            .label=${typeSelectLabel}
             .value=${type}
             .options=${typeOptions}
             .disabled=${this.disabled}
@@ -152,11 +145,7 @@ export class HaNumericThresholdSelector extends LitElement {
 
           ${showSingleValue
             ? this._renderValueRow(
-                this.hass.localize(
-                  type === "above"
-                    ? "ui.components.selectors.numeric_threshold.above"
-                    : "ui.components.selectors.numeric_threshold.below"
-                ),
+                singleValueLabel,
                 this.value?.value,
                 this._valueChanged,
                 this._valueChoiceChanged,
@@ -197,6 +186,37 @@ export class HaNumericThresholdSelector extends LitElement {
           : nothing}
       </div>
     `;
+  }
+
+  private _buildTypeOptions(mode: ThresholdMode) {
+    const baseOptions = (
+      [
+        { value: "above", iconPath: mdiGreaterThan },
+        { value: "below", iconPath: mdiLessThan },
+        { value: "between", iconPath: mdiArrowCollapseVertical },
+        { value: "outside", iconPath: mdiArrowExpandVertical },
+      ] as const
+    ).map(({ value, iconPath }) => ({
+      value,
+      iconPath,
+      label: this.hass.localize(
+        `ui.components.selectors.numeric_threshold.${mode}.${value}`
+      ),
+    }));
+
+    if (mode !== "changed") {
+      return baseOptions;
+    }
+
+    return [
+      {
+        value: "any",
+        label: this.hass.localize(
+          "ui.components.selectors.numeric_threshold.changed.any"
+        ),
+      },
+      ...baseOptions,
+    ];
   }
 
   private _renderUnitSelect(
@@ -255,9 +275,11 @@ export class HaNumericThresholdSelector extends LitElement {
     return html`
       <div class="value-row">
         <div class="value-header">
-          <span class="value-label"
-            >${rowLabel}${this.required ? "*" : ""}</span
-          >
+          ${rowLabel
+            ? html`<span class="value-label"
+                >${rowLabel}${this.required ? "*" : ""}</span
+              >`
+            : nothing}
           <ha-button-toggle-group
             size="small"
             .buttons=${choiceToggleButtons}
@@ -302,6 +324,7 @@ export class HaNumericThresholdSelector extends LitElement {
       newValue.value_min = this.value?.value_min ?? this.value?.value;
       newValue.value_max = this.value?.value_max;
     }
+    // "any" type has no value fields
 
     fireEvent(this, "value-changed", { value: newValue });
   }
@@ -428,6 +451,7 @@ export class HaNumericThresholdSelector extends LitElement {
 
     .inputs,
     .value-row {
+      --ha-input-padding-bottom: 0;
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-2);

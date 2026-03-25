@@ -366,6 +366,7 @@ export interface NumberSelector {
 
 export interface NumericThresholdSelector {
   numeric_threshold: {
+    mode?: "crossed" | "changed" | "is";
     unit_of_measurement?: readonly string[];
     number?: NumberSelector["number"];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
