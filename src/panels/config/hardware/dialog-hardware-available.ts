@@ -5,10 +5,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
+import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHardwareInfo } from "../../../data/hassio/hardware";
 import { fetchHassioHardwareInfo } from "../../../data/hassio/hardware";
@@ -97,16 +98,16 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
         @closed=${this._dialogClosed}
       >
         <div class="content-container">
-          <search-input
+          <ha-input-search
+            appearance="outlined"
             autofocus
-            .hass=${this.hass}
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize(
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
+            .placeholder=${this.hass.localize(
               "ui.panel.config.hardware.available_hardware.search"
             )}
           >
-          </search-input>
+          </ha-input-search>
           <div class="devices-container ha-scrollbar">
             ${devices.map(
               (device) => html`
@@ -160,8 +161,8 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     `;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   static get styles(): CSSResultGroup {
@@ -203,9 +204,8 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
           font-size: var(--ha-font-size-s);
           padding: 0.2em 0.4em;
         }
-        search-input {
-          margin: 8px 16px 0;
-          display: block;
+        ha-input-search {
+          padding: 0 var(--ha-space-5);
         }
         .device-property {
           display: flex;

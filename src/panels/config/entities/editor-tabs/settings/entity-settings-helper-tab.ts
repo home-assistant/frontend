@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import "../../../../../components/ha-button";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
@@ -24,6 +25,7 @@ import "../../../helpers/forms/ha-timer-form";
 import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
+import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
 
 @customElement("entity-settings-helper-tab")
 export class EntitySettingsHelperTab extends LitElement {
@@ -162,11 +164,19 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
+    const name = computeEntityEntryName(this.entry);
+    const confirmationText = await getDeleteConfirmationText(
+      this.hass,
+      this.entry,
+      name
+    );
+
     if (
       !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.confirm_delete"
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_title"
         ),
+        text: confirmationText,
         confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
         destructive: true,
