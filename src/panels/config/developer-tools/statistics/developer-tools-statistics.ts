@@ -32,7 +32,8 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import "../../../../components/search-input-outlined";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import type {
   StatisticsMetaData,
   StatisticsValidationResult,
@@ -107,7 +108,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("search-input-outlined") private _searchInput!: HTMLElement;
+  @query("ha-input-search") private _searchInput!: HaInputSearch;
 
   protected firstUpdated() {
     this._validateStatistics();
@@ -252,12 +253,12 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         </ha-assist-chip> `
       : nothing;
 
-    const searchBar = html`<search-input-outlined
-      .hass=${this.hass}
-      .filter=${this.filter}
-      @value-changed=${this._handleSearchChange}
+    const searchBar = html`<ha-input-search
+      appearance="outlined"
+      .value=${this.filter}
+      @input=${this._handleSearchChange}
     >
-    </search-input-outlined>`;
+    </ha-input-search>`;
 
     const sortByMenu = Object.values(columns).find((col) => col.sortable)
       ? html`
@@ -490,11 +491,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    if (this.filter === ev.detail.value) {
+  private _handleSearchChange(ev: InputEvent) {
+    if (this.filter === (ev.target as HaInputSearch).value) {
       return;
     }
-    this.filter = ev.detail.value;
+    this.filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _handleSelectionChanged(
@@ -728,7 +729,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
         }
         .search-toolbar {
