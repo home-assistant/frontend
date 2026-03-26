@@ -29,7 +29,6 @@ import {
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -231,7 +230,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return html`
         <ha-card class="unavailable" @click=${this._handleAction}>
           ${this.hass.localize("ui.panel.lovelace.warning.entity_unavailable", {
-            entity: `${computeLovelaceEntityName(this.hass, stateObj, this._config.name)} (${this._config.entity})`,
+            entity: `${this.hass.formatEntityName(stateObj, this._config.name)} (${this._config.entity})`,
           })}
         </ha-card>
       `;
@@ -262,11 +261,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     const dayNight = forecastData?.type === "twice_daily";
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const temperatureFractionDigits = this._config.round_temperature
       ? 0

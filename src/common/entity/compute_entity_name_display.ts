@@ -29,14 +29,18 @@ export interface EntityNameOptions {
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[] | undefined,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"],
   options?: EntityNameOptions
 ) => {
-  let items = ensureArray(name || DEFAULT_ENTITY_NAME);
+  if (typeof name === "string") {
+    return name;
+  }
+
+  let items = ensureArray(name ?? DEFAULT_ENTITY_NAME);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
