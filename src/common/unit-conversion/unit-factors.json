@@ -117,11 +117,12 @@
   },
   "energy_distance": {
     "base": "kWh/100km",
+    "inverse": ["mi/kWh", "km/kWh"],
     "units": {
       "kWh/100km": 1,
       "Wh/km": 10,
-      "mi/kWh": [{ "power": -1 }, { "scale": 62.13711922373341 }],
-      "km/kWh": [{ "power": -1 }, { "scale": 100 }]
+      "mi/kWh": 62.13711922373341,
+      "km/kWh": 100
     }
   },
   "information": {

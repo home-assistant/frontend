@@ -3,10 +3,10 @@ import * as _unitFactors from "./unit-factors.json";
 
 // Possible unit conversion operations from JSON file
 enum UnitConvertOpType {
-  SCALE = "scale",
-  OFFSET = "offset",
-  POWER = "power",
-  ROUND = "round",
+  SCALE = "scale", // Multiply by a scale factor (factor != 0)
+  OFFSET = "offset", // Add on an offset (offset is numeric)
+  POWER = "power", // Raise to the power (power != 0)
+  ROUND = "round", // Round to integer (argument unused). Applies only when converting to a unit.
 }
 
 // Maps operations to executable functions, in both the from and to directions.
@@ -18,7 +18,7 @@ const UNIT_CONVERT_FROM_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
   [UnitConvertOpType.OFFSET]: (val: number, factor: number) => val - factor,
   [UnitConvertOpType.POWER]: (val: number, factor: number) =>
     val ** (1 / factor),
-  [UnitConvertOpType.ROUND]: (val: number, _factor) => Math.round(val),
+  [UnitConvertOpType.ROUND]: (val: number, _factor) => val,
 };
 
 const UNIT_CONVERT_TO_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
@@ -34,6 +34,7 @@ interface UnitClassConversion {
   needs_class?: boolean;
   base: string;
   units: Record<string, number | Record<UnitConvertOpType, number>[]>;
+  inverse?: string[];
 }
 function instanceOfObject(object: any): object is object {
   return (
@@ -72,9 +73,13 @@ export class UnitConverter {
   // Unit conversion lookup
   protected readonly _unitConversion!: Record<string, UnitConvertOpInfo[]>;
 
+  // Whether unit is inverse of its base unit.
+  protected readonly _unitInverse!: string[];
+
   constructor(unitClass: string, conversion: UnitClassConversion) {
     this._unitClass = unitClass;
     this._baseUnit = conversion.base;
+    this._unitInverse = conversion.inverse ?? [];
     this._unitConversion = {};
     Object.keys(conversion.units).forEach((key) => {
       const value = conversion.units[key];
@@ -130,6 +135,7 @@ export class UnitConverter {
     // Otherwise prepare conversion operations
     const convertOps: UnitConvertOp[] = [
       ...this._getUnitOps(fromUnit, true),
+      ...this._getInverseOp(fromUnit, toUnit),
       ...this._getUnitOps(toUnit, false),
     ];
     // And convert result
@@ -138,6 +144,13 @@ export class UnitConverter {
       result = op(result, factor);
     });
     return result;
+  }
+
+  private _getInverseOp(fromUnit: string, toUnit: string): UnitConvertOp[] {
+    return this._unitInverse.includes(fromUnit) !==
+      this._unitInverse.includes(toUnit)
+      ? [[UNIT_CONVERT_TO_OP[UnitConvertOpType.POWER], -1]]
+      : [];
   }
 
   private _getUnitOps(unit: string, from: boolean): UnitConvertOp[] {
