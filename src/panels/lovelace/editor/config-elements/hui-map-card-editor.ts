@@ -250,10 +250,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       },
     };
     const states = getStates(this.hass, mockStateObj);
-    states.forEach((state) => {
-      const stateTranslated = this.hass!.formatEntityState(mockStateObj, state);
+    states.forEach((stateRaw) => {
+      const stateTranslated = this.hass!.formatEntityState(mockStateObj, stateRaw);
       this._presetStates.push({
-        value: state,
+        value: stateRaw,
         label: stateTranslated,
       });
     });
