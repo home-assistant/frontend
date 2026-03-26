@@ -216,7 +216,9 @@
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
-        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_batteries_low": "{count} {count, plural,\n one {low}\n other {low}\n}",
+        "all_batteries_good": "All good"
       },
       "toggle-group": {
         "all_off": "All off",
@@ -8215,6 +8217,7 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
+              "batteries": "Batteries",
               "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
@@ -8249,6 +8252,10 @@
             "other_devices": "Other devices"
           },
           "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "battery": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },

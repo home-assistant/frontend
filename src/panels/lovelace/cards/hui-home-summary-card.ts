@@ -248,6 +248,30 @@ export class HuiHomeSummaryCard
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
+      case "batteries": {
+        const batteryFilters = HOME_SUMMARIES_FILTERS.batteries.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+
+        const batteryEntities = findEntities(allEntities, batteryFilters);
+
+        const lowBatteryEntities = batteryEntities.filter((entityId) => {
+          const stateValue = parseFloat(
+            this.hass!.states[entityId]?.state ?? ""
+          );
+          return !isNaN(stateValue) && stateValue <= 20;
+        });
+
+        if (lowBatteryEntities.length > 0) {
+          return this.hass.localize(
+            "ui.card.home-summary.count_batteries_low",
+            {
+              count: lowBatteryEntities.length,
+            }
+          );
+        }
+        return this.hass.localize("ui.card.home-summary.all_batteries_good");
+      }
       case "energy": {
         if (!this._energyData) {
           return "";
