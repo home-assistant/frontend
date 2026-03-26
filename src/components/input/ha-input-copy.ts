@@ -11,6 +11,27 @@ import "../ha-svg-icon";
 import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
+/**
+ * Home Assistant input with copy button
+ *
+ * @element ha-input-copy
+ * @extends {LitElement}
+ *
+ * @summary
+ * A read-only input component with a copy-to-clipboard button.
+ * Supports optional value masking with a toggle to reveal the hidden value.
+ *
+ * @attr {string} value - The value to display and copy.
+ * @attr {string} masked-value - An alternative masked display value (for example, "••••••").
+ * @attr {string} label - Label for the copy button. Defaults to the localized "Copy" text.
+ * @attr {boolean} readonly - Makes the inner input readonly.
+ * @attr {boolean} disabled - Disables the inner input.
+ * @attr {boolean} masked-toggle - Shows a toggle button to reveal/hide the masked value.
+ * @attr {("text"|"password"|"email"|"number"|"tel"|"url"|"search"|"date"|"datetime-local"|"time"|"color")} type - Sets the input type.
+ * @attr {string} placeholder - Placeholder text for the input.
+ * @attr {string} validation-message - Custom validation message.
+ * @attr {boolean} auto-validate - Validates the input on blur.
+ */
 @customElement("ha-input-copy")
 export class HaInputCopy extends LitElement {
   @property({ attribute: "value" }) public value!: string;

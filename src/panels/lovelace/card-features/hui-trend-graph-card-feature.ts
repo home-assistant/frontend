@@ -4,7 +4,10 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
 import "../../../components/ha-spinner";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import {
+  limitedHistoryFromStateObj,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
@@ -127,6 +130,14 @@ class HuiHistoryChartCardFeature
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
+        const entityId = this.context!.entity_id!;
+        let history = historyStates[entityId];
+        if (!history?.length) {
+          const stateObj = this.hass!.states[entityId];
+          if (stateObj) {
+            history = limitedHistoryFromStateObj(stateObj);
+          }
+        }
         // sample to 1 point per hour for low detail or 1 point per 5 pixels for high detail
         const maxDetails = detail
           ? Math.max(10, this.clientWidth / 5, hourToShow)
@@ -134,7 +145,7 @@ class HuiHistoryChartCardFeature
         const useMean = !detail;
         const { points, yAxisOrigin } =
           coordinatesMinimalResponseCompressedState(
-            historyStates[this.context!.entity_id!],
+            history,
             this.clientWidth,
             this.clientHeight,
             maxDetails,

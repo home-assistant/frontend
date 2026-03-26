@@ -1489,7 +1489,7 @@
             "network": "[%key:ui::panel::config::network::caption%]",
             "updates": "[%key:ui::panel::config::updates::caption%]",
             "repairs": "[%key:ui::panel::config::repairs::caption%]",
-            "hardware": "[%key:ui::panel::config::hardware::caption%]",
+            "hardware": "Hardware",
             "storage": "[%key:ui::panel::config::storage::caption%]",
             "general": "[%key:ui::panel::config::core::caption%]",
             "backups": "[%key:ui::panel::config::backup::caption%]",
@@ -4222,12 +4222,13 @@
           "invalid_url": "Invalid URL"
         },
         "hardware": {
-          "caption": "Hardware",
+          "overview": "Overview",
           "description": "Configure your hub and connected hardware",
-          "available_hardware": {
+          "system_hardware": {
             "failed_to_get": "Failed to get available hardware",
-            "title": "All hardware",
+            "title": "System hardware",
             "search": "Search hardware",
+            "name": "Name",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
