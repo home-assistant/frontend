@@ -509,7 +509,6 @@ export class HaNumericThresholdSelector extends LitElement {
 
     ha-select {
       width: 100%;
-      margin-bottom: var(--ha-space-5);
     }
   `;
 }
