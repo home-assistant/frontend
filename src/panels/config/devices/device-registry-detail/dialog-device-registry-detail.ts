@@ -11,6 +11,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -165,7 +166,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   private _nameChanged(ev: InputEvent): void {
     this._error = undefined;
-    this._nameByUser = (ev.target as HTMLInputElement).value;
+    this._nameByUser = (ev.target as HaInput).value ?? "";
   }
 
   private _areaPicked(event: CustomEvent): void {

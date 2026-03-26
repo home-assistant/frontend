@@ -11,6 +11,7 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -259,7 +260,7 @@ export class DialogEnergyDeviceSettingsWater
   private _nameChanged(ev: InputEvent) {
     const newDevice = {
       ...this._device!,
-      name: (ev.target as HTMLInputElement).value,
+      name: (ev.target as HaInput).value,
     } as DeviceConsumptionEnergyPreference;
     if (!newDevice.name) {
       delete newDevice.name;

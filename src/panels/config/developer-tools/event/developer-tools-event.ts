@@ -1,17 +1,18 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-yaml-editor";
-import "../../../../components/input/ha-input";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("developer-tools-event")
 class HaPanelDevEvent extends LitElement {
@@ -118,7 +119,7 @@ class HaPanelDevEvent extends LitElement {
   }
 
   private _eventTypeChanged(ev: InputEvent) {
-    this._eventType = (ev.target as HTMLInputElement).value;
+    this._eventType = (ev.target as HaInput).value ?? "";
   }
 
   private _yamlChanged(ev) {

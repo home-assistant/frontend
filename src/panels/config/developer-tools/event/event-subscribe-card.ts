@@ -9,6 +9,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("event-subscribe-card")
@@ -144,12 +145,12 @@ class EventSubscribeCard extends LitElement {
   }
 
   private _valueChanged(ev: InputEvent): void {
-    this._eventType = (ev.target as HTMLInputElement).value;
+    this._eventType = (ev.target as HaInput).value ?? "";
     this._error = undefined;
   }
 
   private _filterChanged(ev: InputEvent): void {
-    this._eventFilter = (ev.target as HTMLInputElement).value;
+    this._eventFilter = (ev.target as HaInput).value ?? "";
   }
 
   private _testEventFilter(event: HassEvent): boolean {

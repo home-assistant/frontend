@@ -22,9 +22,10 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-input-helper-text";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
-import "../../../../components/input/ha-input";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -315,7 +316,7 @@ class HaPanelDevState extends LitElement {
   }
 
   private _stateChanged(ev: InputEvent) {
-    this._state = (ev.target as HTMLInputElement).value;
+    this._state = (ev.target as HaInput).value ?? "";
   }
 
   private _entityFilterChanged(ev: InputEvent) {

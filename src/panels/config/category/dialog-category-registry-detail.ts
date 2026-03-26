@@ -8,6 +8,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
@@ -108,7 +109,7 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
 
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = (ev.target as HTMLInputElement).value;
+    this._name = (ev.target as HaInput).value ?? "";
   }
 
   private _iconChanged(ev: ValueChangedEvent<string>) {
