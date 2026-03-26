@@ -7,6 +7,7 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -29,10 +30,10 @@ import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import type { PresetState } from "./types/ha-card-condition-state";
 import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_CONDITION = [
   "location",
@@ -64,6 +65,8 @@ export class HaCardConditionsEditor extends LitElement {
   )[];
 
   @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   private _focusLastConditionOnChange = false;
 
@@ -109,6 +112,7 @@ export class HaCardConditionsEditor extends LitElement {
               .hass=${this.hass}
               .condition=${cond}
               .no_entity=${this.no_entity}
+              .presetStates=${this.presetStates}
             ></ha-card-condition-editor>
           `
         )}
