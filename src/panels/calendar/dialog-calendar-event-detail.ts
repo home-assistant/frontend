@@ -271,6 +271,7 @@ class DialogCalendarEventDetail extends LitElement {
           color: var(--secondary-text-color);
           max-width: 300px;
           overflow-wrap: break-word;
+          white-space: pre-line;
         }
       `,
     ];
