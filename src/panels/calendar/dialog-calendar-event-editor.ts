@@ -10,6 +10,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  formatDate,
+  formatTime,
+  parseDate,
+} from "../../common/datetime/calc_date";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -19,13 +24,13 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-date-input";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import "../../components/ha-textarea";
-import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-dialog";
+import "../../components/input/ha-input";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import {
   CalendarEntityFeature,
@@ -40,11 +45,6 @@ import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
-import {
-  formatDate,
-  formatTime,
-  parseDate,
-} from "../../common/datetime/calc_date";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -170,7 +170,7 @@ class DialogCalendarEventEditor extends LitElement {
               >`
             : ""}
 
-          <ha-textfield
+          <ha-input
             class="summary"
             name="summary"
             .label=${this.hass.localize("ui.components.calendar.event.summary")}
@@ -179,8 +179,8 @@ class DialogCalendarEventEditor extends LitElement {
             @input=${this._handleSummaryChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
             autofocus
-          ></ha-textfield>
-          <ha-textfield
+          ></ha-input>
+          <ha-input
             class="location"
             name="location"
             .label=${this.hass.localize(
@@ -188,7 +188,7 @@ class DialogCalendarEventEditor extends LitElement {
             )}
             .value=${this._location}
             @change=${this._handleLocationChanged}
-          ></ha-textfield>
+          ></ha-input>
           <ha-textarea
             class="description"
             name="description"
@@ -624,7 +624,6 @@ class DialogCalendarEventEditor extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
-        ha-textfield,
         ha-textarea {
           display: block;
         }
