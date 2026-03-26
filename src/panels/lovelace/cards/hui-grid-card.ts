@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
+import { haStyleScrollbar } from "../../../resources/styles";
 import { computeCardSize } from "../common/compute-card-size";
 import type { LovelaceCardEditor } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
@@ -15,6 +16,12 @@ const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {
 
 @customElement("hui-grid-card")
 class HuiGridCard extends HuiStackCard<GridCardConfig> {
+  protected override get _rootClass() {
+    return typeof this._config?.grid_options?.rows === "number"
+      ? "ha-scrollbar"
+      : undefined;
+  }
+
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-grid-card-editor");
     return document.createElement("hui-grid-card-editor");
@@ -74,6 +81,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
   static get styles(): CSSResultGroup {
     return [
       super.sharedStyles,
+      haStyleScrollbar,
       css`
         :host {
           display: flex;
@@ -89,6 +97,9 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
             minmax(0, 1fr)
           );
           grid-gap: var(--grid-card-gap, 8px);
+        }
+        #root.ha-scrollbar {
+          overflow-x: clip;
         }
         :host([square]) #root {
           grid-auto-rows: 1fr;

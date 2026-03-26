@@ -1,11 +1,18 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
+import { haStyleScrollbar } from "../../../resources/styles";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
 @customElement("hui-vertical-stack-card")
 class HuiVerticalStackCard extends HuiStackCard {
+  protected override get _rootClass() {
+    return typeof this._config?.grid_options?.rows === "number"
+      ? "ha-scrollbar"
+      : undefined;
+  }
+
   public async getCardSize() {
     if (!this._cards) {
       return 0;
@@ -25,6 +32,7 @@ class HuiVerticalStackCard extends HuiStackCard {
   static get styles(): CSSResultGroup {
     return [
       super.sharedStyles,
+      haStyleScrollbar,
       css`
         :host {
           display: flex;
@@ -37,6 +45,9 @@ class HuiVerticalStackCard extends HuiStackCard {
           flex: 1;
           min-height: 0;
           gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
+        }
+        #root.ha-scrollbar {
+          overflow-x: clip;
         }
       `,
     ];
