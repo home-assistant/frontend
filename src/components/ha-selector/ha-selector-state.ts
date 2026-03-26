@@ -25,6 +25,8 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public no_entity = false;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -35,6 +37,8 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
     filter_target?: HassServiceTarget;
     target_selector?: TargetSelector;
   };
+
+  private selector_type = this.localName.replace("ha-selector-", "");
 
   @state() private _entityIds?: string | string[];
 
@@ -56,7 +60,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
   willUpdate(changedProps) {
     if (changedProps.has("selector") || changedProps.has("context")) {
       this._resolveEntityIds(
-        this.selector.state?.entity_id,
+        this.selector[this.selector_type]?.entity_id,
         this.context?.filter_entity,
         this.context?.filter_target,
         this.context?.target_selector
@@ -68,14 +72,14 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   protected render() {
     const extraOptions = this._convertExtraOptions(
-      this.selector.state?.extra_options
+      this.selector[this.selector_type]?.extra_options
     );
-    if (this.selector.state?.multiple) {
+    if (this.selector[this.selector_type]?.multiple) {
       return html`
         <ha-entity-states-picker
           .hass=${this.hass}
           .entityId=${this._entityIds}
-          .attribute=${this.selector.state?.attribute ||
+          .attribute=${this.selector[this.selector_type]?.attribute ||
           this.context?.filter_attribute}
           .extraOptions=${extraOptions}
           .value=${this.value}
@@ -84,7 +88,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-value
-          .hideStates=${this.selector.state?.hide_states}
+          .hideStates=${this.selector[this.selector_type]?.hide_states}
         ></ha-entity-states-picker>
       `;
     }
@@ -92,16 +96,17 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
       <ha-entity-state-picker
         .hass=${this.hass}
         .entityId=${this._entityIds}
-        .attribute=${this.selector.state?.attribute ||
+        .attribute=${this.selector[this.selector_type]?.attribute ||
         this.context?.filter_attribute}
         .extraOptions=${extraOptions}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
+        .no_entity=${this.no_entity}
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-value
-        .hideStates=${this.selector.state?.hide_states}
+        .hideStates=${this.selector[this.selector_type]?.hide_states}
       ></ha-entity-state-picker>
     `;
   }
