@@ -726,6 +726,8 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
+          "mode_composed": "Composed",
+          "mode_text": "Text",
           "add": "Add",
           "search": "Search name",
           "custom_name": "Custom name"

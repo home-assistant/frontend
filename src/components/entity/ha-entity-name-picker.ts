@@ -93,11 +93,15 @@ export class HaEntityNamePicker extends LitElement {
   protected render() {
     const modeButtons = [
       {
-        label: "Composed",
+        label: this.hass.localize(
+          "ui.components.entity.entity-name-picker.mode_composed"
+        ),
         value: "composed",
       },
       {
-        label: "Text",
+        label: this.hass.localize(
+          "ui.components.entity.entity-name-picker.mode_text"
+        ),
         value: "text",
       },
     ];
