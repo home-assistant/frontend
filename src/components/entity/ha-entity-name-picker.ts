@@ -76,17 +76,30 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @state() private _mode?: "composed" | "text";
+  @state() private _mode?: "composed" | "custom";
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   private _editIndex?: number;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      const items = this._toItems(this.value);
+      this._mode =
+        items.length === 1 && items[0].type === "text"
+          ? "custom"
+          : "composed";
+    }
+  }
+
   protected willUpdate(_changedProperties: PropertyValues): void {
     if (this._mode === undefined) {
       const items = this._toItems(this.value);
-      const isTextOnly = items.length === 1 && items[0].type === "text";
-      this._mode = isTextOnly ? "text" : "composed";
+      this._mode =
+        items.length === 1 && items[0].type === "text"
+          ? "custom"
+          : "composed";
     }
   }
 
@@ -100,9 +113,9 @@ export class HaEntityNamePicker extends LitElement {
       },
       {
         label: this.hass.localize(
-          "ui.components.entity.entity-name-picker.mode_text"
+          "ui.components.entity.entity-name-picker.mode_custom"
         ),
-        value: "text",
+        value: "custom",
       },
     ];
 
@@ -119,9 +132,9 @@ export class HaEntityNamePicker extends LitElement {
           ></ha-button-toggle-group>
         </div>
         <div class="content">
-          ${this._mode === "composed"
-            ? this._renderPicker()
-            : this._renderTextInput()}
+          ${this._mode === "custom"
+            ? this._renderTextInput()
+            : this._renderPicker()}
         </div>
       </div>
       ${this.helper
@@ -227,7 +240,7 @@ export class HaEntityNamePicker extends LitElement {
 
   private _modeChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._mode = ev.detail.value as "composed" | "text";
+    this._mode = ev.detail.value as "composed" | "custom";
   }
 
   private _textInputChanged(ev: Event) {
