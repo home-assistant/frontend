@@ -145,6 +145,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _selected = false;
 
+  @state() private _isNew = false;
+
   @state() private _warnings?: string[];
 
   @property({ attribute: false })
@@ -222,8 +224,8 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
-        ${target !== undefined || descriptionHasTarget
-          ? this._renderTargets(target, descriptionHasTarget)
+        ${target !== undefined || (descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
           : nothing}
       </h3>
 
@@ -450,7 +452,10 @@ export default class HaAutomationTriggerRow extends LitElement {
                 : nothing}${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -581,6 +586,16 @@ export default class HaAutomationTriggerRow extends LitElement {
     this.openSidebar();
   }
 
+  public markAsNew(): void {
+    this._isNew = true;
+  }
+
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   public openSidebar(trigger?: Trigger): void {
     trigger = trigger || this.trigger;
     fireEvent(this, "open-sidebar", {
@@ -589,6 +604,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();

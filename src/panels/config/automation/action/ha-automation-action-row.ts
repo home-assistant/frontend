@@ -185,6 +185,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _collapsed = true;
 
+  @state() private _isNew = false;
+
   @state() private _warnings?: string[];
 
   @query("ha-automation-action-editor")
@@ -266,8 +268,8 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${target !== undefined || actionHasTarget
-          ? this._renderTargets(target, actionHasTarget)
+        ${target !== undefined || (actionHasTarget && !this._isNew)
+          ? this._renderTargets(target, actionHasTarget && !this._isNew)
           : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
@@ -816,6 +818,10 @@ export default class HaAutomationActionRow extends LitElement {
     this.openSidebar();
   }
 
+  public markAsNew(): void {
+    this._isNew = true;
+  }
+
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
     const actionType = getAutomationActionType(sidebarAction);
@@ -826,6 +832,7 @@ export default class HaAutomationActionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();
@@ -905,6 +912,9 @@ export default class HaAutomationActionRow extends LitElement {
   );
 
   private _toggleCollapse() {
+    if (!this._collapsed) {
+      this._isNew = false;
+    }
     this._collapsed = !this._collapsed;
   }
 

@@ -107,6 +107,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _collapsed = true;
 
+  @state() private _isNew = false;
+
   @state() private _warnings?: string[];
 
   @property({ attribute: false })
@@ -180,8 +182,8 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
-        ${target !== undefined || descriptionHasTarget
-          ? this._renderTargets(target, descriptionHasTarget)
+        ${target !== undefined || (descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
           : nothing}
       </h3>
 
@@ -748,6 +750,10 @@ export default class HaAutomationConditionRow extends LitElement {
     this.openSidebar();
   }
 
+  public markAsNew(): void {
+    this._isNew = true;
+  }
+
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
@@ -756,6 +762,7 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();
@@ -811,6 +818,9 @@ export default class HaAutomationConditionRow extends LitElement {
   );
 
   private _toggleCollapse() {
+    if (!this._collapsed) {
+      this._isNew = false;
+    }
     this._collapsed = !this._collapsed;
   }
 
