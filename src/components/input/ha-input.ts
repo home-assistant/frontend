@@ -589,6 +589,7 @@ export class HaInput extends LitElement {
     }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);
+      padding-bottom: 2px;
       cursor: pointer;
     }
     :host([type="color"]) wa-input.no-label::part(input) {

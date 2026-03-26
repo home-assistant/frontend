@@ -29,7 +29,7 @@ export const configElementStyle = css`
   }
   hui-action-editor,
   ha-select,
-  ha-textfield,
+  ha-input,
   ha-icon-picker {
     margin-top: 8px;
     display: block;

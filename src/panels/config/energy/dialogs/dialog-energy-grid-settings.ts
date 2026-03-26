@@ -5,12 +5,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/input/ha-input";
 import type {
   GridSourceTypeEnergyPreference,
   PowerConfig,
@@ -312,16 +312,19 @@ export class DialogEnergyGridSettings
           : nothing}
         ${this._importCostType === "number"
           ? html`
-              <ha-textfield
-                .value=${this._source.number_energy_price ?? ""}
+              <ha-input
+                .value=${this._source.number_energy_price !== null
+                  ? String(this._source.number_energy_price)
+                  : ""}
                 .label=${this.hass.localize(
                   "ui.panel.config.energy.grid.dialog.cost_number_label"
                 )}
                 type="number"
                 step="any"
                 @input=${this._numberCostChanged}
-                .suffix=${`${this.hass.config.currency}/kWh`}
-              ></ha-textfield>
+              >
+                <span slot="end">${this.hass.config.currency}/kWh</span>
+              </ha-input>
             `
           : nothing}
         ${hasExport
@@ -415,16 +418,19 @@ export class DialogEnergyGridSettings
                 : nothing}
               ${this._exportCostType === "number"
                 ? html`
-                    <ha-textfield
-                      .value=${this._source.number_energy_price_export ?? ""}
+                    <ha-input
+                      .value=${this._source.number_energy_price_export !== null
+                        ? String(this._source.number_energy_price_export)
+                        : ""}
                       .label=${this.hass.localize(
                         "ui.panel.config.energy.grid.dialog.compensation_number_label"
                       )}
                       type="number"
                       step="any"
                       @input=${this._numberCompensationChanged}
-                      .suffix=${`${this.hass.config.currency}/kWh`}
-                    ></ha-textfield>
+                    >
+                      <span slot="end">${this.hass.config.currency}/kWh</span>
+                    </ha-input>
                   `
                 : nothing}
             `
@@ -628,14 +634,17 @@ export class DialogEnergyGridSettings
       haStyleDialog,
       css`
         ha-statistic-picker,
-        ha-entity-picker,
-        ha-textfield {
+        ha-entity-picker {
           display: block;
           margin-bottom: var(--ha-space-4);
         }
+        ha-input {
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+        }
         ha-statistic-picker:last-of-type,
         ha-entity-picker:last-of-type,
-        ha-textfield:last-of-type {
+        ha-input:last-of-type {
           margin-bottom: 0;
         }
         ha-formfield {

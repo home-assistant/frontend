@@ -5,11 +5,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
-import "../../../../components/ha-dialog";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
+import "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -179,7 +180,7 @@ export class DialogEnergyDeviceSettingsWater
           )}
         ></ha-statistic-picker>
 
-        <ha-textfield
+        <ha-input
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.display_name"
           )}
@@ -195,7 +196,7 @@ export class DialogEnergyDeviceSettingsWater
             : ""}
           @input=${this._nameChanged}
         >
-        </ha-textfield>
+        </ha-input>
 
         <ha-select
           .label=${this.hass.localize(
@@ -255,10 +256,10 @@ export class DialogEnergyDeviceSettingsWater
     this._device = newDevice;
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     const newDevice = {
       ...this._device!,
-      name: ev.target!.value,
+      name: (ev.target as HTMLInputElement).value,
     } as DeviceConsumptionEnergyPreference;
     if (!newDevice.name) {
       delete newDevice.name;
@@ -297,11 +298,12 @@ export class DialogEnergyDeviceSettingsWater
         }
         ha-select {
           display: block;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
           width: 100%;
         }
-        ha-textfield {
-          margin-top: 16px;
+        ha-input {
+          margin-top: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
           width: 100%;
         }
       `,

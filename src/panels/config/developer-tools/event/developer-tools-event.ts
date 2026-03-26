@@ -2,7 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -55,7 +55,7 @@ class HaPanelDevEvent extends LitElement {
                 </a>
               </p>
               <div class="inputs">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.events.type"
                   )}
@@ -63,7 +63,7 @@ class HaPanelDevEvent extends LitElement {
                   required
                   .value=${this._eventType}
                   @change=${this._eventTypeChanged}
-                ></ha-textfield>
+                ></ha-input>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.events.data"
@@ -117,8 +117,8 @@ class HaPanelDevEvent extends LitElement {
     this._selectedEventType = ev.detail.eventType;
   }
 
-  private _eventTypeChanged(ev) {
-    this._eventType = ev.target.value;
+  private _eventTypeChanged(ev: InputEvent) {
+    this._eventType = (ev.target as HTMLInputElement).value;
   }
 
   private _yamlChanged(ev) {
@@ -176,10 +176,6 @@ class HaPanelDevEvent extends LitElement {
 
         ha-button {
           margin-top: var(--ha-space-2);
-        }
-
-        ha-textfield {
-          display: block;
         }
 
         event-subscribe-card {

@@ -11,7 +11,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
 import "../../../components/ha-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
@@ -144,7 +144,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               @input=${this._nameChanged}
@@ -153,7 +153,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
-            ></ha-textfield>
+            ></ha-input>
 
             <ha-picture-upload
               .hass=${this.hass}
@@ -365,9 +365,9 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     `;
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HTMLInputElement).value;
   }
 
   private _adminChanged(ev): void {
@@ -554,8 +554,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        ha-picture-upload,
-        ha-textfield {
+        ha-picture-upload {
           display: block;
         }
         ha-picture-upload {

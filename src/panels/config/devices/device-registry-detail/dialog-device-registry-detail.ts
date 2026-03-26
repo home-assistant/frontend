@@ -3,14 +3,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
+import "../../../../components/ha-adaptive-dialog";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
-import "../../../../components/ha-adaptive-dialog";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -77,7 +77,7 @@ class DialogDeviceRegistryDetail extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._nameByUser}
               @input=${this._nameChanged}
@@ -86,7 +86,7 @@ class DialogDeviceRegistryDetail extends LitElement {
               )}
               .placeholder=${device.name || ""}
               .disabled=${this._submitting}
-            ></ha-textfield>
+            ></ha-input>
             <ha-area-picker
               .hass=${this.hass}
               .value=${this._areaId}
@@ -163,9 +163,9 @@ class DialogDeviceRegistryDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev): void {
+  private _nameChanged(ev: InputEvent): void {
     this._error = undefined;
-    this._nameByUser = ev.target.value;
+    this._nameByUser = (ev.target as HTMLInputElement).value;
   }
 
   private _areaPicked(event: CustomEvent): void {
@@ -209,11 +209,12 @@ class DialogDeviceRegistryDetail extends LitElement {
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-textfield,
+        ha-input,
         ha-labels-picker,
         ha-area-picker {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
         }
         ha-switch {
           margin-right: 16px;
