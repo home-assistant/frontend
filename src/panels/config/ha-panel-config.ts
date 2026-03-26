@@ -83,7 +83,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "apps",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
-      component: "hassio",
+      core: true,
     },
     {
       path: "/config/lovelace/dashboards",

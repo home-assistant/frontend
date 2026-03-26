@@ -36,6 +36,7 @@ import {
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -169,25 +170,37 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   };
 
   private _pages = memoizeOne(
-    (cloudStatus, isCloudLoaded, hasExternalSettings) => [
-      isCloudLoaded
-        ? [
-            {
-              component: "cloud",
-              path: "/config/cloud",
-              name: "Home Assistant Cloud",
-              info: cloudStatus,
-              iconPath: mdiCloudLock,
-              iconColor: "#3B808E",
-              translationKey: "cloud",
-            },
-            ...configSections.dashboard,
-          ]
-        : configSections.dashboard,
-      hasExternalSettings ? configSections.dashboard_external_settings : [],
-      configSections.dashboard_2,
-      configSections.dashboard_3,
-    ]
+    (
+      cloudStatus,
+      isCloudLoaded,
+      hasExternalSettings,
+      isAppsInfoDismissed,
+      isHassioLoaded
+    ) => {
+      const filterApps = (pages: PageNavigation[]) =>
+        isAppsInfoDismissed && !isHassioLoaded
+          ? pages.filter((page) => page.path !== "/config/apps")
+          : pages;
+      return [
+        isCloudLoaded
+          ? filterApps([
+              {
+                component: "cloud",
+                path: "/config/cloud",
+                name: "Home Assistant Cloud",
+                info: cloudStatus,
+                iconPath: mdiCloudLock,
+                iconColor: "#3B808E",
+                translationKey: "cloud",
+              },
+              ...configSections.dashboard,
+            ])
+          : filterApps(configSections.dashboard),
+        hasExternalSettings ? configSections.dashboard_external_settings : [],
+        configSections.dashboard_2,
+        configSections.dashboard_3,
+      ];
+    }
   );
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -338,7 +351,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           ${this._pages(
             this.cloudStatus,
             isComponentLoaded(this.hass.config, "cloud"),
-            this.hass.auth.external?.config.hasSettingsScreen
+            this.hass.auth.external?.config.hasSettingsScreen,
+            this.hass.userData?.apps_info_dismissed,
+            isComponentLoaded(this.hass.config, "hassio")
           ).map((categoryPages) =>
             categoryPages.length === 0
               ? nothing

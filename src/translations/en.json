@@ -2699,6 +2699,15 @@
           "caption": "Apps",
           "description": "Install and manage apps",
           "error_loading": "Error loading apps",
+          "info": {
+            "what_is_an_app": "What is an app?",
+            "what_is_an_app_description": "Apps allow you to extend the functionality around Home Assistant by installing additional applications. They run alongside Home Assistant and provide extra features like network monitoring, code editors, database management, and more.",
+            "why_not_available": "Why you see this page instead of an app store",
+            "why_not_available_description": "Apps are only available if you've used the Home Assistant Operating System installation method. If you installed Home Assistant using any other method then you cannot use apps. Often you can achieve the same result manually, refer to the documentation by the vendor of the application you'd like to install.",
+            "installation_hint": "Apps require the Home Assistant Operating System. Learn more about installation methods in the documentation.",
+            "learn_more": "Learn more",
+            "dismiss": "Don't show again"
+          },
           "state": {
             "update_available": "Update available",
             "installed": "Installed",
