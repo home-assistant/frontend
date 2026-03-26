@@ -9699,7 +9699,8 @@
                 "label": "Lock open door"
               },
               "media-player-playback": {
-                "label": "Media player playback controls"
+                "label": "Media player playback controls",
+                "controls": "Controls"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",

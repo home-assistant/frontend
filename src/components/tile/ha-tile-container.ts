@@ -137,10 +137,11 @@ export class HaTileContainer extends LitElement {
     }
 
     .container.horizontal ::slotted([slot="features"]) {
-      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
+      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-4));
       flex: none;
+      align-self: center;
       --feature-height: var(--ha-space-9);
-      padding: 0 var(--ha-space-3);
+      padding: 0 var(--ha-space-4);
       padding-inline-start: 0;
     }
     [role="button"] {
