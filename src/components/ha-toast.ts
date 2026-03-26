@@ -181,9 +181,6 @@ export class HaToast extends LitElement {
       margin: 0;
       width: max-content;
       height: auto;
-      padding: 0;
-      color: unset;
-      background: unset;
       border: none;
       overflow: hidden;
       box-sizing: border-box;
