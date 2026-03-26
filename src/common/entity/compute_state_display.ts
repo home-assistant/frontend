@@ -144,18 +144,28 @@ const computeStateToPartsFromEntityAttributes = (
           fraction: "value",
           literal: "literal",
           currency: "unit",
-          minusSign: "value",
         };
 
         const valueParts: ValuePart[] = [];
+        let sign = "";
 
         for (const part of parts) {
+          if (part.type === "minusSign" || part.type === "plusSign") {
+            sign += part.value;
+            continue;
+          }
           const type = TYPE_MAP[part.type];
           if (!type) continue;
           const last = valueParts[valueParts.length - 1];
           // Merge consecutive numeric parts (e.g. "1" + "," + "234" + "." + "56" → "1,234.56")
-          if (type === "value" && last?.type === "value") {
-            last.value += part.value;
+          if (type === "value") {
+            const value = sign + part.value;
+            sign = "";
+            if (last?.type === "value") {
+              last.value += value;
+            } else {
+              valueParts.push({ type, value });
+            }
           } else {
             valueParts.push({ type, value: part.value });
           }
