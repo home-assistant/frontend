@@ -4,11 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-spinner";
-import "../../../components/ha-dialog";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -79,7 +79,7 @@ class MoveDatadiskDialog extends LitElement {
       this.closeDialog();
       await showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.hardware.available_hardware.failed_to_get"
+          "ui.panel.config.hardware.system_hardware.failed_to_get"
         ),
         text: extractApiErrorMessage(err),
       });

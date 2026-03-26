@@ -33,6 +33,49 @@ export type InputType =
   | "color"
   | "url";
 
+/**
+ * Home Assistant input component
+ *
+ * @element ha-input
+ * @extends {LitElement}
+ *
+ * @summary
+ * A text input component supporting Home Assistant theming and validation, based on webawesome input.
+ * Supports multiple input types including text, number, password, email, search, and more.
+ *
+ * @slot start - Content placed before the input (usually for icons or prefixes).
+ * @slot end - Content placed after the input (usually for icons or suffixes).
+ * @slot label - Custom label content. Overrides the `label` property.
+ * @slot hint - Custom hint content. Overrides the `hint` property.
+ * @slot clear-icon - Custom clear icon. Defaults to a close icon button.
+ * @slot show-password-icon - Custom show password icon. Defaults to an eye icon button.
+ * @slot hide-password-icon - Custom hide password icon. Defaults to an eye-off icon button.
+ *
+ * @csspart wa-base - The underlying wa-input base wrapper.
+ * @csspart wa-hint - The underlying wa-input hint container.
+ * @csspart wa-input - The underlying wa-input input element.
+ *
+ * @cssprop --ha-input-padding-top - Padding above the input.
+ * @cssprop --ha-input-padding-bottom - Padding below the input. Defaults to `var(--ha-space-2)`.
+ * @cssprop --ha-input-text-align - Text alignment of the input. Defaults to `start`.
+ * @cssprop --ha-input-required-marker - The marker shown after the label for required fields. Defaults to `"*"`.
+ *
+ * @attr {("material"|"outlined")} appearance - Sets the input appearance style. "material" is the default filled style, "outlined" uses a bordered style.
+ * @attr {("date"|"datetime-local"|"email"|"number"|"password"|"search"|"tel"|"text"|"time"|"color"|"url")} type - Sets the input type.
+ * @attr {string} label - The input's label text.
+ * @attr {string} hint - The input's hint/helper text.
+ * @attr {string} placeholder - Placeholder text shown when the input is empty.
+ * @attr {boolean} with-clear - Adds a clear button when the input is not empty.
+ * @attr {boolean} readonly - Makes the input readonly.
+ * @attr {boolean} disabled - Disables the input and prevents user interaction.
+ * @attr {boolean} required - Makes the input a required field.
+ * @attr {boolean} password-toggle - Adds a button to toggle the password visibility.
+ * @attr {boolean} without-spin-buttons - Hides the browser's built-in spin buttons for number inputs.
+ * @attr {boolean} auto-validate - Validates the input on blur instead of on form submit.
+ * @attr {boolean} invalid - Marks the input as invalid.
+ * @attr {boolean} inset-label - Uses an inset label style where the label stays inside the input.
+ * @attr {string} validation-message - Custom validation message shown when the input is invalid.
+ */
 @customElement("ha-input")
 export class HaInput extends LitElement {
   @property({ reflect: true }) appearance: "material" | "outlined" = "material";
@@ -42,10 +85,6 @@ export class HaInput extends LitElement {
 
   @property()
   public value?: string;
-
-  /** Draws a pill-style input with rounded edges. */
-  @property({ type: Boolean })
-  public pill = false;
 
   /** The input's label. */
   @property()
@@ -189,6 +228,9 @@ export class HaInput extends LitElement {
   @state()
   private _invalid = false;
 
+  @state()
+  private _hasStartSlot = false;
+
   @query("wa-input")
   private _input?: WaInput;
 
@@ -309,7 +351,8 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
-            (this.label && this.placeholder),
+            (this.label && this.placeholder) ||
+            this._hasStartSlot,
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -329,7 +372,7 @@ export class HaInput extends LitElement {
               >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
-        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
+        <slot name="start" slot="start" @slotchange=${this._onStartSlotChange}>
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
@@ -393,6 +436,12 @@ export class HaInput extends LitElement {
   private _handleInvalid() {
     this._invalid = true;
   }
+
+  private _onStartSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this._hasStartSlot = slot.assignedNodes().length > 0;
+    this._syncStartSlotWidth();
+  };
 
   private _syncStartSlotWidth = () => {
     const startEl = this._input?.shadowRoot?.querySelector(
@@ -484,7 +533,8 @@ export class HaInput extends LitElement {
     }
 
     wa-input.label-raised::part(label),
-    :host(:focus-within) wa-input::part(label) {
+    :host(:focus-within) wa-input::part(label),
+    :host([type="date"]) wa-input::part(label) {
       padding-top: var(--ha-space-3);
       font-size: var(--ha-font-size-xs);
     }
@@ -537,6 +587,12 @@ export class HaInput extends LitElement {
     :host([appearance="material"])
       wa-input.invalid:not([disabled])::part(base)::after {
       background-color: var(--ha-color-border-danger-normal);
+    }
+
+    wa-input::part(start) {
+      max-width: var(--ha-input-start-max-width, none);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     wa-input::part(input) {

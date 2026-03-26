@@ -1,25 +1,39 @@
 name: RelativeCI
 
 on:
+  # zizmor: ignore[dangerous-triggers] -- safe: only downloads artifacts, no PR code checkout
   workflow_run:
     workflows: [CI]
     types:
       - completed
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
-  upload:
-    name: Upload stats
+  upload-frontend-modern:
+    name: Upload stats (frontend/modern)
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    strategy:
-      matrix:
-        bundle: [frontend]
-        build: [modern, legacy]
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
         uses: relative-ci/agent-action@3c681926017930047fc03acaa35cd6a44efcbfc3 # v3.2.2
         with:
-          key: ${{ secrets[format('RELATIVE_CI_KEY_{0}_{1}', matrix.bundle, matrix.build)] }}
+          key: ${{ secrets.RELATIVE_CI_KEY_frontend_modern }}
           token: ${{ github.token }}
-          artifactName: ${{ format('{0}-bundle-stats', matrix.bundle) }}
-          webpackStatsFile: ${{ format('{0}-{1}.json', matrix.bundle, matrix.build) }}
+          artifactName: frontend-bundle-stats
+          webpackStatsFile: frontend-modern.json
+
+  upload-frontend-legacy:
+    name: Upload stats (frontend/legacy)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send bundle stats and build information to RelativeCI
+        uses: relative-ci/agent-action@3c681926017930047fc03acaa35cd6a44efcbfc3 # v3.2.2
+        with:
+          key: ${{ secrets.RELATIVE_CI_KEY_frontend_legacy }}
+          token: ${{ github.token }}
+          artifactName: frontend-bundle-stats
+          webpackStatsFile: frontend-legacy.json

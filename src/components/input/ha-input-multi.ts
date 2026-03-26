@@ -14,6 +14,23 @@ import "../ha-sortable";
 import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
+/**
+ * Home Assistant multi-value input component
+ *
+ * @element ha-input-multi
+ * @extends {LitElement}
+ *
+ * @summary
+ * A dynamic list of text inputs that allows adding, removing, and optionally reordering values.
+ * Useful for managing arrays of strings such as URLs, tags, or other repeated text values.
+ *
+ * @attr {boolean} disabled - Disables all inputs and buttons.
+ * @attr {boolean} sortable - Enables drag-and-drop reordering of items.
+ * @attr {boolean} item-index - Appends a 1-based index number to each item's label.
+ * @attr {boolean} update-on-blur - Fires value-changed on blur instead of on input.
+ *
+ * @fires value-changed - Fired when the list of values changes. `event.detail.value` contains the new string array.
+ */
 @customElement("ha-input-multi")
 class HaInputMulti extends LitElement {
   @property({ attribute: false }) public value?: string[];
@@ -22,19 +39,19 @@ class HaInputMulti extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public helper?: string;
+  @property() public helper?: string;
 
-  @property({ attribute: false }) public inputType?: InputType;
+  @property({ attribute: "input-type" }) public inputType?: InputType;
 
-  @property({ attribute: false }) public inputSuffix?: string;
+  @property({ attribute: "input-suffix" }) public inputSuffix?: string;
 
-  @property({ attribute: false }) public inputPrefix?: string;
+  @property({ attribute: "input-prefix" }) public inputPrefix?: string;
 
-  @property({ attribute: false }) public autocomplete?: string;
+  @property() public autocomplete?: string;
 
-  @property({ attribute: false }) public addLabel?: string;
+  @property({ attribute: "add-label" }) public addLabel?: string;
 
-  @property({ attribute: false }) public removeLabel?: string;
+  @property({ attribute: "remove-label" }) public removeLabel?: string;
 
   @property({ attribute: "item-index", type: Boolean })
   public itemIndex = false;
