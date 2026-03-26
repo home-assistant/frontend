@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiPalette } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -42,9 +43,11 @@ import type {
   EntitiesEditorEvent,
 } from "../types";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { getStates } from "../../../../common/entity/get_states";
 import type { Condition } from "../../common/validate-condition";
 import type { LovelaceCardEditor } from "../../types";
 import "../conditions/ha-card-condition-editor";
+import type { PresetState } from "../conditions/types/ha-card-condition-state";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
@@ -106,6 +109,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
   private _locationEntities: string[] = [];
+
+  private _presetStates: PresetState[] = [];
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -228,6 +233,32 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     })
   );
 
+  private _preparePresetStates() {
+    if (!this.hass || this._presetStates.length) {
+      return;
+    }
+    const mockStateObj: HassEntity = {
+      entity_id: "device_tracker.xxx",
+      attributes: {},
+      state: "home",
+      last_changed: "",
+      last_updated: "",
+      context: {
+        id: "",
+        user_id: null,
+        parent_id: null,
+      },
+    };
+    const states = getStates(this.hass, mockStateObj);
+    states.forEach((state) => {
+      const stateTranslated = this.hass!.formatEntityState(mockStateObj, state);
+      this._presetStates.push({
+        value: state,
+        label: stateTranslated,
+      });
+    });
+  }
+
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
 
@@ -261,6 +292,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       : Object.keys(this.hass!.states).filter((entity_id) =>
           hasLocation(this.hass!.states[entity_id])
         );
+    this._preparePresetStates();
   }
 
   protected render() {
@@ -347,6 +379,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         no-entity
         .hass=${this.hass!}
         .conditions=${conditions}
+        .presetStates=${this._presetStates}
         @value-changed=${this._conditionsChanged}
       >
       </ha-card-conditions-editor>
