@@ -87,9 +87,7 @@ export class HaEntityNamePicker extends LitElement {
     if (this.hasUpdated) {
       const items = this._toItems(this.value);
       this._mode =
-        items.length === 1 && items[0].type === "text"
-          ? "custom"
-          : "composed";
+        items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
   }
 
@@ -97,9 +95,7 @@ export class HaEntityNamePicker extends LitElement {
     if (this._mode === undefined) {
       const items = this._toItems(this.value);
       this._mode =
-        items.length === 1 && items[0].type === "text"
-          ? "custom"
-          : "composed";
+        items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
   }
 
