@@ -300,23 +300,17 @@ export class StateHistoryChartLine extends LitElement {
           show: this.showNames,
           data: this._chartData
             .map((d, i) => ({ dataset: d, entityId: this._entityIds[i] }))
-            .filter((item) => {
-              const id = item.dataset.id as string;
-              // Include climate action modes even if they have areaStyle
-              const isClimateAction =
-                id.endsWith("-heating") ||
-                id.endsWith("-cooling") ||
-                id.endsWith("-drying") ||
-                id.endsWith("-fan");
-              // Include non-area items or climate action items
-              return (
-                !(item.dataset as LineSeriesOption).areaStyle || isClimateAction
-              );
-            })
-            .map((item) => ({
-              id: item.dataset.id as string,
-              name: item.dataset.name as string,
-            })),
+            .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
+            .map((item) => {
+              const stateObj = this.hass.states[item.entityId];
+              return {
+                id: item.dataset.id as string,
+                name: item.dataset.name as string,
+                value: stateObj
+                  ? this.hass.formatEntityState(stateObj)
+                  : undefined,
+              };
+            }),
         },
         grid: {
           top: 15,
