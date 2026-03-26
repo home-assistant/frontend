@@ -33,7 +33,7 @@ const UNIT_CONVERT_TO_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
 interface UnitClassConversion {
   needs_class?: boolean;
   base: string;
-  units: Record<string, number | Record<UnitConvertOpType, number>[]>;
+  units: Record<string, number | [UnitConvertOpType, number][]>;
   inverse?: string[];
 }
 function instanceOfObject(object: any): object is object {
@@ -91,11 +91,12 @@ export class UnitConverter {
         // convert to consistent format for parsing.
         this._unitConversion[key] = value
           .map((op): UnitConvertOpInfo | undefined => {
-            const opKey = Object.keys(op).find((opType) =>
-              (Object.values(UnitConvertOpType) as string[])?.includes(opType)
-            );
-            if (!opKey) return undefined;
-            return [opKey as UnitConvertOpType, op[opKey]];
+            const [opType, _factor] = op;
+            if (
+              !(Object.values(UnitConvertOpType) as string[])?.includes(opType)
+            )
+              return undefined;
+            return op;
           })
           .filter((x) => x !== undefined);
       }

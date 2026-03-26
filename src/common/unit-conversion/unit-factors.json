@@ -1,19 +1,17 @@
 {
   "apparent_power": {
     "base": "VA",
-    "units": {
-      "mVA": 1000,
-      "VA": 1,
-      "kVA": 0.001
-    }
+    "inverse": [],
+    "units": { "mVA": 1000, "VA": 1, "kVA": 0.001 }
   },
   "area": {
     "base": "m²",
+    "inverse": [],
     "units": {
       "m²": 1,
-      "cm²": 10000,
-      "mm²": 1000000,
-      "km²": 0.000001,
+      "cm²": 10000.0,
+      "mm²": 1000000.0,
+      "km²": 1e-6,
       "in²": 1550.0031000062002,
       "ft²": 10.763910416709725,
       "yd²": 1.1959900463010806,
@@ -24,25 +22,21 @@
   },
   "blood_glucose_concentration": {
     "base": "mmol/L",
-    "units": {
-      "mg/dL": 18.016,
-      "mmol/L": 1
-    }
+    "inverse": [],
+    "units": { "mg/dL": 18.016, "mmol/L": 1 }
   },
   "conductivity": {
     "base": "μS/cm",
-    "units": {
-      "μS/cm": 1,
-      "mS/cm": 0.001,
-      "S/cm": 0.000001
-    }
+    "inverse": [],
+    "units": { "μS/cm": 1, "mS/cm": 0.001, "S/cm": 1e-6 }
   },
   "data_rate": {
     "base": "bit/s",
+    "inverse": [],
     "units": {
       "bit/s": 1,
       "kbit/s": 0.001,
-      "Mbit/s": 0.000001,
+      "Mbit/s": 1e-6,
       "Gbit/s": 1e-9,
       "B/s": 0.125,
       "kB/s": 0.000125,
@@ -55,10 +49,11 @@
   },
   "distance": {
     "base": "m",
+    "inverse": [],
     "units": {
       "m": 1,
-      "mm": 1000,
-      "cm": 100,
+      "mm": 1000.0,
+      "cm": 100.0,
       "km": 0.001,
       "in": 39.37007874015748,
       "ft": 3.280839895013124,
@@ -69,6 +64,7 @@
   },
   "duration": {
     "base": "s",
+    "inverse": [],
     "units": {
       "μs": 1000000,
       "ms": 1000,
@@ -76,38 +72,32 @@
       "min": 0.016666666666666666,
       "h": 0.0002777777777777778,
       "d": 0.000011574074074074073,
-      "w": 0.0000016534391534391535
+      "w": 1.6534391534391535e-6
     }
   },
   "electric_current": {
     "base": "A",
-    "units": {
-      "A": 1,
-      "mA": 1000
-    }
+    "inverse": [],
+    "units": { "A": 1, "mA": 1000.0 }
   },
   "voltage": {
     "base": "V",
-    "units": {
-      "V": 1,
-      "mV": 1000,
-      "μV": 1000000,
-      "kV": 0.001,
-      "MV": 0.000001
-    }
+    "inverse": [],
+    "units": { "V": 1, "mV": 1000.0, "μV": 1000000.0, "kV": 0.001, "MV": 1e-6 }
   },
   "energy": {
     "base": "kWh",
+    "inverse": [],
     "units": {
-      "J": 3600000,
+      "J": 3600000.0,
       "kJ": 3600,
       "MJ": 3.6,
       "GJ": 0.0036,
-      "mWh": 1000000,
-      "Wh": 1000,
+      "mWh": 1000000.0,
+      "Wh": 1000.0,
       "kWh": 1,
       "MWh": 0.001,
-      "GWh": 0.000001,
+      "GWh": 1e-6,
       "TWh": 1e-9,
       "cal": 860420.6500956023,
       "kcal": 860.4206500956022,
@@ -127,10 +117,11 @@
   },
   "information": {
     "base": "bit",
+    "inverse": [],
     "units": {
       "bit": 1,
       "kbit": 0.001,
-      "Mbit": 0.000001,
+      "Mbit": 1e-6,
       "Gbit": 1e-9,
       "B": 0.125,
       "kB": 0.000125,
@@ -140,7 +131,7 @@
       "PB": 1.25e-16,
       "EB": 1.25e-19,
       "ZB": 1.25e-22,
-      "YB": 1.25e-25,
+      "YB": 1.2500000000000001e-25,
       "KiB": 0.0001220703125,
       "MiB": 1.1920928955078125e-7,
       "GiB": 1.1641532182693481e-10,
@@ -153,6 +144,7 @@
   },
   "mass": {
     "base": "g",
+    "inverse": [],
     "units": {
       "μg": 1000000,
       "mg": 1000,
@@ -165,19 +157,17 @@
   },
   "concentration": {
     "base": "g/m³",
-    "units": {
-      "μg/m³": 1000000,
-      "mg/m³": 1000,
-      "g/m³": 1
-    }
+    "inverse": [],
+    "units": { "μg/m³": 1000000.0, "mg/m³": 1000.0, "g/m³": 1 }
   },
   "power": {
     "base": "W",
+    "inverse": [],
     "units": {
       "mW": 1000,
       "W": 1,
       "kW": 0.001,
-      "MW": 0.000001,
+      "MW": 1e-6,
       "GW": 1e-9,
       "TW": 1e-12,
       "BTU/h": 3.4121416351330756
@@ -185,6 +175,7 @@
   },
   "pressure": {
     "base": "Pa",
+    "inverse": [],
     "units": {
       "mPa": 1000,
       "Pa": 1,
@@ -201,64 +192,61 @@
   },
   "reactive_energy": {
     "base": "varh",
-    "units": {
-      "varh": 1,
-      "kvarh": 0.001
-    }
+    "inverse": [],
+    "units": { "varh": 1, "kvarh": 0.001 }
   },
   "reactive_power": {
     "base": "var",
-    "units": {
-      "mvar": 1000,
-      "var": 1,
-      "kvar": 0.001
-    }
+    "inverse": [],
+    "units": { "mvar": 1000, "var": 1, "kvar": 0.001 }
   },
   "speed": {
     "base": "m/s",
+    "inverse": [],
     "units": {
       "in/d": 3401574.8031496066,
       "in/h": 141732.28346456692,
-      "mm/d": 86400000,
-      "mm/h": 3600000,
+      "mm/d": 86400000.0,
+      "mm/h": 3600000.0,
       "ft/s": 3.280839895013124,
       "in/s": 39.37007874015748,
       "km/h": 3.6,
       "kn": 1.9438444924406046,
       "m/min": 60,
       "m/s": 1,
-      "mm/s": 1000,
+      "mm/s": 1000.0,
       "mph": 2.2369362920544025,
       "Beaufort": [
-        { "scale": 1.1961722488038278 },
-        { "power": 2 },
-        { "power": 0.3333333333333333 },
-        { "round": 0 }
+        ["scale", 1.1961722488038278],
+        ["power", 2],
+        ["power", 0.3333333333333333],
+        ["round", 0]
       ]
     }
   },
   "temperature": {
     "base": "°C",
+    "inverse": [],
     "units": {
-      "°C": 1,
-      "°F": [{ "scale": 1.8 }, { "offset": 32.0 }],
-      "K": [{ "offset": 273.15 }]
+      "°C": 1.0,
+      "°F": [
+        ["scale", 1.8],
+        ["offset", 32.0]
+      ],
+      "K": [["offset", 273.15]]
     }
   },
   "unitless": {
     "base": "",
-    "units": {
-      "": 1,
-      "ppb": 1000000000,
-      "ppm": 1000000,
-      "%": 100
-    }
+    "inverse": [],
+    "units": { "": 1, "ppb": 1000000000, "ppm": 1000000, "%": 100 }
   },
   "volume": {
     "base": "m³",
+    "inverse": [],
     "units": {
-      "L": 1000,
-      "mL": 1000000,
+      "L": 1000.0,
+      "mL": 1000000.0,
       "gal": 264.17205235814845,
       "fl. oz.": 33814.022701843,
       "m³": 1,
@@ -269,12 +257,13 @@
   },
   "volume_flow_rate": {
     "base": "m³/h",
+    "inverse": [],
     "units": {
       "m³/h": 1,
       "m³/min": 0.016666666666666666,
       "m³/s": 0.0002777777777777778,
       "ft³/min": 0.5885777786914768,
-      "L/h": 1000,
+      "L/h": 1000.0,
       "L/min": 16.666666666666668,
       "L/s": 0.2777777777777778,
       "gal/h": 264.17205235814845,
@@ -284,56 +273,44 @@
     }
   },
   "carbon_monoxide": {
-    "needs_class": true,
     "base": "ppb",
+    "inverse": [],
     "units": {
       "ppb": 1,
       "ppm": 0.001,
       "mg/m³": 0.001164409225500478,
       "μg/m³": 1.164409225500478
-    }
+    },
+    "needs_class": true
   },
   "nitrogen_dioxide": {
-    "needs_class": true,
     "base": "ppb",
-    "units": {
-      "ppb": 1,
-      "ppm": 0.001,
-      "μg/m³": 1.9125036995273914
-    }
+    "inverse": [],
+    "units": { "ppb": 1, "ppm": 0.001, "μg/m³": 1.9125036995273916 },
+    "needs_class": true
   },
   "nitrogen_monoxide": {
-    "needs_class": true,
     "base": "ppb",
-    "units": {
-      "ppb": 1,
-      "μg/m³": 1.2473894916561903
-    }
+    "inverse": [],
+    "units": { "ppb": 1, "μg/m³": 1.2473894916561903 },
+    "needs_class": true
   },
   "ozone": {
-    "needs_class": true,
     "base": "ppb",
-    "units": {
-      "ppb": 1,
-      "ppm": 0.001,
-      "μg/m³": 1.9954174517680452
-    }
+    "inverse": [],
+    "units": { "ppb": 1, "ppm": 0.001, "μg/m³": 1.9954174517680452 },
+    "needs_class": true
   },
   "sulphur_dioxide": {
-    "needs_class": true,
     "base": "ppb",
-    "units": {
-      "ppb": 1,
-      "μg/m³": 2.663300301353574
-    }
+    "inverse": [],
+    "units": { "ppb": 1, "μg/m³": 2.6633003013535745 },
+    "needs_class": true
   },
   "temperature_delta": {
-    "needs_class": true,
     "base": "°C",
-    "units": {
-      "°C": 1,
-      "°F": 1.8,
-      "K": 1
-    }
+    "inverse": [],
+    "units": { "°C": 1.0, "°F": 1.8, "K": 1.0 },
+    "needs_class": true
   }
 }
