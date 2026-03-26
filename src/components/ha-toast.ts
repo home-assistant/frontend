@@ -1,5 +1,3 @@
-import "@home-assistant/webawesome/dist/components/popup/popup";
-import type WaPopup from "@home-assistant/webawesome/dist/components/popup/popup";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -21,9 +19,6 @@ export class HaToast extends LitElement {
   @property({ attribute: "label-text" }) public labelText = "";
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
-
-  @query("wa-popup")
-  private _popup?: WaPopup;
 
   @query(".toast")
   private _toast?: HTMLDivElement;
@@ -48,7 +43,6 @@ export class HaToast extends LitElement {
     clearTimeout(this._dismissTimer);
 
     if (this._active && this._visible) {
-      this._popup?.reposition();
       this._setDismissTimer();
       return;
     }
@@ -62,7 +56,7 @@ export class HaToast extends LitElement {
       return;
     }
 
-    this._popup?.reposition();
+    this._showToastPopover();
     await nextRender();
 
     if (transitionId !== this._transitionId) {
@@ -102,6 +96,7 @@ export class HaToast extends LitElement {
       return;
     }
 
+    this._hideToastPopover();
     this._active = false;
     await this.updateComplete;
 
@@ -123,6 +118,22 @@ export class HaToast extends LitElement {
     }
   }
 
+  private _showToastPopover(): void {
+    if (!this._toast || this._toast.matches(":popover-open")) {
+      return;
+    }
+
+    this._toast.showPopover();
+  }
+
+  private _hideToastPopover(): void {
+    if (!this._toast || !this._toast.matches(":popover-open")) {
+      return;
+    }
+
+    this._toast.hidePopover();
+  }
+
   private async _waitForTransitionEnd(): Promise<void> {
     const toastEl = this._toast;
     if (!toastEl) {
@@ -139,59 +150,49 @@ export class HaToast extends LitElement {
 
   protected render() {
     return html`
-      <wa-popup
-        placement="top"
-        .active=${this._active}
-        .distance=${16}
-        skidding="0"
-        flip
-        shift
+      <div
+        class=${classMap({
+          toast: true,
+          visible: this._visible,
+        })}
+        role="status"
+        aria-live="polite"
+        popover="manual"
       >
-        <div id="toast-anchor" slot="anchor" aria-hidden="true"></div>
-        <div
-          class=${classMap({
-            toast: true,
-            visible: this._visible,
-          })}
-          role="status"
-          aria-live="polite"
-        >
-          <span class="message">${this.labelText}</span>
-          <div class="actions">
-            <slot name="action"></slot>
-            <slot name="dismiss"></slot>
-          </div>
+        <span class="message">${this.labelText}</span>
+        <div class="actions">
+          <slot name="action"></slot>
+          <slot name="dismiss"></slot>
         </div>
-      </wa-popup>
+      </div>
     `;
   }
 
   static override styles = css`
-    #toast-anchor {
+    .toast,
+    .toast:popover-open {
       position: fixed;
-      bottom: var(--safe-area-inset-bottom);
+      inset-block-start: auto;
+      inset-inline-end: auto;
+      inset-block-end: calc(
+        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
+      );
       inset-inline-start: 50%;
-      transform: translateX(-50%);
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    wa-popup::part(popup) {
+      margin: 0;
+      width: max-content;
+      height: auto;
       padding: 0;
-      border-radius: var(--ha-border-radius-sm);
-      box-shadow: var(--wa-shadow-l);
+      color: unset;
+      background: unset;
+      border: none;
       overflow: hidden;
-    }
-
-    .toast {
       box-sizing: border-box;
       min-width: min(
         350px,
         calc(
-          100vw - var(--ha-space-4) - var(--safe-area-inset-left) - var(
-              --safe-area-inset-right
+          100vw - var(--ha-space-4) - var(--safe-area-inset-left, 0px) - var(
+              --safe-area-inset-right,
+              0px
             )
         )
       );
@@ -204,8 +205,9 @@ export class HaToast extends LitElement {
       color: var(--ha-color-on-neutral-loud);
       background-color: var(--ha-color-neutral-10);
       border-radius: var(--ha-border-radius-sm);
+      box-shadow: var(--wa-shadow-l);
       opacity: 0;
-      transform: translateY(var(--ha-space-2));
+      transform: translate(-50%, var(--ha-space-2));
       transition:
         opacity var(--ha-animation-duration-fast, 150ms) ease,
         transform var(--ha-animation-duration-fast, 150ms) ease;
@@ -213,7 +215,7 @@ export class HaToast extends LitElement {
 
     .toast.visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate(-50%, 0);
     }
 
     .message {
@@ -229,13 +231,13 @@ export class HaToast extends LitElement {
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
-      wa-popup::part(popup) {
-        border-radius: var(--ha-border-radius-square);
-      }
-
-      .toast {
+      .toast,
+      .toast:popover-open {
         min-width: calc(
-          100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right)
+          100vw - var(--safe-area-inset-left, 0px) - var(
+              --safe-area-inset-right,
+              0px
+            )
         );
         border-radius: var(--ha-border-radius-square);
       }
