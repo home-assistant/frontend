@@ -169,6 +169,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {
