@@ -129,14 +129,8 @@ export class UnitConverter {
     }
     // Otherwise prepare conversion operations
     const convertOps: UnitConvertOp[] = [
-      ...this._unitConversion[fromUnit]
-        .map(
-          ([op, factor]): UnitConvertOp => [UNIT_CONVERT_FROM_OP[op], factor]
-        )
-        .reverse(),
-      ...this._unitConversion[toUnit].map(
-        ([op, factor]): UnitConvertOp => [UNIT_CONVERT_TO_OP[op], factor]
-      ),
+      ...this._getUnitOps(fromUnit, true),
+      ...this._getUnitOps(toUnit, false),
     ];
     // And convert result
     let result: number = value;
@@ -144,6 +138,18 @@ export class UnitConverter {
       result = op(result, factor);
     });
     return result;
+  }
+
+  private _getUnitOps(unit: string, from: boolean): UnitConvertOp[] {
+    // No operations to perform if unit is already the base unit
+    if (unit === this._baseUnit) return [];
+    // Otherwise map unit unit conversion to correct direction of operations
+    const opMap = from ? UNIT_CONVERT_FROM_OP : UNIT_CONVERT_TO_OP;
+    const ops = this._unitConversion[unit].map(
+      ([op, factor]): UnitConvertOp => [opMap[op], factor]
+    );
+    // Return ops in reverse order if this is from unit.
+    return from ? ops.reverse() : ops;
   }
 
   public getBaseUnit(): string {
