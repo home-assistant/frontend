@@ -1,11 +1,6 @@
-import {
-  autoUpdate,
-  computePosition,
-  flip,
-  offset,
-  shift,
-} from "@floating-ui/dom";
-import { css, html, LitElement, nothing } from "lit";
+import "@home-assistant/webawesome/dist/components/popup/popup";
+import type WaPopup from "@home-assistant/webawesome/dist/components/popup/popup";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -27,11 +22,8 @@ export class HaToast extends LitElement {
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
 
-  @query("#toast-anchor")
-  private _anchor?: HTMLDivElement;
-
-  @query(".popup")
-  private _popup?: HTMLDivElement;
+  @query("wa-popup")
+  private _popup?: WaPopup;
 
   @query(".toast")
   private _toast?: HTMLDivElement;
@@ -46,11 +38,8 @@ export class HaToast extends LitElement {
 
   private _transitionId = 0;
 
-  private _cleanupAutoUpdate?: ReturnType<typeof autoUpdate>;
-
   public disconnectedCallback(): void {
     clearTimeout(this._dismissTimer);
-    this._stopPositioning();
     this._transitionId += 1;
     super.disconnectedCallback();
   }
@@ -59,7 +48,7 @@ export class HaToast extends LitElement {
     clearTimeout(this._dismissTimer);
 
     if (this._active && this._visible) {
-      this._reposition();
+      this._popup?.reposition();
       this._setDismissTimer();
       return;
     }
@@ -73,7 +62,7 @@ export class HaToast extends LitElement {
       return;
     }
 
-    this._startPositioning();
+    this._popup?.reposition();
     await nextRender();
 
     if (transitionId !== this._transitionId) {
@@ -114,7 +103,6 @@ export class HaToast extends LitElement {
     }
 
     this._active = false;
-    this._stopPositioning();
     await this.updateComplete;
 
     fireEvent(this, "toast-closed", {
@@ -135,47 +123,6 @@ export class HaToast extends LitElement {
     }
   }
 
-  private _startPositioning(): void {
-    const anchor = this._anchor;
-    const popup = this._popup;
-
-    if (!anchor || !popup) {
-      return;
-    }
-
-    this._cleanupAutoUpdate?.();
-    this._cleanupAutoUpdate = autoUpdate(anchor, popup, () => {
-      this._reposition();
-    });
-
-    this._reposition();
-  }
-
-  private _stopPositioning(): void {
-    this._cleanupAutoUpdate?.();
-    this._cleanupAutoUpdate = undefined;
-  }
-
-  private _reposition(): void {
-    const anchor = this._anchor;
-    const popup = this._popup;
-
-    if (!anchor || !popup) {
-      return;
-    }
-
-    computePosition(anchor, popup, {
-      placement: "top",
-      strategy: "fixed",
-      middleware: [offset(16), flip(), shift()],
-    }).then(({ x, y }) => {
-      Object.assign(popup.style, {
-        left: `${x}px`,
-        top: `${y}px`,
-      });
-    });
-  }
-
   private async _waitForTransitionEnd(): Promise<void> {
     const toastEl = this._toast;
     if (!toastEl) {
@@ -192,27 +139,30 @@ export class HaToast extends LitElement {
 
   protected render() {
     return html`
-      <div id="toast-anchor" aria-hidden="true"></div>
-      ${this._active
-        ? html`
-            <div class="popup">
-              <div
-                class=${classMap({
-                  toast: true,
-                  visible: this._visible,
-                })}
-                role="status"
-                aria-live="polite"
-              >
-                <span class="message">${this.labelText}</span>
-                <div class="actions">
-                  <slot name="action"></slot>
-                  <slot name="dismiss"></slot>
-                </div>
-              </div>
-            </div>
-          `
-        : nothing}
+      <wa-popup
+        placement="top"
+        .active=${this._active}
+        .distance=${16}
+        skidding="0"
+        flip
+        shift
+      >
+        <div id="toast-anchor" slot="anchor" aria-hidden="true"></div>
+        <div
+          class=${classMap({
+            toast: true,
+            visible: this._visible,
+          })}
+          role="status"
+          aria-live="polite"
+        >
+          <span class="message">${this.labelText}</span>
+          <div class="actions">
+            <slot name="action"></slot>
+            <slot name="dismiss"></slot>
+          </div>
+        </div>
+      </wa-popup>
     `;
   }
 
@@ -228,8 +178,7 @@ export class HaToast extends LitElement {
       pointer-events: none;
     }
 
-    .popup {
-      position: fixed;
+    wa-popup::part(popup) {
       padding: 0;
       border-radius: var(--ha-border-radius-sm);
       box-shadow: var(--wa-shadow-l);
@@ -280,7 +229,7 @@ export class HaToast extends LitElement {
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
-      .popup {
+      wa-popup::part(popup) {
         border-radius: var(--ha-border-radius-square);
       }
 

@@ -1516,7 +1516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:1.7.6, @floating-ui/dom@npm:^1.6.13":
+"@floating-ui/dom@npm:^1.6.13":
   version: 1.7.6
   resolution: "@floating-ui/dom@npm:1.7.6"
   dependencies:
@@ -8868,7 +8868,6 @@ __metadata:
     "@codemirror/view": "npm:6.40.0"
     "@date-fns/tz": "npm:1.4.1"
     "@egjs/hammerjs": "npm:2.0.17"
-    "@floating-ui/dom": "npm:1.7.6"
     "@formatjs/intl-datetimeformat": "npm:7.3.1"
     "@formatjs/intl-displaynames": "npm:7.3.1"
     "@formatjs/intl-durationformat": "npm:0.10.3"
