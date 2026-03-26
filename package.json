@@ -37,6 +37,7 @@
     "@codemirror/view": "6.40.0",
     "@date-fns/tz": "1.4.1",
     "@egjs/hammerjs": "2.0.17",
+    "@floating-ui/dom": "1.7.6",
     "@formatjs/intl-datetimeformat": "7.3.1",
     "@formatjs/intl-displaynames": "7.3.1",
     "@formatjs/intl-durationformat": "0.10.3",
