@@ -10,6 +10,7 @@ import type {
   StateCondition,
 } from "../../../common/validate-condition";
 import "../ha-card-conditions-editor";
+import type { PresetState } from "./ha-card-condition-state";
 
 const notConditionStruct = object({
   condition: literal("not"),
@@ -24,7 +25,9 @@ export class HaCardConditionNot extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public no_entity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   public static get defaultConfig(): NotCondition {
     return { condition: "not", conditions: [] };
@@ -41,6 +44,7 @@ export class HaCardConditionNot extends LitElement {
         .hass=${this.hass}
         .conditions=${this.condition.conditions}
         .no_entity=${this.no_entity}
+        .presetStates=${this.presetStates}
         @value-changed=${this._valueChanged}
       >
       </ha-card-conditions-editor>
