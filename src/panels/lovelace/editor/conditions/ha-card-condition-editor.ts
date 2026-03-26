@@ -21,6 +21,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -42,29 +43,36 @@ import {
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import type { PresetState } from "./types/ha-card-condition-state";
 
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
+
+const CONTAINER_CONDITIONS = ["and", "or", "not"];
+
+const NO_ENTITY_CONDITIONS_EXT = [
+  ...CONTAINER_CONDITIONS,
+  ...NO_ENTITY_CONDITIONS,
+];
+
+const isNoEntityCondition = (condition: string, no_entity: boolean): boolean =>
+  NO_ENTITY_CONDITIONS.includes(condition) && no_entity;
 
 export const getConditionClassName = (
   condition: string,
   no_entity: boolean
 ) => {
-  if (NO_ENTITY_CONDITIONS.includes(condition) && no_entity) {
+  if (isNoEntityCondition(condition, no_entity)) {
     return `ha-card-condition-${condition}-no_entity`;
   }
   return `ha-card-condition-${condition}`;
 };
-
-const isNoEntityCondition = (condition: string, no_entity: boolean): boolean =>
-  NO_ENTITY_CONDITIONS.includes(condition) && no_entity;
 
 const containsNoEntityCondition = (
   condition: Condition,
   no_entity: boolean
 ): boolean =>
   no_entity &&
-  ["and", "or", "not"].includes(condition.condition) &&
+  CONTAINER_CONDITIONS.includes(condition.condition) &&
   (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
     (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
   ) === true;
@@ -75,7 +83,9 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
-  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public no_entity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -255,7 +265,15 @@ export class HaCardConditionEditor extends LitElement {
                     {
                       hass: this.hass,
                       condition: condition,
-                      ...(this.no_entity ? { no_entity: this.no_entity } : {}),
+                      ...(this.no_entity &&
+                      NO_ENTITY_CONDITIONS_EXT.includes(condition.condition)
+                        ? {
+                            no_entity: this.no_entity,
+                            ...(condition.condition === "numeric_state"
+                              ? {}
+                              : { presetStates: this.presetStates }),
+                          }
+                        : {}),
                     }
                   )}
                 `}
