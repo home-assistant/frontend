@@ -57,6 +57,7 @@ export class HaButton extends Button {
         .button {
           font-size: var(--ha-font-size-m);
           line-height: 1;
+          -webkit-tap-highlight-color: transparent;
 
           transition: background-color var(--ha-animation-duration-fast)
             ease-out;
