@@ -1,22 +1,22 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
   generateEntityFilter,
   type EntityFilter,
-} from "../../../common/entity/entity_filter";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
-import { floorDefaultIcon } from "../../../components/ha-floor-icon";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../types";
-import type { TileCardConfig } from "../../lovelace/cards/types";
+} from "../../../../common/entity/entity_filter";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+import type { TileCardConfig } from "../../cards/types";
 
-export interface BatteryViewStrategyConfig {
-  type: "battery";
+export interface HomeBatteryViewStrategyConfig {
+  type: "home-battery";
 }
 
 export const batteryEntityFilters: EntityFilter[] = [
@@ -105,9 +105,9 @@ const processUnassignedEntities = (
 };
 
 @customElement("home-battery-view-strategy")
-export class BatteryViewStrategy extends ReactiveElement {
+export class HomeBatteryViewStrategy extends ReactiveElement {
   static async generate(
-    _config: BatteryViewStrategyConfig,
+    _config: HomeBatteryViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -215,6 +215,6 @@ export class BatteryViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "battery-view-strategy": BatteryViewStrategy;
+    "home-battery-view-strategy": HomeBatteryViewStrategy;
   }
 }
