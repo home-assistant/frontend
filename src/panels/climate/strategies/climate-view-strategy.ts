@@ -65,9 +65,9 @@ const processAreasForClimate = (
     if (temperatureEntityId && hass.states[temperatureEntityId]) {
       areaCards.push({
         ...computeTileCard(temperatureEntityId),
-        name: {
-          type: "entity",
-        },
+        name:
+          hass.localize("component.sensor.entity_component.temperature.name") ||
+          "Temperature",
         features: [{ type: "trend-graph" }],
       });
     }
@@ -76,9 +76,9 @@ const processAreasForClimate = (
     if (humidityEntityId && hass.states[humidityEntityId]) {
       areaCards.push({
         ...computeTileCard(humidityEntityId),
-        name: {
-          type: "entity",
-        },
+        name:
+          hass.localize("component.sensor.entity_component.humidity.name") ||
+          "Humidity",
         features: [{ type: "trend-graph" }],
       });
     }
