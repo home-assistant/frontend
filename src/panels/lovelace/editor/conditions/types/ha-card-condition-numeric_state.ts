@@ -30,7 +30,7 @@ export class HaCardConditionNumericState extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public no_entity = false;
 
   public static get defaultConfig(): NumericStateCondition {
     return { condition: "numeric_state", entity: "" };
