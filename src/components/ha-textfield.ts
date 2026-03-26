@@ -283,6 +283,9 @@ export class HaTextField extends LitElement {
     .prefix {
       padding-top: var(--ha-space-3);
       margin-inline-end: var(--text-field-prefix-padding-right);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   `;
 }

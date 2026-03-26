@@ -25,7 +25,6 @@ import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -146,11 +145,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const indexValue = stateParts.findIndex((part) => part.type === "value");
     const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 

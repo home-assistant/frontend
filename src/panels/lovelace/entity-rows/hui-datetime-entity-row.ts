@@ -7,7 +7,6 @@ import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -53,11 +52,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
     const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
 
     return html`
       <hui-generic-entity-row
