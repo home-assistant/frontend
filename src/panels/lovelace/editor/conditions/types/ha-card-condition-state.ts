@@ -27,6 +27,11 @@ interface StateConditionData {
   state?: string | string[];
 }
 
+export interface PresetState {
+  value: string;
+  label: string;
+}
+
 @customElement("ha-card-condition-state")
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -35,7 +40,9 @@ export class HaCardConditionState extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public no_entity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
@@ -90,13 +97,20 @@ export class HaCardConditionState extends LitElement {
               },
             },
             {
-              name: "state",
-              selector: {
-                state: {},
-              },
               ...(this.no_entity
-                ? {}
+                ? {
+                    name: "state",
+                    selector: {
+                      state_no_entity: {
+                        extra_options: this.presetStates,
+                      },
+                    },
+                  }
                 : {
+                    name: "state",
+                    selector: {
+                      state: {},
+                    },
                     context: {
                       filter_entity: "entity",
                     },
