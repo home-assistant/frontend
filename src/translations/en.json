@@ -724,8 +724,10 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
+          "mode_composed": "Composed",
+          "mode_custom": "Custom",
           "add": "Add",
-          "search": "Search or enter custom name",
+          "search": "Search name",
           "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
