@@ -62,11 +62,10 @@ jobs:
           skip-existing: true
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
-        with:
-          files: |
-            dist/*.whl
-            dist/*.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG_NAME" dist/*.whl dist/*.tar.gz --clobber
 
   wheels-init:
     name: Init wheels build
@@ -115,6 +114,7 @@ jobs:
       - name: Tar folder
         run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
       - name: Upload release asset
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
-        with:
-          files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG_NAME" "landing-page/home_assistant_frontend_landingpage-${TAG_NAME}.tar.gz" --clobber
