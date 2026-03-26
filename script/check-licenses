@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+// Checks that all production dependencies use approved open-source licenses.
+//
+// To allow a new license type, add its SPDX identifier to ALLOWED_LICENSES.
+// To allow a specific package that cannot be relicensed (e.g. a dual-license
+// package where the reported identifier is non-standard), add it to
+// ALLOWED_PACKAGES with a comment explaining why.
+
+import checker from "license-checker";
+import { createRequire } from "module";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const require = createRequire(import.meta.url);
+const root = path.resolve(fileURLToPath(import.meta.url), "../../");
+
+// Permissive licenses that are compatible with distribution in a compiled wheel.
+// Copyleft licenses (GPL, LGPL, AGPL, EUPL, etc.) must NOT be added here.
+const ALLOWED_LICENSES = new Set([
+  "MIT",
+  "MIT*",
+  "ISC",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSD*",
+  "Apache-2.0",
+  "0BSD",
+  "CC0-1.0",
+  "(MIT OR CC0-1.0)",
+  "(MIT AND Zlib)",
+  "Python-2.0", // argparse - Python Software Foundation License (permissive)
+  "Public Domain",
+  "W3C-20150513", // wicg-inert - W3C Software and Document License (permissive)
+  "Unlicense",
+  "CC-BY-4.0",
+]);
+
+// Packages whose license identifier is ambiguous or non-standard but have been
+// manually verified as permissive. Add only when strictly necessary.
+const ALLOWED_PACKAGES = {
+  // No entries currently needed.
+};
+
+checker.init(
+  {
+    start: root,
+    production: true,
+    excludePrivatePackages: true,
+  },
+  (err, packages) => {
+    if (err) {
+      console.error("license-checker failed:", err);
+      process.exit(1);
+    }
+
+    const violations = [];
+
+    for (const [nameAtVersion, info] of Object.entries(packages)) {
+      if (nameAtVersion in ALLOWED_PACKAGES) {
+        continue;
+      }
+
+      const license = info.licenses;
+
+      if (!ALLOWED_LICENSES.has(license)) {
+        violations.push({ package: nameAtVersion, license });
+      }
+    }
+
+    if (violations.length > 0) {
+      console.error(
+        "The following packages have licenses that are not on the allowlist:\n"
+      );
+      for (const { package: pkg, license } of violations) {
+        console.error(`  ${pkg}: ${license}`);
+      }
+      console.error(
+        "\nIf the license is permissive and appropriate for distribution, add it"
+      );
+      console.error(
+        "to ALLOWED_LICENSES in script/check-licenses. If it is a specific"
+      );
+      console.error(
+        "package with an ambiguous identifier, add it to ALLOWED_PACKAGES."
+      );
+      console.error(
+        "\nDo NOT add copyleft licenses (GPL, LGPL, AGPL, etc.) to the allowlist."
+      );
+      process.exit(1);
+    }
+
+    const count = Object.keys(packages).length;
+    console.log(
+      `License check passed: all ${count} production dependencies use approved licenses.`
+    );
+  }
+);
