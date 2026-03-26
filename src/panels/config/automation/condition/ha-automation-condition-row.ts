@@ -160,13 +160,15 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderRow() {
-    const target =
-      "target" in (this.conditionDescriptions[this.condition.condition] || {})
-        ? (this.condition as PlatformCondition).target
-        : "device_id" in this.condition &&
-            (this.condition as DeviceCondition).device_id
-          ? { device_id: [(this.condition as DeviceCondition).device_id] }
-          : undefined;
+    const descriptionHasTarget =
+      "target" in (this.conditionDescriptions[this.condition.condition] || {});
+
+    const target = descriptionHasTarget
+      ? (this.condition as PlatformCondition).target
+      : "device_id" in this.condition &&
+          (this.condition as DeviceCondition).device_id
+        ? { device_id: [(this.condition as DeviceCondition).device_id] }
+        : undefined;
 
     return html`
       <ha-condition-icon
@@ -178,7 +180,9 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || descriptionHasTarget
+          ? this._renderTargets(target, descriptionHasTarget)
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -464,10 +468,11 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 

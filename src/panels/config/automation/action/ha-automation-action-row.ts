@@ -237,12 +237,13 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const target =
-      type === "service" && "target" in this.action
-        ? (this.action as ServiceAction).target
-        : type === "device_id" && (this.action as DeviceAction).device_id
-          ? { device_id: (this.action as DeviceAction).device_id }
-          : undefined;
+    const actionHasTarget = type === "service" && "target" in this.action;
+
+    const target = actionHasTarget
+      ? (this.action as ServiceAction).target
+      : type === "device_id" && (this.action as DeviceAction).device_id
+        ? { device_id: (this.action as DeviceAction).device_id }
+        : undefined;
 
     return html`
       ${type === "service" && "action" in this.action && this.action.action
@@ -265,7 +266,9 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || actionHasTarget
+          ? this._renderTargets(target, actionHasTarget)
+          : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
@@ -575,10 +578,11 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 
