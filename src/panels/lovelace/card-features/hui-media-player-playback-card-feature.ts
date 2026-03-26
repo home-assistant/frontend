@@ -20,7 +20,10 @@ import type {
   ControlButton,
   MediaPlayerEntity,
 } from "../../../data/media-player";
-import { MediaPlayerEntityFeature } from "../../../data/media-player";
+import {
+  computeMediaControls,
+  MediaPlayerEntityFeature,
+} from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -181,12 +184,10 @@ class HuiMediaPlayerPlaybackCardFeature
   }
 
   private _computeButtons(stateObj: MediaPlayerEntity): ControlButton[] {
-    const hasExplicitControls = !!this._config?.controls?.length;
-
-    if (hasExplicitControls) {
-      return this._computeExplicitButtons(stateObj);
+    if (this._config?.controls?.length) {
+      return this._filterNarrow(this._computeExplicitButtons(stateObj));
     }
-    return this._computeDefaultButtons(stateObj);
+    return this._filterNarrow(computeMediaControls(stateObj) ?? []);
   }
 
   /**
@@ -259,105 +260,17 @@ class HuiMediaPlayerPlaybackCardFeature
       }
     }
 
-    // In narrow mode, drop prev/next when there are too many buttons
+    return buttons;
+  }
+
+  private _filterNarrow(buttons: ControlButton[]): ControlButton[] {
     if (this._narrow && buttons.length > 3) {
       return buttons.filter(
         (b) =>
           b.action !== "media_previous_track" && b.action !== "media_next_track"
       );
     }
-
     return buttons;
-  }
-
-  /**
-   * No controls configured: use the original default behavior.
-   * Power buttons shown based on active state, playback buttons
-   * are context-aware (assumed state shows all, otherwise one button).
-   */
-  private _computeDefaultButtons(stateObj: MediaPlayerEntity): ControlButton[] {
-    const assumedState = stateObj.attributes.assumed_state === true;
-    const active = stateActive(stateObj);
-    const buttons: ControlButton[] = [];
-
-    // Power: turn_off when active, turn_on when inactive
-    if (
-      active &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)
-    ) {
-      buttons.push({ icon: mdiPower, action: "turn_off" });
-    }
-    if (
-      !active &&
-      !isUnavailableState(stateObj.state) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
-    ) {
-      buttons.push({ icon: mdiPower, action: "turn_on" });
-    }
-
-    // Previous track
-    if (
-      !this._narrow &&
-      (stateObj.state === "playing" || assumedState) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
-    ) {
-      buttons.push({ icon: mdiSkipPrevious, action: "media_previous_track" });
-    }
-
-    // Playback controls
-    if (assumedState) {
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) {
-        buttons.push({ icon: mdiPlay, action: "media_play" });
-      }
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)) {
-        buttons.push({ icon: mdiPause, action: "media_pause" });
-      }
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)) {
-        buttons.push({ icon: mdiStop, action: "media_stop" });
-      }
-    } else {
-      const controlButton = this._getContextualPlayButton(stateObj);
-      if (controlButton) {
-        buttons.push(controlButton);
-      }
-    }
-
-    // Next track
-    if (
-      (stateObj.state === "playing" || assumedState) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
-    ) {
-      buttons.push({ icon: mdiSkipNext, action: "media_next_track" });
-    }
-
-    return buttons;
-  }
-
-  /**
-   * Returns a single play/pause/stop button based on the current state.
-   * Used only when no explicit controls are configured (default behavior).
-   */
-  private _getContextualPlayButton(
-    stateObj: MediaPlayerEntity
-  ): ControlButton | undefined {
-    if (stateObj.state === "on") {
-      return { icon: mdiPlayPause, action: "media_play_pause" };
-    }
-    if (stateObj.state === "playing") {
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)) {
-        return { icon: mdiPause, action: "media_pause" };
-      }
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)) {
-        return { icon: mdiStop, action: "media_stop" };
-      }
-      return undefined;
-    }
-    if (stateObj.state === "paused" || stateObj.state === "idle") {
-      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) {
-        return { icon: mdiPlay, action: "media_play" };
-      }
-    }
-    return undefined;
   }
 
   private _action(e: Event): void {
