@@ -1,6 +1,5 @@
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
@@ -35,10 +34,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   @state() protected _config?: T;
 
   @property({ attribute: false }) public layout?: string;
-
-  protected get _rootClass(): string | undefined {
-    return undefined;
-  }
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -109,11 +104,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
-      <div
-        id="root"
-        class=${ifDefined(this._rootClass)}
-        dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}
-      >
+      <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
         ${this._cards}
         ${this.preview && this._errorCard ? this._errorCard : nothing}
       </div>
