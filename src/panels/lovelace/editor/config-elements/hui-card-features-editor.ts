@@ -35,8 +35,10 @@ import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-featu
 import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsCoverPositionFavoriteCardFeature } from "../../card-features/hui-cover-position-favorite-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
+import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-cover-tilt-favorite-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
@@ -62,6 +64,7 @@ import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-gra
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionFavoriteCardFeature } from "../../card-features/hui-valve-position-favorite-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
@@ -69,6 +72,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
+import { supportsLightColorFavoritesCardFeature } from "../../card-features/hui-light-color-favorites-card-feature";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 
@@ -89,7 +93,9 @@ const UI_FEATURE_TYPES = [
   "climate-swing-horizontal-modes",
   "counter-actions",
   "cover-open-close",
+  "cover-position-favorite",
   "cover-position",
+  "cover-tilt-favorite",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -102,6 +108,7 @@ const UI_FEATURE_TYPES = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "light-color-favorites",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -116,6 +123,7 @@ const UI_FEATURE_TYPES = [
   "update-actions",
   "vacuum-commands",
   "valve-open-close",
+  "valve-position-favorite",
   "valve-position",
   "water-heater-operation-modes",
 ] as const satisfies readonly FeatureType[];
@@ -133,6 +141,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
   "counter-actions",
+  "cover-position-favorite",
+  "cover-tilt-favorite",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -142,6 +152,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "trend-graph",
   "update-actions",
   "vacuum-commands",
+  "valve-position-favorite",
   "water-heater-operation-modes",
 ]);
 
@@ -161,7 +172,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
+  "cover-position-favorite": supportsCoverPositionFavoriteCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
+  "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
   "date-set": supportsDateSetCardFeature,
@@ -174,6 +187,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
+  "light-color-favorites": supportsLightColorFavoritesCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
@@ -188,6 +202,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position-favorite": supportsValvePositionFavoriteCardFeature,
   "valve-position": supportsValvePositionCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };

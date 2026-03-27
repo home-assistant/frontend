@@ -62,7 +62,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -78,10 +78,7 @@ import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry"
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import type { SceneEntity } from "../../../data/scene";
 import {
   activateScene,
@@ -178,12 +175,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "scene-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -417,9 +415,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     return [
       subscribeCategoryRegistry(this.hass.connection, "scene", (categories) => {
         this._categories = categories;
-      }),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
       }),
     ];
   }

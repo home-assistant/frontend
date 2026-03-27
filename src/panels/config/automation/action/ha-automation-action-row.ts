@@ -175,7 +175,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _uiModeAvailable = true;
 
@@ -184,6 +184,8 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
+
+  @state() private _isNew = false;
 
   @state() private _warnings?: string[];
 
@@ -237,12 +239,13 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const target =
-      type === "service" && "target" in this.action
-        ? (this.action as ServiceAction).target
-        : type === "device_id" && (this.action as DeviceAction).device_id
-          ? { device_id: (this.action as DeviceAction).device_id }
-          : undefined;
+    const actionHasTarget = type === "service" && "target" in this.action;
+
+    const target = actionHasTarget
+      ? (this.action as ServiceAction).target
+      : type === "device_id" && (this.action as DeviceAction).device_id
+        ? { device_id: (this.action as DeviceAction).device_id }
+        : undefined;
 
     return html`
       ${type === "service" && "action" in this.action && this.action.action
@@ -265,7 +268,9 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || (actionHasTarget && !this._isNew)
+          ? this._renderTargets(target, actionHasTarget && !this._isNew)
+          : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
@@ -575,10 +580,11 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 
@@ -812,6 +818,10 @@ export default class HaAutomationActionRow extends LitElement {
     this.openSidebar();
   }
 
+  public markAsNew(): void {
+    this._isNew = true;
+  }
+
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
     const actionType = getAutomationActionType(sidebarAction);
@@ -822,6 +832,7 @@ export default class HaAutomationActionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();
@@ -901,6 +912,9 @@ export default class HaAutomationActionRow extends LitElement {
   );
 
   private _toggleCollapse() {
+    if (!this._collapsed) {
+      this._isNew = false;
+    }
     this._collapsed = !this._collapsed;
   }
 

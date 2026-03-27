@@ -5,12 +5,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonRepository,
   HassioAddonsInfo,
@@ -30,8 +29,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showRegistriesDialog } from "./dialogs/registries/show-dialog-registries";
-import { showRepositoriesDialog } from "./dialogs/repositories/show-dialog-repositories";
+
 import "./supervisor-apps-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -84,14 +82,7 @@ export class HaConfigAppsAvailable extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    const repositoryUrl = extractSearchParam("repository_url");
-    navigate("/config/apps/available", { replace: true });
-    this._loadData().then(() => {
-      if (repositoryUrl) {
-        this._manageRepositories(repositoryUrl);
-      }
-    });
-
+    this._loadData();
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
@@ -144,36 +135,23 @@ export class HaConfigAppsAvailable extends LitElement {
           <ha-dropdown-item value="repositories">
             ${this.hass.localize("ui.panel.config.apps.store.repositories")}
           </ha-dropdown-item>
-          ${this.hass.userData?.showAdvanced
-            ? html`<ha-dropdown-item value="registries">
-                ${this.hass.localize("ui.panel.config.apps.store.registries")}
-              </ha-dropdown-item>`
-            : nothing}
+          <ha-dropdown-item value="registries">
+            ${this.hass.localize("ui.panel.config.apps.store.registries")}
+          </ha-dropdown-item>
         </ha-dropdown>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
               <div class="search">
-                <search-input
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._filterChanged}
-                ></search-input>
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._filterChanged}
+                ></ha-input-search>
               </div>
 
               ${repos}
             `}
-        ${!this.hass.userData?.showAdvanced
-          ? html`
-              <div class="advanced">
-                <a href="/profile" target="_top">
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.store.missing_apps"
-                  )}
-                </a>
-              </div>
-            `
-          : ""}
       </hass-subpage>
     `;
   }
@@ -241,19 +219,11 @@ export class HaConfigAppsAvailable extends LitElement {
   }
 
   private _manageRepositoriesClicked() {
-    this._manageRepositories();
-  }
-
-  private _manageRepositories(url?: string) {
-    showRepositoriesDialog(this, {
-      addon: this._addon!,
-      url,
-      closeCallback: () => this._loadData(),
-    });
+    navigate("/config/apps/repositories");
   }
 
   private _manageRegistries() {
-    showRegistriesDialog(this);
+    navigate("/config/apps/registries");
   }
 
   private async _loadData(): Promise<void> {
@@ -290,8 +260,8 @@ export class HaConfigAppsAvailable extends LitElement {
     }
   };
 
-  private _filterChanged(e) {
-    this._filter = e.detail.value;
+  private _filterChanged(e: InputEvent) {
+    this._filter = (e.target as HTMLInputElement).value;
   }
 
   static styles = css`
@@ -308,22 +278,10 @@ export class HaConfigAppsAvailable extends LitElement {
       top: 0;
       z-index: 2;
     }
-    search-input {
-      display: block;
-      --mdc-text-field-fill-color: var(--sidebar-background-color);
-      --mdc-text-field-idle-line-color: var(--divider-color);
-    }
-    .advanced {
-      padding: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      color: var(--primary-text-color);
-    }
-    .advanced a {
-      margin-left: 0.5em;
-      margin-inline-start: 0.5em;
-      margin-inline-end: initial;
-      color: var(--primary-color);
+    ha-input-search {
+      padding: var(--ha-space-3) var(--ha-space-2);
+      background: var(--sidebar-background-color);
+      border-bottom: 1px solid var(--divider-color);
     }
   `;
 }

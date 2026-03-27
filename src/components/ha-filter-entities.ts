@@ -17,7 +17,8 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-list";
 import "./ha-state-icon";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -70,12 +71,12 @@ export class HaFilterEntities extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+              <ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
@@ -149,8 +150,9 @@ export class HaFilterEntities extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   private _entities = memoizeOne(
@@ -265,7 +267,7 @@ export class HaFilterEntities extends LitElement {
           --mdc-list-item-graphic-margin: 16px;
           width: 100%;
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

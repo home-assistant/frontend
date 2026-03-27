@@ -464,7 +464,14 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 
 ### Pull Requests
 
-When creating a pull request, you **must** use the PR template located at `.github/PULL_REQUEST_TEMPLATE.md`. Read the template file and use its full content as the PR body, filling in each section appropriately. Do not omit, reorder, or rewrite the template sections. Do not check the checklist items on behalf of the user — those are the user's responsibility to review and check. If the PR includes UI changes, remind the user to add screenshots or a short video to the PR after creating it.
+When creating a pull request, you **must** use the PR template located at `.github/PULL_REQUEST_TEMPLATE.md`. Read the template file and use its full content as the PR body, filling in each section appropriately.
+
+- Do not omit, reorder, or rewrite the template sections
+- Check the appropriate "Type of change" box based on the changes
+- Do not check the checklist items on behalf of the user — those are the user's responsibility to review and check
+- If the PR includes UI changes, remind the user to add screenshots or a short video to the PR after creating it
+- Be simple and user friendly — explain what the change does, not implementation details
+- Use markdown so the user can copy it
 
 ### Text and Copy Guidelines
 

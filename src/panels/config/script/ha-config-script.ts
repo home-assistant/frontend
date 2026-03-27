@@ -1,13 +1,10 @@
-import { consume } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
-import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
@@ -35,10 +32,6 @@ class HaConfigScript extends HassRouterPage {
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public scripts: ScriptEntity[] = [];
-
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -86,7 +79,6 @@ class HaConfigScript extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
-    pageEl.entityRegistry = this._entityReg;
     pageEl.cloudStatus = this.cloudStatus;
 
     if (this.hass) {

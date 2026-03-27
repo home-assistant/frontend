@@ -8,15 +8,16 @@ import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
-import "../../../components/ha-list";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -33,13 +34,13 @@ import {
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -219,15 +220,15 @@ export class DialogHelperDetail extends LitElement {
       );
 
       content = html`
-        <search-input
+        <ha-input-search
+          appearance="outlined"
           autofocus
-          .hass=${this.hass}
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-          .label=${this.hass.localize(
+          .value=${this._filter}
+          @input=${this._filterChanged}
+          .placeholder=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
-        ></search-input>
+        ></ha-input-search>
         <ha-list
           class="ha-scrollbar"
           innerRole="listbox"
@@ -252,11 +253,14 @@ export class DialogHelperDetail extends LitElement {
                   slot="graphic"
                   loading="lazy"
                   alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
@@ -350,8 +354,9 @@ export class DialogHelperDetail extends LitElement {
     }
   );
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(e: InputEvent) {
+    const target = e.target as HaInputSearch;
+    this._filter = target.value;
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -424,7 +429,7 @@ export class DialogHelperDetail extends LitElement {
   }
 
   private async _focusSearchInput() {
-    const searchInput = this.shadowRoot?.querySelector("search-input") as
+    const searchInput = this.shadowRoot?.querySelector("ha-input-search") as
       | (HTMLElement & { updateComplete?: Promise<unknown> })
       | null;
 
@@ -453,9 +458,8 @@ export class DialogHelperDetail extends LitElement {
         .form {
           padding: var(--ha-space-6);
         }
-        search-input {
-          display: block;
-          margin: 0 var(--ha-space-4) 0;
+        ha-input-search {
+          margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
         ha-list {
           height: calc(60vh - 184px);

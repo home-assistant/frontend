@@ -314,7 +314,10 @@ export class HuiViewHeader extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
@@ -329,10 +332,6 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column;
       gap: 16px 8px;
       --spacing: 8px;
-    }
-
-    .layout.has-heading {
-      margin-top: var(--spacing);
     }
 
     .heading {
@@ -435,21 +434,19 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column-reverse;
     }
 
-    .layout.badges-top.has-badges {
-      margin-top: 0;
-    }
-
     @media (min-width: 768px) {
       .layout.responsive.badges-top.has-heading {
         flex-direction: row;
         align-items: flex-start;
-        margin-top: var(--spacing);
       }
     }
 
     .container.edit-mode {
       padding: 8px;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -469,7 +466,10 @@ export class HuiViewHeader extends LitElement {
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
       width: auto;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

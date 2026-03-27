@@ -202,10 +202,6 @@ class OnboardingCoreConfig extends LitElement {
       line-height: var(--ha-line-height-condensed);
     }
 
-    ha-textfield {
-      display: block;
-    }
-
     .flex {
       flex: 1;
     }

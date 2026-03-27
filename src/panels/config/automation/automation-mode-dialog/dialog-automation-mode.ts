@@ -10,8 +10,9 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 
+import type { HaInput } from "../../../../components/input/ha-input";
 import {
   AUTOMATION_DEFAULT_MAX,
   AUTOMATION_DEFAULT_MODE,
@@ -68,7 +69,6 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         @closed=${this._dialogClosed}
@@ -133,7 +133,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
         ${isMaxMode(this._newMode)
           ? html`
               <div class="options">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize(
                     `ui.panel.config.automation.editor.max.${this._newMode}`
                   )}
@@ -141,9 +141,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                   name="max"
                   .value=${this._newMax?.toString() ?? ""}
                   @input=${this._valueChanged}
-                  class="max"
                 >
-                </ha-textfield>
+                </ha-input>
               </div>
             `
           : nothing}
@@ -176,9 +175,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: InputEvent) {
     ev.stopPropagation();
-    const target = ev.target as any;
+    const target = ev.target as HaInput;
     if (target.name === "max") {
       this._newMax = Number(target.value);
     }
@@ -201,9 +200,6 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-textfield {
-          display: block;
-        }
         ha-dialog {
           --dialog-content-padding: 0;
         }

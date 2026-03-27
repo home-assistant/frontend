@@ -11,8 +11,8 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 import "../../../../components/ha-button";
-import "../../../../components/ha-copy-textfield";
 import "../../../../components/ha-dialog";
+import "../../../../components/input/ha-input-copy";
 
 @customElement("dialog-manage-cloudhook")
 export class DialogManageCloudhook extends LitElement {
@@ -79,11 +79,11 @@ export class DialogManageCloudhook extends LitElement {
                 `}
           </p>
 
-          <ha-copy-textfield
-            .hass=${this.hass}
+          <ha-input-copy
+            readonly
             .value=${cloudhook.cloudhook_url}
             .label=${this.hass!.localize("ui.panel.config.common.copy_link")}
-          ></ha-copy-textfield>
+          ></ha-input-copy>
         </div>
 
         <ha-dialog-footer slot="footer">

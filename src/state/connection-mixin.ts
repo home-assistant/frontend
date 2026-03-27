@@ -31,6 +31,7 @@ import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import {
+  addBrandsAuth,
   clearBrandsTokenRefresh,
   fetchAndScheduleBrandsAccessToken,
 } from "../util/brands-url";
@@ -88,7 +89,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
-        hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
+        hassUrl: (path = "") =>
+          addBrandsAuth(
+            new URL(path, auth.data.hassUrl).toString(),
+            auth.data.hassUrl
+          ),
         callService: async (
           domain,
           service,

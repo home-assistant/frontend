@@ -120,14 +120,14 @@ export class HaPickerField extends PickerMixin(LitElement) {
     return [
       css`
         ha-combo-box-item[disabled] {
-          background-color: var(
-            --mdc-text-field-disabled-fill-color,
-            whitesmoke
-          );
+          background-color: var(--ha-color-form-background-disabled);
+          --md-list-item-disabled-opacity: 0.5;
+          opacity: 0.5;
+          cursor: not-allowed;
         }
         ha-combo-box-item {
           position: relative;
-          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          background-color: var(--ha-color-form-background);
           border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
           border-end-start-radius: 0;
@@ -143,13 +143,6 @@ export class HaPickerField extends PickerMixin(LitElement) {
           --md-focus-ring-duration: 0s;
         }
 
-        /* Add Similar focus style as the text field */
-        ha-combo-box-item[disabled]:after {
-          background-color: var(
-            --mdc-text-field-disabled-line-color,
-            rgba(0, 0, 0, 0.42)
-          );
-        }
         ha-combo-box-item:after {
           display: block;
           content: "";

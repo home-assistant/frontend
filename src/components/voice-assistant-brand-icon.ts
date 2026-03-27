@@ -17,11 +17,14 @@ export class VoiceAssistantBrandicon extends LitElement {
       <img
         class="logo"
         alt=${voiceAssistants[this.voiceAssistantId].name}
-        src=${brandsUrl({
-          domain: voiceAssistants[this.voiceAssistantId].domain,
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        })}
+        src=${brandsUrl(
+          {
+            domain: voiceAssistants[this.voiceAssistantId].domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          },
+          this.hass.auth.data.hassUrl
+        )}
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
       />

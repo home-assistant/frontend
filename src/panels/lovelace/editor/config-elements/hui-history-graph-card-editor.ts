@@ -43,16 +43,18 @@ const cardConfigStruct = assign(
   })
 );
 
-const SUB_SCHEMA = [
-  { name: "entity", selector: { entity: {} }, required: true },
-  {
-    name: "name",
-    selector: { entity_name: {} },
-    context: {
-      entity: "entity",
+const SUB_FORM = {
+  schema: [
+    { name: "entity", selector: { entity: {} }, required: true },
+    {
+      name: "name",
+      selector: { entity_name: {} },
+      context: {
+        entity: "entity",
+      },
     },
-  },
-] as const;
+  ] as const,
+};
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
@@ -131,7 +133,7 @@ export class HuiHistoryGraphCardEditor
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${SUB_SCHEMA}
+          .form=${SUB_FORM}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >

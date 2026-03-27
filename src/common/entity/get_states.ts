@@ -29,6 +29,7 @@ export const FIXED_DOMAIN_STATES = {
   device_tracker: ["home", "not_home"],
   fan: ["on", "off"],
   humidifier: ["on", "off"],
+  infrared: [],
   input_boolean: ["on", "off"],
   input_button: [],
   lawn_mower: ["error", "paused", "mowing", "returning", "docked"],
@@ -270,6 +271,8 @@ export const getStates = (
         result.push(...state.attributes.preset_modes);
       } else if (attribute === "swing_mode") {
         result.push(...state.attributes.swing_modes);
+      } else if (attribute === "swing_horizontal_mode") {
+        result.push(...state.attributes.swing_horizontal_modes);
       }
       break;
     case "device_tracker":

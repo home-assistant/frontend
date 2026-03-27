@@ -13,7 +13,6 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
@@ -246,11 +245,14 @@ class HaConfigBackupSettings extends LitElement {
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
-                      .src=${brandsUrl({
-                        domain: "cloud",
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
+                      .src=${brandsUrl(
+                        {
+                          domain: "cloud",
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                       alt="Nabu Casa logo"

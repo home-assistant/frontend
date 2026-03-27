@@ -153,7 +153,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @property({ attribute: false }) public helperConfigEntry?: ConfigEntry;
 
-  @state() private _name!: string;
+  @state() private _name!: string | null;
 
   @state() private _icon!: string;
 
@@ -218,7 +218,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._name = this.entry.name || "";
+    this._name = this.entry.name;
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -388,14 +388,27 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${this.hideName
         ? nothing
         : html`<ha-textfield
-            .value=${this._name}
+            class="name"
+            .value=${this._name ?? this.entry.original_name ?? ""}
             .label=${this.hass.localize(
               "ui.dialogs.entity_registry.editor.name"
             )}
             .disabled=${this.disabled}
-            .placeholder=${this.entry.original_name}
             @input=${this._nameChanged}
-          ></ha-textfield>`}
+            .iconTrailing=${this._name !== null}
+          >
+            ${this._name !== null
+              ? html`<div class="layout horizontal" slot="trailingIcon">
+                  <ha-icon-button
+                    @click=${this._restoreName}
+                    .path=${mdiRestore}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.restore_name"
+                    )}
+                  ></ha-icon-button>
+                </div>`
+              : nothing}
+          </ha-textfield>`}
       ${this.hideIcon
         ? nothing
         : html`
@@ -884,9 +897,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           )}</span
         >
         <span slot="secondary">
-          ${this.entry.aliases.length
-            ? [...this.entry.aliases]
-                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+          ${this.entry.aliases.filter((a) => a !== null).length
+            ? this.entry.aliases
+                .filter((a): a is string => a !== null)
                 .join(", ")
             : this.hass.localize(
                 "ui.dialogs.entity_registry.editor.no_aliases"
@@ -1052,7 +1065,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const params: Partial<EntityRegistryEntryUpdateParams> = {
-      name: this._name.trim() || null,
+      name: this._name?.trim() ?? null,
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
       labels: this._labels || [],
@@ -1064,7 +1077,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._deviceClass !==
       (this.entry.device_class || this.entry.original_device_class)
     ) {
-      params.device_class = this._deviceClass;
+      params.device_class = this._deviceClass ?? null;
     }
 
     const stateObj: HassEntity | undefined =
@@ -1316,6 +1329,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _nameChanged(ev): void {
     fireEvent(this, "change");
     this._name = ev.target.value;
+  }
+
+  private _restoreName(): void {
+    fireEvent(this, "change");
+    this._name = null;
   }
 
   private _iconChanged(ev: CustomEvent): void {
@@ -1592,9 +1610,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-textfield.entityId {
           --text-field-prefix-padding-right: 0;
+        }
+        ha-textfield.entityId,
+        ha-textfield.name {
           --textfield-icon-trailing-padding: 0;
         }
-        ha-textfield.entityId ha-icon-button {
+        ha-textfield.entityId ha-icon-button,
+        ha-textfield.name ha-icon-button {
           position: relative;
           right: calc(var(--ha-space-2) * -1);
           --ha-icon-button-size: 36px;

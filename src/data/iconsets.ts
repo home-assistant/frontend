@@ -1,5 +1,5 @@
+import type { UseStore } from "idb-keyval";
 import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
-import memoizeOne from "memoize-one";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
 import type { IconMeta } from "../types";
@@ -8,7 +8,19 @@ export type Icons = Record<string, string>;
 
 export type Chunks = Record<string, Promise<Icons>>;
 
-const getStore = memoizeOne(async () => {
+let iconStorePromise: Promise<UseStore> | undefined;
+
+const getStore = (): Promise<UseStore> => {
+  if (!iconStorePromise) {
+    iconStorePromise = initIconStore().catch((e) => {
+      iconStorePromise = undefined;
+      throw e;
+    });
+  }
+  return iconStorePromise;
+};
+
+const initIconStore = async (): Promise<UseStore> => {
   const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
   // Supervisor doesn't use icons, and should not update/downgrade the icon DB.
@@ -22,7 +34,7 @@ const getStore = memoizeOne(async () => {
   }
 
   return iconStore;
-});
+};
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 

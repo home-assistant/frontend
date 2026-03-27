@@ -34,6 +34,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -65,7 +66,6 @@ import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-  updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -94,10 +94,9 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
-export interface EntityRegistryStateEntry extends EntityRegistryEntry {
-  stateName?: string | null;
+export interface EntityRegistryEntryWithDisplayName extends EntityRegistryEntry {
+  display_name?: string | null;
 }
 
 export interface DeviceAction {
@@ -147,7 +146,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _logbookTime = { recent: 86400 };
 
@@ -177,17 +176,17 @@ export class HaConfigDevicePage extends LitElement {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryStateEntry[] =>
+    ): EntityRegistryEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          display_name: computeEntityEntryName(entity),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
+            ent1.display_name || "",
+            ent2.display_name || "",
             this.hass.locale.language
           )
         )
@@ -217,7 +216,7 @@ export class HaConfigDevicePage extends LitElement {
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
   private _entityIds = memoizeOne(
-    (entries: EntityRegistryStateEntry[]): string[] =>
+    (entries: EntityRegistryEntryWithDisplayName[]): string[] =>
       entries.map((entry) => entry.entity_id)
   );
 
@@ -250,7 +249,7 @@ export class HaConfigDevicePage extends LitElement {
         | "assist"
         | "notify"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
-        EntityRegistryStateEntry[]
+        EntityRegistryEntryWithDisplayName[]
       >;
       for (const key of [
         "assist",
@@ -364,11 +363,14 @@ export class HaConfigDevicePage extends LitElement {
             <img
               slot="graphic"
               alt=${domainToName(this.hass.localize, integration.domain)}
-              src=${brandsUrl({
-                domain: integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: integration.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
@@ -763,11 +765,14 @@ export class HaConfigDevicePage extends LitElement {
                       this.hass.localize,
                       integrations[0].domain
                     )}
-                    src=${brandsUrl({
-                      domain: integrations[0].domain,
-                      type: "logo",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: integrations[0].domain,
+                        type: "logo",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
@@ -1265,14 +1270,6 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private _computeEntityName(entity: EntityRegistryEntry) {
-    const device = this.hass.devices[this.deviceId];
-    return (
-      computeEntityEntryName(entity, this.hass.devices) ||
-      computeDeviceNameDisplay(device, this.hass)
-    );
-  }
-
   private _onImageLoad(ev) {
     ev.target.style.display = "inline-block";
   }
@@ -1365,8 +1362,6 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const oldDeviceName = device.name_by_user || device.name;
-        const newDeviceName = updates.name_by_user;
         const disabled =
           updates.disabled_by === "user" && device.disabled_by !== "user";
 
@@ -1438,43 +1433,7 @@ export class HaConfigDevicePage extends LitElement {
             ),
             text: err.message,
           });
-          return;
         }
-
-        if (
-          !oldDeviceName ||
-          !newDeviceName ||
-          oldDeviceName === newDeviceName
-        ) {
-          return;
-        }
-        const entities = this._entities(this.deviceId, this._entityReg);
-
-        const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.stateName;
-          let newName: string | null | undefined;
-
-          if (entity.has_entity_name && !entity.name) {
-            return undefined;
-          }
-
-          if (
-            entity.has_entity_name &&
-            (entity.name === oldDeviceName || entity.name === newDeviceName)
-          ) {
-            // clear name if it matches the device name and it uses the device name (entity naming)
-            newName = null;
-          } else if (name && name.includes(oldDeviceName)) {
-            newName = name.replace(oldDeviceName, newDeviceName);
-          } else {
-            return undefined;
-          }
-
-          return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: newName,
-          });
-        });
-        await Promise.all(updateProms);
       },
     });
   };

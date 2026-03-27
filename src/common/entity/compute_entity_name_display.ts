@@ -29,14 +29,18 @@ export interface EntityNameOptions {
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[] | undefined,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"],
   options?: EntityNameOptions
 ) => {
-  let items = ensureArray(name || DEFAULT_ENTITY_NAME);
+  if (typeof name === "string") {
+    return name;
+  }
+
+  let items = ensureArray(name ?? DEFAULT_ENTITY_NAME);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
@@ -45,7 +49,7 @@ export const computeEntityNameDisplay = (
     return items.map((item) => item.text).join(separator);
   }
 
-  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
+  const useDeviceName = entityUseDeviceName(stateObj, entities);
 
   // If entity uses device name, and device is not already included, replace it with device name
   if (useDeviceName) {
@@ -91,7 +95,7 @@ export const computeEntityNameList = (
   const names = name.map((item) => {
     switch (item.type) {
       case "entity":
-        return computeEntityName(stateObj, entities, devices);
+        return computeEntityName(stateObj, entities);
       case "device":
         return device ? computeDeviceName(device) : undefined;
       case "area":

@@ -8,17 +8,29 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
-import { endOfDay, isSameDay } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  isSameDay,
+} from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { calcDate } from "../../../common/datetime/calc_date";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -32,8 +44,8 @@ import "../../../components/ha-relative-time";
 import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { TodoItem } from "../../../data/todo";
 import {
@@ -56,6 +68,13 @@ import type { TodoListCardConfig } from "./types";
 
 export const ITEM_TAP_ACTION_EDIT = "edit";
 export const ITEM_TAP_ACTION_TOGGLE = "toggle";
+
+interface TodoDueDatePeriod {
+  calendar?: {
+    period: string;
+    offset?: number;
+  };
+}
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -92,19 +111,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _reordering = false;
 
+  @query("ha-input", true) private _input!: HaInput;
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
+
+  private _refreshTimer?: number;
 
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._subscribeItems();
     }
+    this._setRefreshTimer();
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubItems?.then((unsub) => unsub());
     this._unsubItems = undefined;
+    this._clearRefreshTimer();
   }
 
   public getCardSize(): number {
@@ -160,12 +185,18 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _getUncheckedAndItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
+    ): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter(
-              (item) =>
-                item.status === TodoItemStatus.NeedsAction || !item.status
+            this._filterItems(
+              items,
+              [null, TodoItemStatus.NeedsAction],
+              due_date_period
             ),
             sort
           )
@@ -173,34 +204,133 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   );
 
   private _getCheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
+    ): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.Completed),
+            this._filterItems(
+              items,
+              [TodoItemStatus.Completed],
+              due_date_period
+            ),
             sort
           )
         : []
   );
 
   private _getUncheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
+    ): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.NeedsAction),
+            this._filterItems(
+              items,
+              [TodoItemStatus.NeedsAction],
+              due_date_period
+            ),
             sort
           )
         : []
   );
 
   private _getItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+    (
+      items?: TodoItem[],
+      sort?: string | undefined,
+      due_date_period?: TodoDueDatePeriod,
+      _memoTime?: number
+    ): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter((item) => !item.status),
+            this._filterItems(items, [null], due_date_period),
             sort
           )
         : []
   );
+
+  private _filterItems(
+    items: TodoItem[],
+    status: (TodoItemStatus | null)[],
+    period?: TodoDueDatePeriod
+  ): TodoItem[] {
+    const endDate =
+      period && period.calendar && period.calendar.period
+        ? this._addPeriod(new Date(), period.calendar)
+        : undefined;
+
+    return items.filter((item) => {
+      if (!status.includes(item.status || null)) {
+        return false;
+      }
+      if (!endDate) {
+        return true;
+      }
+      const dueDate = this._getDueDate(item);
+      return dueDate && dueDate <= endDate;
+    });
+  }
+
+  private _addPeriod(
+    date: Date,
+    calendar: { period: string; offset?: number }
+  ): Date | undefined {
+    const locale = this.hass!.locale;
+    const config = this.hass!.config;
+    const offset = calendar.offset || 0;
+    switch (calendar.period) {
+      case "day":
+        return addDays(calcDate(date, endOfDay, locale, config), offset);
+      case "week": {
+        const weekStartsOn = firstWeekdayIndex(locale);
+        return addWeeks(
+          calcDate(date, endOfWeek, locale, config, {
+            weekStartsOn,
+          }),
+          offset
+        );
+      }
+      case "month":
+        return addMonths(calcDate(date, endOfMonth, locale, config), offset);
+      case "year":
+        return addYears(calcDate(date, endOfYear, locale, config), offset);
+      default:
+        return undefined;
+    }
+  }
+
+  private _setRefreshTimer() {
+    this._clearRefreshTimer();
+    if (!this.hass || !this._config?.due_date_period) {
+      return;
+    }
+    const nowDate = new Date();
+    const timeout = calcDate(
+      nowDate,
+      endOfDay,
+      this.hass.locale,
+      this.hass.config
+    );
+    this._refreshTimer = window.setTimeout(() => {
+      this._refreshTimer = undefined;
+      this.requestUpdate();
+    }, timeout.getTime() - nowDate.getTime());
+  }
+
+  private _clearRefreshTimer() {
+    if (this._refreshTimer === undefined) {
+      return;
+    }
+    window.clearTimeout(this._refreshTimer);
+    this._refreshTimer = undefined;
+  }
 
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
@@ -213,6 +343,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     } else if (changedProperties.has("_entityId") || !this._items) {
       this._items = undefined;
       this._subscribeItems();
+    }
+
+    if (!this._refreshTimer) {
+      this._setRefreshTimer();
     }
   }
 
@@ -252,24 +386,42 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
+    // Discard memoization when we rollover to a new day, so filters can be recalculated
+    const memoTime = this._config.due_date_period
+      ? calcDate(
+          new Date(),
+          endOfDay,
+          this.hass.locale,
+          this.hass.config
+        ).getTime()
+      : 0;
+
     const checkedItems = this._getCheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period,
+      memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period,
+      memoTime
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      this._config.due_date_period,
+      memoTime
     );
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
           this._items,
-          this._config.display_order
+          this._config.display_order,
+          this._config.due_date_period,
+          memoTime
         )
       : undefined;
 
@@ -284,24 +436,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         this._todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
           ? html`
               <div class="addRow">
-                <ha-textfield
-                  class="addBox"
+                <ha-input
                   .placeholder=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
                   .disabled=${unavailable}
-                ></ha-textfield>
-                <ha-icon-button
-                  class="addButton"
-                  .path=${mdiPlus}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.add_item"
-                  )}
-                  .disabled=${unavailable}
-                  @click=${this._addItem}
                 >
-                </ha-icon-button>
+                  <ha-icon-button
+                    slot="end"
+                    class="addButton"
+                    .path=${mdiPlus}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.add_item"
+                    )}
+                    .disabled=${unavailable}
+                    @click=${this._addItem}
+                  >
+                  </ha-icon-button>
+                </ha-input>
               </div>
             `
           : nothing}
@@ -664,16 +817,27 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private get _newItem(): HaTextField {
-    return this.shadowRoot!.querySelector(".addBox") as HaTextField;
+  private get _newItem(): HaInput {
+    return this._input;
   }
 
-  private _addItem(ev): void {
+  private async _addItem(ev): Promise<void> {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, {
-        summary: newItem.value!,
-      });
+      if (this._config?.due_date_period) {
+        const item = {
+          summary: newItem.value!,
+          status: TodoItemStatus.NeedsAction,
+        };
+        await showTodoItemEditDialog(this, {
+          entity: this._entityId!,
+          item,
+        });
+      } else {
+        createItem(this.hass!, this._entityId!, {
+          summary: newItem.value!,
+        });
+      }
     }
 
     newItem.value = "";
@@ -779,10 +943,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     .addRow ha-icon-button {
-      position: absolute;
-      right: 16px;
-      inset-inline-start: initial;
-      inset-inline-end: 16px;
+      --ha-icon-button-size: 32px;
     }
 
     .addRow,
@@ -901,7 +1062,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       inset-inline-end: initial;
     }
 
-    ha-textfield {
+    ha-input {
       flex-grow: 1;
     }
 
