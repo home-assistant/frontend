@@ -6,12 +6,17 @@ import { getContrastedColorHex } from "../common/color/rgb";
 import { uid } from "../common/util/uid";
 import "./ha-tooltip";
 
+/**
+ * Returns CSS styles for a label's background & icon/text
+ * @param color Label color defined in HEX format
+ * @returns CSS styles
+ */
 export const getLabelColorStyle = (labelColor: string | undefined | null) => {
   const color = labelColor ? computeCssColor(labelColor) : undefined;
   return color
     ? `--ha-label-background-color: ${color};
        --primary-text-color: ${getContrastedColorHex(labelColor!)};`
-    : `--ha-label-background-color: rgba(var(--rgb-primary-text-color),0.15);`;
+    : `--ha-label-background-color: rgba(var(--rgb-primary-text-color), 0.15);`;
 };
 
 @customElement("ha-label")
