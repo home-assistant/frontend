@@ -41,9 +41,12 @@ export class HaCardConditionNumericState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (stateObj?: HassEntity) =>
+    (
+      no_entity: boolean,
+      stateObj?: HassEntity
+    ) =>
       [
-        ...(this.no_entity
+        ...(no_entity
           ? []
           : [{ name: "entity", selector: { entity: {} } }]),
         {
@@ -84,7 +87,7 @@ export class HaCardConditionNumericState extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${this.condition}
-        .schema=${this._schema(stateObj)}
+        .schema=${this._schema(this.no_entity, stateObj)}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
