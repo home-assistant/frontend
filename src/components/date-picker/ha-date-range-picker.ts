@@ -133,7 +133,8 @@ export class HaDateRangePicker extends LitElement {
           ${!this.minimal
             ? html`<ha-textarea
                   id="field"
-                  mobile-multiline
+                  rows="1"
+                  resize="auto"
                   @click=${this._openPicker}
                   @keydown=${this._handleKeydown}
                   .value=${(isThisYear(this.startDate)
@@ -336,14 +337,7 @@ export class HaDateRangePicker extends LitElement {
   private _setTextareaFocusStyle(focused: boolean) {
     const textarea = this.renderRoot.querySelector("ha-textarea");
     if (textarea) {
-      const foundation = (textarea as any).mdcFoundation;
-      if (foundation) {
-        if (focused) {
-          foundation.activateFocus();
-        } else {
-          foundation.deactivateFocus();
-        }
-      }
+      textarea.setFocused(focused);
     }
   }
 
