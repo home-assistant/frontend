@@ -4921,9 +4921,7 @@
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
-              "trigger": "By trigger",
-              "condition": "By condition",
-              "action": "By action"
+              "type": "By type"
             },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
