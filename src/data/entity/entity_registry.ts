@@ -73,7 +73,7 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
-  aliases: string[];
+  aliases: (string | null)[];
 }
 
 export interface UpdateEntityRegistryEntryResult {
