@@ -67,8 +67,9 @@ export function computeCssColor(color: string): string {
 export function resolveThemeColor(color: string): string {
   const cssColor = computeCssVariableName(color);
   if (cssColor.startsWith("--")) {
-    const resolved =
-      getComputedStyle(document.body).getPropertyValue(cssColor).trim();
+    const resolved = getComputedStyle(document.body)
+      .getPropertyValue(cssColor)
+      .trim();
     return resolved || color;
   }
   return cssColor;
