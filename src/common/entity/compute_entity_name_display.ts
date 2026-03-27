@@ -5,6 +5,7 @@ import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
+import { computeStateName } from "./compute_state_name";
 import { getEntityContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
@@ -40,7 +41,12 @@ export const computeEntityNameDisplay = (
     return name;
   }
 
-  let items = ensureArray(name ?? DEFAULT_ENTITY_NAME);
+  // If no name config is provided, fall back to the friendly name
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+
+  let items = ensureArray(name);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
