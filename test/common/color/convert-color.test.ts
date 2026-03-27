@@ -51,7 +51,7 @@ describe("Color Conversion Tests", () => {
     // which can differ from `#ff0000` on a particular Frontend client
     expect(theme2hex("red")).toBe("#ff0000");
     expect(theme2hex("ReD")).toBe("#ff0000");
-    
+
     expect(theme2hex("#ff0000")).toBe("#ff0000");
     expect(theme2hex("unicorn")).toBe("unicorn");
     expect(theme2hex("#abc")).toBe("#aabbcc");
