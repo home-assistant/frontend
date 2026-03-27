@@ -620,6 +620,10 @@ export class HaInput extends LitElement {
       background-color: var(--ha-color-form-background-disabled);
     }
 
+    wa-input:disabled::part(label) {
+      opacity: 0.5;
+    }
+
     wa-input::part(hint) {
       height: var(--ha-space-5);
       margin-block-start: 0;
