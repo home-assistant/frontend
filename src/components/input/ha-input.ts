@@ -228,9 +228,6 @@ export class HaInput extends LitElement {
   @state()
   private _invalid = false;
 
-  @state()
-  private _hasStartSlot = false;
-
   @query("wa-input")
   private _input?: WaInput;
 
@@ -351,8 +348,7 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
-            (this.label && this.placeholder) ||
-            this._hasStartSlot,
+            (this.label && this.placeholder),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -372,7 +368,7 @@ export class HaInput extends LitElement {
               >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
-        <slot name="start" slot="start" @slotchange=${this._onStartSlotChange}>
+        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
@@ -436,12 +432,6 @@ export class HaInput extends LitElement {
   private _handleInvalid() {
     this._invalid = true;
   }
-
-  private _onStartSlotChange = (ev: Event) => {
-    const slot = ev.target as HTMLSlotElement;
-    this._hasStartSlot = slot.assignedNodes().length > 0;
-    this._syncStartSlotWidth();
-  };
 
   private _syncStartSlotWidth = () => {
     const startEl = this._input?.shadowRoot?.querySelector(
@@ -589,12 +579,6 @@ export class HaInput extends LitElement {
       background-color: var(--ha-color-border-danger-normal);
     }
 
-    wa-input::part(start) {
-      max-width: var(--ha-input-start-max-width, none);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
     wa-input::part(input) {
       padding-top: var(--ha-space-3);
       padding-inline-start: var(--input-padding-inline-start, 0);
@@ -634,6 +618,10 @@ export class HaInput extends LitElement {
 
     wa-input:disabled::part(base) {
       background-color: var(--ha-color-form-background-disabled);
+    }
+
+    wa-input:disabled::part(label) {
+      opacity: 0.5;
     }
 
     wa-input::part(hint) {
