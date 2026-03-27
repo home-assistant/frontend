@@ -51,11 +51,11 @@ export const getRGBContrastRatio = (
 ) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 
 /**
- * Gets a contrasted color (black or white) based on the luminance of the theme color.
- * @param themeColor - The theme color to calculate the contrasted color for.
- * @returns A hex color string ("#000000" for dark backgrounds, "#ffffff" for light backgrounds).
+ * Returns a contrasted color (black or white) based on the luminance of another color
+ * @param color - Color (HEX, rgb/rgba, named color) to calculate a contrasted color
+ * @returns HEX color ("#000000" for dark backgrounds, "#ffffff" for light backgrounds)
  */
-export const getContrastedColorHex = (themeColor: string): string => {
-  const lum = wcagLuminance(theme2hex(themeColor));
+export const getContrastedColorHex = (color: string): string => {
+  const lum = wcagLuminance(theme2hex(color));
   return lum > 0.5 ? "#000000" : "#ffffff";
 };
