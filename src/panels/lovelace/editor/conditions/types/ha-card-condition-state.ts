@@ -64,14 +64,9 @@ export class HaCardConditionState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (
-      no_entity: boolean,
-      localize: LocalizeFunc,
-    ) =>
+    (no_entity: boolean, localize: LocalizeFunc) =>
       [
-        ...(no_entity
-          ? []
-          : [{ name: "entity", selector: { entity: {} } }]),
+        ...(no_entity ? [] : [{ name: "entity", selector: { entity: {} } }]),
         {
           name: "",
           type: "grid",
