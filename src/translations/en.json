@@ -9122,8 +9122,8 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
-              "group_by_floor": "Group entities by floor",
-              "group_by_area": "Group entities by area",
+              "group_by_floor": "Group by floor",
+              "group_by_area": "Group by area",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
