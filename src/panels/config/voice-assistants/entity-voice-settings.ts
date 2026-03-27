@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import type {
   EntityDomainFilter,
   EntityDomainFilterFunc,
@@ -288,55 +287,27 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               }
             )}
           </ha-alert>`
-        : html`
-            <ha-md-list-item>
-              <span slot="headline">
-                ${this.hass.states[this.entityId]
-                  ? computeStateName(this.hass.states[this.entityId])
-                  : this.entityId}
-              </span>
-              <span slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.dialogs.voice-settings.entity_name_alias_description"
-                )}
-              </span>
-              <ha-switch
-                slot="end"
-                .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
-                @change=${this._toggleEntityNameAlias}
-              ></ha-switch>
-            </ha-md-list-item>
-            <ha-aliases-editor
-              .hass=${this.hass}
-              .aliases=${(this._aliases ?? this.entry.aliases).filter(
-                (a): a is string => a !== null
-              )}
-              sortable
-              @value-changed=${this._aliasesChanged}
-            ></ha-aliases-editor>
-          `}
+        : html`<ha-aliases-editor
+            .hass=${this.hass}
+            .aliases=${(this._aliases ?? this.entry.aliases).filter(
+              (a): a is string => a !== null
+            )}
+            @value-changed=${this._aliasesChanged}
+            @blur=${this._saveAliases}
+          ></ha-aliases-editor>`}
     `;
   }
 
-  private async _toggleEntityNameAlias(ev) {
-    const enabled = ev.target.checked;
-    const currentAliases = this._aliases ?? this.entry?.aliases ?? [];
-    if (enabled) {
-      this._aliases = [null, ...currentAliases.filter((a) => a !== null)];
-    } else {
-      this._aliases = currentAliases.filter((a): a is string => a !== null);
-    }
-    await this._saveAliases();
-  }
-
   private _aliasesChanged(ev) {
-    const currentAliases = this._aliases ?? this.entry?.aliases ?? [];
-    const hasNull = currentAliases.includes(null);
-    const nullAliases: (string | null)[] = hasNull ? [null] : [];
-    const newStringAliases: string[] = ev.detail.value;
+    const currentLength =
+      this._aliases?.length ?? this.entry?.aliases?.length ?? 0;
 
-    this._aliases = [...nullAliases, ...newStringAliases];
-    this._saveAliases();
+    this._aliases = ev.detail.value;
+
+    // if an entry was deleted, then save changes
+    if (currentLength > ev.detail.value.length) {
+      this._saveAliases();
+    }
   }
 
   private async _2faChanged(ev) {
@@ -355,8 +326,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     if (!this._aliases) {
       return;
     }
-    const hasNull = this._aliases.includes(null);
-    const nullAliases: null[] = hasNull ? [null] : [];
+    const nullAliases = (this.entry?.aliases ?? []).filter((a) => a === null);
     const stringAliases = this._aliases
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())

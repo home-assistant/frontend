@@ -12,8 +12,6 @@ class AliasesEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public sortable = false;
-
   protected render() {
     if (!this.aliases) {
       return nothing;
@@ -23,8 +21,6 @@ class AliasesEditor extends LitElement {
       <ha-input-multi
         .value=${this.aliases}
         .disabled=${this.disabled}
-        .sortable=${this.sortable}
-        update-on-blur
         .label=${this.hass!.localize("ui.dialogs.aliases.label")}
         .removeLabel=${this.hass!.localize("ui.dialogs.aliases.remove")}
         .addLabel=${this.hass!.localize("ui.dialogs.aliases.add")}
@@ -35,9 +31,8 @@ class AliasesEditor extends LitElement {
     `;
   }
 
-  private _aliasesChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+  private _aliasesChanged(value) {
+    fireEvent(this, "value-changed", { value });
   }
 }
 
