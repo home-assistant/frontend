@@ -702,7 +702,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "-12"
     );
-    // Intl.NumberFormat formats negative currency differently across platforms
+    // Joined output matches native Intl formatting
     const expected = new Intl.NumberFormat("en", {
       style: "currency",
       currency: "USD",
