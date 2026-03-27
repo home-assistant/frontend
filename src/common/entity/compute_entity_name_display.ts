@@ -49,7 +49,7 @@ export const computeEntityNameDisplay = (
     return items.map((item) => item.text).join(separator);
   }
 
-  const useDeviceName = entityUseDeviceName(stateObj, entities);
+  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
 
   // If entity uses device name, and device is not already included, replace it with device name
   if (useDeviceName) {
@@ -95,7 +95,7 @@ export const computeEntityNameList = (
   const names = name.map((item) => {
     switch (item.type) {
       case "entity":
-        return computeEntityName(stateObj, entities);
+        return computeEntityName(stateObj, entities, devices);
       case "device":
         return device ? computeDeviceName(device) : undefined;
       case "area":

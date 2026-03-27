@@ -200,19 +200,15 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        template: (entry) => {
-          const aliases = entry.aliases.filter(
-            (a: string | null) => a !== null
-          );
-          return aliases.length === 0
+        template: (entry) =>
+          entry.aliases.length === 0
             ? "-"
-            : aliases.length === 1
-              ? aliases[0]
+            : entry.aliases.length === 1
+              ? entry.aliases[0]
               : this.hass.localize(
                   "ui.panel.config.voice_assistants.expose.aliases",
-                  { count: aliases.length }
-                );
-        },
+                  { count: entry.aliases.length }
+                ),
       },
       remove: {
         title: "",

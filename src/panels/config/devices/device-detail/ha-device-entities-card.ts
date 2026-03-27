@@ -18,7 +18,8 @@ import {
   computeSection,
 } from "../../../lovelace/common/generate-lovelace-config";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type { EntityRegistryEntryWithDisplayName } from "../ha-config-device-page";
+import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import { entityRowElement } from "../../../lovelace/entity-rows/entity-row-element-directive";
 
 @customElement("ha-device-entities-card")
@@ -30,7 +31,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public entities!: EntityRegistryEntryWithDisplayName[];
+  public entities!: EntityRegistryStateEntry[];
 
   @property({ attribute: "show-hidden", type: Boolean })
   public showHidden = false;
@@ -115,10 +116,11 @@ export class HaDeviceEntitiesCard extends LitElement {
     this.showHidden = !this.showHidden;
   }
 
-  private _renderEntity(
-    entry: EntityRegistryEntryWithDisplayName
-  ): TemplateResult {
-    let name = entry.display_name || this.deviceName;
+  private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
+    let name =
+      (entry.stateName
+        ? stripPrefixFromEntityName(entry.stateName, this.deviceName)
+        : undefined) || this.deviceName;
     if (entry.hidden_by) {
       name += ` (${this.hass.localize(
         "ui.panel.config.devices.entities.hidden"
@@ -130,9 +132,12 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _renderUnavailableEntity(
-    entry: EntityRegistryEntryWithDisplayName
+    entry: EntityRegistryStateEntry
   ): TemplateResult {
-    const name = entry.display_name || this.deviceName;
+    const name =
+      (entry.stateName
+        ? stripPrefixFromEntityName(entry.stateName, this.deviceName)
+        : undefined) || this.deviceName;
 
     const icon = until(entryIcon(this.hass, entry));
 

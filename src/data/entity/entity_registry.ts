@@ -73,7 +73,7 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
-  aliases: (string | null)[];
+  aliases: string[];
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -198,7 +198,7 @@ export interface EntityRegistryEntryUpdateParams {
     | CoverEntityOptions
     | ValveEntityOptions
     | VacuumEntityOptions;
-  aliases?: (string | null)[];
+  aliases?: string[];
   labels?: string[];
   categories?: Record<string, string | null>;
 }
