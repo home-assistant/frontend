@@ -198,7 +198,7 @@ export interface EntityRegistryEntryUpdateParams {
     | CoverEntityOptions
     | ValveEntityOptions
     | VacuumEntityOptions;
-  aliases?: string[];
+  aliases?: (string | null)[];
   labels?: string[];
   categories?: Record<string, string | null>;
 }
