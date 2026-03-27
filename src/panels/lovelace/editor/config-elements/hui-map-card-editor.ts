@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiPalette } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -19,7 +18,10 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { hasLocation } from "../../../../common/entity/has_location";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -30,6 +32,7 @@ import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
@@ -43,7 +46,7 @@ import type {
   EntitiesEditorEvent,
 } from "../types";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { getStates } from "../../../../common/entity/get_states";
+import { FIXED_DOMAIN_STATES } from "../../../../common/entity/get_states";
 import type { Condition } from "../../common/validate-condition";
 import type { LovelaceCardEditor } from "../../types";
 import "../conditions/ha-card-condition-editor";
@@ -237,24 +240,18 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (!this.hass || this._presetStates.length) {
       return;
     }
-    const mockStateObj: HassEntity = {
-      entity_id: "device_tracker.xxx",
-      attributes: {},
-      state: "home",
-      last_changed: "",
-      last_updated: "",
-      context: {
-        id: "",
-        user_id: null,
-        parent_id: null,
-      },
-    };
-    const states = getStates(this.hass, mockStateObj);
+    const states = [
+      UNAVAILABLE,
+      UNKNOWN,
+      ...FIXED_DOMAIN_STATES["device_tracker"],
+    ];
     states.forEach((stateRaw) => {
-      const stateTranslated = this.hass!.formatEntityState(
-        mockStateObj,
-        stateRaw
-      );
+      let stateTranslated;
+      if ([UNKNOWN, UNAVAILABLE].includes(stateRaw)) {
+        stateTranslated = this.hass!.localize(`state.default.${stateRaw}` as LocalizeKeys);
+      } else {
+        stateTranslated = this.hass!.localize(`component.device_tracker.entity_component._.state.${stateRaw}`);
+      }
       this._presetStates.push({
         value: stateRaw,
         label: stateTranslated,
