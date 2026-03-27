@@ -243,7 +243,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     const states = [
       UNAVAILABLE,
       UNKNOWN,
-      ...FIXED_DOMAIN_STATES["device_tracker"],
+      ...FIXED_DOMAIN_STATES.device_tracker,
     ];
     states.forEach((stateRaw) => {
       let stateTranslated;
