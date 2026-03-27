@@ -4915,6 +4915,10 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "tabs": {
+              "target": "By target",
+              "type": "By type"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
