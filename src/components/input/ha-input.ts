@@ -228,9 +228,6 @@ export class HaInput extends LitElement {
   @state()
   private _invalid = false;
 
-  @state()
-  private _hasStartSlot = false;
-
   @query("wa-input")
   private _input?: WaInput;
 
@@ -238,7 +235,8 @@ export class HaInput extends LitElement {
     this,
     "label",
     "hint",
-    "input"
+    "input",
+    "start"
   );
 
   static shadowRootOptions: ShadowRootInit = {
@@ -321,6 +319,8 @@ export class HaInput extends LitElement {
       ? false
       : this._hasSlotController.test("hint");
 
+    const hasStartSlot = this._hasSlotController.test("start");
+
     return html`
       <wa-input
         .type=${this.type}
@@ -352,7 +352,7 @@ export class HaInput extends LitElement {
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
             (this.label && this.placeholder) ||
-            this._hasStartSlot,
+            hasStartSlot,
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -372,7 +372,7 @@ export class HaInput extends LitElement {
               >${this._renderLabel(this.label, this.required)}</slot
             >`
           : nothing}
-        <slot name="start" slot="start" @slotchange=${this._onStartSlotChange}>
+        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
@@ -436,12 +436,6 @@ export class HaInput extends LitElement {
   private _handleInvalid() {
     this._invalid = true;
   }
-
-  private _onStartSlotChange = (ev: Event) => {
-    const slot = ev.target as HTMLSlotElement;
-    this._hasStartSlot = slot.assignedNodes().length > 0;
-    this._syncStartSlotWidth();
-  };
 
   private _syncStartSlotWidth = () => {
     const startEl = this._input?.shadowRoot?.querySelector(
@@ -591,8 +585,6 @@ export class HaInput extends LitElement {
 
     wa-input::part(start) {
       max-width: var(--ha-input-start-max-width, none);
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     wa-input::part(input) {
