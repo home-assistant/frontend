@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,20 +13,21 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { labelsContext } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-info-card")
-export class HaDeviceCard extends SubscribeMixin(LitElement) {
+export class HaDeviceCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _labelRegistry?: LabelRegistryEntry[];
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labelRegistry?: LabelRegistryEntry[];
 
   private _labelsData = memoizeOne(
     (
@@ -49,14 +51,6 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
       return { map, ids };
     }
   );
-
-  public hassSubscribe() {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labelRegistry = labels;
-      }),
-    ];
-  }
 
   protected render(): TemplateResult {
     const { map: labelMap, ids: labels } = this._labelsData(
