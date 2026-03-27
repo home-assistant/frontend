@@ -70,7 +70,7 @@ import {
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
@@ -98,10 +98,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -258,12 +255,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _filteredHelperEntityIds?: string[] | null;
 
@@ -312,9 +310,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       ),
       subscribeEntityRegistry(this.hass.connection!, (entries) => {
         this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
-      }),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
       }),
       subscribeCategoryRegistry(
         this.hass.connection,
