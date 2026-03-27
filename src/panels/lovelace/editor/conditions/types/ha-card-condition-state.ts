@@ -100,7 +100,7 @@ export class HaCardConditionState extends LitElement {
               },
             },
             {
-              ...(this.no_entity
+              ...(no_entity
                 ? {
                     name: "state",
                     selector: {
