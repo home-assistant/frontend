@@ -2,18 +2,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
+import { createErrorCardElement } from "../create-element/create-element-base";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
-import type { StackCardConfig } from "./types";
-import { createErrorCardElement } from "../create-element/create-element-base";
 import type { HuiErrorCard } from "./hui-error-card";
+import type { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -42,14 +37,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   public getCardSize(): number | Promise<number> {
     return 1;
-  }
-
-  public getGridOptions(): LovelaceGridOptions {
-    return {
-      columns: 12,
-      rows: "auto",
-      min_columns: 3,
-    };
   }
 
   public setConfig(config: T): void {
@@ -117,11 +104,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
-      <div
-        id="root"
-        class="ha-scrollbar"
-        dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}
-      >
+      <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
         ${this._cards}
         ${this.preview && this._errorCard ? this._errorCard : nothing}
       </div>
@@ -129,7 +112,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   }
 
   static sharedStyles = [
-    haStyleScrollbar,
     css`
       .card-header {
         color: var(--ha-card-header-color, var(--primary-text-color));

@@ -129,6 +129,8 @@
         "current_temperature": "{name} current temperature",
         "heating": "{name} heating",
         "cooling": "{name} cooling",
+        "drying": "{name} drying",
+        "fan": "{name} fan only",
         "high": "high",
         "low": "low",
         "mode": "Mode",
@@ -724,8 +726,10 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
+          "mode_composed": "Composed",
+          "mode_custom": "Custom",
           "add": "Add",
-          "search": "Search or enter custom name",
+          "search": "Search name",
           "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
@@ -1865,6 +1869,7 @@
           },
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
+          "change_device_name_link": "change the device name",
           "use_device_area": "Use device area",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
@@ -9252,7 +9257,7 @@
               },
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
-              "collection_key_description": "Optionally connect a collection of date picker, statistics graph and energy cards. Cards with matching key will respond to any connected date picker card. Any energy card on this dashboard with no key will automatically be linked together.",
+              "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",

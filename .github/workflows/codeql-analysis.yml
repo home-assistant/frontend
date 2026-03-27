@@ -7,6 +7,10 @@ on:
     # The branches below must be a subset of the branches above
     branches: [dev]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   analyze:
     name: Analyze
@@ -28,6 +32,7 @@ jobs:
           # We must fetch at least the immediate parents so that if this is
           # a pull request then we can checkout the head.
           fetch-depth: 2
+          persist-credentials: false
 
       # If this run was triggered by a pull request event, then checkout
       # the head of the pull request instead of the merge commit.

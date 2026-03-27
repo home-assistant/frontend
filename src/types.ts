@@ -309,7 +309,7 @@ export interface HomeAssistant {
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
-    type: EntityNameItem | EntityNameItem[],
+    type: string | EntityNameItem | EntityNameItem[] | undefined,
     separator?: EntityNameOptions
   ): string;
 }

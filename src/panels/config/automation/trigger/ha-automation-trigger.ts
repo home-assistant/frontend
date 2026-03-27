@@ -252,6 +252,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
           row.expand();
           row.focus();
         }
+        row.markAsNew();
       });
     }
   }

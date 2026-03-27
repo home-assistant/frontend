@@ -6,7 +6,6 @@ import type { HaInput } from "../../../components/input/ha-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -44,11 +43,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
 
     return html`
       <hui-generic-entity-row

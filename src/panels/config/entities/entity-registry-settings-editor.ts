@@ -8,6 +8,7 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -211,6 +212,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
+    if (changedProperties.has("hass") && this.entry.device_id) {
+      const device = this.hass.devices[this.entry.device_id];
+      if (device !== this._device) {
+        this._device = device;
+      }
+    }
     if (
       !changedProperties.has("entry") ||
       changedProperties.get("entry")?.id === this.entry.id
@@ -388,6 +395,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${this.hideName
         ? nothing
         : html`<ha-input
+            inset-label
             class="name"
             .value=${this._name ?? this.entry.original_name ?? ""}
             .label=${this.hass.localize(
@@ -396,8 +404,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
             .disabled=${this.disabled}
             @input=${this._nameChanged}
           >
+            ${this.entry.has_entity_name && this._device
+              ? html`<span class="input-prefix" slot="start"
+                  >${computeDeviceName(this._device) ?? ""}</span
+                >`
+              : nothing}
             ${this._name !== null
-              ? html` <ha-icon-button
+              ? html`<ha-icon-button
                   slot="end"
                   @click=${this._restoreName}
                   .path=${mdiRestore}
@@ -406,7 +419,24 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   )}
                 ></ha-icon-button>`
               : nothing}
-          </ha-input>`}
+            ${this.entry.has_entity_name && this._device
+              ? html`<span slot="hint" class="hint">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.change_device_settings",
+                    {
+                      link: html`<button
+                        class="link"
+                        @click=${this._openDeviceSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.change_device_name_link"
+                        )}
+                      </button>`,
+                    }
+                  )}
+                </span>`
+              : nothing}
+          </ha-input> `}
       ${this.hideIcon
         ? nothing
         : html`
@@ -769,7 +799,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         .autocorrect=${false}
         .spellcheck=${false}
       >
-        <span class="entity-id-domain" slot="start">${domain + "."}</span>
+        <span class="input-prefix" slot="start">${domain + "."}</span>
         <ha-icon-button
           slot="end"
           @click=${this._restoreEntityId}
@@ -1611,14 +1641,24 @@ export class EntityRegistrySettingsEditor extends LitElement {
         :host {
           display: block;
         }
-        .entity-id-domain {
+        .input-prefix {
           color: var(--secondary-text-color);
           margin: var(--ha-space-3) 0 0;
         }
+
         ha-input.entityId,
         ha-input.name {
           --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
+        }
+
+        ha-input.name {
+          --ha-input-start-max-width: 35%;
+        }
+        ha-input.name .input-prefix {
+          margin-inline-end: var(--ha-space-1);
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         ha-input.entityId ha-icon-button:last-child {
           margin-inline-start: 0;
@@ -1634,6 +1674,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
           display: block;
           margin: var(--ha-space-2) 0;
           width: 100%;
+        }
+        .hint {
+          font-size: var(--ha-font-size-s);
+        }
+        .hint .link {
+          direction: var(--direction);
         }
         .menu-item {
           border-radius: var(--ha-border-radius-sm);
