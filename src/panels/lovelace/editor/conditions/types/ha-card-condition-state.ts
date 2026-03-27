@@ -66,7 +66,7 @@ export class HaCardConditionState extends LitElement {
   private _schema = memoizeOne(
     (
       no_entity: boolean,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
     ) =>
       [
         ...(no_entity
