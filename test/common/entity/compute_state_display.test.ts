@@ -702,7 +702,13 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "-12"
     );
-    expect(result).toBe("-$12.00");
+    // Intl.NumberFormat formats negative currency differently across platforms
+    const expected = new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    }).format(-12);
+    expect(result).toBe(expected);
   });
 });
 
