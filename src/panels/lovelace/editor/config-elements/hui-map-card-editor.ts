@@ -248,9 +248,13 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     states.forEach((stateRaw) => {
       let stateTranslated;
       if ([UNKNOWN, UNAVAILABLE].includes(stateRaw)) {
-        stateTranslated = this.hass!.localize(`state.default.${stateRaw}` as LocalizeKeys);
+        stateTranslated = this.hass!.localize(
+          `state.default.${stateRaw}` as LocalizeKeys
+        );
       } else {
-        stateTranslated = this.hass!.localize(`component.device_tracker.entity_component._.state.${stateRaw}`);
+        stateTranslated = this.hass!.localize(
+          `component.device_tracker.entity_component._.state.${stateRaw}`
+        );
       }
       this._presetStates.push({
         value: stateRaw,
