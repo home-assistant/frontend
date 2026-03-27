@@ -1927,8 +1927,9 @@
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
-        "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "aliases_description": "Aliases are alternative names to call your entity. Only supported by Assist and Google Assistant.",
         "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
+        "entity_name_alias_description": "Default name. Disable it if you want your voice assistants to ignore it and just use aliases.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",

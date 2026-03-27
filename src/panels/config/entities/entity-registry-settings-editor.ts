@@ -884,9 +884,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           )}</span
         >
         <span slot="secondary">
-          ${this.entry.aliases.length
-            ? [...this.entry.aliases]
-                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+          ${this.entry.aliases.filter((a) => a !== null).length
+            ? this.entry.aliases
+                .filter((a): a is string => a !== null)
                 .join(", ")
             : this.hass.localize(
                 "ui.dialogs.entity_registry.editor.no_aliases"

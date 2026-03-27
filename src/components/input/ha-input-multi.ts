@@ -1,14 +1,16 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
+import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { localizeContext } from "../../data/context";
 import { haStyle } from "../../resources/styles";
 import "../ha-button";
 import "../ha-icon-button";
 import "../ha-input-helper-text";
+import "../ha-sortable";
 import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
@@ -23,7 +25,9 @@ import type { HaInput, InputType } from "./ha-input";
  * Useful for managing arrays of strings such as URLs, tags, or other repeated text values.
  *
  * @attr {boolean} disabled - Disables all inputs and buttons.
+ * @attr {boolean} sortable - Enables drag-and-drop reordering of items.
  * @attr {boolean} item-index - Appends a 1-based index number to each item's label.
+ * @attr {boolean} update-on-blur - Fires value-changed on blur instead of on input.
  *
  * @fires value-changed - Fired when the list of values changes. `event.detail.value` contains the new string array.
  */
@@ -54,49 +58,74 @@ class HaInputMulti extends LitElement {
 
   @property({ type: Number }) public max?: number;
 
+  @property({ type: Boolean }) public sortable = false;
+
+  @property({ type: Boolean, attribute: "update-on-blur" })
+  public updateOnBlur = false;
+
   @state()
   @consume({ context: localizeContext, subscribe: true })
   private localize?: ContextType<typeof localizeContext>;
 
   protected render() {
     return html`
-      ${this._items.map((item, index) => {
-        const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
-        return html`
-          <div class="layout horizontal center-center row">
-            <ha-input
-              .type=${this.inputType}
-              .autocomplete=${this.autocomplete}
-              .disabled=${this.disabled}
-              dialogInitialFocus=${index}
-              .index=${index}
-              class="flex-auto"
-              .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
-              .value=${item}
-              ?data-last=${index === this._items.length - 1}
-              @input=${this._editItem}
-              @keydown=${this._keyDown}
-            >
-              ${this.inputPrefix
-                ? html`<span slot="start">${this.inputPrefix}</span>`
-                : nothing}
-              ${this.inputSuffix
-                ? html`<span slot="end">${this.inputSuffix}</span>`
-                : nothing}
-            </ha-input>
-            <ha-icon-button
-              .disabled=${this.disabled}
-              .index=${index}
-              slot="navigationIcon"
-              .label=${this.removeLabel ??
-              this.localize?.("ui.common.remove") ??
-              "Remove"}
-              @click=${this._removeItem}
-              .path=${mdiDeleteOutline}
-            ></ha-icon-button>
-          </div>
-        `;
-      })}
+      <ha-sortable
+        handle-selector=".handle"
+        draggable-selector=".row"
+        .disabled=${!this.sortable || this.disabled}
+        @item-moved=${this._itemMoved}
+      >
+        <div class="items">
+          ${repeat(
+            this._items,
+            (item, index) => `${item}-${index}`,
+            (item, index) => {
+              const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
+              return html`
+                <div class="layout horizontal center-center row">
+                  <ha-input
+                    .type=${this.inputType}
+                    .autocomplete=${this.autocomplete}
+                    .disabled=${this.disabled}
+                    dialogInitialFocus=${index}
+                    .index=${index}
+                    class="flex-auto"
+                    .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
+                    .value=${item}
+                    ?data-last=${index === this._items.length - 1}
+                    @input=${this._editItem}
+                    @change=${this._editItem}
+                    @keydown=${this._keyDown}
+                  >
+                    ${this.inputPrefix
+                      ? html`<span slot="start">${this.inputPrefix}</span>`
+                      : nothing}
+                    ${this.inputSuffix
+                      ? html`<span slot="end">${this.inputSuffix}</span>`
+                      : nothing}
+                  </ha-input>
+                  <ha-icon-button
+                    .disabled=${this.disabled}
+                    .index=${index}
+                    slot="navigationIcon"
+                    .label=${this.removeLabel ??
+                    this.localize?.("ui.common.remove") ??
+                    "Remove"}
+                    @click=${this._removeItem}
+                    .path=${mdiDeleteOutline}
+                  ></ha-icon-button>
+                  ${this.sortable
+                    ? html`<ha-svg-icon
+                        class="handle"
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>`
+                    : nothing}
+                </div>
+              `;
+            }
+          )}
+        </div>
+      </ha-sortable>
       <div class="layout horizontal">
         <ha-button
           size="small"
@@ -141,6 +170,12 @@ class HaInputMulti extends LitElement {
   }
 
   private async _editItem(ev: Event) {
+    if (this.updateOnBlur && ev.type === "input") {
+      return;
+    }
+    if (!this.updateOnBlur && ev.type === "change") {
+      return;
+    }
     const index = (ev.target as any).index;
     const items = [...this._items];
     items[index] = (ev.target as any).value;
@@ -152,6 +187,15 @@ class HaInputMulti extends LitElement {
       ev.stopPropagation();
       this._addItem();
     }
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    const items = [...this._items];
+    const [moved] = items.splice(oldIndex, 1);
+    items.splice(newIndex, 0, moved);
+    this._fireChanged(items);
   }
 
   private async _removeItem(ev: Event) {
@@ -176,6 +220,11 @@ class HaInputMulti extends LitElement {
         }
         ha-icon-button {
           display: block;
+        }
+        .handle {
+          cursor: grab;
+          padding: 8px;
+          margin: -8px;
         }
       `,
     ];
