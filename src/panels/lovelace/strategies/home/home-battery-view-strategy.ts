@@ -6,8 +6,6 @@ import {
   generateEntityFilter,
   type EntityFilter,
 } from "../../../../common/entity/entity_filter";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
@@ -31,21 +29,11 @@ export const batteryEntityFilters: EntityFilter[] = [
   },
 ];
 
-const computeBatteryTileCard = (
-  hass: HomeAssistant,
-  areaName: string,
-  entityId: string
-): TileCardConfig => {
-  const stateObj = hass.states[entityId];
-  const name = computeStateName(stateObj);
-  const strippedName = stripPrefixFromEntityName(name, areaName.toLowerCase());
-
-  return {
-    type: "tile",
-    entity: entityId,
-    name: strippedName,
-  };
-};
+const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
+  type: "tile",
+  entity: entityId,
+  name: { type: "device" },
+});
 
 const processAreasForBattery = (
   areaIds: string[],
@@ -65,7 +53,7 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(hass, area.name, entityId));
+      areaCards.push(computeBatteryTileCard(entityId));
     }
 
     if (areaCards.length > 0) {
@@ -98,7 +86,7 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(hass, "", entityId));
+    cards.push(computeBatteryTileCard(entityId));
   }
 
   return cards;
