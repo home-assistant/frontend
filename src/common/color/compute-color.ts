@@ -1,4 +1,30 @@
-import { DEFAULT_THEME_COLORS } from "../../resources/theme/color/color.globals";
+export const THEME_COLORS = new Set([
+  "primary",
+  "accent",
+  "red",
+  "pink",
+  "purple",
+  "deep-purple",
+  "indigo",
+  "blue",
+  "light-blue",
+  "cyan",
+  "teal",
+  "green",
+  "light-green",
+  "lime",
+  "yellow",
+  "amber",
+  "orange",
+  "deep-orange",
+  "brown",
+  "light-grey",
+  "grey",
+  "dark-grey",
+  "blue-grey",
+  "black",
+  "white",
+]);
 
 const YAML_ONLY_THEMES_COLORS = new Set([
   "primary-text",
@@ -6,11 +32,46 @@ const YAML_ONLY_THEMES_COLORS = new Set([
   "disabled",
 ]);
 
-export function computeCssColor(color: string): string {
-  if (color in DEFAULT_THEME_COLORS || YAML_ONLY_THEMES_COLORS.has(color)) {
-    return `var(--${color}-color)`;
+/**
+ * Compose a CSS variable out of a theme color
+ * @param color - Theme color (examples: `red`, `primary-text`)
+ * @returns CSS variable in `--xxx-color` format;
+ * initial color if not found in theme colors
+ */
+export function computeCssVariableName(color: string): string {
+  if (THEME_COLORS.has(color) || YAML_ONLY_THEMES_COLORS.has(color)) {
+    return `--${color}-color`;
   }
   return color;
+}
+
+/**
+ * Compose a CSS variable out of a theme color & then resolve it
+ * @param color - Theme color (examples: `red`, `primary-text`)
+ * @returns Resolved CSS variable in `var(--xxx-color)` format;
+ * initial color if not found in theme colors
+ */
+export function computeCssColor(color: string): string {
+  const cssVarName = computeCssVariableName(color);
+  if (cssVarName !== color) {
+    return `var(${cssVarName})`;
+  }
+  return color;
+}
+
+/**
+ * Get a color from document's styles
+ * @param color - Named theme color (examples: `red`, `primary-text`)
+ * @returns Resolved color; initial color if not found in document's styles
+ */
+export function resolveThemeColor(color: string): string {
+  const cssColor = computeCssVariableName(color);
+  if (cssColor.startsWith("--")) {
+    const resolved =
+      getComputedStyle(document.body).getPropertyValue(cssColor).trim();
+    return resolved || color;
+  }
+  return cssColor;
 }
 
 /**
@@ -23,7 +84,7 @@ export function isValidColorString(color: string | undefined): boolean {
   }
 
   // Check if it's a theme color
-  if (color in DEFAULT_THEME_COLORS) {
+  if (THEME_COLORS.has(color)) {
     return true;
   }
 
