@@ -612,10 +612,10 @@ class DialogAddAutomationElement
                 .narrow=${this._narrow}
                 class=${classMap({
                   "ha-scrollbar": true,
-                  [this._getAddFromTargetHidden(
+                  hidden: !!this._getAddFromTargetHidden(
                     this._narrow,
                     this._selectedTarget
-                  )]: true,
+                  ),
                 })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
