@@ -3,14 +3,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import { popoverSupported } from "../common/feature-detect/support-popover";
 import { nextRender } from "../common/util/render-status";
-
-const SUPPORTS_POPOVER = globalThis?.HTMLElement?.prototype
-  ? Object.prototype.hasOwnProperty.call(
-      globalThis.HTMLElement.prototype,
-      "popover"
-    )
-  : false;
 
 export type ToastCloseReason =
   | "dismiss"
@@ -127,7 +121,7 @@ export class HaToast extends LitElement {
   }
 
   private _isPopoverOpen(): boolean {
-    if (!this._toast || !SUPPORTS_POPOVER) {
+    if (!this._toast || !popoverSupported) {
       return false;
     }
 
@@ -139,7 +133,7 @@ export class HaToast extends LitElement {
   }
 
   private _showToastPopover(): void {
-    if (!this._toast || !SUPPORTS_POPOVER || this._isPopoverOpen()) {
+    if (!this._toast || !popoverSupported || this._isPopoverOpen()) {
       return;
     }
 
@@ -147,7 +141,7 @@ export class HaToast extends LitElement {
   }
 
   private _hideToastPopover(): void {
-    if (!this._toast || !SUPPORTS_POPOVER || !this._isPopoverOpen()) {
+    if (!this._toast || !popoverSupported || !this._isPopoverOpen()) {
       return;
     }
 
@@ -178,7 +172,7 @@ export class HaToast extends LitElement {
         })}
         role="status"
         aria-live="polite"
-        popover=${ifDefined(SUPPORTS_POPOVER ? "manual" : undefined)}
+        popover=${ifDefined(popoverSupported ? "manual" : undefined)}
       >
         <span class="message">${this.labelText}</span>
         <div class="actions">
