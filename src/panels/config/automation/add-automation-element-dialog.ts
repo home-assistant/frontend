@@ -502,7 +502,9 @@ class DialogAddAutomationElement
 
     const tabButtons = [
       {
-        label: this.hass.localize("ui.panel.config.automation.editor.tabs.type"),
+        label: this.hass.localize(
+          "ui.panel.config.automation.editor.tabs.type"
+        ),
         value: "groups",
       },
     ];
