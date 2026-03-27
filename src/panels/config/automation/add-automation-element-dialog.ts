@@ -503,7 +503,7 @@ class DialogAddAutomationElement
     const tabButtons = [
       {
         label: this.hass.localize(
-          `ui.panel.config.automation.editor.${automationElementType}s.name`
+          `ui.panel.config.automation.editor.tabs.${automationElementType}` as LocalizeKeys
         ),
         value: "groups",
       },
@@ -511,7 +511,9 @@ class DialogAddAutomationElement
 
     if (this._newTriggersAndConditions) {
       tabButtons.unshift({
-        label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
+        label: this.hass.localize(
+          "ui.panel.config.automation.editor.tabs.target"
+        ),
         value: "targets",
       });
     }
