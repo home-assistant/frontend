@@ -41,14 +41,9 @@ export class HaCardConditionNumericState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (
-      no_entity: boolean,
-      stateObj?: HassEntity,
-    ) =>
+    (no_entity: boolean, stateObj?: HassEntity) =>
       [
-        ...(no_entity
-          ? []
-          : [{ name: "entity", selector: { entity: {} } }]),
+        ...(no_entity ? [] : [{ name: "entity", selector: { entity: {} } }]),
         {
           name: "",
           type: "grid",
