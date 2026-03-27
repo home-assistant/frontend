@@ -1869,7 +1869,6 @@
           },
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
-          "change_device_name_link": "change the device name",
           "use_device_area": "Use device area",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
@@ -4919,6 +4918,10 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "tabs": {
+              "target": "By target",
+              "type": "By type"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
@@ -9123,8 +9126,8 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
-              "group_by_floor": "Group entities by floor",
-              "group_by_area": "Group entities by area",
+              "group_by_floor": "Group by floor",
+              "group_by_area": "Group by area",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -9257,7 +9260,7 @@
               },
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
-              "collection_key_description": "Optionally connect a collection of date picker, statistics graph and energy cards. Cards with matching key will respond to any connected date picker card. Any energy card on this dashboard with no key will automatically be linked together.",
+              "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
