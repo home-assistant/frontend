@@ -15,9 +15,12 @@ import {
   string,
   union,
 } from "superstruct";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { FIXED_DOMAIN_STATES } from "../../../../common/entity/get_states";
 import { hasLocation } from "../../../../common/entity/has_location";
+import { stringCompare } from "../../../../common/string/compare";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -28,31 +31,29 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
-import "../../components/hui-entity-editor";
-import "../hui-sub-element-editor";
-import type {
-  EditDetailElementEvent,
-  SubElementEditorConfig,
-  EntitiesEditorEvent,
-} from "../types";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { FIXED_DOMAIN_STATES } from "../../../../common/entity/get_states";
 import type { Condition } from "../../common/validate-condition";
+import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
 import "../conditions/ha-card-condition-editor";
 import type { PresetState } from "../conditions/types/ha-card-condition-state";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type {
+  EditDetailElementEvent,
+  EntitiesEditorEvent,
+  SubElementEditorConfig,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 export const mapEntitiesConfigStruct = union([
@@ -240,27 +241,42 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (!this.hass || this._presetStates.length) {
       return;
     }
+
     const states = [
       UNAVAILABLE,
       UNKNOWN,
-      ...FIXED_DOMAIN_STATES.device_tracker,
+      ...FIXED_DOMAIN_STATES["device_tracker"],
     ];
     states.forEach((stateRaw) => {
       let stateTranslated;
       if ([UNKNOWN, UNAVAILABLE].includes(stateRaw)) {
-        stateTranslated = this.hass!.localize(
-          `state.default.${stateRaw}` as LocalizeKeys
-        );
+        stateTranslated = this.hass!.localize(`state.default.${stateRaw}` as LocalizeKeys);
       } else {
-        stateTranslated = this.hass!.localize(
-          `component.device_tracker.entity_component._.state.${stateRaw}`
-        );
+        stateTranslated = this.hass!.localize(`component.device_tracker.entity_component._.state.${stateRaw}`);
       }
       this._presetStates.push({
         value: stateRaw,
         label: stateTranslated,
       });
     });
+
+    const zones = Object.entries(this.hass!.states)
+      .filter(
+        ([entityId, stateObj]) =>
+          computeDomain(entityId) === "zone" &&
+          entityId !== "zone.home" &&
+          stateObj.attributes.friendly_name
+      )
+      .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
+      .sort((zone1, zone2) =>
+        stringCompare(zone1, zone2, this.hass!.locale.language)
+      );
+    zones.forEach((zone) =>
+      this._presetStates.push({
+        value: zone,
+        label: zone,
+      })
+    );
   }
 
   public setConfig(config: MapCardConfig): void {
