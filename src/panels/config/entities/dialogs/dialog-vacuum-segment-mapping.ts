@@ -140,9 +140,9 @@ export class DialogVacuumSegmentMapping
         : undefined;
 
     const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities)
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
       : this._entry
-        ? computeEntityEntryName(this._entry)
+        ? computeEntityEntryName(this._entry, this.hass.devices)
         : this._params.entityId;
 
     const deviceName = context?.device

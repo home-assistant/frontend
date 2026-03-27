@@ -5,6 +5,7 @@ import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
+import { computeStateName } from "./compute_state_name";
 import { getEntityContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
@@ -40,7 +41,12 @@ export const computeEntityNameDisplay = (
     return name;
   }
 
-  let items = ensureArray(name ?? DEFAULT_ENTITY_NAME);
+  // If no name config is provided, fall back to the friendly name
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+
+  let items = ensureArray(name);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
@@ -49,7 +55,7 @@ export const computeEntityNameDisplay = (
     return items.map((item) => item.text).join(separator);
   }
 
-  const useDeviceName = entityUseDeviceName(stateObj, entities);
+  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
 
   // If entity uses device name, and device is not already included, replace it with device name
   if (useDeviceName) {
@@ -95,7 +101,7 @@ export const computeEntityNameList = (
   const names = name.map((item) => {
     switch (item.type) {
       case "entity":
-        return computeEntityName(stateObj, entities);
+        return computeEntityName(stateObj, entities, devices);
       case "device":
         return device ? computeDeviceName(device) : undefined;
       case "area":
