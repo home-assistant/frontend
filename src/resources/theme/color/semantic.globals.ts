@@ -14,6 +14,10 @@ export const semanticColorStyles = css`
     --ha-color-text-secondary: var(--ha-color-neutral-40);
     --ha-color-text-disabled: var(--ha-color-neutral-60);
     --ha-color-text-link: var(--ha-color-primary-40);
+
+    --ha-color-text-primary-inverted: var(--ha-color-white);
+    --ha-color-text-secondary-inverted: var(--ha-color-neutral-20);
+
     /* border primary */
     --ha-color-border-primary-quiet: var(--ha-color-primary-90);
     --ha-color-border-primary-normal: var(--ha-color-primary-70);
@@ -161,6 +165,12 @@ export const semanticColorStyles = css`
     --ha-color-form-background: var(--ha-color-neutral-95);
     --ha-color-form-background-hover: var(--ha-color-neutral-90);
     --ha-color-form-background-disabled: var(--ha-color-neutral-80);
+    --ha-color-surface-default: var(--ha-color-white);
+    --ha-color-surface-low: var(--ha-color-neutral-95);
+    --ha-color-surface-lower: var(--ha-color-neutral-90);
+    --ha-color-surface-default-inverted: var(--ha-color-neutral-10);
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-05);
+    --ha-color-surface-lower-inverted: var(--ha-color-black);
 
     /* Scrollable fade */
     --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
@@ -173,6 +183,9 @@ export const darkSemanticColorStyles = css`
     --ha-color-text-primary: var(--white-color);
     --ha-color-text-secondary: var(--ha-color-neutral-80);
     --ha-color-text-link: var(--ha-color-primary-60);
+
+    --ha-color-text-primary-inverted: var(--ha-color-black);
+    --ha-color-text-secondary-inverted: var(--ha-color-neutral-40);
 
     /* border primary */
     --ha-color-border-normal: var(--ha-color-primary-50);
@@ -301,5 +314,10 @@ export const darkSemanticColorStyles = css`
     --ha-color-form-background: var(--ha-color-neutral-20);
     --ha-color-form-background-hover: var(--ha-color-neutral-30);
     --ha-color-form-background-disabled: var(--ha-color-neutral-20);
+    --ha-color-surface-low: var(--ha-color-neutral-05);
+    --ha-color-surface-lower: var(--ha-color-black);
+    --ha-color-surface-default-inverted: var(--ha-color-white);  // Will be used for ha-tooltip task
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);  // Will be used for ha-tooltip task
+    --ha-color-surface-lower-inverted: var(--ha-color-90);  // Will be used for ha-tooltip task
   }
 `;

@@ -10,7 +10,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
-  eventOptions,
   property,
   query,
   state,
@@ -47,9 +46,9 @@ import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-md-list";
 import "./ha-md-list-item";
-import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-spinner";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 import "./user/ha-user-badge";
 
 const SORT_VALUE_URL_PATHS = {
@@ -185,17 +184,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   @state() private _hiddenPanels?: string[];
 
-  private _mouseLeaveTimeout?: number;
-
-  private _touchendTimeout?: number;
-
-  private _tooltipHideTimeout?: number;
-
-  private _recentKeydownActiveUntil = 0;
-
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
-
-  @query(".tooltip") private _tooltip!: HTMLDivElement;
 
   @query(".before-spacer") private _scrollableList?: HTMLDivElement;
 
@@ -237,14 +226,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    // clear timeouts
-    clearTimeout(this._mouseLeaveTimeout);
-    clearTimeout(this._tooltipHideTimeout);
-    clearTimeout(this._touchendTimeout);
-    // set undefined values
-    this._mouseLeaveTimeout = undefined;
-    this._tooltipHideTimeout = undefined;
-    this._touchendTimeout = undefined;
   }
 
   protected render() {
@@ -257,8 +238,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     // prettier-ignore
     return html`
       ${this._renderHeader()}
-      ${this._renderAllPanels(selectedPanel)}
-      <div class="tooltip"></div>`;
+      ${this._renderAllPanels(selectedPanel)}`;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -382,11 +362,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           "ha-scrollbar": scrollable,
           [cls]: true,
         })}
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @touchend=${this._listboxTouchend}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
         >${content}</ha-md-list
       >`;
 
@@ -462,15 +437,23 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <ha-md-list-item
         .href=${`/${urlPath}`}
         type="link"
+        id="sidebar-panel-${urlPath}"
         class=${classMap({ selected: isSelected })}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
       >
         ${iconPath
           ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
           : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
         <span class="item-text" slot="headline">${title}</span>
       </ha-md-list-item>
+      <ha-tooltip
+        for="sidebar-panel-${urlPath}"
+        show-delay="0"
+        hide-delay="0"
+        placement="right"
+        .disabled=${this.alwaysExpand}
+      >
+        ${title}
+      </ha-tooltip>
     `;
   }
 
@@ -489,8 +472,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         class="configuration ${classMap({ selected: isSelected })}"
         type="button"
         href="/config"
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
+        id="sidebar-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
         ${this._updatesCount > 0 || this._issuesCount > 0
@@ -511,6 +493,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             `
           : nothing}
       </ha-md-list-item>
+      <ha-tooltip for="sidebar-config" show-delay="0" hide-delay="0" placement="right" .disabled=${this.alwaysExpand}>
+        ${this.hass.localize("panel.config")}
+      </ha-tooltip>
     `;
   }
 
@@ -523,9 +508,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <ha-md-list-item
         class="notifications"
         @click=${this._handleShowNotificationDrawer}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
         type="button"
+        id="sidebar-notifications"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
         ${notificationCount > 0
@@ -540,6 +524,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : nothing}
       </ha-md-list-item>
+      <ha-tooltip
+        for="sidebar-notifications"
+        show-delay="0"
+        hide-delay="0"
+        placement="right"
+        .disabled=${this.alwaysExpand}
+      >
+        ${this.hass.localize("ui.notification_drawer.title")}
+      </ha-tooltip>
     `;
   }
 
@@ -551,13 +544,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <ha-md-list-item
         href="/profile"
         type="link"
+        id="sidebar-profile"
         class=${classMap({
           user: true,
           selected: isSelected,
           rtl: isRTL,
         })}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
       >
         <ha-user-badge
           slot="start"
@@ -568,6 +560,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           >${this.hass.user ? this.hass.user.name : ""}</span
         >
       </ha-md-list-item>
+      <ha-tooltip for="sidebar-profile" show-delay="0" hide-delay="0" placement="right" .disabled=${this.alwaysExpand}>
+        ${this.hass.user ? this.hass.user.name : ""}
+      </ha-tooltip>
     `;
   }
 
@@ -579,14 +574,22 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <ha-md-list-item
         @click=${this._handleExternalAppConfiguration}
         type="button"
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
+        id="sidebar-external-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
         >
       </ha-md-list-item>
+      <ha-tooltip
+        for="sidebar-external-config"
+        show-delay="0"
+        hide-delay="0"
+        placement="right"
+        .disabled=${this.alwaysExpand}
+      >
+        ${this.hass.localize("ui.sidebar.external_app_configuration")}
+      </ha-tooltip>
     `;
   }
 
@@ -603,98 +606,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     }
 
     showEditSidebarDialog(this);
-  }
-
-  private _itemMouseEnter(ev: MouseEvent) {
-    // On keypresses on the listbox, we're going to ignore mouse enter events
-    // for 100ms so that we ignore it when pressing down arrow scrolls the
-    // sidebar causing the mouse to hover a new icon
-    if (new Date().getTime() < this._recentKeydownActiveUntil) {
-      return;
-    }
-    if (this._mouseLeaveTimeout) {
-      clearTimeout(this._mouseLeaveTimeout);
-      this._mouseLeaveTimeout = undefined;
-    }
-    this._showTooltip(ev.currentTarget as HaMdListItem);
-  }
-
-  private _itemMouseLeave() {
-    if (this._mouseLeaveTimeout) {
-      clearTimeout(this._mouseLeaveTimeout);
-    }
-    this._mouseLeaveTimeout = window.setTimeout(() => {
-      this._hideTooltip();
-    }, 500);
-  }
-
-  private _listboxFocusIn(ev) {
-    if (ev.target.localName !== "ha-md-list-item") {
-      return;
-    }
-    this._showTooltip(ev.target);
-  }
-
-  private _listboxFocusOut() {
-    this._hideTooltip();
-  }
-
-  private _listboxTouchend() {
-    clearTimeout(this._touchendTimeout);
-    this._touchendTimeout = window.setTimeout(() => {
-      // Allow 1 second for users to read the tooltip on touch devices
-      this._hideTooltip();
-    }, 1000);
-  }
-
-  @eventOptions({
-    passive: true,
-  })
-  private _listboxScroll() {
-    // On keypresses on the listbox, we're going to ignore scroll events
-    // for 100ms so that if pressing down arrow scrolls the sidebar, the tooltip
-    // will not be hidden.
-    if (new Date().getTime() < this._recentKeydownActiveUntil) {
-      return;
-    }
-    this._hideTooltip();
-  }
-
-  private _listboxKeydown() {
-    this._recentKeydownActiveUntil = new Date().getTime() + 100;
-  }
-
-  private _showTooltip(item: HaMdListItem) {
-    if (this._tooltipHideTimeout) {
-      clearTimeout(this._tooltipHideTimeout);
-      this._tooltipHideTimeout = undefined;
-    }
-    const itemText = item.querySelector(".item-text") as HTMLElement | null;
-    if (this.hasAttribute("expanded") && itemText) {
-      const isTruncated = itemText.scrollWidth > itemText.clientWidth;
-      if (!isTruncated) {
-        this._hideTooltip();
-        return;
-      }
-    }
-    const tooltip = this._tooltip;
-    const itemRect = item.getBoundingClientRect();
-
-    tooltip.innerText = itemText?.innerText ?? "";
-    tooltip.style.display = "block";
-    tooltip.style.position = "fixed";
-    tooltip.style.top = `${itemRect.top + itemRect.height / 2 - tooltip.offsetHeight / 2}px`;
-    tooltip.style.left = `calc(${itemRect.right + 8}px)`;
-  }
-
-  private _hideTooltip() {
-    // Delay it a little in case other events are pending processing.
-    if (!this._tooltipHideTimeout) {
-      this._tooltipHideTimeout = window.setTimeout(() => {
-        this._tooltipHideTimeout = undefined;
-        this._tooltip.style.display = "none";
-      }, 10);
-    }
   }
 
   private _handleShowNotificationDrawer() {
@@ -955,20 +866,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .spacer {
           margin-top: auto;
           pointer-events: none;
-        }
-
-        .tooltip {
-          display: none;
-          position: absolute;
-          opacity: 0.9;
-          border-radius: var(--ha-border-radius-sm);
-          max-width: calc(var(--ha-space-20) * 3);
-          white-space: normal;
-          overflow-wrap: break-word;
-          color: var(--sidebar-background-color);
-          background-color: var(--sidebar-text-color);
-          padding: var(--ha-space-1);
-          font-weight: var(--ha-font-weight-medium);
         }
 
         .menu ha-icon-button {
