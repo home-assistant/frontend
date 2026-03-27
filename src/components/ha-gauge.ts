@@ -172,7 +172,7 @@ export class HaGauge extends LitElement {
             ? svg`
                 <path
                 class="needle"
-                d="M -36,-2 L -44,-1 A 1,1,0,0,0,-44,1 L -36,2 A 2,2,0,0,0,-36,-2 Z
+                d="M -36,-2 L -44,-1 A 1,1,0,0,0,-44,1 L -36,2 A 2,2,0,0,0,-36,-2 Z"
 
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
               >
