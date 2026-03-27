@@ -9096,7 +9096,7 @@
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide upstream devices",
-              "modes": "Chart display mode",
+              "modes": "Chart types",
               "mode_options": {
                 "bar": "Bar",
                 "pie": "Pie"
