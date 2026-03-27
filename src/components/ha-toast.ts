@@ -1,8 +1,16 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+
+const SUPPORTS_POPOVER = globalThis?.HTMLElement?.prototype
+  ? Object.prototype.hasOwnProperty.call(
+      globalThis.HTMLElement.prototype,
+      "popover"
+    )
+  : false;
 
 export type ToastCloseReason =
   | "dismiss"
@@ -118,20 +126,32 @@ export class HaToast extends LitElement {
     }
   }
 
+  private _isPopoverOpen(): boolean {
+    if (!this._toast || !SUPPORTS_POPOVER) {
+      return false;
+    }
+
+    try {
+      return this._toast.matches(":popover-open");
+    } catch {
+      return false;
+    }
+  }
+
   private _showToastPopover(): void {
-    if (!this._toast || this._toast.matches(":popover-open")) {
+    if (!this._toast || !SUPPORTS_POPOVER || this._isPopoverOpen()) {
       return;
     }
 
-    this._toast.showPopover();
+    this._toast.showPopover?.();
   }
 
   private _hideToastPopover(): void {
-    if (!this._toast || !this._toast.matches(":popover-open")) {
+    if (!this._toast || !SUPPORTS_POPOVER || !this._isPopoverOpen()) {
       return;
     }
 
-    this._toast.hidePopover();
+    this._toast.hidePopover?.();
   }
 
   private async _waitForTransitionEnd(): Promise<void> {
@@ -153,11 +173,12 @@ export class HaToast extends LitElement {
       <div
         class=${classMap({
           toast: true,
+          active: this._active,
           visible: this._visible,
         })}
         role="status"
         aria-live="polite"
-        popover="manual"
+        popover=${ifDefined(SUPPORTS_POPOVER ? "manual" : undefined)}
       >
         <span class="message">${this.labelText}</span>
         <div class="actions">
@@ -169,8 +190,7 @@ export class HaToast extends LitElement {
   }
 
   static override styles = css`
-    .toast,
-    .toast:popover-open {
+    .toast {
       position: fixed;
       inset-block-start: auto;
       inset-inline-end: auto;
@@ -210,6 +230,10 @@ export class HaToast extends LitElement {
         transform var(--ha-animation-duration-fast, 150ms) ease;
     }
 
+    .toast:not(.active) {
+      display: none;
+    }
+
     .toast.visible {
       opacity: 1;
       transform: translate(-50%, 0);
@@ -228,8 +252,7 @@ export class HaToast extends LitElement {
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
-      .toast,
-      .toast:popover-open {
+      .toast {
         min-width: calc(
           100vw - var(--safe-area-inset-left, 0px) - var(
               --safe-area-inset-right,
