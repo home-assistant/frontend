@@ -125,14 +125,14 @@ export class HaGauge extends LitElement {
 
                   const isFirst = i === 0;
                   const isLast = i === arr.length - 1;
-                  const linecap = isFirst || isLast ? "round" : "butt";
+                  const linecap = "butt";
 
                   if (isFirst) {
                     return svg`
                       <path
                         class="level"
                         stroke="${level.stroke}"
-                        style="stroke-linecap: round"
+                        style="stroke-linecap: butt"
                         d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
                       />
                     `;
@@ -149,7 +149,7 @@ export class HaGauge extends LitElement {
                     return svg`
                         <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
                               d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${xm} ${ym}" />
-                        <path class="level" stroke="${level.stroke}" style="stroke-linecap: round"
+                        <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
                               d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 ${x2} ${y2}" />
                     `;
                   }
@@ -172,7 +172,8 @@ export class HaGauge extends LitElement {
             ? svg`
                 <path
                 class="needle"
-                d="M -30.5 -2.2 Q -30 -2.5 -30 -1.5 L -30 1.5 Q -30 2.5 -30.5 2.2 L -35.0 0 Z"
+                d="M -36,-2 L -44,-1 A 1,1,0,0,0,-44,1 L -36,2 A 2,2,0,0,0,-36,-2 Z
+
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
               >
               `
@@ -244,7 +245,7 @@ export class HaGauge extends LitElement {
       fill: none;
       stroke: var(--primary-background-color);
       stroke-width: 6;
-      stroke-linecap: round;
+      stroke-linecap: butt;
     }
 
     .level {
@@ -257,14 +258,15 @@ export class HaGauge extends LitElement {
       fill: none;
       stroke-width: 6;
       stroke: var(--gauge-color);
-      stroke-linecap: round;
+      stroke-linecap: butt;
       transition: stroke-dashoffset 1s ease 0s;
     }
 
     .needle {
-      stroke: var(--primary-text-color);
+      fill: var(--primary-text-color);
+      stroke: var(--card-background-color);
       color: var(--primary-text-color);
-      stroke-width: 2;
+      stroke-width: 1;
       stroke-linecap: round;
       transform-origin: 0 0;
       transition: all 1s ease 0s;
