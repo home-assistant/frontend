@@ -70,7 +70,10 @@ export class UnitConverter {
   protected readonly _baseUnit!: string;
 
   // Unit conversion lookup
-  protected readonly _unitConversion!: Record<string, UnitConvertOpInfo[]>;
+  protected readonly _unitConversion!: Record<
+    string,
+    UnitConvertOpInfo[] | number
+  >;
 
   // Whether unit is inverse of its base unit.
   protected readonly _unitInverse!: string[];
@@ -82,9 +85,10 @@ export class UnitConverter {
     this._unitConversion = {};
     Object.keys(conversion.units).forEach((key) => {
       const value = conversion.units[key];
-      if (typeof value === "number") {
-        // If a unit factor is provided as a bar number, assume a scale operation.
-        this._unitConversion[key] = [[UnitConvertOpType.SCALE, value]];
+      if (this._isScaleFactor(value)) {
+        // If a simple scale factor, save the value as is, we will convert to a
+        // scale operation later if necessary
+        this._unitConversion[key] = value;
       } else {
         // Parse provided operations list ensuring they are valid operations and
         // convert to consistent format for parsing.
@@ -132,13 +136,23 @@ export class UnitConverter {
     if (fromUnit === toUnit) {
       return value;
     }
-    // Otherwise prepare conversion operations
+    // If both units are simple scale factors, then optimise the conversion to
+    // a simple multiply by ratio.
+    const fromInfo = this._unitConversion[fromUnit];
+    const toInfo = this._unitConversion[toUnit];
+    if (this._isScaleFactor(fromInfo) && this._isScaleFactor(toInfo)) {
+      if (this._areInverseUnits(fromUnit, toUnit)) {
+        return toInfo / (value / fromInfo);
+      }
+      return (value / fromInfo) * toInfo;
+    }
+    // Otherwise for more complex conversions, prepare conversion operations
     const convertOps: UnitConvertOp[] = [
-      ...this._getUnitOps(fromUnit, true),
+      ...this._getUnitOps(fromUnit, fromInfo, true),
       ...this._getInverseOp(fromUnit, toUnit),
-      ...this._getUnitOps(toUnit, false),
+      ...this._getUnitOps(toUnit, toInfo, false),
     ];
-    // And convert result
+    // And apply them to the value in order
     let result: number = value;
     convertOps.forEach(([op, factor]) => {
       result = op(result, factor);
@@ -147,22 +161,39 @@ export class UnitConverter {
   }
 
   private _getInverseOp(fromUnit: string, toUnit: string): UnitConvertOp[] {
-    return this._unitInverse.includes(fromUnit) !==
-      this._unitInverse.includes(toUnit)
+    return this._areInverseUnits(fromUnit, toUnit)
       ? [[UNIT_CONVERT_TO_OP[UnitConvertOpType.POWER], -1]]
       : [];
   }
 
-  private _getUnitOps(unit: string, from: boolean): UnitConvertOp[] {
+  private _getUnitOps(
+    unit: string,
+    unitInfo: number | UnitConvertOpInfo[],
+    from: boolean
+  ): UnitConvertOp[] {
     // No operations to perform if unit is already the base unit
     if (unit === this._baseUnit) return [];
     // Otherwise map unit unit conversion to correct direction of operations
     const opMap = from ? UNIT_CONVERT_FROM_OP : UNIT_CONVERT_TO_OP;
-    const ops = this._unitConversion[unit].map(
-      ([op, factor]): UnitConvertOp => [opMap[op], factor]
-    );
+    let ops: UnitConvertOp[];
+    if (this._isScaleFactor(unitInfo)) {
+      ops = [[opMap[UnitConvertOpType.SCALE], unitInfo]];
+    } else {
+      ops = unitInfo.map(([op, factor]): UnitConvertOp => [opMap[op], factor]);
+    }
     // Return ops in reverse order if this is from unit.
     return from ? ops.reverse() : ops;
+  }
+
+  private _areInverseUnits(fromUnit: string, toUnit: string): boolean {
+    return (
+      this._unitInverse.includes(fromUnit) !==
+      this._unitInverse.includes(toUnit)
+    );
+  }
+
+  private _isScaleFactor(info): info is number {
+    return typeof info === "number";
   }
 
   public getBaseUnit(): string {
