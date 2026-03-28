@@ -13,6 +13,27 @@ import {
 } from "./context/context-mock";
 
 describe("computeEntityNameDisplay", () => {
+  it("returns string name directly", () => {
+    const stateObj = mockStateObj({ entity_id: "light.kitchen" });
+    const hass = {
+      entities: {},
+      devices: {},
+      areas: {},
+      floors: {},
+    } as unknown as HomeAssistant;
+
+    const result = computeEntityNameDisplay(
+      stateObj,
+      "Custom Name",
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+
+    expect(result).toBe("Custom Name");
+  });
+
   it("returns text when all items are text", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
@@ -94,6 +115,7 @@ describe("computeEntityNameDisplay", () => {
       entities: {
         "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
+          name: "Kitchen Device",
           device_id: "dev1",
         }),
       },
@@ -119,12 +141,13 @@ describe("computeEntityNameDisplay", () => {
     expect(result).toBe("Kitchen Device");
   });
 
-  it("does not duplicate device name when entity uses device name and device is included", () => {
+  it("does not replace entity with device when device is already included", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
         "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
+          name: "Kitchen Device",
           device_id: "dev1",
         }),
       },
@@ -147,8 +170,8 @@ describe("computeEntityNameDisplay", () => {
       hass.floors
     );
 
-    // Entity has no name (uses device name), device is already included
-    // So we only get the device name once
+    // Since entity name equals device name, entity returns undefined
+    // So we only get the device name
     expect(result).toBe("Kitchen Device");
   });
 

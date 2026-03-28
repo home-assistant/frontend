@@ -197,10 +197,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
               disabled: this._shouldDisableOptions(entityId),
               selector: {
                 attribute: {
-                  entity_id: entityId,
                   hide_attributes: ["entity_picture", "friendly_name", "icon"],
                 },
               },
+              context: { filter_entity: "entity" },
             },
             {
               name: "unit",

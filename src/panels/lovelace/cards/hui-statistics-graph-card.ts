@@ -24,7 +24,6 @@ import {
   getStatisticMetadata,
 } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -191,8 +190,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._entities.forEach((config) => {
       const stateObj = this.hass!.states[config.entity];
       this._names[config.entity] =
-        computeLovelaceEntityName(this.hass!, stateObj, config.name) ||
-        config.entity;
+        this.hass!.formatEntityName(stateObj, config.name) || config.entity;
     });
   }
 

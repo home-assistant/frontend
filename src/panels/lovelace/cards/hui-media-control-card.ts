@@ -36,7 +36,6 @@ import {
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
@@ -242,8 +241,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 .hass=${this.hass}
               ></ha-state-icon>
               <div>
-                ${computeLovelaceEntityName(
-                  this.hass,
+                ${this.hass.formatEntityName(
                   this.hass!.states[this._config!.entity],
                   this._config.name
                 )}

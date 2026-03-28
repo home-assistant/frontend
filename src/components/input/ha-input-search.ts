@@ -5,6 +5,16 @@ import { customElement, state } from "lit/decorators";
 import { localizeContext } from "../../data/context";
 import { HaInput } from "./ha-input";
 
+/**
+ * Home Assistant search input component
+ *
+ * @element ha-input-search
+ * @extends {HaInput}
+ *
+ * @summary
+ * A pre-configured search input that extends `ha-input` with a magnify icon, clear button,
+ * and a localized "Search" placeholder. Autocomplete is disabled by default.
+ */
 @customElement("ha-input-search")
 export class HaInputSearch extends HaInput {
   @state()

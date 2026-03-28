@@ -1,10 +1,12 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
+import type { ToastClosedEventDetail } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -39,7 +41,7 @@ class NotificationManager extends LitElement {
       await this._toast?.hide();
     }
 
-    if (!parameters || parameters.duration === 0) {
+    if (parameters.duration === 0) {
       this._parameters = undefined;
       return;
     }
@@ -57,7 +59,7 @@ class NotificationManager extends LitElement {
     this._toast?.show();
   }
 
-  private _toastClosed(_ev: HTMLElementEventMap["toast-closed"]) {
+  private _toastClosed(_ev: HASSDomEvent<ToastClosedEventDetail>) {
     this._parameters = undefined;
   }
 

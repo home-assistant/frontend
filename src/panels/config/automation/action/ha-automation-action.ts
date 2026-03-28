@@ -161,6 +161,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {

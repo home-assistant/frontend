@@ -129,6 +129,8 @@
         "current_temperature": "{name} current temperature",
         "heating": "{name} heating",
         "cooling": "{name} cooling",
+        "drying": "{name} drying",
+        "fan": "{name} fan only",
         "high": "high",
         "low": "low",
         "mode": "Mode",
@@ -724,8 +726,10 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
+          "mode_composed": "Composed",
+          "mode_custom": "Custom",
           "add": "Add",
-          "search": "Search or enter custom name",
+          "search": "Search name",
           "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
@@ -1489,7 +1493,7 @@
             "network": "[%key:ui::panel::config::network::caption%]",
             "updates": "[%key:ui::panel::config::updates::caption%]",
             "repairs": "[%key:ui::panel::config::repairs::caption%]",
-            "hardware": "[%key:ui::panel::config::hardware::caption%]",
+            "hardware": "Hardware",
             "storage": "[%key:ui::panel::config::storage::caption%]",
             "general": "[%key:ui::panel::config::core::caption%]",
             "backups": "[%key:ui::panel::config::backup::caption%]",
@@ -1762,7 +1766,6 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "restore_name": "Restore default name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "default_code": "Default code",
@@ -4222,12 +4225,13 @@
           "invalid_url": "Invalid URL"
         },
         "hardware": {
-          "caption": "Hardware",
+          "overview": "Overview",
           "description": "Configure your hub and connected hardware",
-          "available_hardware": {
+          "system_hardware": {
             "failed_to_get": "Failed to get available hardware",
-            "title": "All hardware",
+            "title": "System hardware",
             "search": "Search hardware",
+            "name": "Name",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
@@ -4913,6 +4917,10 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "tabs": {
+              "target": "By target",
+              "type": "By type"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
@@ -9087,7 +9095,7 @@
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide upstream devices",
-              "modes": "Chart display mode",
+              "modes": "Chart types",
               "mode_options": {
                 "bar": "Bar",
                 "pie": "Pie"
@@ -9117,8 +9125,8 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
-              "group_by_floor": "Group entities by floor",
-              "group_by_area": "Group entities by area",
+              "group_by_floor": "Group by floor",
+              "group_by_area": "Group by area",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -9251,7 +9259,7 @@
               },
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
-              "collection_key_description": "Optionally connect a collection of date picker, statistics graph and energy cards. Cards with matching key will respond to any connected date picker card. Any energy card on this dashboard with no key will automatically be linked together.",
+              "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
