@@ -307,22 +307,31 @@ export class HaChartBase extends LitElement {
     `;
   }
 
-  private _renderLegend() {
+  private _getLegendItems() {
     if (!this.options?.legend || !this.data) {
-      return nothing;
+      return undefined;
     }
     const legend = ensureArray(this.options.legend).find(
       (l) => l.show && l.type === "custom"
     ) as CustomLegendOption | undefined;
     if (!legend) {
-      return nothing;
+      return undefined;
     }
     const datasets = ensureArray(this.data);
-    const items =
+    return (
       legend.data ||
       datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
+        .map((d) => ({ id: d.id, name: d.name }))
+    );
+  }
+
+  private _renderLegend() {
+    const items = this._getLegendItems();
+    if (!items) {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data!);
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -1125,22 +1134,10 @@ export class HaChartBase extends LitElement {
   }
 
   private _getAllLegendIds(): string[] {
-    if (!this.options?.legend || !this.data) {
+    const items = this._getLegendItems();
+    if (!items) {
       return [];
     }
-    const legend = ensureArray(this.options.legend).find(
-      (l) => l.show && l.type === "custom"
-    ) as CustomLegendOption | undefined;
-    if (!legend) {
-      return [];
-    }
-    const datasets = ensureArray(this.data);
-    const items =
-      legend.data ||
-      datasets
-        .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
-
     const allIds = new Set<string>();
     for (const item of items) {
       const primaryId =
