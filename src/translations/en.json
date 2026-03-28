@@ -2866,7 +2866,8 @@
               "get_changelog": "Failed to get changelog",
               "start_invalid_config": "Invalid configuration",
               "go_to_config": "Go to configuration",
-              "validate_config": "Failed to validate app configuration"
+              "validate_config": "Failed to validate app configuration",
+              "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
               "title": "Uninstall {name}?",
