@@ -18,9 +18,7 @@ import "../../../components/ha-svg-icon";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
-import { addBrandsAuth } from "../../../util/brands-url";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -144,10 +142,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
 
     if (!entityPicture) return undefined;
 
-    let imageUrl = addBrandsAuth(
-      this.hass!.hassUrl(entityPicture),
-      this.hass?.auth.data.hassUrl
-    );
+    let imageUrl = this.hass!.hassUrl(entityPicture);
     if (computeStateDomain(stateObj) === "camera") {
       imageUrl = cameraUrlWithWidthHeight(imageUrl, 32, 32);
     }
@@ -179,11 +174,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       "--badge-color": color,
     };
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const stateDisplay = html`
       <state-display

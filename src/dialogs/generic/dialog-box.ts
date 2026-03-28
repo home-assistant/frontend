@@ -5,12 +5,12 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
-import "../../components/ha-textfield";
-import type { HaTextField } from "../../components/ha-textfield";
-import "../../components/ha-dialog";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -26,7 +26,9 @@ class DialogBox extends LitElement {
 
   @state() private _loading = false;
 
-  @query("ha-textfield") private _textField?: HaTextField;
+  @state() private _validInput = true;
+
+  @query("ha-input") private _textField?: HaInput;
 
   private _closePromise?: Promise<void>;
 
@@ -37,7 +39,10 @@ class DialogBox extends LitElement {
       await this._closePromise;
     }
     this._params = params;
+    this._validInput = true;
     this._open = true;
+    await this.updateComplete;
+    this._validateInput();
   }
 
   public closeDialog(): boolean {
@@ -61,7 +66,6 @@ class DialogBox extends LitElement {
     }
 
     const confirmPrompt = this._params.confirmation || !!this._params.prompt;
-
     const dialogTitle =
       this._params.title ||
       (this._params.confirmation &&
@@ -69,7 +73,6 @@ class DialogBox extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
         ?prevent-scrim-close=${confirmPrompt}
@@ -100,12 +103,15 @@ class DialogBox extends LitElement {
               : nothing}
             ${dialogTitle}
           </span>
+          ${this._params.subtitle
+            ? html`<span slot="subtitle">${this._params.subtitle}</span>`
+            : nothing}
         </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
             ? html`
-                <ha-textfield
+                <ha-input
                   autofocus
                   value=${ifDefined(this._params.defaultValue)}
                   .placeholder=${this._params.placeholder}
@@ -118,9 +124,14 @@ class DialogBox extends LitElement {
                   .min=${this._params.inputMin}
                   .max=${this._params.inputMax}
                   .disabled=${this._loading}
-                ></ha-textfield>
+                  @input=${this._validateInput}
+                >
+                  ${this._params.inputSuffix
+                    ? html`<span slot="end">${this._params.inputSuffix}</span>`
+                    : nothing}
+                </ha-input>
               `
-            : ""}
+            : nothing}
         </div>
         <ha-dialog-footer slot="footer">
           ${confirmPrompt
@@ -142,6 +153,8 @@ class DialogBox extends LitElement {
             slot="primaryAction"
             @click=${this._confirm}
             ?autofocus=${!this._params.prompt && !this._params.destructive}
+            ?disabled=${this._loading ||
+            (!!this._params.prompt && !this._validInput)}
             .loading=${this._loading}
             variant=${this._params.destructive ? "danger" : "brand"}
           >
@@ -167,6 +180,10 @@ class DialogBox extends LitElement {
   }
 
   private async _confirm(): Promise<void> {
+    if (this._params?.prompt && !this._textField?.reportValidity()) {
+      return;
+    }
+
     if (this._params!.action) {
       this._loading = true;
       try {
@@ -182,6 +199,12 @@ class DialogBox extends LitElement {
       this._params!.confirm(this._textField?.value);
     }
     this._closeDialog();
+  }
+
+  private _validateInput(): void {
+    this._validInput = this._params?.prompt
+      ? (this._textField?.checkValidity() ?? true)
+      : true;
   }
 
   private _closeDialog() {
@@ -222,7 +245,7 @@ class DialogBox extends LitElement {
     .secondary {
       color: var(--secondary-text-color);
     }
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
     .title.alert {

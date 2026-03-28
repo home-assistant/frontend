@@ -5,6 +5,8 @@ import { assert } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-service-control";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
@@ -105,7 +107,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
                     "ui.panel.config.automation.editor.actions.type.service.has_response"
                   )}
             </span>
-            <ha-textfield
+            <ha-input
               .value=${this._action.response_variable || ""}
               .required=${!this.hass.services[domain][service].response!
                 .optional}
@@ -114,7 +116,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
                 !this._action.response_variable &&
                 !this._responseChecked)}
               @change=${this._responseVariableChanged}
-            ></ha-textfield>
+            ></ha-input>
           </ha-settings-row>`
         : nothing}
     `;
@@ -143,9 +145,12 @@ export class HaServiceAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  private _responseVariableChanged(ev) {
-    const value = { ...this.action, response_variable: ev.target.value };
-    if (!ev.target.value) {
+  private _responseVariableChanged(ev: InputEvent) {
+    const value = {
+      ...this.action,
+      response_variable: (ev.target as HaInput).value,
+    };
+    if (!(ev.target as HaInput).value) {
       delete value.response_variable;
     }
     fireEvent(this, "value-changed", { value });

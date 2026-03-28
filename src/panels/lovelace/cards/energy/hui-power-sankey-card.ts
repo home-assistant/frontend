@@ -11,6 +11,7 @@ import {
   formatPowerShort,
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -60,11 +61,28 @@ class HuiPowerSankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: PowerSankeyCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): PowerSankeyCardConfig {
+    return {
+      type: "power-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -73,6 +91,9 @@ class HuiPowerSankeyCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: PowerSankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 

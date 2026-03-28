@@ -7,7 +7,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import type { HistoryStates } from "../../../data/history";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import {
+  limitedHistoryFromStateObj,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
@@ -165,6 +168,13 @@ export class HuiGraphHeaderFooter
           return;
         }
         this._history = combinedHistory;
+        if (!this._history[this._config.entity]?.length) {
+          const stateObj = this.hass!.states[this._config.entity];
+          if (stateObj) {
+            this._history[this._config.entity] =
+              limitedHistoryFromStateObj(stateObj);
+          }
+        }
         this._computeCoordinates();
       },
       this._config.hours_to_show!,

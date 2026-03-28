@@ -156,17 +156,15 @@ export class HaStatisticPicker extends LitElement {
       this.value
     );
 
-  private _getAdditionalItems(): StatisticComboBoxItem[] {
-    return [
-      {
-        id: MISSING_ID,
-        primary: this.hass.localize(
-          "ui.components.statistic-picker.missing_entity"
-        ),
-        icon_path: mdiHelpCircleOutline,
-      },
-    ];
-  }
+  private _getAdditionalItems = (): StatisticComboBoxItem[] => [
+    {
+      id: MISSING_ID,
+      primary: this.hass.localize(
+        "ui.components.statistic-picker.missing_entity"
+      ),
+      icon_path: mdiHelpCircleOutline,
+    },
+  ];
 
   private _getStatisticsItems = memoizeOne(
     (

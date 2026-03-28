@@ -33,7 +33,6 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
@@ -63,7 +62,7 @@ const automationConfigStruct = union([
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomationConfig>(
-  SubscribeMixin(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -418,8 +417,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           margin-top: 0;
         }
         .header {
-          margin-top: 16px;
-
           display: flex;
           align-items: center;
         }

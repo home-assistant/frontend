@@ -1,6 +1,6 @@
+import { consume } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,9 +10,8 @@ import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
+import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
-import { subscribeLabelRegistry } from "../data/label/label_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -22,10 +21,11 @@ import "./ha-icon-button";
 import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
-export class HaFilterLabels extends SubscribeMixin(LitElement) {
+export class HaFilterLabels extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: string[];
@@ -34,19 +34,13 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _labels: LabelRegistryEntry[] = [];
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
-  }
 
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
@@ -86,19 +80,23 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
             : nothing}
         </div>
         ${this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
                 multi
               >
                 ${repeat(
-                  this._filteredLabels(this._labels, this._filter, this.value),
+                  this._filteredLabels(
+                    this._labels || [],
+                    this._filter,
+                    this.value
+                  ),
                   (label) => label.label_id,
                   (label) => {
                     const color = label.color
@@ -166,13 +164,14 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value ?? "";
+    this._filter = value.toLowerCase();
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
     const filteredLabels = this._filteredLabels(
-      this._labels,
+      this._labels || [],
       this._filter,
       this.value
     );
@@ -264,7 +263,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           right: 0;
           left: 0;
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

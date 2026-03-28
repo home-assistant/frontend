@@ -58,9 +58,11 @@ export class CastManager {
     this._eventListeners[event].push(listener);
 
     return () => {
-      this._eventListeners[event].splice(
-        this._eventListeners[event].indexOf(listener)
-      );
+      const listeners = this._eventListeners[event];
+      const index = listeners.indexOf(listener);
+      if (index !== -1) {
+        listeners.splice(index, 1);
+      }
     };
   }
 

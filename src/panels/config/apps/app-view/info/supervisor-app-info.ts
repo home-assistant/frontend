@@ -76,6 +76,7 @@ import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-s
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
+import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-card-content";
 import "../components/supervisor-app-metric";
 import { extractChangelog } from "../util/supervisor-app";
@@ -197,7 +198,9 @@ class SupervisorAppInfo extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
-            ${!this.narrow ? this.addon.name : nothing}
+            ${!this.narrow
+              ? getAppDisplayName(this.addon.name, this.addon.stage)
+              : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
@@ -490,7 +493,7 @@ class SupervisorAppInfo extends LitElement {
                   href=${this.addon.url!}
                   target="_blank"
                   rel="noreferrer"
-                  >${this.addon.name}</a
+                  >${getAppDisplayName(this.addon.name, this.addon.stage)}</a
                 >`,
               }
             )}
@@ -556,30 +559,24 @@ class SupervisorAppInfo extends LitElement {
                             </ha-settings-row>
                           `
                         : nothing}
-                      ${this.addon.auto_update ||
-                      this.hass.userData?.showAdvanced
-                        ? html`
-                            <ha-settings-row ?three-line=${this.narrow}>
-                              <span slot="heading">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.title"
-                                )}
-                              </span>
-                              <span slot="description">
-                                ${this.hass.localize(
-                                  "ui.panel.config.apps.dashboard.option.auto_update.description"
-                                )}
-                              </span>
-                              <ha-switch
-                                .disabled=${systemManaged &&
-                                !this.controlEnabled}
-                                @change=${this._autoUpdateToggled}
-                                .checked=${this.addon.auto_update}
-                                haptic
-                              ></ha-switch>
-                            </ha-settings-row>
-                          `
-                        : nothing}
+                      <ha-settings-row ?three-line=${this.narrow}>
+                        <span slot="heading">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.title"
+                          )}
+                        </span>
+                        <span slot="description">
+                          ${this.hass.localize(
+                            "ui.panel.config.apps.dashboard.option.auto_update.description"
+                          )}
+                        </span>
+                        <ha-switch
+                          .disabled=${systemManaged && !this.controlEnabled}
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </ha-settings-row>
                       ${!this._computeCannotIngressSidebar && this.addon.ingress
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -632,7 +629,7 @@ class SupervisorAppInfo extends LitElement {
             </div>
             <div>
               ${this.addon.version && this.addon.state === "started"
-                ? html`<ha-settings-row ?three-line=${this.narrow}>
+                ? html`<ha-settings-row ?three-line=${this.narrow} empty>
                       <span slot="heading">
                         ${this.hass.localize(
                           "ui.panel.config.apps.dashboard.hostname"
@@ -1223,7 +1220,7 @@ class SupervisorAppInfo extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.title",
         {
-          name: this.addon.name,
+          name: getAppDisplayName(this.addon.name, this.addon.stage),
         }
       ),
       text: html`
@@ -1289,7 +1286,7 @@ class SupervisorAppInfo extends LitElement {
         }
         ha-card {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-card.warning {
           background-color: var(--error-color);
@@ -1325,21 +1322,18 @@ class SupervisorAppInfo extends LitElement {
         }
         .errors {
           color: var(--error-color);
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .description {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         img.logo {
           max-width: 100%;
           max-height: 60px;
-          margin: 16px 0;
+          margin: var(--ha-space-4) 0;
           display: block;
         }
 
-        ha-switch {
-          display: flex;
-        }
         ha-svg-icon.running {
           color: var(--success-color);
         }
@@ -1386,7 +1380,7 @@ class SupervisorAppInfo extends LitElement {
           );
         }
         .capabilities {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .card-actions {
           justify-content: space-between;
@@ -1402,12 +1396,16 @@ class SupervisorAppInfo extends LitElement {
           cursor: pointer;
         }
         ha-markdown {
-          padding: 16px;
+          padding: var(--ha-space-4);
           --markdown-image-background-color: transparent;
           --markdown-image-border-radius: 0;
           --markdown-image-min-height: auto;
           --markdown-image-text-indent: 0;
           --markdown-image-transition: none;
+        }
+        ha-settings-row,
+        supervisor-app-metric {
+          --settings-row-prefix-flex: 2;
         }
         ha-settings-row {
           padding: 0;
@@ -1420,6 +1418,14 @@ class SupervisorAppInfo extends LitElement {
         }
         ha-settings-row[three-line] {
           height: 74px;
+        }
+        .addon-options ha-settings-row {
+          padding: 0;
+          width: 100%;
+          --settings-row-body-padding-top: 0;
+          --settings-row-body-padding-bottom: 0;
+          --settings-row-content-padding-block: var(--ha-space-2);
+          --settings-row-switch-padding-block: var(--ha-space-2);
         }
 
         .addon-options {
@@ -1442,7 +1448,7 @@ class SupervisorAppInfo extends LitElement {
 
         :host > ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         a {
@@ -1450,7 +1456,7 @@ class SupervisorAppInfo extends LitElement {
         }
 
         supervisor-app-update-available-card {
-          padding-bottom: 16px;
+          padding-bottom: var(--ha-space-4);
         }
 
         @media (max-width: 720px) {

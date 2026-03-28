@@ -159,7 +159,8 @@ export type FullCalendarView =
   | "dayGridDay"
   | "listWeek";
 
-export type ThemeMode = "auto" | "light" | "dark";
+export const THEME_MODES = ["auto", "light", "dark"] as const;
+export type ThemeMode = (typeof THEME_MODES)[number];
 
 export interface ToggleButton {
   label: string;
@@ -308,7 +309,7 @@ export interface HomeAssistant {
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
-    type: EntityNameItem | EntityNameItem[],
+    type: string | EntityNameItem | EntityNameItem[] | undefined,
     separator?: EntityNameOptions
   ): string;
 }

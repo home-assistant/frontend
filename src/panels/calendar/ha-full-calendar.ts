@@ -16,7 +16,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { TZDate } from "@date-fns/tz";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -96,6 +98,8 @@ export class HAFullCalendar extends LitElement {
 
   private calendar?: Calendar;
 
+  private _midnightRefreshTimeout?: number;
+
   private _viewButtons?: ToggleButton[];
 
   @state() private _activeView = this.initialView;
@@ -106,6 +110,7 @@ export class HAFullCalendar extends LitElement {
   });
 
   disconnectedCallback(): void {
+    this._clearMidnightRefreshTimeout();
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
@@ -116,6 +121,8 @@ export class HAFullCalendar extends LitElement {
     super.connectedCallback();
     if (this.hasUpdated && !this.calendar) {
       this._loadCalendar(this._activeView);
+    } else if (this.calendar) {
+      this._scheduleMidnightRefresh();
     }
   }
 
@@ -380,11 +387,72 @@ export class HAFullCalendar extends LitElement {
   }
 
   private _fireViewChanged(): void {
+    this._scheduleMidnightRefresh();
     fireEvent(this, "view-changed", {
       start: this.calendar!.view.activeStart,
       end: this.calendar!.view.activeEnd,
       view: this.calendar!.view.type,
     });
+  }
+
+  private _scheduleMidnightRefresh(): void {
+    this._clearMidnightRefreshTimeout();
+
+    if (!this.calendar) {
+      return;
+    }
+
+    const wasShowingToday = this._isShowingToday();
+    const nextMidnight = new TZDate(new Date(), this._calendarTimeZone());
+    nextMidnight.setHours(24, 0, 0, 0);
+
+    this._midnightRefreshTimeout = window.setTimeout(() => {
+      if (wasShowingToday) {
+        this.calendar?.today();
+        this._fireViewChanged();
+        return;
+      }
+
+      this._scheduleMidnightRefresh();
+    }, nextMidnight.getTime() - Date.now());
+  }
+
+  private _clearMidnightRefreshTimeout(): void {
+    if (this._midnightRefreshTimeout === undefined) {
+      return;
+    }
+
+    window.clearTimeout(this._midnightRefreshTimeout);
+    this._midnightRefreshTimeout = undefined;
+  }
+
+  private _isShowingToday(): boolean {
+    const calendarDate = this.calendar?.getDate();
+
+    if (!calendarDate) {
+      return false;
+    }
+
+    return (
+      this._formatDateInCalendarTimeZone(calendarDate) ===
+      this._formatDateInCalendarTimeZone(new Date())
+    );
+  }
+
+  private _calendarTimeZone(): string {
+    return resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
+  }
+
+  private _formatDateInCalendarTimeZone(date: Date): string {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: this._calendarTimeZone(),
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
   }
 
   private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {

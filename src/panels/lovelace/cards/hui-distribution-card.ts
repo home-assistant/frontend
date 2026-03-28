@@ -12,7 +12,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { normalizeValueBySIPrefix } from "../../../common/number/normalize-by-si-prefix";
 import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
 import "../../../components/ha-segmented-bar";
@@ -163,7 +162,6 @@ export class HuiDistributionCard
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
@@ -241,7 +239,7 @@ export class HuiDistributionCard
       const color = entity.color
         ? computeCssColor(entity.color)
         : getGraphColorByIndex(entity.originalIndex, computedStyles);
-      const name = computeLovelaceEntityName(this.hass!, stateObj, entity.name);
+      const name = this.hass!.formatEntityName(stateObj, entity.name);
       const formattedValue = this.hass!.formatEntityState(stateObj);
 
       segments.push({
@@ -277,7 +275,7 @@ export class HuiDistributionCard
       const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
 
       const name = stateObj
-        ? computeLovelaceEntityName(this.hass!, stateObj, entity.name)
+        ? this.hass!.formatEntityName(stateObj, entity.name)
         : entity.entity;
 
       const formattedValue = stateObj
@@ -490,8 +488,8 @@ export class HuiDistributionCard
   }
 
   static styles = css`
-    :host {
-      display: block;
+    ha-card {
+      height: 100%;
     }
 
     ha-alert {

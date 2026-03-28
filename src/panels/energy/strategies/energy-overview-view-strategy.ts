@@ -5,7 +5,7 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -25,6 +25,8 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
+          opening_direction: "right",
+          vertical_opening_direction: "up",
         },
       },
     };

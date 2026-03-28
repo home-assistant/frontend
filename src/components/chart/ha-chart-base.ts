@@ -44,6 +44,7 @@ export type CustomLegendOption = ECOption["legend"] & {
     id?: string;
     secondaryIds?: string[]; // Other dataset IDs that should be controlled by this legend item.
     name: string;
+    value?: string; // Current value to display next to the name in the legend.
     itemStyle?: Record<string, any>;
   }[];
 };
@@ -279,18 +280,23 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <div class="chart-controls ${classMap({ small: this.smallControls })}">
-          ${this._isZoomed && !this.hideResetButton
-            ? html`<ha-icon-button
-                class="zoom-reset"
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-              ></ha-icon-button>`
-            : nothing}
-          <slot name="button"></slot>
+        <div class="top-controls ${classMap({ small: this.smallControls })}">
+          <slot name="search"></slot>
+          <div
+            class="chart-controls ${classMap({ small: this.smallControls })}"
+          >
+            ${this._isZoomed && !this.hideResetButton
+              ? html`<ha-icon-button
+                  class="zoom-reset"
+                  .path=${mdiRestart}
+                  @click=${this._handleZoomReset}
+                  title=${this.hass.localize(
+                    "ui.components.history_charts.zoom_reset"
+                  )}
+                ></ha-icon-button>`
+              : nothing}
+            <slot name="button"></slot>
+          </div>
         </div>
       </div>
     `;
@@ -333,12 +339,14 @@ export class HaChartBase extends LitElement {
           let itemStyle: Record<string, any> = {};
           let name = "";
           let id = "";
+          let value = "";
           if (typeof item === "string") {
             name = item;
             id = item;
           } else {
             name = item.name ?? "";
             id = item.id ?? name;
+            value = item.value ?? "";
             itemStyle = item.itemStyle ?? {};
           }
           const dataset =
@@ -365,6 +373,7 @@ export class HaChartBase extends LitElement {
               })}
             ></div>
             <div class="label">${name}</div>
+            ${value ? html`<div class="value">${value}</div>` : nothing}
           </li>`;
         })}
         ${items.length > overflowLimit
@@ -578,7 +587,10 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "none",
+      // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
+      // It rescales the Y-axis to the visible data while keeping one point
+      // just outside each boundary to avoid line gaps at the zoom edges.
+      filterMode: "boundaryFilter" as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
@@ -877,10 +889,20 @@ export class HaChartBase extends LitElement {
           };
         }
         if (s.sampling === "minmax") {
-          const minX =
-            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
-          const maxX =
-            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
+          const minX = xAxis?.min
+            ? xAxis.min instanceof Date
+              ? xAxis.min.getTime()
+              : typeof xAxis.min === "number"
+                ? xAxis.min
+                : undefined
+            : undefined;
+          const maxX = xAxis?.max
+            ? xAxis.max instanceof Date
+              ? xAxis.max.getTime()
+              : typeof xAxis.max === "number"
+                ? xAxis.max
+                : undefined
+            : undefined;
           return {
             ...s,
             sampling: undefined,
@@ -1099,16 +1121,35 @@ export class HaChartBase extends LitElement {
       height: 100%;
       width: 100%;
     }
-    .chart-controls {
+    .top-controls {
       position: absolute;
-      top: 16px;
-      right: 4px;
+      top: var(--ha-space-4);
+      inset-inline-start: var(--ha-space-4);
+      inset-inline-end: var(--ha-space-1);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ha-space-2);
+      z-index: 1;
+      pointer-events: none;
+    }
+    ::slotted([slot="search"]) {
+      flex: 1 1 250px;
+      min-width: 0;
+      max-width: 250px;
+      pointer-events: auto;
+    }
+    .chart-controls {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-1);
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      pointer-events: auto;
+    }
+    .top-controls.small {
+      top: 0;
     }
     .chart-controls.small {
-      top: 0;
       flex-direction: row;
     }
     .chart-controls ha-icon-button,
@@ -1156,6 +1197,9 @@ export class HaChartBase extends LitElement {
     .chart-legend.multiple-items li {
       max-width: 220px;
     }
+    .chart-legend.multiple-items li:has(.value) {
+      max-width: 300px;
+    }
     .chart-legend .hidden {
       color: var(--secondary-text-color);
     }
@@ -1163,6 +1207,12 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+    }
+    .chart-legend .value {
+      color: var(--secondary-text-color);
+      margin-inline-start: var(--ha-space-1);
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .chart-legend .bullet {
       border-width: 1px;

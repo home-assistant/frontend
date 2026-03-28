@@ -5,6 +5,7 @@ import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
+import { computeStateName } from "./compute_state_name";
 import { getEntityContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
@@ -29,14 +30,23 @@ export interface EntityNameOptions {
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[] | undefined,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"],
   options?: EntityNameOptions
 ) => {
-  let items = ensureArray(name || DEFAULT_ENTITY_NAME);
+  if (typeof name === "string") {
+    return name;
+  }
+
+  // If no name config is provided, fall back to the friendly name
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+
+  let items = ensureArray(name);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 

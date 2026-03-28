@@ -6,8 +6,12 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
+import {
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../../lovelace/strategies/helpers/screen-conditions";
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
@@ -20,12 +24,17 @@ export class EnergyViewStrategy extends ReactiveElement {
 
     const view: LovelaceViewConfig = {
       type: "sections",
-      max_columns: 3,
       sections: [],
+      sidebar: {
+        sections: [{ cards: [] }],
+        visibility: [LARGE_SCREEN_CONDITION],
+      },
       footer: {
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
+          opening_direction: "right",
+          vertical_opening_direction: "up",
         },
       },
     };
@@ -52,7 +61,9 @@ export class EnergyViewStrategy extends ReactiveElement {
         source.type === "grid" &&
         (!!source.stat_energy_from || !!source.stat_energy_to)
     );
-    const hasReturn = hasGrid && !!hasGrid.stat_energy_to;
+    const hasReturn = prefs.energy_sources.some(
+      (source) => source.type === "grid" && !!source.stat_energy_to
+    );
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
@@ -62,6 +73,22 @@ export class EnergyViewStrategy extends ReactiveElement {
 
     const mainCards: LovelaceCardConfig[] = [];
     const gaugeCards: LovelaceCardConfig[] = [];
+    const sidebarSection = view.sidebar!.sections![0];
+
+    if (hasGrid || hasBattery || hasSolar) {
+      const distributionCard = {
+        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
+        type: "energy-distribution",
+        collection_key: collectionKey,
+      };
+      sidebarSection.cards!.push(distributionCard);
+      view.sections!.push({
+        type: "grid",
+        column_span: 1,
+        cards: [distributionCard],
+        visibility: [SMALL_SCREEN_CONDITION],
+      });
+    }
 
     // Only include if we have a grid source & return.
     if (hasReturn) {
@@ -100,9 +127,15 @@ export class EnergyViewStrategy extends ReactiveElement {
     }
 
     if (gaugeCards.length) {
+      sidebarSection.cards!.push({
+        type: "grid",
+        columns: gaugeCards.length === 1 ? 1 : 2,
+        cards: gaugeCards,
+      });
       view.sections!.push({
         type: "grid",
-        column_span: 3,
+        column_span: 1,
+        visibility: [SMALL_SCREEN_CONDITION],
         cards:
           gaugeCards.length === 1
             ? [gaugeCards[0]]

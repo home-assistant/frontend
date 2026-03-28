@@ -22,6 +22,8 @@ import type {
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
 
+export type ThresholdMode = "crossed" | "changed" | "is";
+
 export type Selector =
   | ActionSelector
   | AddonSelector
@@ -56,6 +58,7 @@ export type Selector =
   | MediaSelector
   | NavigationSelector
   | NumberSelector
+  | NumericThresholdSelector
   | ObjectSelector
   | AssistPipelineSelector
   | QRCodeSelector
@@ -100,6 +103,7 @@ export interface AreaSelector {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
+    reorder?: boolean;
   } | null;
 }
 
@@ -240,6 +244,7 @@ interface EntitySelectorFilter {
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
+  unit_of_measurement?: string | readonly string[];
   manufacturer?: string;
   model?: string;
   model_id?: string;
@@ -361,6 +366,15 @@ export interface NumberSelector {
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
+  } | null;
+}
+
+export interface NumericThresholdSelector {
+  numeric_threshold: {
+    mode?: ThresholdMode;
+    unit_of_measurement?: readonly string[];
+    number?: NumberSelector["number"];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
 }
 
@@ -508,11 +522,19 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiColorExtraOption {
+  value: string;
+  label: string;
+  icon?: string;
+  display_color?: string;
+}
+
 export interface UiColorSelector {
   ui_color: {
     default_color?: string;
     include_none?: boolean;
     include_state?: boolean;
+    extra_options?: UiColorExtraOption[];
   } | null;
 }
 
@@ -833,6 +855,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
     manufacturer: filterManufacturer,
     model: filterModel,
@@ -866,6 +889,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }

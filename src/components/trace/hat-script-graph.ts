@@ -597,28 +597,30 @@ export class HatScriptGraph extends LitElement {
         : undefined;
     try {
       return html`
-        <div class="parent graph-container">
-          ${triggerNodes
-            ? html`<hat-graph-branch start .short=${triggerNodes.length < 2}>
-                ${triggerNodes}
-              </hat-graph-branch>`
-            : ""}
-          ${conditionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[conditionKey])?.map(
-                (condition, i) => this._renderCondition(condition, i)
-              )}`
-            : ""}
-          ${actionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[actionKey]).map(
-                (action, i) => this._renderActionNode(action, `action/${i}`)
-              )}`
-            : ""}
-          ${"sequence" in this.trace.config
-            ? html`${ensureArray<Action>(this.trace.config.sequence).map(
-                (action, i) =>
-                  this._renderActionNode(action, `sequence/${i}`, i === 0)
-              )}`
-            : ""}
+        <div class="graph-scroll ha-scrollbar">
+          <div class="parent graph-container">
+            ${triggerNodes
+              ? html`<hat-graph-branch start .short=${triggerNodes.length < 2}>
+                  ${triggerNodes}
+                </hat-graph-branch>`
+              : ""}
+            ${conditionKey in this.trace.config
+              ? html`${ensureArray(this.trace.config[conditionKey])?.map(
+                  (condition, i) => this._renderCondition(condition, i)
+                )}`
+              : ""}
+            ${actionKey in this.trace.config
+              ? html`${ensureArray(this.trace.config[actionKey]).map(
+                  (action, i) => this._renderActionNode(action, `action/${i}`)
+                )}`
+              : ""}
+            ${"sequence" in this.trace.config
+              ? html`${ensureArray<Action>(this.trace.config.sequence).map(
+                  (action, i) =>
+                    this._renderActionNode(action, `sequence/${i}`, i === 0)
+                )}`
+              : ""}
+          </div>
         </div>
         <div class="actions">
           <ha-icon-button
@@ -658,6 +660,20 @@ export class HatScriptGraph extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (!changedProps.has("trace") && !changedProps.has("selected")) {
+      return;
+    }
+
+    // Scroll to active node when selection changes
+    if (changedProps.has("selected")) {
+      const activeNode = this.renderRoot.querySelector(
+        "hat-graph-node[active], hat-graph-branch[active]"
+      ) as HTMLElement;
+      if (activeNode) {
+        activeNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
 
     if (!changedProps.has("trace")) {
       return;
@@ -717,6 +733,8 @@ export class HatScriptGraph extends LitElement {
     return css`
       :host {
         display: flex;
+        flex-direction: row;
+        overflow: hidden;
         --stroke-clr: var(--stroke-color, var(--secondary-text-color));
         --active-clr: var(--active-color, var(--primary-color));
         --track-clr: var(--track-color, var(--accent-color));
@@ -734,10 +752,16 @@ export class HatScriptGraph extends LitElement {
         --hat-graph-node-size: ${NODE_SIZE}px;
         --hat-graph-branch-height: ${BRANCH_HEIGHT}px;
       }
+      .graph-scroll {
+        flex: 1;
+        overflow: auto;
+        min-width: 0;
+      }
       .graph-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        min-width: fit-content;
       }
       .actions {
         display: flex;
