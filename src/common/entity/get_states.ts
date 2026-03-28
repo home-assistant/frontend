@@ -242,13 +242,17 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   },
 };
 
-export const getStates = (
+export const getStatesDomain = (
   hass: HomeAssistant,
-  state: HassEntity,
-  attribute: string | undefined = undefined
+  domain: string,
+  attribute?: string | undefined
 ): string[] => {
-  const domain = computeStateDomain(state);
   const result: string[] = [];
+
+  if (!attribute) {
+    // All entities can have unavailable states
+    result.push(...UNAVAILABLE_STATES);
+  }
 
   if (!attribute && domain in FIXED_DOMAIN_STATES) {
     result.push(...FIXED_DOMAIN_STATES[domain]);
@@ -259,6 +263,40 @@ export const getStates = (
   ) {
     result.push(...FIXED_DOMAIN_ATTRIBUTE_STATES[domain][attribute]);
   }
+
+  switch (domain) {
+    case "device_tracker":
+    case "person":
+      if (!attribute) {
+        result.push(
+          ...Object.entries(hass.states)
+          .filter(
+            ([entityId, stateObj]) =>
+              computeDomain(entityId) === "zone" &&
+              entityId !== "zone.home" &&
+              stateObj.attributes.friendly_name
+          )
+          .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
+          .sort((zone1, zone2) =>
+            stringCompare(zone1, zone2, hass.locale.language)
+          ));
+      }
+      break;
+  }
+
+  return result;
+};
+
+export const getStates = (
+  hass: HomeAssistant,
+  state: HassEntity,
+  attribute: string | undefined = undefined
+): string[] => {
+  const domain = computeStateDomain(state);
+  const result: string[] = [];
+
+  // Fixed values based on a domain
+  result.push(...getStatesDomain(hass, domain, attribute));
 
   // Dynamic values based on the entities
   switch (domain) {
@@ -273,24 +311,6 @@ export const getStates = (
         result.push(...state.attributes.swing_modes);
       } else if (attribute === "swing_horizontal_mode") {
         result.push(...state.attributes.swing_horizontal_modes);
-      }
-      break;
-    case "device_tracker":
-    case "person":
-      if (!attribute) {
-        result.push(
-          ...Object.entries(hass.states)
-            .filter(
-              ([entityId, stateObj]) =>
-                computeDomain(entityId) === "zone" &&
-                entityId !== "zone.home" &&
-                stateObj.attributes.friendly_name
-            )
-            .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
-            .sort((zone1, zone2) =>
-              stringCompare(zone1, zone2, hass.locale.language)
-            )
-        );
       }
       break;
     case "event":
@@ -353,9 +373,5 @@ export const getStates = (
       break;
   }
 
-  if (!attribute) {
-    // All entities can have unavailable states
-    result.push(...UNAVAILABLE_STATES);
-  }
   return [...new Set(result)];
 };
