@@ -15,12 +15,15 @@ import {
   string,
   union,
 } from "superstruct";
+import { arrayLiteralIncludes } from "../../../../common/array/literal-includes";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { FIXED_DOMAIN_STATES } from "../../../../common/entity/get_states";
+import {
+  FIXED_DOMAIN_STATES,
+  getStatesDomain,
+} from "../../../../common/entity/get_states";
 import { hasLocation } from "../../../../common/entity/has_location";
-import { stringCompare } from "../../../../common/string/compare";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -35,7 +38,7 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
-import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
+import { UNAVAILABLE_STATES } from "../../../../data/entity/entity";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
@@ -242,45 +245,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
 
-    const states = [
-      UNAVAILABLE,
-      UNKNOWN,
-      ...FIXED_DOMAIN_STATES.device_tracker,
-    ];
+    const states = getStatesDomain(this.hass!, "device_tracker");
     states.forEach((stateRaw) => {
       let stateTranslated;
-      if ([UNKNOWN, UNAVAILABLE].includes(stateRaw)) {
+      if (arrayLiteralIncludes(UNAVAILABLE_STATES)(stateRaw)) {
         stateTranslated = this.hass!.localize(
           `state.default.${stateRaw}` as LocalizeKeys
         );
-      } else {
+      } else if (arrayLiteralIncludes(FIXED_DOMAIN_STATES["device_tracker"])(stateRaw)) {
         stateTranslated = this.hass!.localize(
           `component.device_tracker.entity_component._.state.${stateRaw}`
         );
+      } else {
+        stateTranslated = stateRaw;
       }
       this._presetStates.push({
         value: stateRaw,
         label: stateTranslated,
       });
     });
-
-    const zones = Object.entries(this.hass!.states)
-      .filter(
-        ([entityId, stateObj]) =>
-          computeDomain(entityId) === "zone" &&
-          entityId !== "zone.home" &&
-          stateObj.attributes.friendly_name
-      )
-      .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
-      .sort((zone1, zone2) =>
-        stringCompare(zone1, zone2, this.hass!.locale.language)
-      );
-    zones.forEach((zone) =>
-      this._presetStates.push({
-        value: zone,
-        label: zone,
-      })
-    );
   }
 
   public setConfig(config: MapCardConfig): void {
