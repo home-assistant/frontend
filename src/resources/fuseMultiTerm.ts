@@ -20,7 +20,7 @@ export interface FuseWeightedKey {
  * characters that decompose via NFD, missing characters like Polish ł.
  */
 export const normalizingGetFn: FuseGetFunction<any> = (
-  obj: any,
+  obj: unknown,
   path: string | string[]
 ) => {
   const value = Fuse.config.getFn(obj, path);
