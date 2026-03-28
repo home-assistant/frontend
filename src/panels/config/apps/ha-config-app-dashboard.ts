@@ -63,9 +63,12 @@ class HaConfigAppDashboard extends LitElement {
     this._fromStore = extractSearchParam("store") === "true";
     const repositoryUrl = extractSearchParam("repository_url");
     if (repositoryUrl) {
-      navigate(`/config/app/${this.route.path.split("/")[1]}`, {
-        replace: true,
-      });
+      navigate(
+        `/config/app/${this.route.path.split("/")[1]}?repository_url=${encodeURIComponent(repositoryUrl)}`,
+        {
+          replace: true,
+        }
+      );
     }
     await this._loadAddon(repositoryUrl);
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));

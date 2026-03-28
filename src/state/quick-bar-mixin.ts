@@ -290,6 +290,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
             }
           }
         }
+        if (redirect.optional_params) {
+          const params = extractSearchParamsObject();
+          for (const key of Object.keys(redirect.optional_params)) {
+            if (key in params) {
+              myParams.append(key, params[key]);
+            }
+          }
+        }
         if (redirect.redirect === "/config/integrations/integration") {
           myParams.append("domain", targetPath.split("/")[4]);
         } else if (redirect.redirect === "/config/app") {
