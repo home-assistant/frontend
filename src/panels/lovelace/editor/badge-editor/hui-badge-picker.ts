@@ -10,6 +10,8 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
+import { stripDiacritics } from "../../../../common/string/strip-diacritics";
+import { normalizingGetFn } from "../../../../resources/fuseMultiTerm";
 import "../../../../components/ha-spinner";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
@@ -84,9 +86,12 @@ export class HuiBadgePicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        getFn: normalizingGetFn,
       };
       const fuse = new Fuse(badges, options);
-      badges = fuse.search(filter).map((result) => result.item);
+      badges = fuse
+        .search(stripDiacritics(filter))
+        .map((result) => result.item);
       return badgeElements.filter((badgeElement: BadgeElement) =>
         badges.includes(badgeElement.badge)
       );

@@ -64,6 +64,7 @@ import {
 import {
   multiTermSearch,
   multiTermSortedSearch,
+  normalizingGetFn,
   type FuseWeightedKey,
 } from "../../../../resources/fuseMultiTerm";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
@@ -452,7 +453,7 @@ export class HaAutomationAddSearch extends LitElement {
     typeof item === "string" ? item : item.id;
 
   private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+    Fuse.createIndex(keys, states, { getFn: normalizingGetFn });
 
   private _fuseIndexes = {
     area: memoizeOne((states: PickerComboBoxItem[]) =>

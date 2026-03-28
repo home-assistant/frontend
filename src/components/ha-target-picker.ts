@@ -53,6 +53,7 @@ import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-hel
 import {
   multiTermSearch,
   multiTermSortedSearch,
+  normalizingGetFn,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
@@ -165,7 +166,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+    Fuse.createIndex(keys, states, { getFn: normalizingGetFn });
 
   protected render() {
     if (this.addOnTop) {

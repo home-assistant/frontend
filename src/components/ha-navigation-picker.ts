@@ -12,7 +12,10 @@ import { getPanelIcon, getPanelTitle } from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
+import {
+  multiTermSortedSearch,
+  normalizingGetFn,
+} from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
 import "./ha-generic-picker";
@@ -180,16 +183,24 @@ export class HaNavigationPicker extends LitElement {
 
   private _fuseIndexes = {
     related: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items, {
+        getFn: normalizingGetFn,
+      })
     ),
     dashboards: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items, {
+        getFn: normalizingGetFn,
+      })
     ),
     views: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items, {
+        getFn: normalizingGetFn,
+      })
     ),
     other_routes: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items, {
+        getFn: normalizingGetFn,
+      })
     ),
   };
 

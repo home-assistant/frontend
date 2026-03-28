@@ -1,16 +1,37 @@
 import type {
   Expression,
+  FuseGetFunction,
   FuseIndex,
   FuseOptionKey,
   FuseResult,
   IFuseOptions,
 } from "fuse.js";
 import Fuse from "fuse.js";
+import { stripDiacritics } from "../common/string/strip-diacritics";
 
 export interface FuseWeightedKey {
   name: string | string[];
   weight: number;
 }
+
+/**
+ * Custom getFn that normalizes non-decomposable diacritics (e.g. ł→l, ø→o)
+ * before Fuse.js indexes values. Fuse's built-in ignoreDiacritics only handles
+ * characters that decompose via NFD, missing characters like Polish ł.
+ */
+export const normalizingGetFn: FuseGetFunction<any> = (
+  obj: any,
+  path: string | string[]
+) => {
+  const value = Fuse.config.getFn(obj, path);
+  if (typeof value === "string") {
+    return stripDiacritics(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => (typeof v === "string" ? stripDiacritics(v) : v));
+  }
+  return value;
+};
 
 const DEFAULT_OPTIONS: IFuseOptions<any> = {
   ignoreDiacritics: true,
@@ -18,6 +39,7 @@ const DEFAULT_OPTIONS: IFuseOptions<any> = {
   threshold: 0.3,
   minMatchCharLength: 2,
   ignoreLocation: true, // don't care where the pattern is
+  getFn: normalizingGetFn,
 };
 
 const DEFAULT_MIN_CHAR_LENGTH = 2;
@@ -37,6 +59,10 @@ function searchTerm<T>(
   options?: IFuseOptions<T>,
   minMatchCharLength?: number
 ) {
+  // Normalize non-decomposable diacritics in search terms to match getFn normalization
+  const normalizedSearch =
+    typeof search === "string" ? stripDiacritics(search) : search;
+
   const fuse = new Fuse<T>(
     items,
     {
@@ -51,7 +77,7 @@ function searchTerm<T>(
     fuseIndex
   );
 
-  return fuse.search(search);
+  return fuse.search(normalizedSearch);
 }
 
 /**
@@ -77,7 +103,8 @@ export function multiTermSearch<T>(
   const terms = search
     .toLowerCase()
     .split(" ")
-    .filter((t) => t.trim());
+    .filter((t) => t.trim())
+    .map((t) => stripDiacritics(t));
 
   if (!terms.length) {
     return items;
@@ -150,7 +177,8 @@ export function multiTermSortedSearch<T>(
   const terms = search
     .toLowerCase()
     .split(" ")
-    .filter((t) => t.trim());
+    .filter((t) => t.trim())
+    .map((t) => stripDiacritics(t));
 
   if (!terms.length) {
     return items;

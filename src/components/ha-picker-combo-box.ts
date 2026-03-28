@@ -19,6 +19,7 @@ import { localeContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,
+  normalizingGetFn,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
@@ -451,7 +452,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
-      Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
+      Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states, {
+        getFn: normalizingGetFn,
+      })
   );
 
   private _filterChanged = (ev: InputEvent) => {

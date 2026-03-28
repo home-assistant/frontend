@@ -8,6 +8,7 @@ import { computeRTL } from "../common/util/compute_rtl";
 import type { LocalizeFunc } from "../common/translations/localize";
 import {
   multiTermSortedSearch,
+  normalizingGetFn,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
 import {
@@ -96,7 +97,7 @@ export class HaAreaControlsPicker extends LitElement {
   private _createFuseIndex = (
     items: AreaControlPickerItem[],
     keys: FuseWeightedKey[]
-  ) => Fuse.createIndex(keys, items);
+  ) => Fuse.createIndex(keys, items, { getFn: normalizingGetFn });
 
   private _domainFuseIndex = memoizeOne((items: AreaControlPickerItem[]) =>
     this._createFuseIndex(items, this._domainSearchKeys)

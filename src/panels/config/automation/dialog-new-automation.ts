@@ -36,6 +36,7 @@ import { showScriptEditor } from "../../../data/script";
 import {
   type FuseWeightedKey,
   multiTermSearch,
+  normalizingGetFn,
 } from "../../../resources/fuseMultiTerm";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -123,7 +124,9 @@ class DialogNewAutomation extends LitElement {
 
   private _blueprintFuseIndex = memoizeOne(
     (blueprints: ReturnType<DialogNewAutomation["_processedBlueprints"]>) =>
-      Fuse.createIndex(BLUEPRINT_SEARCH_KEYS, blueprints)
+      Fuse.createIndex(BLUEPRINT_SEARCH_KEYS, blueprints, {
+        getFn: normalizingGetFn,
+      })
   );
 
   private _filteredBlueprints = memoizeOne(

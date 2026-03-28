@@ -9,6 +9,8 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
+import { stripDiacritics } from "../../../../common/string/strip-diacritics";
+import { normalizingGetFn } from "../../../../resources/fuseMultiTerm";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-spinner";
 import "../../../../components/input/ha-input-search";
@@ -90,9 +92,10 @@ export class HuiCardPicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        getFn: normalizingGetFn,
       };
       const fuse = new Fuse(cards, options);
-      cards = fuse.search(filter).map((result) => result.item);
+      cards = fuse.search(stripDiacritics(filter)).map((result) => result.item);
       return cardElements.filter((cardElement: CardElement) =>
         cards.includes(cardElement.card)
       );

@@ -14,6 +14,8 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
+import { normalizingGetFn } from "../../../resources/fuseMultiTerm";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -362,9 +364,12 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
           ignoreDiacritics: true,
+          getFn: normalizingGetFn,
         };
         const fuse = new Fuse(inProgress, options);
-        filteredEntries = fuse.search(filter).map((result) => result.item);
+        filteredEntries = fuse
+          .search(stripDiacritics(filter))
+          .map((result) => result.item);
       } else {
         filteredEntries = inProgress;
       }

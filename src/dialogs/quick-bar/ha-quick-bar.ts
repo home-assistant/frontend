@@ -50,6 +50,7 @@ import {
 import type { RelatedResult } from "../../data/search";
 import {
   multiTermSortedSearch,
+  normalizingGetFn,
   type FuseWeightedKey,
 } from "../../resources/fuseMultiTerm";
 import { buttonLinkStyle } from "../../resources/styles";
@@ -655,7 +656,7 @@ export class QuickBar extends LitElement {
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
 
   private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+    Fuse.createIndex(keys, states, { getFn: normalizingGetFn });
 
   private _fuseIndexes = {
     entity: memoizeOne((states: PickerComboBoxItem[]) =>

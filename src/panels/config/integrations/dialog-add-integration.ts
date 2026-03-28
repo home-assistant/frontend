@@ -14,6 +14,8 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
+import { normalizingGetFn } from "../../../resources/fuseMultiTerm";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
@@ -317,7 +319,9 @@ class AddIntegrationDialog extends LitElement {
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
           ignoreDiacritics: true,
+          getFn: normalizingGetFn,
         };
+        const normalizedFilter = stripDiacritics(filter);
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
           name: integration.name || domainToName(localize, domain),
@@ -328,13 +332,13 @@ class AddIntegrationDialog extends LitElement {
         }));
         return [
           ...new Fuse(integrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
         ];
       }
