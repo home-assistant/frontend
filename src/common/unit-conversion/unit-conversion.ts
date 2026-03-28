@@ -10,31 +10,30 @@ enum UnitConvertOpType {
 }
 
 // Maps operations to executable functions, in both the from and to directions.
-type UnitConvertOpFn = (val: number, factor: number) => number;
+type UnitConvertOpFn = (val: number, param: number) => number;
 type UnitConvertOp = [UnitConvertOpFn, number];
 
 const UNIT_CONVERT_FROM_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
-  [UnitConvertOpType.SCALE]: (val: number, factor: number) => val / factor,
-  [UnitConvertOpType.OFFSET]: (val: number, factor: number) => val - factor,
-  [UnitConvertOpType.POWER]: (val: number, factor: number) =>
-    val ** (1 / factor),
-  [UnitConvertOpType.ROUND]: (val: number, _factor) => val,
+  [UnitConvertOpType.SCALE]: (val: number, scale: number) => val / scale,
+  [UnitConvertOpType.OFFSET]: (val: number, offset: number) => val - offset,
+  [UnitConvertOpType.POWER]: (val: number, power: number) => val ** (1 / power),
+  [UnitConvertOpType.ROUND]: (val: number, _unused) => val,
 };
 
 const UNIT_CONVERT_TO_OP: Record<UnitConvertOpType, UnitConvertOpFn> = {
-  [UnitConvertOpType.SCALE]: (val: number, factor: number) => val * factor,
-  [UnitConvertOpType.OFFSET]: (val: number, factor: number) => val + factor,
-  [UnitConvertOpType.POWER]: (val: number, factor: number) => val ** factor,
-  [UnitConvertOpType.ROUND]: (val: number, _factor) => Math.round(val),
+  [UnitConvertOpType.SCALE]: (val: number, scale: number) => val * scale,
+  [UnitConvertOpType.OFFSET]: (val: number, offset: number) => val + offset,
+  [UnitConvertOpType.POWER]: (val: number, power: number) => val ** power,
+  [UnitConvertOpType.ROUND]: (val: number, _unused) => Math.round(val),
 };
 
 // Expected typing for imported JSON data, along with validation that each unit
 // class imported as a sensible value.
 interface UnitClassConversion {
-  needs_class?: boolean;
   base: string;
   units: Record<string, number | [UnitConvertOpType, number][]>;
   inverse?: string[];
+  needs_class?: boolean;
 }
 function instanceOfObject(object: any): object is object {
   return (
