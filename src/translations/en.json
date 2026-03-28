@@ -1766,7 +1766,6 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "restore_name": "Restore default name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "default_code": "Default code",
@@ -9096,7 +9095,7 @@
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide upstream devices",
-              "modes": "Chart display mode",
+              "modes": "Chart types",
               "mode_options": {
                 "bar": "Bar",
                 "pie": "Pie"
