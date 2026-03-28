@@ -125,7 +125,6 @@ export class HaGauge extends LitElement {
 
                   const isFirst = i === 0;
                   const isLast = i === arr.length - 1;
-                  const linecap = "butt";
 
                   if (isFirst) {
                     return svg`
@@ -158,7 +157,7 @@ export class HaGauge extends LitElement {
                     <path
                       class="level"
                       stroke="${level.stroke}"
-                      style="stroke-linecap: ${linecap}"
+                      style="stroke-linecap: butt"
                       d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
                     ></path>
                   `;
@@ -220,7 +219,7 @@ export class HaGauge extends LitElement {
     const box = svgRoot.querySelector("text")!.getBBox()!;
     svgRoot.setAttribute(
       "viewBox",
-      `${box.x} ${box!.y} ${box.width} ${box.height}`
+      `${box.x} ${box.y} ${box.width} ${box.height}`
     );
   }
 
