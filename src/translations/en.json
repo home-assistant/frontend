@@ -2739,7 +2739,6 @@
             "current_version": "Current version: {version}",
             "changelog": "Changelog",
             "hostname": "Hostname",
-            "visit_app_page": "Visit {name} page for more details.",
             "start": "Start",
             "stop": "Stop",
             "restart": "Restart",

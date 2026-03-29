@@ -486,17 +486,6 @@ class SupervisorAppInfo extends LitElement {
 
           <div class="description light-color">
             ${this.addon.description}.<br />
-            ${this.hass.localize(
-              "ui.panel.config.apps.dashboard.visit_app_page",
-              {
-                name: html`<a
-                  href=${this.addon.url!}
-                  target="_blank"
-                  rel="noreferrer"
-                  >${getAppDisplayName(this.addon.name, this.addon.stage)}</a
-                >`,
-              }
-            )}
           </div>
           <div class="addon-container">
             <div>
