@@ -368,12 +368,11 @@ export class DateRangePicker extends LitElement {
       .date-range-ranges {
         border-right: 1px solid var(--divider-color);
         min-width: 140px;
+        flex: 0 1 30%;
       }
 
       :host([narrow]) .date-range-ranges {
-        flex-shrink: 0;
-        flex-grow: 1;
-        flex-basis: 100px;
+        flex: 1 0 100px;
         border-bottom: 1px solid var(--divider-color);
         border-right: none;
       }
@@ -404,12 +403,6 @@ export class DateRangePicker extends LitElement {
         border-top: 1px solid var(--divider-color);
         position: sticky;
         flex: 0 0 fit-content;
-      }
-
-      @media only screen and (max-width: 500px) {
-        :host(:not([narrow])).date-range-ranges {
-          max-width: 30%;
-        }
       }
     `,
   ];
