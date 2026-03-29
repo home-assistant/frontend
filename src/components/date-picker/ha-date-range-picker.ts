@@ -229,6 +229,7 @@ export class HaDateRangePicker extends LitElement {
     }
     return html`
       <date-range-picker
+        .narrow=${this._openedNarrow}
         .fixedHeight=${fixedHeight}
         .ranges=${this.ranges === false ? false : this.ranges || this._ranges}
         .startDate=${this.startDate}
