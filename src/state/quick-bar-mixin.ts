@@ -276,41 +276,45 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const myPanel = await import("../panels/my/ha-panel-my");
       const redirects = myPanel.getMyRedirects();
 
-      for (const [slug, redirect] of Object.entries(redirects)) {
-        if (!targetPath.startsWith(redirect.redirect)) {
-          continue;
-        }
-        myParams.append("redirect", slug);
+      const redirectEntry = Object.entries(redirects).find(([_, redirect]) =>
+        targetPath.startsWith(redirect.redirect)
+      );
 
-        if (redirect.params) {
-          const params = extractSearchParamsObject();
-          for (const key of Object.keys(redirect.params)) {
-            if (key in params) {
-              myParams.append(key, params[key]);
+      if (!redirectEntry) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.notification_toast.no_matching_link_found",
+            {
+              path: targetPath,
             }
-          }
-        }
-        if (redirect.redirect === "/config/integrations/integration") {
-          myParams.append("domain", targetPath.split("/")[4]);
-        } else if (redirect.redirect === "/config/app") {
-          myParams.append("app", targetPath.split("/")[3]);
-        } else if (redirect.redirect === "/hassio/addon") {
-          myParams.append("addon", targetPath.split("/")[3]);
-        }
-        window.open(
-          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-          "_blank"
-        );
+          ),
+        });
         return;
       }
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.notification_toast.no_matching_link_found",
-          {
-            path: targetPath,
+
+      const [slug, redirect] = redirectEntry;
+
+      myParams.append("redirect", slug);
+
+      if (redirect.params) {
+        const params = extractSearchParamsObject();
+        for (const key of Object.keys(redirect.params)) {
+          if (key in params) {
+            myParams.append(key, params[key]);
           }
-        ),
-      });
+        }
+      }
+      if (redirect.redirect === "/config/integrations/integration") {
+        myParams.append("domain", targetPath.split("/")[4]);
+      } else if (redirect.redirect === "/config/app") {
+        myParams.append("app", targetPath.split("/")[3]);
+      } else if (redirect.redirect === "/hassio/addon") {
+        myParams.append("addon", targetPath.split("/")[3]);
+      }
+      window.open(
+        `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+        "_blank"
+      );
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {
