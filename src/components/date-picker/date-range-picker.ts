@@ -43,7 +43,10 @@ export class DateRangePicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow?: boolean;
 
-  @property({ attribute: "time-picker", type: Boolean })
+  @property({ type: Boolean, attribute: "fixed-height", reflect: true })
+  public fixedHeight?: boolean;
+
+  @property({ attribute: "time-picker", type: Boolean, reflect: true })
   public timePicker = false;
 
   @state()
@@ -342,22 +345,29 @@ export class DateRangePicker extends LitElement {
     haStyleScrollbar,
     css`
       :host {
-        --content-max-height: 520px;
+        --date-picker-fixed-height: 510px;
       }
       :host([narrow]) {
-        --content-max-height: 820px;
+        --date-picker-fixed-height: 820px;
+      }
+      :host([time-picker]) {
+        --time-picker-extra-height: 150px;
       }
 
       .content {
         display: flex;
         flex-direction: column;
+      }
+
+      :host([fixed-height]) .content {
         height: calc(
           min(
             var(
               --ha-bottom-sheet-max-height,
               90vh - max(var(--safe-area-inset-bottom), 32px)
             ),
-            var(--content-max-height)
+            var(--date-picker-fixed-height) +
+              var(--time-picker-extra-height, 0px)
           )
         );
       }
@@ -365,7 +375,7 @@ export class DateRangePicker extends LitElement {
       .picker {
         display: flex;
         flex-direction: row;
-        min-height: 0;
+        min-height: 100px;
         flex: 1;
       }
 
@@ -380,9 +390,10 @@ export class DateRangePicker extends LitElement {
       }
 
       :host([narrow]) .date-range-ranges {
-        flex: 1 0 100px;
+        flex: 1 0 130px;
         border-bottom: 1px solid var(--divider-color);
         border-right: none;
+        overflow-y: scroll;
       }
 
       .range {
@@ -409,7 +420,6 @@ export class DateRangePicker extends LitElement {
         justify-content: flex-end;
         padding: var(--ha-space-2);
         border-top: 1px solid var(--divider-color);
-        position: sticky;
         flex: 0 0 fit-content;
       }
     `,
