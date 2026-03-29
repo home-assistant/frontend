@@ -308,6 +308,20 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         myParams.append("domain", targetPath.split("/")[4]);
       } else if (redirect.redirect === "/config/app") {
         myParams.append("app", targetPath.split("/")[3]);
+        const [{ fetchHassioAddonInfo }, { fetchStoreRepositories }] =
+          await Promise.all([
+            import("../data/hassio/addon"),
+            import("../data/supervisor/store"),
+          ]);
+        const [info, repos] = await Promise.all([
+          fetchHassioAddonInfo(this.hass!, myParams.get("app")!),
+          fetchStoreRepositories(this.hass!),
+        ]);
+        const repo = repos.find((r) => r.slug === info.repository)!;
+
+        if (repo.source !== "local") {
+          myParams.append("repository_url", repo.source);
+        }
       } else if (redirect.redirect === "/hassio/addon") {
         myParams.append("addon", targetPath.split("/")[3]);
       }
