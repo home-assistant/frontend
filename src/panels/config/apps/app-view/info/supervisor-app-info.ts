@@ -4,8 +4,10 @@ import {
   mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
+  mdiDotsVertical,
   mdiExclamationThick,
   mdiFlask,
+  mdiHammer,
   mdiKey,
   mdiLinkLock,
   mdiNetwork,
@@ -19,7 +21,9 @@ import {
   mdiNumeric8,
   mdiPlayCircle,
   mdiPound,
+  mdiRestart,
   mdiShield,
+  mdiStop,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -37,7 +41,10 @@ import "../../../../../components/chips/ha-chip-set";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-markdown";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -119,15 +126,16 @@ class SupervisorAppInfo extends LitElement {
 
   @state() private _error?: string;
 
-  private _fetchDataTimeout?: number;
+  private _pollInterval?: number;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._startPolling();
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-
-    if (this._fetchDataTimeout) {
-      clearTimeout(this._fetchDataTimeout);
-      this._fetchDataTimeout = undefined;
-    }
+    this._stopPolling();
   }
 
   protected render(): TemplateResult {
@@ -223,6 +231,69 @@ class SupervisorAppInfo extends LitElement {
                             .path=${mdiCircleOffOutline}
                           ></ha-svg-icon>
                         `}
+                    ${this._computeIsRunning || this.addon.build
+                      ? html`
+                          <ha-dropdown>
+                            <ha-icon-button
+                              slot="trigger"
+                              .path=${mdiDotsVertical}
+                              .label=${this.hass.localize(
+                                "ui.common.overflow_menu"
+                              )}
+                            ></ha-icon-button>
+                            ${this._computeIsRunning
+                              ? html`
+                                  <ha-dropdown-item
+                                    @click=${this._stopClicked}
+                                    .disabled=${this._isSystemManaged(
+                                      this.addon
+                                    ) && !this.controlEnabled}
+                                    variant="danger"
+                                  >
+                                    <ha-svg-icon
+                                      slot="icon"
+                                      .path=${mdiStop}
+                                    ></ha-svg-icon>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.apps.dashboard.stop"
+                                    )}
+                                  </ha-dropdown-item>
+                                  <ha-dropdown-item
+                                    @click=${this._restartClicked}
+                                    .disabled=${this._isSystemManaged(
+                                      this.addon
+                                    ) && !this.controlEnabled}
+                                    variant="danger"
+                                  >
+                                    <ha-svg-icon
+                                      slot="icon"
+                                      .path=${mdiRestart}
+                                    ></ha-svg-icon>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.apps.dashboard.restart"
+                                    )}
+                                  </ha-dropdown-item>
+                                `
+                              : nothing}
+                            ${this.addon.build
+                              ? html`
+                                  <ha-dropdown-item
+                                    @click=${this._rebuildClicked}
+                                    variant="danger"
+                                  >
+                                    <ha-svg-icon
+                                      slot="icon"
+                                      .path=${mdiHammer}
+                                    ></ha-svg-icon>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.apps.dashboard.rebuild"
+                                    )}
+                                  </ha-dropdown-item>
+                                `
+                              : nothing}
+                          </ha-dropdown>
+                        `
+                      : nothing}
                   `
                 : html` ${this.addon.version_latest} `}
             </div>
@@ -656,44 +727,6 @@ class SupervisorAppInfo extends LitElement {
         <div class="card-actions">
           <div>
             ${this.addon.version
-              ? this._computeIsRunning
-                ? html`
-                    <ha-progress-button
-                      variant="danger"
-                      appearance="plain"
-                      @click=${this._stopClicked}
-                      .disabled=${systemManaged && !this.controlEnabled}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.apps.dashboard.stop"
-                      )}
-                    </ha-progress-button>
-                    <ha-progress-button
-                      variant="danger"
-                      appearance="plain"
-                      @click=${this._restartClicked}
-                      .disabled=${systemManaged && !this.controlEnabled}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.apps.dashboard.restart"
-                      )}
-                    </ha-progress-button>
-                  `
-                : html`
-                    <ha-progress-button
-                      @click=${this._startClicked}
-                      .progress=${this.addon.state === "startup"}
-                      appearance="plain"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.apps.dashboard.start"
-                      )}
-                    </ha-progress-button>
-                  `
-              : nothing}
-          </div>
-          <div>
-            ${this.addon.version
               ? html`
                   <ha-progress-button
                     variant="danger"
@@ -705,44 +738,48 @@ class SupervisorAppInfo extends LitElement {
                       "ui.panel.config.apps.dashboard.uninstall"
                     )}
                   </ha-progress-button>
-                  ${this.addon.build
-                    ? html`
-                        <ha-progress-button
-                          variant="danger"
-                          appearance="plain"
-                          @click=${this._rebuildClicked}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.apps.dashboard.rebuild"
-                          )}
-                        </ha-progress-button>
-                      `
-                    : nothing}
-                  ${this._computeShowWebUI || this._computeShowIngressUI
-                    ? html`
-                        <ha-button
-                          href=${ifDefined(
-                            !this._computeShowIngressUI
-                              ? this._pathWebui!
-                              : nothing
-                          )}
-                          target=${ifDefined(
-                            !this._computeShowIngressUI ? "_blank" : nothing
-                          )}
-                          rel=${ifDefined(
-                            !this._computeShowIngressUI ? "noopener" : nothing
-                          )}
-                          @click=${!this._computeShowWebUI
-                            ? this._openIngress
-                            : undefined}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.apps.dashboard.open_web_ui"
-                          )}
-                        </ha-button>
-                      `
-                    : nothing}
                 `
+              : nothing}
+          </div>
+          <div>
+            ${this.addon.version
+              ? this._computeIsRunning
+                ? html`
+                    ${this._computeShowWebUI || this._computeShowIngressUI
+                      ? html`
+                          <ha-button
+                            href=${ifDefined(
+                              !this._computeShowIngressUI
+                                ? this._pathWebui!
+                                : nothing
+                            )}
+                            target=${ifDefined(
+                              !this._computeShowIngressUI ? "_blank" : nothing
+                            )}
+                            rel=${ifDefined(
+                              !this._computeShowIngressUI ? "noopener" : nothing
+                            )}
+                            @click=${!this._computeShowWebUI
+                              ? this._openIngress
+                              : undefined}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.apps.dashboard.open_web_ui"
+                            )}
+                          </ha-button>
+                        `
+                      : nothing}
+                  `
+                : html`
+                    <ha-progress-button
+                      @click=${this._startClicked}
+                      .progress=${this.addon.state === "startup"}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.apps.dashboard.start"
+                      )}
+                    </ha-progress-button>
+                  `
               : html`
                   <ha-progress-button
                     .disabled=${!this.addon.available}
@@ -775,38 +812,39 @@ class SupervisorAppInfo extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("addon")) {
-      this._loadData();
-      if (
-        !this._fetchDataTimeout &&
-        this.addon &&
-        "state" in this.addon &&
-        this.addon.state === "startup"
-      ) {
-        // App is starting up, wait for it to start
-        this._scheduleDataUpdate();
-      }
+      this._loadMetrics();
     }
   }
 
-  private _scheduleDataUpdate() {
-    this._fetchDataTimeout = window.setTimeout(async () => {
-      const addon = await fetchHassioAddonInfo(this.hass, this.addon.slug);
-      if (addon.state !== "startup") {
-        this._fetchDataTimeout = undefined;
-        this.addon = addon;
-        const eventdata = {
-          success: true,
-          response: undefined,
-          path: "start",
-        };
-        fireEvent(this, "hass-api-called", eventdata);
-      } else {
-        this._scheduleDataUpdate();
-      }
-    }, 500);
+  private _startPolling() {
+    if (this._pollInterval) {
+      return;
+    }
+    this._pollInterval = window.setInterval(() => {
+      this._refreshAddonInfo();
+    }, 5000);
   }
 
-  private async _loadData(): Promise<void> {
+  private _stopPolling() {
+    if (this._pollInterval) {
+      clearInterval(this._pollInterval);
+      this._pollInterval = undefined;
+    }
+  }
+
+  private async _refreshAddonInfo(): Promise<void> {
+    if (!this.addon?.slug) {
+      return;
+    }
+    try {
+      const addon = await fetchHassioAddonInfo(this.hass, this.addon.slug);
+      this.addon = addon;
+    } catch {
+      // Ignore errors during polling
+    }
+  }
+
+  private async _loadMetrics(): Promise<void> {
     if ("state" in this.addon && this.addon.state === "started") {
       this._metrics = await fetchHassioStats(
         this.hass,
@@ -1069,13 +1107,10 @@ class SupervisorAppInfo extends LitElement {
     button.progress = false;
   }
 
-  private async _stopClicked(ev: CustomEvent): Promise<void> {
+  private async _stopClicked(): Promise<void> {
     if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
       return;
     }
-
-    const button = ev.currentTarget as any;
-    button.progress = true;
 
     try {
       await stopHassioAddon(this.hass, this.addon.slug);
@@ -1093,16 +1128,12 @@ class SupervisorAppInfo extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
-    button.progress = false;
   }
 
-  private async _restartClicked(ev: CustomEvent): Promise<void> {
+  private async _restartClicked(): Promise<void> {
     if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
       return;
     }
-
-    const button = ev.currentTarget as any;
-    button.progress = true;
 
     try {
       await restartHassioAddon(this.hass, this.addon.slug);
@@ -1120,13 +1151,9 @@ class SupervisorAppInfo extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
-    button.progress = false;
   }
 
-  private async _rebuildClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
+  private async _rebuildClicked(): Promise<void> {
     try {
       await rebuildLocalAddon(this.hass, this.addon.slug);
     } catch (err: any) {
@@ -1137,7 +1164,6 @@ class SupervisorAppInfo extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
-    button.progress = false;
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -1318,7 +1344,8 @@ class SupervisorAppInfo extends LitElement {
         .addon-version {
           float: var(--float-end);
           font-size: var(--ha-font-size-l);
-          vertical-align: middle;
+          display: flex;
+          align-items: center;
         }
         .errors {
           color: var(--error-color);
