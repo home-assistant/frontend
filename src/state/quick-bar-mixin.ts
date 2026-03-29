@@ -317,9 +317,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           fetchHassioAddonInfo(this.hass!, myParams.get("app")!),
           fetchStoreRepositories(this.hass!),
         ]);
-        const repo = repos.find((r) => r.slug === info.repository)!;
+        const repo = repos.find((r) => r.slug === info.repository);
 
-        if (repo.source !== "local") {
+        if (repo && repo.source !== "local") {
           myParams.append("repository_url", repo.source);
         }
       } else if (redirect.redirect === "/hassio/addon") {
