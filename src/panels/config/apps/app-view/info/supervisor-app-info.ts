@@ -1038,6 +1038,7 @@ class SupervisorAppInfo extends LitElement {
   }
 
   private _updateComplete() {
+    this._scheduleDataUpdate();
     const eventdata = {
       success: true,
       response: undefined,
