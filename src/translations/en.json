@@ -516,6 +516,24 @@
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
           "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
         },
+        "period": {
+          "periods": {
+            "none": "None",
+            "today": "[%key:ui::panel::lovelace::editor::card::statistic::periods::today%]",
+            "tomorrow": "Tomorrow",
+            "yesterday": "[%key:ui::panel::lovelace::editor::card::statistic::periods::yesterday%]",
+            "this_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_week%]",
+            "last_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_week%]",
+            "next_week": "Next week",
+            "this_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_month%]",
+            "last_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_month%]",
+            "next_month": "Next month",
+            "this_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_year%]",
+            "last_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_year%]",
+            "next_7d": "Next 7 days",
+            "next_30d": "Next 30 days"
+          }
+        },
         "selector": {
           "options": "Selector options",
           "type": "Type",
@@ -9523,6 +9541,8 @@
               "hide_section_headers": "Hide section headers",
               "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
+              "due_date_period": "Due date period",
+              "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
               "actions": {
                 "edit": "Default (edit item)",
