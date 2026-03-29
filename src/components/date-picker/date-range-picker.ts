@@ -29,6 +29,8 @@ import "../ha-list-item";
 import "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
+import { debounce } from "../../common/util/debounce";
+import { haStyleScrollbar } from "../../resources/styles";
 
 @customElement("date-range-picker")
 export class DateRangePicker extends LitElement {
@@ -37,6 +39,8 @@ export class DateRangePicker extends LitElement {
   @property({ attribute: false }) public startDate?: Date;
 
   @property({ attribute: false }) public endDate?: Date;
+
+  @property({ type: Boolean, reflect: true }) public narrow?: boolean;
 
   @property({ attribute: "time-picker", type: Boolean })
   public timePicker = false;
@@ -69,8 +73,28 @@ export class DateRangePicker extends LitElement {
     to: { hours: 23, minutes: 59 },
   };
 
+  private _resizeObserver?: ResizeObserver;
+
+  private _measure() {
+    this.narrow = this.offsetWidth < 450;
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measure(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
+  }
+
   public connectedCallback() {
     super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
 
     const date = this.startDate || new Date();
 
@@ -100,10 +124,18 @@ export class DateRangePicker extends LitElement {
     }
   }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
+
   render() {
-    return html`<div class="picker">
+    return html`<div class="content">
+      <div class="picker">
         ${this.ranges !== false && this.ranges
-          ? html`<div class="date-range-ranges">
+          ? html`<div class="date-range-ranges ha-scrollbar">
               <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges).map(
                   (name) => html`<ha-list-item>${name}</ha-list-item>`
@@ -111,7 +143,7 @@ export class DateRangePicker extends LitElement {
               </ha-list>
             </div>`
           : nothing}
-        <div class="range">
+        <div class="range ha-scrollbar">
           <calendar-range
             .value=${this._dateValue}
             .locale=${this.locale.language}
@@ -176,7 +208,8 @@ export class DateRangePicker extends LitElement {
         <ha-button .disabled=${!this._dateValue} @click=${this._save}
           >${this.localize("ui.components.date-range-picker.select")}</ha-button
         >
-      </div>`;
+      </div>
+    </div>`;
   }
 
   private _focusToday() {
@@ -298,20 +331,64 @@ export class DateRangePicker extends LitElement {
   static styles = [
     datePickerStyles,
     dateRangePickerStyles,
+    haStyleScrollbar,
     css`
+      :host {
+        --content-max-height: 520px;
+      }
+      :host([narrow]) {
+        --content-max-height: 820px;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        height: calc(
+          min(
+            var(
+              --ha-bottom-sheet-max-height,
+              90vh - max(var(--safe-area-inset-bottom), 32px)
+            ),
+            var(--content-max-height)
+          )
+        );
+      }
+
       .picker {
         display: flex;
+        flex-direction: row;
+        min-height: 0;
+        flex: 1;
+      }
+
+      :host([narrow]) .picker {
+        flex-direction: column;
       }
 
       .date-range-ranges {
         border-right: 1px solid var(--divider-color);
+        min-width: 140px;
       }
+
+      :host([narrow]) .date-range-ranges {
+        flex-shrink: 0;
+        flex-grow: 1;
+        flex-basis: 100px;
+        border-bottom: 1px solid var(--divider-color);
+        border-right: none;
+      }
+
       .range {
         display: flex;
         flex-direction: column;
         align-items: center;
-        flex: 1;
         padding: var(--ha-space-3);
+        flex: 1 1 fit-content;
+        overflow-x: hidden;
+      }
+
+      :host([narrow]) .range {
+        flex: 0 1 fit-content;
       }
 
       .times {
@@ -325,10 +402,12 @@ export class DateRangePicker extends LitElement {
         justify-content: flex-end;
         padding: var(--ha-space-2);
         border-top: 1px solid var(--divider-color);
+        position: sticky;
+        flex: 0 0 fit-content;
       }
 
       @media only screen and (max-width: 500px) {
-        .date-range-ranges {
+        :host(:not([narrow])).date-range-ranges {
           max-width: 30%;
         }
       }
