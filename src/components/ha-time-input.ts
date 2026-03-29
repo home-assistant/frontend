@@ -21,6 +21,8 @@ export class HaTimeInput extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: "auto-validate", type: Boolean }) autoValidate = false;
+
   @property({ type: Boolean, attribute: "enable-second" })
   public enableSecond = false;
 
@@ -71,6 +73,7 @@ export class HaTimeInput extends LitElement {
         .clearable=${this.clearable && this.value !== undefined}
         .helper=${this.helper}
         .placeholderLabels=${this.placeholderLabels}
+        .autoValidate=${this.autoValidate}
         day-label="dd"
         hour-label="hh"
         min-label="mm"

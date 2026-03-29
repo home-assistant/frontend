@@ -153,6 +153,7 @@ export class DateRangePicker extends LitElement {
                     )}
                     id="from"
                     placeholder-labels
+                    auto-validate
                   ></ha-time-input>
                   <ha-time-input
                     .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
@@ -163,6 +164,7 @@ export class DateRangePicker extends LitElement {
                     )}
                     id="to"
                     placeholder-labels
+                    auto-validate
                   ></ha-time-input>
                 </div>
               `
@@ -281,7 +283,8 @@ export class DateRangePicker extends LitElement {
   private _handleChangeTime(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const time = ev.detail.value;
-    const type = (ev.target as HaBaseTimeInput).id;
+    const target = ev.target as HaBaseTimeInput;
+    const type = target.id;
     if (time) {
       if (!this._timeValue) {
         this._timeValue = {
@@ -290,8 +293,10 @@ export class DateRangePicker extends LitElement {
         };
       }
       const [hours, minutes] = time.split(":").map(Number);
-      this._timeValue[type].hours = hours;
-      this._timeValue[type].minutes = minutes;
+      if (target.reportValidity()) {
+        this._timeValue[type].hours = hours;
+        this._timeValue[type].minutes = minutes;
+      }
     }
   }
 
