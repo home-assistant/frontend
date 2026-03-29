@@ -89,6 +89,7 @@ export class HaTimeInput extends LitElement {
 
     const useAMPM = useAmPm(this.locale);
     let value: string | undefined;
+    let updateHours = 0;
 
     // An undefined eventValue means the time selector is being cleared,
     // the `value` variable will (intentionally) be left undefined.
@@ -100,6 +101,8 @@ export class HaTimeInput extends LitElement {
     ) {
       let hours = eventValue.hours || 0;
       if (eventValue && useAMPM) {
+        updateHours =
+          hours >= 12 && hours < 24 ? hours - 12 : hours === 0 ? 12 : 0;
         if (eventValue.amPm === "PM" && hours < 12) {
           hours += 12;
         }
@@ -116,6 +119,17 @@ export class HaTimeInput extends LitElement {
           ? eventValue.seconds.toString().padStart(2, "0")
           : "00"
       }`;
+    }
+
+    if (updateHours) {
+      // If the user entered a 24hr time in a 12hr input, we need to refresh the
+      // input to ensure it resets back to the 12hr equivalent.
+      this.updateComplete.then(() => {
+        const input = this._input;
+        if (input) {
+          input.hours = updateHours;
+        }
+      });
     }
 
     if (value === this.value) {
