@@ -4,7 +4,7 @@ import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import {
   formatCallyDateRange,
@@ -29,6 +29,7 @@ import "../ha-list-item";
 import "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
+import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("date-range-picker")
 export class DateRangePicker extends LitElement {
@@ -68,6 +69,8 @@ export class DateRangePicker extends LitElement {
     from: { hours: 0, minutes: 0 },
     to: { hours: 23, minutes: 59 },
   };
+
+  @queryAll("ha-time-input") private _timeInputs?: NodeListOf<HaTimeInput>;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -153,6 +156,7 @@ export class DateRangePicker extends LitElement {
                     )}
                     id="from"
                     placeholder-labels
+                    auto-validate
                   ></ha-time-input>
                   <ha-time-input
                     .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
@@ -163,6 +167,7 @@ export class DateRangePicker extends LitElement {
                     )}
                     id="to"
                     placeholder-labels
+                    auto-validate
                   ></ha-time-input>
                 </div>
               `
@@ -200,6 +205,14 @@ export class DateRangePicker extends LitElement {
     let endDate = new Date(`${dates[1]}T23:59:00`);
 
     if (this.timePicker) {
+      const timeInputs = this._timeInputs;
+      if (
+        timeInputs &&
+        ![...timeInputs].every((input) => input.reportValidity())
+      ) {
+        // If we have time inputs, and they don't all report valid, don't save
+        return;
+      }
       startDate.setHours(this._timeValue.from.hours);
       startDate.setMinutes(this._timeValue.from.minutes);
       endDate.setHours(this._timeValue.to.hours);
@@ -281,7 +294,8 @@ export class DateRangePicker extends LitElement {
   private _handleChangeTime(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const time = ev.detail.value;
-    const type = (ev.target as HaBaseTimeInput).id;
+    const target = ev.target as HaBaseTimeInput;
+    const type = target.id;
     if (time) {
       if (!this._timeValue) {
         this._timeValue = {
