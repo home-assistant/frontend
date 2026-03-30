@@ -130,7 +130,6 @@ class HuiMediaPlayerSoundModeCardFeature
       <ha-control-select-menu
         .hass=${this.hass}
         show-arrow
-        hide-label
         .label=${this.hass.localize("ui.card.media_player.sound_mode")}
         .value=${this._currentSoundMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
