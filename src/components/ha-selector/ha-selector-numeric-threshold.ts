@@ -287,7 +287,9 @@ export class HaNumericThresholdSelector extends LitElement {
     const numberSelector = {
       number: {
         ...this.selector.numeric_threshold?.number,
-        ...(effectiveUnit ? { unit_of_measurement: effectiveUnit } : {}),
+        ...(!showUnit && effectiveUnit
+          ? { unit_of_measurement: effectiveUnit }
+          : {}),
       },
     };
     const entitySelector = {
