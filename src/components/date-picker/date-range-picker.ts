@@ -3,7 +3,6 @@ import { consume, type ContextType } from "@lit/context";
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
@@ -30,7 +29,6 @@ import "../ha-list-item";
 import "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
-import { debounce } from "../../common/util/debounce";
 import { haStyleScrollbar } from "../../resources/styles";
 import type { HaTimeInput } from "../ha-time-input";
 
@@ -42,12 +40,7 @@ export class DateRangePicker extends LitElement {
 
   @property({ attribute: false }) public endDate?: Date;
 
-  @property({ attribute: false }) public narrow?: boolean;
-
-  @property({ type: Boolean, attribute: "fixed-height", reflect: true })
-  public fixedHeight?: boolean;
-
-  @property({ type: Boolean, attribute: "time-picker", reflect: true })
+  @property({ type: Boolean, attribute: "time-picker" })
   public timePicker = false;
 
   @state()
@@ -61,9 +54,6 @@ export class DateRangePicker extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private hassConfig!: ContextType<typeof configContext>;
-
-  /** internally set when this.narrow and available width is small */
-  @property({ type: Boolean, reflect: true }) public compact?: boolean;
 
   /** used to show month in calendar-range header */
   @state() private _pickerMonth?: string;
@@ -83,40 +73,8 @@ export class DateRangePicker extends LitElement {
 
   @queryAll("ha-time-input") private _timeInputs?: NodeListOf<HaTimeInput>;
 
-  private _resizeObserver?: ResizeObserver;
-
-  private _measure() {
-    this.compact = this.narrow && this.offsetWidth < 450;
-  }
-
-  private async _attachObserver(): Promise<void> {
-    if (!this._resizeObserver) {
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measure(), 250, false)
-      );
-    }
-    this._resizeObserver.observe(this);
-  }
-
-  private async _removeObserver(): Promise<void> {
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-    }
-  }
-
-  protected firstUpdated(): void {
-    if (this.narrow) {
-      this._attachObserver();
-    }
-  }
-
   public connectedCallback() {
     super.connectedCallback();
-    this.updateComplete.then(() => {
-      if (this.narrow) {
-        this._attachObserver();
-      }
-    });
 
     const date = this.startDate || new Date();
 
@@ -143,26 +101,6 @@ export class DateRangePicker extends LitElement {
           minutes: this.endDate.getMinutes(),
         },
       };
-    }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._removeObserver();
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._measure();
-    }
-    if (changedProps.has("narrow")) {
-      // Only observe size in narrow mode.
-      if (this.narrow) {
-        this._attachObserver();
-      } else {
-        this._removeObserver();
-      }
     }
   }
 
@@ -379,32 +317,9 @@ export class DateRangePicker extends LitElement {
     dateRangePickerStyles,
     haStyleScrollbar,
     css`
-      :host {
-        --date-picker-fixed-height: 510px;
-      }
-      :host([compact]) {
-        --date-picker-fixed-height: 820px;
-      }
-      :host([time-picker]) {
-        --time-picker-extra-height: 150px;
-      }
-
       .content {
         display: flex;
         flex-direction: column;
-      }
-
-      :host([fixed-height]) .content {
-        height: calc(
-          min(
-            var(
-              --ha-bottom-sheet-max-height,
-              90vh - max(var(--safe-area-inset-bottom), 32px)
-            ),
-            var(--date-picker-fixed-height) +
-              var(--time-picker-extra-height, 0px)
-          )
-        );
       }
 
       .picker {
@@ -414,21 +329,10 @@ export class DateRangePicker extends LitElement {
         flex: 1;
       }
 
-      :host([compact]) .picker {
-        flex-direction: column;
-      }
-
       .date-range-ranges {
         border-right: 1px solid var(--divider-color);
         min-width: 140px;
         flex: 0 1 30%;
-      }
-
-      :host([compact]) .date-range-ranges {
-        flex: 1 0 130px;
-        border-bottom: 1px solid var(--divider-color);
-        border-right: none;
-        overflow-y: scroll;
       }
 
       .range {
@@ -440,8 +344,21 @@ export class DateRangePicker extends LitElement {
         overflow-x: hidden;
       }
 
-      :host([compact]) .range {
-        flex: 0 1 fit-content;
+      @media only screen and (max-width: 460px) {
+        .picker {
+          flex-direction: column;
+        }
+
+        .date-range-ranges {
+          flex-basis: 180px;
+          border-bottom: 1px solid var(--divider-color);
+          border-right: none;
+          overflow-y: scroll;
+        }
+
+        .range {
+          flex-basis: fit-content;
+        }
       }
 
       .times {

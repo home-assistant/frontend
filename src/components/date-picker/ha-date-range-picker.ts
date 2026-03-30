@@ -196,7 +196,7 @@ export class HaDateRangePicker extends LitElement {
                   @wa-after-show=${this._dialogOpened}
                   @closed=${this._hidePicker}
                 >
-                  ${this._renderPicker(true)}
+                  ${this._renderPicker()}
                 </ha-bottom-sheet>
               `
             : html`
@@ -215,7 +215,7 @@ export class HaDateRangePicker extends LitElement {
                   @wa-after-hide=${this._hidePicker}
                   trap-focus
                 >
-                  ${this._renderPicker(this.popoverPlacement.includes("top"))}
+                  ${this._renderPicker()}
                 </wa-popover>
               `
           : nothing}
@@ -223,14 +223,12 @@ export class HaDateRangePicker extends LitElement {
     `;
   }
 
-  private _renderPicker(fixedHeight) {
+  private _renderPicker() {
     if (!this._opened) {
       return nothing;
     }
     return html`
       <date-range-picker
-        .narrow=${this._openedNarrow}
-        .fixedHeight=${fixedHeight}
         .ranges=${this.ranges === false ? false : this.ranges || this._ranges}
         .startDate=${this.startDate}
         .endDate=${this.endDate}
