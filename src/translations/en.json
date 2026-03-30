@@ -9709,6 +9709,9 @@
               "media-player-playback": {
                 "label": "Media player playback controls"
               },
+              "media-player-sound-mode": {
+                "label": "Media player sound mode"
+              },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
                 "step": "Step size"

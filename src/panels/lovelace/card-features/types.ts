@@ -67,6 +67,10 @@ export interface MediaPlayerVolumeButtonsCardFeatureConfig {
   step?: number;
 }
 
+export interface MediaPlayerSoundModeCardFeatureConfig {
+  type: "media-player-sound-mode";
+}
+
 export interface FanDirectionCardFeatureConfig {
   type: "fan-direction";
 }
@@ -281,6 +285,7 @@ export type LovelaceCardFeatureConfig =
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerSoundModeCardFeatureConfig
   | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
