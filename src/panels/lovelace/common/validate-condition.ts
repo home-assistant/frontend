@@ -13,6 +13,7 @@ import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
+  | ViewColumnsCondition
   | LocationCondition
   | NumericStateCondition
   | StateCondition
@@ -32,6 +33,16 @@ export interface LegacyCondition {
 
 interface BaseCondition {
   condition: string;
+}
+
+export interface ConditionContext {
+  column_count?: number;
+}
+
+export interface ViewColumnsCondition extends BaseCondition {
+  condition: "view_columns";
+  min?: number;
+  max?: number;
 }
 
 export interface LocationCondition extends BaseCondition {
@@ -164,6 +175,17 @@ function checkStateNumericCondition(
   );
 }
 
+function checkViewColumnsCondition(
+  condition: ViewColumnsCondition,
+  context: ConditionContext
+) {
+  if (!context.column_count) return true;
+  return (
+    (condition.min == null || context.column_count >= condition.min) &&
+    (condition.max == null || context.column_count <= condition.max)
+  );
+}
+
 function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
@@ -194,34 +216,52 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
     : false;
 }
 
-function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
+function checkAndCondition(
+  condition: AndCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return checkConditionsMet(condition.conditions, hass);
+  return checkConditionsMet(condition.conditions, hass, context);
 }
 
-function checkNotCondition(condition: NotCondition, hass: HomeAssistant) {
+function checkNotCondition(
+  condition: NotCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return !checkConditionsMet(condition.conditions, hass);
+  return !checkConditionsMet(condition.conditions, hass, context);
 }
 
-function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
+function checkOrCondition(
+  condition: OrCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return condition.conditions.some((c) => checkConditionsMet([c], hass));
+  return condition.conditions.some((c) =>
+    checkConditionsMet([c], hass, context)
+  );
 }
 
 /**
  * Return the result of applying conditions
  * @param conditions conditions to apply
  * @param hass Home Assistant object
+ * @param context optional context for conditions that need runtime information
  * @returns true if conditions are respected
  */
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
       switch (c.condition) {
+        case "view_columns":
+          return checkViewColumnsCondition(c, context);
         case "time":
           return checkTimeCondition(c, hass);
         case "screen":
@@ -233,11 +273,11 @@ export function checkConditionsMet(
         case "numeric_state":
           return checkStateNumericCondition(c, hass);
         case "and":
-          return checkAndCondition(c, hass);
+          return checkAndCondition(c, hass, context);
         case "not":
-          return checkNotCondition(c, hass);
+          return checkNotCondition(c, hass, context);
         case "or":
-          return checkOrCondition(c, hass);
+          return checkOrCondition(c, hass, context);
         default:
           return checkStateCondition(c, hass);
       }
@@ -349,6 +389,10 @@ function validateOrCondition(condition: OrCondition) {
   return condition.conditions != null;
 }
 
+function validateViewColumnsCondition(condition: ViewColumnsCondition) {
+  return condition.min != null || condition.max != null;
+}
+
 function validateNumericStateCondition(condition: NumericStateCondition) {
   return (
     condition.entity != null &&
@@ -366,6 +410,8 @@ export function validateConditionalConfig(
   return conditions.every((c) => {
     if ("condition" in c) {
       switch (c.condition) {
+        case "view_columns":
+          return validateViewColumnsCondition(c);
         case "screen":
           return validateScreenCondition(c);
         case "time":

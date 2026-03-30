@@ -1,4 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { ContextProvider } from "@lit/context";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,6 +13,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import { columnCountContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -61,6 +63,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _config?: LovelaceViewConfig;
 
   @state() private _sectionColumnCount = 0;
+
+  private _columnCount = 0;
+
+  private _columnCountProvider = new ContextProvider(this, {
+    context: columnCountContext,
+  });
 
   @state() _dragging = false;
 
@@ -143,6 +151,26 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }
+    this._updateColumnCount();
+  }
+
+  private _updateColumnCount(): void {
+    const editMode = Boolean(this.lovelace?.editMode);
+    const hasSidebar = Boolean(
+      this._config?.sidebar && (this._sidebarVisible || editMode)
+    );
+    const totalSectionCount =
+      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
+    const maxColumnCount = this._columnsController.value ?? 1;
+    const columnCount = Math.max(
+      Math.min(maxColumnCount, totalSectionCount),
+      1
+    );
+
+    if (columnCount !== this._columnCount) {
+      this._columnCount = columnCount;
+      this._columnCountProvider.setValue(columnCount);
+    }
   }
 
   protected render() {
@@ -153,15 +181,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const hasSidebar =
       this._config?.sidebar && (this._sidebarVisible || editMode);
 
-    const totalSectionCount =
-      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
-
-    const maxColumnCount = this._columnsController.value ?? 1;
-
-    const columnCount = Math.max(
-      Math.min(maxColumnCount, totalSectionCount),
-      1
-    );
+    const columnCount = this._columnCount;
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;

@@ -297,7 +297,7 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    this._testingResult = checkConditionsMet([condition], this.hass);
+    this._testingResult = checkConditionsMet([condition], this.hass, {});
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
