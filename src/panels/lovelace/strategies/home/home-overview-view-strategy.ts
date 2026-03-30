@@ -222,10 +222,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
     const hasLights =
       hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
@@ -236,12 +232,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
-    const hasPersons =
-      hass.panels.map &&
-      findEntities(allEntities, personsFilters).some(
-        (entityId) =>
-          (hass.states[entityId]?.attributes.device_trackers ?? []).length > 0
-      );
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -343,15 +333,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             navigation_path: config.home_panel
               ? "/energy?historyBack=1&backPath=/home"
               : "/energy?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-      hasPersons &&
-        ({
-          type: "home-summary",
-          summary: "persons",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/map?historyBack=1",
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
