@@ -157,6 +157,8 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
+  | "timeGridWeek"
+  | "timeGridDay"
   | "listWeek";
 
 export const THEME_MODES = ["auto", "light", "dark"] as const;

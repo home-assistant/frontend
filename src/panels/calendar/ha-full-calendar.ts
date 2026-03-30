@@ -4,9 +4,12 @@ import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
+  mdiCalendarClock,
   mdiPlus,
+  mdiTimetable,
   mdiViewAgenda,
   mdiViewDay,
   mdiViewModule,
@@ -56,12 +59,14 @@ declare global {
 
 const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
-  plugins: [dayGridPlugin, listPlugin, interactionPlugin],
+  plugins: [dayGridPlugin, listPlugin, interactionPlugin, timeGridPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
   height: "parent",
   handleWindowResize: false,
   locales: allLocales,
+  nowIndicator: true,
+  scrollTime: "06:00:00",
   views: {
     listWeek: {
       type: "list",
@@ -86,6 +91,8 @@ export class HAFullCalendar extends LitElement {
     "dayGridMonth",
     "dayGridWeek",
     "dayGridDay",
+    "timeGridWeek",
+    "timeGridDay",
     "listWeek",
   ];
 
@@ -325,6 +332,8 @@ export class HAFullCalendar extends LitElement {
       selectedDate:
         this._activeView === "dayGridWeek" ||
         this._activeView === "dayGridDay" ||
+        this._activeView === "timeGridWeek" ||
+        this._activeView === "timeGridDay" ||
         (this._activeView === "dayGridMonth" &&
           this.calendar!.view.currentStart.getMonth() !== new Date().getMonth())
           ? this.calendar!.view.currentStart
@@ -359,8 +368,11 @@ export class HAFullCalendar extends LitElement {
     if (info.view.type !== "dayGridMonth") {
       return;
     }
-    this._activeView = "dayGridDay";
-    this.calendar!.changeView("dayGridDay");
+    const dayView = this.views.includes("timeGridDay")
+      ? "timeGridDay"
+      : "dayGridDay";
+    this._activeView = dayView;
+    this.calendar!.changeView(dayView);
     this.calendar!.gotoDate(info.dateStr);
     this._fireViewChanged();
   }
@@ -472,6 +484,16 @@ export class HAFullCalendar extends LitElement {
           label: localize("ui.components.calendar.views.dayGridDay"),
           value: "dayGridDay",
           iconPath: mdiViewDay,
+        },
+        {
+          label: localize("ui.components.calendar.views.timeGridWeek"),
+          value: "timeGridWeek",
+          iconPath: mdiTimetable,
+        },
+        {
+          label: localize("ui.components.calendar.views.timeGridDay"),
+          value: "timeGridDay",
+          iconPath: mdiCalendarClock,
         },
         {
           label: localize("ui.components.calendar.views.listWeek"),
@@ -766,6 +788,64 @@ export class HAFullCalendar extends LitElement {
           overflow-y: auto;
           scrollbar-color: var(--scrollbar-thumb-color) transparent;
           scrollbar-width: thin;
+        }
+
+        /* timeGrid (week/day) view styles */
+        .fc-timegrid-slot-label {
+          font-size: var(--ha-font-size-xs);
+          color: var(--secondary-text-color);
+        }
+
+        .fc-timegrid-axis {
+          font-size: var(--ha-font-size-xs);
+          color: var(--secondary-text-color);
+        }
+
+        .fc .fc-timegrid-col.fc-day-today {
+          background: var(--primary-color-alpha-10, rgba(0, 0, 0, 0.04));
+        }
+
+        .fc-timegrid-now-indicator-line {
+          border-color: var(--primary-color);
+        }
+
+        .fc-timegrid-now-indicator-arrow {
+          border-top-color: var(--primary-color);
+          border-bottom-color: var(--primary-color);
+        }
+
+        .fc-timegrid-event {
+          border-radius: var(--ha-border-radius-sm);
+        }
+
+        .fc-timegrid-event .fc-event-main {
+          padding: 2px 4px;
+        }
+
+        .fc-timegrid-event .fc-event-title-container {
+          order: -1;
+        }
+
+        /* Compact styling for short events via container query */
+        .fc-timegrid-event-harness {
+          container-type: size;
+        }
+
+        @container (max-height: 30px) {
+          .fc-v-event {
+            border-top-width: 0;
+            border-bottom-width: 0;
+          }
+          .fc-v-event .fc-event-main {
+            padding-top: 0;
+            padding-bottom: 0;
+          }
+          .fc-v-event .fc-event-main .fc-event-main-frame {
+            line-height: 14px;
+          }
+          .fc-v-event .fc-event-time {
+            display: none;
+          }
         }
       `,
     ];

@@ -53,6 +53,7 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
 export interface CalendarCardConfig extends LovelaceCardConfig {
   entities: string[];
   initial_view?: FullCalendarView;
+  schedule_day_view?: boolean;
   title?: string;
   theme?: string;
 }

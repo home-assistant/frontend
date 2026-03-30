@@ -188,11 +188,11 @@ export class HuiCalendarCard
 
     const loading = !this._entityRegistry || !this._eventsLoaded;
 
-    const views: FullCalendarView[] = [
-      "dayGridMonth",
-      "dayGridDay",
-      "listWeek",
-    ];
+    const dayView: FullCalendarView = this._config.schedule_day_view
+      ? "timeGridDay"
+      : "dayGridDay";
+
+    const views: FullCalendarView[] = ["dayGridMonth", dayView, "listWeek"];
 
     return html`
       <ha-card>

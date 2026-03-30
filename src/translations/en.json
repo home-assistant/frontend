@@ -1331,6 +1331,8 @@
           "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
           "dayGridWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridWeek%]",
           "dayGridDay": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridDay%]",
+          "timeGridWeek": "Schedule (week)",
+          "timeGridDay": "Schedule (day)",
           "listWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::listWeek%]"
         }
       },
@@ -8932,6 +8934,7 @@
               "name": "Calendar",
               "description": "This card displays a calendar including day, week, and list views",
               "initial_view": "Initial view",
+              "schedule_day_view": "Use schedule for day view",
               "calendar_entities": "Calendar entities",
               "views": {
                 "dayGridMonth": "Month",
