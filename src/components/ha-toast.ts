@@ -215,7 +215,7 @@ export class HaToast extends LitElement {
       overflow: hidden;
       box-sizing: border-box;
       min-width: min(350px, calc(var(--safe-width) - var(--ha-space-4)));
-      max-width: 650px;
+      max-width: min(650px, var(--safe-width));
       min-height: 48px;
       display: flex;
       align-items: center;
