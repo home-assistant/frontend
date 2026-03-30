@@ -198,15 +198,7 @@ export class HaToast extends LitElement {
       border: none;
       overflow: hidden;
       box-sizing: border-box;
-      min-width: min(
-        350px,
-        calc(
-          100vw - var(--ha-space-4) - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        )
-      );
+      min-width: min(350px, calc(var(--safe-width) - var(--ha-space-4)));
       max-width: 650px;
       min-height: 48px;
       display: flex;
@@ -247,12 +239,8 @@ export class HaToast extends LitElement {
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
       .toast {
-        min-width: calc(
-          100vw - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        );
+        min-width: var(--safe-width);
+        max-width: var(--safe-width);
         border-radius: var(--ha-border-radius-square);
       }
     }
