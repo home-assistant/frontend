@@ -39,7 +39,7 @@ export class DateRangePicker extends LitElement {
 
   @property({ attribute: false }) public endDate?: Date;
 
-  @property({ type: Boolean, attribute: "time-picker" })
+  @property({ attribute: "time-picker", type: Boolean })
   public timePicker = false;
 
   @state()
