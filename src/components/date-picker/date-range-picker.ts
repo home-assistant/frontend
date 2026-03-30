@@ -29,7 +29,6 @@ import "../ha-list-item";
 import "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
-import { haStyleScrollbar } from "../../resources/styles";
 import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("date-range-picker")
@@ -105,10 +104,9 @@ export class DateRangePicker extends LitElement {
   }
 
   render() {
-    return html`<div class="content">
-      <div class="picker">
+    return html`<div class="picker">
         ${this.ranges !== false && this.ranges
-          ? html`<div class="date-range-ranges ha-scrollbar">
+          ? html`<div class="date-range-ranges">
               <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges).map(
                   (name) => html`<ha-list-item>${name}</ha-list-item>`
@@ -116,7 +114,7 @@ export class DateRangePicker extends LitElement {
               </ha-list>
             </div>`
           : nothing}
-        <div class="range ha-scrollbar">
+        <div class="range">
           <calendar-range
             .value=${this._dateValue}
             .locale=${this.locale.language}
@@ -183,8 +181,7 @@ export class DateRangePicker extends LitElement {
         <ha-button .disabled=${!this._dateValue} @click=${this._save}
           >${this.localize("ui.components.date-range-picker.select")}</ha-button
         >
-      </div>
-    </div>`;
+      </div>`;
   }
 
   private _focusToday() {
@@ -315,13 +312,7 @@ export class DateRangePicker extends LitElement {
   static styles = [
     datePickerStyles,
     dateRangePickerStyles,
-    haStyleScrollbar,
     css`
-      .content {
-        display: flex;
-        flex-direction: column;
-      }
-
       .picker {
         display: flex;
         flex-direction: row;
@@ -340,7 +331,6 @@ export class DateRangePicker extends LitElement {
         flex-direction: column;
         align-items: center;
         padding: var(--ha-space-3);
-        flex: 1 1 fit-content;
         overflow-x: hidden;
       }
 
@@ -372,7 +362,6 @@ export class DateRangePicker extends LitElement {
         justify-content: flex-end;
         padding: var(--ha-space-2);
         border-top: 1px solid var(--divider-color);
-        flex: 0 0 fit-content;
       }
     `,
   ];
