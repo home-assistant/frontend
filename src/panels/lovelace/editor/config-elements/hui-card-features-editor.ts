@@ -54,6 +54,7 @@ import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-co
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
 import { supportsMediaPlayerSoundModeCardFeature } from "../../card-features/hui-media-player-sound-mode-card-feature";
+import { supportsMediaPlayerSourceCardFeature } from "../../card-features/hui-media-player-source-card-feature";
 import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
@@ -114,6 +115,7 @@ const UI_FEATURE_TYPES = [
   "lock-open-door",
   "media-player-playback",
   "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
@@ -194,6 +196,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
   "media-player-sound-mode": supportsMediaPlayerSoundModeCardFeature,
+  "media-player-source": supportsMediaPlayerSourceCardFeature,
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
