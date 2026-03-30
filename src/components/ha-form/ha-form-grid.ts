@@ -63,6 +63,11 @@ export class HaFormGrid extends LitElement implements HaFormElement {
       } else {
         this.style.setProperty("--form-grid-min-width", "");
       }
+      if (this.schema.row_gap) {
+        this.style.setProperty("--form-grid-row-gap", this.schema.row_gap);
+      } else {
+        this.style.setProperty("--form-grid-row-gap", "");
+      }
     }
   }
 
@@ -92,7 +97,7 @@ export class HaFormGrid extends LitElement implements HaFormElement {
         minmax(var(--form-grid-min-width, 200px), 1fr)
       );
       grid-column-gap: var(--ha-space-2);
-      grid-row-gap: var(--ha-space-6);
+      grid-row-gap: var(--form-grid-row-gap, var(--ha-space-6));
     }
     :host > ha-form {
       display: block;

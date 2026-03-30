@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ButtonToggleSelector, SelectOption } from "../../data/selector";
@@ -66,6 +67,7 @@ export class HaButtonToggleSelector extends LitElement {
       <ha-button-toggle-group
         .buttons=${toggleButtons}
         .active=${this.value}
+        size=${ifDefined(this.selector.button_toggle?.size)}
         @value-changed=${this._valueChanged}
       ></ha-button-toggle-group>
     `;
@@ -92,9 +94,14 @@ export class HaButtonToggleSelector extends LitElement {
       gap: var(--ha-space-2);
       align-items: center;
     }
+
+    ha-button-toggle-group {
+      margin-inline-start: auto;
+    }
+
     @media all and (max-width: 600px) {
       ha-button-toggle-group {
-        flex: 1;
+        flex: none;
       }
     }
   `;
