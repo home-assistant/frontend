@@ -251,15 +251,18 @@ export class HuiHomeSummaryCard
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
-        const batteryFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
           (filter) => generateEntityFilter(this.hass!, filter)
         );
 
-        const batteryEntities = findEntities(allEntities, batteryFilters);
+        const maintenanceEntities = findEntities(
+          allEntities,
+          maintenanceFilters
+        );
 
         const needsAttentionEntities = filterNeedsAttentionEntities(
           this.hass!,
-          batteryEntities
+          maintenanceEntities
         );
 
         if (needsAttentionEntities.length > 0) {
