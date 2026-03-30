@@ -72,6 +72,7 @@ export const PANEL_DASHBOARDS = [
   "security",
   "climate",
   "energy",
+  "maintenance",
 ] as string[];
 
 type DataTableItem = Pick<
