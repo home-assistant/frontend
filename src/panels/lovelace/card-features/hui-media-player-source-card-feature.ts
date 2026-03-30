@@ -128,7 +128,6 @@ class HuiMediaPlayerSourceCardFeature
       <ha-control-select-menu
         .hass=${this.hass}
         show-arrow
-        hide-label
         .label=${this.hass.localize("ui.card.media_player.source")}
         .value=${this._currentSource}
         .disabled=${this._stateObj.state === UNAVAILABLE}
