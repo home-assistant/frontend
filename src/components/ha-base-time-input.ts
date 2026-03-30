@@ -401,7 +401,7 @@ export class HaBaseTimeInput extends LitElement {
 
     .time-separator,
     ha-icon-button {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      background-color: var(--ha-color-form-background);
       color: var(--ha-color-text-secondary);
       border-bottom: 1px solid var(--ha-color-border-neutral-loud);
       box-sizing: border-box;
