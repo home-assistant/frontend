@@ -301,17 +301,39 @@ export class DateRangePicker extends LitElement {
     css`
       .picker {
         display: flex;
+        flex-direction: row;
       }
 
       .date-range-ranges {
         border-right: 1px solid var(--divider-color);
+        min-width: 140px;
+        flex: 0 1 30%;
       }
+
       .range {
         display: flex;
         flex-direction: column;
         align-items: center;
         flex: 1;
         padding: var(--ha-space-3);
+        overflow-x: hidden;
+      }
+
+      @media only screen and (max-width: 460px) {
+        .picker {
+          flex-direction: column;
+        }
+
+        .date-range-ranges {
+          flex-basis: 180px;
+          border-bottom: 1px solid var(--divider-color);
+          border-right: none;
+          overflow-y: scroll;
+        }
+
+        .range {
+          flex-basis: fit-content;
+        }
       }
 
       .times {
@@ -325,12 +347,6 @@ export class DateRangePicker extends LitElement {
         justify-content: flex-end;
         padding: var(--ha-space-2);
         border-top: 1px solid var(--divider-color);
-      }
-
-      @media only screen and (max-width: 500px) {
-        .date-range-ranges {
-          max-width: 30%;
-        }
       }
     `,
   ];
