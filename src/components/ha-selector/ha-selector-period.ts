@@ -4,9 +4,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PeriodKey, PeriodSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-dropdown-item";
-import "../ha-input-helper-text";
-import "../ha-select";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-form/ha-form";
@@ -34,7 +31,7 @@ export class HaPeriodSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: PeriodSelector;
 
-  @property() public value?: any;
+  @property({ attribute: false }) public value?: unknown;
 
   @property() public label?: string;
 
@@ -45,18 +42,21 @@ export class HaPeriodSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   private _schema = memoizeOne(
-    (selectedPeriodKey: PeriodKey | undefined, localize: LocalizeFunc) =>
+    (
+      selectedPeriodKey: PeriodKey | undefined,
+      selector: PeriodSelector,
+      localize: LocalizeFunc
+    ) =>
       [
         {
           name: "period",
           required: true,
           selector:
-            selectedPeriodKey &&
-            selectedPeriodKey in this._periods(this.selector)
+            selectedPeriodKey && selectedPeriodKey in this._periods(selector)
               ? {
                   select: {
                     multiple: false,
-                    options: Object.keys(this._periods(this.selector)).map(
+                    options: Object.keys(this._periods(selector)).map(
                       (periodKey) => ({
                         value: periodKey,
                         label:
@@ -73,10 +73,11 @@ export class HaPeriodSelector extends LitElement {
   );
 
   protected render() {
-    const data = this._data(this.value);
+    const data = this._data(this.value, this.selector);
 
     const schema = this._schema(
       typeof data.period === "string" ? (data.period as PeriodKey) : undefined,
+      this.selector,
       this.hass.localize
     );
 
@@ -100,10 +101,8 @@ export class HaPeriodSelector extends LitElement {
     )
   );
 
-  private _data = memoizeOne((value: any) => {
-    for (const [periodKey, period] of Object.entries(
-      this._periods(this.selector)
-    )) {
+  private _data = memoizeOne((value: unknown, selector: PeriodSelector) => {
+    for (const [periodKey, period] of Object.entries(this._periods(selector))) {
       if (deepEqual(period, value)) {
         return { period: periodKey };
       }
