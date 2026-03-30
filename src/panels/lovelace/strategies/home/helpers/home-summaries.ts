@@ -1,6 +1,6 @@
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { batteryEntityFilters } from "../home-battery-view-strategy";
+import { batteryEntityFilters } from "../../maintenance/maintenance-view-strategy";
 import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
 import { lightEntityFilters } from "../../../../light/strategies/light-view-strategy";
 import { securityEntityFilters } from "../../../../security/strategies/security-view-strategy";
@@ -10,7 +10,7 @@ export const HOME_SUMMARIES = [
   "climate",
   "security",
   "media_players",
-  "batteries",
+  "maintenance",
   "energy",
 ] as const;
 
@@ -21,7 +21,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
-  batteries: "mdi:battery-outline",
+  maintenance: "mdi:wrench",
   energy: "mdi:lightning-bolt",
 };
 
@@ -30,7 +30,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   climate: climateEntityFilters,
   security: securityEntityFilters,
   media_players: [{ domain: "media_player", entity_category: "none" }],
-  batteries: batteryEntityFilters,
+  maintenance: batteryEntityFilters,
   energy: [], // Uses energy collection data
 };
 
@@ -38,7 +38,12 @@ export const getSummaryLabel = (
   localize: LocalizeFunc,
   summary: HomeSummary
 ) => {
-  if (summary === "light" || summary === "climate" || summary === "security") {
+  if (
+    summary === "light" ||
+    summary === "climate" ||
+    summary === "security" ||
+    summary === "maintenance"
+  ) {
     return localize(`panel.${summary}`);
   }
   return localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

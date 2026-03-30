@@ -222,7 +222,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const batteryFilters = HOME_SUMMARIES_FILTERS.batteries.map((filter) =>
+    const batteryFilters = HOME_SUMMARIES_FILTERS.maintenance.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
@@ -236,7 +236,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
-    const hasBattery = findEntities(allEntities, batteryFilters).length > 0;
+    const hasMaintenance =
+      hass.panels.maintenance &&
+      findEntities(allEntities, batteryFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -320,13 +322,15 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             navigation_path: "media-players",
           },
         } satisfies HomeSummaryCard),
-      hasBattery &&
+      hasMaintenance &&
         ({
           type: "home-summary",
-          summary: "batteries",
+          summary: "maintenance",
           tap_action: {
             action: "navigate",
-            navigation_path: "batteries",
+            navigation_path: config.home_panel
+              ? "/maintenance?historyBack=1&backPath=/home"
+              : "/maintenance?historyBack=1",
           },
         } satisfies HomeSummaryCard),
       weatherEntity &&

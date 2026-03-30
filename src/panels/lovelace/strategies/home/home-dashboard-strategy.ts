@@ -74,16 +74,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
       icon: HOME_SUMMARIES_ICONS.media_players,
     } satisfies LovelaceViewRawConfig;
 
-    const batteryView = {
-      title: getSummaryLabel(hass.localize, "batteries"),
-      path: "batteries",
-      subview: true,
-      strategy: {
-        type: "home-battery",
-      },
-      icon: HOME_SUMMARIES_ICONS.batteries,
-    } satisfies LovelaceViewRawConfig;
-
     const otherDevicesView = {
       title: hass.localize("ui.panel.lovelace.strategy.home.devices"),
       path: "other-devices",
@@ -108,7 +98,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
         },
         ...areaViews,
         mediaPlayersView,
-        batteryView,
         otherDevicesView,
       ],
     };

@@ -42,7 +42,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
-  batteries: "green",
+  maintenance: "green",
   energy: "amber",
 };
 
@@ -249,9 +249,9 @@ export class HuiHomeSummaryCard
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
-      case "batteries": {
-        const batteryFilters = HOME_SUMMARIES_FILTERS.batteries.map((filter) =>
-          generateEntityFilter(this.hass!, filter)
+      case "maintenance": {
+        const batteryFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
         );
 
         const batteryEntities = findEntities(allEntities, batteryFilters);
@@ -265,13 +265,13 @@ export class HuiHomeSummaryCard
 
         if (lowBatteryEntities.length > 0) {
           return this.hass.localize(
-            "ui.card.home-summary.count_batteries_low",
+            "ui.card.home-summary.count_maintenance_issues",
             {
               count: lowBatteryEntities.length,
             }
           );
         }
-        return this.hass.localize("ui.card.home-summary.all_batteries_good");
+        return this.hass.localize("ui.card.home-summary.all_maintenance_good");
       }
       case "energy": {
         if (!this._energyData) {

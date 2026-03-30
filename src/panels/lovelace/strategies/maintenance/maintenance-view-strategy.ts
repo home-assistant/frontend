@@ -13,8 +13,8 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { TileCardConfig } from "../../cards/types";
 
-export interface HomeBatteryViewStrategyConfig {
-  type: "home-battery";
+export interface MaintenanceViewStrategyConfig {
+  type: "maintenance";
 }
 
 export const batteryEntityFilters: EntityFilter[] = [
@@ -92,10 +92,10 @@ const processUnassignedEntities = (
   return cards;
 };
 
-@customElement("home-battery-view-strategy")
-export class HomeBatteryViewStrategy extends ReactiveElement {
+@customElement("maintenance-view-strategy")
+export class MaintenanceViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeBatteryViewStrategyConfig,
+    _config: MaintenanceViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -155,7 +155,7 @@ export class HomeBatteryViewStrategy extends ReactiveElement {
             heading:
               floorCount > 1
                 ? hass.localize(
-                    "ui.panel.lovelace.strategy.battery.other_devices"
+                    "ui.panel.lovelace.strategy.maintenance.other_devices"
                   )
                 : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
@@ -183,9 +183,11 @@ export class HomeBatteryViewStrategy extends ReactiveElement {
             heading:
               sections.length > 0
                 ? hass.localize(
-                    "ui.panel.lovelace.strategy.battery.other_devices"
+                    "ui.panel.lovelace.strategy.maintenance.other_devices"
                   )
-                : hass.localize("ui.panel.lovelace.strategy.battery.devices"),
+                : hass.localize(
+                    "ui.panel.lovelace.strategy.maintenance.devices"
+                  ),
           },
           ...unassignedCards,
         ],
@@ -203,6 +205,6 @@ export class HomeBatteryViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-battery-view-strategy": HomeBatteryViewStrategy;
+    "maintenance-view-strategy": MaintenanceViewStrategy;
   }
 }
