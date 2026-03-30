@@ -19,7 +19,11 @@ import {
   localizeContext,
 } from "../../data/context";
 import { TimeZone } from "../../data/translation";
+import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
 import type { ValueChangedEvent } from "../../types";
+import "../chips/ha-chip-set";
+import "../chips/ha-filter-chip";
+import type { HaFilterChip } from "../chips/ha-filter-chip";
 import type { HaBaseTimeInput } from "../ha-base-time-input";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
@@ -27,12 +31,12 @@ import "../ha-icon-button-prev";
 import "../ha-list";
 import "../ha-list-item";
 import "../ha-time-input";
+import type { HaTimeInput } from "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
-import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("date-range-picker")
-export class DateRangePicker extends LitElement {
+export class DateRangePicker extends MobileAwareMixin(LitElement) {
   @property({ attribute: false }) public ranges?: DateRangePickerRanges | false;
 
   @property({ attribute: false }) public startDate?: Date;
@@ -103,16 +107,38 @@ export class DateRangePicker extends LitElement {
     }
   }
 
+  private _renderRanges() {
+    if (this._isMobileSize) {
+      return html`
+        <ha-chip-set>
+          ${Object.entries(this.ranges!).map(
+            ([name, range], index) => html`
+              <ha-filter-chip
+                .index=${index}
+                .range=${range}
+                @click=${this._clickDateRangeChip}
+              >
+                ${name}
+              </ha-filter-chip>
+            `
+          )}
+        </ha-chip-set>
+      `;
+    }
+
+    return html`
+      <ha-list @action=${this._setDateRange} activatable>
+        ${Object.keys(this.ranges!).map(
+          (name) => html`<ha-list-item>${name}</ha-list-item>`
+        )}
+      </ha-list>
+    `;
+  }
+
   render() {
     return html`<div class="picker">
         ${this.ranges !== false && this.ranges
-          ? html`<div class="date-range-ranges">
-              <ha-list @action=${this._setDateRange} activatable>
-                ${Object.keys(this.ranges).map(
-                  (name) => html`<ha-list-item>${name}</ha-list-item>`
-                )}
-              </ha-list>
-            </div>`
+          ? html`<div class="date-range-ranges">${this._renderRanges()}</div>`
           : nothing}
         <div class="range">
           <calendar-range
@@ -270,18 +296,30 @@ export class DateRangePicker extends LitElement {
     this._focusDate = undefined;
   }
 
+  private _clickDateRangeChip(ev: Event) {
+    const chip = ev.target as HaFilterChip & {
+      index: number;
+      range: [Date, Date];
+    };
+    this._saveDateRangePreset(chip.range, chip.index);
+  }
+
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
+    this._saveDateRangePreset(dateRange, ev.detail.index);
+  }
+
+  private _saveDateRangePreset(range: [Date, Date], index: number) {
     fireEvent(this, "value-changed", {
       value: {
-        startDate: dateRange[0],
-        endDate: dateRange[1],
+        startDate: range[0],
+        endDate: range[1],
       },
     });
     fireEvent(this, "preset-selected", {
-      index: ev.detail.index,
+      index,
     });
   }
 
@@ -313,7 +351,7 @@ export class DateRangePicker extends LitElement {
       }
 
       .date-range-ranges {
-        border-right: 1px solid var(--divider-color);
+        border-right: var(--ha-border-width-sm) solid var(--divider-color);
         min-width: 140px;
         flex: 0 1 30%;
       }
@@ -327,16 +365,21 @@ export class DateRangePicker extends LitElement {
         overflow-x: hidden;
       }
 
-      @media only screen and (max-width: 460px) {
+      @media all and (max-width: 450px), all and (max-height: 500px) {
         .picker {
           flex-direction: column;
         }
 
         .date-range-ranges {
-          flex-basis: 180px;
           border-bottom: 1px solid var(--divider-color);
-          border-right: none;
-          overflow-y: scroll;
+          margin-top: var(--ha-space-5);
+          overflow: visible;
+        }
+
+        ha-chip-set {
+          padding: var(--ha-space-3);
+          flex-wrap: nowrap;
+          overflow-x: auto;
         }
 
         .range {
