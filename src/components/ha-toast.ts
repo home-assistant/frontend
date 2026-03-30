@@ -220,7 +220,7 @@ export class HaToast extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-3);
+      padding: var(--ha-space-3) var(--ha-space-4);
       color: var(--ha-color-on-neutral-loud);
       background-color: var(--ha-color-neutral-10);
       border-radius: var(--ha-border-radius-sm);
