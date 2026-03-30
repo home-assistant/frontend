@@ -310,8 +310,6 @@ export class DateRangePicker extends LitElement {
       .picker {
         display: flex;
         flex-direction: row;
-        min-height: 100px;
-        flex: 1;
       }
 
       .date-range-ranges {
@@ -324,6 +322,7 @@ export class DateRangePicker extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        flex: 1;
         padding: var(--ha-space-3);
         overflow-x: hidden;
       }
