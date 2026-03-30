@@ -114,13 +114,7 @@ const tryDescribeAction = <T extends ActionType>(
         ) || hass.services[domain]?.[serviceName]?.name;
 
       if (config.metadata) {
-        return hass.localize(
-          `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
-          {
-            domain: domainToName(hass.localize, domain),
-            name: service || config.action,
-          }
-        );
+        return service || config.action;
       }
 
       return hass.localize(

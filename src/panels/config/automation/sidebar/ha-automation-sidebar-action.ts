@@ -26,7 +26,6 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
-import { domainToName } from "../../../../data/integration";
 import type {
   NonConditionAction,
   RepeatAction,
@@ -104,14 +103,13 @@ export default class HaAutomationSidebarAction extends LitElement {
         2
       );
 
-      title = `${domainToName(this.hass.localize, domain)}: ${
+      title =
         this.hass.localize(
           `component.${domain}.services.${service}.name`,
           this.hass.services[domain]?.[service]?.description_placeholders
         ) ||
         this.hass.services[domain]?.[service]?.name ||
-        title
-      }`;
+        title;
     }
 
     const description = isBuildingBlock
