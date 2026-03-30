@@ -33,6 +33,7 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
+import { filterNeedsAttentionEntities } from "../strategies/maintenance/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -256,18 +257,16 @@ export class HuiHomeSummaryCard
 
         const batteryEntities = findEntities(allEntities, batteryFilters);
 
-        const lowBatteryEntities = batteryEntities.filter((entityId) => {
-          const stateValue = parseFloat(
-            this.hass!.states[entityId]?.state ?? ""
-          );
-          return !isNaN(stateValue) && stateValue <= 20;
-        });
+        const needsAttentionEntities = filterNeedsAttentionEntities(
+          this.hass!,
+          batteryEntities
+        );
 
-        if (lowBatteryEntities.length > 0) {
+        if (needsAttentionEntities.length > 0) {
           return this.hass.localize(
             "ui.card.home-summary.count_maintenance_issues",
             {
-              count: lowBatteryEntities.length,
+              count: needsAttentionEntities.length,
             }
           );
         }

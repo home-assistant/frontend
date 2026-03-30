@@ -1,6 +1,6 @@
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { batteryEntityFilters } from "../../maintenance/maintenance-view-strategy";
+import { maintenanceEntityFilters } from "../../maintenance/maintenance-view-strategy";
 import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
 import { lightEntityFilters } from "../../../../light/strategies/light-view-strategy";
 import { securityEntityFilters } from "../../../../security/strategies/security-view-strategy";
@@ -30,7 +30,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   climate: climateEntityFilters,
   security: securityEntityFilters,
   media_players: [{ domain: "media_player", entity_category: "none" }],
-  maintenance: batteryEntityFilters,
+  maintenance: maintenanceEntityFilters,
   energy: [], // Uses energy collection data
 };
 

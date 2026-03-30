@@ -17,7 +17,7 @@ export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
 }
 
-export const batteryEntityFilters: EntityFilter[] = [
+export const maintenanceEntityFilters: EntityFilter[] = [
   {
     domain: "sensor",
     device_class: ["battery"],
@@ -28,6 +28,17 @@ export const batteryEntityFilters: EntityFilter[] = [
     entity_category: "none",
   },
 ];
+
+const LOW_BATTERY_THRESHOLD = 20;
+
+export const filterNeedsAttentionEntities = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    const stateValue = parseFloat(hass.states[entityId]?.state ?? "");
+    return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
+  });
 
 const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
   type: "tile",
@@ -106,7 +117,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const batteryFilters = batteryEntityFilters.map((filter) =>
+    const batteryFilters = maintenanceEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 

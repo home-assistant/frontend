@@ -222,8 +222,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const batteryFilters = HOME_SUMMARIES_FILTERS.maintenance.map((filter) =>
-      generateEntityFilter(hass, filter)
+    const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+      (filter) => generateEntityFilter(hass, filter)
     );
 
     const hasLights =
@@ -238,7 +238,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       findEntities(allEntities, securityFilters).length > 0;
     const hasMaintenance =
       hass.panels.maintenance &&
-      findEntities(allEntities, batteryFilters).length > 0;
+      findEntities(allEntities, maintenanceFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
