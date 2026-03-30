@@ -1,6 +1,12 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  customElement,
+  property,
+  query,
+  queryAssignedElements,
+  state,
+} from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { popoverSupported } from "../common/feature-detect/support-popover";
@@ -24,6 +30,12 @@ export class HaToast extends LitElement {
 
   @query(".toast")
   private _toast?: HTMLDivElement;
+
+  @queryAssignedElements({ slot: "action", flatten: true })
+  private _actionElements?: Element[];
+
+  @queryAssignedElements({ slot: "dismiss", flatten: true })
+  private _dismissElements?: Element[];
 
   @state() private _active = false;
 
@@ -163,6 +175,10 @@ export class HaToast extends LitElement {
   }
 
   protected render() {
+    const hasAction =
+      (this._actionElements?.length ?? 0) > 0 ||
+      (this._dismissElements?.length ?? 0) > 0;
+
     return html`
       <div
         class=${classMap({
@@ -175,7 +191,7 @@ export class HaToast extends LitElement {
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
       >
         <span class="message">${this.labelText}</span>
-        <div class="actions">
+        <div class=${classMap({ actions: true, "has-action": hasAction })}>
           <slot name="action"></slot>
           <slot name="dismiss"></slot>
         </div>
@@ -198,21 +214,13 @@ export class HaToast extends LitElement {
       border: none;
       overflow: hidden;
       box-sizing: border-box;
-      min-width: min(
-        350px,
-        calc(
-          100vw - var(--ha-space-4) - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        )
-      );
-      max-width: 650px;
+      min-width: min(350px, calc(var(--safe-width) - var(--ha-space-4)));
+      max-width: min(650px, var(--safe-width));
       min-height: 48px;
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-3);
+      padding: var(--ha-space-3) var(--ha-space-4);
       color: var(--ha-color-on-neutral-loud);
       background-color: var(--ha-color-neutral-10);
       border-radius: var(--ha-border-radius-sm);
@@ -245,14 +253,14 @@ export class HaToast extends LitElement {
       color: var(--ha-color-on-neutral-loud);
     }
 
+    .actions:not(.has-action) {
+      display: none;
+    }
+
     @media all and (max-width: 450px), all and (max-height: 500px) {
       .toast {
-        min-width: calc(
-          100vw - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        );
+        min-width: var(--safe-width);
+        max-width: var(--safe-width);
         border-radius: var(--ha-border-radius-square);
       }
     }
