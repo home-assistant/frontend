@@ -3,6 +3,7 @@ import {
   mdiChip,
   mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
+  mdiDelete,
   mdiDocker,
   mdiDotsVertical,
   mdiExclamationThick,
@@ -231,69 +232,74 @@ class SupervisorAppInfo extends LitElement {
                             .path=${mdiCircleOffOutline}
                           ></ha-svg-icon>
                         `}
-                    ${this._computeIsRunning || this.addon.build
-                      ? html`
-                          <ha-dropdown>
-                            <ha-icon-button
-                              slot="trigger"
-                              .path=${mdiDotsVertical}
-                              .label=${this.hass.localize(
-                                "ui.common.overflow_menu"
+                    <ha-dropdown>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize("ui.common.overflow_menu")}
+                      ></ha-icon-button>
+                      ${this._computeIsRunning
+                        ? html`
+                            <ha-dropdown-item
+                              @click=${this._stopClicked}
+                              .disabled=${this._isSystemManaged(this.addon) &&
+                              !this.controlEnabled}
+                              variant="danger"
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiStop}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.panel.config.apps.dashboard.stop"
                               )}
-                            ></ha-icon-button>
-                            ${this._computeIsRunning
-                              ? html`
-                                  <ha-dropdown-item
-                                    @click=${this._stopClicked}
-                                    .disabled=${this._isSystemManaged(
-                                      this.addon
-                                    ) && !this.controlEnabled}
-                                    variant="danger"
-                                  >
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${mdiStop}
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.apps.dashboard.stop"
-                                    )}
-                                  </ha-dropdown-item>
-                                  <ha-dropdown-item
-                                    @click=${this._restartClicked}
-                                    .disabled=${this._isSystemManaged(
-                                      this.addon
-                                    ) && !this.controlEnabled}
-                                    variant="danger"
-                                  >
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${mdiRestart}
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.apps.dashboard.restart"
-                                    )}
-                                  </ha-dropdown-item>
-                                `
-                              : nothing}
-                            ${this.addon.build
-                              ? html`
-                                  <ha-dropdown-item
-                                    @click=${this._rebuildClicked}
-                                    variant="danger"
-                                  >
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${mdiHammer}
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.apps.dashboard.rebuild"
-                                    )}
-                                  </ha-dropdown-item>
-                                `
-                              : nothing}
-                          </ha-dropdown>
-                        `
-                      : nothing}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item
+                              @click=${this._restartClicked}
+                              .disabled=${this._isSystemManaged(this.addon) &&
+                              !this.controlEnabled}
+                              variant="danger"
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiRestart}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.panel.config.apps.dashboard.restart"
+                              )}
+                            </ha-dropdown-item>
+                          `
+                        : nothing}
+                      ${this.addon.build
+                        ? html`
+                            <ha-dropdown-item
+                              @click=${this._rebuildClicked}
+                              variant="danger"
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiHammer}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.panel.config.apps.dashboard.rebuild"
+                              )}
+                            </ha-dropdown-item>
+                          `
+                        : nothing}
+                      <ha-dropdown-item
+                        @click=${this._uninstallClicked}
+                        .disabled=${systemManaged && !this.controlEnabled}
+                        variant="danger"
+                      >
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiDelete}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.apps.dashboard.uninstall"
+                        )}
+                      </ha-dropdown-item>
+                    </ha-dropdown>
                   `
                 : html` ${this.addon.version_latest} `}
             </div>
@@ -725,22 +731,7 @@ class SupervisorAppInfo extends LitElement {
             : nothing}
         </div>
         <div class="card-actions">
-          <div>
-            ${this.addon.version
-              ? html`
-                  <ha-progress-button
-                    variant="danger"
-                    appearance="plain"
-                    @click=${this._uninstallClicked}
-                    .disabled=${systemManaged && !this.controlEnabled}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.apps.dashboard.uninstall"
-                    )}
-                  </ha-progress-button>
-                `
-              : nothing}
-          </div>
+          <div></div>
           <div>
             ${this.addon.version
               ? this._computeIsRunning
@@ -1230,13 +1221,11 @@ class SupervisorAppInfo extends LitElement {
     navigate(`/config/app/${this.addon.slug}/config`);
   }
 
-  private async _uninstallClicked(ev: CustomEvent): Promise<void> {
+  private async _uninstallClicked(): Promise<void> {
     if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
       return;
     }
 
-    const button = ev.currentTarget as any;
-    button.progress = true;
     let removeData = false;
     const _removeDataToggled = (e: Event) => {
       removeData = (e.target as HaSwitch).checked;
@@ -1272,7 +1261,6 @@ class SupervisorAppInfo extends LitElement {
     });
 
     if (!confirmed) {
-      button.progress = false;
       return;
     }
 
@@ -1285,7 +1273,6 @@ class SupervisorAppInfo extends LitElement {
         path: "uninstall",
       };
       fireEvent(this, "hass-api-called", eventdata);
-      button.actionSuccess();
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -1293,9 +1280,7 @@ class SupervisorAppInfo extends LitElement {
         ),
         text: extractApiErrorMessage(err),
       });
-      button.actionError();
     }
-    button.progress = false;
   }
 
   private _isSystemManaged = memoizeOne(
