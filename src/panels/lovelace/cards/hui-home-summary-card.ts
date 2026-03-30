@@ -43,7 +43,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
-  maintenance: "green",
+  maintenance: "grey",
   energy: "amber",
 };
 
