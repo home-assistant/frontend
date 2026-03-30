@@ -101,7 +101,7 @@ export class HaDropdown extends Dropdown {
           padding: var(--ha-space-1);
         }
         wa-popup::part(popup) {
-          z-index: 1;
+          z-index: 200;
         }
       `,
     ];
