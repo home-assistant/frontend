@@ -378,6 +378,7 @@ export class HaChartBase extends LitElement {
             @click=${this._legendClick}
             @pointerdown=${this._legendPointerDown}
             @pointerup=${this._legendPointerCancel}
+            @pointerleave=${this._legendPointerCancel}
             @pointercancel=${this._legendPointerCancel}
             @contextmenu=${this._legendContextMenu}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
