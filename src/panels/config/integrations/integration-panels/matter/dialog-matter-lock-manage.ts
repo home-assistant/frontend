@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
@@ -100,6 +101,10 @@ class DialogMatterLockManage extends LitElement {
     `;
   }
 
+  private get _supportsPinCredential(): boolean {
+    return this._lockInfo?.supported_credential_types?.includes("pin") ?? false;
+  }
+
   private _renderUsers() {
     const occupiedUsers = this._users.filter(
       (u) => u.user_status !== "available"
@@ -107,6 +112,13 @@ class DialogMatterLockManage extends LitElement {
 
     return html`
       <div class="users-content">
+        ${!this._supportsPinCredential
+          ? html`<ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.matter.lock.errors.pin_not_supported"
+              )}
+            </ha-alert>`
+          : nothing}
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
               ${this.hass.localize(
@@ -147,12 +159,14 @@ class DialogMatterLockManage extends LitElement {
                 )}
               </ha-md-list>
             `}
-        <div class="actions">
-          <ha-button @click=${this._addUser}>
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
-          </ha-button>
-        </div>
+        ${this._supportsPinCredential
+          ? html`<div class="actions">
+              <ha-button @click=${this._addUser}>
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
+              </ha-button>
+            </div>`
+          : nothing}
       </div>
     `;
   }

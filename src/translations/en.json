@@ -7901,6 +7901,8 @@
               "load_failed": "Failed to load lock information",
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
+              "pin_not_supported": "This lock does not support PIN code management. You can still view and manage existing users.",
+              "no_credential_types_supported": "This lock does not support any credential types that can be managed from this interface.",
               "user_not_found": "User not found",
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",

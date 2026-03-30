@@ -65,6 +65,9 @@ class DialogMatterLockUserEdit extends LitElement {
     }
 
     const isNew = !this._params.user;
+    const supportsPinCredential =
+      this._params.lockInfo?.supported_credential_types?.includes("pin") ??
+      false;
     const title = isNew
       ? this.hass.localize("ui.panel.config.matter.lock.users.add")
       : this.hass.localize("ui.panel.config.matter.lock.users.edit");
@@ -92,7 +95,7 @@ class DialogMatterLockUserEdit extends LitElement {
             maxlength="10"
           ></ha-textfield>
 
-          ${isNew
+          ${isNew && supportsPinCredential
             ? html`
                 <ha-textfield
                   .label=${this.hass.localize(
@@ -112,6 +115,13 @@ class DialogMatterLockUserEdit extends LitElement {
                   required
                 ></ha-textfield>
               `
+            : nothing}
+          ${isNew && !supportsPinCredential
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
+                )}
+              </ha-alert>`
             : nothing}
 
           <div class="user-type-section">
@@ -140,7 +150,7 @@ class DialogMatterLockUserEdit extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving}
+            .disabled=${this._saving || (isNew && !supportsPinCredential)}
           >
             ${this._saving
               ? html`<ha-spinner size="small"></ha-spinner>`
