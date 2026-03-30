@@ -274,12 +274,6 @@ export class DateRangePicker extends LitElement {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
-    this._dateValue = formatCallyDateRange(
-      dateRange[0],
-      dateRange[1],
-      this.locale,
-      this.hassConfig
-    );
     fireEvent(this, "value-changed", {
       value: {
         startDate: dateRange[0],
