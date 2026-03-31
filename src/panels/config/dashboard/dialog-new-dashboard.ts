@@ -310,12 +310,17 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   private _customStrategyImage(
     strategy: CustomStrategyEntry
   ): string | undefined {
-    if (!strategy.images) {
+    const { images } = strategy;
+
+    if (!images) {
       return undefined;
     }
-    return this.hass.themes.darkMode
-      ? strategy.images.dark
-      : strategy.images.light;
+
+    if (typeof images === "string") {
+      return images;
+    }
+
+    return this.hass.themes.darkMode ? images.dark : images.light;
   }
 
   private async _selected(ev: Event) {
