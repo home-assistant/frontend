@@ -314,6 +314,9 @@ class DialogAddAutomationElement
       ""
     );
 
+    this._open = true;
+    this._closing = false;
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       getServiceIcons(this.hass);
