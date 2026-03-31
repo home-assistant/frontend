@@ -559,7 +559,10 @@ export default class HaAutomationActionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -817,6 +820,12 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -921,9 +930,6 @@ export default class HaAutomationActionRow extends LitElement {
   );
 
   private _toggleCollapse() {
-    if (!this._collapsed) {
-      this._isNew = false;
-    }
     this._collapsed = !this._collapsed;
   }
 
