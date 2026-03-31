@@ -287,6 +287,19 @@ class DialogAddAutomationElement
 
   public showDialog(params): void {
     this._params = params;
+    this._open = true;
+    this._closing = false;
+    this._selectedCollectionIndex = undefined;
+    this._selectedGroup = undefined;
+    this._selectedTarget = undefined;
+    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+    this._filter = "";
+    this._manifests = undefined;
+    this._domains = undefined;
+    this._bottomSheetMode = false;
+    this._narrow = false;
+    this._targetItems = undefined;
+    this._loadItemsError = false;
 
     this.addKeyboardShortcuts();
 
@@ -313,9 +326,6 @@ class DialogAddAutomationElement
       },
       ""
     );
-
-    this._open = true;
-    this._closing = false;
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
@@ -379,20 +389,7 @@ class DialogAddAutomationElement
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
-    this._open = true;
-    this._closing = false;
     this._params = undefined;
-    this._selectedCollectionIndex = undefined;
-    this._selectedGroup = undefined;
-    this._selectedTarget = undefined;
-    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
-    this._filter = "";
-    this._manifests = undefined;
-    this._domains = undefined;
-    this._bottomSheetMode = false;
-    this._narrow = false;
-    this._targetItems = undefined;
-    this._loadItemsError = false;
     return true;
   }
 
