@@ -4,6 +4,8 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { normalizingGetFn } from "../../../resources/fuseMultiTerm";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   LocalizeFunc,
@@ -227,9 +229,11 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         threshold: 0.3,
         ignoreLocation: true,
         minMatchCharLength: Math.min(filter.length, 2),
+        ignoreDiacritics: true,
+        getFn: normalizingGetFn,
       };
       const fuse = new Fuse(strategies, options);
-      return fuse.search(filter).map((result) => result.item);
+      return fuse.search(stripDiacritics(filter)).map((result) => result.item);
     }
   );
 
