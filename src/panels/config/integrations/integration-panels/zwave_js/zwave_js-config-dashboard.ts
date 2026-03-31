@@ -806,7 +806,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           url,
           `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
         );
-        URL.revokeObjectURL(url);
       } catch (err: any) {
         showAlertDialog(this, {
           title: this.hass.localize(

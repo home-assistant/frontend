@@ -291,6 +291,7 @@ class DialogAddAutomationElement
 
   public showDialog(params): void {
     this._params = params;
+    this._resetVariables();
 
     this.addKeyboardShortcuts();
 
@@ -382,9 +383,15 @@ class DialogAddAutomationElement
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
+    this._params = undefined;
+    this._resetVariables();
+
+    return true;
+  }
+
+  private _resetVariables() {
     this._open = true;
     this._closing = false;
-    this._params = undefined;
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
     this._selectedTarget = undefined;
@@ -397,7 +404,6 @@ class DialogAddAutomationElement
     this._targetItems = undefined;
     this._loadItemsError = false;
     this._initialStates = undefined;
-    return true;
   }
 
   private _updateNarrow = () => {

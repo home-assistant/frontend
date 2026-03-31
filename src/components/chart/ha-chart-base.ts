@@ -609,7 +609,10 @@ export class HaChartBase extends LitElement {
       // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
       // It rescales the Y-axis to the visible data while keeping one point
       // just outside each boundary to avoid line gaps at the zoom edges.
-      filterMode: "boundaryFilter" as any,
+      // Only use it for line charts — it causes issues with bar charts.
+      filterMode: (ensureArray(this.data).every((s) => s.type === "line")
+        ? "boundaryFilter"
+        : "filter") as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
@@ -651,7 +654,7 @@ export class HaChartBase extends LitElement {
             hideOverlap: true,
             ...axis.axisLabel,
           },
-          minInterval,
+          minInterval: axis.minInterval ?? minInterval,
         } as XAXisOption;
       });
     }

@@ -104,7 +104,6 @@ export class HuiEntityPickerTable extends LitElement {
     return html`
       <ha-data-table
         class=${showEntityId ? "show-entity-id" : ""}
-        .hass=${this.hass}
         selectable
         .id=${"entity_id"}
         .columns=${columns}

@@ -464,7 +464,6 @@ export class HaAutomationTrace extends LitElement {
       url,
       `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
     );
-    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {

@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,

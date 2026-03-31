@@ -129,7 +129,6 @@ class AssistDevicesPage extends LitElement {
         <ha-data-table
           clickable
           id="device_id"
-          .hass=${this.hass}
           .columns=${this._columns(this.hass.localize)}
           .data=${this._data(
             this.hass.localize,
