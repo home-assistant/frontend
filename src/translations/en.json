@@ -9716,6 +9716,9 @@
               "media-player-sound-mode": {
                 "label": "Media player sound mode"
               },
+              "media-player-source": {
+                "label": "Media player source"
+              },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
                 "step": "Step size"
