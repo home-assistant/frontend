@@ -287,19 +287,7 @@ class DialogAddAutomationElement
 
   public showDialog(params): void {
     this._params = params;
-    this._open = true;
-    this._closing = false;
-    this._selectedCollectionIndex = undefined;
-    this._selectedGroup = undefined;
-    this._selectedTarget = undefined;
-    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
-    this._filter = "";
-    this._manifests = undefined;
-    this._domains = undefined;
-    this._bottomSheetMode = false;
-    this._narrow = false;
-    this._targetItems = undefined;
-    this._loadItemsError = false;
+    this._resetVariables();
 
     this.addKeyboardShortcuts();
 
@@ -390,7 +378,25 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._params = undefined;
+    this._resetVariables();
+
     return true;
+  }
+
+  private _resetVariables() {
+    this._open = true;
+    this._closing = false;
+    this._selectedCollectionIndex = undefined;
+    this._selectedGroup = undefined;
+    this._selectedTarget = undefined;
+    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+    this._filter = "";
+    this._manifests = undefined;
+    this._domains = undefined;
+    this._bottomSheetMode = false;
+    this._narrow = false;
+    this._targetItems = undefined;
+    this._loadItemsError = false;
   }
 
   private _updateNarrow = () => {
