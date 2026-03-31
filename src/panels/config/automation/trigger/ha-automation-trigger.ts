@@ -203,7 +203,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger!));
     } else if (isDynamic(value)) {
       triggers = this.triggers.concat({
         trigger: getValueFromDynamic(value),

@@ -153,7 +153,7 @@ export class HaCardConditionsEditor extends LitElement {
     }
 
     if (condition === "paste") {
-      const newCondition = deepClone(this._clipboard);
+      const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
     } else {
       const elClass = customElements.get(`ha-card-condition-${condition}`) as

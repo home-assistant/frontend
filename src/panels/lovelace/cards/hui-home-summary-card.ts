@@ -43,6 +43,7 @@ const COLORS: Record<HomeSummary, string> = {
   security: "blue-grey",
   media_players: "blue",
   energy: "amber",
+  persons: "green",
 };
 
 @customElement("hui-home-summary-card")
@@ -256,6 +257,21 @@ export class HuiHomeSummaryCard
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
         return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+      }
+      case "persons": {
+        const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+        const personEntities = findEntities(allEntities, personsFilters);
+        const personsHome = personEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "home";
+        });
+        return personsHome.length
+          ? this.hass.localize("ui.card.home-summary.count_persons_home", {
+              count: personsHome.length,
+            })
+          : this.hass.localize("ui.card.home-summary.nobody_home");
       }
     }
     return "";
