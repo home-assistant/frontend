@@ -503,7 +503,7 @@ class DialogAddAutomationElement
     const tabButtons = [
       {
         label: this.hass.localize(
-          `ui.panel.config.automation.editor.${automationElementType}s.name`
+          "ui.panel.config.automation.editor.tabs.type"
         ),
         value: "groups",
       },
@@ -511,7 +511,9 @@ class DialogAddAutomationElement
 
     if (this._newTriggersAndConditions) {
       tabButtons.unshift({
-        label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
+        label: this.hass.localize(
+          "ui.panel.config.automation.editor.tabs.target"
+        ),
         value: "targets",
       });
     }
@@ -610,10 +612,10 @@ class DialogAddAutomationElement
                 .narrow=${this._narrow}
                 class=${classMap({
                   "ha-scrollbar": true,
-                  [this._getAddFromTargetHidden(
+                  hidden: !!this._getAddFromTargetHidden(
                     this._narrow,
                     this._selectedTarget
-                  )]: true,
+                  ),
                 })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`

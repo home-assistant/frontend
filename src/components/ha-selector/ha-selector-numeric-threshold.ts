@@ -2,6 +2,7 @@ import memoizeOne from "memoize-one";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiChartBellCurveCumulative } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   NumericThresholdSelector,
@@ -73,6 +74,18 @@ export class HaNumericThresholdSelector extends LitElement {
     if (changedProperties.has("value") || changedProperties.has("selector")) {
       const mode = this._getMode();
       this._type = this.value?.type || DEFAULT_TYPE[mode];
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (
+      (changedProperties.has("value") || changedProperties.has("selector")) &&
+      !this.value
+    ) {
+      const mode = this._getMode();
+      const type = DEFAULT_TYPE[mode];
+      fireEvent(this, "value-changed", { value: { type } });
     }
   }
 
@@ -220,6 +233,7 @@ export class HaNumericThresholdSelector extends LitElement {
       return [
         {
           value: "any",
+          iconPath: mdiChartBellCurveCumulative,
           label: localize(
             "ui.components.selectors.numeric_threshold.changed.any"
           ),
@@ -273,7 +287,9 @@ export class HaNumericThresholdSelector extends LitElement {
     const numberSelector = {
       number: {
         ...this.selector.numeric_threshold?.number,
-        ...(effectiveUnit ? { unit_of_measurement: effectiveUnit } : {}),
+        ...(!showUnit && effectiveUnit
+          ? { unit_of_measurement: effectiveUnit }
+          : {}),
       },
     };
     const entitySelector = {
@@ -481,7 +497,7 @@ export class HaNumericThresholdSelector extends LitElement {
     .value-inputs {
       display: flex;
       gap: var(--ha-space-2);
-      align-items: flex-end;
+      align-items: flex-start;
     }
 
     .value-selector {

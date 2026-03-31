@@ -22,7 +22,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -1116,7 +1115,6 @@ ${rejected
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
         );
@@ -1136,10 +1134,7 @@ ${rejected
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label
-            style=${color ? `--color: ${color}` : ""}
-            .description=${label.description}
-          >
+          <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1271,10 +1266,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

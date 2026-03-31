@@ -32,6 +32,7 @@ import {
 } from "../../data/recorder";
 import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
+import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
 
@@ -293,6 +294,22 @@ export class StatisticsChart extends LitElement {
           type: "time",
           min: startTime,
           max: this.endTime,
+          ...(this.period === "month" && {
+            minInterval: 28 * 24 * 3600 * 1000,
+            axisLabel: getPeriodicAxisLabelConfig(
+              "month",
+              this.hass.locale,
+              this.hass.config
+            ),
+          }),
+          ...(this.period === "year" && {
+            minInterval: 365 * 24 * 3600 * 1000,
+            axisLabel: getPeriodicAxisLabelConfig(
+              "year",
+              this.hass.locale,
+              this.hass.config
+            ),
+          }),
         },
         {
           id: "hiddenAxis",

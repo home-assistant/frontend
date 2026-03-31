@@ -12,6 +12,7 @@ export const HOME_SUMMARIES = [
   "media_players",
   "maintenance",
   "energy",
+  "persons",
 ] as const;
 
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
@@ -23,6 +24,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   media_players: "mdi:multimedia",
   maintenance: "mdi:wrench",
   energy: "mdi:lightning-bolt",
+  persons: "mdi:account-multiple",
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
@@ -32,6 +34,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   media_players: [{ domain: "media_player", entity_category: "none" }],
   maintenance: maintenanceEntityFilters,
   energy: [], // Uses energy collection data
+  persons: [{ domain: "person" }],
 };
 
 export const getSummaryLabel = (
