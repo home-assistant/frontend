@@ -4412,7 +4412,7 @@
               "search_dashboards": "Search dashboards",
               "heading": {
                 "default": "Dashboards",
-                "custom": "Custom dashboards"
+                "custom": "Community dashboards"
               }
             },
             "picker": {
