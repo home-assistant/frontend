@@ -2,9 +2,10 @@ import { loadCSS, loadJS, loadModule } from "../../../common/dom/load_resource";
 import type { LovelaceResource } from "../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../types";
 
-// CSS and JS should only be imported once. Modules and HTML are safe.
+// CSS, JS, and modules should only be imported once.
 const CSS_CACHE: Record<string, Promise<unknown>> = {};
 const JS_CACHE: Record<string, Promise<unknown>> = {};
+const MODULE_CACHE: Record<string, Promise<unknown>> = {};
 
 const _loadLovelaceResource = (
   resource: LovelaceResource,
@@ -36,8 +37,15 @@ const _loadLovelaceResource = (
       return loadTask;
     }
 
-    case "module":
-      return loadModule(normalizedUrl);
+    case "module": {
+      if (normalizedUrl in MODULE_CACHE) {
+        return MODULE_CACHE[normalizedUrl];
+      }
+
+      const loadTask = loadModule(normalizedUrl);
+      MODULE_CACHE[normalizedUrl] = loadTask;
+      return loadTask;
+    }
 
     default:
       // eslint-disable-next-line
