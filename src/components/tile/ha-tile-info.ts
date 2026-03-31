@@ -132,7 +132,7 @@ export class HaTileInfo extends LitElement {
       max-width: 100%;
       height: var(--tile-info-secondary-font-size);
       --wa-border-radius-pill: var(--ha-border-radius-sm);
-      --color: var(--ha-color-fill-neutral-normal-hover);
+      --color: var(--ha-color-fill-neutral-normal-resting);
       --sheen-color: var(--ha-color-fill-neutral-loud-resting);
     }
   `;
