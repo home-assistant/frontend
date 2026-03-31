@@ -56,16 +56,16 @@ export class DashboardCard extends LitElement {
       border: 1px solid var(--divider-color);
     }
     .card-header {
-      padding: 12px;
+      padding: var(--ha-space-3);
       display: block;
       text-align: var(--float-start);
       gap: var(--ha-space-2);
     }
     .preview {
-      padding: 16px;
+      padding: var(--ha-space-4);
     }
     h2 {
-      margin: 0 0 8px 0;
+      margin: 0 0 var(--ha-space-2) 0;
       font-size: 1.2rem;
       color: var(--primary-text-color);
     }
