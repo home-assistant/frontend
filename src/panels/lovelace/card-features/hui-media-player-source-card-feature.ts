@@ -11,6 +11,7 @@ import {
   type MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
+import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -81,6 +82,21 @@ class HuiMediaPlayerSourceCardFeature
         this._currentSource = this._stateObj.attributes.source;
       }
     }
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    const entityId = this.context?.entity_id;
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    return (
+      changedProps.has("_currentSource") ||
+      changedProps.has("context") ||
+      hasConfigChanged(this, changedProps) ||
+      (changedProps.has("hass") &&
+        (!oldHass ||
+          !entityId ||
+          oldHass.states[entityId] !== this.hass?.states[entityId]))
+    );
   }
 
   private async _valueChanged(ev: HaDropdownSelectEvent) {
