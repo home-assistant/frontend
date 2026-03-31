@@ -207,8 +207,6 @@ class DialogAddAutomationElement
 
   @state() private _domains?: Set<string>;
 
-  private _initialStates?: HomeAssistant["states"];
-
   @state() private _bottomSheetMode = false;
 
   @state() private _narrow = false;
@@ -294,8 +292,6 @@ class DialogAddAutomationElement
     this._resetVariables();
 
     this.addKeyboardShortcuts();
-
-    this._initialStates = this.hass.states;
 
     this._loadConfigEntries();
 
@@ -403,7 +399,6 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
-    this._initialStates = undefined;
   }
 
   private _updateNarrow = () => {
@@ -423,7 +418,7 @@ class DialogAddAutomationElement
     (
       descriptions: TriggerDescriptions | ConditionDescriptions,
       manifests: DomainManifestLookup,
-      _states: HomeAssistant["states"]
+      getDomain: (key: string) => string
     ): { active: Set<string>; byEntityDomain: Map<string, Set<string>> } => {
       const active = new Set<string>();
       // Group all entity filters by system domain
@@ -434,7 +429,7 @@ class DialogAddAutomationElement
       // Also collect which entity domains each system domain targets
       const entityDomainsPerSystemDomain: Record<string, Set<string>> = {};
       for (const [key, desc] of Object.entries(descriptions)) {
-        const domain = getTriggerDomain(key);
+        const domain = getDomain(key);
         if (manifests[domain]?.integration_type !== "system") {
           continue;
         }
@@ -458,7 +453,7 @@ class DialogAddAutomationElement
         }
       }
       // Check each entity in hass.states against the filters
-      for (const entity of Object.values(_states)) {
+      for (const entity of Object.values(this.hass.states)) {
         for (const [domain, filters] of Object.entries(domainFilters)) {
           if (active.has(domain)) {
             continue;
@@ -485,7 +480,7 @@ class DialogAddAutomationElement
   );
 
   private get _systemDomains() {
-    if (!this._manifests || !this._initialStates) {
+    if (!this._manifests) {
       return undefined;
     }
     const descriptions =
@@ -495,7 +490,7 @@ class DialogAddAutomationElement
     return this._calculateActiveSystemDomains(
       descriptions,
       this._manifests,
-      this._initialStates
+      this._params?.type === "trigger" ? getTriggerDomain : getConditionDomain
     );
   }
 
