@@ -17,6 +17,8 @@ export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
   home_panel?: boolean;
+  hidden_summaries?: string[];
+  quick_links?: { name: string; icon?: string; navigation_path: string }[];
 }
 
 @customElement("home-dashboard-strategy")
@@ -94,6 +96,8 @@ export class HomeDashboardStrategy extends ReactiveElement {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
             home_panel: config.home_panel,
+            hidden_summaries: config.hidden_summaries,
+            quick_links: config.quick_links,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
