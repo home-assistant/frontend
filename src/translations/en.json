@@ -4228,6 +4228,7 @@
           "invalid_url": "Invalid URL"
         },
         "hardware": {
+          "caption": "Hardware",
           "overview": "Overview",
           "description": "Configure your hub and connected hardware",
           "system_hardware": {
