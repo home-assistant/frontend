@@ -36,7 +36,7 @@ interface BaseCondition {
 }
 
 export interface ConditionContext {
-  column_count?: number;
+  max_columns?: number;
 }
 
 export interface ViewColumnsCondition extends BaseCondition {
@@ -179,10 +179,10 @@ function checkViewColumnsCondition(
   condition: ViewColumnsCondition,
   context: ConditionContext
 ) {
-  if (!context.column_count) return true;
+  if (!context.max_columns) return true;
   return (
-    (condition.min == null || context.column_count >= condition.min) &&
-    (condition.max == null || context.column_count <= condition.max)
+    (condition.min == null || context.max_columns >= condition.min) &&
+    (condition.max == null || context.max_columns <= condition.max)
   );
 }
 

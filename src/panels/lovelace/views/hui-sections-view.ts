@@ -13,7 +13,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import { columnCountContext } from "../common/context";
+import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -64,10 +64,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _sectionColumnCount = 0;
 
-  private _columnCount = 0;
+  private _maxColumns = 0;
 
-  private _columnCountProvider = new ContextProvider(this, {
-    context: columnCountContext,
+  private _maxColumnsProvider = new ContextProvider(this, {
+    context: maxColumnsContext,
   });
 
   @state() _dragging = false;
@@ -151,15 +151,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }
-    this._updateColumnCount();
+    this._updateMaxColumnCount();
   }
 
-  private _updateColumnCount(): void {
+  private _updateMaxColumnCount(): void {
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    if (maxColumnCount !== this._columnCount) {
-      this._columnCount = maxColumnCount;
-      this._columnCountProvider.setValue(maxColumnCount);
+    if (maxColumnCount !== this._maxColumns) {
+      this._maxColumns = maxColumnCount;
+      this._maxColumnsProvider.setValue(maxColumnCount);
     }
   }
 
@@ -175,7 +175,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
 
     const columnCount = Math.max(
-      Math.min(this._columnCount, totalSectionCount),
+      Math.min(this._maxColumns, totalSectionCount),
       1
     );
     // On mobile with sidebar, use full width for whichever view is active

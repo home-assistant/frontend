@@ -3,7 +3,7 @@ import type { PropertyValues, ReactiveElement } from "lit";
 import { state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
 import { setupConditionListeners } from "../common/condition/listeners";
-import { columnCountContext } from "../panels/lovelace/common/context";
+import { maxColumnsContext } from "../panels/lovelace/common/context";
 import type {
   Condition,
   ConditionContext,
@@ -52,8 +52,8 @@ export const ConditionalListenerMixin = <
     public hass?: HomeAssistant;
 
     @state()
-    @consume({ context: columnCountContext, subscribe: true })
-    protected _columnCount?: number;
+    @consume({ context: maxColumnsContext, subscribe: true })
+    protected _maxColumns?: number;
 
     protected _conditionContext: ConditionContext = {};
 
@@ -73,14 +73,14 @@ export const ConditionalListenerMixin = <
 
     protected willUpdate(changedProperties: PropertyValues) {
       super.willUpdate(changedProperties);
-      if (changedProperties.has("_columnCount")) {
-        this._conditionContext = { column_count: this._columnCount };
+      if (changedProperties.has("_maxColumns")) {
+        this._conditionContext = { max_columns: this._maxColumns };
       }
     }
 
     protected updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);
-      if (changedProperties.has("_columnCount")) {
+      if (changedProperties.has("_maxColumns")) {
         this._updateVisibility?.();
       }
     }
