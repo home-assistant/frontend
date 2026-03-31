@@ -286,6 +286,8 @@ class DialogAddAutomationElement
   }
 
   public showDialog(params): void {
+    this._open = true;
+    this._closing = false;
     this._params = params;
 
     this.addKeyboardShortcuts();

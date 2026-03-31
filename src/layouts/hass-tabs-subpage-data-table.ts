@@ -505,7 +505,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   `
                 : ""}
               <ha-data-table
-                .hass=${this.hass}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
