@@ -118,7 +118,6 @@ class ZHADeviceNeighbors extends LitElement {
       ${!this._devices
         ? html`<ha-spinner size="large"></ha-spinner>`
         : html`<ha-data-table
-            .hass=${this.hass}
             .columns=${this._columns(this.narrow)}
             .data=${this._deviceNeighbors(this.device, this._devices)}
             auto-height

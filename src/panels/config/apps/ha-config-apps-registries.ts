@@ -108,7 +108,6 @@ export class HaConfigAppsRegistries extends LitElement {
         .header=${this.hass.localize("ui.panel.config.apps.store.registries")}
       >
         <ha-data-table
-          .hass=${this.hass}
           .columns=${this._columns(this.hass.localize)}
           .data=${this._registries}
           .noDataText=${this.hass.localize(

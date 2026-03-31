@@ -158,7 +158,6 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
-        .hass=${this.hass}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._deviceEndpoints(this.deviceEndpoints, this.hass.areas)}
         .selectable=${this.selectable}
