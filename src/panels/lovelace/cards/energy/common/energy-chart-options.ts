@@ -35,6 +35,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
+import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
 // Number of days of padding when showing time axis in months
@@ -109,17 +110,7 @@ export function getCommonOptions(
       type: "time",
       min: subDays(start, MONTH_TIME_AXIS_PADDING),
       max: addDays(suggestedMax, MONTH_TIME_AXIS_PADDING),
-      axisLabel: {
-        formatter: {
-          year: "{yearStyle|{MMMM} {yyyy}}",
-          month: "{MMMM}",
-        },
-        rich: {
-          yearStyle: {
-            fontWeight: "bold",
-          },
-        },
-      },
+      axisLabel: getPeriodicAxisLabelConfig("month", locale, config),
       // For shorter month ranges, force splitting to ensure time axis renders
       // as whole month intervals. Limit the number of forced ticks to 6 months
       // (so a max calendar difference of 5) to reduce clutter.
