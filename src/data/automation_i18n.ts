@@ -78,6 +78,19 @@ const localizeTimeString = (
   }
 };
 
+const formatNumericLimitValue = (
+  hass: HomeAssistant,
+  value?: number | string
+) => {
+  if (typeof value !== "string" || !isValidEntityId(value)) {
+    return value;
+  }
+
+  return hass.states[value]
+    ? computeStateName(hass.states[value]) || value
+    : value;
+};
+
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
@@ -1116,8 +1129,8 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: condition.above,
-          below: condition.below,
+          above: formatNumericLimitValue(hass, condition.above),
+          below: formatNumericLimitValue(hass, condition.below),
         }
       );
     }
@@ -1128,7 +1141,7 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: condition.above,
+          above: formatNumericLimitValue(hass, condition.above),
         }
       );
     }
@@ -1139,7 +1152,7 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          below: condition.below,
+          below: formatNumericLimitValue(hass, condition.below),
         }
       );
     }
