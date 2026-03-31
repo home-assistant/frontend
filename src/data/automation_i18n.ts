@@ -246,8 +246,8 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
-          below: trigger.below,
+          above: formatNumericLimitValue(hass, trigger.above),
+          below: formatNumericLimitValue(hass, trigger.below),
           duration: duration,
         }
       );
@@ -259,7 +259,7 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
+          above: formatNumericLimitValue(hass, trigger.above),
           duration: duration,
         }
       );
@@ -271,7 +271,7 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          below: trigger.below,
+          below: formatNumericLimitValue(hass, trigger.below),
           duration: duration,
         }
       );
