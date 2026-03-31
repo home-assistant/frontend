@@ -95,6 +95,8 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -239,7 +241,14 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const actionHasTarget = type === "service" && "target" in this.action;
+    const action = type === "service" && (this.action as ServiceAction).action;
+
+    const actionHasTarget =
+      action &&
+      "target" in
+        (this.hass.services?.[computeDomain(action)]?.[
+          computeObjectId(action)
+        ] || {});
 
     const target = actionHasTarget
       ? (this.action as ServiceAction).target
