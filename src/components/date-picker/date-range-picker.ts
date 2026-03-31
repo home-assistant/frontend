@@ -20,6 +20,7 @@ import {
 } from "../../data/context";
 import { TimeZone } from "../../data/translation";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
+import { haStyleScrollbar } from "../../resources/styles";
 import type { ValueChangedEvent } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-filter-chip";
@@ -110,7 +111,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
   private _renderRanges() {
     if (this._isMobileSize) {
       return html`
-        <ha-chip-set>
+        <ha-chip-set class="ha-scrollbar">
           ${Object.entries(this.ranges!).map(
             ([name, range], index) => html`
               <ha-filter-chip
@@ -344,6 +345,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
   static styles = [
     datePickerStyles,
     dateRangePickerStyles,
+    haStyleScrollbar,
     css`
       .picker {
         display: flex;
