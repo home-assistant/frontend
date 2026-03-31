@@ -382,6 +382,21 @@ export function fillLineGaps(datasets: LineSeriesOption[]) {
   return datasets;
 }
 
+export function computeStatMidpoint(
+  start: number,
+  end: number,
+  compareTransform?: (ts: Date) => Date
+): number {
+  if (compareTransform) {
+    return (
+      (compareTransform(new Date(start)).getTime() +
+        compareTransform(new Date(end)).getTime()) /
+      2
+    );
+  }
+  return (start + end) / 2;
+}
+
 export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;

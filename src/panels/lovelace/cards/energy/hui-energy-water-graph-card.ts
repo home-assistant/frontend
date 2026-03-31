@@ -26,6 +26,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -286,15 +287,14 @@ export class HuiEnergyWaterGraphCard
             continue;
           }
           const dataPoint: (Date | string | number)[] = [
-            (point.start + point.end) / 2,
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              compare ? compareTransform : undefined
+            ),
             point.change,
             point.start,
           ];
-          if (compare) {
-            const s = compareTransform(new Date(point.start));
-            const e = compareTransform(new Date(point.end));
-            dataPoint[0] = (s.getTime() + e.getTime()) / 2;
-          }
           waterConsumptionData.push(dataPoint);
           prevStart = point.start;
         }

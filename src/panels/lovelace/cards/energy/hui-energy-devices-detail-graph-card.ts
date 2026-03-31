@@ -32,6 +32,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -502,15 +503,14 @@ export class HuiEnergyDevicesDetailGraphCard
           });
 
           const dataPoint = [
-            (point.start + point.end) / 2,
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              compare ? compareTransform : undefined
+            ),
             point.change - sumChildren,
             point.start,
           ];
-          if (compare) {
-            const s = compareTransform(new Date(point.start));
-            const e = compareTransform(new Date(point.end));
-            dataPoint[0] = (s.getTime() + e.getTime()) / 2;
-          }
           consumptionData.push(dataPoint);
           prevStart = point.start;
         }
