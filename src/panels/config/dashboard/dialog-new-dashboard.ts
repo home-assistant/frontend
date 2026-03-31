@@ -19,7 +19,11 @@ import {
   type CustomStrategyEntry,
 } from "../../../data/lovelace_custom_strategies";
 import { fetchResources } from "../../../data/lovelace/resource";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+  LovelaceRawConfig,
+} from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -27,6 +31,11 @@ import { loadLovelaceResourcesAndWait } from "../../lovelace/common/load-resourc
 import { generateDefaultView } from "../../lovelace/views/default-view";
 import "./dashboard-card";
 import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
+
+type DashboardCardSelectionTarget = EventTarget & {
+  config?: LovelaceRawConfig;
+  strategy?: string;
+};
 
 interface Strategy {
   type: string;
@@ -303,7 +312,9 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     }
   );
 
-  private _generateStrategyConfig(strategy: string) {
+  private _generateStrategyConfig(
+    strategy: string
+  ): LovelaceDashboardStrategyConfig {
     return {
       strategy: {
         type: strategy,
@@ -347,8 +358,12 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   }
 
   private async _selected(ev: Event) {
-    const target = ev.currentTarget as any;
-    let config: any = null;
+    const target = ev.currentTarget as DashboardCardSelectionTarget | null;
+    let config: LovelaceRawConfig | undefined;
+
+    if (!target) {
+      return;
+    }
 
     if (target.config) {
       config = target.config;
@@ -356,7 +371,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       config = this._generateStrategyConfig(target.strategy);
     }
 
-    this._params?.selectConfig(config);
+    await this._params?.selectConfig(config);
     this.closeDialog();
   }
 
