@@ -352,7 +352,7 @@ export class HaInput extends LitElement {
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
             (this.label && this.placeholder) ||
-            hasStartSlot,
+            (hasStartSlot && this.insetLabel),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -583,10 +583,6 @@ export class HaInput extends LitElement {
       background-color: var(--ha-color-border-danger-normal);
     }
 
-    wa-input::part(start) {
-      max-width: var(--ha-input-start-max-width, none);
-    }
-
     wa-input::part(input) {
       padding-top: var(--ha-space-3);
       padding-inline-start: var(--input-padding-inline-start, 0);
@@ -627,6 +623,10 @@ export class HaInput extends LitElement {
 
     wa-input:disabled::part(base) {
       background-color: var(--ha-color-form-background-disabled);
+    }
+
+    wa-input:disabled::part(label) {
+      opacity: 0.5;
     }
 
     wa-input::part(hint) {

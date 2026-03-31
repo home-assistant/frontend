@@ -216,7 +216,9 @@
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
-        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n}",
+        "nobody_home": "No one home"
       },
       "toggle-group": {
         "all_off": "All off",
@@ -1766,7 +1768,6 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "restore_name": "Restore default name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "default_code": "Default code",
@@ -1869,7 +1870,6 @@
           },
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
-          "change_device_name_link": "change the device name",
           "use_device_area": "Use device area",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
@@ -2868,7 +2868,8 @@
               "get_changelog": "Failed to get changelog",
               "start_invalid_config": "Invalid configuration",
               "go_to_config": "Go to configuration",
-              "validate_config": "Failed to validate app configuration"
+              "validate_config": "Failed to validate app configuration",
+              "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
               "title": "Uninstall {name}?",
@@ -4919,6 +4920,10 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "tabs": {
+              "target": "By target",
+              "type": "By type"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
@@ -8215,7 +8220,8 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
-              "energy": "Today's energy"
+              "energy": "Today's energy",
+              "persons": "People at home"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -9093,7 +9099,7 @@
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide upstream devices",
-              "modes": "Chart display mode",
+              "modes": "Chart types",
               "mode_options": {
                 "bar": "Bar",
                 "pie": "Pie"
@@ -9123,8 +9129,8 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
-              "group_by_floor": "Group entities by floor",
-              "group_by_area": "Group entities by area",
+              "group_by_floor": "Group by floor",
+              "group_by_area": "Group by area",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",

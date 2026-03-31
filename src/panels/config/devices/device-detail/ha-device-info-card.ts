@@ -3,7 +3,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { stringCompare } from "../../../../common/string/compare";
@@ -172,13 +171,9 @@ export class HaDeviceCard extends LitElement {
                 <div class="extra-info labels">
                   ${labels.map((labelId) => {
                     const label = labelMap.get(labelId);
-                    const color =
-                      label?.color && typeof label.color === "string"
-                        ? computeCssColor(label.color)
-                        : undefined;
                     return html`
                       <ha-label
-                        style=${color ? `--color: ${color}` : ""}
+                        .color=${label?.color}
                         .description=${label?.description}
                       >
                         ${label?.icon
@@ -242,12 +237,6 @@ export class HaDeviceCard extends LitElement {
           min-width: 0;
           max-width: 100%;
           flex: 0 1 auto;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
-          --ha-label-text-color: var(--primary-text-color);
-          --ha-label-icon-color: var(--primary-text-color);
         }
         .extra-info {
           margin-top: var(--ha-space-2);

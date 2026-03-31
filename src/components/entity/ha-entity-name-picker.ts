@@ -7,10 +7,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  DEFAULT_ENTITY_NAME,
-  type EntityNameItem,
-} from "../../common/entity/compute_entity_name_display";
+import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -333,13 +330,13 @@ export class HaEntityNamePicker extends LitElement {
       }
       return [{ type: "text", text: value } satisfies EntityNameItem];
     }
-    return value ? ensureArray(value) : [...DEFAULT_ENTITY_NAME];
+    return value ? ensureArray(value) : [];
   });
 
   private _toValue = memoizeOne(
     (items: EntityNameItem[]): typeof this.value => {
       if (items.length === 0) {
-        return "";
+        return undefined;
       }
       if (items.length === 1) {
         const item = items[0];

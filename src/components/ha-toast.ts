@@ -1,9 +1,15 @@
-import "@home-assistant/webawesome/dist/components/popup/popup";
-import type WaPopup from "@home-assistant/webawesome/dist/components/popup/popup";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  customElement,
+  property,
+  query,
+  queryAssignedElements,
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import { popoverSupported } from "../common/feature-detect/support-popover";
 import { nextRender } from "../common/util/render-status";
 
 export type ToastCloseReason =
@@ -22,11 +28,14 @@ export class HaToast extends LitElement {
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
 
-  @query("wa-popup")
-  private _popup?: WaPopup;
-
   @query(".toast")
   private _toast?: HTMLDivElement;
+
+  @queryAssignedElements({ slot: "action", flatten: true })
+  private _actionElements?: Element[];
+
+  @queryAssignedElements({ slot: "dismiss", flatten: true })
+  private _dismissElements?: Element[];
 
   @state() private _active = false;
 
@@ -48,7 +57,6 @@ export class HaToast extends LitElement {
     clearTimeout(this._dismissTimer);
 
     if (this._active && this._visible) {
-      this._popup?.reposition();
       this._setDismissTimer();
       return;
     }
@@ -62,7 +70,7 @@ export class HaToast extends LitElement {
       return;
     }
 
-    this._popup?.reposition();
+    this._showToastPopover();
     await nextRender();
 
     if (transitionId !== this._transitionId) {
@@ -102,6 +110,7 @@ export class HaToast extends LitElement {
       return;
     }
 
+    this._hideToastPopover();
     this._active = false;
     await this.updateComplete;
 
@@ -123,6 +132,34 @@ export class HaToast extends LitElement {
     }
   }
 
+  private _isPopoverOpen(): boolean {
+    if (!this._toast || !popoverSupported) {
+      return false;
+    }
+
+    try {
+      return this._toast.matches(":popover-open");
+    } catch {
+      return false;
+    }
+  }
+
+  private _showToastPopover(): void {
+    if (!this._toast || !popoverSupported || this._isPopoverOpen()) {
+      return;
+    }
+
+    this._toast.showPopover?.();
+  }
+
+  private _hideToastPopover(): void {
+    if (!this._toast || !popoverSupported || !this._isPopoverOpen()) {
+      return;
+    }
+
+    this._toast.hidePopover?.();
+  }
+
   private async _waitForTransitionEnd(): Promise<void> {
     const toastEl = this._toast;
     if (!toastEl) {
@@ -138,82 +175,70 @@ export class HaToast extends LitElement {
   }
 
   protected render() {
+    const hasAction =
+      (this._actionElements?.length ?? 0) > 0 ||
+      (this._dismissElements?.length ?? 0) > 0;
+
     return html`
-      <wa-popup
-        placement="top"
-        .active=${this._active}
-        .distance=${16}
-        skidding="0"
-        flip
-        shift
+      <div
+        class=${classMap({
+          toast: true,
+          active: this._active,
+          visible: this._visible,
+        })}
+        role="status"
+        aria-live="polite"
+        popover=${ifDefined(popoverSupported ? "manual" : undefined)}
       >
-        <div id="toast-anchor" slot="anchor" aria-hidden="true"></div>
-        <div
-          class=${classMap({
-            toast: true,
-            visible: this._visible,
-          })}
-          role="status"
-          aria-live="polite"
-        >
-          <span class="message">${this.labelText}</span>
-          <div class="actions">
-            <slot name="action"></slot>
-            <slot name="dismiss"></slot>
-          </div>
+        <span class="message">${this.labelText}</span>
+        <div class=${classMap({ actions: true, "has-action": hasAction })}>
+          <slot name="action"></slot>
+          <slot name="dismiss"></slot>
         </div>
-      </wa-popup>
+      </div>
     `;
   }
 
   static override styles = css`
-    #toast-anchor {
-      position: fixed;
-      bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom));
-      inset-inline-start: 50%;
-      transform: translateX(-50%);
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    wa-popup::part(popup) {
-      padding: 0;
-      border-radius: var(--ha-border-radius-sm);
-      box-shadow: var(--wa-shadow-l);
-      overflow: hidden;
-    }
-
     .toast {
-      box-sizing: border-box;
-      min-width: min(
-        350px,
-        calc(
-          100vw - var(--ha-space-4) - var(--safe-area-inset-left) - var(
-              --safe-area-inset-right
-            )
-        )
+      position: fixed;
+      inset-block-start: auto;
+      inset-inline-end: auto;
+      inset-block-end: calc(
+        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
       );
-      max-width: 650px;
+      inset-inline-start: 50%;
+      margin: 0;
+      width: max-content;
+      height: auto;
+      border: none;
+      overflow: hidden;
+      box-sizing: border-box;
+      min-width: min(350px, calc(var(--safe-width) - var(--ha-space-4)));
+      max-width: min(650px, var(--safe-width));
       min-height: 48px;
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-2) var(--ha-space-3);
+      padding: var(--ha-space-3) var(--ha-space-4);
       color: var(--ha-color-on-neutral-loud);
       background-color: var(--ha-color-neutral-10);
       border-radius: var(--ha-border-radius-sm);
+      box-shadow: var(--wa-shadow-l);
       opacity: 0;
-      transform: translateY(var(--ha-space-2));
+      transform: translate(-50%, var(--ha-space-2));
       transition:
         opacity var(--ha-animation-duration-fast, 150ms) ease,
         transform var(--ha-animation-duration-fast, 150ms) ease;
     }
 
+    .toast:not(.active) {
+      display: none;
+    }
+
     .toast.visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate(-50%, 0);
     }
 
     .message {
@@ -228,15 +253,14 @@ export class HaToast extends LitElement {
       color: var(--ha-color-on-neutral-loud);
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      wa-popup::part(popup) {
-        border-radius: var(--ha-border-radius-square);
-      }
+    .actions:not(.has-action) {
+      display: none;
+    }
 
+    @media all and (max-width: 450px), all and (max-height: 500px) {
       .toast {
-        min-width: calc(
-          100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right)
-        );
+        min-width: var(--safe-width);
+        max-width: var(--safe-width);
         border-radius: var(--ha-border-radius-square);
       }
     }

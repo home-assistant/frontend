@@ -536,9 +536,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         : undefined;
 
     const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities)
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
       : this._entry
-        ? computeEntityEntryName(this._entry)
+        ? computeEntityEntryName(this._entry, this.hass.devices)
         : entityId;
 
     const deviceName = context?.device
