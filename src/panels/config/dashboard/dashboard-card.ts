@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-ripple";
 
@@ -27,9 +27,17 @@ export class DashboardCard extends LitElement {
             <p>${this.description}</p>
           </div>
         </div>
-        <div class="preview">
-          <img alt=${this.alt} loading="lazy" src=${this.img} />
-        </div>
+        ${this.img
+          ? html`
+              <div class="preview">
+                <img
+                  alt=${this.alt || this.name}
+                  loading="lazy"
+                  src=${this.img}
+                />
+              </div>
+            `
+          : nothing}
         <ha-ripple></ha-ripple>
       </div>
     `;

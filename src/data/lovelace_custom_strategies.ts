@@ -1,10 +1,16 @@
 import type { LovelaceStrategyConfigType } from "../panels/lovelace/strategies/get-strategy";
 
+export interface CustomStrategyImages {
+  dark: string;
+  light: string;
+}
+
 export interface CustomStrategyEntry {
   type: string;
   name?: string;
   description?: string;
   documentationURL?: string;
+  images?: CustomStrategyImages;
   strategyType: LovelaceStrategyConfigType;
 }
 

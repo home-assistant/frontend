@@ -170,6 +170,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                         <dashboard-card
                           .name=${strategy.name || strategy.type}
                           .description=${strategy.description || ""}
+                          .img=${this._customStrategyImage(strategy)}
                           .alt=${strategy.name || strategy.type}
                           @click=${this._selected}
                           .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
@@ -231,6 +232,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                               <dashboard-card
                                 .name=${strategy.name || strategy.type}
                                 .description=${strategy.description || ""}
+                                .img=${this._customStrategyImage(strategy)}
                                 .alt=${strategy.name || strategy.type}
                                 @click=${this._selected}
                                 .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
@@ -303,6 +305,17 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         type: strategy,
       },
     };
+  }
+
+  private _customStrategyImage(
+    strategy: CustomStrategyEntry
+  ): string | undefined {
+    if (!strategy.images) {
+      return undefined;
+    }
+    return this.hass.themes.darkMode
+      ? strategy.images.dark
+      : strategy.images.light;
   }
 
   private async _selected(ev: Event) {
