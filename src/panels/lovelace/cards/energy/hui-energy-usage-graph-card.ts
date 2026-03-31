@@ -36,6 +36,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -482,6 +483,8 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
+    // Only start timestamps available here, so estimate midpoint from the gap
+    // between the first two entries. Assumes uniform period spacing.
     const periodOffset =
       uniqueKeys.length >= 2 ? (uniqueKeys[1] - uniqueKeys[0]) / 2 : 0;
 
@@ -496,18 +499,16 @@ export class HuiEnergyUsageGraphCard
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
-          // [displayX (midpoint), value, originalStart]
-          const dataPoint = [
-            new Date(key + periodOffset),
+          const dataPoint: EnergyDataPoint = [
+            key + periodOffset,
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
               : value,
-            new Date(key),
+            key,
           ];
           if (compare) {
-            dataPoint[0] = new Date(
-              compareTransform(new Date(key)).getTime() + periodOffset
-            );
+            dataPoint[0] =
+              compareTransform(new Date(key)).getTime() + periodOffset;
           }
           points.push(dataPoint);
         }

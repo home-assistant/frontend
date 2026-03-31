@@ -404,6 +404,8 @@ export class HuiEnergyDevicesDetailGraphCard
     const sortedTimes = Object.keys(consumptionData.used_total).sort(
       (a, b) => Number(a) - Number(b)
     );
+    // Only start timestamps available here, so estimate midpoint from the gap
+    // between the first two entries. Assumes uniform period spacing.
     const periodOffset =
       sortedTimes.length >= 2
         ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2

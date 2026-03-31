@@ -413,6 +413,8 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: LineSeriesOption["data"] = [];
+          // Only start timestamps available for forecasts, so estimate midpoint
+          // from the gap between the first two entries. Assumes uniform spacing.
           const forecastTimes = Object.keys(forecastsData)
             .map(Number)
             .sort((a, b) => a - b);
