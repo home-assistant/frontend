@@ -166,19 +166,12 @@ export class HaPlatformCondition extends LitElement {
       </div>
       ${conditionDesc && "target" in conditionDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
               )}</span
             >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
-              )}</span
-            ><ha-selector
+            <ha-selector
               .hass=${this.hass}
               .selector=${this._targetSelector(conditionDesc.target)}
               .disabled=${this.disabled}
@@ -240,6 +233,10 @@ export class HaPlatformCondition extends LitElement {
       return nothing;
     }
 
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
+    );
+
     return html`<ha-settings-row narrow>
       ${!showOptional
         ? hasOptional
@@ -259,11 +256,9 @@ export class HaPlatformCondition extends LitElement {
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
         ) || conditionName}</span
       >
-      <span slot="description"
-        >${this.hass.localize(
-          `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
-        )}</span
-      >
+      ${description
+        ? html`<span slot="description">${description}</span>`
+        : nothing}
       <ha-selector
         .disabled=${this.disabled ||
         (showOptional &&
