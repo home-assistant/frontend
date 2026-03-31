@@ -5,7 +5,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
@@ -126,7 +125,6 @@ class HuiMediaPlayerSourceCardFeature
 
     return html`
       <ha-control-select-menu
-        .hass=${this.hass}
         show-arrow
         .label=${this.hass.localize("ui.card.media_player.source")}
         .value=${this._currentSource}
