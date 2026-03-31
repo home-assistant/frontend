@@ -217,8 +217,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
-        "count_persons_home": "{count} {count, plural,\n one {person}\n other {persons}\n}",
-        "nobody_home": "Nobody"
+        "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n}",
+        "nobody_home": "No one home"
       },
       "toggle-group": {
         "all_off": "All off",
