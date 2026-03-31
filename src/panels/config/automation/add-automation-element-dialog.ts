@@ -2051,8 +2051,7 @@ class DialogAddAutomationElement
           this.hass.localize,
           items,
           getTriggerDomain,
-          (localize, domain, trigger) =>
-            this._getTriggerListItem(localize, domain, trigger)
+          this._getTriggerListItem
         );
         if (this._selectedTarget.entity_id) {
           grouped.push({
@@ -2075,8 +2074,7 @@ class DialogAddAutomationElement
           this.hass.localize,
           items,
           getConditionDomain,
-          (localize, domain, condition) =>
-            this._getConditionListItem(localize, domain, condition)
+          this._getConditionListItem
         );
         if (this._selectedTarget.entity_id) {
           grouped.push({
