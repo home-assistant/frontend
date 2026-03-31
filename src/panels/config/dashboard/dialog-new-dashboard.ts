@@ -335,7 +335,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         .cards-container-header {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
-          padding: 12px 8px;
+          padding: var(--ha-space-3) var(--ha-space-2);
           margin: 0;
           grid-column: 1 / -1;
           position: sticky;
@@ -356,9 +356,9 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         }
         .cards-container {
           display: grid;
-          grid-gap: 8px 8px;
+          grid-gap: var(--ha-space-2) var(--ha-space-2);
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          margin-top: 20px;
+          margin-top: var(--ha-space-5);
         }
         .content-wrapper {
           flex: 1;
