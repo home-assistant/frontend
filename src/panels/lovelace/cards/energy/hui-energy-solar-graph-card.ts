@@ -31,6 +31,7 @@ import type { EnergySolarGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -309,7 +310,7 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint: (Date | string | number)[] = [
+          const dataPoint: EnergyDataPoint = [
             computeStatMidpoint(
               point.start,
               point.end,

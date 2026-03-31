@@ -37,6 +37,18 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
+/**
+ * Energy chart data point tuple:
+ * [0] displayX  - midpoint of the period, used for bar positioning
+ * [1] value     - the energy value
+ * [2] originalStart - original period start timestamp, used for tooltips
+ */
+export type EnergyDataPoint = [
+  displayX: number,
+  value: number,
+  originalStart: number,
+];
+
 // Number of days of padding when showing time axis in months
 const MONTH_TIME_AXIS_PADDING = 5;
 
@@ -216,9 +228,8 @@ function formatTooltip(
   if (!params[0]?.value) {
     return "";
   }
-  // when comparing the first value is offset to match the main period
-  // and the real date is in the third value
-  // find the first param with the real date to handle gap-filled entries
+  // displayX is the period midpoint; originalStart has the real date for display.
+  // Gap-filled entries lack originalStart, so find the first real one.
   const origDate = params.find((p) => p.value?.[2] != null)?.value?.[2];
   const date = new Date(origDate ?? params[0].value?.[0]);
   let period: string;

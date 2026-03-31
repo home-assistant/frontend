@@ -33,6 +33,7 @@ import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -411,7 +412,7 @@ export class HuiEnergyDevicesDetailGraphCard
       const ts = Number(time);
       const value =
         consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint: number[] = [ts + periodOffset, value, ts];
+      const dataPoint: EnergyDataPoint = [ts + periodOffset, value, ts];
       if (compare) {
         dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
       }
@@ -502,7 +503,7 @@ export class HuiEnergyDevicesDetailGraphCard
               cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
           });
 
-          const dataPoint = [
+          const dataPoint: EnergyDataPoint = [
             computeStatMidpoint(
               point.start,
               point.end,

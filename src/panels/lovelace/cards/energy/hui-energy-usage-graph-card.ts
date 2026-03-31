@@ -496,6 +496,7 @@ export class HuiEnergyUsageGraphCard
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
+          // [displayX (midpoint), value, originalStart]
           const dataPoint = [
             new Date(key + periodOffset),
             value && ["to_grid", "to_battery"].includes(type)
