@@ -504,7 +504,9 @@ export class HuiEnergyUsageGraphCard
             new Date(key),
           ];
           if (compare) {
-            dataPoint[0] = compareTransform(dataPoint[0] as Date);
+            dataPoint[0] = new Date(
+              compareTransform(new Date(key)).getTime() + periodOffset
+            );
           }
           points.push(dataPoint);
         }

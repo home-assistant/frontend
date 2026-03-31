@@ -412,7 +412,7 @@ export class HuiEnergyDevicesDetailGraphCard
         consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
       const dataPoint: number[] = [ts + periodOffset, value, ts];
       if (compare) {
-        dataPoint[0] = compareTransform(new Date(ts + periodOffset)).getTime();
+        dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
       }
       untrackedConsumption.push(dataPoint);
     });
@@ -501,10 +501,15 @@ export class HuiEnergyDevicesDetailGraphCard
               cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
           });
 
-          const midpoint = (point.start + point.end) / 2;
-          const dataPoint = [midpoint, point.change - sumChildren, point.start];
+          const dataPoint = [
+            (point.start + point.end) / 2,
+            point.change - sumChildren,
+            point.start,
+          ];
           if (compare) {
-            dataPoint[0] = compareTransform(new Date(midpoint)).getTime();
+            const s = compareTransform(new Date(point.start));
+            const e = compareTransform(new Date(point.end));
+            dataPoint[0] = (s.getTime() + e.getTime()) / 2;
           }
           consumptionData.push(dataPoint);
           prevStart = point.start;

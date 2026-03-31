@@ -308,14 +308,15 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const midpoint = (point.start + point.end) / 2;
           const dataPoint: (Date | string | number)[] = [
-            midpoint,
+            (point.start + point.end) / 2,
             point.change,
             point.start,
           ];
           if (compare) {
-            dataPoint[0] = compareTransform(new Date(midpoint));
+            const s = compareTransform(new Date(point.start));
+            const e = compareTransform(new Date(point.end));
+            dataPoint[0] = (s.getTime() + e.getTime()) / 2;
           }
           solarProductionData.push(dataPoint);
           prevStart = point.start;
@@ -411,18 +412,8 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: LineSeriesOption["data"] = [];
-          const forecastTimes = Object.keys(forecastsData)
-            .map(Number)
-            .sort((a, b) => a - b);
-          const forecastOffset =
-            forecastTimes.length >= 2
-              ? (forecastTimes[1] - forecastTimes[0]) / 2
-              : 0;
           for (const [time, value] of Object.entries(forecastsData)) {
-            solarForecastData.push([
-              Number(time) + forecastOffset,
-              value / 1000,
-            ]);
+            solarForecastData.push([Number(time), value / 1000]);
           }
 
           if (solarForecastData.length) {
