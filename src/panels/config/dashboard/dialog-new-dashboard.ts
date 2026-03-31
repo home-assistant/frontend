@@ -17,10 +17,12 @@ import {
   getCustomStrategiesForType,
   type CustomStrategyEntry,
 } from "../../../data/lovelace_custom_strategies";
+import { fetchResources } from "../../../data/lovelace/resource";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { loadLovelaceResourcesAndWait } from "../../lovelace/common/load-resources";
 import { generateDefaultView } from "../../lovelace/views/default-view";
 import "./dashboard-card";
 import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
@@ -95,6 +97,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       ),
     }));
     this._customStrategies = getCustomStrategiesForType("dashboard");
+    this._loadCustomStrategies();
   }
 
   public closeDialog() {
@@ -305,6 +308,18 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         type: strategy,
       },
     };
+  }
+
+  private async _loadCustomStrategies(): Promise<void> {
+    try {
+      const resources = await fetchResources(this.hass.connection);
+      await loadLovelaceResourcesAndWait(resources, this.hass);
+    } catch (_err: unknown) {
+      this._customStrategies = getCustomStrategiesForType("dashboard");
+      return;
+    }
+
+    this._customStrategies = getCustomStrategiesForType("dashboard");
   }
 
   private _customStrategyImage(
