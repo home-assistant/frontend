@@ -207,6 +207,8 @@ class DialogAddAutomationElement
 
   @state() private _domains?: Set<string>;
 
+  private _initialStates?: HomeAssistant["states"];
+
   @state() private _bottomSheetMode = false;
 
   @state() private _narrow = false;
@@ -291,6 +293,8 @@ class DialogAddAutomationElement
     this._params = params;
 
     this.addKeyboardShortcuts();
+
+    this._initialStates = this.hass.states;
 
     this._loadConfigEntries();
 
@@ -392,6 +396,7 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._initialStates = undefined;
     return true;
   }
 
@@ -476,7 +481,7 @@ class DialogAddAutomationElement
   );
 
   private get _systemDomains() {
-    if (!this._manifests) {
+    if (!this._manifests || !this._initialStates) {
       return undefined;
     }
     const descriptions =
@@ -486,7 +491,7 @@ class DialogAddAutomationElement
     return this._calculateActiveSystemDomains(
       descriptions,
       this._manifests,
-      this.hass.states
+      this._initialStates
     );
   }
 
@@ -1761,11 +1766,12 @@ class DialogAddAutomationElement
 
     // When a specific entity is selected, system domain triggers are merged
     // under the entity's real domain rather than under their system domain name.
+    const targetEntityId = this._selectedTarget?.entity_id;
     const targetEntityDomain =
-      this._selectedTarget?.entity_id &&
-      this._manifests?.[computeDomain(this._selectedTarget.entity_id as string)]
-        ?.integration_type !== "system"
-        ? computeDomain(this._selectedTarget.entity_id as string)
+      targetEntityId &&
+      this._manifests?.[computeDomain(targetEntityId)]?.integration_type !==
+        "system"
+        ? computeDomain(targetEntityId)
         : undefined;
 
     triggerIds.forEach((trigger) => {
@@ -1929,11 +1935,12 @@ class DialogAddAutomationElement
 
     // When a specific entity is selected, system domain conditions are merged
     // under the entity's real domain rather than under their system domain name.
+    const targetEntityId = this._selectedTarget?.entity_id;
     const targetEntityDomain =
-      this._selectedTarget?.entity_id &&
-      this._manifests?.[computeDomain(this._selectedTarget.entity_id as string)]
-        ?.integration_type !== "system"
-        ? computeDomain(this._selectedTarget.entity_id as string)
+      targetEntityId &&
+      this._manifests?.[computeDomain(targetEntityId)]?.integration_type !==
+        "system"
+        ? computeDomain(targetEntityId)
         : undefined;
 
     conditionIds.forEach((condition) => {
