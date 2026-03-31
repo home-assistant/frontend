@@ -50,7 +50,7 @@ export class HaPeriodSelector extends LitElement {
       [
         {
           name: "period",
-          required: true,
+          required: this.required,
           selector:
             selectedPeriodKey && selectedPeriodKey in this._periods(selector)
               ? {
@@ -88,6 +88,7 @@ export class HaPeriodSelector extends LitElement {
         .schema=${schema}
         .computeHelper=${this._computeHelperCallback}
         .computeLabel=${this._computeLabelCallback}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -110,7 +111,7 @@ export class HaPeriodSelector extends LitElement {
     return { period: value };
   });
 
-  private async _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
