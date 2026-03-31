@@ -14,7 +14,7 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
 import {
-  customDashboardStrategies,
+  getCustomStrategiesForType,
   type CustomStrategyEntry,
 } from "../../../data/lovelace_custom_strategies";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -94,7 +94,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         strategy.description as LocalizeKeys
       ),
     }));
-    this._customStrategies = [...customDashboardStrategies];
+    this._customStrategies = getCustomStrategiesForType("dashboard");
   }
 
   public closeDialog() {

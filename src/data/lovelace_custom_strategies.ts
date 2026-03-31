@@ -1,22 +1,33 @@
+import type { LovelaceStrategyConfigType } from "../panels/lovelace/strategies/get-strategy";
+
 export interface CustomStrategyEntry {
   type: string;
   name?: string;
   description?: string;
   documentationURL?: string;
+  strategyType: LovelaceStrategyConfigType;
 }
 
 export interface CustomStrategiesWindow {
-  customDashboardStrategies?: CustomStrategyEntry[];
+  customStrategies?: CustomStrategyEntry[];
 }
 
 const customStrategiesWindow = window as CustomStrategiesWindow;
 
-if (!("customDashboardStrategies" in customStrategiesWindow)) {
-  customStrategiesWindow.customDashboardStrategies = [];
+if (!("customStrategies" in customStrategiesWindow)) {
+  customStrategiesWindow.customStrategies = [];
 }
 
-export const customDashboardStrategies =
-  customStrategiesWindow.customDashboardStrategies!;
+export const customStrategies = customStrategiesWindow.customStrategies!;
 
-export const getCustomDashboardStrategyEntry = (type: string) =>
-  customDashboardStrategies.find((strategy) => strategy.type === type);
+export const getCustomStrategiesForType = (
+  strategyType: LovelaceStrategyConfigType
+) => customStrategies.filter((s) => s.strategyType === strategyType);
+
+export const getCustomStrategyEntry = (
+  type: string,
+  strategyType: LovelaceStrategyConfigType
+) =>
+  customStrategies.find(
+    (s) => s.type === type && s.strategyType === strategyType
+  );
