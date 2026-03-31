@@ -24,6 +24,7 @@ import type {
 import {
   computeConsumptionData,
   getEnergyDataCollection,
+  getSuggestedPeriod,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -483,10 +484,14 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
+    // Only center bars for sub-daily periods (hour/5min).
     // Only start timestamps available here, so estimate midpoint from the gap
     // between the first two entries. Assumes uniform period spacing.
+    const period = getSuggestedPeriod(this._start, this._end);
     const periodOffset =
-      uniqueKeys.length >= 2 ? (uniqueKeys[1] - uniqueKeys[0]) / 2 : 0;
+      (period === "hour" || period === "5minute") && uniqueKeys.length >= 2
+        ? (uniqueKeys[1] - uniqueKeys[0]) / 2
+        : 0;
 
     const compareTransform = getCompareTransform(
       this._start,

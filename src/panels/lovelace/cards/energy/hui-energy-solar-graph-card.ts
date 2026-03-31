@@ -289,6 +289,7 @@ export class HuiEnergySolarGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     solarSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -314,6 +315,7 @@ export class HuiEnergySolarGraphCard
             computeStatMidpoint(
               point.start,
               point.end,
+              period,
               compare ? compareTransform : undefined
             ),
             point.change,
@@ -413,15 +415,19 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: LineSeriesOption["data"] = [];
-          // Only start timestamps available for forecasts, so estimate midpoint
-          // from the gap between the first two entries. Assumes uniform spacing.
-          const forecastTimes = Object.keys(forecastsData)
-            .map(Number)
-            .sort((a, b) => a - b);
-          const forecastOffset =
-            forecastTimes.length >= 2
-              ? (forecastTimes[1] - forecastTimes[0]) / 2
-              : 0;
+          // Only center forecast points for sub-daily periods to align with bars.
+          // Only start timestamps available, so estimate midpoint from the gap
+          // between the first two entries. Assumes uniform spacing.
+          let forecastOffset = 0;
+          if (period === "hour" || period === "5minute") {
+            const forecastTimes = Object.keys(forecastsData)
+              .map(Number)
+              .sort((a, b) => a - b);
+            forecastOffset =
+              forecastTimes.length >= 2
+                ? (forecastTimes[1] - forecastTimes[0]) / 2
+                : 0;
+          }
           for (const [time, value] of Object.entries(forecastsData)) {
             solarForecastData.push([
               Number(time) + forecastOffset,

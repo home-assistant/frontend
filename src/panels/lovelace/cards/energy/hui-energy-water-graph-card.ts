@@ -15,6 +15,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
+  getSuggestedPeriod,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
@@ -267,6 +268,7 @@ export class HuiEnergyWaterGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     waterSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -291,6 +293,7 @@ export class HuiEnergyWaterGraphCard
             computeStatMidpoint(
               point.start,
               point.end,
+              period,
               compare ? compareTransform : undefined
             ),
             point.change,

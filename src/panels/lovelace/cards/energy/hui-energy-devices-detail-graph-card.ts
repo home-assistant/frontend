@@ -16,6 +16,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
+  getSuggestedPeriod,
   getSummedData,
   computeConsumptionData,
   validateEnergyCollectionKey,
@@ -399,6 +400,7 @@ export class HuiEnergyDevicesDetailGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
     const sortedTimes = Object.keys(consumptionData.used_total).sort(
@@ -407,7 +409,7 @@ export class HuiEnergyDevicesDetailGraphCard
     // Only start timestamps available here, so estimate midpoint from the gap
     // between the first two entries. Assumes uniform period spacing.
     const periodOffset =
-      sortedTimes.length >= 2
+      (period === "hour" || period === "5minute") && sortedTimes.length >= 2
         ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
         : 0;
     sortedTimes.forEach((time) => {
@@ -466,6 +468,7 @@ export class HuiEnergyDevicesDetailGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     devices.forEach((source, idx) => {
       const order = sorted_devices.indexOf(source.stat_consumption);
@@ -509,6 +512,7 @@ export class HuiEnergyDevicesDetailGraphCard
             computeStatMidpoint(
               point.start,
               point.end,
+              period,
               compare ? compareTransform : undefined
             ),
             point.change - sumChildren,
