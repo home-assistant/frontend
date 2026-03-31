@@ -5,11 +5,40 @@ import {
   formatDateMonthYear,
   formatDateVeryShort,
   formatDateWeekdayShort,
+  formatDateYear,
 } from "../../common/datetime/format_date";
 import {
   formatTime,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
+
+export function getPeriodicAxisLabelConfig(
+  period: string,
+  locale: FrontendLocaleData,
+  config: HassConfig
+):
+  | {
+      formatter: (value: number) => string;
+    }
+  | undefined {
+  if (period === "month") {
+    return {
+      formatter: (value: number) => {
+        const date = new Date(value);
+        return date.getMonth() === 0
+          ? `{bold|${formatDateMonthYear(date, locale, config)}}`
+          : formatDateMonth(date, locale, config);
+      },
+    };
+  }
+  if (period === "year") {
+    return {
+      formatter: (value: number) =>
+        formatDateYear(new Date(value), locale, config),
+    };
+  }
+  return undefined;
+}
 
 export function formatTimeLabel(
   value: number | Date,
