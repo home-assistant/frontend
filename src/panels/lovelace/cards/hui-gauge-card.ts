@@ -303,9 +303,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: var(--ha-font-size-l);
+      font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-expanded);
-      padding: 0px 0px var(--ha-space-2) 0px;
       margin: 0;
       text-align: center;
       box-sizing: border-box;
@@ -318,6 +317,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     ha-gauge {
       width: 100%;
+      max-width: 250px;
     }
   `;
 }
