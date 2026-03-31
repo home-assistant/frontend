@@ -457,9 +457,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
       preloadWindow.llResProm = fetchResources(this.hass.connection);
     }
 
-    preloadWindow.llResProm.then((resources) => {
-      loadLovelaceResources(resources, this.hass);
-    });
+    preloadWindow.llResProm
+      .then((resources) => {
+        loadLovelaceResources(resources, this.hass);
+      })
+      .catch((err: unknown) => {
+        // eslint-disable-next-line
+        console.error("Unable to preload Lovelace resources", err);
+      });
 
     this._getDashboards();
   }
