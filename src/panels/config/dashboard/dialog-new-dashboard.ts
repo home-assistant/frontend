@@ -322,6 +322,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       const resources = await preloadWindow.llResProm;
       await loadLovelaceResourcesAndWait(resources, this.hass);
     } catch (_err: unknown) {
+      preloadWindow.llResProm = undefined;
       this._customStrategies = getCustomStrategiesForType("dashboard");
       return;
     }

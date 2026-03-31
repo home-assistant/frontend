@@ -462,6 +462,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         loadLovelaceResources(resources, this.hass);
       })
       .catch((err: unknown) => {
+        preloadWindow.llResProm = undefined;
         // eslint-disable-next-line
         console.error("Unable to preload Lovelace resources", err);
       });
