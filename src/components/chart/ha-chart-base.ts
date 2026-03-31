@@ -651,7 +651,7 @@ export class HaChartBase extends LitElement {
             hideOverlap: true,
             ...axis.axisLabel,
           },
-          minInterval,
+          minInterval: axis.minInterval ?? minInterval,
         } as XAXisOption;
       });
     }
