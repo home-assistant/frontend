@@ -5,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { WindowWithPreloads } from "../../../data/preloads";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -311,8 +312,14 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   }
 
   private async _loadCustomStrategies(): Promise<void> {
+    const preloadWindow = window as WindowWithPreloads;
+
+    if (!preloadWindow.llResProm) {
+      preloadWindow.llResProm = fetchResources(this.hass.connection);
+    }
+
     try {
-      const resources = await fetchResources(this.hass.connection);
+      const resources = await preloadWindow.llResProm;
       await loadLovelaceResourcesAndWait(resources, this.hass);
     } catch (_err: unknown) {
       this._customStrategies = getCustomStrategiesForType("dashboard");
