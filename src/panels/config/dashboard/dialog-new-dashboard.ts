@@ -12,6 +12,11 @@ import type {
 import "../../../components/ha-dialog";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
+import {
+  customDashboardStrategies,
+  type CustomStrategyEntry,
+} from "../../../data/lovelace_custom_strategies";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleScrollbar } from "../../../resources/styles";
@@ -77,6 +82,8 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     localizedDescription: string;
   })[] = [];
 
+  @state() private _customStrategies: CustomStrategyEntry[] = [];
+
   public showDialog(params: NewDashboardDialogParams): void {
     this._open = true;
     this._params = params;
@@ -87,6 +94,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         strategy.description as LocalizeKeys
       ),
     }));
+    this._customStrategies = [...customDashboardStrategies];
   }
 
   public closeDialog() {
@@ -154,6 +162,20 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                         ></dashboard-card>
                       `
                     )}
+                    ${this._filterCustomStrategies(
+                      this._customStrategies,
+                      this._filter
+                    ).map(
+                      (strategy) => html`
+                        <dashboard-card
+                          .name=${strategy.name || strategy.type}
+                          .description=${strategy.description || ""}
+                          .alt=${strategy.name || strategy.type}
+                          @click=${this._selected}
+                          .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
+                        ></dashboard-card>
+                      `
+                    )}
                   </div>
                 `
               : html`
@@ -196,6 +218,28 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                       `
                     )}
                   </div>
+                  ${this._customStrategies.length > 0
+                    ? html`
+                        <div class="cards-container">
+                          <div class="cards-container-header">
+                            ${this.hass.localize(
+                              `ui.panel.config.lovelace.dashboards.dialog_new.heading.custom`
+                            )}
+                          </div>
+                          ${this._customStrategies.map(
+                            (strategy) => html`
+                              <dashboard-card
+                                .name=${strategy.name || strategy.type}
+                                .description=${strategy.description || ""}
+                                .alt=${strategy.name || strategy.type}
+                                @click=${this._selected}
+                                .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
+                              ></dashboard-card>
+                            `
+                          )}
+                        </div>
+                      `
+                    : nothing}
                 `}
           </div>
         </div>
@@ -223,6 +267,26 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       }
       const options: IFuseOptions<(typeof strategies)[0]> = {
         keys: ["type", "localizedName", "localizedDescription"],
+        isCaseSensitive: false,
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: Math.min(filter.length, 2),
+      };
+      const fuse = new Fuse(strategies, options);
+      return fuse.search(filter).map((result) => result.item);
+    }
+  );
+
+  private _filterCustomStrategies = memoizeOne(
+    (
+      strategies: CustomStrategyEntry[],
+      filter?: string
+    ): readonly CustomStrategyEntry[] => {
+      if (!filter) {
+        return strategies;
+      }
+      const options: IFuseOptions<CustomStrategyEntry> = {
+        keys: ["type", "name", "description"],
         isCaseSensitive: false,
         threshold: 0.3,
         ignoreLocation: true,
