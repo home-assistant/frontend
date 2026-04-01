@@ -443,7 +443,7 @@ export class HaPlatformCondition extends LitElement {
     } else if (
       target &&
       this._resolvedTargetEntityCount !== undefined &&
-      this._resolvedTargetEntityCount > 1 &&
+      this._resolvedTargetEntityCount >= 1 &&
       this.condition.options?.behavior === undefined
     ) {
       const behaviorDefault = this.description?.fields?.behavior?.default;
