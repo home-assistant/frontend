@@ -1,7 +1,7 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { dump, load } from "js-yaml";
+import { dump, JSON_SCHEMA, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -652,7 +652,7 @@ class HaPanelDevAction extends LitElement {
       if (field.example) {
         let value: any = "";
         try {
-          value = load(field.example);
+          value = load(field.example, { schema: JSON_SCHEMA });
         } catch (_err: any) {
           value =
             this.hass.localize(
