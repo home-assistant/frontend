@@ -8439,7 +8439,8 @@
               "info": "You are comparing the period {start} with the period {end}",
               "compare_previous_year": "Compare previous year",
               "compare_previous_period": "Compare previous period",
-              "compare_preview": "Card preview"
+              "compare_preview": "Card preview",
+              "stop_comparing": "Stop comparing"
             },
             "power_total_title": "Power usage",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",

@@ -38,6 +38,8 @@ class HaAlert extends LitElement {
 
   @property({ type: Boolean }) public dismissable = false;
 
+  @property({ attribute: "dismiss-label" }) public dismissLabel?: string;
+
   @property({ type: Boolean }) public narrow = false;
 
   public render() {
@@ -65,7 +67,7 @@ class HaAlert extends LitElement {
               ${this.dismissable
                 ? html`<ha-icon-button
                     @click=${this._dismissClicked}
-                    label="Dismiss alert"
+                    .label=${this.dismissLabel || "Dismiss alert"}
                     .path=${mdiClose}
                   ></ha-icon-button>`
                 : nothing}

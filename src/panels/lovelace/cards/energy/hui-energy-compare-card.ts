@@ -143,7 +143,13 @@ export class HuiEnergyCompareCard
     );
 
     return html`
-      <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
+      <ha-alert
+        dismissable
+        .dismissLabel=${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_compare.stop_comparing"
+        )}
+        @alert-dismissed-clicked=${this._stopCompare}
+      >
         ${this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_compare.info",
           {
