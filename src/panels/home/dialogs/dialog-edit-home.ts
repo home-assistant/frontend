@@ -16,7 +16,7 @@ import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
-} from "../../../panels/lovelace/strategies/home/helpers/home-summaries";
+} from "../../lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
