@@ -75,18 +75,21 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const deviceIds = new Set<string>();
+    const devices = this._configEntry
+      ? Object.values(this.hass.devices).filter((device) =>
+          device.config_entries.includes(this._configEntry!.entry_id)
+        )
+      : [];
+    const deviceCount = devices.length;
+
     let entityCount = 0;
     for (const entity of Object.values(this.hass.entities)) {
       if (entity.platform === "zha") {
         entityCount++;
-        if (entity.device_id) {
-          deviceIds.add(entity.device_id);
-        }
       }
     }
     const deviceOnline =
-      this._offlineDevices < deviceIds.size || deviceIds.size === 0;
+      this._offlineDevices < deviceCount || deviceCount === 0;
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -96,8 +99,8 @@ class ZHAConfigDashboard extends LitElement {
         has-fab
       >
         <div class="container">
-          ${this._renderNetworkStatus(deviceOnline, deviceIds.size)}
-          ${this._renderMyNetworkCard(deviceIds, entityCount)}
+          ${this._renderNetworkStatus(deviceOnline, deviceCount)}
+          ${this._renderMyNetworkCard(deviceCount, entityCount)}
           ${this._renderNavigationCard()} ${this._renderBackupCard()}
         </div>
 
@@ -165,7 +168,7 @@ class ZHAConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderMyNetworkCard(deviceIds: Set<string>, entityCount: number) {
+  private _renderMyNetworkCard(deviceCount: number, entityCount: number) {
     return html`
       <ha-card class="nav-card">
         <div class="card-header">
@@ -189,7 +192,7 @@ class ZHAConfigDashboard extends LitElement {
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.device_count",
-                  { count: deviceIds.size }
+                  { count: deviceCount }
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
