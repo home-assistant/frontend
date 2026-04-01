@@ -68,9 +68,7 @@ class HaAlert extends LitElement {
               ${this.dismissable
                 ? html`<ha-icon-button
                     @click=${this._dismissClicked}
-                    .label=${this.localize
-                      ? this.localize("ui.common.dismiss_alert")
-                      : "Dismiss alert"}
+                    .label=${this.localize?.("ui.common.dismiss_alert") ?? ""}
                     .path=${mdiClose}
                   ></ha-icon-button>`
                 : nothing}
