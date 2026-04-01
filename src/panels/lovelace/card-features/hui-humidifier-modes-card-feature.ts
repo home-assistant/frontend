@@ -49,8 +49,6 @@ class HuiHumidifierModesCardFeature
 
   protected readonly _serviceAction = "set_mode";
 
-  protected readonly _serviceValueKey = "mode";
-
   static getStubConfig(): HumidifierModesCardFeatureConfig {
     return {
       type: "humidifier-modes",

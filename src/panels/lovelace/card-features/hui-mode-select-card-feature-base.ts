@@ -57,8 +57,6 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   protected abstract readonly _serviceAction: string;
 
-  protected abstract readonly _serviceValueKey: string;
-
   protected abstract _isSupported(): boolean;
 
   protected get _label(): string {
@@ -220,7 +218,7 @@ export abstract class HuiModeSelectCardFeatureBase<
     try {
       await this.hass.callService(this._serviceDomain, this._serviceAction, {
         entity_id: this._stateObj.entity_id,
-        [this._serviceValueKey]: value,
+        [this._attribute]: value,
       });
     } catch (_err) {
       this._currentValue = oldValue;

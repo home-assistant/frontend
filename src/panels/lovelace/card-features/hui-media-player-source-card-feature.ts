@@ -51,8 +51,6 @@ class HuiMediaPlayerSourceCardFeature
 
   protected readonly _serviceAction = "select_source";
 
-  protected readonly _serviceValueKey = "source";
-
   protected get _label(): string {
     return this.hass!.localize("ui.card.media_player.source");
   }

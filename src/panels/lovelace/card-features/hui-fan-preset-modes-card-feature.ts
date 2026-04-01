@@ -48,8 +48,6 @@ class HuiFanPresetModesCardFeature
 
   protected readonly _serviceAction = "set_preset_mode";
 
-  protected readonly _serviceValueKey = "preset_mode";
-
   static getStubConfig(): FanPresetModesCardFeatureConfig {
     return {
       type: "fan-preset-modes",

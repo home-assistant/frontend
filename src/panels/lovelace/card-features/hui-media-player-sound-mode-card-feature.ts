@@ -51,8 +51,6 @@ class HuiMediaPlayerSoundModeCardFeature
 
   protected readonly _serviceAction = "select_sound_mode";
 
-  protected readonly _serviceValueKey = "sound_mode";
-
   protected get _label(): string {
     return this.hass!.localize("ui.card.media_player.sound_mode");
   }

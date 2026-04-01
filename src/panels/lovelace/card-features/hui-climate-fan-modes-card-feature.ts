@@ -49,8 +49,6 @@ class HuiClimateFanModesCardFeature
 
   protected readonly _serviceAction = "set_fan_mode";
 
-  protected readonly _serviceValueKey = "fan_mode";
-
   static getStubConfig(): ClimateFanModesCardFeatureConfig {
     return {
       type: "climate-fan-modes",

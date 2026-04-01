@@ -49,8 +49,6 @@ class HuiClimateSwingModesCardFeature
 
   protected readonly _serviceAction = "set_swing_mode";
 
-  protected readonly _serviceValueKey = "swing_mode";
-
   static getStubConfig(): ClimateSwingModesCardFeatureConfig {
     return {
       type: "climate-swing-modes",
