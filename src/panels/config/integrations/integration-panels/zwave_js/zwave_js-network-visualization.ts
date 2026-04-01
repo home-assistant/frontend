@@ -114,7 +114,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchNetworkStatus() {
-    const network = await fetchZwaveNetworkStatus(this.hass!, {
+    const network = await fetchZwaveNetworkStatus(this.hass!.connection, {
       entry_id: this.configEntryId,
     });
     const nodeStatuses: Record<number, ZWaveJSNodeStatus> = {};

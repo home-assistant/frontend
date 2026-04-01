@@ -209,9 +209,12 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
-      device_id: this.device!.id,
-    });
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
+      this.hass!.connection,
+      {
+        device_id: this.device!.id,
+      }
+    );
     if (network.controller.is_rebuilding_routes) {
       this._status = "rebuilding-routes";
     }

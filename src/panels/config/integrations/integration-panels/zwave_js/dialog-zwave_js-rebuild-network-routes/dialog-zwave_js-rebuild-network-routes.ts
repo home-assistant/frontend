@@ -1,79 +1,72 @@
+import { consume, type ContextType } from "@lit/context";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-dialog";
+import { customElement, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-dialog";
+import "../../../../../../components/ha-dialog-footer";
+import {
+  connectionContext,
+  localizeContext,
+} from "../../../../../../data/context";
 import type {
   ZWaveJSNetwork,
   ZWaveJSRebuildRoutesStatusMessage,
-} from "../../../../../data/zwave_js";
+} from "../../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
   rebuildZwaveNetworkRoutes,
   stopRebuildingZwaveNetworkRoutes,
   subscribeRebuildZwaveNetworkRoutesProgress,
-} from "../../../../../data/zwave_js";
-import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+} from "../../../../../../data/zwave_js";
+import { DialogMixin } from "../../../../../../dialogs/dialog-mixin";
 import type { ZWaveJSRebuildNetworkRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes";
 
 @customElement("dialog-zwave_js-rebuild-network-routes")
-class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private entry_id?: string;
-
+class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetworkRoutesDialogParams>(
+  LitElement
+) {
   @state() private _status?: string;
 
-  @state() private _progress_total = 0;
-
-  @state() private _progress_finished = 0;
-
-  @state() private _progress_in_progress = 0;
+  @state() private _progress?: {
+    pending: number[];
+    skipped: number[];
+    done: number[];
+    failed: number[];
+  };
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  @state() private _open = false;
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private _localize!: ContextType<typeof localizeContext>;
 
-  public showDialog(params: ZWaveJSRebuildNetworkRoutesDialogParams): void {
-    this._progress_total = 0;
-    this.entry_id = params.entry_id;
-    this._open = true;
-    this._fetchData();
-  }
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this.entry_id = undefined;
-    this._status = undefined;
-    this._progress_total = 0;
-
-    this._unsubscribe();
-
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.params?.entry_id) {
+      this._fetchData();
+    }
   }
 
   protected render() {
-    if (!this.entry_id) {
+    if (!this.params || !this.params.entry_id) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this.hass.localize(
+        open
+        header-title=${this._localize(
           "ui.panel.config.zwave_js.rebuild_network_routes.title"
         )}
-        @closed=${this._dialogClosed}
       >
         ${!this._status
           ? html`
@@ -84,7 +77,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.introduction"
                     )}
                   </p>
@@ -92,36 +85,36 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
               </div>
               <p>
                 <em>
-                  ${this.hass.localize(
+                  ${this._localize(
                     "ui.panel.config.zwave_js.rebuild_network_routes.traffic_warning"
                   )}
                 </em>
               </p>
             `
-          : ``}
+          : nothing}
         ${this._status === "started"
           ? html`
               <div class="status">
                 <p>
                   <b>
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.in_progress"
                     )}
                   </b>
                 </p>
                 <p>
-                  ${this.hass.localize(
+                  ${this._localize(
                     "ui.panel.config.zwave_js.rebuild_network_routes.run_in_background"
                   )}
                 </p>
               </div>
-              ${!this._progress_total
+              ${!this._progress
                 ? html`
                     <mwc-linear-progress indeterminate> </mwc-linear-progress>
                   `
-                : ""}
+                : nothing}
             `
-          : ``}
+          : nothing}
         ${this._status === "failed"
           ? html`
               <div class="flex-container">
@@ -131,14 +124,14 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_failed"
                     )}
                   </p>
                 </div>
               </div>
             `
-          : ``}
+          : nothing}
         ${this._status === "finished"
           ? html`
               <div class="flex-container">
@@ -148,14 +141,14 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_complete"
                     )}
                   </p>
                 </div>
               </div>
             `
-          : ``}
+          : nothing}
         ${this._status === "cancelled"
           ? html`
               <div class="flex-container">
@@ -165,24 +158,31 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_cancelled"
                     )}
                   </p>
                 </div>
               </div>
             `
-          : ``}
-        ${this._progress_total && this._status !== "finished"
+          : nothing}
+        ${this._progress && this._status !== "finished"
           ? html`
               <mwc-linear-progress
                 determinate
-                .progress=${this._progress_finished}
-                .buffer=${this._progress_in_progress}
+                .progress=${this._progressPercent(this._progress)}
+                .buffer=${this._progress.pending.length}
               >
               </mwc-linear-progress>
+
+              <ul>
+                <li>Done: ${this._progress.done.length}</li>
+                <li>Skipped: ${this._progress.skipped.length}</li>
+                <li>Pending: ${this._progress.pending.length}</li>
+                <li>Failed: ${this._progress.failed.length}</li>
+              </ul>
             `
-          : ""}
+          : nothing}
         <ha-dialog-footer slot="footer">
           ${!this._status
             ? html`
@@ -190,7 +190,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                   slot="primaryAction"
                   @click=${this._startRebuildingRoutes}
                 >
-                  ${this.hass.localize(
+                  ${this._localize(
                     "ui.panel.config.zwave_js.rebuild_network_routes.start_rebuilding_routes"
                   )}
                 </ha-button>
@@ -203,17 +203,17 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                     @click=${this._stopRebuildingRoutes}
                     variant="danger"
                   >
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.stop_rebuilding_routes"
                     )}
                   </ha-button>
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
+                    ${this._localize("ui.common.close")}
                   </ha-button>
                 `
               : html`
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
+                    ${this._localize("ui.common.close")}
                   </ha-button>
                 `}
         </ha-dialog-footer>
@@ -222,65 +222,70 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
   }
 
   private async _fetchData(): Promise<void> {
-    if (!this.hass) {
-      return;
-    }
-    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
-      entry_id: this.entry_id!,
-    });
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
+      this._connection,
+      {
+        entry_id: this.params!.entry_id,
+      }
+    );
     if (network.controller.is_rebuilding_routes) {
       this._status = "started";
-      this._subscribed = subscribeRebuildZwaveNetworkRoutesProgress(
-        this.hass,
-        this.entry_id!,
-        this._handleMessage.bind(this)
-      );
+      this._startSubscribingToProgress();
     }
   }
 
   private _startRebuildingRoutes(): void {
-    if (!this.hass) {
-      return;
-    }
-    rebuildZwaveNetworkRoutes(this.hass, this.entry_id!);
+    rebuildZwaveNetworkRoutes(this._connection, this.params!.entry_id);
     this._status = "started";
+    this._startSubscribingToProgress();
+  }
+
+  private _startSubscribingToProgress() {
+    // TODO initial message isn't handled
     this._subscribed = subscribeRebuildZwaveNetworkRoutesProgress(
-      this.hass,
-      this.entry_id!,
-      this._handleMessage.bind(this)
+      this._connection,
+      this.params!.entry_id,
+      this._handleMessage
     );
   }
 
   private _stopRebuildingRoutes(): void {
-    if (!this.hass) {
-      return;
-    }
-    stopRebuildingZwaveNetworkRoutes(this.hass, this.entry_id!);
+    stopRebuildingZwaveNetworkRoutes(this._connection, this.params!.entry_id);
     this._unsubscribe();
     this._status = "cancelled";
   }
 
-  private _handleMessage(message: ZWaveJSRebuildRoutesStatusMessage): void {
+  private _handleMessage = (message: ZWaveJSRebuildRoutesStatusMessage) => {
     if (message.event === "rebuild routes progress") {
-      let finished = 0;
-      let in_progress = 0;
-      for (const status of Object.values(message.rebuild_routes_status)) {
-        if (status === "pending") {
-          in_progress++;
-        }
-        if (["skipped", "failed", "done"].includes(status)) {
-          finished++;
-        }
+      const progressNumbers: typeof this._progress = {
+        pending: [],
+        skipped: [],
+        done: [],
+        failed: [],
+      };
+      for (const [nodeId, status] of Object.entries(
+        message.rebuild_routes_status
+      )) {
+        progressNumbers[status].push(Number(nodeId));
       }
-      this._progress_total = Object.keys(message.rebuild_routes_status).length;
-      this._progress_finished = finished / this._progress_total;
-      this._progress_in_progress = in_progress / this._progress_total;
+      this._progress = progressNumbers;
     }
     if (message.event === "rebuild routes done") {
       this._unsubscribe();
       this._status = "finished";
     }
-  }
+  };
+
+  private _progressPercent = memoizeOne(
+    (progress: typeof this._progress) =>
+      (progress!.done.length +
+        progress!.skipped.length +
+        progress!.failed.length) /
+      (progress!.done.length +
+        progress!.skipped.length +
+        progress!.failed.length +
+        progress!.pending.length)
+  );
 
   private _unsubscribe(): void {
     if (this._subscribed) {
@@ -289,9 +294,13 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
     }
   }
 
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyleDialog,
       css`
         .success {
           color: var(--success-color);

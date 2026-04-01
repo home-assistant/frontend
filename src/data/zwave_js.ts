@@ -1,5 +1,6 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import { callWS } from "../util/ws-message";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -325,7 +326,10 @@ export interface ZWaveJSRefreshNodeStatusMessage {
 
 export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  rebuild_routes_status: Record<number, string>;
+  rebuild_routes_status: Record<
+    number,
+    "pending" | "skipped" | "done" | "failed"
+  >;
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
@@ -475,7 +479,7 @@ export const invokeZWaveCCApi = <T = unknown>(
   });
 
 export const fetchZwaveNetworkStatus = (
-  hass: HomeAssistant,
+  connection: Connection,
   device_or_entry_id: {
     device_id?: string;
     entry_id?: string;
@@ -487,7 +491,7 @@ export const fetchZwaveNetworkStatus = (
   if (!device_or_entry_id.device_id && !device_or_entry_id.entry_id) {
     throw new Error("Either device or entry ID should be supplied.");
   }
-  return hass.callWS({
+  return callWS<ZWaveJSNetwork>(connection, {
     type: "zwave_js/network_status",
     device_id: device_or_entry_id.device_id,
     entry_id: device_or_entry_id.entry_id,
@@ -814,35 +818,32 @@ export const removeFailedZwaveNode = (
   );
 
 export const rebuildZwaveNetworkRoutes = (
-  hass: HomeAssistant,
+  connection: Connection,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
-  hass.callWS({
+  callWS(connection, {
     type: "zwave_js/begin_rebuilding_routes",
     entry_id,
   });
 
 export const stopRebuildingZwaveNetworkRoutes = (
-  hass: HomeAssistant,
+  connection: Connection,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
-  hass.callWS({
+  callWS(connection, {
     type: "zwave_js/stop_rebuilding_routes",
     entry_id,
   });
 
 export const subscribeRebuildZwaveNetworkRoutesProgress = (
-  hass: HomeAssistant,
+  connection: Connection,
   entry_id: string,
   callbackFunction: (message: ZWaveJSRebuildRoutesStatusMessage) => void
 ): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/subscribe_rebuild_routes_progress",
-      entry_id,
-    }
-  );
+  connection.subscribeMessage((message: any) => callbackFunction(message), {
+    type: "zwave_js/subscribe_rebuild_routes_progress",
+    entry_id,
+  });
 
 export const subscribeZwaveControllerStatistics = (
   hass: HomeAssistant,

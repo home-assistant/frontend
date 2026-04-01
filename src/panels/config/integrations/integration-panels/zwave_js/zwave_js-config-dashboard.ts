@@ -636,7 +636,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
 
     const [network, provisioningEntries] = await Promise.all([
-      fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
+      fetchZwaveNetworkStatus(this.hass!.connection, {
+        entry_id: this.configEntryId,
+      }),
       fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
     ]);
 
