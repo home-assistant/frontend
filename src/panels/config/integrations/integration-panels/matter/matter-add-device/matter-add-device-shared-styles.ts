@@ -29,7 +29,7 @@ export const sharedStyles = css`
     --md-list-item-trailing-space: var(--horizontal-padding, 16px);
     margin-bottom: 16px;
   }
-  ha-textfield {
+  ha-input {
     width: 100%;
   }
 `;
