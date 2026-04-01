@@ -1664,7 +1664,10 @@
           "clean_spot": "Clean spot",
           "locate": "Locate",
           "return_home": "Return home",
-          "start_pause": "Start/pause"
+          "start_pause": "Start/pause",
+          "clean_rooms": "Clean rooms",
+          "start_cleaning_rooms": "Start cleaning",
+          "no_rooms_available": "No rooms available"
         },
         "person": {
           "create_zone": "Create zone from current location"
