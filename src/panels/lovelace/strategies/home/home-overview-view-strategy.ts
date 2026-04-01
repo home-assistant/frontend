@@ -30,7 +30,7 @@ import type {
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../helpers/screen-conditions";
+} from "../helpers/view-columns-conditions";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
