@@ -1,24 +1,50 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-icon";
 import "../../../components/ha-switch";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
-  HOME_SUMMARIES,
   getSummaryLabel,
+  HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../../../panels/lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
-const ALL_SUMMARY_KEYS = [...HOME_SUMMARIES, "weather"] as const;
+interface SummaryInfo {
+  key: string;
+  icon: string;
+  color: string;
+}
+
+// Ordered to match dashboard rendering order
+const SUMMARY_ITEMS: SummaryInfo[] = [
+  { key: "light", icon: HOME_SUMMARIES_ICONS.light, color: "amber" },
+  { key: "climate", icon: HOME_SUMMARIES_ICONS.climate, color: "deep-orange" },
+  {
+    key: "security",
+    icon: HOME_SUMMARIES_ICONS.security,
+    color: "blue-grey",
+  },
+  {
+    key: "media_players",
+    icon: HOME_SUMMARIES_ICONS.media_players,
+    color: "blue",
+  },
+  { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
+  { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
+  { key: "persons", icon: HOME_SUMMARIES_ICONS.persons, color: "green" },
+];
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -96,16 +122,21 @@ export class DialogEditHome
           ${this.hass.localize("ui.panel.home.editor.summaries_description")}
         </p>
         <div class="summary-toggles">
-          ${ALL_SUMMARY_KEYS.map((key) => {
-            const label = this._getSummaryLabel(key);
+          ${SUMMARY_ITEMS.map((item) => {
+            const label = this._getSummaryLabel(item.key);
+            const color = computeCssColor(item.color);
             return html`
               <label class="summary-toggle">
+                <ha-icon
+                  .icon=${item.icon}
+                  style=${styleMap({ "--mdc-icon-size": "24px", color })}
+                ></ha-icon>
+                <span class="summary-label">${label}</span>
                 <ha-switch
-                  .checked=${!hiddenSummaries.has(key)}
-                  .summary=${key}
+                  .checked=${!hiddenSummaries.has(item.key)}
+                  .summary=${item.key}
                   @change=${this._summaryToggleChanged}
                 ></ha-switch>
-                <span>${label}</span>
               </label>
             `;
           })}
@@ -227,15 +258,19 @@ export class DialogEditHome
       .summary-toggles {
         display: flex;
         flex-direction: column;
-        gap: var(--ha-space-2);
       }
 
       .summary-toggle {
         display: flex;
         align-items: center;
         gap: var(--ha-space-3);
-        padding: var(--ha-space-1) 0;
+        padding: var(--ha-space-2) 0;
         cursor: pointer;
+      }
+
+      .summary-label {
+        flex: 1;
+        font-size: 14px;
       }
 
       ha-entities-picker {
