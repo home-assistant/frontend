@@ -43,7 +43,6 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   },
   { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
-  { key: "persons", icon: HOME_SUMMARIES_ICONS.persons, color: "green" },
 ];
 
 @customElement("dialog-edit-home")
