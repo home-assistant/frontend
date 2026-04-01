@@ -107,19 +107,6 @@ class HaPanelDevAction extends LitElement {
           this._yamlEditor?.setValue(this._serviceData)
         );
       }
-    } else if (!this._serviceData?.action) {
-      const domain = Object.keys(this.hass.services).sort()[0];
-      const service = Object.keys(this.hass.services[domain]).sort()[0];
-      this._serviceData = {
-        action: `${domain}.${service}`,
-        target: {},
-        data: {},
-      };
-      if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
-        );
-      }
     }
     this._checkUiSupported();
   }
