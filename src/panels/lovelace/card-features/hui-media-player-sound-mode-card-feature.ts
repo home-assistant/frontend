@@ -1,12 +1,7 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
@@ -14,7 +9,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
+import { HuiModeSelectCardFeatureBase } from "./hui-mode-select-card-feature-base";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerSoundModeCardFeatureConfig,
@@ -38,25 +33,35 @@ export const supportsMediaPlayerSoundModeCardFeature = (
 
 @customElement("hui-media-player-sound-mode-card-feature")
 class HuiMediaPlayerSoundModeCardFeature
-  extends LitElement
+  extends HuiModeSelectCardFeatureBase<
+    MediaPlayerEntity,
+    MediaPlayerSoundModeCardFeatureConfig
+  >
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  protected readonly _attribute = "sound_mode";
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  protected readonly _modesAttribute = "sound_mode_list";
 
-  @state() private _config?: MediaPlayerSoundModeCardFeatureConfig;
-
-  @state() private _currentSoundMode?: string;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      | MediaPlayerEntity
-      | undefined;
+  protected get _configuredModes() {
+    return undefined;
   }
+
+  protected readonly _serviceDomain = "media_player";
+
+  protected readonly _serviceAction = "select_sound_mode";
+
+  protected readonly _serviceValueKey = "sound_mode";
+
+  protected get _label(): string {
+    return this.hass!.localize("ui.card.media_player.sound_mode");
+  }
+
+  protected readonly _hideLabel = false;
+
+  protected readonly _showDropdownOptionIcons = false;
+
+  protected readonly _allowIconsStyle = false;
 
   static getStubConfig(): MediaPlayerSoundModeCardFeatureConfig {
     return {
@@ -64,33 +69,12 @@ class HuiMediaPlayerSoundModeCardFeature
     };
   }
 
-  public setConfig(config: MediaPlayerSoundModeCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-    this._config = config;
-  }
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      (changedProps.has("hass") || changedProps.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._currentSoundMode = this._stateObj.attributes.sound_mode;
-      }
-    }
-  }
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     const entityId = this.context?.entity_id;
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     return (
-      changedProps.has("_currentSoundMode") ||
+      changedProps.has("_currentValue") ||
       changedProps.has("context") ||
       hasConfigChanged(this, changedProps) ||
       (changedProps.has("hass") &&
@@ -100,64 +84,12 @@ class HuiMediaPlayerSoundModeCardFeature
     );
   }
 
-  private async _valueChanged(ev: HaDropdownSelectEvent) {
-    const soundMode = ev.detail.item?.value;
-    const oldSoundMode = this._stateObj!.attributes.sound_mode;
-
-    if (soundMode === oldSoundMode || !soundMode) {
-      return;
-    }
-
-    this._currentSoundMode = soundMode;
-
-    try {
-      await this.hass!.callService("media_player", "select_sound_mode", {
-        entity_id: this._stateObj!.entity_id,
-        sound_mode: soundMode,
-      });
-    } catch (_err) {
-      this._currentSoundMode = oldSoundMode;
-    }
-  }
-
-  protected render() {
-    if (
-      !this._config ||
-      !this.hass ||
-      !this.context ||
-      !this._stateObj ||
-      !supportsMediaPlayerSoundModeCardFeature(this.hass, this.context)
-    ) {
-      return nothing;
-    }
-
-    const options = this._stateObj.attributes.sound_mode_list!.map(
-      (soundMode) => ({
-        value: soundMode,
-        label: this.hass!.formatEntityAttributeValue(
-          this._stateObj!,
-          "sound_mode",
-          soundMode
-        ),
-      })
+  protected _isSupported(): boolean {
+    return !!(
+      this.hass &&
+      this.context &&
+      supportsMediaPlayerSoundModeCardFeature(this.hass, this.context)
     );
-
-    return html`
-      <ha-control-select-menu
-        .hass=${this.hass}
-        show-arrow
-        .label=${this.hass.localize("ui.card.media_player.sound_mode")}
-        .value=${this._currentSoundMode}
-        .disabled=${this._stateObj.state === UNAVAILABLE}
-        .options=${options}
-        @wa-select=${this._valueChanged}
-      >
-      </ha-control-select-menu>
-    `;
-  }
-
-  static get styles() {
-    return cardFeatureStyles;
   }
 }
 

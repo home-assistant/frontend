@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
@@ -51,7 +51,7 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   protected abstract get _configuredModes(): string[] | undefined;
 
-  protected abstract readonly _dropdownIconPath: string;
+  protected readonly _dropdownIconPath?: string;
 
   protected abstract readonly _serviceDomain: string;
 
@@ -60,6 +60,19 @@ export abstract class HuiModeSelectCardFeatureBase<
   protected abstract readonly _serviceValueKey: string;
 
   protected abstract _isSupported(): boolean;
+
+  protected get _label(): string {
+    return this.hass!.formatEntityAttributeName(
+      this._stateObj!,
+      this._attribute
+    );
+  }
+
+  protected readonly _hideLabel: boolean = true;
+
+  protected readonly _showDropdownOptionIcons: boolean = true;
+
+  protected readonly _allowIconsStyle: boolean = true;
 
   protected get _stateObj(): TEntity | undefined {
     if (!this.hass || !this.context?.entity_id) {
@@ -108,12 +121,9 @@ export abstract class HuiModeSelectCardFeatureBase<
 
     const stateObj = this._stateObj;
     const options = this._getOptions();
-    const label = this.hass.formatEntityAttributeName(
-      stateObj,
-      this._attribute
-    );
+    const label = this._label;
 
-    if (this._config.style === "icons") {
+    if (this._allowIconsStyle && this._config.style === "icons") {
       return html`
         <ha-control-select
           .options=${options.map((option) => ({
@@ -133,15 +143,22 @@ export abstract class HuiModeSelectCardFeatureBase<
     return html`
       <ha-control-select-menu
         show-arrow
-        hide-label
+        ?hide-label=${this._hideLabel}
         .label=${label}
         .value=${this._currentValue}
         .disabled=${stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
         .options=${options}
-        .renderIcon=${this._renderMenuIcon}
+        .renderIcon=${this._showDropdownOptionIcons
+          ? this._renderMenuIcon
+          : undefined}
       >
-        <ha-svg-icon slot="icon" .path=${this._dropdownIconPath}></ha-svg-icon>
+        ${this._dropdownIconPath
+          ? html`<ha-svg-icon
+              slot="icon"
+              .path=${this._dropdownIconPath}
+            ></ha-svg-icon>`
+          : nothing}
       </ha-control-select-menu>
     `;
   }
