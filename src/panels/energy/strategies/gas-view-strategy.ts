@@ -52,6 +52,9 @@ export class GasViewStrategy extends ReactiveElement {
     section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
+      grid_options: {
+        columns: 36,
+      },
     });
 
     section.cards!.push({
