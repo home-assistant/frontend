@@ -32,7 +32,9 @@ export class HaTraceLogbook extends LitElement {
           ></hat-logbook-note>
         `
       : html`<div class="padded-box">
-          No Logbook entries found for this step.
+          ${this.hass.localize(
+            "ui.panel.config.automation.trace.path.no_logbook_entries"
+          )}
         </div>`;
   }
 
