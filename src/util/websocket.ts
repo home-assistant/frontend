@@ -1,17 +1,23 @@
 import type { Connection, MessageBase } from "home-assistant-js-websocket";
 
+let _debugConnection = __DEV__;
+
+export const setDebugConnection = (debug: boolean) => {
+  _debugConnection = debug;
+};
+
 export const callWS = <T>(
   connection: Connection,
   msg: MessageBase
 ): Promise<T> => {
-  if (__DEV__) {
+  if (_debugConnection) {
     // eslint-disable-next-line no-console
     console.log("Sending", msg);
   }
 
   const response = connection.sendMessagePromise<T>(msg);
 
-  if (__DEV__) {
+  if (_debugConnection) {
     response.then(
       // eslint-disable-next-line no-console
       (result) => console.log("Received", result),

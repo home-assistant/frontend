@@ -1,6 +1,6 @@
 import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
-import { callWS } from "../util/ws-message";
+import { callWS } from "../util/websocket";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */

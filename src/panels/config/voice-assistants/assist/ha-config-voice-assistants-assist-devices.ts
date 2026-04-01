@@ -87,7 +87,7 @@ class AssistDevicesPage extends LitElement {
 
         return {
           ...assistDevice,
-          name: device ? computeDeviceNameDisplay(device, this.hass) : "",
+          name: device ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states) : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {
                 preferred: pipelineName,

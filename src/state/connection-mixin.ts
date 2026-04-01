@@ -40,7 +40,7 @@ import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
-import { callWS } from "../util/ws-message";
+import { callWS, setDebugConnection } from "../util/websocket";
 import type { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
@@ -222,6 +222,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ...getState(),
         ...this._pendingHass,
       };
+
+      setDebugConnection(this.hass.debugConnection);
 
       this.hassConnected();
     }

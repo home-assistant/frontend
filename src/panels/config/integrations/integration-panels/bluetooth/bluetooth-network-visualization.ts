@@ -239,7 +239,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           | DeviceRegistryEntry
           | undefined;
         const area = scannerDevice
-          ? getDeviceContext(scannerDevice, this.hass).area
+          ? getDeviceContext(scannerDevice, this.hass.areas).area
           : undefined;
         nodes.push({
           id: scanner.source,
@@ -282,7 +282,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           | DeviceRegistryEntry
           | undefined;
         const area = device
-          ? getDeviceContext(device, this.hass).area
+          ? getDeviceContext(device, this.hass.areas).area
           : undefined;
         nodes.push({
           id: node.address,
@@ -349,7 +349,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}<br><b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${btDevice.rssi}<br><b>${this.hass.localize("ui.panel.config.bluetooth.source")}:</b> ${btDevice.source}<br><b>${this.hass.localize("ui.panel.config.bluetooth.updated")}:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
         const device = this._sourceDevices[address];
         if (device) {
-          const area = getDeviceContext(device, this.hass).area;
+          const area = getDeviceContext(device, this.hass.areas).area;
           if (area) {
             tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
           }
@@ -358,7 +358,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         const device = this._sourceDevices[address];
         if (device) {
           tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}`;
-          const area = getDeviceContext(device, this.hass).area;
+          const area = getDeviceContext(device, this.hass.areas).area;
           if (area) {
             tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
           }

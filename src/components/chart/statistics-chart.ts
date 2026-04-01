@@ -149,7 +149,7 @@ export class StatisticsChart extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!isComponentLoaded(this.hass, "history")) {
+    if (!isComponentLoaded(this.hass.config, "history")) {
       return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
       </div>`;

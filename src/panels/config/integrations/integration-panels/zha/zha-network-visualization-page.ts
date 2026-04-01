@@ -169,7 +169,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       | DeviceRegistryEntry
       | undefined;
     if (haDevice) {
-      const area = getDeviceContext(haDevice, this.hass).area;
+      const area = getDeviceContext(haDevice, this.hass.areas).area;
       if (area) {
         label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }

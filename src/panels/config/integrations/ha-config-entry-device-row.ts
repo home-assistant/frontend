@@ -53,7 +53,7 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const entities = this._getEntities();
 
-    const { area } = getDeviceContext(device, this.hass);
+    const { area } = getDeviceContext(device, this.hass.areas);
 
     const supportingText = [
       device.model || device.sw_version || device.manufacturer,
@@ -71,7 +71,13 @@ class HaConfigEntryDeviceRow extends LitElement {
           : mdiDevices}
         slot="start"
       ></ha-svg-icon>
-      <div slot="headline">${computeDeviceNameDisplay(device, this.hass)}</div>
+      <div slot="headline">
+        ${computeDeviceNameDisplay(
+          device,
+          this.hass.localize,
+          this.hass.states
+        )}
+      </div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
         ${supportingText.length && entities.length ? " • " : nothing}
@@ -268,7 +274,13 @@ class HaConfigEntryDeviceRow extends LitElement {
         ),
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.device.confirm_disable_message",
-          { name: computeDeviceNameDisplay(this.device, this.hass) }
+          {
+            name: computeDeviceNameDisplay(
+              this.device,
+              this.hass.localize,
+              this.hass.states
+            ),
+          }
         ),
         destructive: true,
         confirmText: this.hass.localize("ui.common.yes"),

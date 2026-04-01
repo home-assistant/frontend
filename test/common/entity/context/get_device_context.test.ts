@@ -17,7 +17,7 @@ describe("getDeviceContext", () => {
       floors: {},
     } as unknown as HomeAssistant;
 
-    const result = getDeviceContext(device, hass);
+    const result = getDeviceContext(device, hass.areas, hass.floors);
 
     expect(result).toEqual({
       device,
@@ -46,7 +46,7 @@ describe("getDeviceContext", () => {
       floors: {},
     } as unknown as HomeAssistant;
 
-    const result = getDeviceContext(device, hass);
+    const result = getDeviceContext(device, hass.areas, hass.floors);
 
     expect(result).toEqual({
       device,
@@ -82,7 +82,7 @@ describe("getDeviceContext", () => {
       },
     } as unknown as HomeAssistant;
 
-    const result = getDeviceContext(device, hass);
+    const result = getDeviceContext(device, hass.areas, hass.floors);
 
     expect(result).toEqual({
       device,

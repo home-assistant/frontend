@@ -334,7 +334,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(device, this.hass);
+    const deviceName = computeDeviceNameDisplay(device, this.hass.localize, this.hass.states);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -439,7 +439,7 @@ export class HaConfigDevicePage extends LitElement {
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
 
-    const automationCard = isComponentLoaded(this.hass, "automation")
+    const automationCard = isComponentLoaded(this.hass.config, "automation")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -517,7 +517,7 @@ export class HaConfigDevicePage extends LitElement {
       : "";
 
     const sceneCard =
-      isComponentLoaded(this.hass, "scene") && entities.length
+      isComponentLoaded(this.hass.config, "scene") && entities.length
         ? html`
             <ha-card outlined>
               <h1 class="card-header">
@@ -613,7 +613,7 @@ export class HaConfigDevicePage extends LitElement {
           `
         : "";
 
-    const scriptCard = isComponentLoaded(this.hass, "script")
+    const scriptCard = isComponentLoaded(this.hass.config, "script")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -933,7 +933,7 @@ export class HaConfigDevicePage extends LitElement {
         </div>
         <div class="column">
           ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
-          ${isComponentLoaded(this.hass, "logbook")
+          ${isComponentLoaded(this.hass.config, "logbook")
             ? html`
                 <ha-card outlined>
                   <h1 class="card-header">
@@ -968,7 +968,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private async _getDiagnosticButtons(): Promise<void> {
     const deviceId = this.deviceId;
-    if (!isComponentLoaded(this.hass, "diagnostics")) {
+    if (!isComponentLoaded(this.hass.config, "diagnostics")) {
       return;
     }
 
@@ -1275,7 +1275,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = this.hass.devices[this.deviceId];
     return (
       computeEntityEntryName(entity, this.hass.devices) ||
-      computeDeviceNameDisplay(device, this.hass)
+      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
     );
   }
 

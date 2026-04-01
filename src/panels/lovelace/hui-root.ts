@@ -171,7 +171,7 @@ class HUIRoot extends LitElement {
   });
 
   private _conversation = memoizeOne((_components) =>
-    isComponentLoaded(this.hass, "conversation")
+    isComponentLoaded(this.hass.config, "conversation")
   );
 
   private _renderActionItems(): TemplateResult {

@@ -112,7 +112,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
           const areaName =
             deviceEntry && deviceEntry.entry_type !== "service"
-              ? getDeviceContext(deviceEntry, this.hass).area?.name ||
+              ? getDeviceContext(deviceEntry, this.hass.areas).area?.name ||
                 this.hass.localize("ui.panel.config.updates.no_area")
               : undefined;
 
@@ -146,7 +146,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </div>
               <span slot="headline"
                 >${deviceEntry
-                  ? computeDeviceNameDisplay(deviceEntry, this.hass)
+                  ? computeDeviceNameDisplay(
+                      deviceEntry,
+                      this.hass.localize,
+                      this.hass.states
+                    )
                   : entity.attributes.friendly_name}</span
               >
               <span slot="supporting-text">

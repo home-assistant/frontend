@@ -1,12 +1,20 @@
-import { consume, type ContextType } from "@lit/context";
+import { consume, provide, type ContextType } from "@lit/context";
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
+import {
+  mdiAlert,
+  mdiCheckCircle,
+  mdiCloseCircle,
+  mdiSkipNext,
+  mdiStethoscope,
+  mdiSync,
+} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../../components/ha-button";
+import type { HaButton } from "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import {
@@ -24,19 +32,26 @@ import {
   subscribeRebuildZwaveNetworkRoutesProgress,
 } from "../../../../../../data/zwave_js";
 import { DialogMixin } from "../../../../../../dialogs/dialog-mixin";
+import {
+  zwaveJsRebuildNetworkRoutesProgressContext,
+  type ZWaveJSRebuildNetworkRoutesProgress,
+} from "./context";
 import type { ZWaveJSRebuildNetworkRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes";
+import { showZWaveJSRebuildNetworkRoutesDetailDialog } from "./show-dialog-zwave_js-rebuild-network-routes-detail";
 
 @customElement("dialog-zwave_js-rebuild-network-routes")
 class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetworkRoutesDialogParams>(
   LitElement
 ) {
-  @state() private _status?: string;
+  @state() private _status?: string = "started";
 
-  @state() private _progress?: {
-    pending: number[];
-    skipped: number[];
-    done: number[];
-    failed: number[];
+  @provide({ context: zwaveJsRebuildNetworkRoutesProgressContext })
+  @state()
+  private _progress?: ZWaveJSRebuildNetworkRoutesProgress = {
+    pending: [11, 12],
+    skipped: [1],
+    done: [2, 5, 6, 7, 8],
+    failed: [9, 90, 65],
   };
 
   private _subscribed?: Promise<UnsubscribeFunc>;
@@ -73,7 +88,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
               <div class="flex-container">
                 <ha-svg-icon
                   .path=${mdiStethoscope}
-                  class="introduction"
+                  class="status-icon introduction"
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -120,7 +135,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
               <div class="flex-container">
                 <ha-svg-icon
                   .path=${mdiCloseCircle}
-                  class="failed"
+                  class="status-icon failed"
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -137,7 +152,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
               <div class="flex-container">
                 <ha-svg-icon
                   .path=${mdiCheckCircle}
-                  class="success"
+                  class="status-icon success"
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -154,7 +169,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
               <div class="flex-container">
                 <ha-svg-icon
                   .path=${mdiCloseCircle}
-                  class="failed"
+                  class="status-icon failed"
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -171,16 +186,72 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
               <mwc-linear-progress
                 determinate
                 .progress=${this._progressPercent(this._progress)}
-                .buffer=${this._progress.pending.length}
+                .buffer=${1 - this._progressPercent(this._progress)}
               >
               </mwc-linear-progress>
 
-              <ul>
-                <li>Done: ${this._progress.done.length}</li>
-                <li>Skipped: ${this._progress.skipped.length}</li>
-                <li>Pending: ${this._progress.pending.length}</li>
-                <li>Failed: ${this._progress.failed.length}</li>
-              </ul>
+              <div class="progress-detail">
+                <ha-button
+                  .progressType=${"pending"}
+                  @click=${this._showProgressDetail}
+                  appearance="outlined"
+                  variant="warning"
+                  size="small"
+                >
+                  ${this._localize(
+                    "ui.panel.config.zwave_js.rebuild_network_routes.progress.in_progress",
+                    { count: this._progress.pending.length }
+                  )}
+                  <ha-svg-icon .path=${mdiSync} slot="end"></ha-svg-icon>
+                </ha-button>
+                <ha-button
+                  .progressType=${"done"}
+                  @click=${this._showProgressDetail}
+                  appearance="outlined"
+                  variant="success"
+                  size="small"
+                >
+                  ${this._localize(
+                    "ui.panel.config.zwave_js.rebuild_network_routes.progress.completed",
+                    { count: this._progress.done.length }
+                  )}
+                  <ha-svg-icon .path=${mdiCheckCircle} slot="end"></ha-svg-icon>
+                </ha-button>
+
+                ${this._progress.failed.length
+                  ? html`<ha-button
+                      .progressType=${"failed"}
+                      @click=${this._showProgressDetail}
+                      appearance="outlined"
+                      variant="danger"
+                      size="small"
+                    >
+                      ${this._localize(
+                        "ui.panel.config.zwave_js.rebuild_network_routes.progress.failed",
+                        { count: this._progress.failed.length }
+                      )}
+                      <ha-svg-icon .path=${mdiAlert} slot="end"></ha-svg-icon>
+                    </ha-button>`
+                  : nothing}
+                ${this._progress.skipped.length
+                  ? html`<ha-button
+                      .progressType=${"skipped"}
+                      @click=${this._showProgressDetail}
+                      appearance="outlined"
+                      variant="neutral"
+                      size="small"
+                    >
+                      ${this._localize(
+                        "ui.panel.config.zwave_js.rebuild_network_routes.progress.skipped",
+                        { count: this._progress.skipped.length }
+                      )}
+                      <ha-svg-icon
+                        .path=${mdiSkipNext}
+                        slot="end"
+                      ></ha-svg-icon>
+                    </ha-button>`
+                  : nothing}
+              </div>
             `
           : nothing}
         <ha-dialog-footer slot="footer">
@@ -257,12 +328,13 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
 
   private _handleMessage = (message: ZWaveJSRebuildRoutesStatusMessage) => {
     if (message.event === "rebuild routes progress") {
-      const progressNumbers: typeof this._progress = {
+      const progressNumbers: ZWaveJSRebuildNetworkRoutesProgress = {
         pending: [],
         skipped: [],
         done: [],
         failed: [],
       };
+
       for (const [nodeId, status] of Object.entries(
         message.rebuild_routes_status
       )) {
@@ -286,6 +358,16 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
         progress!.failed.length +
         progress!.pending.length)
   );
+
+  private _showProgressDetail(ev: Event) {
+    const button = ev.target as HaButton & {
+      progressType: "pending" | "skipped" | "failed" | "done";
+    };
+    showZWaveJSRebuildNetworkRoutesDetailDialog(this, {
+      type: button.progressType,
+      configEntryId: this.params!.entry_id,
+    });
+  }
 
   private _unsubscribe(): void {
     if (this._subscribed) {
@@ -315,7 +397,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
           align-items: center;
         }
 
-        ha-svg-icon {
+        ha-svg-icon.status-icon {
           width: 68px;
           height: 48px;
         }
@@ -331,7 +413,23 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
         }
 
         mwc-linear-progress {
-          margin-top: 8px;
+          margin-top: var(--ha-space-8);
+        }
+
+        .progress-detail {
+          margin-top: var(--ha-space-4);
+          display: flex;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          gap: var(--ha-space-3);
+        }
+
+        .progress-detail ha-button {
+          flex: 1;
+          --ha-font-weight-medium: var(--ha-font-weight-normal);
+        }
+        .progress-detail ha-button::part(label) {
+          white-space: nowrap;
         }
       `,
     ];

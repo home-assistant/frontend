@@ -133,7 +133,7 @@ export class HuiTodoListEditor
 
     return html`
         ${
-          !isComponentLoaded(this.hass, "todo")
+          !isComponentLoaded(this.hass.config, "todo")
             ? html`
                 <ha-alert alert-type="error">
                   ${this.hass.localize(

@@ -144,11 +144,12 @@ export const getDevices = (
   const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
     const deviceName = computeDeviceNameDisplay(
       device,
-      hass,
+      hass.localize,
+      hass.states,
       deviceEntityLookup[device.id]
     );
 
-    const { area } = getDeviceContext(device, hass);
+    const { area } = getDeviceContext(device, hass.areas);
 
     const areaName = area ? computeAreaName(area) : undefined;
 

@@ -939,7 +939,7 @@ ${rejected
   }
 
   private _createNew() {
-    if (isComponentLoaded(this.hass, "blueprint")) {
+    if (isComponentLoaded(this.hass.config, "blueprint")) {
       showNewAutomationDialog(this, { mode: "script" });
     } else {
       navigate("/config/script/edit/new");

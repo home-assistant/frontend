@@ -75,7 +75,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(this.device, this.hass!.localize, this.hass!.states)}
                         </em>`,
                       }
                     )}
@@ -101,7 +101,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(this.device, this.hass!.localize, this.hass!.states)}
                         </em>`,
                       }
                     )}
@@ -125,7 +125,8 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         device: html`<em
                           >${computeDeviceNameDisplay(
                             this.device,
-                            this.hass!
+                            this.hass!.localize,
+                            this.hass!.states
                           )}</em
                         >`,
                       }
@@ -157,7 +158,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(this.device, this.hass!.localize, this.hass!.states)}
                         </em>`,
                       }
                     )}

@@ -190,7 +190,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _conversation = memoizeOne((_components) =>
-      isComponentLoaded(this.hass!, "conversation")
+      isComponentLoaded(this.hass!.config, "conversation")
     );
 
     private _showVoiceCommandDialog(e: KeyboardEvent) {

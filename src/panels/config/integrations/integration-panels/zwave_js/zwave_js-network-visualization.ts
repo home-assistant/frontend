@@ -187,7 +187,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       }
     }
     if (device) {
-      const area = getDeviceContext(device, this.hass).area;
+      const area = getDeviceContext(device, this.hass.areas).area;
       if (area) {
         tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
       }
@@ -255,7 +255,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           | DeviceRegistryEntry
           | undefined;
         const area = device
-          ? getDeviceContext(device, this.hass).area
+          ? getDeviceContext(device, this.hass.areas).area
           : undefined;
         nodes.push({
           id: String(node.node_id),

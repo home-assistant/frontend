@@ -68,7 +68,7 @@ class DialogDeviceRegistryDetail extends LitElement {
       <ha-adaptive-dialog
         .hass=${this.hass}
         .open=${this._open}
-        header-title=${computeDeviceNameDisplay(device, this.hass)}
+        header-title=${computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)}
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >

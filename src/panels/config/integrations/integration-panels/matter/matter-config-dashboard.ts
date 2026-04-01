@@ -204,7 +204,7 @@ export class MatterConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            ${isComponentLoaded(this.hass, "thread")
+            ${isComponentLoaded(this.hass.config, "thread")
               ? html`<ha-md-list-item type="link" href="/config/thread">
                   <ha-svg-icon slot="start" .path=${THREAD_ICON}></ha-svg-icon>
                   <div slot="headline">

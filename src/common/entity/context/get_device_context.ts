@@ -11,12 +11,16 @@ interface DeviceContext {
 
 export const getDeviceContext = (
   device: DeviceRegistryEntry,
-  hass: HomeAssistant
+  areas: HomeAssistant["areas"],
+  floors?: HomeAssistant["floors"]
 ): DeviceContext => {
   const areaId = device.area_id;
-  const area = areaId ? hass.areas[areaId] : undefined;
+  const area = areaId ? areas[areaId] : undefined;
   const floorId = area?.floor_id;
-  const floor = floorId ? hass.floors[floorId] : undefined;
+  let floor: FloorRegistryEntry | null = null;
+  if (floors && floorId) {
+    floor = floors[floorId];
+  }
 
   return {
     device: device,

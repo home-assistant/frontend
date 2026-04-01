@@ -101,7 +101,11 @@ export class HaFilterDevices extends LitElement {
           .value=${device.id}
           .selected=${this.value?.includes(device.id) ?? false}
         >
-          ${computeDeviceNameDisplay(device, this.hass)}
+          ${computeDeviceNameDisplay(
+            device,
+            this.hass.localize,
+            this.hass.states
+          )}
         </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
@@ -151,14 +155,18 @@ export class HaFilterDevices extends LitElement {
         .filter(
           (device) =>
             !filter ||
-            computeDeviceNameDisplay(device, this.hass)
+            computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
               .toLowerCase()
               .includes(filter)
         )
         .sort((a, b) =>
           stringCompare(
-            computeDeviceNameDisplay(a, this.hass),
-            computeDeviceNameDisplay(b, this.hass),
+            computeDeviceNameDisplay(a, this.hass.localize, this.hass.states),
+            computeDeviceNameDisplay(b, this.hass.localize, this.hass.states),
             this.hass.locale.language
           )
         );

@@ -154,7 +154,7 @@ export class HaDevicePicker extends LitElement {
         return html`<span slot="headline">${deviceId}</span>`;
       }
 
-      const { area } = getDeviceContext(device, this.hass);
+      const { area } = getDeviceContext(device, this.hass.areas);
 
       const deviceName = device ? computeDeviceName(device) : undefined;
       const areaName = area ? computeAreaName(area) : undefined;

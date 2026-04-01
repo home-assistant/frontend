@@ -56,21 +56,29 @@ describe("computeDeviceNameDisplay", () => {
   } as any;
 
   it("returns device name if present", () => {
-    expect(computeDeviceNameDisplay({ name: "Device" } as any, hass)).toBe(
-      "Device"
-    );
+    expect(
+      computeDeviceNameDisplay(
+        { name: "Device" } as any,
+        hass.localize,
+        hass.states
+      )
+    ).toBe("Device");
   });
 
   it("returns fallback name from entities if device name not present", () => {
     const entities: any = [{ entity_id: "light.test" }];
-    expect(computeDeviceNameDisplay({} as any, hass, entities)).toBe(
-      "Test Light"
-    );
+    expect(
+      computeDeviceNameDisplay({} as any, hass.localize, hass.states, entities)
+    ).toBe("Test Light");
   });
 
   it("returns localized unnamed device if no name or entities", () => {
     expect(
-      computeDeviceNameDisplay({ entry_type: "router" } as any, hass)
+      computeDeviceNameDisplay(
+        { entry_type: "router" } as any,
+        hass.localize,
+        hass.states
+      )
     ).toBe("Unnamed (router)");
   });
 });
