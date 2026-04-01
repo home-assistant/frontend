@@ -8867,6 +8867,12 @@
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
+              "view_columns": {
+                "label": "Number of columns",
+                "min": "Minimum",
+                "max": "Maximum",
+                "unit": "columns"
+              },
               "numeric_state": {
                 "label": "Entity numeric state",
                 "above": "Above",

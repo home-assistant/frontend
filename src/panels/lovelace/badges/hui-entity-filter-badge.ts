@@ -100,7 +100,7 @@ export class HuiEntityFilterBadge
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entityConf.entity)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       }
 
       const filters = entityConf.state_filter ?? this._config!.state_filter;

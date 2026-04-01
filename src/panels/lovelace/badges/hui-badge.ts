@@ -160,7 +160,11 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     const visible =
       conditionsMet ??
       (!this.config?.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+        checkConditionsMet(
+          this.config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
     this._setElementVisibility(visible);
   }
 
