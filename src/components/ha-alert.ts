@@ -8,6 +8,7 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-svg-icon";
@@ -38,6 +39,8 @@ class HaAlert extends LitElement {
 
   @property({ type: Boolean }) public dismissable = false;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property({ type: Boolean }) public narrow = false;
 
   public render() {
@@ -65,7 +68,7 @@ class HaAlert extends LitElement {
               ${this.dismissable
                 ? html`<ha-icon-button
                     @click=${this._dismissClicked}
-                    label="Dismiss alert"
+                    .label=${this.localize!("ui.common.dismiss_alert")}
                     .path=${mdiClose}
                   ></ha-icon-button>`
                 : nothing}
