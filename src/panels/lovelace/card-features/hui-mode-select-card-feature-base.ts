@@ -81,6 +81,14 @@ export abstract class HuiModeSelectCardFeatureBase<
     return undefined;
   }
 
+  protected _getServiceDomain(_stateObj: TEntity): string {
+    return this._serviceDomain;
+  }
+
+  protected _isValueValid(_value: string, _stateObj: TEntity): boolean {
+    return true;
+  }
+
   protected get _stateObj(): TEntity | undefined {
     if (!this.hass || !this.context?.entity_id) {
       return undefined;
@@ -223,17 +231,25 @@ export abstract class HuiModeSelectCardFeatureBase<
     const value = ev.detail.value ?? ev.detail.item?.value;
     const oldValue = this._getValue(this._stateObj);
 
-    if (value === oldValue || !value) {
+    if (
+      value === oldValue ||
+      !value ||
+      !this._isValueValid(value, this._stateObj)
+    ) {
       return;
     }
 
     this._currentValue = value;
 
     try {
-      await this.hass.callService(this._serviceDomain, this._serviceAction, {
-        entity_id: this._stateObj.entity_id,
-        [this._attribute]: value,
-      });
+      await this.hass.callService(
+        this._getServiceDomain(this._stateObj),
+        this._serviceAction,
+        {
+          entity_id: this._stateObj.entity_id,
+          [this._attribute]: value,
+        }
+      );
     } catch (_err) {
       this._currentValue = oldValue;
     }
