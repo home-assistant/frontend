@@ -43,10 +43,6 @@ class HuiMediaPlayerSoundModeCardFeature
 
   protected readonly _modesAttribute = "sound_mode_list";
 
-  protected get _configuredModes() {
-    return undefined;
-  }
-
   protected readonly _serviceDomain = "media_player";
 
   protected readonly _serviceAction = "select_sound_mode";

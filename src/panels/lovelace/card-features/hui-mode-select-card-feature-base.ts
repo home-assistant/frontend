@@ -50,7 +50,9 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   protected abstract readonly _modesAttribute: string;
 
-  protected abstract get _configuredModes(): string[] | undefined;
+  protected get _configuredModes(): string[] | undefined {
+    return undefined;
+  }
 
   protected readonly _dropdownIconPath?: string;
 

@@ -39,10 +39,6 @@ class HuiFanDirectionCardFeature
 
   protected readonly _modesAttribute = "direction";
 
-  protected get _configuredModes() {
-    return undefined;
-  }
-
   protected readonly _serviceDomain = "fan";
 
   protected readonly _serviceAction = "set_direction";

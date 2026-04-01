@@ -43,10 +43,6 @@ class HuiMediaPlayerSourceCardFeature
 
   protected readonly _modesAttribute = "source_list";
 
-  protected get _configuredModes() {
-    return undefined;
-  }
-
   protected readonly _serviceDomain = "media_player";
 
   protected readonly _serviceAction = "select_source";
