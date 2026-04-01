@@ -1,23 +1,13 @@
-import { mdiClose, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-navigation-picker";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import type {
-  HomeFrontendSystemData,
-  HomeQuickLink,
-} from "../../../data/frontend";
+import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
   HOME_SUMMARIES,
@@ -69,7 +59,6 @@ export class DialogEditHome
     }
 
     const hiddenSummaries = new Set(this._config?.hidden_summaries || []);
-    const quickLinks = this._config?.quick_links || [];
 
     return html`
       <ha-dialog
@@ -120,66 +109,6 @@ export class DialogEditHome
               </label>
             `;
           })}
-        </div>
-
-        <h3 class="section-header">
-          ${this.hass.localize("ui.panel.home.editor.quick_links")}
-        </h3>
-        <p class="section-description">
-          ${this.hass.localize("ui.panel.home.editor.quick_links_description")}
-        </p>
-        <div class="quick-links">
-          ${repeat(
-            quickLinks,
-            (_link, index) => index,
-            (link, index) => html`
-              <div class="quick-link-row">
-                <ha-icon-picker
-                  .hass=${this.hass}
-                  .value=${link.icon || ""}
-                  .label=${this.hass.localize(
-                    "ui.panel.home.editor.quick_link_icon"
-                  )}
-                  @value-changed=${(ev: CustomEvent) =>
-                    this._quickLinkChanged(index, "icon", ev.detail.value)}
-                ></ha-icon-picker>
-                <ha-textfield
-                  .value=${link.name}
-                  .label=${this.hass.localize(
-                    "ui.panel.home.editor.quick_link_name"
-                  )}
-                  @input=${(ev: InputEvent) =>
-                    this._quickLinkChanged(
-                      index,
-                      "name",
-                      (ev.target as HTMLInputElement).value
-                    )}
-                ></ha-textfield>
-                <ha-navigation-picker
-                  .hass=${this.hass}
-                  .value=${link.navigation_path}
-                  .label=${this.hass.localize(
-                    "ui.panel.home.editor.quick_link_path"
-                  )}
-                  @value-changed=${(ev: CustomEvent) =>
-                    this._quickLinkChanged(
-                      index,
-                      "navigation_path",
-                      ev.detail.value
-                    )}
-                ></ha-navigation-picker>
-                <ha-icon-button
-                  .path=${mdiClose}
-                  .label=${this.hass.localize("ui.common.remove")}
-                  @click=${() => this._removeQuickLink(index)}
-                ></ha-icon-button>
-              </div>
-            `
-          )}
-          <ha-button @click=${this._addQuickLink}>
-            <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-            ${this.hass.localize("ui.panel.home.editor.add_quick_link")}
-          </ha-button>
         </div>
 
         <ha-alert alert-type="info">
@@ -245,37 +174,6 @@ export class DialogEditHome
     };
   }
 
-  private _quickLinkChanged(
-    index: number,
-    field: keyof HomeQuickLink,
-    value: string
-  ): void {
-    const quickLinks = [...(this._config?.quick_links || [])];
-    quickLinks[index] = { ...quickLinks[index], [field]: value };
-    this._config = {
-      ...this._config,
-      quick_links: quickLinks,
-    };
-  }
-
-  private _removeQuickLink(index: number): void {
-    const quickLinks = [...(this._config?.quick_links || [])];
-    quickLinks.splice(index, 1);
-    this._config = {
-      ...this._config,
-      quick_links: quickLinks.length > 0 ? quickLinks : undefined,
-    };
-  }
-
-  private _addQuickLink(): void {
-    const quickLinks = [...(this._config?.quick_links || [])];
-    quickLinks.push({ name: "", icon: "mdi:link", navigation_path: "" });
-    this._config = {
-      ...this._config,
-      quick_links: quickLinks,
-    };
-  }
-
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
     const entities = ev.detail.value as string[];
     this._config = {
@@ -338,37 +236,6 @@ export class DialogEditHome
         gap: var(--ha-space-3);
         padding: var(--ha-space-1) 0;
         cursor: pointer;
-      }
-
-      .quick-links {
-        display: flex;
-        flex-direction: column;
-        gap: var(--ha-space-3);
-      }
-
-      .quick-link-row {
-        display: flex;
-        align-items: center;
-        gap: var(--ha-space-2);
-      }
-
-      .quick-link-row ha-icon-picker {
-        width: 80px;
-        flex-shrink: 0;
-      }
-
-      .quick-link-row ha-textfield {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .quick-link-row ha-navigation-picker {
-        flex: 2;
-        min-width: 0;
-      }
-
-      .quick-link-row ha-icon-button {
-        flex-shrink: 0;
       }
 
       ha-entities-picker {

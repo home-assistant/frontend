@@ -2446,13 +2446,7 @@
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "quick_links": "Quick links",
-          "quick_links_description": "Add links to dashboards, sidebar items, or other pages.",
-          "add_quick_link": "Add quick link",
-          "quick_link_name": "Name",
-          "quick_link_icon": "Icon",
-          "quick_link_path": "Navigation path"
+          "summaries_description": "Choose which summaries to show on your overview page."
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",

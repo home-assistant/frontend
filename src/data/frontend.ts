@@ -17,17 +17,10 @@ export interface CoreFrontendSystemData {
   onboarded_date?: string;
 }
 
-export interface HomeQuickLink {
-  name: string;
-  icon?: string;
-  navigation_path: string;
-}
-
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
-  quick_links?: HomeQuickLink[];
 }
 
 declare global {

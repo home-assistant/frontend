@@ -40,7 +40,6 @@ export interface HomeOverviewViewStrategyConfig {
   favorite_entities?: string[];
   home_panel?: boolean;
   hidden_summaries?: string[];
-  quick_links?: { name: string; icon?: string; navigation_path: string }[];
 }
 
 const computeAreaCard = (
@@ -345,21 +344,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
               : "/energy?historyBack=1",
           },
         } satisfies HomeSummaryCard),
-      // Quick links (chip-like cards without summary line)
-      ...(config.quick_links || []).map(
-        (link) =>
-          ({
-            type: "tile",
-            entity: "zone.home",
-            name: link.name,
-            icon: link.icon || "mdi:link",
-            hide_state: true,
-            tap_action: {
-              action: "navigate",
-              navigation_path: link.navigation_path,
-            },
-          }) satisfies TileCardConfig
-      ),
     ].filter(Boolean) as LovelaceCardConfig[];
 
     // Build summary cards for sidebar (full width: columns 12)
