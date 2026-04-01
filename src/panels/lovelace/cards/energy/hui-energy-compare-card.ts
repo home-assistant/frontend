@@ -145,9 +145,7 @@ export class HuiEnergyCompareCard
     return html`
       <ha-alert
         dismissable
-        .dismissLabel=${this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_compare.stop_comparing"
-        )}
+        .localize=${this.hass.localize}
         @alert-dismissed-clicked=${this._stopCompare}
       >
         ${this.hass.localize(
