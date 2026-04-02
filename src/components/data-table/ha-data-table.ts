@@ -103,6 +103,9 @@ export interface DataTableRowData {
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
+const INTERACTIVE_ELEMENTS_SELECTOR =
+  "a,button,input,select,textarea,ha-assist-chip,ha-button,ha-checkbox,ha-icon-button";
+const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
@@ -166,6 +169,10 @@ export class HaDataTable extends LitElement {
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
+  @query(".mdc-data-table__header-row") private _headerRow?: HTMLDivElement;
+
+  @query("lit-virtualizer") private _scroller?: HTMLElement;
+
   @state() private _collapsedGroups: string[] = [];
 
   @state() private _lastSelectedRowId: string | null = null;
@@ -179,6 +186,8 @@ export class HaDataTable extends LitElement {
   private _curRequest = 0;
 
   private _lastUpdate = 0;
+
+  private _didAutoFocusScroller = false;
 
   // @ts-ignore
   @restoreScroll(".scroller") private _savedScrollPos?: number;
@@ -243,15 +252,19 @@ export class HaDataTable extends LitElement {
   }
 
   protected updated() {
-    const header = this.renderRoot.querySelector(".mdc-data-table__header-row");
-    if (!header) {
+    if (!this._headerRow) {
       return;
     }
-    if (header.scrollWidth > header.clientWidth) {
-      this.style.setProperty("--table-row-width", `${header.scrollWidth}px`);
+    if (this._headerRow.scrollWidth > this._headerRow.clientWidth) {
+      this.style.setProperty(
+        "--table-row-width",
+        `${this._headerRow.scrollWidth}px`
+      );
     } else {
       this.style.removeProperty("--table-row-width");
     }
+
+    this._focusTableOnLoad();
   }
 
   public willUpdate(properties: PropertyValues) {
@@ -415,6 +428,7 @@ export class HaDataTable extends LitElement {
               ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
+          @pointerdown=${this._focusTable}
         >
           <div
             class="mdc-data-table__header-row"
@@ -517,6 +531,7 @@ export class HaDataTable extends LitElement {
                 <lit-virtualizer
                   scroller
                   class="mdc-data-table__content scroller ha-scrollbar"
+                  tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
                   @scroll=${this._saveScrollPos}
                   .items=${this._groupData(
                     this._filteredData,
@@ -850,9 +865,10 @@ export class HaDataTable extends LitElement {
     });
   }
 
-  private _handleHeaderRowCheckboxClick(ev: Event) {
-    const checkbox = ev.target as HaCheckbox;
-    if (checkbox.checked) {
+  private _handleHeaderRowCheckboxClick(
+    ev: Event & { currentTarget: HaCheckbox }
+  ) {
+    if (ev.currentTarget.checked) {
       this.selectAll();
     } else {
       this._checkedRows = [];
@@ -983,6 +999,49 @@ export class HaDataTable extends LitElement {
     this._debounceSearch((ev.target as HTMLInputElement).value);
   }
 
+  private _focusTable(ev: PointerEvent) {
+    if (this.autoHeight) {
+      return;
+    }
+    if (
+      ev.target instanceof HTMLElement &&
+      ev.target.closest(INTERACTIVE_ELEMENTS_SELECTOR)
+    ) {
+      return;
+    }
+    this._focusScroller();
+  }
+
+  private _focusTableOnLoad() {
+    if (
+      this._didAutoFocusScroller ||
+      this.autoHeight ||
+      (document.activeElement &&
+        !AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(
+          document.activeElement.tagName
+        ))
+    ) {
+      return;
+    }
+
+    this._focusScroller(true);
+  }
+
+  private _focusScroller(trackAutoFocus = false): void {
+    if (!this._scroller) {
+      return;
+    }
+
+    this._scroller.focus({
+      preventScroll: true,
+    });
+
+    if (trackAutoFocus) {
+      this._didAutoFocusScroller =
+        (this.renderRoot as ShadowRoot).activeElement === this._scroller;
+    }
+  }
+
   private async _calcTableHeight() {
     if (this.autoHeight) {
       return;
@@ -992,19 +1051,21 @@ export class HaDataTable extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
-    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  private _saveScrollPos(e: Event & { target: HTMLDivElement }) {
+    this._savedScrollPos = e.target.scrollTop;
 
-    this.renderRoot.querySelector(".mdc-data-table__header-row")!.scrollLeft = (
-      e.target as HTMLDivElement
-    ).scrollLeft;
+    if (this._headerRow) {
+      this._headerRow.scrollLeft = e.target.scrollLeft;
+    }
   }
 
   @eventOptions({ passive: true })
-  private _scrollContent(e: Event) {
-    this.renderRoot.querySelector("lit-virtualizer")!.scrollLeft = (
-      e.target as HTMLDivElement
-    ).scrollLeft;
+  private _scrollContent(e: Event & { target: HTMLDivElement }) {
+    if (!this._scroller) {
+      return;
+    }
+
+    this._scroller.scrollLeft = e.target.scrollLeft;
   }
 
   private _collapseGroup = (ev: Event) => {
@@ -1430,6 +1491,11 @@ export class HaDataTable extends LitElement {
         lit-virtualizer {
           contain: size layout !important;
           overscroll-behavior: contain;
+        }
+
+        lit-virtualizer:focus,
+        lit-virtualizer:focus-visible {
+          outline: none;
         }
       `,
     ];
