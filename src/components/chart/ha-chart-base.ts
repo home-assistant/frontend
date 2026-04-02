@@ -606,18 +606,29 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
-      // It rescales the Y-axis to the visible data while keeping one point
-      // just outside each boundary to avoid line gaps at the zoom edges.
-      // Only use it for line charts — it causes issues with bar charts.
-      filterMode: (ensureArray(this.data).every((s) => s.type === "line")
-        ? "boundaryFilter"
-        : "filter") as any,
+      filterMode: this._getDataZoomFilterMode() as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
+  }
+
+  // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
+  // It rescales the Y-axis to the visible data while keeping one point
+  // just outside each boundary to avoid line gaps at the zoom edges.
+  // Use "filter" for bar charts since boundaryFilter causes rendering issues.
+  // Use "weakFilter" for other types (e.g. custom/timeline) so bars
+  // spanning the visible range boundary are kept.
+  private _getDataZoomFilterMode(): string {
+    const series = ensureArray(this.data);
+    if (series.every((s) => s.type === "line")) {
+      return "boundaryFilter";
+    }
+    if (series.some((s) => s.type === "bar")) {
+      return "filter";
+    }
+    return "weakFilter";
   }
 
   private _createOptions(): ECOption {
