@@ -19,6 +19,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
 
 export type InputType =
   | "date"
@@ -288,7 +289,9 @@ export class HaInput extends LitElement {
   }
 
   public checkValidity(): boolean {
-    return this._input?.checkValidity() ?? true;
+    return nativeElementInternalsSupported
+      ? (this._input?.checkValidity() ?? true)
+      : true;
   }
 
   public reportValidity(): boolean {
