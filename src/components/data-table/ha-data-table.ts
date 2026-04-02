@@ -17,6 +17,10 @@ import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
@@ -865,10 +869,8 @@ export class HaDataTable extends LitElement {
     });
   }
 
-  private _handleHeaderRowCheckboxClick(
-    ev: Event & { currentTarget: HaCheckbox }
-  ) {
-    if (ev.currentTarget.checked) {
+  private _handleHeaderRowCheckboxClick(ev: HASSDomTargetEvent<HaCheckbox>) {
+    if (ev.target.checked) {
       this.selectAll();
     } else {
       this._checkedRows = [];
@@ -877,9 +879,10 @@ export class HaDataTable extends LitElement {
     this._lastSelectedRowId = null;
   }
 
-  private _handleRowCheckboxClicked = (ev: Event) => {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    const rowId = (checkbox as any).rowId;
+  private _handleRowCheckboxClicked = (
+    ev: HASSDomCurrentTargetEvent<HaCheckbox>
+  ) => {
+    const rowId = (ev.currentTarget as any).rowId;
 
     const groupedData = this._groupData(
       this._filteredData,
@@ -916,7 +919,7 @@ export class HaDataTable extends LitElement {
           ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
         ];
       }
-    } else if (!checkbox.checked) {
+    } else if (!ev.currentTarget.checked) {
       if (!this._checkedRows.includes(rowId)) {
         this._checkedRows = [...this._checkedRows, rowId];
       }
@@ -974,10 +977,9 @@ export class HaDataTable extends LitElement {
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
 
-  private _setTitle(ev: Event) {
-    const target = ev.currentTarget as HTMLElement;
-    if (target.scrollWidth > target.offsetWidth) {
-      target.setAttribute("title", target.innerText);
+  private _setTitle(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    if (ev.currentTarget.scrollWidth > ev.currentTarget.offsetWidth) {
+      ev.currentTarget.setAttribute("title", ev.currentTarget.innerText);
     }
   }
 
@@ -1051,7 +1053,7 @@ export class HaDataTable extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event & { target: HTMLDivElement }) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = e.target.scrollTop;
 
     if (this._headerRow) {
@@ -1060,7 +1062,7 @@ export class HaDataTable extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _scrollContent(e: Event & { target: HTMLDivElement }) {
+  private _scrollContent(e: HASSDomTargetEvent<HTMLDivElement>) {
     if (!this._scroller) {
       return;
     }
