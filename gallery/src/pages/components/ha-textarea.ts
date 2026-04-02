@@ -78,7 +78,7 @@ export class DemoHaTextarea extends LitElement {
                     placeholder="No label, just placeholder"
                   ></ha-textarea>
                   <ha-textarea
-                    autogrow
+                    resize="auto"
                     placeholder="No label, autogrow"
                   ></ha-textarea>
                 </div>

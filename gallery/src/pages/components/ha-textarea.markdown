@@ -14,7 +14,11 @@ Supports autogrow, hints, validation, and both material and outlined appearances
 ```html
 <ha-textarea label="Description" value="Hello world"></ha-textarea>
 
-<ha-textarea label="Notes" placeholder="Type here..." autogrow></ha-textarea>
+<ha-textarea
+  label="Notes"
+  placeholder="Type here..."
+  resize="auto"
+></ha-textarea>
 
 <ha-textarea label="Required field" required></ha-textarea>
 
