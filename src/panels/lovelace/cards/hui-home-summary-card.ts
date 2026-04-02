@@ -33,7 +33,7 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
-import { filterNeedsAttentionEntities } from "../strategies/maintenance/maintenance-view-strategy";
+import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";

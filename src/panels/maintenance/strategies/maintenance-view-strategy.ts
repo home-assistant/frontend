@@ -1,17 +1,17 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
+import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
   generateEntityFilter,
   type EntityFilter,
-} from "../../../../common/entity/entity_filter";
-import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
-import type { TileCardConfig } from "../../cards/types";
+} from "../../../common/entity/entity_filter";
+import { floorDefaultIcon } from "../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import type { TileCardConfig } from "../../lovelace/cards/types";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";

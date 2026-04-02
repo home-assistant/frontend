@@ -1,6 +1,6 @@
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { maintenanceEntityFilters } from "../../maintenance/maintenance-view-strategy";
+import { maintenanceEntityFilters } from "../../../../maintenance/strategies/maintenance-view-strategy";
 import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
 import { lightEntityFilters } from "../../../../light/strategies/light-view-strategy";
 import { securityEntityFilters } from "../../../../security/strategies/security-view-strategy";
