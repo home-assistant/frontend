@@ -55,6 +55,7 @@ import {
 import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
+import type { HassTabsSubpage } from "../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -169,6 +170,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
+
+  @query("hass-tabs-subpage") private _tabsSubpage?: HassTabsSubpage;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -423,6 +426,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       this._fetchIntegrationManifests(
         this.configEntries.map((entry) => entry.domain)
       );
+    }
+
+    if (this.configEntries && this.configEntriesInProgress) {
+      this._tabsSubpage?.focusContentScroller();
     }
   }
 
