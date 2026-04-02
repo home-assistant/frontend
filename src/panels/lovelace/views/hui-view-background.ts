@@ -33,12 +33,7 @@ export class HUIViewBackground extends LitElement {
   private _fetchMedia() {
     const backgroundImage = this._getBackgroundImageSource(this.background);
 
-    if (
-      this._currentMediaContentId === backgroundImage &&
-      (!backgroundImage ||
-        !isMediaSourceContentId(backgroundImage) ||
-        this.resolvedImage)
-    ) {
+    if (this._currentMediaContentId === backgroundImage) {
       return;
     }
     this._currentMediaContentId = backgroundImage;
@@ -87,7 +82,10 @@ export class HUIViewBackground extends LitElement {
       this.background
     );
     if (viewBackgroundOpacity !== null) {
-      this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
+      this.style.setProperty(
+        "--view-background-opacity",
+        viewBackgroundOpacity
+      );
     } else {
       this.style.removeProperty("--view-background-opacity");
     }
