@@ -269,10 +269,8 @@ export class HaDataTable extends LitElement {
 
     this._focusTableOnLoad();
 
-    if (
-      changedProps.has("selectable") &&
-      changedProps.get("selectable") !== undefined
-    ) {
+    // Refocus on toggle checkbox changes
+    if (changedProps.has("selectable")) {
       this._focusScroller();
     }
   }
