@@ -3,10 +3,13 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   isMediaSourceContentId,
   resolveMediaSource,
 } from "../../../data/media_source";
+
+const mediaSourceUrlCache = new Map<string, string>();
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -19,25 +22,48 @@ export class HUIViewBackground extends LitElement {
 
   @state({ attribute: false }) resolvedImage?: string;
 
+  private _currentMediaContentId?: string;
+
+  private _pendingMediaContentId?: string;
+
   protected render() {
     return nothing;
   }
 
   private _fetchMedia() {
-    const backgroundImage =
-      typeof this.background === "string"
-        ? this.background
-        : typeof this.background?.image === "object"
-          ? this.background.image.media_content_id
-          : this.background?.image;
+    const backgroundImage = this._getBackgroundImageSource(this.background);
+
+    if (
+      this._currentMediaContentId === backgroundImage &&
+      (!backgroundImage ||
+        !isMediaSourceContentId(backgroundImage) ||
+        this.resolvedImage)
+    ) {
+      return;
+    }
+    this._currentMediaContentId = backgroundImage;
 
     if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
+      const cachedImage = mediaSourceUrlCache.get(backgroundImage);
+      if (cachedImage) {
+        this._pendingMediaContentId = undefined;
+        this.resolvedImage = cachedImage;
+        return;
+      }
+      this._pendingMediaContentId = backgroundImage;
       resolveMediaSource(this.hass, backgroundImage).then((result) => {
+        if (this._pendingMediaContentId !== backgroundImage) {
+          return;
+        }
+        mediaSourceUrlCache.set(backgroundImage, result.url);
+        this._pendingMediaContentId = undefined;
         this.resolvedImage = result.url;
       });
-    } else {
-      this.resolvedImage = undefined;
+      return;
     }
+
+    this._pendingMediaContentId = undefined;
+    this.resolvedImage = undefined;
   }
 
   private _applyTheme() {
@@ -122,8 +148,13 @@ export class HUIViewBackground extends LitElement {
     }
 
     if (changedProperties.has("background")) {
-      applyTheme = true;
-      this._fetchMedia();
+      const oldBackground = changedProperties.get(
+        "background"
+      ) as this["background"];
+      if (!deepEqual(this.background, oldBackground)) {
+        applyTheme = true;
+        this._fetchMedia();
+      }
     }
     if (changedProperties.has("resolvedImage")) {
       applyTheme = true;
@@ -134,29 +165,18 @@ export class HUIViewBackground extends LitElement {
   }
 
   static styles = css`
-    /* Fixed background hack for Safari iOS */
-    :host([fixed-background]) {
-      display: block;
-      z-index: -1;
-      position: fixed;
-      background-attachment: scroll !important;
-    }
-    :host(:not([fixed-background])) {
-      z-index: -1;
-      position: absolute;
-    }
     :host {
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 100%;
-      width: 100%;
+      display: block;
       background: var(
         --view-background,
         var(--lovelace-background, var(--primary-background-color))
       );
-      opacity: var(--view-background-opacity);
+      opacity: var(--view-background-opacity, 1);
+      transition: background 0.3s ease;
+    }
+    /* Fixed background hack for Safari iOS */
+    :host([fixed-background]) {
+      background-attachment: scroll !important;
     }
   `;
 }
