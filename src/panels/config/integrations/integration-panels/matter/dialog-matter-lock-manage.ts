@@ -103,10 +103,24 @@ class DialogMatterLockManage extends LitElement {
                     "ui.panel.config.matter.lock.errors.no_user_management"
                   )}
                 </ha-alert>
+                ${this._renderDocsLink()}
               </div>`
             : html`<div class="content">${this._renderUsers()}</div>`}
       </ha-dialog>
     `;
+  }
+
+  private _renderDocsLink() {
+    return html`<a
+      class="docs-link"
+      href="https://www.home-assistant.io/integrations/matter/#lock-user-and-credential-management"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      ${this.hass.localize(
+        "ui.panel.config.matter.lock.errors.learn_more"
+      )}
+    </a>`;
   }
 
   private get _supportsPinCredential(): boolean {
@@ -128,13 +142,15 @@ class DialogMatterLockManage extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.matter.lock.errors.no_credential_types_supported"
               )}
-            </ha-alert>`
+            </ha-alert>
+            ${this._renderDocsLink()}`
           : !this._supportsPinCredential
             ? html`<ha-alert alert-type="info">
                 ${this.hass.localize(
                   "ui.panel.config.matter.lock.errors.pin_not_supported"
                 )}
-              </ha-alert>`
+              </ha-alert>
+              ${this._renderDocsLink()}`
             : nothing}
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
@@ -283,6 +299,12 @@ class DialogMatterLockManage extends LitElement {
         }
         .content > ha-alert {
           margin: var(--ha-space-4);
+        }
+        .docs-link {
+          display: block;
+          padding: 0 var(--ha-space-4);
+          color: var(--primary-color);
+          font-size: 14px;
         }
         .users-content {
           padding: var(--ha-space-4) 0;
