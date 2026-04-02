@@ -4,7 +4,7 @@ import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-md-list";
-import "../../../../../../components/ha-textfield";
+import "../../../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
@@ -59,19 +59,19 @@ class MatterAddDeviceGoogleHomeFallback extends LitElement {
             `ui.dialogs.matter-add-device.google_home_fallback.code_instructions`
           )}
         </p>
-        <ha-textfield
+        <ha-input
           label=${this.hass.localize(
             `ui.dialogs.matter-add-device.google_home_fallback.pairing_code`
           )}
           .value=${this._code}
           @input=${this._onCodeChanged}
-        ></ha-textfield>
+        ></ha-input>
       </div>
     `;
   }
 
-  private _onCodeChanged(ev: any) {
-    const value = ev.currentTarget.value;
+  private _onCodeChanged(ev: InputEvent) {
+    const value = (ev.target as HTMLInputElement).value;
     this._code = value;
     fireEvent(this, "pairing-code-changed", { code: value });
   }

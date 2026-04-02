@@ -11,7 +11,7 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptyWaterEnergyPreference,
@@ -240,18 +240,20 @@ export class DialogEnergyWaterSettings
           ></ha-radio>
         </ha-formfield>
         ${this._costs === "number"
-          ? html`<ha-textfield
+          ? html`<ha-input
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_number_input"
               )} (${unitPriceFixed})`}
               class="price-options"
               step="any"
               type="number"
-              .value=${this._source.number_energy_price}
+              .value=${this._source.number_energy_price !== null
+                ? String(this._source.number_energy_price)
+                : ""}
               @change=${this._numberPriceChanged}
-              .suffix=${unitPriceFixed}
             >
-            </ha-textfield>`
+              <span slot="end">${unitPriceFixed}</span>
+            </ha-input>`
           : ""}
 
         <ha-dialog-footer slot="footer">
@@ -279,10 +281,10 @@ export class DialogEnergyWaterSettings
     this._costs = input.value as any;
   }
 
-  private _numberPriceChanged(ev) {
+  private _numberPriceChanged(ev: InputEvent) {
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.target.value),
+      number_energy_price: Number((ev.target as HTMLInputElement).value),
       entity_energy_price: null,
       stat_cost: null,
     };

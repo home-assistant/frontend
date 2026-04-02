@@ -1,11 +1,7 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import "../../../components/ha-control-select-menu";
-import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
@@ -13,7 +9,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
+import { HuiModeSelectCardFeatureBase } from "./hui-mode-select-card-feature-base";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerSourceCardFeatureConfig,
@@ -37,25 +33,29 @@ export const supportsMediaPlayerSourceCardFeature = (
 
 @customElement("hui-media-player-source-card-feature")
 class HuiMediaPlayerSourceCardFeature
-  extends LitElement
+  extends HuiModeSelectCardFeatureBase<
+    MediaPlayerEntity,
+    MediaPlayerSourceCardFeatureConfig
+  >
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  protected readonly _attribute = "source";
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  protected readonly _modesAttribute = "source_list";
 
-  @state() private _config?: MediaPlayerSourceCardFeatureConfig;
+  protected readonly _serviceDomain = "media_player";
 
-  @state() private _currentSource?: string;
+  protected readonly _serviceAction = "select_source";
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      | MediaPlayerEntity
-      | undefined;
+  protected get _label(): string {
+    return this.hass!.localize("ui.card.media_player.source");
   }
+
+  protected readonly _hideLabel = false;
+
+  protected readonly _showDropdownOptionIcons = false;
+
+  protected readonly _allowIconsStyle = false;
 
   static getStubConfig(): MediaPlayerSourceCardFeatureConfig {
     return {
@@ -63,33 +63,12 @@ class HuiMediaPlayerSourceCardFeature
     };
   }
 
-  public setConfig(config: MediaPlayerSourceCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-    this._config = config;
-  }
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      (changedProps.has("hass") || changedProps.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._currentSource = this._stateObj.attributes.source;
-      }
-    }
-  }
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     const entityId = this.context?.entity_id;
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     return (
-      changedProps.has("_currentSource") ||
+      changedProps.has("_currentValue") ||
       changedProps.has("context") ||
       hasConfigChanged(this, changedProps) ||
       (changedProps.has("hass") &&
@@ -99,61 +78,12 @@ class HuiMediaPlayerSourceCardFeature
     );
   }
 
-  private async _valueChanged(ev: HaDropdownSelectEvent) {
-    const source = ev.detail.item?.value;
-    const oldSource = this._stateObj!.attributes.source;
-
-    if (source === oldSource || !source) {
-      return;
-    }
-
-    this._currentSource = source;
-
-    try {
-      await this.hass!.callService("media_player", "select_source", {
-        entity_id: this._stateObj!.entity_id,
-        source: source,
-      });
-    } catch (_err) {
-      this._currentSource = oldSource;
-    }
-  }
-
-  protected render() {
-    if (
-      !this._config ||
-      !this.hass ||
-      !this.context ||
-      !this._stateObj ||
-      !supportsMediaPlayerSourceCardFeature(this.hass, this.context)
-    ) {
-      return nothing;
-    }
-
-    const options = this._stateObj.attributes.source_list!.map((source) => ({
-      value: source,
-      label: this.hass!.formatEntityAttributeValue(
-        this._stateObj!,
-        "source",
-        source
-      ),
-    }));
-
-    return html`
-      <ha-control-select-menu
-        show-arrow
-        .label=${this.hass.localize("ui.card.media_player.source")}
-        .value=${this._currentSource}
-        .disabled=${this._stateObj.state === UNAVAILABLE}
-        .options=${options}
-        @wa-select=${this._valueChanged}
-      >
-      </ha-control-select-menu>
-    `;
-  }
-
-  static get styles() {
-    return cardFeatureStyles;
+  protected _isSupported(): boolean {
+    return !!(
+      this.hass &&
+      this.context &&
+      supportsMediaPlayerSourceCardFeature(this.hass, this.context)
+    );
   }
 }
 

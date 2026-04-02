@@ -5,14 +5,15 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -103,14 +104,14 @@ class DialogUserDetail extends LitElement {
             ${
               !user.system_generated
                 ? html`
-                    <ha-textfield
+                    <ha-input
                       autofocus
                       .value=${this._name}
                       @input=${this._nameChanged}
                       .label=${this.hass!.localize(
                         "ui.panel.config.users.editor.name"
                       )}
-                    ></ha-textfield>
+                    ></ha-input>
                     <ha-md-list-item>
                       <span slot="headline"
                         >${this.hass.localize(
@@ -268,9 +269,9 @@ class DialogUserDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HaInput).value ?? "";
   }
 
   private _adminChanged(ev): void {
@@ -397,9 +398,6 @@ class DialogUserDetail extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
-        }
-        ha-textfield {
-          display: block;
         }
         ha-md-list-item {
           --md-list-item-leading-space: 0;

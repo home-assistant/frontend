@@ -9,7 +9,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
 import type { HaInput } from "../../../components/input/ha-input";
 import "../../../components/input/ha-input-copy";
 import type { HaInputCopy } from "../../../components/input/ha-input-copy";
@@ -44,10 +43,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @state() private _cloudChecked = false;
 
   @query('[data-name="external_url"]')
-  private _externalUrlField?: HaInput;
+  private _externalUrlField?: HaInputCopy;
 
   @query('[data-name="internal_url"]')
-  private _internalUrlField?: HaInput;
+  private _internalUrlField?: HaInputCopy;
 
   protected hassSubscribe() {
     return [

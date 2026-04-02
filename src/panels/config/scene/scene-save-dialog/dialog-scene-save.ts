@@ -9,24 +9,21 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-domain-icon";
 
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
+import "../../../../components/input/ha-input";
 import "../../category/ha-category-picker";
 
 import type { GenDataTaskResult } from "../../../../data/ai_task";
+import type { SceneConfig } from "../../../../data/scene";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  EntityRegistryUpdate,
-  SceneSaveDialogParams,
-} from "./show-dialog-scene-save";
 import {
   type MetadataSuggestionInclude,
   type MetadataSuggestionResult,
@@ -34,7 +31,10 @@ import {
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
 import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
-import type { SceneConfig } from "../../../../data/scene";
+import type {
+  EntityRegistryUpdate,
+  SceneSaveDialogParams,
+} from "./show-dialog-scene-save";
 
 const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
   name: true,
@@ -113,7 +113,7 @@ class DialogSceneSave extends LitElement {
     }
 
     return html`
-      <ha-textfield
+      <ha-input
         dialogInitialFocus
         .value=${this._newName}
         .placeholder=${this.hass.localize(
@@ -121,12 +121,10 @@ class DialogSceneSave extends LitElement {
         )}
         .label=${this.hass.localize("ui.panel.config.scene.editor.name")}
         required
-        type="string"
         @input=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
 
       <ha-icon-picker
-        .hass=${this.hass}
         .label=${this.hass.localize("ui.panel.config.scene.editor.icon")}
         .value=${this._newIcon}
         @value-changed=${this._iconChanged}
@@ -353,19 +351,12 @@ class DialogSceneSave extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
         ha-icon-picker,
         ha-category-picker,
         ha-labels-picker,
         ha-area-picker {
           display: block;
-        }
-        ha-icon-picker,
-        ha-category-picker,
-        ha-labels-picker,
-        ha-area-picker,
-        ha-chip-set:has(> ha-assist-chip) {
-          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-5);
         }
         ha-alert {
           display: block;
@@ -374,6 +365,9 @@ class DialogSceneSave extends LitElement {
 
         ha-suggest-with-ai-button {
           margin: var(--ha-space-2) var(--ha-space-4);
+        }
+        ha-input {
+          --ha-input-padding-bottom: 0;
         }
       `,
     ];

@@ -295,7 +295,7 @@
         "up_to_date": "Up-to-date"
       },
       "text": {
-        "emtpy_value": "(empty value)"
+        "empty_value": "(empty value)"
       },
       "timer": {
         "actions": {
@@ -443,6 +443,7 @@
       "update": "Update",
       "hide": "Hide",
       "close": "Close",
+      "dismiss_alert": "Dismiss alert",
       "clear": "Clear",
       "leave": "Leave",
       "stay": "Stay",
@@ -517,6 +518,24 @@
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
           "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+        },
+        "period": {
+          "periods": {
+            "none": "None",
+            "today": "[%key:ui::panel::lovelace::editor::card::statistic::periods::today%]",
+            "tomorrow": "Tomorrow",
+            "yesterday": "[%key:ui::panel::lovelace::editor::card::statistic::periods::yesterday%]",
+            "this_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_week%]",
+            "last_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_week%]",
+            "next_week": "Next week",
+            "this_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_month%]",
+            "last_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_month%]",
+            "next_month": "Next month",
+            "this_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_year%]",
+            "last_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_year%]",
+            "next_7d": "Next 7 days",
+            "next_30d": "Next 30 days"
+          }
         },
         "selector": {
           "options": "Selector options",
@@ -2443,7 +2462,9 @@
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
-          "areas_page": "areas page"
+          "areas_page": "areas page",
+          "summaries": "Summaries",
+          "summaries_description": "Choose which summaries to show on your overview page."
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -5020,7 +5041,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Manual event received",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
@@ -5513,7 +5534,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Fire manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
@@ -8862,6 +8883,12 @@
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
+              "view_columns": {
+                "label": "Number of columns",
+                "min": "Minimum",
+                "max": "Maximum",
+                "unit": "columns"
+              },
               "numeric_state": {
                 "label": "Entity numeric state",
                 "above": "Above",
@@ -9296,7 +9323,7 @@
               "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
-              "manual_description": "Need to add a custom card or just want to manually write the YAML?",
+              "manual_description": "Need to add a community card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
               "paste": "Paste from clipboard",
@@ -9319,7 +9346,7 @@
               "suggested_cards": "Suggested cards",
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
-              "custom_cards": "Custom cards",
+              "custom_cards": "Community cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
@@ -9542,6 +9569,8 @@
               "hide_section_headers": "Hide section headers",
               "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
+              "due_date_period": "Due date",
+              "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
               "actions": {
                 "edit": "Default (edit item)",
@@ -9631,12 +9660,12 @@
             },
             "generic": {
               "manual": "Manual",
-              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "manual_description": "Need to add a community badge or just want to manually write the YAML?",
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} badge from the clipboard",
               "suggested_badges": "Suggested badges",
               "other_badges": "Other badges",
-              "custom_badges": "Custom badges"
+              "custom_badges": "Community badges"
             }
           },
           "entities": {

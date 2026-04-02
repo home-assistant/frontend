@@ -234,7 +234,11 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     const visible =
       conditionsMet ??
       (!this._config.visibility ||
-        checkConditionsMet(this._config.visibility, this.hass));
+        checkConditionsMet(
+          this._config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
 
     if (!visible) {
       this._setElementVisibility(false);
