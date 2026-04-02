@@ -11,11 +11,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-fade-in";
 import "../../components/ha-icon-next";
-import "../../components/ha-adaptive-dialog";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -59,7 +59,7 @@ class DialogRestart extends LitElement {
   private _dialogOpen = false;
 
   public async showDialog(): Promise<void> {
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
 
     this._open = true;
     this._dialogOpen = true;

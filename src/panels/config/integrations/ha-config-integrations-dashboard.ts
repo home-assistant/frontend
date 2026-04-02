@@ -386,7 +386,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._scanUSBDevices();
     this._scanImprovDevices();
 
-    if (isComponentLoaded(this.hass, "diagnostics")) {
+    if (isComponentLoaded(this.hass.config, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
         for (const info of infos) {
@@ -723,7 +723,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   }
 
   private async _scanUSBDevices() {
-    if (!isComponentLoaded(this.hass, "usb")) {
+    if (!isComponentLoaded(this.hass.config, "usb")) {
       return;
     }
     await scanUSBDevices(this.hass);

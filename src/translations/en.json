@@ -7612,7 +7612,20 @@
             "stop_rebuilding_routes": "Stop rebuilding routes",
             "rebuilding_routes_complete": "Routes have been rebuilt.",
             "rebuilding_routes_failed": "Route rebuilding failed. Additional information may be available in the logs.",
-            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled."
+            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled.",
+            "progress": {
+              "in_progress": "{count} in progress",
+              "completed": "{count} completed",
+              "failed": "{count} failed",
+              "skipped": "{count} skipped"
+            },
+            "details": {
+              "pending": "{count} pending devices",
+              "done": "{count} completed devices",
+              "failed": "{count} failed devices",
+              "skipped": "{count} skipped devices",
+              "no_devices": "No devices"
+            }
           },
           "rebuild_node_routes": {
             "title": "Rebuild routes for a Z-Wave device",

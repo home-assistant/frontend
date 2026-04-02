@@ -72,7 +72,6 @@ export class HaFilterDomains extends LitElement {
                     >
                       <ha-domain-icon
                         slot="graphic"
-                        .hass=${this.hass}
                         .domain=${domain}
                         brand-fallback
                       ></ha-domain-icon>

@@ -162,7 +162,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             >
             </ha-input-copy>
           </div>
-          ${hasCloud || !isComponentLoaded(this.hass, "cloud")
+          ${hasCloud || !isComponentLoaded(this.hass.config, "cloud")
             ? nothing
             : html`
                 <ha-alert alert-type="info">
@@ -298,7 +298,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   protected override firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       fetchCloudStatus(this.hass).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
         this._showCustomExternalUrl = !(

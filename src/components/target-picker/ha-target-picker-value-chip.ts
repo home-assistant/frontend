@@ -161,7 +161,13 @@ export class HaTargetPickerValueChip extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : itemId,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : itemId,
         fallbackIconPath: mdiDevices,
       };
     }

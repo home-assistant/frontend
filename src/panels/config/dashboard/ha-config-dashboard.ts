@@ -337,7 +337,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             : ""}
           ${this._pages(
             this.cloudStatus,
-            isComponentLoaded(this.hass, "cloud"),
+            isComponentLoaded(this.hass.config, "cloud"),
             this.hass.auth.external?.config.hasSettingsScreen
           ).map((categoryPages) =>
             categoryPages.length === 0

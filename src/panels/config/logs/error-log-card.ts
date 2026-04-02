@@ -126,7 +126,7 @@ class ErrorLogCard extends LitElement {
     const streaming =
       this._streamSupported &&
       this.provider &&
-      isComponentLoaded(this.hass, "hassio") &&
+      isComponentLoaded(this.hass.config, "hassio") &&
       this._loadingState !== "loading";
 
     const hasBoots = this._streamSupported && Array.isArray(this._boots);
@@ -403,7 +403,7 @@ class ErrorLogCard extends LitElement {
 
     const streamLogs =
       this._streamSupported &&
-      isComponentLoaded(this.hass, "hassio") &&
+      isComponentLoaded(this.hass.config, "hassio") &&
       this.provider;
 
     try {
@@ -512,7 +512,7 @@ class ErrorLogCard extends LitElement {
         // fallback to old method
         this._streamSupported = false;
         let logs = "";
-        if (isComponentLoaded(this.hass, "hassio") && this.provider) {
+        if (isComponentLoaded(this.hass.config, "hassio") && this.provider) {
           logs = await fetchHassioLogsLegacy(this.hass, this.provider);
         } else {
           logs = await fetchErrorLog(this.hass);
@@ -647,7 +647,10 @@ class ErrorLogCard extends LitElement {
   };
 
   private async _loadBoots() {
-    if (this._streamSupported && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this._streamSupported &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const { data } = await fetchHassioBoots(this.hass);
         const boots = Object.keys(data.boots)

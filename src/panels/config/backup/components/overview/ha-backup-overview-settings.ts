@@ -2,6 +2,7 @@ import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -16,10 +17,9 @@ import {
   getFormattedBackupTime,
   isLocalAgent,
 } from "../../../../../data/backup";
+import { getRecorderInfo } from "../../../../../data/recorder";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import { getRecorderInfo } from "../../../../../data/recorder";
 
 @customElement("ha-backup-overview-settings")
 class HaBackupBackupsSummary extends LitElement {
@@ -41,7 +41,7 @@ class HaBackupBackupsSummary extends LitElement {
   }
 
   private async _checkDbOption() {
-    if (isComponentLoaded(this.hass, "recorder")) {
+    if (isComponentLoaded(this.hass.config, "recorder")) {
       const info = await getRecorderInfo(this.hass.connection);
       this._showDbOption = info.db_in_default_location;
     } else {

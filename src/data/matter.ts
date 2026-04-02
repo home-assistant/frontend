@@ -52,7 +52,7 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
-  if (isComponentLoaded(hass, "thread")) {
+  if (isComponentLoaded(hass.config, "thread")) {
     const datasets = await listThreadDataSets(hass);
     const preferredDataset = datasets.datasets.find(
       (dataset) => dataset.preferred

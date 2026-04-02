@@ -235,7 +235,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const domain = computeDomain(this.entry.entity_id);
 
-    if (domain === "camera" && isComponentLoaded(this.hass, "stream")) {
+    if (domain === "camera" && isComponentLoaded(this.hass.config, "stream")) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
       if (stateObj && supportsFeature(stateObj, CAMERA_SUPPORT_STREAM)) {

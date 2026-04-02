@@ -362,7 +362,6 @@ export class HaAutomationAddSearch extends LitElement {
                   ? html`
                       <ha-domain-icon
                         slot="start"
-                        .hass=${this.hass}
                         .domain=${(item as DevicePickerItem).domain!}
                         brand-fallback
                       ></ha-domain-icon>

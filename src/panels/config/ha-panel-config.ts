@@ -734,7 +734,7 @@ class HaPanelConfig extends HassRouterPage {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       this._updateCloudStatus();
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {

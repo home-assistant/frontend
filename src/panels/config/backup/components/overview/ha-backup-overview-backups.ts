@@ -60,7 +60,7 @@ class HaBackupOverviewBackups extends LitElement {
   );
 
   render() {
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
     const stats = this._stats(this.backups, isHassio);
 
     return html`
