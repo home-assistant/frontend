@@ -848,8 +848,10 @@ export class HaDataTable extends LitElement {
     ): Promise<DataTableRowData[]> => filterData(data, columns, filter)
   );
 
-  private _handleHeaderClick(ev: Event) {
-    const columnId = (ev.currentTarget as any).columnId;
+  private _handleHeaderClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { columnId: string }>
+  ) {
+    const columnId = ev.currentTarget.columnId;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -880,9 +882,9 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleRowCheckboxClicked = (
-    ev: HASSDomCurrentTargetEvent<HaCheckbox>
+    ev: HASSDomCurrentTargetEvent<HaCheckbox & { rowId: string }>
   ) => {
-    const rowId = (ev.currentTarget as any).rowId;
+    const rowId = ev.currentTarget.rowId;
 
     const groupedData = this._groupData(
       this._filteredData,
@@ -957,7 +959,9 @@ export class HaDataTable extends LitElement {
     return checkedRows;
   }
 
-  private _handleRowClick = (ev: Event) => {
+  private _handleRowClick = (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { rowId: string }>
+  ) => {
     if (
       ev
         .composedPath()
@@ -973,7 +977,7 @@ export class HaDataTable extends LitElement {
     ) {
       return;
     }
-    const rowId = (ev.currentTarget as any).rowId;
+    const rowId = ev.currentTarget.rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
 
@@ -1070,8 +1074,10 @@ export class HaDataTable extends LitElement {
     this._scroller.scrollLeft = e.target.scrollLeft;
   }
 
-  private _collapseGroup = (ev: Event) => {
-    const groupName = (ev.currentTarget as any).group;
+  private _collapseGroup = (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { group: string }>
+  ) => {
+    const groupName = ev.currentTarget.group;
     if (this._collapsedGroups.includes(groupName)) {
       this._collapsedGroups = this._collapsedGroups.filter(
         (grp) => grp !== groupName
