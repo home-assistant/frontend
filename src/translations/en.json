@@ -9310,7 +9310,7 @@
               "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
-              "manual_description": "Need to add a custom card or just want to manually write the YAML?",
+              "manual_description": "Need to add a community card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
               "paste": "Paste from clipboard",
@@ -9333,7 +9333,7 @@
               "suggested_cards": "Suggested cards",
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
-              "custom_cards": "Custom cards",
+              "custom_cards": "Community cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
@@ -9647,12 +9647,12 @@
             },
             "generic": {
               "manual": "Manual",
-              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "manual_description": "Need to add a community badge or just want to manually write the YAML?",
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} badge from the clipboard",
               "suggested_badges": "Suggested badges",
               "other_badges": "Other badges",
-              "custom_badges": "Custom badges"
+              "custom_badges": "Community badges"
             }
           },
           "entities": {
