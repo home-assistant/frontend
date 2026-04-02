@@ -869,6 +869,8 @@ export class HaDataTable extends LitElement {
       column: columnId,
       direction: this.sortDirection,
     });
+
+    this._focusScroller();
   }
 
   private _handleHeaderRowCheckboxClick(ev: HASSDomTargetEvent<HaCheckbox>) {
