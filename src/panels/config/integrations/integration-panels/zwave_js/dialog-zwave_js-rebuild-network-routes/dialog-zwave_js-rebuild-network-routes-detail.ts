@@ -13,8 +13,10 @@ import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-domain-icon";
+import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-md-list";
 import "../../../../../../components/ha-md-list-item";
+import "../../../../../../components/ha-spinner";
 import {
   areasContext,
   configEntriesContext,
@@ -112,29 +114,38 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
           }
         )}
       >
-        ${!this._progress || this._progress.length === 0
-          ? html`<p>
-              ${this._localize(
-                "ui.panel.config.zwave_js.rebuild_network_routes.details.no_devices"
-              )}
-            </p>`
-          : this._zwaveDevices && this._configEntries
-            ? html`<ha-md-list>
-                ${this._filteredDevices(this._progress, this._zwaveDevices).map(
-                  (device) => html`
-                    <ha-md-list-item>
-                      <ha-domain-icon
-                        slot="start"
-                        .domain=${device.domain}
-                        brand-fallback
-                      ></ha-domain-icon>
-                      <span slot="headline">${device.name}</span>
-                      <span slot="supporting-text">${device.areaName}</span>
-                    </ha-md-list-item>
-                  `
+        ${!this._configEntries
+          ? html`
+              <ha-fade-in .delay=${500}
+                ><ha-spinner size="large"></ha-spinner
+              ></ha-fade-in>
+            `
+          : !this._progress || this._progress.length === 0
+            ? html`<p>
+                ${this._localize(
+                  "ui.panel.config.zwave_js.rebuild_network_routes.details.no_devices"
                 )}
-              </ha-md-list>`
-            : nothing}
+              </p>`
+            : this._zwaveDevices
+              ? html`<ha-md-list>
+                  ${this._filteredDevices(
+                    this._progress,
+                    this._zwaveDevices
+                  ).map(
+                    (device) => html`
+                      <ha-md-list-item>
+                        <ha-domain-icon
+                          slot="start"
+                          .domain=${device.domain}
+                          brand-fallback
+                        ></ha-domain-icon>
+                        <span slot="headline">${device.name}</span>
+                        <span slot="supporting-text">${device.areaName}</span>
+                      </ha-md-list-item>
+                    `
+                  )}
+                </ha-md-list>`
+              : nothing}
       </ha-dialog>
     `;
   }
@@ -205,12 +216,19 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
       css`
         ha-md-list {
           gap: var(--ha-space-2);
+          min-height: 300px;
         }
         ha-md-list-item {
           border: var(--ha-border-width-sm) solid
             var(--ha-color-border-neutral-normal);
           border-radius: var(--ha-border-radius-lg);
           background: var(--ha-color-fill-neutral-quiet-resting);
+        }
+        ha-fade-in {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 300px;
         }
       `,
     ];
