@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { transform } from "../../../../../../common/decorators/transform";
 import { computeAreaName } from "../../../../../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
-import { getDeviceContext } from "../../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../../common/entity/context/get_device_context";
 import { caseInsensitiveStringCompare } from "../../../../../../common/string/compare";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
@@ -183,7 +183,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
               deviceEntityLookup[device.id]
             ) || this._localize("ui.components.device-picker.unnamed_device");
 
-          const { area } = getDeviceContext(device, this._areas);
+          const area = getDeviceArea(device, this._areas);
 
           const areaName = area ? computeAreaName(area) : undefined;
 

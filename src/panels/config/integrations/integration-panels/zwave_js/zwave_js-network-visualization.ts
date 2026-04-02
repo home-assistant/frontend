@@ -5,7 +5,7 @@ import type {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
@@ -15,6 +15,7 @@ import type {
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
@@ -28,7 +29,6 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
-import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -187,7 +187,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       }
     }
     if (device) {
-      const area = getDeviceContext(device, this.hass.areas).area;
+      const area = getDeviceArea(device, this.hass.areas);
       if (area) {
         tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
       }
@@ -255,7 +255,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           | DeviceRegistryEntry
           | undefined;
         const area = device
-          ? getDeviceContext(device, this.hass.areas).area
+          ? getDeviceArea(device, this.hass.areas)
           : undefined;
         nodes.push({
           id: String(node.node_id),

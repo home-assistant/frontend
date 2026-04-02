@@ -12,7 +12,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { getDeviceContext } from "../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -53,7 +53,7 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const entities = this._getEntities();
 
-    const { area } = getDeviceContext(device, this.hass.areas);
+    const area = getDeviceArea(device, this.hass.areas);
 
     const supportingText = [
       device.model || device.sw_version || device.manufacturer,
