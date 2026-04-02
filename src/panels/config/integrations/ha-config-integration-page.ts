@@ -30,8 +30,12 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import {
+  ERROR_STATES,
+  getConfigEntries,
+  getSubEntries,
+} from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
@@ -69,6 +73,19 @@ import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
+
+export interface SubEntryData {
+  subEntry: SubEntry;
+  devices: DeviceRegistryEntry[];
+  services: DeviceRegistryEntry[];
+}
+
+export interface ConfigEntryData {
+  entry: ConfigEntry;
+  devices: DeviceRegistryEntry[];
+  services: DeviceRegistryEntry[];
+  subEntries: SubEntryData[];
+}
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -137,6 +154,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
+  @state() private _subEntries: Record<string, SubEntry[]> = {};
+
   @state() private _domainEntities: Record<string, string[]> = {};
 
   @queryAll("ha-config-entry-row")
@@ -195,9 +214,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._subEntries = {};
       this._fetchManifest();
       this._fetchDiagnostics();
       this._fetchEntitySources();
+    }
+    if (
+      changedProperties.has("configEntries") ||
+      changedProperties.has("_extraConfigEntries")
+    ) {
+      const entries = this._domainConfigEntries(
+        this.domain,
+        this._extraConfigEntries || this.configEntries
+      );
+      this._fetchAllSubEntries(entries);
     }
   }
 
@@ -284,6 +314,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           this.hass.locale.language
         );
       });
+
+    const normalData = this._buildEntryData(
+      normalEntries,
+      this.hass.devices,
+      this._subEntries,
+      this.hass.locale.language
+    );
+    const attentionData = this._buildEntryData(
+      attentionEntries,
+      this.hass.devices,
+      this._subEntries,
+      this.hass.locale.language
+    );
 
     const devicesRegs = this._getDevices(configEntries, this.hass.devices);
     const entities = this._getEntities(configEntries, this._entities);
@@ -649,7 +692,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </div>
               `
             : nothing}
-          ${attentionFlows.length || attentionEntries.length
+          ${attentionFlows.length || attentionData.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -689,8 +732,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         })}
                       </ha-md-list>`
                     : nothing}
-                  ${attentionEntries.map(
-                    (item) =>
+                  ${attentionData.map(
+                    (data) =>
                       html`<ha-config-entry-row
                         class="attention"
                         .hass=${this.hass}
@@ -698,8 +741,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         .manifest=${this._manifest}
                         .diagnosticHandler=${this._diagnosticHandler}
                         .entities=${this._entities}
-                        .entry=${item}
-                        data-entry-id=${item.entry_id}
+                        .data=${data}
+                        data-entry-id=${data.entry.entry_id}
                       ></ha-config-entry-row>`
                   )}
                 </div>
@@ -716,7 +759,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     `ui.panel.config.integrations.integration_page.entries`
                   )}
             </h3>
-            ${normalEntries.length === 0
+            ${normalData.length === 0
               ? html`<div class="card-content no-entries">
                   ${this._manifest &&
                   !this._manifest.config_flow &&
@@ -731,16 +774,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       )}
                 </div>`
               : html`
-                  ${normalEntries.map(
-                    (item) =>
+                  ${normalData.map(
+                    (data) =>
                       html`<ha-config-entry-row
                         .hass=${this.hass}
                         .narrow=${this.narrow}
                         .manifest=${this._manifest}
                         .diagnosticHandler=${this._diagnosticHandler}
                         .entities=${this._entities}
-                        .entry=${item}
-                        data-entry-id=${item.entry_id}
+                        .data=${data}
+                        data-entry-id=${data.entry.entry_id}
                       ></ha-config-entry-row>`
                   )}
                 `}
@@ -813,6 +856,102 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       // No issue, as diagnostics are not required
     }
   }
+
+  private async _fetchAllSubEntries(entries: ConfigEntry[]) {
+    const entriesWithSubs = entries.filter((e) => e.num_subentries > 0);
+    if (!entriesWithSubs.length) {
+      this._subEntries = {};
+      return;
+    }
+    const results: Record<string, SubEntry[]> = {};
+    await Promise.all(
+      entriesWithSubs.map(async (entry) => {
+        try {
+          results[entry.entry_id] = (
+            await getSubEntries(this.hass, entry.entry_id)
+          ).sort((a, b) =>
+            caseInsensitiveStringCompare(
+              a.title,
+              b.title,
+              this.hass.locale.language
+            )
+          );
+        } catch {
+          results[entry.entry_id] = [];
+        }
+      })
+    );
+    this._subEntries = results;
+  }
+
+  private _buildEntryData = memoizeOne(
+    (
+      entries: ConfigEntry[],
+      devices: HomeAssistant["devices"],
+      subEntries: Record<string, SubEntry[]>,
+      language: string
+    ): ConfigEntryData[] => {
+      const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
+        caseInsensitiveStringCompare(
+          a.name_by_user || a.name || "",
+          b.name_by_user || b.name || "",
+          language
+        );
+
+      return entries.map((entry) => {
+        const allDevices = Object.values(devices).filter((device) =>
+          device.config_entries.includes(entry.entry_id)
+        );
+
+        const entrySubs = (subEntries[entry.entry_id] || []).map(
+          (sub): SubEntryData => {
+            const subDevs = allDevices
+              .filter(
+                (d) =>
+                  d.config_entries_subentries[entry.entry_id]?.includes(
+                    sub.subentry_id
+                  ) && d.entry_type !== "service"
+              )
+              .sort(sortDevices);
+            const subServices = allDevices
+              .filter(
+                (d) =>
+                  d.config_entries_subentries[entry.entry_id]?.includes(
+                    sub.subentry_id
+                  ) && d.entry_type === "service"
+              )
+              .sort(sortDevices);
+            return { subEntry: sub, devices: subDevs, services: subServices };
+          }
+        );
+
+        const ownDevices = allDevices
+          .filter(
+            (d) =>
+              (!d.config_entries_subentries[entry.entry_id]?.length ||
+                d.config_entries_subentries[entry.entry_id][0] === null) &&
+              d.entry_type !== "service"
+          )
+          .sort(sortDevices);
+
+        const ownServices = allDevices
+          .filter(
+            (d) =>
+              (!d.config_entries_subentries[entry.entry_id]?.length ||
+                d.config_entries_subentries[entry.entry_id][0] === null) &&
+              d.entry_type === "service"
+          )
+          .sort(sortDevices);
+
+        return {
+          entry,
+          devices: ownDevices,
+          services: ownServices,
+          subEntries: entrySubs,
+        };
+      });
+    }
+  );
 
   private async _handleEnableDebugLogging() {
     const integration = this.domain;
