@@ -15,15 +15,19 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-icon";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
-import { findBatteryEntity } from "../../../data/entity/entity_registry";
+import {
+  findBatteryChargingEntity,
+  findBatteryEntity,
+} from "../../../data/entity/entity_registry";
 import type { VacuumEntity } from "../../../data/vacuum";
 import {
   VacuumEntityFeature,
@@ -62,24 +66,19 @@ class MoreInfoVacuum extends LitElement {
       return undefined;
     }
 
-    const stateDisplay = supportsFeature(
-      this.stateObj,
-      VacuumEntityFeature.STATUS
-    )
-      ? this.hass.formatEntityAttributeValue(this.stateObj, "status") ||
-        this.hass.formatEntityState(this.stateObj)
-      : this.hass.formatEntityState(this.stateObj);
-
-    const batteryText = this._getBatteryText();
-    if (batteryText) {
-      return `${stateDisplay} · ${batteryText}`;
+    if (
+      supportsFeature(this.stateObj, VacuumEntityFeature.STATUS) &&
+      this.stateObj.attributes.status
+    ) {
+      return this.hass.formatEntityAttributeValue(this.stateObj, "status");
     }
-    return stateDisplay;
+
+    return undefined;
   }
 
-  private _getBatteryText(): string | undefined {
+  private _renderBattery() {
     if (!this.stateObj || !this.hass) {
-      return undefined;
+      return nothing;
     }
 
     const deviceId = this.hass.entities[this.stateObj.entity_id]?.device_id;
@@ -98,25 +97,48 @@ class MoreInfoVacuum extends LitElement {
       battery &&
       (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
     ) {
-      if (batteryDomain === "sensor") {
-        return this.hass.formatEntityState(battery);
-      }
-      return undefined;
+      const batteryChargingEntity = findBatteryChargingEntity(
+        this.hass,
+        entities
+      );
+      const batteryCharging = batteryChargingEntity
+        ? this.hass.states[batteryChargingEntity?.entity_id]
+        : undefined;
+
+      return html`
+        <div class="battery">
+          <span>
+            ${batteryDomain === "binary_sensor"
+              ? ""
+              : `${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%`}
+            <ha-battery-icon
+              .hass=${this.hass}
+              .batteryStateObj=${battery}
+              .batteryChargingStateObj=${batteryCharging}
+            ></ha-battery-icon>
+          </span>
+        </div>
+      `;
     }
 
-    // Use deprecated battery_level attribute
+    // Use deprecated battery_level and battery_icon attributes
     if (
       supportsFeature(this.stateObj, VacuumEntityFeature.BATTERY) &&
       this.stateObj.attributes.battery_level
     ) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj,
-        "battery_level",
-        Math.round(this.stateObj.attributes.battery_level)
-      );
+      return html`
+        <div class="battery">
+          <span>
+            ${Math.round(
+              this.stateObj.attributes.battery_level
+            )}${blankBeforePercent(this.hass.locale)}%
+            <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
+          </span>
+        </div>
+      `;
     }
 
-    return undefined;
+    return nothing;
   }
 
   private _callVacuumService(service: string) {
@@ -274,8 +296,13 @@ class MoreInfoVacuum extends LitElement {
       VacuumEntityFeature.FAN_SPEED
     );
 
-    const hasSecondaryControls =
-      supportsLocate || supportsCleanSpot || supportsCleanArea;
+    const hasAnyCommand =
+      this._supportsStartPause ||
+      supportsStop ||
+      supportsReturnHome ||
+      supportsLocate ||
+      supportsCleanSpot ||
+      supportsCleanArea;
 
     return html`
       <ha-more-info-state-header
@@ -284,13 +311,15 @@ class MoreInfoVacuum extends LitElement {
         .stateOverride=${this._stateOverride}
       ></ha-more-info-state-header>
 
+      ${this._renderBattery()}
+
       <div class="controls">
         <ha-state-control-vacuum-status
           .stateObj=${this.stateObj}
           .hass=${this.hass}
         ></ha-state-control-vacuum-status>
 
-        ${this._supportsStartPause || supportsStop || supportsReturnHome
+        ${hasAnyCommand
           ? html`
               <div class="buttons">
                 <ha-control-button-group>
@@ -335,54 +364,48 @@ class MoreInfoVacuum extends LitElement {
                         </ha-control-button>
                       `
                     : nothing}
+                  ${supportsLocate
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.locate"
+                          )}
+                          @click=${this._handleLocate}
+                          .disabled=${isUnavailable}
+                        >
+                          <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsCleanSpot
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.clean_spot"
+                          )}
+                          @click=${this._handleCleanSpot}
+                          .disabled=${isUnavailable}
+                        >
+                          <ha-svg-icon .path=${mdiTargetVariant}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsCleanArea
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.clean_rooms"
+                          )}
+                          @click=${this._handleCleanRooms}
+                          .disabled=${isUnavailable}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiViewDashboardVariant}
+                          ></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
                 </ha-control-button-group>
-              </div>
-            `
-          : nothing}
-        ${hasSecondaryControls
-          ? html`
-              <div class="secondary-buttons">
-                ${supportsLocate
-                  ? html`
-                      <ha-outlined-icon-button
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.vacuum.locate"
-                        )}
-                        @click=${this._handleLocate}
-                        .disabled=${isUnavailable}
-                      >
-                        <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
-                      </ha-outlined-icon-button>
-                    `
-                  : nothing}
-                ${supportsCleanSpot
-                  ? html`
-                      <ha-outlined-icon-button
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.vacuum.clean_spot"
-                        )}
-                        @click=${this._handleCleanSpot}
-                        .disabled=${isUnavailable}
-                      >
-                        <ha-svg-icon .path=${mdiTargetVariant}></ha-svg-icon>
-                      </ha-outlined-icon-button>
-                    `
-                  : nothing}
-                ${supportsCleanArea
-                  ? html`
-                      <ha-outlined-icon-button
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.vacuum.clean_rooms"
-                        )}
-                        @click=${this._handleCleanRooms}
-                        .disabled=${isUnavailable}
-                      >
-                        <ha-svg-icon
-                          .path=${mdiViewDashboardVariant}
-                        ></ha-svg-icon>
-                      </ha-outlined-icon-button>
-                    `
-                  : nothing}
               </div>
             `
           : nothing}
@@ -421,22 +444,33 @@ class MoreInfoVacuum extends LitElement {
     return [
       moreInfoControlStyle,
       css`
+        .battery {
+          text-align: end;
+          font-size: var(--ha-font-size-s);
+          color: var(--secondary-text-color);
+          margin-top: calc(var(--ha-space-4) * -1);
+          margin-bottom: var(--ha-space-2);
+          padding-inline-end: var(--ha-space-2);
+        }
+
+        .battery span {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+        }
+
+        .battery ha-battery-icon,
+        .battery ha-icon {
+          --mdc-icon-size: 18px;
+        }
+
         ha-state-control-vacuum-status {
           margin-bottom: var(--ha-space-4);
         }
 
         ha-control-button-group {
-          --control-button-group-thickness: 60px;
-          width: 100%;
-          max-width: 400px;
-        }
-
-        .secondary-buttons {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--ha-space-3);
-          margin-top: var(--ha-space-3);
+          --control-button-group-thickness: 48px;
+          max-width: 450px;
         }
       `,
     ];

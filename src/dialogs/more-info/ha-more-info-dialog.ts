@@ -839,7 +839,15 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                     .params=${this._childView.viewParams}
                                   ></ha-more-info-view-vacuum-segment-mapping>
                                 `
-                              : nothing}
+                              : this._childView.viewTag ===
+                                  "ha-more-info-view-vacuum-clean-rooms"
+                                ? html`
+                                    <ha-more-info-view-vacuum-clean-rooms
+                                      .hass=${this.hass}
+                                      .params=${this._childView.viewParams}
+                                    ></ha-more-info-view-vacuum-clean-rooms>
+                                  `
+                                : nothing}
                         </div>
                       `
                     : this._currView === "info"

@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, svg } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -72,7 +72,7 @@ export class HaStateControlVacuumStatus extends LitElement {
             r="90"
             class="glow"
             fill="var(--vacuum-color)"
-            opacity="0.1"
+            opacity="0.08"
           />
 
           <!-- Vacuum body -->
@@ -81,149 +81,128 @@ export class HaStateControlVacuumStatus extends LitElement {
             <circle
               cx="100"
               cy="100"
-              r="60"
+              r="62"
               fill="var(--card-background-color, #fff)"
               stroke="var(--vacuum-color)"
-              stroke-width="3"
+              stroke-width="2.5"
             />
 
-            <!-- Inner ring detail -->
-            <circle
-              cx="100"
-              cy="100"
-              r="48"
+            <!-- Front bumper sensor arc -->
+            <path
+              d="M 55 75 A 55 55 0 0 1 145 75"
               fill="none"
               stroke="var(--vacuum-color)"
-              stroke-width="1.5"
-              opacity="0.3"
+              stroke-width="3.5"
+              stroke-linecap="round"
+              class="bumper"
             />
 
-            <!-- Top bumper sensor -->
-            ${svg`
-              <path
-                d="M 60 72 A 50 50 0 0 1 140 72"
-                fill="none"
-                stroke="var(--vacuum-color)"
-                stroke-width="3"
-                stroke-linecap="round"
-                class="bumper"
-              />
-            `}
+            <!-- LIDAR tower (top center) -->
+            <circle
+              cx="100"
+              cy="78"
+              r="10"
+              fill="var(--card-background-color, #fff)"
+              stroke="var(--vacuum-color)"
+              stroke-width="2"
+            />
+            <circle
+              cx="100"
+              cy="78"
+              r="4"
+              fill="var(--vacuum-color)"
+              opacity="0.3"
+              class="lidar-dot"
+            />
 
             <!-- Front sensor dot -->
             <circle
               cx="100"
-              cy="50"
-              r="4"
+              cy="46"
+              r="3.5"
               fill="var(--vacuum-color)"
               class="sensor"
             />
 
-            <!-- Left brush -->
+            <!-- Left side brush -->
             <g class="brush brush-left">
-              <line
-                x1="52"
-                y1="108"
-                x2="38"
-                y2="98"
+              <circle
+                cx="52"
+                cy="120"
+                r="12"
+                fill="none"
                 stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
+                stroke-width="1.5"
+                opacity="0.4"
+                stroke-dasharray="3 3"
               />
-              <line
-                x1="52"
-                y1="108"
-                x2="36"
-                y2="112"
-                stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
-              />
-              <line
-                x1="52"
-                y1="108"
-                x2="42"
-                y2="122"
-                stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
+              <circle
+                cx="52"
+                cy="120"
+                r="3"
+                fill="var(--vacuum-color)"
+                opacity="0.5"
               />
             </g>
 
-            <!-- Right brush -->
+            <!-- Right side brush -->
             <g class="brush brush-right">
-              <line
-                x1="148"
-                y1="108"
-                x2="162"
-                y2="98"
+              <circle
+                cx="148"
+                cy="120"
+                r="12"
+                fill="none"
                 stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
+                stroke-width="1.5"
+                opacity="0.4"
+                stroke-dasharray="3 3"
               />
-              <line
-                x1="148"
-                y1="108"
-                x2="164"
-                y2="112"
-                stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
-              />
-              <line
-                x1="148"
-                y1="108"
-                x2="158"
-                y2="122"
-                stroke="var(--vacuum-color)"
-                stroke-width="2"
-                stroke-linecap="round"
-                opacity="0.6"
+              <circle
+                cx="148"
+                cy="120"
+                r="3"
+                fill="var(--vacuum-color)"
+                opacity="0.5"
               />
             </g>
 
-            <!-- Center button/display -->
+            <!-- Center button -->
             <circle
               cx="100"
-              cy="100"
-              r="16"
+              cy="108"
+              r="10"
               fill="var(--vacuum-color)"
-              opacity="0.15"
+              opacity="0.12"
               class="center-display"
             />
             <circle
               cx="100"
-              cy="100"
-              r="8"
+              cy="108"
+              r="5"
               fill="var(--vacuum-color)"
-              opacity="0.4"
+              opacity="0.35"
               class="center-button"
             />
           </g>
 
           <!-- Dust particles (only visible when cleaning) -->
           <g class="particles">
-            <circle cx="30" cy="80" r="2.5" fill="var(--vacuum-color)" />
-            <circle cx="170" cy="120" r="2" fill="var(--vacuum-color)" />
-            <circle cx="25" cy="130" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="175" cy="80" r="2" fill="var(--vacuum-color)" />
-            <circle cx="50" cy="160" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="150" cy="45" r="2" fill="var(--vacuum-color)" />
+            <circle cx="28" cy="85" r="2" fill="var(--vacuum-color)" />
+            <circle cx="172" cy="115" r="1.5" fill="var(--vacuum-color)" />
+            <circle cx="25" cy="135" r="1.5" fill="var(--vacuum-color)" />
+            <circle cx="175" cy="75" r="2" fill="var(--vacuum-color)" />
+            <circle cx="45" cy="155" r="1.5" fill="var(--vacuum-color)" />
+            <circle cx="155" cy="50" r="1.5" fill="var(--vacuum-color)" />
           </g>
 
           <!-- Dock indicator (only visible when docked) -->
           <g class="dock-indicator">
             <rect
               x="82"
-              y="170"
+              y="172"
               width="36"
-              height="6"
-              rx="3"
+              height="5"
+              rx="2.5"
               fill="var(--vacuum-color)"
               opacity="0.3"
             />
@@ -232,7 +211,7 @@ export class HaStateControlVacuumStatus extends LitElement {
           <!-- Return home path (only visible when returning) -->
           <g class="return-path">
             <path
-              d="M 85 165 Q 80 150 90 140"
+              d="M 85 168 Q 78 152 88 140"
               fill="none"
               stroke="var(--vacuum-color)"
               stroke-width="1.5"
@@ -240,7 +219,7 @@ export class HaStateControlVacuumStatus extends LitElement {
               opacity="0.4"
             />
             <path
-              d="M 100 175 L 95 168 L 105 168 Z"
+              d="M 100 178 L 95 170 L 105 170 Z"
               fill="var(--vacuum-color)"
               opacity="0.4"
             />
@@ -250,9 +229,9 @@ export class HaStateControlVacuumStatus extends LitElement {
           <g class="error-indicator">
             <text
               x="100"
-              y="106"
+              y="115"
               text-anchor="middle"
-              font-size="28"
+              font-size="26"
               font-weight="bold"
               fill="var(--vacuum-color)"
             >
@@ -298,13 +277,13 @@ export class HaStateControlVacuumStatus extends LitElement {
     }
 
     .cleaning .brush-left {
-      animation: brush-spin-left 0.6s linear infinite;
-      transform-origin: 52px 108px;
+      animation: brush-spin 1s linear infinite;
+      transform-origin: 52px 120px;
     }
 
     .cleaning .brush-right {
-      animation: brush-spin-right 0.6s linear infinite;
-      transform-origin: 148px 108px;
+      animation: brush-spin 1s linear infinite reverse;
+      transform-origin: 148px 120px;
     }
 
     .cleaning .particles {
@@ -340,7 +319,6 @@ export class HaStateControlVacuumStatus extends LitElement {
       opacity: 0.8;
     }
 
-    /* -- CHARGING (docked) state with glow -- */
     .docked .center-display {
       animation: charge-pulse 2s ease-in-out infinite;
     }
@@ -386,16 +364,7 @@ export class HaStateControlVacuumStatus extends LitElement {
       }
     }
 
-    @keyframes brush-spin-left {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(-360deg);
-      }
-    }
-
-    @keyframes brush-spin-right {
+    @keyframes brush-spin {
       0% {
         transform: rotate(0deg);
       }
@@ -443,22 +412,20 @@ export class HaStateControlVacuumStatus extends LitElement {
     @keyframes docked-glow {
       0%,
       100% {
-        opacity: 0.1;
+        opacity: 0.08;
       }
       50% {
-        opacity: 0.2;
+        opacity: 0.18;
       }
     }
 
     @keyframes charge-pulse {
       0%,
       100% {
-        opacity: 0.15;
-        r: 16;
+        opacity: 0.12;
       }
       50% {
-        opacity: 0.35;
-        r: 18;
+        opacity: 0.3;
       }
     }
 
@@ -476,7 +443,7 @@ export class HaStateControlVacuumStatus extends LitElement {
       0%,
       40%,
       100% {
-        opacity: 0.4;
+        opacity: 0.35;
       }
       20% {
         opacity: 0.1;
