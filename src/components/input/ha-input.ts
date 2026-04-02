@@ -378,54 +378,6 @@ export class HaInput extends WaInputMixin(LitElement) {
       }
       :host([type="color"]) wa-input::part(input) {
         padding-top: var(--ha-space-6);
-        cursor: pointer;
-      }
-      :host([type="color"]) wa-input.no-label::part(input) {
-        padding: var(--ha-space-2);
-      }
-      :host([type="color"]) wa-input.no-label::part(base) {
-        padding: 0;
-      }
-      wa-input::part(input)::placeholder {
-        color: var(--ha-color-neutral-60);
-      }
-
-      wa-input::part(base):hover {
-        background-color: var(--ha-color-form-background-hover);
-      }
-
-      :host([appearance="outlined"]) wa-input::part(base):hover {
-        border-color: var(--ha-color-border-neutral-normal);
-      }
-      :host([appearance="outlined"]:focus-within) wa-input::part(base) {
-        border-color: var(--primary-color);
-      }
-
-      wa-input:disabled::part(base) {
-        background-color: var(--ha-color-form-background-disabled);
-      }
-
-      wa-input::part(end) {
-        color: var(--ha-color-text-secondary);
-      }
-
-      :host([appearance="material"]:focus-within)
-        wa-input.invalid::part(base)::after,
-      :host([appearance="material"])
-        wa-input.invalid:not([disabled])::part(base)::after {
-        background-color: var(--ha-color-border-danger-normal);
-      }
-
-      wa-input::part(input) {
-        padding-top: var(--ha-space-3);
-        padding-inline-start: var(--input-padding-inline-start, 0);
-      }
-
-      wa-input.no-label::part(input) {
-        padding-top: 0;
-      }
-      :host([type="color"]) wa-input::part(input) {
-        padding-top: var(--ha-space-6);
         padding-bottom: 2px;
         cursor: pointer;
       }
@@ -437,10 +389,6 @@ export class HaInput extends WaInputMixin(LitElement) {
       }
       wa-input::part(input)::placeholder {
         color: var(--ha-color-neutral-60);
-      }
-
-      :host(:focus-within) wa-input::part(base) {
-        outline: none;
       }
 
       wa-input::part(base):hover {
@@ -460,25 +408,6 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input:disabled::part(label) {
         opacity: 0.5;
-      }
-
-      wa-input::part(hint) {
-        min-height: var(--ha-space-5);
-        margin-block-start: 0;
-        margin-inline-start: var(--ha-space-3);
-        font-size: var(--ha-font-size-xs);
-        display: flex;
-        align-items: center;
-        color: var(--ha-color-text-secondary);
-      }
-
-      wa-input.hint-hidden::part(hint) {
-        height: 0;
-        min-height: 0;
-      }
-
-      .error {
-        color: var(--ha-color-on-danger-quiet);
       }
 
       wa-input::part(end) {
