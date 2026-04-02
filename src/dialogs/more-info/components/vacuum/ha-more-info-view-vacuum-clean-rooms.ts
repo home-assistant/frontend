@@ -1,21 +1,20 @@
+import { mdiCheckCircle, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-check-list-item";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
-import type { Segment } from "../../../../data/vacuum";
-import { getVacuumSegments } from "../../../../data/vacuum";
+import "../../../../components/ha-svg-icon";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import {
   getExtendedEntityRegistryEntry,
   type ExtEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import type { HomeAssistant } from "../../../../types";
-
-interface DisplaySegment extends Segment {
-  areaName?: string;
-}
 
 @customElement("ha-more-info-view-vacuum-clean-rooms")
 export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
@@ -23,9 +22,9 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
 
   @property({ attribute: false }) public params!: { entityId: string };
 
-  @state() private _segments?: DisplaySegment[];
+  @state() private _mappedAreaIds?: string[];
 
-  @state() private _selectedSegmentIds = new Set<string>();
+  @state() private _selectedAreaIds = new Set<string>();
 
   @state() private _loading = true;
 
@@ -34,40 +33,25 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
   @state() private _submitting = false;
 
   protected firstUpdated() {
-    this._loadSegments();
+    this._loadAreas();
   }
 
-  private async _loadSegments() {
+  private async _loadAreas() {
     if (!this.params.entityId) return;
     this._loading = true;
     this._error = undefined;
 
     try {
-      const [segmentsResult, entry] = await Promise.all([
-        getVacuumSegments(this.hass, this.params.entityId),
-        getExtendedEntityRegistryEntry(this.hass, this.params.entityId).catch(
-          () => undefined as ExtEntityRegistryEntry | undefined
-        ),
-      ]);
+      const entry: ExtEntityRegistryEntry | undefined =
+        await getExtendedEntityRegistryEntry(
+          this.hass,
+          this.params.entityId
+        ).catch(() => undefined);
 
       const areaMapping = entry?.options?.vacuum?.area_mapping || {};
-
-      // Build reverse mapping: segment ID -> area ID
-      const segmentToArea: Record<string, string> = {};
-      for (const [areaId, segmentIds] of Object.entries(areaMapping)) {
-        for (const segId of segmentIds) {
-          segmentToArea[segId] = areaId;
-        }
-      }
-
-      this._segments = segmentsResult.segments.map((seg) => {
-        const areaId = segmentToArea[seg.id];
-        const area = areaId ? this.hass.areas[areaId] : undefined;
-        return {
-          ...seg,
-          areaName: area?.name,
-        };
-      });
+      this._mappedAreaIds = Object.keys(areaMapping).filter(
+        (areaId) => this.hass.areas[areaId]
+      );
     } catch (err: any) {
       this._error = err.message || "Failed to load rooms";
     } finally {
@@ -75,34 +59,25 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
     }
   }
 
-  private _toggleSegment(ev: Event) {
-    const segmentId = (ev.currentTarget as HTMLElement).dataset.segmentId!;
-    const selected = new Set(this._selectedSegmentIds);
-    if (selected.has(segmentId)) {
-      selected.delete(segmentId);
+  private _toggleArea(ev: Event) {
+    const areaId = (ev.currentTarget as HTMLElement).dataset.areaId!;
+    const selected = new Set(this._selectedAreaIds);
+    if (selected.has(areaId)) {
+      selected.delete(areaId);
     } else {
-      selected.add(segmentId);
+      selected.add(areaId);
     }
-    this._selectedSegmentIds = selected;
-  }
-
-  private _selectAll() {
-    if (!this._segments) return;
-    this._selectedSegmentIds = new Set(this._segments.map((s) => s.id));
-  }
-
-  private _deselectAll() {
-    this._selectedSegmentIds = new Set();
+    this._selectedAreaIds = selected;
   }
 
   private async _startCleaning() {
-    if (!this.params.entityId || this._selectedSegmentIds.size === 0) return;
+    if (!this.params.entityId || this._selectedAreaIds.size === 0) return;
     this._submitting = true;
 
     try {
       await this.hass.callService("vacuum", "clean_area", {
         entity_id: this.params.entityId,
-        area: [...this._selectedSegmentIds],
+        area: [...this._selectedAreaIds],
       });
     } catch (err: any) {
       this._error = err.message || "Failed to start cleaning";
@@ -111,18 +86,32 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
     }
   }
 
-  private _groupSegments(
-    segments: DisplaySegment[]
-  ): Map<string, DisplaySegment[]> {
-    const groups = new Map<string, DisplaySegment[]>();
-    for (const seg of segments) {
-      const group = seg.group || "";
-      if (!groups.has(group)) {
-        groups.set(group, []);
-      }
-      groups.get(group)!.push(seg);
-    }
-    return groups;
+  private _renderAreaCard(areaId: string) {
+    const area: AreaRegistryEntry | undefined = this.hass.areas[areaId];
+    if (!area) return nothing;
+
+    const isSelected = this._selectedAreaIds.has(areaId);
+
+    return html`
+      <div
+        class="area-card ${classMap({ selected: isSelected })}"
+        data-area-id=${areaId}
+        @click=${this._toggleArea}
+      >
+        ${isSelected
+          ? html`<ha-svg-icon
+              class="check"
+              .path=${mdiCheckCircle}
+            ></ha-svg-icon>`
+          : nothing}
+        <div class="area-icon">
+          ${area.icon
+            ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+            : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
+        </div>
+        <div class="area-name">${area.name}</div>
+      </div>
+    `;
   }
 
   protected render() {
@@ -142,7 +131,7 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
       `;
     }
 
-    if (!this._segments || this._segments.length === 0) {
+    if (!this._mappedAreaIds || this._mappedAreaIds.length === 0) {
       return html`
         <div class="content">
           <p class="empty">
@@ -154,66 +143,57 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
       `;
     }
 
-    const allSelected = this._selectedSegmentIds.size === this._segments.length;
-    const groups = this._groupSegments(this._segments);
+    // Get areas and group by floor
+    const mappedAreas = this._mappedAreaIds
+      .map((id) => this.hass.areas[id])
+      .filter(Boolean) as AreaRegistryEntry[];
+
+    const floors = Object.values(this.hass.floors);
+    const hierarchy = getAreasFloorHierarchy(floors, mappedAreas);
 
     return html`
       <div class="content">
-        <div class="select-actions">
-          <ha-button
-            @click=${allSelected ? this._deselectAll : this._selectAll}
-          >
-            ${allSelected
-              ? this.hass.localize(
-                  "ui.components.subpage-data-table.select_none"
-                )
-              : this.hass.localize(
-                  "ui.components.subpage-data-table.select_all"
-                )}
-          </ha-button>
-        </div>
-
-        <div class="segments-list">
-          ${[...groups.entries()].map(([groupName, segments]) => {
-            const showGroupHeader = groupName && groups.size > 1;
+        ${hierarchy.floors
+          .filter((floor) => floor.areas.length > 0)
+          .map((floor) => {
+            const floorEntry = this.hass.floors[floor.id];
             return html`
-              ${showGroupHeader
-                ? html`<div class="group-header">${groupName}</div>`
-                : nothing}
-              ${segments.map(
-                (segment) => html`
-                  <ha-check-list-item
-                    left
-                    .selected=${this._selectedSegmentIds.has(segment.id)}
-                    data-segment-id=${segment.id}
-                    @request-selected=${this._toggleSegment}
-                  >
-                    <span class="segment-name">
-                      ${segment.areaName || segment.name}
-                    </span>
-                    ${segment.areaName && segment.areaName !== segment.name
-                      ? html`<span class="segment-original"
-                          >${segment.name}</span
-                        >`
-                      : nothing}
-                  </ha-check-list-item>
-                `
-              )}
+              <div class="floor-section">
+                <div class="floor-header">${floorEntry?.name || floor.id}</div>
+                <div class="area-grid">
+                  ${floor.areas.map((areaId) => this._renderAreaCard(areaId))}
+                </div>
+              </div>
             `;
           })}
-        </div>
+        ${hierarchy.areas.length > 0
+          ? html`
+              <div class="floor-section">
+                ${hierarchy.floors.some((f) => f.areas.length > 0)
+                  ? html`<div class="floor-header">
+                      ${this.hass.localize("ui.common.other")}
+                    </div>`
+                  : nothing}
+                <div class="area-grid">
+                  ${hierarchy.areas.map((areaId) =>
+                    this._renderAreaCard(areaId)
+                  )}
+                </div>
+              </div>
+            `
+          : nothing}
       </div>
 
       <div class="footer">
         <ha-button
           @click=${this._startCleaning}
-          .disabled=${this._selectedSegmentIds.size === 0 || this._submitting}
+          .disabled=${this._selectedAreaIds.size === 0 || this._submitting}
         >
           ${this.hass.localize(
             "ui.dialogs.more_info_control.vacuum.start_cleaning_rooms"
           )}
-          ${this._selectedSegmentIds.size > 0
-            ? ` (${this._selectedSegmentIds.size})`
+          ${this._selectedAreaIds.size > 0
+            ? ` (${this._selectedAreaIds.size})`
             : ""}
         </ha-button>
       </div>
@@ -237,6 +217,7 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
     .content {
       flex: 1;
       overflow-y: auto;
+      padding: var(--ha-space-4);
     }
 
     .empty {
@@ -245,37 +226,81 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
       padding: var(--ha-space-8);
     }
 
-    .select-actions {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(--ha-space-2) var(--ha-space-4);
+    .floor-section {
+      margin-bottom: var(--ha-space-4);
     }
 
-    .segments-list {
-      padding: 0 var(--ha-space-2);
-    }
-
-    .group-header {
+    .floor-header {
+      font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
-      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-1);
+      padding: var(--ha-space-1) var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
     }
 
-    ha-check-list-item {
-      --mdc-theme-secondary: var(--primary-color);
+    .area-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: var(--ha-space-2);
     }
 
-    .segment-name {
-      font-size: var(--ha-font-size-m);
+    .area-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-space-3) var(--ha-space-2);
+      border-radius: var(--ha-border-radius-xl);
+      background: var(--card-background-color, #fff);
+      border: 1.5px solid var(--divider-color);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        border-color 180ms ease,
+        background-color 180ms ease;
+      min-height: 80px;
     }
 
-    .segment-original {
-      font-size: var(--ha-font-size-s);
+    .area-card:hover {
+      background: var(--secondary-background-color);
+    }
+
+    .area-card.selected {
+      border-color: var(--primary-color);
+      background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+    }
+
+    .area-card .check {
+      position: absolute;
+      top: 6px;
+      inset-inline-end: 6px;
+      color: var(--primary-color);
+      --mdc-icon-size: 18px;
+    }
+
+    .area-icon {
+      --mdc-icon-size: 28px;
       color: var(--secondary-text-color);
-      margin-inline-start: var(--ha-space-2);
+      margin-bottom: var(--ha-space-1);
+    }
+
+    .area-card.selected .area-icon {
+      color: var(--primary-color);
+    }
+
+    .area-name {
+      font-size: var(--ha-font-size-xs);
+      text-align: center;
+      line-height: var(--ha-line-height-condensed);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
     }
 
     .footer {
