@@ -32,7 +32,7 @@ class PanelMaintenance extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
+  @state() private _searchParams = new URLSearchParams(window.location.search);
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -90,7 +90,7 @@ class PanelMaintenance extends LitElement {
     this._setLovelace();
   };
 
-  private _back(ev) {
+  private _back(ev: Event) {
     ev.stopPropagation();
     goBack();
   }
@@ -99,41 +99,38 @@ class PanelMaintenance extends LitElement {
     return html`
       <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          ${
-            this._searchParms.has("historyBack")
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._back}
-                    slot="navigationIcon"
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    slot="navigationIcon"
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-          }
-          <div class="main-title">${this.hass.localize("panel.maintenance")}</div>
-        </div>
-      </div>
-      ${
-        this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
+          ${this._searchParams.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
                   .hass=${this.hass}
                   .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing
-      }
-      </hui-view-container>
+                ></ha-menu-button>
+              `}
+          <div class="main-title">
+            ${this.hass.localize("panel.maintenance")}
+          </div>
+        </div>
+      </div>
+      ${this._lovelace
+        ? html`
+            <hui-view-container .hass=${this.hass}>
+              <hui-view-background .hass=${this.hass}> </hui-view-background>
+              <hui-view
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .lovelace=${this._lovelace}
+                .index=${this._viewIndex}
+              ></hui-view>
+            </hui-view-container>
+          `
+        : nothing}
     `;
   }
 
@@ -185,7 +182,6 @@ class PanelMaintenance extends LitElement {
                 0px
               )
           );
-          padding-top: var(--safe-area-inset-top);
           z-index: 4;
           display: flex;
           flex-direction: row;
