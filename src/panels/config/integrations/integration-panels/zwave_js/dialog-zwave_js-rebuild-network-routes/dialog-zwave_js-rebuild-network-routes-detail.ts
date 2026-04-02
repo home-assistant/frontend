@@ -43,22 +43,6 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
   private _localize!: ContextType<typeof localizeContext>;
 
   @state()
-  @consume({ context: localeContext, subscribe: true })
-  private _locale!: ContextType<typeof localeContext>;
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
-
-  @state()
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
-
-  @state()
-  @consume({ context: areasContext, subscribe: true })
-  private _areas!: ContextType<typeof areasContext>;
-
-  @state()
   @consume({ context: configEntriesContext, subscribe: true })
   private _configEntries?: ContextType<typeof configEntriesContext>;
 
@@ -97,6 +81,18 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
     },
   })
   private _progress?: number[];
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: localeContext, subscribe: true })
+  private _locale!: ContextType<typeof localeContext>;
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
 
   protected render() {
     if (!this.params) {
