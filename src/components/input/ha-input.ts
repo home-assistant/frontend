@@ -641,6 +641,7 @@ export class HaInput extends LitElement {
 
     wa-input.hint-hidden::part(hint) {
       height: 0;
+      min-height: 0;
     }
 
     .error {
