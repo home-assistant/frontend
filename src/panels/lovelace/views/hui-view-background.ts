@@ -77,12 +77,20 @@ export class HUIViewBackground extends LitElement {
     );
     const viewBackground = this._computeBackgroundProperty(this.background);
     this.toggleAttribute("fixed-background", fixedBackground);
-    this.style.setProperty("--view-background", viewBackground);
+    if (viewBackground !== null) {
+      this.style.setProperty("--view-background", viewBackground);
+    } else if (!this._isPendingMediaSourceBackground()) {
+      this.style.removeProperty("--view-background");
+    }
 
     const viewBackgroundOpacity = this._computeBackgroundOpacityProperty(
       this.background
     );
-    this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
+    if (viewBackgroundOpacity !== null) {
+      this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
+    } else {
+      this.style.removeProperty("--view-background-opacity");
+    }
   }
 
   private _isFixedBackground(
@@ -101,17 +109,14 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      const image =
-        typeof background.image === "object"
-          ? background.image.media_content_id || ""
-          : background.image;
-      if (isMediaSourceContentId(image) && !this.resolvedImage) {
+      const image = this._getBackgroundImageSource(background);
+      if (image && isMediaSourceContentId(image) && !this.resolvedImage) {
         return null;
       }
       const alignment = background.alignment ?? "center";
       const size = background.size ?? "cover";
       const repeat = background.repeat ?? "no-repeat";
-      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(this.resolvedImage || image)}')`;
+      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(this.resolvedImage || image || "")}')`;
     }
     if (typeof background === "string") {
       if (isMediaSourceContentId(background) && !this.resolvedImage) {
@@ -131,6 +136,28 @@ export class HUIViewBackground extends LitElement {
       }
     }
     return null;
+  }
+
+  private _getBackgroundImageSource(
+    background?: string | LovelaceViewBackgroundConfig
+  ): string | undefined {
+    if (typeof background === "string") {
+      return background;
+    }
+    if (typeof background?.image === "object") {
+      return background.image.media_content_id;
+    }
+    return background?.image;
+  }
+
+  private _isPendingMediaSourceBackground() {
+    const backgroundImage = this._getBackgroundImageSource(this.background);
+    if (!backgroundImage || !isMediaSourceContentId(backgroundImage)) {
+      return false;
+    }
+    return (
+      this._pendingMediaContentId === backgroundImage && !this.resolvedImage
+    );
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {

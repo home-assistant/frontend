@@ -614,15 +614,16 @@ class HUIRoot extends LitElement {
               : nothing}
           </slot>
         </div>
+        <hui-view-background
+          .hass=${this.hass}
+          .background=${background}
+        ></hui-view-background>
         <hui-view-container
           class=${this._editMode ? "has-tab-bar" : ""}
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
-        >
-          <hui-view-background .hass=${this.hass} .background=${background}>
-          </hui-view-background>
-        </hui-view-container>
+        ></hui-view-container>
       </div>
     `;
   }
@@ -1489,6 +1490,14 @@ class HUIRoot extends LitElement {
           flex-direction: column;
           flex: 1 1 100%;
           max-width: 100%;
+        }
+        hui-view-background {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: -1;
         }
         /**
          * In edit mode we have the tab bar on a new line *
