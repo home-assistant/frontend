@@ -11,9 +11,9 @@ import { createSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
+import { labelsContext } from "../../../../data/context";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import { labelsContext } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -153,7 +153,8 @@ export class HaDeviceCard extends LitElement {
                         )}"
                         >${value.toUpperCase()}</a
                       >`
-                  : type === "mac" && isComponentLoaded(this.hass.config, "dhcp")
+                  : type === "mac" &&
+                      isComponentLoaded(this.hass.config, "dhcp")
                     ? html`MAC:
                         <a
                           href="/config/dhcp?${createSearchParam({

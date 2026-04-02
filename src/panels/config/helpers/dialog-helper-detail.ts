@@ -241,7 +241,8 @@ export class DialogHelperDetail extends LitElement {
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
             const isLoaded =
-              !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
+              !(domain in HELPERS) ||
+              isComponentLoaded(this.hass.config, domain);
             return html`
               <ha-list-item
                 hasmeta

@@ -46,7 +46,10 @@ export class EntitySettingsHelperTab extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    this._componentLoaded = isComponentLoaded(this.hass.config, this.entry.platform);
+    this._componentLoaded = isComponentLoaded(
+      this.hass.config,
+      this.entry.platform
+    );
   }
 
   protected updated(changedProperties: PropertyValues) {
