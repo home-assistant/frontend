@@ -1335,11 +1335,7 @@ class DialogAddAutomationElement
       ) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
@@ -1410,11 +1406,7 @@ class DialogAddAutomationElement
       if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
@@ -1486,11 +1478,7 @@ class DialogAddAutomationElement
       if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),

@@ -306,7 +306,6 @@ export class QuickBar extends LitElement {
                 <ha-domain-icon
                   slot="start"
                   style="margin: var(--ha-space-1);"
-                  .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
                 ></ha-domain-icon>
