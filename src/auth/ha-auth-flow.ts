@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import { nativeElementInternalsSupported } from "../common/feature-detect/support-native-element-internals";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
@@ -374,7 +375,8 @@ export class HaAuthFlow extends LitElement {
       return;
     }
 
-    if (!this._form?.reportValidity()) {
+    // Let core validate the form when element internals are not natively supported.
+    if (nativeElementInternalsSupported && !this._form?.reportValidity()) {
       return;
     }
 
