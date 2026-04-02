@@ -103,7 +103,6 @@ class DialogRestart extends LitElement {
       return nothing;
     }
 
-    const showReload = this.hass.userData?.showAdvanced;
     const showRebootShutdown = !!this._hostInfo;
 
     const dialogTitle = this.hass.localize("ui.dialogs.restart.heading");
@@ -135,30 +134,24 @@ class DialogRestart extends LitElement {
               `
             : html`
                 <ha-md-list dialogInitialFocus>
-                  ${showReload
-                    ? html`
-                        <ha-md-list-item
-                          type="button"
-                          @click=${this._reload}
-                          .disabled=${this._loadingBackupInfo}
-                        >
-                          <div slot="headline">
-                            ${this.hass.localize(
-                              "ui.dialogs.restart.reload.title"
-                            )}
-                          </div>
-                          <div slot="supporting-text">
-                            ${this.hass.localize(
-                              "ui.dialogs.restart.reload.description"
-                            )}
-                          </div>
-                          <div slot="start" class="icon-background reload">
-                            <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-                          </div>
-                          <ha-icon-next slot="end"></ha-icon-next>
-                        </ha-md-list-item>
-                      `
-                    : nothing}
+                  <ha-md-list-item
+                    type="button"
+                    @click=${this._reload}
+                    .disabled=${this._loadingBackupInfo}
+                  >
+                    <div slot="headline">
+                      ${this.hass.localize("ui.dialogs.restart.reload.title")}
+                    </div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.reload.description"
+                      )}
+                    </div>
+                    <div slot="start" class="icon-background reload">
+                      <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>
                   <ha-md-list-item
                     type="button"
                     .action=${"restart"}
