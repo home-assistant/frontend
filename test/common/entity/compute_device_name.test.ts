@@ -102,17 +102,17 @@ describe("fallbackDeviceName", () => {
       { entity_id: "sensor.temp" },
       { entity_id: "light.lamp" },
     ];
-    expect(fallbackDeviceName(hass, entities)).toBe("Temperature");
+    expect(fallbackDeviceName(hass.states, entities)).toBe("Temperature");
   });
 
   it("returns undefined if no entities have state", () => {
     expect(
-      fallbackDeviceName({ states: {} } as any, [{ entity_id: "none" } as any])
+      fallbackDeviceName({}, [{ entity_id: "none" } as any])
     ).toBeUndefined();
   });
 
   it("works with string entity ids", () => {
-    expect(fallbackDeviceName(hass, ["light.lamp"])).toBe("Lamp");
+    expect(fallbackDeviceName(hass.states, ["light.lamp"])).toBe("Lamp");
   });
 });
 
