@@ -9,6 +9,7 @@ import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_
 import { getDeviceContext } from "../../../common/entity/context/get_device_context";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
+import "../../../components/ha-checkbox";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
@@ -33,6 +34,10 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ type: Number }) public total?: number;
 
   @property({ attribute: false }) public isInstallable = true;
+
+  @property({ attribute: false }) public multiSelectMode = false;
+
+  @property({ attribute: false }) public selectedEntities?: Set<string>;
 
   @state() private _devices?: DeviceRegistryEntry[];
 
@@ -124,25 +129,35 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
               type="button"
-              @click=${this._openMoreInfo}
+              @click=${this.multiSelectMode
+                ? this._toggleSelection
+                : this._openMoreInfo}
             >
               <div slot="start">
-                <state-badge
-                  .title=${entity.attributes.title ||
-                  entity.attributes.friendly_name}
-                  .hass=${this.hass}
-                  .stateObj=${entity}
-                  class=${ifDefined(
-                    this.narrow && entity.attributes.in_progress
-                      ? "updating"
-                      : undefined
-                  )}
-                ></state-badge>
-                ${this.narrow && entity.attributes.in_progress
-                  ? html`<div class="absolute">
-                      ${this._renderUpdateProgress(entity)}
-                    </div>`
-                  : nothing}
+                ${this.multiSelectMode
+                  ? html`<ha-checkbox
+                      .checked=${this.selectedEntities?.has(entity.entity_id) ??
+                      false}
+                      reducedTouchTarget
+                    ></ha-checkbox>`
+                  : html`
+                      <state-badge
+                        .title=${entity.attributes.title ||
+                        entity.attributes.friendly_name}
+                        .hass=${this.hass}
+                        .stateObj=${entity}
+                        class=${ifDefined(
+                          this.narrow && entity.attributes.in_progress
+                            ? "updating"
+                            : undefined
+                        )}
+                      ></state-badge>
+                      ${this.narrow && entity.attributes.in_progress
+                        ? html`<div class="absolute">
+                            ${this._renderUpdateProgress(entity)}
+                          </div>`
+                        : nothing}
+                    `}
               </div>
               <span slot="headline"
                 >${deviceEntry
@@ -170,6 +185,12 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
   private _openMoreInfo(ev: MouseEvent): void {
     fireEvent(this, "hass-more-info", {
+      entityId: (ev.currentTarget as any).entity_id,
+    });
+  }
+
+  private _toggleSelection(ev: MouseEvent): void {
+    fireEvent(this, "update-entity-selected", {
       entityId: (ev.currentTarget as any).entity_id,
     });
   }
@@ -215,6 +236,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         div[slot="start"] {
           position: relative;
         }
+        ha-checkbox {
+          pointer-events: none;
+        }
         div.absolute {
           position: absolute;
           left: 6px;
@@ -231,5 +255,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-config-updates": HaConfigUpdates;
+  }
+  interface HASSDomEvents {
+    "update-entity-selected": { entityId: string };
   }
 }

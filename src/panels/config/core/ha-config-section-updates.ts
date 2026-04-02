@@ -1,7 +1,9 @@
 import {
+  mdiFormatListChecks,
   mdiDotsVertical,
   mdiLocationEnter,
   mdiLocationExit,
+  mdiMenuDown,
   mdiRefresh,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
@@ -11,6 +13,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -30,6 +33,7 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "@home-assistant/webawesome/dist/components/divider/divider";
@@ -44,6 +48,10 @@ class HaConfigSectionUpdates extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _showSkipped = false;
+
+  @state() private _multiSelectMode = false;
+
+  @state() private _selectedEntities = new Set<string>();
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
@@ -65,6 +73,12 @@ class HaConfigSectionUpdates extends LitElement {
       this._showSkipped
     );
 
+    const selectedInstallableIds = canInstallUpdates
+      .filter((e) => this._selectedEntities.has(e.entity_id))
+      .map((e) => e.entity_id);
+    const selectedCount = this._selectedEntities.size;
+    const showFabs = this._multiSelectMode && selectedCount > 0;
+
     return html`
       <hass-subpage
         .backPath=${this._searchParms.has("historyBack")
@@ -75,6 +89,49 @@ class HaConfigSectionUpdates extends LitElement {
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
         <div slot="toolbar-icon">
+          <ha-dropdown @wa-select=${this._handleSelectDropdown}>
+            <ha-assist-chip
+              .label=${this.hass.localize(
+                "ui.components.subpage-data-table.select"
+              )}
+              slot="trigger"
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiFormatListChecks}
+              ></ha-svg-icon>
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon>
+            </ha-assist-chip>
+            ${this._multiSelectMode
+              ? html`
+                  <ha-dropdown-item value="all">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.select_all"
+                    )}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item value="none">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.select_none"
+                    )}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item value="disable_select_mode">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                `
+              : html`
+                  <ha-dropdown-item value="enable_select_mode">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.enter_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                `}
+          </ha-dropdown>
           <ha-icon-button
             .label=${this.hass.localize(
               "ui.panel.config.updates.check_updates"
@@ -127,6 +184,9 @@ class HaConfigSectionUpdates extends LitElement {
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
                       .isInstallable=${true}
+                      .multiSelectMode=${this._multiSelectMode}
+                      .selectedEntities=${this._selectedEntities}
+                      @update-entity-selected=${this._handleSelectionChanged}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -142,6 +202,9 @@ class HaConfigSectionUpdates extends LitElement {
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
                       .isInstallable=${false}
+                      .multiSelectMode=${this._multiSelectMode}
+                      .selectedEntities=${this._selectedEntities}
+                      @update-entity-selected=${this._handleSelectionChanged}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -157,6 +220,27 @@ class HaConfigSectionUpdates extends LitElement {
                   </div>
                 </ha-card>
               `}
+        </div>
+        <div class="fab-container ${showFabs ? "visible" : ""}">
+          ${selectedInstallableIds.length
+            ? html`
+                <ha-fab
+                  extended
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.update"
+                  ) + ` (${selectedInstallableIds.length})`}
+                  @click=${this._installSelected}
+                ></ha-fab>
+              `
+            : nothing}
+          <ha-fab
+            extended
+            .label=${this.hass.localize(
+              "ui.dialogs.more_info_control.update.skip"
+            ) + ` (${selectedCount})`}
+            class="skip-fab"
+            @click=${this._skipSelected}
+          ></ha-fab>
         </div>
       </hass-subpage>
     `;
@@ -200,6 +284,84 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
+  private _toggleMultiSelectMode(): void {
+    this._multiSelectMode = !this._multiSelectMode;
+    if (!this._multiSelectMode) {
+      this._selectedEntities = new Set();
+    }
+  }
+
+  private _handleSelectDropdown(ev: HaDropdownSelectEvent): void {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "enable_select_mode":
+        ev.preventDefault();
+        this._toggleMultiSelectMode();
+        break;
+      case "disable_select_mode":
+        this._toggleMultiSelectMode();
+        break;
+      case "all":
+        this._selectAll();
+        break;
+      case "none":
+        this._selectNone();
+        break;
+    }
+  }
+
+  private _selectAll(): void {
+    const allEntities = [
+      ...this._filterInstallableUpdateEntities(
+        this.hass.states,
+        this._showSkipped
+      ),
+      ...this._filterNotInstallableUpdateEntities(
+        this.hass.states,
+        this._showSkipped
+      ),
+    ];
+    this._selectedEntities = new Set(allEntities.map((e) => e.entity_id));
+  }
+
+  private _selectNone(): void {
+    this._selectedEntities = new Set();
+  }
+
+  private _handleSelectionChanged(ev: CustomEvent<{ entityId: string }>): void {
+    const { entityId } = ev.detail;
+    const updated = new Set(this._selectedEntities);
+    if (updated.has(entityId)) {
+      updated.delete(entityId);
+    } else {
+      updated.add(entityId);
+    }
+    this._selectedEntities = updated;
+  }
+
+  private _installSelected(): void {
+    const installableIds = this._filterInstallableUpdateEntities(
+      this.hass.states,
+      this._showSkipped
+    )
+      .filter((e) => this._selectedEntities.has(e.entity_id))
+      .map((e) => e.entity_id);
+
+    for (const entityId of installableIds) {
+      this.hass.callService("update", "install", { entity_id: entityId });
+    }
+    this._selectedEntities = new Set();
+    this._multiSelectMode = false;
+  }
+
+  private _skipSelected(): void {
+    for (const entityId of this._selectedEntities) {
+      this.hass.callService("update", "skip", { entity_id: entityId });
+    }
+    this._selectedEntities = new Set();
+    this._multiSelectMode = false;
+  }
+
   private _filterInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, false)
@@ -241,6 +403,31 @@ class HaConfigSectionUpdates extends LitElement {
     }
     li[divider] {
       border-bottom-color: var(--divider-color);
+    }
+    .fab-container ha-fab {
+      --ha-fab-icon-display: none;
+    }
+    .fab-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--ha-space-2);
+      position: fixed;
+      bottom: calc(-160px - var(--safe-area-inset-bottom, 0px));
+      right: calc(var(--ha-space-4) + var(--safe-area-inset-right, 0px));
+      inset-inline-end: calc(
+        var(--ha-space-4) + var(--safe-area-inset-right, 0px)
+      );
+      inset-inline-start: initial;
+      transition: bottom 0.3s;
+    }
+    .fab-container.visible {
+      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom, 0px));
+    }
+    .skip-fab {
+      /* ha-fab sets --mdc-theme-secondary inline in firstUpdated; !important overrides it */
+      --mdc-theme-secondary: var(--card-background-color) !important;
+      --mdc-theme-on-secondary: var(--secondary-text-color);
     }
   `;
 }

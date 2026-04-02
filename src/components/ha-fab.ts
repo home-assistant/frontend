@@ -33,6 +33,7 @@ export class HaFab extends FabBase {
         );
       }
       :host .mdc-fab--extended .mdc-fab__icon {
+        display: var(--ha-fab-icon-display, inline-flex);
         margin-inline-start: -8px;
         margin-inline-end: 12px;
         direction: var(--direction);

@@ -2638,7 +2638,8 @@
           "leave_beta": "Leave beta channel",
           "skipped": "Skipped",
           "update_in_progress": "Update in progress",
-          "no_area": "No area"
+          "no_area": "No area",
+          "select_multiple": "Select multiple"
         },
         "repairs": {
           "caption": "Repairs",
