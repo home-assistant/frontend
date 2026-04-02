@@ -247,7 +247,7 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
-        visible: this._editMode && this.hass.userData?.showAdvanced,
+        visible: this._editMode,
         overflow: true,
       },
       {
