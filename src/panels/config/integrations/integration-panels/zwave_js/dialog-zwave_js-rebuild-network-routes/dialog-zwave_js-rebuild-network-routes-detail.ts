@@ -215,10 +215,18 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
           min-height: 300px;
         }
         ha-md-list-item {
+          --md-list-item-two-line-container-height: 0;
+          --md-list-item-top-space: var(--ha-space-1);
+          --md-list-item-bottom-space: var(--ha-space-1);
+          --md-list-item-leading-space: var(--ha-space-2);
+          --md-list-item-trailing-space: var(--ha-space-2);
           border: var(--ha-border-width-sm) solid
             var(--ha-color-border-neutral-normal);
           border-radius: var(--ha-border-radius-lg);
           background: var(--ha-color-fill-neutral-quiet-resting);
+        }
+        ha-domain-icon {
+          margin-top: var(--ha-space-2);
         }
         ha-fade-in {
           display: flex;
