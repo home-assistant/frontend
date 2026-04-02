@@ -39,6 +39,9 @@ export const showSubConfigFlowDialog = (
     },
     fetchFlow: async (hass, flowId) => {
       const step = await fetchSubConfigFlow(hass, flowId);
+      if (flowType !== step.handler[1]) {
+        flowType = step.handler[1];
+      }
       await hass.loadFragmentTranslation("config");
       await hass.loadBackendTranslation(
         "config_subentries",
