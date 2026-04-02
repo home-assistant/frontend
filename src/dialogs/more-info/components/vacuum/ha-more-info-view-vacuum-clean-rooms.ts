@@ -8,6 +8,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import {
   getExtendedEntityRegistryEntry,
   type ExtEntityRegistryEntry,
