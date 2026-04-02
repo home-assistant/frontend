@@ -171,7 +171,7 @@ export class HaGauge extends LitElement {
             ? svg`
                 <path
                 class="needle"
-                d="M -36,-2 L -44,-1 A 1,1,0,0,0,-44,1 L -36,2 A 2,2,0,0,0,-36,-2 Z"
+                d="M -34,-3 L -48,-1 A 1,1,0,0,0,-48,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
 
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
               />
@@ -243,19 +243,19 @@ export class HaGauge extends LitElement {
     .levels-base {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 6;
+      stroke-width: 12;
       stroke-linecap: butt;
     }
 
     .level {
       fill: none;
-      stroke-width: 6;
+      stroke-width: 12;
       stroke-linecap: butt;
     }
 
     .value {
       fill: none;
-      stroke-width: 6;
+      stroke-width: 12;
       stroke: var(--gauge-color);
       stroke-linecap: butt;
       transition: stroke-dashoffset 1s ease 0s;
