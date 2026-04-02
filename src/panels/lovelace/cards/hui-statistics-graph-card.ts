@@ -187,8 +187,15 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._names = {};
     this._entities.forEach((config) => {
       const stateObj = this.hass!.states[config.entity];
-      this._names[config.entity] =
-        this.hass!.formatEntityName(stateObj, config.name) || config.entity;
+      if (stateObj) {
+        this._names[config.entity] =
+          this.hass!.formatEntityName(stateObj, config.name) || config.entity;
+      } else {
+        this._names[config.entity] =
+          (typeof config.name === "string" ? config.name : undefined) ||
+          this._metadata?.[config.entity]?.name ||
+          config.entity;
+      }
     });
   }
 
