@@ -1022,10 +1022,10 @@ export class HaDataTable extends LitElement {
       return;
     }
 
-    this._focusScroller(true);
+    this._focusScroller();
   }
 
-  private _focusScroller(trackAutoFocus = false): void {
+  private _focusScroller(): void {
     if (!this._scroller) {
       return;
     }
@@ -1033,11 +1033,6 @@ export class HaDataTable extends LitElement {
     this._scroller.focus({
       preventScroll: true,
     });
-
-    if (trackAutoFocus) {
-      this._didAutoFocusScroller =
-        (this.renderRoot as ShadowRoot).activeElement === this._scroller;
-    }
   }
 
   private async _calcTableHeight() {
