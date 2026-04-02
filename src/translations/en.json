@@ -5041,7 +5041,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Manual event received",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
@@ -5534,7 +5534,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Fire manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
