@@ -117,9 +117,7 @@ class DialogMatterLockManage extends LitElement {
       target="_blank"
       rel="noopener noreferrer"
     >
-      ${this.hass.localize(
-        "ui.panel.config.matter.lock.errors.learn_more"
-      )}
+      ${this.hass.localize("ui.panel.config.matter.lock.errors.learn_more")}
     </a>`;
   }
 
@@ -139,18 +137,18 @@ class DialogMatterLockManage extends LitElement {
       <div class="users-content">
         ${hasNoManageableCredentials
           ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.matter.lock.errors.no_credential_types_supported"
-              )}
-            </ha-alert>
-            ${this._renderDocsLink()}`
-          : !this._supportsPinCredential
-            ? html`<ha-alert alert-type="info">
                 ${this.hass.localize(
-                  "ui.panel.config.matter.lock.errors.pin_not_supported"
+                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
                 )}
               </ha-alert>
               ${this._renderDocsLink()}`
+          : !this._supportsPinCredential
+            ? html`<ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.pin_not_supported"
+                  )}
+                </ha-alert>
+                ${this._renderDocsLink()}`
             : nothing}
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
