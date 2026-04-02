@@ -9,7 +9,6 @@ import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-// eslint-disable-next-line import-x/extensions
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import "./components/page-description";
 
