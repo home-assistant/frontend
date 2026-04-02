@@ -1026,11 +1026,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _focusScroller(): void {
-    if (!this._scroller) {
-      return;
-    }
-
-    this._scroller.focus({
+    this._scroller?.focus({
       preventScroll: true,
     });
   }
