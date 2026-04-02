@@ -235,7 +235,8 @@ export class HaInput extends LitElement {
     this,
     "label",
     "hint",
-    "input"
+    "input",
+    "start"
   );
 
   static shadowRootOptions: ShadowRootInit = {
@@ -318,6 +319,8 @@ export class HaInput extends LitElement {
       ? false
       : this._hasSlotController.test("hint");
 
+    const hasStartSlot = this._hasSlotController.test("start");
+
     return html`
       <wa-input
         .type=${this.type}
@@ -348,7 +351,8 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
-            (this.label && this.placeholder),
+            (this.label && this.placeholder) ||
+            (hasStartSlot && this.insetLabel),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -589,6 +593,7 @@ export class HaInput extends LitElement {
     }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);
+      padding-bottom: 2px;
       cursor: pointer;
     }
     :host([type="color"]) wa-input.no-label::part(input) {

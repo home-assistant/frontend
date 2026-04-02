@@ -202,17 +202,9 @@ export class HaPlatformTrigger extends LitElement {
       </div>
       ${triggerDesc && "target" in triggerDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
               )}</span
             ><ha-selector
               .hass=${this.hass}
@@ -276,6 +268,10 @@ export class HaPlatformTrigger extends LitElement {
       return nothing;
     }
 
+    const description = this.hass.localize(
+      `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
+    );
+
     return html`<ha-settings-row narrow>
       ${!showOptional
         ? hasOptional
@@ -295,11 +291,9 @@ export class HaPlatformTrigger extends LitElement {
           `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
         ) || triggerName}</span
       >
-      <span slot="description"
-        >${this.hass.localize(
-          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
-        )}</span
-      >
+      ${description
+        ? html`<span slot="description">${description}</span>`
+        : nothing}
       <ha-selector
         .disabled=${this.disabled ||
         (showOptional &&

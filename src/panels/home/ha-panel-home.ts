@@ -318,6 +318,7 @@ class PanelHome extends LitElement {
         type: "home",
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
+        hidden_summaries: this._config.hidden_summaries,
       },
     };
 

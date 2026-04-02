@@ -1,5 +1,6 @@
+import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-settings-row")
@@ -16,17 +17,28 @@ export class HaSettingsRow extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public empty = false;
 
+  private readonly _hasSlotController = new HasSlotController(
+    this,
+    "description"
+  );
+
   protected render(): TemplateResult {
+    const hasDescription = this._hasSlotController.test("description");
+
     return html`
       <div class="prefix-wrap">
         <slot name="prefix"></slot>
         <div
           class="body"
-          ?two-line=${!this.threeLine}
+          ?two-line=${!this.threeLine && hasDescription}
           ?three-line=${this.threeLine}
         >
           <slot name="heading"></slot>
-          <div class="secondary"><slot name="description"></slot></div>
+          ${hasDescription
+            ? html`<span class="secondary"
+                ><slot name="description"></slot
+              ></span>`
+            : nothing}
         </div>
       </div>
       <div class="content">

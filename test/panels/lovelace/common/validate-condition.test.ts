@@ -45,7 +45,7 @@ describe("checkConditionsMet", () => {
       const conditions = [
         { condition: "state", entity: "sensor.test", state: "on" },
       ] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(true);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
     });
 
     it("should return false when state does not match", () => {
@@ -55,7 +55,7 @@ describe("checkConditionsMet", () => {
       const conditions = [
         { condition: "state", entity: "sensor.test", state: "on" },
       ] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(false);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
     });
 
     it("should return false for condition without state or state_not", () => {
@@ -63,7 +63,7 @@ describe("checkConditionsMet", () => {
         "sensor.test": { state: "on" },
       });
       const conditions = [{ condition: "state", entity: "sensor.test" }] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(false);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
     });
 
     it("should not crash with invalid condition type", () => {
@@ -74,8 +74,8 @@ describe("checkConditionsMet", () => {
         { condition: "numeric", entity: "sensor.test", above: 0 },
       ] as any;
       // Should not throw - this was the bug
-      expect(() => checkConditionsMet(conditions, hass)).not.toThrow();
-      expect(checkConditionsMet(conditions, hass)).toBe(false);
+      expect(() => checkConditionsMet(conditions, hass, {})).not.toThrow();
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
     });
   });
 
@@ -87,7 +87,7 @@ describe("checkConditionsMet", () => {
       const conditions = [
         { condition: "numeric_state", entity: "sensor.test", above: 0 },
       ] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(true);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
     });
   });
 
@@ -97,7 +97,7 @@ describe("checkConditionsMet", () => {
         "sensor.test": { state: "on" },
       });
       const conditions = [{ entity: "sensor.test", state: "on" }] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(true);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
     });
 
     it("should return false for legacy condition without state", () => {
@@ -105,7 +105,7 @@ describe("checkConditionsMet", () => {
         "sensor.test": { state: "on" },
       });
       const conditions = [{ entity: "sensor.test" }] as any;
-      expect(checkConditionsMet(conditions, hass)).toBe(false);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
     });
   });
 });

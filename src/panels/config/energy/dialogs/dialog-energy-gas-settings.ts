@@ -4,14 +4,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-button";
 import "../../../../components/ha-markdown";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptyGasEnergyPreference,
@@ -300,18 +300,22 @@ export class DialogEnergyGasSettings
           ></ha-radio>
         </ha-formfield>
         ${this._costs === "number"
-          ? html`<ha-textfield
+          ? html`<ha-input
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.gas.dialog.cost_number_input"
               )} ${unitPrice ? ` (${unitPrice})` : ""}`}
               class="price-options"
               step="any"
               type="number"
-              .value=${this._source.number_energy_price}
+              .value=${this._source.number_energy_price !== null
+                ? String(this._source.number_energy_price)
+                : ""}
               @change=${this._numberPriceChanged}
-              .suffix=${unitPrice || ""}
             >
-            </ha-textfield>`
+              ${unitPrice
+                ? html`<span slot="end">${unitPrice}</span>`
+                : nothing}
+            </ha-input>`
           : ""}
 
         <ha-dialog-footer slot="footer">
@@ -339,10 +343,10 @@ export class DialogEnergyGasSettings
     this._costs = input.value as any;
   }
 
-  private _numberPriceChanged(ev) {
+  private _numberPriceChanged(ev: InputEvent) {
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.target.value),
+      number_energy_price: Number((ev.target as HTMLInputElement).value),
       entity_energy_price: null,
       stat_cost: null,
     };

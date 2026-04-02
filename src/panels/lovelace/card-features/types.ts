@@ -58,6 +58,10 @@ export interface MediaPlayerPlaybackCardFeatureConfig {
   type: "media-player-playback";
 }
 
+export interface MediaPlayerSourceCardFeatureConfig {
+  type: "media-player-source";
+}
+
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
 }
@@ -65,6 +69,10 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
 export interface MediaPlayerVolumeButtonsCardFeatureConfig {
   type: "media-player-volume-buttons";
   step?: number;
+}
+
+export interface MediaPlayerSoundModeCardFeatureConfig {
+  type: "media-player-sound-mode";
 }
 
 export interface FanDirectionCardFeatureConfig {
@@ -281,6 +289,8 @@ export type LovelaceCardFeatureConfig =
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerSoundModeCardFeatureConfig
+  | MediaPlayerSourceCardFeatureConfig
   | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig

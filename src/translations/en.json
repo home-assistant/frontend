@@ -217,7 +217,7 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
-        "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n}",
+        "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
       },
       "toggle-group": {
@@ -295,7 +295,7 @@
         "up_to_date": "Up-to-date"
       },
       "text": {
-        "emtpy_value": "(empty value)"
+        "empty_value": "(empty value)"
       },
       "timer": {
         "actions": {
@@ -443,6 +443,7 @@
       "update": "Update",
       "hide": "Hide",
       "close": "Close",
+      "dismiss_alert": "Dismiss alert",
       "clear": "Clear",
       "leave": "Leave",
       "stay": "Stay",
@@ -517,6 +518,24 @@
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
           "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+        },
+        "period": {
+          "periods": {
+            "none": "None",
+            "today": "[%key:ui::panel::lovelace::editor::card::statistic::periods::today%]",
+            "tomorrow": "Tomorrow",
+            "yesterday": "[%key:ui::panel::lovelace::editor::card::statistic::periods::yesterday%]",
+            "this_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_week%]",
+            "last_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_week%]",
+            "next_week": "Next week",
+            "this_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_month%]",
+            "last_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_month%]",
+            "next_month": "Next month",
+            "this_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_year%]",
+            "last_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_year%]",
+            "next_7d": "Next 7 days",
+            "next_30d": "Next 30 days"
+          }
         },
         "selector": {
           "options": "Selector options",
@@ -1091,7 +1110,6 @@
       "service-control": {
         "required": "This field is required",
         "target": "Targets",
-        "target_secondary": "What should this action use as targeted areas, devices or entities.",
         "action_data": "Action data",
         "integration_doc": "Integration documentation",
         "script_variables": "Script variables"
@@ -2444,7 +2462,9 @@
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
-          "areas_page": "areas page"
+          "areas_page": "areas page",
+          "summaries": "Summaries",
+          "summaries_description": "Choose which summaries to show on your overview page."
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -4228,6 +4248,7 @@
           "invalid_url": "Invalid URL"
         },
         "hardware": {
+          "caption": "Hardware",
           "overview": "Overview",
           "description": "Configure your hub and connected hardware",
           "system_hardware": {
@@ -8221,7 +8242,7 @@
               "other_devices": "Other devices",
               "weather": "Weather",
               "energy": "Today's energy",
-              "persons": "People at home"
+              "persons": "Presence"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -8849,6 +8870,12 @@
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
+              "view_columns": {
+                "label": "Number of columns",
+                "min": "Minimum",
+                "max": "Maximum",
+                "unit": "columns"
+              },
               "numeric_state": {
                 "label": "Entity numeric state",
                 "above": "Above",
@@ -9529,6 +9556,8 @@
               "hide_section_headers": "Hide section headers",
               "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
+              "due_date_period": "Due date",
+              "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
               "actions": {
                 "edit": "Default (edit item)",
@@ -9711,6 +9740,12 @@
               },
               "media-player-playback": {
                 "label": "Media player playback controls"
+              },
+              "media-player-sound-mode": {
+                "label": "Media player sound mode"
+              },
+              "media-player-source": {
+                "label": "Media player source"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",

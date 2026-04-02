@@ -317,7 +317,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entity.entity_id)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       });
     } else {
       this._filteredMapEntities = this._mapEntities;

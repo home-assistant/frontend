@@ -95,6 +95,8 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -239,7 +241,14 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const actionHasTarget = type === "service" && "target" in this.action;
+    const action = type === "service" && (this.action as ServiceAction).action;
+
+    const actionHasTarget =
+      action &&
+      "target" in
+        (this.hass.services?.[computeDomain(action)]?.[
+          computeObjectId(action)
+        ] || {});
 
     const target = actionHasTarget
       ? (this.action as ServiceAction).target
@@ -550,7 +559,10 @@ export default class HaAutomationActionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -808,6 +820,12 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -912,9 +930,6 @@ export default class HaAutomationActionRow extends LitElement {
   );
 
   private _toggleCollapse() {
-    if (!this._collapsed) {
-      this._isNew = false;
-    }
     this._collapsed = !this._collapsed;
   }
 
