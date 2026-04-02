@@ -107,8 +107,6 @@ export interface DataTableRowData {
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
-const INTERACTIVE_ELEMENTS_SELECTOR =
-  "a,button,input,select,textarea,ha-assist-chip,ha-button,ha-checkbox,ha-icon-button";
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
 @customElement("ha-data-table")
@@ -432,7 +430,6 @@ export class HaDataTable extends LitElement {
               ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
-          @pointerdown=${this._focusTable}
         >
           <div
             class="mdc-data-table__header-row"
@@ -1005,19 +1002,6 @@ export class HaDataTable extends LitElement {
     }
     this._lastSelectedRowId = null;
     this._debounceSearch((ev.target as HTMLInputElement).value);
-  }
-
-  private _focusTable(ev: PointerEvent) {
-    if (this.autoHeight) {
-      return;
-    }
-    if (
-      ev.target instanceof HTMLElement &&
-      ev.target.closest(INTERACTIVE_ELEMENTS_SELECTOR)
-    ) {
-      return;
-    }
-    this._focusScroller();
   }
 
   private _focusTableOnLoad() {
