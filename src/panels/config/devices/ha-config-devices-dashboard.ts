@@ -465,7 +465,8 @@ export class HaConfigDeviceDashboard extends LitElement {
           ...device,
           name: computeDeviceNameDisplay(
             device,
-            this.hass,
+            this.hass.localize,
+            this.hass.states,
             deviceEntityLookup[device.id]
           ),
           model:

@@ -13,7 +13,7 @@ export const fetchErrorLog = (hass: HomeAssistant) =>
   hass.callApi<string>("GET", "error_log");
 
 export const getErrorLogDownloadUrl = (hass: HomeAssistant) =>
-  isComponentLoaded(hass, "hassio") &&
+  isComponentLoaded(hass.config, "hassio") &&
   atLeastVersion(hass.config.version, 2025, 10)
     ? "/api/hassio/core/logs/latest"
     : "/api/error_log";

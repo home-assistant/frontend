@@ -20,6 +20,7 @@ export interface CoreFrontendSystemData {
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
+  hidden_summaries?: string[];
 }
 
 declare global {

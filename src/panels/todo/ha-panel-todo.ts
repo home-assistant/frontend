@@ -77,7 +77,7 @@ class PanelTodo extends LitElement {
   private _mql?: MediaQueryList;
 
   private _conversation = memoizeOne((_components) =>
-    isComponentLoaded(this.hass, "conversation")
+    isComponentLoaded(this.hass.config, "conversation")
   );
 
   public connectedCallback() {

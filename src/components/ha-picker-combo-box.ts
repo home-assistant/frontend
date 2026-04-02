@@ -798,11 +798,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         }
 
         ha-input-search {
-          padding: 0 var(--ha-space-3);
+          padding: 0 var(--ha-space-3) var(--ha-space-3);
         }
 
         :host([mode="dialog"]) ha-input-search {
-          padding: 0 var(--ha-space-4);
+          padding: 0 var(--ha-space-4) var(--ha-space-3);
         }
 
         ha-combo-box-item {
@@ -873,12 +873,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-wrap: nowrap;
           gap: var(--ha-space-2);
-          padding: var(--ha-space-3) var(--ha-space-3);
+          padding: 0 var(--ha-space-3) var(--ha-space-3);
           overflow: auto;
         }
 
         :host([mode="dialog"]) .sections {
-          padding: var(--ha-space-3) var(--ha-space-4);
+          padding: 0 var(--ha-space-4) var(--ha-space-3);
         }
 
         .sections ha-filter-chip {
@@ -913,10 +913,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         :host([mode="dialog"]) .title {
           padding: var(--ha-space-1) var(--ha-space-4);
-        }
-
-        :host([mode="dialog"]) ha-input-search {
-          padding: 0 var(--ha-space-4);
         }
 
         .section-title-wrapper {

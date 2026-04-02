@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -116,6 +117,11 @@ export class HuiHomeSummaryCard
       hasAction(this._config?.double_tap_action)
     );
   }
+
+  private _computeSecondaryLoading = memoizeOne(
+    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
+      summary === "energy" && !energyData
+  );
 
   private _computeSummaryState(): string {
     if (!this._config || !this.hass) {
@@ -316,6 +322,10 @@ export class HuiHomeSummaryCard
     };
 
     const secondary = this._computeSummaryState();
+    const secondaryLoading = this._computeSecondaryLoading(
+      this._config.summary,
+      this._energyData
+    );
 
     const label = getSummaryLabel(this.hass.localize, this._config.summary);
     const icon = HOME_SUMMARIES_ICONS[this._config.summary];
@@ -336,6 +346,7 @@ export class HuiHomeSummaryCard
             slot="info"
             .primary=${label}
             .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
           ></ha-tile-info>
         </ha-tile-container>
       </ha-card>

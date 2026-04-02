@@ -134,6 +134,21 @@ const CONFIGS = [
   entity: sensor.not_working
     `,
   },
+  {
+    heading: "Lower minimum",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  needle: true
+  severity:
+    green: 0
+    yellow: 0.45
+    red: 0.9
+  min: -0.05
+  name: " "
+  max: 1.9
+  unit: GBP/h`,
+  },
 ];
 
 @customElement("demo-lovelace-gauge-card")

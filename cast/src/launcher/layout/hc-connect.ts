@@ -26,7 +26,7 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
-import "../../../../src/components/ha-textfield";
+import "../../../../src/components/input/ha-input";
 import "../../../../src/components/ha-button";
 
 const seeFAQ = (qid) => html`
@@ -123,11 +123,11 @@ export class HcConnect extends LitElement {
               To get started, enter your Home Assistant URL and click authorize.
               If you want a preview instead, click the show demo button.
             </p>
-            <ha-textfield
+            <ha-input
               label="Home Assistant URL"
               placeholder="https://abcdefghijklmnop.ui.nabu.casa"
               @keydown=${this._handleInputKeyDown}
-            ></ha-textfield>
+            ></ha-input>
             ${this.error ? html` <p class="error">${this.error}</p> ` : ""}
           </div>
           <div class="card-actions">
@@ -204,7 +204,7 @@ export class HcConnect extends LitElement {
   }
 
   private async _handleConnect() {
-    const inputEl = this.shadowRoot!.querySelector("ha-textfield")!;
+    const inputEl = this.shadowRoot!.querySelector("ha-input")!;
     const value = inputEl.value || "";
     this.error = undefined;
 
@@ -319,7 +319,7 @@ export class HcConnect extends LitElement {
       flex: 1;
     }
 
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
   `;

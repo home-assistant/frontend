@@ -15,7 +15,7 @@ import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpe
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
+} from "../../lovelace/strategies/helpers/view-columns-conditions";
 import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
 import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
 

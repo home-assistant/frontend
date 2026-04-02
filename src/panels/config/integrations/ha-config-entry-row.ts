@@ -511,8 +511,8 @@ export class HaConfigEntryRow extends LitElement {
       )
       .sort((a, b) =>
         caseInsensitiveStringCompare(
-          computeDeviceNameDisplay(a, this.hass),
-          computeDeviceNameDisplay(b, this.hass),
+          computeDeviceNameDisplay(a, this.hass.localize, this.hass.states),
+          computeDeviceNameDisplay(b, this.hass.localize, this.hass.states),
           this.hass.locale.language
         )
       );
@@ -526,8 +526,8 @@ export class HaConfigEntryRow extends LitElement {
       )
       .sort((a, b) =>
         caseInsensitiveStringCompare(
-          computeDeviceNameDisplay(a, this.hass),
-          computeDeviceNameDisplay(b, this.hass),
+          computeDeviceNameDisplay(a, this.hass.localize, this.hass.states),
+          computeDeviceNameDisplay(b, this.hass.localize, this.hass.states),
           this.hass.locale.language
         )
       );

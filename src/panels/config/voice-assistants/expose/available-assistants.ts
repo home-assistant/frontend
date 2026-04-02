@@ -7,7 +7,7 @@ export const getAvailableAssistants = memoizeOne(
   (cloudStatus: CloudStatus | undefined, hass: HomeAssistant) => {
     const showAssistants: string[] = [];
 
-    if (isComponentLoaded(hass, "conversation")) {
+    if (isComponentLoaded(hass.config, "conversation")) {
       showAssistants.push("conversation");
     }
 

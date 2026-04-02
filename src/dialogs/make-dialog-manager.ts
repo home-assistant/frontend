@@ -26,6 +26,7 @@ export interface HassDialog<T = unknown> extends HTMLElement {
 }
 
 export interface HassDialogNext<T = unknown> extends HTMLElement {
+  dialogNext: true;
   params?: T;
   closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
@@ -168,10 +169,12 @@ export const showDialog = async (
     dialogElement = await LOADED[dialogTag].element;
   }
 
-  if ("showDialog" in dialogElement!) {
+  if ("dialogNext" in dialogElement! && dialogElement.dialogNext) {
+    dialogElement!.params = dialogParams;
+  } else if ("showDialog" in dialogElement!) {
     dialogElement.showDialog(dialogParams);
   } else {
-    dialogElement!.params = dialogParams;
+    throw new Error("Unknown dialog type loaded");
   }
 
   (parentElement || element).shadowRoot!.appendChild(dialogElement!);

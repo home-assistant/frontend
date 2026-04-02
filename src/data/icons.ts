@@ -3,8 +3,10 @@ import {
   mdiAirFilter,
   mdiAlert,
   mdiAppleSafari,
+  mdiBattery,
   mdiBell,
   mdiBookmark,
+  mdiBrightness6,
   mdiBullhorn,
   mdiButtonPointer,
   mdiCalendar,
@@ -16,13 +18,18 @@ import {
   mdiCog,
   mdiCommentAlert,
   mdiCounter,
+  mdiDoorOpen,
   mdiEye,
+  mdiFlash,
   mdiFlower,
   mdiFormatListBulleted,
   mdiFormTextbox,
   mdiForumOutline,
+  mdiGarageOpen,
+  mdiGate,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
+  mdiHomeAccount,
   mdiHomeAutomation,
   mdiImage,
   mdiImageFilterFrames,
@@ -30,6 +37,7 @@ import {
   mdiLightbulb,
   mdiMapMarkerRadius,
   mdiMicrophoneMessage,
+  mdiMotionSensor,
   mdiPalette,
   mdiRayVertex,
   mdiRemote,
@@ -40,13 +48,17 @@ import {
   mdiScriptText,
   mdiSpeakerMessage,
   mdiStarFourPoints,
+  mdiThermometer,
   mdiThermostat,
   mdiTimerOutline,
   mdiToggleSwitch,
+  mdiWater,
+  mdiWaterPercent,
   mdiWeatherPartlyCloudy,
   mdiWhiteBalanceSunny,
+  mdiWindowClosed,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { Connection, HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { atLeastVersion } from "../common/config/version";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -60,6 +72,7 @@ import type {
 } from "./entity/entity_registry";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { callWS } from "../util/websocket";
 import { getConditionDomain, getConditionObjectId } from "./condition";
 import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
@@ -75,6 +88,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   air_quality: mdiAirFilter,
   alert: mdiAlert,
   automation: mdiRobot,
+  battery: mdiBattery,
   calendar: mdiCalendar,
   climate: mdiThermostat,
   configurator: mdiCog,
@@ -84,10 +98,15 @@ export const FALLBACK_DOMAIN_ICONS = {
   datetime: mdiCalendarClock,
   demo: mdiHomeAssistant,
   device_tracker: mdiAccount,
+  door: mdiDoorOpen,
+  garage_door: mdiGarageOpen,
+  gate: mdiGate,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
   homeassistant: mdiHomeAssistant,
   homekit: mdiHomeAutomation,
+  humidity: mdiWaterPercent,
+  illuminance: mdiBrightness6,
   image_processing: mdiImageFilterFrames,
   image: mdiImage,
   infrared: mdiLedOn,
@@ -99,11 +118,15 @@ export const FALLBACK_DOMAIN_ICONS = {
   input_text: mdiFormTextbox,
   lawn_mower: mdiRobotMower,
   light: mdiLightbulb,
+  moisture: mdiWater,
+  motion: mdiMotionSensor,
   notify: mdiCommentAlert,
   number: mdiRayVertex,
+  occupancy: mdiHomeAccount,
   persistent_notification: mdiBell,
   person: mdiAccount,
   plant: mdiFlower,
+  power: mdiFlash,
   proximity: mdiAppleSafari,
   remote: mdiRemote,
   scene: mdiPalette,
@@ -115,6 +138,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   siren: mdiBullhorn,
   stt: mdiMicrophoneMessage,
   sun: mdiWhiteBalanceSunny,
+  temperature: mdiThermometer,
   text: mdiFormTextbox,
   time: mdiClock,
   timer: mdiTimerOutline,
@@ -124,6 +148,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   vacuum: mdiRobotVacuum,
   wake_word: mdiChatSleep,
   weather: mdiWeatherPartlyCloudy,
+  window: mdiWindowClosed,
   zone: mdiMapMarkerRadius,
 };
 
@@ -229,18 +254,19 @@ interface CategoryType {
 }
 
 export const getHassIcons = async <T extends IconCategory>(
-  hass: HomeAssistant,
+  connection: Connection,
   category: T,
   integration?: string
 ) =>
-  hass.callWS<IconResources<CategoryType[T]>>({
+  callWS<IconResources<CategoryType[T]>>(connection, {
     type: "frontend/get_icons",
     category,
     integration,
   });
 
 export const getPlatformIcons = async (
-  hass: HomeAssistant,
+  hassConfig: HomeAssistant["config"],
+  connection: Connection,
   integration: string,
   force = false
 ): Promise<PlatformIcons | undefined> => {
@@ -248,12 +274,12 @@ export const getPlatformIcons = async (
     return resources.entity[integration];
   }
   if (
-    !isComponentLoaded(hass, integration) ||
-    !atLeastVersion(hass.connection.haVersion, 2024, 2)
+    !isComponentLoaded(hassConfig, integration) ||
+    !atLeastVersion(connection.haVersion, 2024, 2)
   ) {
     return undefined;
   }
-  const result = getHassIcons(hass, "entity", integration).then(
+  const result = getHassIcons(connection, "entity", integration).then(
     (res) => res?.resources[integration]
   );
   resources.entity[integration] = result;
@@ -261,15 +287,13 @@ export const getPlatformIcons = async (
 };
 
 export const getComponentIcons = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   domain: string,
   force = false
 ): Promise<ComponentIcons | undefined> => {
   // For Cast, old instances can connect to it.
-  if (
-    __BACKWARDS_COMPAT__ &&
-    !atLeastVersion(hass.connection.haVersion, 2024, 2)
-  ) {
+  if (__BACKWARDS_COMPAT__ && !atLeastVersion(connection.haVersion, 2024, 2)) {
     return import("../fake_data/entity_component_icons")
       .then((mod) => mod.ENTITY_COMPONENT_ICONS)
       .then((res) => res[domain]);
@@ -283,12 +307,12 @@ export const getComponentIcons = async (
     return resources.entity_component.resources.then((res) => res[domain]);
   }
 
-  if (!isComponentLoaded(hass, domain)) {
+  if (!isComponentLoaded(hassConfig, domain)) {
     return undefined;
   }
-  resources.entity_component.domains = [...hass.config.components];
+  resources.entity_component.domains = [...hassConfig.components];
   resources.entity_component.resources = getHassIcons(
-    hass,
+    connection,
     "entity_component"
   ).then((result) => result.resources);
   return resources.entity_component.resources.then((res) => res[domain]);
@@ -308,10 +332,12 @@ export const getCategoryIcons = async <
         Record<string, CategoryType[T]>
       >;
     }
-    resources[category].all = getHassIcons(hass, category).then((res) => {
-      resources[category].domains = res.resources as any;
-      return res?.resources as Record<string, CategoryType[T]>;
-    }) as any;
+    resources[category].all = getHassIcons(hass.connection, category).then(
+      (res) => {
+        resources[category].domains = res.resources as any;
+        return res?.resources as Record<string, CategoryType[T]>;
+      }
+    ) as any;
     return resources[category].all as Promise<Record<string, CategoryType[T]>>;
   }
   if (!force && domain in resources[category].domains) {
@@ -323,10 +349,10 @@ export const getCategoryIcons = async <
       return resources[category].domains[domain] as Promise<CategoryType[T]>;
     }
   }
-  if (!isComponentLoaded(hass, domain)) {
+  if (!isComponentLoaded(hass.config, domain)) {
     return undefined;
   }
-  const result = getHassIcons(hass, category, domain);
+  const result = getHassIcons(hass.connection, category, domain);
   resources[category].domains[domain] = result.then(
     (res) => res?.resources[domain]
   ) as any;
@@ -467,7 +493,11 @@ const getEntityIcon = async (
 
   let icon: string | undefined;
   if (translation_key && platform) {
-    const platformIcons = await getPlatformIcons(hass, platform);
+    const platformIcons = await getPlatformIcons(
+      hass.config,
+      hass.connection,
+      platform
+    );
     if (platformIcons) {
       const translations = platformIcons[domain]?.[translation_key];
 
@@ -480,7 +510,11 @@ const getEntityIcon = async (
   }
 
   if (!icon) {
-    const entityComponentIcons = await getComponentIcons(hass, domain);
+    const entityComponentIcons = await getComponentIcons(
+      hass.connection,
+      hass.config,
+      domain
+    );
     if (entityComponentIcons) {
       const translations =
         (device_class && entityComponentIcons[device_class]) ||
@@ -511,7 +545,11 @@ export const attributeIcon = async (
     (state.attributes[attribute] as string | number | undefined);
 
   if (translation_key && platform) {
-    const platformIcons = await getPlatformIcons(hass, platform);
+    const platformIcons = await getPlatformIcons(
+      hass.config,
+      hass.connection,
+      platform
+    );
     if (platformIcons) {
       icon = getIconFromTranslations(
         value,
@@ -520,7 +558,11 @@ export const attributeIcon = async (
     }
   }
   if (!icon) {
-    const entityComponentIcons = await getComponentIcons(hass, domain);
+    const entityComponentIcons = await getComponentIcons(
+      hass.connection,
+      hass.config,
+      domain
+    );
     if (entityComponentIcons) {
       const translations =
         (deviceClass &&
@@ -548,7 +590,7 @@ export const triggerIcon = async (
     icon = trgrIcon?.trigger;
   }
   if (!icon) {
-    icon = await domainIcon(hass, domain);
+    icon = await domainIcon(hass.connection, hass.config, domain);
   }
   return icon;
 };
@@ -567,7 +609,7 @@ export const conditionIcon = async (
     icon = condIcon?.condition;
   }
   if (!icon) {
-    icon = await domainIcon(hass, domain);
+    icon = await domainIcon(hass.connection, hass.config, domain);
   }
   return icon;
 };
@@ -585,7 +627,7 @@ export const serviceIcon = async (
     icon = srvceIcon?.service;
   }
   if (!icon) {
-    icon = await domainIcon(hass, domain);
+    icon = await domainIcon(hass.connection, hass.config, domain);
   }
   return icon;
 };
@@ -606,12 +648,17 @@ export const serviceSectionIcon = async (
 };
 
 export const domainIcon = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   domain: string,
   deviceClass?: string,
   state?: string
 ): Promise<string | undefined> => {
-  const entityComponentIcons = await getComponentIcons(hass, domain);
+  const entityComponentIcons = await getComponentIcons(
+    connection,
+    hassConfig,
+    domain
+  );
   if (entityComponentIcons) {
     const translations =
       (deviceClass && entityComponentIcons[deviceClass]) ||

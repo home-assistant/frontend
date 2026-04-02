@@ -241,7 +241,8 @@ export class DialogHelperDetail extends LitElement {
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
             const isLoaded =
-              !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+              !(domain in HELPERS) ||
+              isComponentLoaded(this.hass.config, domain);
             return html`
               <ha-list-item
                 hasmeta
@@ -391,7 +392,7 @@ export class DialogHelperDetail extends LitElement {
   private async _domainPicked(ev): Promise<void> {
     const domain = ev.target.closest("ha-list-item").domain;
     const isLoaded =
-      !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+      !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
     if (!isLoaded) {
       showAlertDialog(this, {
         text: this.hass.localize(

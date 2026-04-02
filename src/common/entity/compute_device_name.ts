@@ -14,24 +14,25 @@ export const computeDeviceName = (
 
 export const computeDeviceNameDisplay = (
   device: DeviceRegistryEntry,
-  hass: HomeAssistant,
+  localize: HomeAssistant["localize"],
+  hassStates: HomeAssistant["states"],
   entities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
 ) =>
   computeDeviceName(device) ||
-  (entities && fallbackDeviceName(hass, entities)) ||
-  hass.localize("ui.panel.config.devices.unnamed_device", {
-    type: hass.localize(
+  (entities && fallbackDeviceName(hassStates, entities)) ||
+  localize("ui.panel.config.devices.unnamed_device", {
+    type: localize(
       `ui.panel.config.devices.type.${device.entry_type || "device"}`
     ),
   });
 
 export const fallbackDeviceName = (
-  hass: HomeAssistant,
+  hassStates: HomeAssistant["states"],
   entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
 ) => {
   for (const entity of entities || []) {
     const entityId = typeof entity === "string" ? entity : entity.entity_id;
-    const stateObj = hass.states[entityId];
+    const stateObj = hassStates[entityId];
     if (stateObj) {
       return computeStateName(stateObj);
     }

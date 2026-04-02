@@ -119,7 +119,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
       ),
     ];
 
-    if (isComponentLoaded(this.hass, "hardware")) {
+    if (isComponentLoaded(this.hass.config, "hardware")) {
       subs.push(
         this.hass.connection.subscribeMessage<SystemStatusStreamMessage>(
           (message) => {
@@ -253,7 +253,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${hardwareTabs(this.hass)}
       >
-        ${isComponentLoaded(this.hass, "hassio")
+        ${isComponentLoaded(this.hass.config, "hassio")
           ? html`
               <ha-icon-button
                 slot="toolbar-icon"
@@ -269,7 +269,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <div class="content">
-          ${boardName || isComponentLoaded(this.hass, "hassio")
+          ${boardName || isComponentLoaded(this.hass.config, "hassio")
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
@@ -355,7 +355,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                 })}
               </ha-card>`
             : nothing}
-          ${isComponentLoaded(this.hass, "hardware")
+          ${isComponentLoaded(this.hass.config, "hardware")
             ? html`<ha-card outlined>
                   <div class="header">
                     <div class="title">
@@ -429,13 +429,13 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
   }
 
   private async _load() {
-    if (isComponentLoaded(this.hass, "usb")) {
+    if (isComponentLoaded(this.hass.config, "usb")) {
       await scanUSBDevices(this.hass);
     }
 
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
     try {
-      if (isComponentLoaded(this.hass, "hardware")) {
+      if (isComponentLoaded(this.hass.config, "hardware")) {
         this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
       }
 

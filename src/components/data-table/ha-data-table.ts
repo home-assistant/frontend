@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -21,9 +22,10 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
+import { localeContext, localizeContext } from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
@@ -104,9 +106,13 @@ const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private _localize?: ContextType<typeof localizeContext>;
 
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+  @state()
+  @consume({ context: localeContext, subscribe: true })
+  private _locale?: ContextType<typeof localeContext>;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -378,8 +384,6 @@ export class HaDataTable extends LitElement {
   );
 
   protected render() {
-    const localize = this.localizeFunc || this.hass.localize;
-
     const columns = this._sortedColumns(this.columns, this.columnOrder);
 
     const renderRow = (row: DataTableRowData, index: number) =>
@@ -503,7 +507,8 @@ export class HaDataTable extends LitElement {
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText ||
-                      localize("ui.components.data-table.no-data")}
+                      this._localize?.("ui.components.data-table.no-data") ||
+                      "No data"}
                     </div>
                   </div>
                 </div>
@@ -515,7 +520,8 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                   .items=${this._groupData(
                     this._filteredData,
-                    localize,
+                    this._localize,
+                    this._locale,
                     this.appendRow,
                     this.groupColumn,
                     this.groupOrder,
@@ -685,7 +691,7 @@ export class HaDataTable extends LitElement {
             this._sortColumns[this.sortColumn],
             this.sortDirection,
             this.sortColumn,
-            this.hass.locale.language
+            this._locale?.language
           )
         : filteredData;
 
@@ -711,7 +717,8 @@ export class HaDataTable extends LitElement {
   private _groupData = memoizeOne(
     (
       data: DataTableRowData[],
-      localize: LocalizeFunc,
+      localize: LocalizeFunc | undefined,
+      locale: FrontendLocaleData | undefined,
       appendRow,
       groupColumn: string | undefined,
       groupOrder: string[] | undefined,
@@ -735,11 +742,7 @@ export class HaDataTable extends LitElement {
           )
             .sort((a, b) => {
               if (!groupOrder && isGroupSortColumn) {
-                const comparison = stringCompare(
-                  a,
-                  b,
-                  this.hass.locale.language
-                );
+                const comparison = stringCompare(a, b, locale?.language);
                 if (sortDirection === "asc") {
                   return comparison;
                 }
@@ -760,7 +763,7 @@ export class HaDataTable extends LitElement {
               return stringCompare(
                 ["", "-", "—"].includes(a) ? "zzz" : a,
                 ["", "-", "—"].includes(b) ? "zzz" : b,
-                this.hass.locale.language
+                locale?.language
               );
             })
             .reduce(
@@ -787,14 +790,15 @@ export class HaDataTable extends LitElement {
               >
                 <ha-icon-button
                   .path=${mdiChevronUp}
-                  .label=${this.hass.localize(
+                  .label=${localize?.(
                     `ui.components.data-table.${collapsed ? "expand" : "collapse"}`
-                  )}
+                  ) || (collapsed ? "Expand" : "Collapse")}
                   class=${collapsed ? "collapsed" : ""}
                 >
                 </ha-icon-button>
                 ${groupName === UNDEFINED_GROUP_KEY
-                  ? localize("ui.components.data-table.ungrouped")
+                  ? localize?.("ui.components.data-table.ungrouped") ||
+                    "Ungrouped"
                   : groupName || ""}
               </div>`,
             });
@@ -863,7 +867,8 @@ export class HaDataTable extends LitElement {
 
     const groupedData = this._groupData(
       this._filteredData,
-      this.localizeFunc || this.hass.localize,
+      this._localize,
+      this._locale,
       this.appendRow,
       this.groupColumn,
       this.groupOrder,
