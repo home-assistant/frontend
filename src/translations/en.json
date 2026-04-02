@@ -2462,7 +2462,9 @@
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
-          "areas_page": "areas page"
+          "areas_page": "areas page",
+          "summaries": "Summaries",
+          "summaries_description": "Choose which summaries to show on your overview page."
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
