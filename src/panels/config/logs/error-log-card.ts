@@ -22,7 +22,6 @@ import {
 } from "lit";
 import { classMap } from "lit/directives/class-map";
 
-// eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../components/chips/ha-assist-chip";
