@@ -7773,7 +7773,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
-            "manage_lock": "Manage lock",
+            "manage_lock": "Manage access",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7816,8 +7816,8 @@
             "copy_code": "Copy code"
           },
           "lock": {
-            "manage": "Manage lock",
-            "dialog_title": "Manage lock",
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
             "users": {
               "title": "Users",
               "add": "Add user",
@@ -7901,8 +7901,9 @@
               "load_failed": "Failed to load lock information",
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
-              "pin_not_supported": "This lock does not support PIN code management. You can still view and manage existing users.",
-              "no_credential_types_supported": "This lock does not support any credential types that can be managed from this interface.",
+              "no_user_management": "This lock does not support user management. Users and credentials cannot be managed from this interface.",
+              "pin_not_supported": "This lock does not support PIN codes. You can still view and manage existing users.",
+              "no_credential_types_supported": "This lock does not support any credential types that can be managed from this interface. You can still view existing users.",
               "user_not_found": "User not found",
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",

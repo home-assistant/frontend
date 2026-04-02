@@ -96,7 +96,15 @@ class DialogMatterLockManage extends LitElement {
           ? html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`
-          : html`<div class="content">${this._renderUsers()}</div>`}
+          : this._lockInfo && !this._lockInfo.supports_user_management
+            ? html`<div class="content">
+                <ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.no_user_management"
+                  )}
+                </ha-alert>
+              </div>`
+            : html`<div class="content">${this._renderUsers()}</div>`}
       </ha-dialog>
     `;
   }
@@ -110,15 +118,24 @@ class DialogMatterLockManage extends LitElement {
       (u) => u.user_status !== "available"
     );
 
+    const hasNoManageableCredentials =
+      !this._lockInfo?.supported_credential_types?.length;
+
     return html`
       <div class="users-content">
-        ${!this._supportsPinCredential
-          ? html`<ha-alert alert-type="info">
+        ${hasNoManageableCredentials
+          ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
-                "ui.panel.config.matter.lock.errors.pin_not_supported"
+                "ui.panel.config.matter.lock.errors.no_credential_types_supported"
               )}
             </ha-alert>`
-          : nothing}
+          : !this._supportsPinCredential
+            ? html`<ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.errors.pin_not_supported"
+                )}
+              </ha-alert>`
+            : nothing}
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
               ${this.hass.localize(
@@ -263,6 +280,9 @@ class DialogMatterLockManage extends LitElement {
         }
         .content {
           min-height: 300px;
+        }
+        .content > ha-alert {
+          margin: var(--ha-space-4);
         }
         .users-content {
           padding: var(--ha-space-4) 0;
