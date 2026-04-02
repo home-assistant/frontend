@@ -1491,9 +1491,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       bottom: 0;
       width: 100%;
       padding-bottom: var(--ha-space-2);
-      box-shadow: inset var(--ha-shadow-offset-x-lg)
-        calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
-        var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+      box-shadow: inset 0 -8px 12px 0 rgba(0, 0, 0, 0.06);
       z-index: 2;
     }
 

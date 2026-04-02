@@ -236,7 +236,10 @@ export class HuiViewFooter extends LitElement {
     }
 
     .wrapper:not(.edit-mode) {
-      --ha-card-box-shadow: var(--ha-box-shadow-l);
+      --ha-card-box-shadow: var(
+        --ha-view-footer-box-shadow,
+        var(--ha-box-shadow-xl)
+      );
     }
 
     .container {

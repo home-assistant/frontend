@@ -37,6 +37,7 @@ export const waMainStyles = css`
     --wa-shadow-s: var(--ha-box-shadow-s);
     --wa-shadow-m: var(--ha-box-shadow-m);
     --wa-shadow-l: var(--ha-box-shadow-l);
+    --wa-shadow-xl: var(--ha-box-shadow-xl);
 
     --wa-form-control-padding-block: 0.75em;
     --wa-form-control-value-line-height: var(--wa-line-height-condensed);

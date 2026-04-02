@@ -7,17 +7,19 @@ import { extractVars } from "../../common/style/derived-css-vars";
  */
 export const semanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-light);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-light);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+    --ha-box-shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    --ha-box-shadow-m: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 4px 8px 0 rgba(0, 0, 0, 0.14);
+    --ha-box-shadow-l: 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 12px 24px -4px rgba(0, 0, 0, 0.18);
+    --ha-box-shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.15), 0 24px 48px -8px rgba(0, 0, 0, 0.25);
   }
 `;
 
 export const darkSemanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-dark);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-dark);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
+    --ha-box-shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    --ha-box-shadow-m: 0 2px 4px -1px rgba(0, 0, 0, 0.4), 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+    --ha-box-shadow-l: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 0.55);
+    --ha-box-shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.45), 0 24px 48px -8px rgba(0, 0, 0, 0.6);
   }
 `;
 
