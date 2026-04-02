@@ -8,12 +8,10 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import {
   getExtendedEntityRegistryEntry,
   type ExtEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
-import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-view-vacuum-clean-rooms")
@@ -143,45 +141,11 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
       `;
     }
 
-    // Get areas and group by floor
-    const mappedAreas = this._mappedAreaIds
-      .map((id) => this.hass.areas[id])
-      .filter(Boolean) as AreaRegistryEntry[];
-
-    const floors = Object.values(this.hass.floors);
-    const hierarchy = getAreasFloorHierarchy(floors, mappedAreas);
-
     return html`
       <div class="content">
-        ${hierarchy.floors
-          .filter((floor) => floor.areas.length > 0)
-          .map((floor) => {
-            const floorEntry = this.hass.floors[floor.id];
-            return html`
-              <div class="floor-section">
-                <div class="floor-header">${floorEntry?.name || floor.id}</div>
-                <div class="area-grid">
-                  ${floor.areas.map((areaId) => this._renderAreaCard(areaId))}
-                </div>
-              </div>
-            `;
-          })}
-        ${hierarchy.areas.length > 0
-          ? html`
-              <div class="floor-section">
-                ${hierarchy.floors.some((f) => f.areas.length > 0)
-                  ? html`<div class="floor-header">
-                      ${this.hass.localize("ui.common.other")}
-                    </div>`
-                  : nothing}
-                <div class="area-grid">
-                  ${hierarchy.areas.map((areaId) =>
-                    this._renderAreaCard(areaId)
-                  )}
-                </div>
-              </div>
-            `
-          : nothing}
+        <div class="area-grid">
+          ${this._mappedAreaIds.map((areaId) => this._renderAreaCard(areaId))}
+        </div>
       </div>
 
       <div class="footer">
@@ -224,18 +188,6 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
       text-align: center;
       color: var(--secondary-text-color);
       padding: var(--ha-space-8);
-    }
-
-    .floor-section {
-      margin-bottom: var(--ha-space-4);
-    }
-
-    .floor-header {
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--secondary-text-color);
-      padding: var(--ha-space-1) var(--ha-space-2);
-      margin-bottom: var(--ha-space-2);
     }
 
     .area-grid {
