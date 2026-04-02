@@ -610,9 +610,13 @@ export class HaChartBase extends LitElement {
       // It rescales the Y-axis to the visible data while keeping one point
       // just outside each boundary to avoid line gaps at the zoom edges.
       // Only use it for line charts — it causes issues with bar charts.
+      // Use "filter" for bar charts, and "weakFilter" for other types
+      // (e.g. custom/timeline) so bars spanning the visible range are kept.
       filterMode: (ensureArray(this.data).every((s) => s.type === "line")
         ? "boundaryFilter"
-        : "filter") as any,
+        : ensureArray(this.data).some((s) => s.type === "bar")
+          ? "filter"
+          : "weakFilter") as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
