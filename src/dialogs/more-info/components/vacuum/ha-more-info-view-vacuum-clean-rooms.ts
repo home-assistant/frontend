@@ -193,8 +193,8 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
 
     .area-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: var(--ha-space-2);
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--ha-space-3);
     }
 
     .area-card {
@@ -245,14 +245,12 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
     }
 
     .area-name {
-      font-size: var(--ha-font-size-xs);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      font-size: var(--ha-font-size-s);
       text-align: center;
       line-height: var(--ha-line-height-condensed);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
       word-break: break-word;
     }
 
