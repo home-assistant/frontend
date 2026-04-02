@@ -253,10 +253,11 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues) {
     if (!this._headerRow) {
       return;
     }
+
     if (this._headerRow.scrollWidth > this._headerRow.clientWidth) {
       this.style.setProperty(
         "--table-row-width",
@@ -267,6 +268,13 @@ export class HaDataTable extends LitElement {
     }
 
     this._focusTableOnLoad();
+
+    if (
+      changedProps.has("selectable") &&
+      changedProps.get("selectable") !== undefined
+    ) {
+      this._focusScroller();
+    }
   }
 
   public willUpdate(properties: PropertyValues) {
