@@ -57,6 +57,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-ripple";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
 import {
@@ -122,6 +123,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @state() private _compare = false;
 
   @state() private _collapseButtons = false;
+
+  @state() private _loading = false;
+
+  private _loadingTimer?: ReturnType<typeof setTimeout>;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -347,6 +352,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               : nothing}
           </section>
           <section class="date-actions">
+            ${this._loading
+              ? html`<ha-spinner size="small"></ha-spinner>`
+              : nothing}
             <div class="overflow">
               ${!this.narrow
                 ? html`<ha-button
@@ -495,6 +503,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     });
     energyCollection.setPeriod(this._startDate!, this._endDate!);
     energyCollection.refresh();
+    this._scheduleLoadingIndicator();
   }
 
   private _dateRangeChanged(ev) {
@@ -671,6 +680,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _updateDates(energyData: EnergyData): void {
+    clearTimeout(this._loadingTimer);
+    this._loading = false;
     this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
@@ -689,6 +700,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._compare ? CompareMode.PREVIOUS : CompareMode.NONE
     );
     energyCollection.refresh();
+    this._scheduleLoadingIndicator();
+  }
+
+  private _scheduleLoadingIndicator() {
+    // Add a delay before showing the loading indicator
+    // Basically to ensure there's no "flash loading" when data is loaded quickly
+    clearTimeout(this._loadingTimer);
+    this._loadingTimer = setTimeout(() => {
+      this._loading = true;
+    }, 200);
   }
 
   private _getDatePickerPlacement = memoizeOne(
@@ -762,10 +783,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       height: 100%;
       display: flex;
       flex-direction: row;
+      align-items: center;
     }
     .date-actions .overflow {
       display: flex;
       align-items: center;
+    }
+    .date-actions ha-spinner {
+      margin-inline-end: var(--ha-space-2);
+      margin-inline-start: var(--ha-space-2);
     }
     ha-button {
       margin-left: var(--ha-space-2);
