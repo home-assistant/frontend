@@ -177,7 +177,10 @@ export const showDialog = async (
     throw new Error("Unknown dialog type loaded");
   }
 
-  (parentElement || element).shadowRoot!.appendChild(dialogElement!);
+  const targetParent = (parentElement || element).shadowRoot!;
+  if (dialogElement!.parentNode !== targetParent) {
+    targetParent.appendChild(dialogElement!);
+  }
 
   return true;
 };
