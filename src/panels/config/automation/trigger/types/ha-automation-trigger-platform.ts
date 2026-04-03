@@ -112,10 +112,12 @@ export class HaPlatformTrigger extends LitElement {
       oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.trigger;
       const updatedOptions = this.trigger.options
         ? { ...this.trigger.options }
         : {};
-      const loadDefaults = !("options" in this.trigger);
+      const loadDefaults = !hadOptions;
+      let updatedDefaultValue = false;
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -125,6 +127,7 @@ export class HaPlatformTrigger extends LitElement {
           "boolean" in field.selector &&
           updatedOptions[key] === undefined
         ) {
+          updatedDefaultValue = true;
           updatedOptions[key] = false;
         } else if (
           loadDefaults &&
@@ -137,16 +140,19 @@ export class HaPlatformTrigger extends LitElement {
             !this.trigger?.target
           )
         ) {
+          updatedDefaultValue = true;
           updatedOptions[key] = field.default;
         }
       });
 
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.trigger,
-          options: updatedOptions,
-        },
-      });
+      if (!hadOptions || updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: updatedOptions,
+          },
+        });
+      }
     }
 
     if (oldValue?.target !== this.trigger?.target) {
