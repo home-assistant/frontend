@@ -115,11 +115,8 @@ export class DialogEditHome
         ></ha-entities-picker>
 
         <h3 class="section-header">
-          ${this.hass.localize("ui.panel.home.editor.summaries")}
+          ${this.hass.localize("ui.panel.home.editor.greeting")}
         </h3>
-        <p class="section-description">
-          ${this.hass.localize("ui.panel.home.editor.summaries_description")}
-        </p>
         <div class="summary-toggles">
           <label class="summary-toggle">
             <ha-icon
@@ -134,6 +131,15 @@ export class DialogEditHome
               @change=${this._welcomeMessageToggleChanged}
             ></ha-switch>
           </label>
+        </div>
+
+        <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.summaries")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize("ui.panel.home.editor.summaries_description")}
+        </p>
+        <div class="summary-toggles">
           ${SUMMARY_ITEMS.map((item) => {
             const label = this._getSummaryLabel(item.key);
             const color = computeCssColor(item.color);
