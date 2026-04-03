@@ -42,7 +42,7 @@ export class HaPlatformCondition extends LitElement {
   @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformCondition {
-    return { condition: "", options: {} };
+    return { condition: "" };
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {

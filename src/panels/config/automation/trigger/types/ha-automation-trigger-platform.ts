@@ -52,7 +52,7 @@ export class HaPlatformTrigger extends LitElement {
   @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformTrigger {
-    return { trigger: "", options: {} };
+    return { trigger: "" };
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
