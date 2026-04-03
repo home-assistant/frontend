@@ -121,6 +121,19 @@ export class DialogEditHome
           ${this.hass.localize("ui.panel.home.editor.summaries_description")}
         </p>
         <div class="summary-toggles">
+          <label class="summary-toggle">
+            <ha-icon
+              icon="mdi:hand-wave"
+              style=${styleMap({ "--mdc-icon-size": "24px" })}
+            ></ha-icon>
+            <span class="summary-label">
+              ${this.hass.localize("ui.panel.home.editor.welcome_message")}
+            </span>
+            <ha-switch
+              .checked=${!this._config?.hidden_welcome_message}
+              @change=${this._welcomeMessageToggleChanged}
+            ></ha-switch>
+          </label>
           ${SUMMARY_ITEMS.map((item) => {
             const label = this._getSummaryLabel(item.key);
             const color = computeCssColor(item.color);
@@ -201,6 +214,14 @@ export class DialogEditHome
       ...this._config,
       hidden_summaries:
         hiddenSummaries.size > 0 ? [...hiddenSummaries] : undefined,
+    };
+  }
+
+  private _welcomeMessageToggleChanged(ev: Event): void {
+    const checked = (ev.target as HTMLElement & { checked: boolean }).checked;
+    this._config = {
+      ...this._config,
+      hidden_welcome_message: checked ? undefined : true,
     };
   }
 

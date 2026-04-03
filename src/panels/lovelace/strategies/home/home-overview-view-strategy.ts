@@ -40,6 +40,7 @@ export interface HomeOverviewViewStrategyConfig {
   favorite_entities?: string[];
   home_panel?: boolean;
   hidden_summaries?: string[];
+  hidden_welcome_message?: boolean;
 }
 
 const computeAreaCard = (
@@ -456,14 +457,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       type: "sections",
       max_columns: maxColumns,
       sections: sections,
-      header: {
-        layout: "responsive",
-        card: {
-          type: "markdown",
-          text_only: true,
-          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
-        } satisfies MarkdownCardConfig,
-      },
+      ...(!config.hidden_welcome_message && {
+        header: {
+          layout: "responsive",
+          card: {
+            type: "markdown",
+            text_only: true,
+            content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
+          } satisfies MarkdownCardConfig,
+        },
+      }),
       ...(sidebarSection && {
         sidebar: {
           sections: [sidebarSection],

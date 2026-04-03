@@ -2464,7 +2464,8 @@
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page."
+          "summaries_description": "Choose which summaries to show on your overview page.",
+          "welcome_message": "Welcome message"
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
