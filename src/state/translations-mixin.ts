@@ -66,7 +66,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmentTranslations = new Set<string>();
+    private __loadedFragmentTranslations = new Map<
+      string,
+      Promise<LocalizeFunc>
+    >();
 
     private __loadedTranslations: Record<string, LoadedTranslationCategory> =
       {};
@@ -257,7 +260,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
-      this.__loadedFragmentTranslations = new Set();
+      this.__loadedFragmentTranslations = new Map();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -381,11 +384,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       if (this.__loadedFragmentTranslations.has(fragment)) {
-        return this.hass!.localize;
+        return this.__loadedFragmentTranslations.get(fragment)!;
       }
-      this.__loadedFragmentTranslations.add(fragment);
-      const result = await getTranslation(fragment, language);
-      return this._updateResources(language, result.data);
+      const promise = getTranslation(fragment, language).then((result) =>
+        this._updateResources(language, result.data)
+      );
+      this.__loadedFragmentTranslations.set(fragment, promise);
+      return promise;
     }
 
     private async _loadCoreTranslations(language: string) {
