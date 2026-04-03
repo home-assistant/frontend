@@ -108,13 +108,16 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (
-      oldValue?.trigger !== this.trigger?.trigger &&
       this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.trigger;
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.trigger);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -142,7 +145,7 @@ export class HaPlatformTrigger extends LitElement {
         }
       });
 
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.trigger,
