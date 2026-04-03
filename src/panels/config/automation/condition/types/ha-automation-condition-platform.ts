@@ -42,7 +42,7 @@ export class HaPlatformCondition extends LitElement {
   @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformCondition {
-    return { condition: "" };
+    return { condition: "", options: {} };
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
@@ -73,12 +73,13 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      oldValue?.condition !== this.condition?.condition &&
       this.condition &&
+      oldValue?.condition !== this.condition.condition &&
       this.description?.fields
     ) {
-      let updatedDefaultValue = false;
-      const updatedOptions = {};
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
       const loadDefaults = !("options" in this.condition);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
@@ -89,7 +90,6 @@ export class HaPlatformCondition extends LitElement {
           "boolean" in field.selector &&
           updatedOptions[key] === undefined
         ) {
-          updatedDefaultValue = true;
           updatedOptions[key] = false;
         } else if (
           loadDefaults &&
@@ -102,18 +102,15 @@ export class HaPlatformCondition extends LitElement {
             !this.condition?.target
           )
         ) {
-          updatedDefaultValue = true;
           updatedOptions[key] = field.default;
         }
       });
-      if (updatedDefaultValue) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.condition,
-            options: updatedOptions,
-          },
-        });
-      }
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.condition,
+          options: updatedOptions,
+        },
+      });
     }
 
     if (oldValue?.target !== this.condition?.target) {

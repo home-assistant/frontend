@@ -52,7 +52,7 @@ export class HaPlatformTrigger extends LitElement {
   @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformTrigger {
-    return { trigger: "" };
+    return { trigger: "", options: {} };
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
@@ -108,12 +108,13 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (
-      oldValue?.trigger !== this.trigger?.trigger &&
       this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
-      let updatedDefaultValue = false;
-      const updatedOptions = {};
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
       const loadDefaults = !("options" in this.trigger);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
@@ -124,7 +125,6 @@ export class HaPlatformTrigger extends LitElement {
           "boolean" in field.selector &&
           updatedOptions[key] === undefined
         ) {
-          updatedDefaultValue = true;
           updatedOptions[key] = false;
         } else if (
           loadDefaults &&
@@ -137,19 +137,16 @@ export class HaPlatformTrigger extends LitElement {
             !this.trigger?.target
           )
         ) {
-          updatedDefaultValue = true;
           updatedOptions[key] = field.default;
         }
       });
 
-      if (updatedDefaultValue) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.trigger,
-            options: updatedOptions,
-          },
-        });
-      }
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.trigger,
+          options: updatedOptions,
+        },
+      });
     }
 
     if (oldValue?.target !== this.trigger?.target) {
