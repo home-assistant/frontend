@@ -150,7 +150,7 @@
     "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
     "@rsdoctor/rspack-plugin": "1.5.6",
-    "@rspack/core": "1.7.10",
+    "@rspack/core": "1.7.11",
     "@rspack/dev-server": "1.2.1",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.25",
