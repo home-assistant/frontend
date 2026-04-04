@@ -89,7 +89,7 @@
     "@vibrant/color": "4.0.4",
     "@webcomponents/scoped-custom-element-registry": "0.0.10",
     "@webcomponents/webcomponentsjs": "2.8.0",
-    "barcode-detector": "3.1.1",
+    "barcode-detector": "3.1.2",
     "cally": "0.9.2",
     "color-name": "2.1.0",
     "comlink": "4.4.2",
