@@ -16,6 +16,7 @@ export interface CommonControlSectionStrategyConfig {
   include_entities?: string[];
   hide_empty?: boolean;
   heading?: HeadingCardConfig;
+  show_predicted?: boolean;
   /** @deprecated Use `heading` instead */
   icon?: string;
   /** @deprecated Use `heading` instead */
@@ -46,34 +47,39 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       } satisfies HeadingCardConfig);
     }
 
-    if (!isComponentLoaded(hass.config, "usage_prediction")) {
-      section.cards!.push({
-        type: "markdown",
-        content: hass.localize(
-          "ui.panel.lovelace.strategy.common_controls.not_loaded"
-        ),
+    let predictedEntities: string[] = [];
+
+    if (config.show_predicted !== false) {
+      if (!isComponentLoaded(hass.config, "usage_prediction")) {
+        section.cards!.push({
+          type: "markdown",
+          content: hass.localize(
+            "ui.panel.lovelace.strategy.common_controls.not_loaded"
+          ),
+        });
+        section.disabled = config.hide_empty;
+        return section;
+      }
+
+      const predictedCommonControl =
+        await getCommonControlUsagePrediction(hass);
+      predictedEntities = predictedCommonControl.entities.filter((entity) => {
+        if (!(entity in hass.states)) {
+          return false;
+        }
+        const entityEntry = hass.entities[entity];
+        // Filter out hidden entities (respects user/integration/device hidden_by)
+        if (entityEntry?.hidden) {
+          return false;
+        }
+        return true;
       });
-      section.disabled = config.hide_empty;
-      return section;
-    }
 
-    const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities.filter((entity) => {
-      if (!(entity in hass.states)) {
-        return false;
+      if (config.exclude_entities?.length) {
+        predictedEntities = predictedEntities.filter(
+          (entity) => !config.exclude_entities!.includes(entity)
+        );
       }
-      const entityEntry = hass.entities[entity];
-      // Filter out hidden entities (respects user/integration/device hidden_by)
-      if (entityEntry?.hidden) {
-        return false;
-      }
-      return true;
-    });
-
-    if (config.exclude_entities?.length) {
-      predictedEntities = predictedEntities.filter(
-        (entity) => !config.exclude_entities!.includes(entity)
-      );
     }
 
     if (config.include_entities?.length) {

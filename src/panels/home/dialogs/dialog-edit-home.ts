@@ -129,6 +129,21 @@ export class DialogEditHome
           @value-changed=${this._welcomeMessageToggleChanged}
         ></ha-form>
 
+        <label class="summary-toggle">
+          <span class="summary-label">
+            ${this.hass.localize("ui.panel.home.editor.suggested_entities")}
+          </span>
+          <ha-switch
+            .checked=${this._config?.show_suggested_entities !== false}
+            @change=${this._suggestedEntitiesToggleChanged}
+          ></ha-switch>
+        </label>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.home.editor.suggested_entities_description"
+          )}
+        </p>
+
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
         </h3>
@@ -229,6 +244,14 @@ export class DialogEditHome
     this._config = {
       ...this._config,
       hide_welcome_message: ev.detail.value.welcome_message ? undefined : true,
+    };
+  }
+
+  private _suggestedEntitiesToggleChanged(ev: Event): void {
+    const checked = (ev.target as HTMLInputElement).checked;
+    this._config = {
+      ...this._config,
+      show_suggested_entities: checked ? undefined : false,
     };
   }
 

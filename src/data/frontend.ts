@@ -23,6 +23,7 @@ export interface HomeFrontendSystemData {
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
+  show_suggested_entities?: boolean;
 }
 
 declare global {

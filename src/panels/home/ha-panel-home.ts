@@ -320,6 +320,7 @@ class PanelHome extends LitElement {
         home_panel: true,
         hidden_summaries: this._config.hidden_summaries,
         hide_welcome_message: this._config.hide_welcome_message,
+        show_suggested_entities: this._config.show_suggested_entities,
       },
     };
 

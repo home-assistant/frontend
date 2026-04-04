@@ -41,6 +41,7 @@ export interface HomeOverviewViewStrategyConfig {
   home_panel?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
+  show_suggested_entities?: boolean;
 }
 
 const computeAreaCard = (
@@ -195,6 +196,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         limit: maxCommonControls,
         include_entities: favoriteEntities,
         hide_empty: true,
+        show_predicted: config.show_suggested_entities !== false,
         heading: {
           type: "heading",
           heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
