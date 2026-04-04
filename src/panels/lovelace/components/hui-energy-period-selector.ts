@@ -350,16 +350,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     : ``}
                 </div>`
               : nothing}
-          </section>
-          <section class="date-actions">
-            <div
+            <ha-spinner
               class=${classMap({
                 "loading-indicator": true,
                 "is-loading": this._loading,
               })}
-            >
-              <ha-spinner size="small"></ha-spinner>
-            </div>
+              size="small"
+            ></ha-spinner>
+          </section>
+          <section class="date-actions">
             <div class="overflow">
               ${!this.narrow
                 ? html`<ha-button
@@ -793,13 +792,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .loading-indicator {
       display: flex;
+      position: absolute;
+      right: var(--ha-space-2);
       align-items: center;
       margin-inline-end: var(--ha-space-2);
       margin-inline-start: var(--ha-space-2);
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal) ease-in-out;
-      position: absolute;
-      right: var(--ha-space-2);
     }
     .loading-indicator.is-loading {
       opacity: 1;
