@@ -10,6 +10,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
+import "../../../components/ha-input-helper-text";
 import "../../../components/ha-switch";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -138,11 +139,11 @@ export class DialogEditHome
             @change=${this._suggestedEntitiesToggleChanged}
           ></ha-switch>
         </label>
-        <p class="section-description">
+        <ha-input-helper-text>
           ${this.hass.localize(
             "ui.panel.home.editor.suggested_entities_description"
           )}
-        </p>
+        </ha-input-helper-text>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
