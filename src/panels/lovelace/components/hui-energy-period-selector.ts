@@ -350,16 +350,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     : ``}
                 </div>`
               : nothing}
-          </section>
-          <section class="date-actions">
-            <div
+            <ha-spinner
               class=${classMap({
                 "loading-indicator": true,
                 "is-loading": this._loading,
               })}
-            >
-              <ha-spinner size="small"></ha-spinner>
-            </div>
+              size="small"
+            ></ha-spinner>
+          </section>
+          <section class="date-actions">
             <div class="overflow">
               ${!this.narrow
                 ? html`<ha-button
