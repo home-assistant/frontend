@@ -9,6 +9,7 @@ import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeConsumptionData,
   calculateSolarConsumedGauge,
   getEnergyDataCollection,
   getSummedData,
@@ -102,8 +103,11 @@ class HuiEnergySolarGaugeCard
 
     let value: number | undefined;
     if (productionReturnedToGrid !== null) {
-      const hasBattery = !!summedData.to_battery || !!summedData.from_battery;
-      value = calculateSolarConsumedGauge(hasBattery, summedData);
+      const { consumption, compareConsumption: __ } = computeConsumptionData(
+        summedData,
+        undefined
+      );
+      value = calculateSolarConsumedGauge(summedData, consumption);
     }
 
     return html`
