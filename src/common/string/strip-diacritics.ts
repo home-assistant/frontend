@@ -12,6 +12,12 @@ const NON_DECOMPOSABLE_MAP: Record<string, string> = {
   Ŧ: "T",
   ı: "i",
   ß: "ss",
+  æ: "ae",
+  Æ: "AE",
+  ð: "d",
+  Ð: "D",
+  þ: "th",
+  Þ: "Th",
 };
 
 const NON_DECOMPOSABLE_RE = new RegExp(

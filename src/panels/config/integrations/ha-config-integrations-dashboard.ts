@@ -282,7 +282,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         };
         const fuse = new Fuse(allEntries, options);
         filteredConfigEntries = fuse
-          .search(filter)
+          .search(stripDiacritics(filter))
           .map((result) => result.item);
       } else {
         filteredConfigEntries = allEntries;
