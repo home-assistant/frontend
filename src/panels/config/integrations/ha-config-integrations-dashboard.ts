@@ -279,6 +279,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          ignoreDiacritics: true,
         };
         const fuse = new Fuse(allEntries, options);
         filteredConfigEntries = fuse
