@@ -165,7 +165,7 @@ class HaConfigSystemNavigation extends LitElement {
     super.firstUpdated(_changedProperties);
 
     this._fetchNetworkStatus();
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
     this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
     this._fetchLabFeatures();
@@ -175,7 +175,10 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchBackupInfo() {
-    const backups: BackupContent[] = isComponentLoaded(this.hass, "backup")
+    const backups: BackupContent[] = isComponentLoaded(
+      this.hass.config,
+      "backup"
+    )
       ? await fetchBackupInfo(this.hass).then(
           (backupData) => backupData.backups
         )
@@ -189,7 +192,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchHardwareInfo(isHassioLoaded: boolean) {
-    if (isComponentLoaded(this.hass, "hardware")) {
+    if (isComponentLoaded(this.hass.config, "hardware")) {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
@@ -214,7 +217,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchNetworkStatus() {
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       const cloudStatus = await fetchCloudStatus(this.hass);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
@@ -225,7 +228,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchLabFeatures() {
-    if (isComponentLoaded(this.hass, "labs")) {
+    if (isComponentLoaded(this.hass.config, "labs")) {
       this._labFeatures = await fetchLabFeatures(this.hass);
     }
   }

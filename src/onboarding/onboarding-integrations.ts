@@ -192,7 +192,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private async _scanUSBDevices() {
-    if (!isComponentLoaded(this.hass, "usb")) {
+    if (!isComponentLoaded(this.hass.config, "usb")) {
       return;
     }
     await scanUSBDevices(this.hass);

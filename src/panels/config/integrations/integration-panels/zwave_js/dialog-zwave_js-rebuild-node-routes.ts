@@ -5,9 +5,9 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-spinner";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import {
@@ -75,7 +75,11 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(
+                            this.device,
+                            this.hass!.localize,
+                            this.hass!.states
+                          )}
                         </em>`,
                       }
                     )}
@@ -101,7 +105,11 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(
+                            this.device,
+                            this.hass!.localize,
+                            this.hass!.states
+                          )}
                         </em>`,
                       }
                     )}
@@ -125,7 +133,8 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         device: html`<em
                           >${computeDeviceNameDisplay(
                             this.device,
-                            this.hass!
+                            this.hass!.localize,
+                            this.hass!.states
                           )}</em
                         >`,
                       }
@@ -157,7 +166,11 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
                       {
                         device: html`<em>
-                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                          ${computeDeviceNameDisplay(
+                            this.device,
+                            this.hass!.localize,
+                            this.hass!.states
+                          )}
                         </em>`,
                       }
                     )}
@@ -209,9 +222,12 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
-      device_id: this.device!.id,
-    });
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
+      this.hass!.connection,
+      {
+        device_id: this.device!.id,
+      }
+    );
     if (network.controller.is_rebuilding_routes) {
       this._status = "rebuilding-routes";
     }

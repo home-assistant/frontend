@@ -1,3 +1,4 @@
+/// <reference types="chromecast-caf-sender" />
 import { mdiTelevision } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";

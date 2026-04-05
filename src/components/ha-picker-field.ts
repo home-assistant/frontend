@@ -153,10 +153,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
           right: 0;
           height: 1px;
           width: 100%;
-          background-color: var(
-            --mdc-text-field-idle-line-color,
-            rgba(0, 0, 0, 0.42)
-          );
+          background-color: var(--ha-color-border-neutral-loud);
           transform:
             height 180ms ease-in-out,
             background-color 180ms ease-in-out;

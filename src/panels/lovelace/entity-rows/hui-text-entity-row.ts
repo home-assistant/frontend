@@ -1,7 +1,8 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { TextEntity } from "../../../data/text";
 import { setValue } from "../../../data/text";
@@ -53,7 +54,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hide-name
       >
-        <ha-textfield
+        <ha-input
           .label=${name}
           .disabled=${stateObj.state === UNAVAILABLE}
           .value=${stateObj.state}
@@ -63,19 +64,20 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
           .pattern=${stateObj.attributes.pattern}
           .type=${stateObj.attributes.mode}
           @change=${this._valueChanged}
-          placeholder=${this.hass!.localize("ui.card.text.emtpy_value")}
-        ></ha-textfield>
+          .placeholder=${this.hass!.localize("ui.card.text.empty_value")}
+        ></ha-input>
       </hui-generic-entity-row>
     `;
   }
 
-  private _valueChanged(ev): void {
+  private _valueChanged(ev: InputEvent): void {
     const stateObj = this.hass!.states[this._config!.entity] as TextEntity;
-    const newValue = ev.target.value;
+    const target = ev.target as HaInput;
+    const newValue = target.value ?? "";
 
     // Filter out invalid text states
     if (newValue && isUnavailableState(newValue)) {
-      ev.target.value = stateObj.state;
+      target.value = stateObj.state;
       return;
     }
 
@@ -83,7 +85,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       setValue(this.hass!, stateObj.entity_id, newValue);
     }
 
-    ev.target.blur();
+    target.blur();
   }
 
   static styles = css`
@@ -91,7 +93,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       display: flex;
       align-items: center;
     }
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
   `;

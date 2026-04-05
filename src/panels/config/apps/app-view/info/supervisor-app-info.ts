@@ -1038,6 +1038,7 @@ class SupervisorAppInfo extends LitElement {
   }
 
   private _updateComplete() {
+    this._scheduleDataUpdate();
     const eventdata = {
       success: true,
       response: undefined,
@@ -1059,11 +1060,16 @@ class SupervisorAppInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      showAlertDialog(this, {
+      showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.apps.dashboard.action_error.install"
         ),
         text: extractApiErrorMessage(err),
+        confirmText: this.hass.localize("ui.common.ok"),
+        dismissText: this.hass.localize(
+          "ui.panel.config.apps.dashboard.action_error.view_supervisor_logs"
+        ),
+        cancel: () => navigate("/config/logs?provider=supervisor"),
       });
     }
     button.progress = false;

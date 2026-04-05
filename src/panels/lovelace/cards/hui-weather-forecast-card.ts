@@ -118,7 +118,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       !this.hass ||
       !this._config ||
       !this._needForecastSubscription() ||
-      !isComponentLoaded(this.hass, "weather") ||
+      !isComponentLoaded(this.hass.config, "weather") ||
       !this.hass.states[this._config!.entity]
     ) {
       return;

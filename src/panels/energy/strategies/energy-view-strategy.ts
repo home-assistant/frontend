@@ -11,7 +11,7 @@ import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
+} from "../../lovelace/strategies/helpers/view-columns-conditions";
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {

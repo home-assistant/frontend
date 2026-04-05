@@ -10,7 +10,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/ha-textarea";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
 import { localizeContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
@@ -70,7 +70,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               .configValue=${"name"}
@@ -80,7 +80,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
                 "ui.dialogs.label-detail.required_error_msg"
               )}
               required
-            ></ha-textfield>
+            ></ha-input>
             <ha-icon-picker
               .value=${this._icon}
               .configValue=${"icon"}
@@ -138,9 +138,9 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
     `;
   }
 
-  private _input(ev: Event) {
-    const target = ev.target as any;
-    const configValue = target.configValue;
+  private _input(ev: InputEvent) {
+    const target = ev.target as HTMLInputElement;
+    const configValue = (target as any).configValue;
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
@@ -195,14 +195,13 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
           color: var(--primary-color);
         }
         ha-textarea,
-        ha-textfield,
         ha-icon-picker,
         ha-color-picker {
           display: block;
+          margin-bottom: var(--ha-space-5);
         }
-        ha-color-picker,
-        ha-textarea {
-          margin-top: 16px;
+        ha-input {
+          --ha-input-padding-bottom: 0;
         }
       `,
     ];

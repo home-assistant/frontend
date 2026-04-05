@@ -8,6 +8,7 @@ import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-switch";
+import "../../../../../components/input/ha-input";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import type { Action } from "../../../../../data/script";
 import { callExecuteScript } from "../../../../../data/service";
@@ -80,11 +81,11 @@ export class MQTTConfigPanel extends LitElement {
           >
             <div class="card-content">
               <div class="panel-dev-mqtt-fields">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
                   .value=${this._topic}
                   @change=${this._handleTopic}
-                ></ha-textfield>
+                ></ha-input>
                 <ha-select
                   .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
                   .value=${this._qos}
@@ -127,8 +128,8 @@ export class MQTTConfigPanel extends LitElement {
     `;
   }
 
-  private _handleTopic(ev: CustomEvent) {
-    this._topic = (ev.target! as any).value;
+  private _handleTopic(ev: InputEvent) {
+    this._topic = (ev.target as HTMLInputElement).value;
   }
 
   private _handlePayload(ev: CustomEvent) {
@@ -210,7 +211,7 @@ export class MQTTConfigPanel extends LitElement {
           width: 96px;
           margin: 0 8px;
         }
-        ha-textfield {
+        ha-input {
           flex: 1;
         }
         @media screen and (max-width: 600px) {
@@ -220,7 +221,7 @@ export class MQTTConfigPanel extends LitElement {
             margin-inline-end: initial;
             margin-top: 8px;
           }
-          ha-textfield {
+          ha-input {
             flex: auto;
             width: 100%;
           }

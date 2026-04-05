@@ -53,7 +53,6 @@ class DialogAssignCategory extends LitElement {
     const entry = this._params.entityReg.categories[this._params.scope];
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.category.assign.edit")
@@ -127,7 +126,6 @@ class DialogAssignCategory extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
         ha-icon-picker {
           display: block;
           margin-bottom: 16px;

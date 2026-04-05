@@ -238,7 +238,8 @@ class HaProfileSectionGeneral extends LitElement {
                     <ha-set-vibrate-row .hass=${this.hass}></ha-set-vibrate-row>
                   `
                 : ""}
-              ${!isExternal && isComponentLoaded(this.hass, "html5.notify")
+              ${!isExternal &&
+              isComponentLoaded(this.hass.config, "html5.notify")
                 ? html`
                     <ha-push-notifications-row
                       .hass=${this.hass}

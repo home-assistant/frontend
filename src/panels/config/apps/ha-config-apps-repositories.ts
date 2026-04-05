@@ -187,7 +187,6 @@ export class HaConfigAppsRepositories extends LitElement {
         .header=${this.hass.localize("ui.panel.config.apps.store.repositories")}
       >
         <ha-data-table
-          .hass=${this.hass}
           .columns=${this._columns(this.hass.localize, usedRepositories)}
           .data=${this._data(repositories)}
           .noDataText=${this.hass.localize(

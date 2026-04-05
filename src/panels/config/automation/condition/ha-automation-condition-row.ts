@@ -429,7 +429,10 @@ export default class HaAutomationConditionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -754,6 +757,12 @@ export default class HaAutomationConditionRow extends LitElement {
     this._isNew = true;
   }
 
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
@@ -818,9 +827,6 @@ export default class HaAutomationConditionRow extends LitElement {
   );
 
   private _toggleCollapse() {
-    if (!this._collapsed) {
-      this._isNew = false;
-    }
     this._collapsed = !this._collapsed;
   }
 

@@ -4,11 +4,12 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatTime } from "../../../../common/datetime/format_time";
-import "../../../../components/ha-card";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-button";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("event-subscribe-card")
@@ -62,7 +63,7 @@ class EventSubscribeCard extends LitElement {
         )}
       >
         <div class="card-content">
-          <ha-textfield
+          <ha-input
             .label=${this._subscribed
               ? this.hass!.localize(
                   "ui.panel.config.developer-tools.tabs.events.listening_to"
@@ -73,17 +74,16 @@ class EventSubscribeCard extends LitElement {
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @input=${this._valueChanged}
-          ></ha-textfield>
-          <ha-textfield
+          ></ha-input>
+          <ha-input
             .label=${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.filter_events"
             )}
             .value=${this._eventFilter}
             .disabled=${this._subscribed !== undefined}
-            helperPersistent
-            .helper=${`${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
+            .hint=${`${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
             @input=${this._filterChanged}
-          ></ha-textfield>
+          ></ha-input>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
@@ -144,13 +144,13 @@ class EventSubscribeCard extends LitElement {
     `;
   }
 
-  private _valueChanged(ev): void {
-    this._eventType = ev.target.value;
+  private _valueChanged(ev: InputEvent): void {
+    this._eventType = (ev.target as HaInput).value ?? "";
     this._error = undefined;
   }
 
-  private _filterChanged(ev): void {
-    this._eventFilter = ev.target.value;
+  private _filterChanged(ev: InputEvent): void {
+    this._eventFilter = (ev.target as HaInput).value ?? "";
   }
 
   private _testEventFilter(event: HassEvent): boolean {
@@ -231,9 +231,8 @@ class EventSubscribeCard extends LitElement {
   }
 
   static styles = css`
-    ha-textfield {
-      display: block;
-      margin-bottom: var(--ha-space-4);
+    ha-input {
+      margin-bottom: var(--ha-space-2);
     }
     .error-message {
       margin-top: var(--ha-space-2);

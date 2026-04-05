@@ -46,7 +46,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const error = this._error
       ? this._error
-      : !isComponentLoaded(this.hass, "analytics")
+      : !isComponentLoaded(this.hass.config, "analytics")
         ? "Analytics integration not loaded"
         : undefined;
 
@@ -194,7 +194,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     if (section) {
       this._highlightedSection = section;
     }
-    if (isComponentLoaded(this.hass, "analytics")) {
+    if (isComponentLoaded(this.hass.config, "analytics")) {
       this._load();
     }
   }
@@ -210,7 +210,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   }
 
   private async _loadZwaveDataCollection() {
-    if (!isComponentLoaded(this.hass, "zwave_js")) {
+    if (!isComponentLoaded(this.hass.config, "zwave_js")) {
       return;
     }
     try {

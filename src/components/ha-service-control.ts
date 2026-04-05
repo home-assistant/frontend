@@ -516,17 +516,10 @@ export class HaServiceControl extends LitElement {
         `}
     ${serviceData && "target" in serviceData
       ? html`<ha-settings-row .narrow=${this.narrow}>
-          ${hasOptional
-            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-            : ""}
           <span slot="heading"
             >${this.hass.localize("ui.components.service-control.target")}</span
           >
-          <span slot="description"
-            >${this.hass.localize(
-              "ui.components.service-control.target_secondary"
-            )}</span
-          ><ha-selector
+          <ha-selector
             .hass=${this.hass}
             .selector=${this._targetSelector(
               serviceData.target as TargetSelector,

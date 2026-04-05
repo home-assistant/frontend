@@ -91,6 +91,10 @@ export class HaChartBase extends LitElement {
 
   private _lastTapTime?: number;
 
+  private _longPressTimer?: ReturnType<typeof setTimeout>;
+
+  private _longPressTriggered = false;
+
   private _shouldResizeChart = false;
 
   private _resizeAnimationDuration?: number;
@@ -128,6 +132,7 @@ export class HaChartBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._legendPointerCancel();
     this._pendingSetup = false;
     while (this._listeners.length) {
       this._listeners.pop()!();
@@ -302,22 +307,31 @@ export class HaChartBase extends LitElement {
     `;
   }
 
-  private _renderLegend() {
+  private _getLegendItems() {
     if (!this.options?.legend || !this.data) {
-      return nothing;
+      return undefined;
     }
     const legend = ensureArray(this.options.legend).find(
       (l) => l.show && l.type === "custom"
     ) as CustomLegendOption | undefined;
     if (!legend) {
-      return nothing;
+      return undefined;
     }
     const datasets = ensureArray(this.data);
-    const items =
+    return (
       legend.data ||
       datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
+        .map((d) => ({ id: d.id, name: d.name }))
+    );
+  }
+
+  private _renderLegend() {
+    const items = this._getLegendItems();
+    if (!items) {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data!);
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -362,6 +376,11 @@ export class HaChartBase extends LitElement {
           return html`<li
             .id=${id}
             @click=${this._legendClick}
+            @pointerdown=${this._legendPointerDown}
+            @pointerup=${this._legendPointerCancel}
+            @pointerleave=${this._legendPointerCancel}
+            @pointercancel=${this._legendPointerCancel}
+            @contextmenu=${this._legendContextMenu}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
             .title=${name}
           >
@@ -587,15 +606,29 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
-      // It rescales the Y-axis to the visible data while keeping one point
-      // just outside each boundary to avoid line gaps at the zoom edges.
-      filterMode: "boundaryFilter" as any,
+      filterMode: this._getDataZoomFilterMode() as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
+  }
+
+  // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
+  // It rescales the Y-axis to the visible data while keeping one point
+  // just outside each boundary to avoid line gaps at the zoom edges.
+  // Use "filter" for bar charts since boundaryFilter causes rendering issues.
+  // Use "weakFilter" for other types (e.g. custom/timeline) so bars
+  // spanning the visible range boundary are kept.
+  private _getDataZoomFilterMode(): string {
+    const series = ensureArray(this.data);
+    if (series.every((s) => s.type === "line")) {
+      return "boundaryFilter";
+    }
+    if (series.some((s) => s.type === "bar")) {
+      return "filter";
+    }
+    return "weakFilter";
   }
 
   private _createOptions(): ECOption {
@@ -632,7 +665,7 @@ export class HaChartBase extends LitElement {
             hideOverlap: true,
             ...axis.axisLabel,
           },
-          minInterval,
+          minInterval: axis.minInterval ?? minInterval,
         } as XAXisOption;
       });
     }
@@ -1022,11 +1055,52 @@ export class HaChartBase extends LitElement {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _legendClick(ev: any) {
+  // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
+  private _legendPointerDown(ev: PointerEvent) {
+    // Mouse uses Ctrl/Cmd+click instead
+    if (ev.pointerType === "mouse") {
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement)?.id;
+    if (!id) {
+      return;
+    }
+    this._longPressTriggered = false;
+    this._longPressTimer = setTimeout(() => {
+      this._longPressTriggered = true;
+      this._longPressTimer = undefined;
+      this._soloLegend(id);
+    }, 500);
+  }
+
+  private _legendPointerCancel() {
+    if (this._longPressTimer) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = undefined;
+    }
+  }
+
+  private _legendContextMenu(ev: Event) {
+    if (this._longPressTimer || this._longPressTriggered) {
+      ev.preventDefault();
+    }
+  }
+
+  private _legendClick(ev: MouseEvent) {
     if (!this.chart) {
       return;
     }
-    const id = ev.currentTarget?.id;
+    if (this._longPressTriggered) {
+      this._longPressTriggered = false;
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement)?.id;
+    // Cmd+click on Mac (Ctrl+click is right-click there), Ctrl+click elsewhere
+    const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
+    if (soloModifier) {
+      this._soloLegend(id);
+      return;
+    }
     if (this._hiddenDatasets.has(id)) {
       this._getAllIdsFromLegend(this.options, id).forEach((i) =>
         this._hiddenDatasets.delete(i)
@@ -1039,6 +1113,60 @@ export class HaChartBase extends LitElement {
       fireEvent(this, "dataset-hidden", { id });
     }
     this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _soloLegend(id: string) {
+    const allIds = this._getAllLegendIds();
+    const clickedIds = this._getAllIdsFromLegend(this.options, id);
+    const otherIds = allIds.filter((i) => !clickedIds.includes(i));
+
+    const clickedIsOnlyVisible =
+      clickedIds.every((i) => !this._hiddenDatasets.has(i)) &&
+      otherIds.every((i) => this._hiddenDatasets.has(i));
+
+    if (clickedIsOnlyVisible) {
+      // Already solo'd on this item — restore all series to visible
+      for (const hiddenId of [...this._hiddenDatasets]) {
+        this._hiddenDatasets.delete(hiddenId);
+        fireEvent(this, "dataset-unhidden", { id: hiddenId });
+      }
+    } else {
+      // Solo: hide every other series, unhide clicked if it was hidden
+      for (const otherId of otherIds) {
+        if (!this._hiddenDatasets.has(otherId)) {
+          this._hiddenDatasets.add(otherId);
+          fireEvent(this, "dataset-hidden", { id: otherId });
+        }
+      }
+      for (const clickedId of clickedIds) {
+        if (this._hiddenDatasets.has(clickedId)) {
+          this._hiddenDatasets.delete(clickedId);
+          fireEvent(this, "dataset-unhidden", { id: clickedId });
+        }
+      }
+    }
+    this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _getAllLegendIds(): string[] {
+    const items = this._getLegendItems();
+    if (!items) {
+      return [];
+    }
+    const allIds = new Set<string>();
+    for (const item of items) {
+      const primaryId =
+        typeof item === "string"
+          ? item
+          : ((item.id as string) ?? (item.name as string) ?? "");
+      for (const expandedId of this._getAllIdsFromLegend(
+        this.options,
+        primaryId
+      )) {
+        allIds.add(expandedId);
+      }
+    }
+    return [...allIds];
   }
 
   private _toggleExpandedLegend() {

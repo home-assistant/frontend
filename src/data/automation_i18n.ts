@@ -78,6 +78,19 @@ const localizeTimeString = (
   }
 };
 
+const formatNumericLimitValue = (
+  hass: HomeAssistant,
+  value?: number | string
+) => {
+  if (typeof value !== "string" || !isValidEntityId(value)) {
+    return value;
+  }
+
+  return hass.states[value]
+    ? computeStateName(hass.states[value]) || value
+    : value;
+};
+
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
@@ -233,8 +246,8 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
-          below: trigger.below,
+          above: formatNumericLimitValue(hass, trigger.above),
+          below: formatNumericLimitValue(hass, trigger.below),
           duration: duration,
         }
       );
@@ -246,7 +259,7 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
+          above: formatNumericLimitValue(hass, trigger.above),
           duration: duration,
         }
       );
@@ -258,7 +271,7 @@ const describeLegacyTrigger = (
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          below: trigger.below,
+          below: formatNumericLimitValue(hass, trigger.below),
           duration: duration,
         }
       );
@@ -813,16 +826,16 @@ const describeLegacyTrigger = (
       : trigger.entity_id;
 
     let offsetChoice = "other";
-    let offset: string | string[] = "";
+    let offset = "";
     if (trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-      offset = trigger.offset.startsWith("-")
+      const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")
         : trigger.offset.split(":");
       const duration = {
-        hours: offset.length > 0 ? +offset[0] : 0,
-        minutes: offset.length > 1 ? +offset[1] : 0,
-        seconds: offset.length > 2 ? +offset[2] : 0,
+        hours: parts.length > 0 ? +parts[0] : 0,
+        minutes: parts.length > 1 ? +parts[1] : 0,
+        seconds: parts.length > 2 ? +parts[2] : 0,
       };
       offset = formatDurationLong(hass.locale, duration);
       if (offset === "") {
@@ -1116,8 +1129,8 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: condition.above,
-          below: condition.below,
+          above: formatNumericLimitValue(hass, condition.above),
+          below: formatNumericLimitValue(hass, condition.below),
         }
       );
     }
@@ -1128,7 +1141,7 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: condition.above,
+          above: formatNumericLimitValue(hass, condition.above),
         }
       );
     }
@@ -1139,7 +1152,7 @@ const describeLegacyCondition = (
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          below: condition.below,
+          below: formatNumericLimitValue(hass, condition.below),
         }
       );
     }

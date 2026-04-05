@@ -9,7 +9,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
 import type { HaInput } from "../../../components/input/ha-input";
 import "../../../components/input/ha-input-copy";
 import type { HaInputCopy } from "../../../components/input/ha-input-copy";
@@ -44,10 +43,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @state() private _cloudChecked = false;
 
   @query('[data-name="external_url"]')
-  private _externalUrlField?: HaInput;
+  private _externalUrlField?: HaInputCopy;
 
   @query('[data-name="internal_url"]')
-  private _internalUrlField?: HaInput;
+  private _internalUrlField?: HaInputCopy;
 
   protected hassSubscribe() {
     return [
@@ -163,7 +162,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             >
             </ha-input-copy>
           </div>
-          ${hasCloud || !isComponentLoaded(this.hass, "cloud")
+          ${hasCloud || !isComponentLoaded(this.hass.config, "cloud")
             ? nothing
             : html`
                 <ha-alert alert-type="info">
@@ -299,7 +298,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   protected override firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       fetchCloudStatus(this.hass).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
         this._showCustomExternalUrl = !(

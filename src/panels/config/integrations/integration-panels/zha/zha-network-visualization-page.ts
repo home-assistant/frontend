@@ -6,7 +6,7 @@ import type {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
@@ -169,7 +169,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       | DeviceRegistryEntry
       | undefined;
     if (haDevice) {
-      const area = getDeviceContext(haDevice, this.hass).area;
+      const area = getDeviceArea(haDevice, this.hass.areas);
       if (area) {
         label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }

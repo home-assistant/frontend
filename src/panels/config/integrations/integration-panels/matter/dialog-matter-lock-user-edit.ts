@@ -8,7 +8,7 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import "../../../../../components/ha-dialog";
 import type { MatterLockUserType } from "../../../../../data/matter-lock";
 import {
@@ -83,18 +83,18 @@ class DialogMatterLockUserEdit extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
 
-          <ha-textfield
+          <ha-input
             .label=${this.hass.localize(
               "ui.panel.config.matter.lock.users.name"
             )}
             .value=${this._userName}
             @input=${this._handleNameChange}
             maxlength="10"
-          ></ha-textfield>
+          ></ha-input>
 
           ${isNew
             ? html`
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize(
                     "ui.panel.config.matter.lock.credentials.data"
                   )}
@@ -110,7 +110,7 @@ class DialogMatterLockUserEdit extends LitElement {
                   minlength=${minPin}
                   maxlength=${maxPin}
                   required
-                ></ha-textfield>
+                ></ha-input>
               `
             : nothing}
 

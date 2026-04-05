@@ -19,6 +19,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
 
 export type InputType =
   | "date"
@@ -235,7 +236,8 @@ export class HaInput extends LitElement {
     this,
     "label",
     "hint",
-    "input"
+    "input",
+    "start"
   );
 
   static shadowRootOptions: ShadowRootInit = {
@@ -287,7 +289,9 @@ export class HaInput extends LitElement {
   }
 
   public checkValidity(): boolean {
-    return this._input?.checkValidity() ?? true;
+    return nativeElementInternalsSupported
+      ? (this._input?.checkValidity() ?? true)
+      : true;
   }
 
   public reportValidity(): boolean {
@@ -317,6 +321,8 @@ export class HaInput extends LitElement {
     const hasHintSlot = this.hint
       ? false
       : this._hasSlotController.test("hint");
+
+    const hasStartSlot = this._hasSlotController.test("start");
 
     return html`
       <wa-input
@@ -348,7 +354,8 @@ export class HaInput extends LitElement {
           invalid: this.invalid || this._invalid,
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
-            (this.label && this.placeholder),
+            (this.label && this.placeholder) ||
+            (hasStartSlot && this.insetLabel),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -589,6 +596,7 @@ export class HaInput extends LitElement {
     }
     :host([type="color"]) wa-input::part(input) {
       padding-top: var(--ha-space-6);
+      padding-bottom: 2px;
       cursor: pointer;
     }
     :host([type="color"]) wa-input.no-label::part(input) {
@@ -625,7 +633,7 @@ export class HaInput extends LitElement {
     }
 
     wa-input::part(hint) {
-      height: var(--ha-space-5);
+      min-height: var(--ha-space-5);
       margin-block-start: 0;
       margin-inline-start: var(--ha-space-3);
       font-size: var(--ha-font-size-xs);
@@ -636,6 +644,7 @@ export class HaInput extends LitElement {
 
     wa-input.hint-hidden::part(hint) {
       height: 0;
+      min-height: 0;
     }
 
     .error {

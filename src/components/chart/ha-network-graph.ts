@@ -65,6 +65,8 @@ export interface NetworkData {
   categories?: { name: string; symbol: string }[];
 }
 
+const PHYSICS_DISABLE_THRESHOLD = 512;
+
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
@@ -94,7 +96,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @state() private _reducedMotion = false;
 
-  @state() private _physicsEnabled = true;
+  @state() private _physicsEnabled?: boolean;
 
   @state() private _showLabels = true;
 
@@ -122,6 +124,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ];
   }
 
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (this._physicsEnabled === undefined && this.data?.nodes?.length > 1) {
+      this._physicsEnabled =
+        this.data.nodes.length <= PHYSICS_DISABLE_THRESHOLD;
+    }
+  }
+
   protected render() {
     if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
@@ -138,7 +148,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       .hass=${this.hass}
       .data=${this._getSeries(
         this.data,
-        this._physicsEnabled,
+        this._physicsEnabled ?? false,
         this._reducedMotion,
         this._showLabels,
         isMobile,

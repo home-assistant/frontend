@@ -322,7 +322,7 @@ export class VoiceAssistantsExpose extends LitElement {
           (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
         const _assistants = Object.keys(
-          exposedEntities?.[entityState.entity_id]
+          exposedEntities?.[entityState.entity_id] ?? {}
         ).filter(
           (key) =>
             showAssistants.includes(key) &&
@@ -384,7 +384,7 @@ export class VoiceAssistantsExpose extends LitElement {
               assistants: [
                 ...(exposedEntities
                   ? Object.keys(
-                      exposedEntities?.[entityState.entity_id]
+                      exposedEntities?.[entityState.entity_id] ?? {}
                     ).filter(
                       (key) =>
                         showAssistants.includes(key) &&

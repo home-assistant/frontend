@@ -784,7 +784,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchDiagnostics() {
-    if (!this.domain || !isComponentLoaded(this.hass, "diagnostics")) {
+    if (!this.domain || !isComponentLoaded(this.hass.config, "diagnostics")) {
       return;
     }
     try {
