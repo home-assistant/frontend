@@ -178,7 +178,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           outputDevices.push({
             name: computeDeviceNameDisplay(
               device,
-              this.hass,
+              this.hass.localize,
+              this.hass.states,
               this._deviceEntityLookup[device.id]
             ),
             id: device.id,

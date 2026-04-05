@@ -135,7 +135,6 @@ export class HaNavigationPicker extends LitElement {
         ? html`
             <ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               brand-fallback
             ></ha-domain-icon>
@@ -161,7 +160,6 @@ export class HaNavigationPicker extends LitElement {
         ? html`
             <ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               brand-fallback
             ></ha-domain-icon>

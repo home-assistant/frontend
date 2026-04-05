@@ -41,7 +41,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
       let sensorNumericDeviceClasses: string[] = [];
 
-      if (isComponentLoaded(this.hass, "sensor")) {
+      if (isComponentLoaded(this.hass.config, "sensor")) {
         try {
           sensorNumericDeviceClasses = (
             await getSensorNumericDeviceClasses(this.hass)

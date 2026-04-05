@@ -46,7 +46,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       } satisfies HeadingCardConfig);
     }
 
-    if (!isComponentLoaded(hass, "usage_prediction")) {
+    if (!isComponentLoaded(hass.config, "usage_prediction")) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(

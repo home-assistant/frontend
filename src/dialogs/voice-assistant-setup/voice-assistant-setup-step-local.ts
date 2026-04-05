@@ -182,7 +182,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         await this._pickOrCreatePipelineExists();
         return;
       }
-      if (!isComponentLoaded(this.hass, "hassio")) {
+      if (!isComponentLoaded(this.hass.config, "hassio")) {
         this._state = "NOT_SUPPORTED";
         return;
       }

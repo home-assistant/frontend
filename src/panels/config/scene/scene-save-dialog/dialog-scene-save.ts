@@ -129,11 +129,7 @@ class DialogSceneSave extends LitElement {
         .value=${this._newIcon}
         @value-changed=${this._iconChanged}
       >
-        <ha-domain-icon
-          slot="start"
-          domain=${this._params.domain}
-          .hass=${this.hass}
-        >
+        <ha-domain-icon slot="start" domain=${this._params.domain}>
         </ha-domain-icon>
       </ha-icon-picker>
 

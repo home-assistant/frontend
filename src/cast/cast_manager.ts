@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/// <reference types="chromecast-caf-sender" />
 
 import type { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";

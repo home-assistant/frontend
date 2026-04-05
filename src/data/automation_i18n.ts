@@ -826,16 +826,16 @@ const describeLegacyTrigger = (
       : trigger.entity_id;
 
     let offsetChoice = "other";
-    let offset: string | string[] = "";
+    let offset = "";
     if (trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-      offset = trigger.offset.startsWith("-")
+      const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")
         : trigger.offset.split(":");
       const duration = {
-        hours: offset.length > 0 ? +offset[0] : 0,
-        minutes: offset.length > 1 ? +offset[1] : 0,
-        seconds: offset.length > 2 ? +offset[2] : 0,
+        hours: parts.length > 0 ? +parts[0] : 0,
+        minutes: parts.length > 1 ? +parts[1] : 0,
+        seconds: parts.length > 2 ? +parts[2] : 0,
       };
       offset = formatDurationLong(hass.locale, duration);
       if (offset === "") {

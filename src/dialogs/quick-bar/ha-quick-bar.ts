@@ -130,7 +130,10 @@ export class QuickBar extends LitElement {
       console.error("Error fetching config entries for quick bar", err);
     }
 
-    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = hassioAddonsInfo.addons;
@@ -304,7 +307,6 @@ export class QuickBar extends LitElement {
                 <ha-domain-icon
                   slot="start"
                   style="margin: var(--ha-space-1);"
-                  .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
                 ></ha-domain-icon>

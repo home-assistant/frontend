@@ -23,7 +23,7 @@ class ConfigNetwork extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "network")) {
+    if (!isComponentLoaded(this.hass.config, "network")) {
       return nothing;
     }
 
@@ -64,7 +64,7 @@ class ConfigNetwork extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "network")) {
+    if (isComponentLoaded(this.hass.config, "network")) {
       this._load();
     }
   }
@@ -73,7 +73,7 @@ class ConfigNetwork extends LitElement {
     this._error = undefined;
     try {
       const coreNetwork = await getNetworkConfig(this.hass);
-      if (isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass.config, "hassio")) {
         const supervisorNetwork = await fetchNetworkInfo(this.hass);
         const interfaces = new Set(
           supervisorNetwork.interfaces.map((int) => int.interface)

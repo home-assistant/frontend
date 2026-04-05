@@ -698,7 +698,7 @@ class AddIntegrationDialog extends LitElement {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
-      isComponentLoaded(this.hass, integration.domain)
+      isComponentLoaded(this.hass.config, integration.domain)
     ) {
       this._pickedBrand = integration.domain;
       return;
@@ -741,7 +741,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       integration.domain === "cloud" &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/cloud");
@@ -750,7 +750,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       ["google_assistant", "alexa"].includes(integration.domain) &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/voice-assistants/assistants");

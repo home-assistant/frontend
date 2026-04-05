@@ -268,7 +268,6 @@ export class HaAreaControlsPicker extends LitElement {
         : item.domain
           ? html`<ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               .deviceClass=${item.deviceClass}
             ></ha-domain-icon>`

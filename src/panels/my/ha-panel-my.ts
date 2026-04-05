@@ -410,7 +410,7 @@ class HaPanelMy extends LitElement {
       1,
       this.route.path.endsWith("/") ? this.route.path.length - 1 : undefined
     );
-    const hasSupervisor = isComponentLoaded(this.hass, "hassio");
+    const hasSupervisor = isComponentLoaded(this.hass.config, "hassio");
 
     this._redirect = getRedirect(path);
 
@@ -441,7 +441,7 @@ class HaPanelMy extends LitElement {
 
     if (
       this._redirect.component &&
-      !isComponentLoaded(this.hass, this._redirect.component)
+      !isComponentLoaded(this.hass.config, this._redirect.component)
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";

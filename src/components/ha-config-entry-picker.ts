@@ -79,7 +79,6 @@ class HaConfigEntryPicker extends LitElement {
       <span slot="supporting-text">${item.secondary}</span>
       <ha-domain-icon
         slot="start"
-        .hass=${this.hass}
         .domain=${item.icon!}
         brand-fallback
       ></ha-domain-icon>
@@ -115,7 +114,6 @@ class HaConfigEntryPicker extends LitElement {
       slot="headline"
       >${item?.icon
         ? html`<ha-domain-icon
-            .hass=${this.hass}
             .domain=${item.icon!}
             brand-fallback
           ></ha-domain-icon>`

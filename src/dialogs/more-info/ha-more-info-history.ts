@@ -19,8 +19,8 @@ import type {
 } from "../../data/recorder";
 import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import type { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -57,7 +57,7 @@ export class MoreInfoHistory extends LitElement {
       return nothing;
     }
 
-    return html`${isComponentLoaded(this.hass, "history")
+    return html`${isComponentLoaded(this.hass.config, "history")
       ? html`<div class="header">
             <div>
               <h2>
@@ -204,7 +204,7 @@ export class MoreInfoHistory extends LitElement {
 
   private async _getStateHistory(): Promise<void> {
     if (
-      isComponentLoaded(this.hass, "recorder") &&
+      isComponentLoaded(this.hass.config, "recorder") &&
       computeDomain(this.entityId) === "sensor"
     ) {
       const stateObj = this.hass.states[this.entityId];
@@ -221,7 +221,7 @@ export class MoreInfoHistory extends LitElement {
       }
     }
 
-    if (!isComponentLoaded(this.hass, "history")) {
+    if (!isComponentLoaded(this.hass.config, "history")) {
       return;
     }
     if (this._subscribed) {

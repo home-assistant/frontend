@@ -83,7 +83,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private _cancelUpload?: () => void;
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
-    this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
+    this._deviceName = computeDeviceNameDisplay(
+      params.device,
+      this.hass!.localize,
+      this.hass!.states
+    );
     this.device = params.device;
     this._open = true;
     this._fetchData();
