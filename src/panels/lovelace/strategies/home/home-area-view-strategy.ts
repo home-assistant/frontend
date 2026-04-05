@@ -15,6 +15,7 @@ import type {
   EmptyStateCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   getSummaryLabel,
@@ -95,6 +96,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     } = entitiesBySummary;
 
     if (light.length > 0) {
+      const anyOnCondition = {
+        condition: "or" as const,
+        conditions: light.map((entityId) => ({
+          condition: "state" as const,
+          entity: entityId,
+          state: "on",
+        })),
+      };
+
       sections.push({
         type: "grid",
         cards: [
@@ -108,6 +118,40 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                   navigation_path: "/light?historyBack=1",
                 }
               : undefined,
+            badges: [
+              {
+                type: "button",
+                icon: "mdi:power",
+                text: hass.localize("ui.panel.lovelace.strategy.light.off"),
+                tap_action: {
+                  action: "perform-action",
+                  perform_action: "light.turn_on",
+                  target: {
+                    area_id: config.area,
+                  },
+                },
+                visibility: [
+                  {
+                    condition: "not",
+                    conditions: [anyOnCondition],
+                  },
+                ],
+              } satisfies ButtonHeadingBadgeConfig,
+              {
+                type: "button",
+                icon: "mdi:power",
+                color: "orange",
+                text: hass.localize("ui.panel.lovelace.strategy.light.on"),
+                tap_action: {
+                  action: "perform-action",
+                  perform_action: "light.turn_off",
+                  target: {
+                    area_id: config.area,
+                  },
+                },
+                visibility: [anyOnCondition],
+              } satisfies ButtonHeadingBadgeConfig,
+            ],
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],

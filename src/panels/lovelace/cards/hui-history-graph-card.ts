@@ -19,7 +19,6 @@ import {
 import { fetchStatistics } from "../../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
@@ -106,7 +105,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._entities.forEach((entity) => {
       const stateObj = this.hass!.states[entity.entity];
       this._names[entity.entity] = stateObj
-        ? computeLovelaceEntityName(this.hass!, stateObj, entity.name)
+        ? this.hass!.formatEntityName(stateObj, entity.name)
         : entity.entity;
     });
   }
@@ -131,7 +130,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (!isComponentLoaded(this.hass!.config, "history") || this._subscribed) {
       return;
     }
 
@@ -185,6 +184,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
+    if (this._hoursToShow < 1) {
+      // Statistics are hourly aggregates, not useful for sub-hour windows
+      return;
+    }
     const now = new Date();
     const start = new Date();
     start.setHours(start.getHours() - this._hoursToShow - 1);

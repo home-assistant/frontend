@@ -6,12 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-password-field";
+import "../../../../components/input/ha-input";
 
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-svg-icon";
 import type { RestoreBackupParams } from "../../../../data/backup";
 import {
   fetchBackupConfig,
@@ -23,11 +23,11 @@ import type {
   RestoreBackupState,
 } from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
+import { waitForIntegrationSetup } from "../../../../data/integration";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
-import { waitForIntegrationSetup } from "../../../../data/integration";
 
 interface FormData {
   encryption_key_type: "config" | "custom";
@@ -211,14 +211,16 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     return html`
       ${this._renderEncryptionIntro()}
 
-      <ha-password-field
+      <ha-input
+        type="password"
+        password-toggle
         autofocus
         @input=${this._passwordChanged}
         .label=${this.hass.localize(
           "ui.panel.config.backup.dialogs.restore.encryption.input_label"
         )}
         .value=${this._userPassword || ""}
-      ></ha-password-field>
+      ></ha-input>
     `;
   }
 
@@ -291,6 +293,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._unsub = subscribeBackupEvents(
       this.hass!,
       (event) => {
+        if ("agent_id" in event) {
+          return;
+        }
         if (event.manager_state === "idle" && this._state === "in_progress") {
           this.closeDialog();
         }
@@ -311,7 +316,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
       },
       async () => {
-        if (isComponentLoaded(this.hass, "backup")) {
+        if (isComponentLoaded(this.hass.config, "backup")) {
           return true;
         }
         return (await waitForIntegrationSetup(this.hass, "backup"))
@@ -359,7 +364,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       restore_homeassistant: homeassistant_included,
     };
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       restoreParams.restore_addons = addons.map((addon) => addon.slug);
       restoreParams.restore_folders = folders;
     }
@@ -384,10 +389,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           margin-bottom: 16px;
         }
         ha-alert[alert-type="warning"] {
-          display: block;
-          margin-top: 16px;
-        }
-        ha-password-field {
           display: block;
           margin-top: 16px;
         }

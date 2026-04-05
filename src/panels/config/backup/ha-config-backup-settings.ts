@@ -10,10 +10,10 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
@@ -35,7 +35,6 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -61,7 +60,7 @@ class HaConfigBackupSettings extends LitElement {
       this._config = this.config;
     }
 
-    if (!this.hasUpdated && isComponentLoaded(this.hass, "hassio")) {
+    if (!this.hasUpdated && isComponentLoaded(this.hass.config, "hassio")) {
       this._getSupervisorUpdateConfig();
     }
   }
@@ -92,7 +91,7 @@ class HaConfigBackupSettings extends LitElement {
     const hash = window.location.hash.substring(1);
     if (
       hash === "locations" &&
-      isComponentLoaded(this.hass, "hassio") &&
+      isComponentLoaded(this.hass.config, "hassio") &&
       !this._config?.create_backup.include_all_addons &&
       this._config?.create_backup.include_addons?.length
     ) {
@@ -129,7 +128,7 @@ class HaConfigBackupSettings extends LitElement {
       return nothing;
     }
 
-    const supervisor = isComponentLoaded(this.hass, "hassio");
+    const supervisor = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       <hass-subpage
@@ -242,15 +241,18 @@ class HaConfigBackupSettings extends LitElement {
                 : nothing}
             </div>
             ${!this.cloudStatus?.logged_in &&
-            isComponentLoaded(this.hass, "cloud")
+            isComponentLoaded(this.hass.config, "cloud")
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
-                      .src=${brandsUrl({
-                        domain: "cloud",
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
+                      .src=${brandsUrl(
+                        {
+                          domain: "cloud",
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                       alt="Nabu Casa logo"

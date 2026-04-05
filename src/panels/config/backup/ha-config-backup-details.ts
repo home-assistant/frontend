@@ -104,7 +104,7 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       <hass-subpage
@@ -204,12 +204,15 @@ class HaConfigBackupDetails extends LitElement {
                                       `
                                     : html`
                                         <img
-                                          .src=${brandsUrl({
-                                            domain,
-                                            type: "icon",
-                                            darkOptimized:
-                                              this.hass.themes?.darkMode,
-                                          })}
+                                          .src=${brandsUrl(
+                                            {
+                                              domain,
+                                              type: "icon",
+                                              darkOptimized:
+                                                this.hass.themes?.darkMode,
+                                            },
+                                            this.hass.auth.data.hassUrl
+                                          )}
                                           crossorigin="anonymous"
                                           referrerpolicy="no-referrer"
                                           alt=${`${domain} logo`}

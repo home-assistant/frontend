@@ -21,6 +21,7 @@ import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-top-app-bar-fixed";
+import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
@@ -211,6 +212,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const quickBarLabel = [
+      this.hass.localize("ui.dialogs.quick-bar.title"),
+      this.hass.enableShortcuts && !isMobileClient
+        ? isMac
+          ? "(⌘ + K)"
+          : "(Ctrl + K)"
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     const { updates: canInstallUpdates, total: totalUpdates } =
       this._filterUpdateEntitiesParameterized(
         this.hass.states,
@@ -231,10 +243,15 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         <ha-icon-button
           slot="actionItems"
-          .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+          id="button-quick-bar"
+          .label=${quickBarLabel}
           .path=${mdiMagnify}
+          hide-title
           @click=${this._showQuickBar}
         ></ha-icon-button>
+        <ha-tooltip placement="bottom" for="button-quick-bar"
+          >${quickBarLabel}</ha-tooltip
+        >
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -320,7 +337,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             : ""}
           ${this._pages(
             this.cloudStatus,
-            isComponentLoaded(this.hass, "cloud"),
+            isComponentLoaded(this.hass.config, "cloud"),
             this.hass.auth.external?.config.hasSettingsScreen
           ).map((categoryPages) =>
             categoryPages.length === 0

@@ -5,11 +5,11 @@ import {
   mdiServerNetwork,
   mdiStorePlus,
 } from "@mdi/js";
+import { componentsWithService } from "../common/config/components_with_service";
 import {
   filterNavigationPages,
   type NavigationFilterOptions,
 } from "../common/config/filter_navigation_pages";
-import { componentsWithService } from "../common/config/components_with_service";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
@@ -163,7 +163,7 @@ export const generateNavigationCommands = (
     filterOptions
   );
   const appItems: BaseNavigationCommand[] = [];
-  if (hass.user?.is_admin && isComponentLoaded(hass, "hassio")) {
+  if (hass.user?.is_admin && isComponentLoaded(hass.config, "hassio")) {
     appItems.push({
       path: "/config/apps/available",
       icon_path: mdiStorePlus,

@@ -64,11 +64,14 @@ class HaDomainIntegrations extends LitElement {
                     alt=""
                     slot="graphic"
                     loading="lazy"
-                    src=${brandsUrl({
-                      domain: flow.handler,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: flow.handler,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                   />
@@ -112,11 +115,14 @@ class HaDomainIntegrations extends LitElement {
                   slot="graphic"
                   loading="lazy"
                   alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
@@ -175,11 +181,14 @@ class HaDomainIntegrations extends LitElement {
               slot="graphic"
               loading="lazy"
               alt=""
-              src=${brandsUrl({
-                domain: this.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: this.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
@@ -266,7 +275,7 @@ class HaDomainIntegrations extends LitElement {
 
     if (
       ["cloud", "google_assistant", "alexa"].includes(domain) &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       navigate("/config/cloud");
       return;

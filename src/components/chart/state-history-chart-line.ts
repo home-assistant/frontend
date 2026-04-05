@@ -28,6 +28,13 @@ const safeParseFloat = (value) => {
   return isFinite(parsed) ? parsed : null;
 };
 
+const CLIMATE_MODE_CONFIGS = [
+  { mode: "heat", action: "heating", cssVar: "--state-climate-heat-color" },
+  { mode: "cool", action: "cooling", cssVar: "--state-climate-cool-color" },
+  { mode: "dry", action: "drying", cssVar: "--state-climate-dry-color" },
+  { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
+] as const;
+
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -239,7 +246,9 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("fitYData") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_visualMap") ||
-      changedProps.has("_yWidth")
+      changedProps.has("_yWidth") ||
+      (changedProps.has("hass") &&
+        this._hasEntityStatesChanged(changedProps.get("hass")))
     ) {
       const rtl = computeRTL(this.hass);
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
@@ -296,6 +305,19 @@ export class StateHistoryChartLine extends LitElement {
         legend: {
           type: "custom",
           show: this.showNames,
+          data: this._chartData
+            .map((d, i) => ({ dataset: d, entityId: this._entityIds[i] }))
+            .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
+            .map((item) => {
+              const stateObj = this.hass.states[item.entityId];
+              return {
+                id: item.dataset.id as string,
+                name: item.dataset.name as string,
+                value: stateObj
+                  ? this.hass.formatEntityState(stateObj)
+                  : undefined,
+              };
+            }),
         },
         grid: {
           top: 15,
@@ -314,6 +336,13 @@ export class StateHistoryChartLine extends LitElement {
         },
       };
     }
+  }
+
+  private _hasEntityStatesChanged(oldHass: HomeAssistant): boolean {
+    return this._entityIds.some(
+      (entityId) =>
+        this.hass.states[entityId]?.state !== oldHass.states[entityId]?.state
+    );
   }
 
   private _generateData() {
@@ -407,23 +436,18 @@ export class StateHistoryChartLine extends LitElement {
           (entityState) => entityState.attributes?.hvac_action
         );
 
-        const isHeating =
-          domain === "climate" && hasHvacAction
-            ? (entityState: LineChartState) =>
-                CLIMATE_HVAC_ACTION_TO_MODE[
-                  entityState.attributes?.hvac_action
-                ] === "heat"
-            : (entityState: LineChartState) => entityState.state === "heat";
-        const isCooling =
-          domain === "climate" && hasHvacAction
-            ? (entityState: LineChartState) =>
-                CLIMATE_HVAC_ACTION_TO_MODE[
-                  entityState.attributes?.hvac_action
-                ] === "cool"
-            : (entityState: LineChartState) => entityState.state === "cool";
-
-        const hasHeat = states.states.some(isHeating);
-        const hasCool = states.states.some(isCooling);
+        const activeModes = CLIMATE_MODE_CONFIGS.map(
+          ({ mode, action, cssVar }) => {
+            const isActive =
+              domain === "climate" && hasHvacAction
+                ? (entityState: LineChartState) =>
+                    CLIMATE_HVAC_ACTION_TO_MODE[
+                      entityState.attributes?.hvac_action
+                    ] === mode
+                : (entityState: LineChartState) => entityState.state === mode;
+            return { action, cssVar, isActive };
+          }
+        ).filter(({ isActive }) => states.states.some(isActive));
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
@@ -444,33 +468,19 @@ export class StateHistoryChartLine extends LitElement {
                 "component.climate.entity_component._.state_attributes.current_temperature.name"
               )
         );
-        if (hasHeat) {
+        for (const { action, cssVar } of activeModes) {
           addDataSet(
-            states.entity_id + "-heating",
+            `${states.entity_id}-${action}`,
             this.showNames
-              ? this.hass.localize("ui.card.climate.heating", { name: name })
+              ? this.hass.localize(`ui.card.climate.${action}`, {
+                  name: name,
+                })
               : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.hvac_action.state.heating"
+                  `component.climate.entity_component._.state_attributes.hvac_action.state.${action}`
                 ),
-            computedStyles.getPropertyValue("--state-climate-heat-color"),
+            computedStyles.getPropertyValue(cssVar),
             true
           );
-          // The "heating" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
-        }
-        if (hasCool) {
-          addDataSet(
-            states.entity_id + "-cooling",
-            this.showNames
-              ? this.hass.localize("ui.card.climate.cooling", { name: name })
-              : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.hvac_action.state.cooling"
-                ),
-            computedStyles.getPropertyValue("--state-climate-cool-color"),
-            true
-          );
-          // The "cooling" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
         }
 
         if (hasTargetRange) {
@@ -518,11 +528,8 @@ export class StateHistoryChartLine extends LitElement {
             entityState.attributes.current_temperature
           );
           const series = [curTemp];
-          if (hasHeat) {
-            series.push(isHeating(entityState) ? curTemp : null);
-          }
-          if (hasCool) {
-            series.push(isCooling(entityState) ? curTemp : null);
+          for (const { isActive } of activeModes) {
+            series.push(isActive(entityState) ? curTemp : null);
           }
           if (hasTargetRange) {
             const targetHigh = safeParseFloat(

@@ -6,6 +6,7 @@ import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import { storeState } from "../../../../util/ha-pref-storage";
+import { setDebugConnection } from "../../../../util/websocket";
 
 @customElement("ha-debug-connection-row")
 class HaDebugConnectionRow extends LitElement {
@@ -39,6 +40,7 @@ class HaDebugConnectionRow extends LitElement {
       return;
     }
     this.hass.debugConnection = debugConnection;
+    setDebugConnection(debugConnection);
     storeState(this.hass);
   }
 }

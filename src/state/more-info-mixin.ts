@@ -28,7 +28,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
       showDialog(
         this,
-        this.shadowRoot!,
         "ha-more-info-dialog",
         {
           entityId: ev.detail.entityId,
@@ -42,7 +41,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               : false),
           data: ev.detail.data,
         },
-        () => import("../dialogs/more-info/ha-more-info-dialog")
+        () => import("../dialogs/more-info/ha-more-info-dialog"),
+        ev.detail.parentElement
       );
     }
   };

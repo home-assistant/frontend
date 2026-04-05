@@ -15,7 +15,6 @@ import "../../../state-control/water_heater/ha-state-control-water_heater-temper
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -132,11 +131,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     const domain = computeDomain(stateObj.entity_id);
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const color = stateColorCss(stateObj);
 

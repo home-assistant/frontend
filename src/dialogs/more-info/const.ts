@@ -3,9 +3,25 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
+import { isNumericEntity } from "../../data/history";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
-import { isNumericEntity } from "../../data/history";
+
+export const MORE_INFO_VIEWS = [
+  "info",
+  "history",
+  "settings",
+  "related",
+  "add_to",
+  "details",
+] as const;
+
+export type MoreInfoView = (typeof MORE_INFO_VIEWS)[number];
+
+export const isMoreInfoView = (
+  value: string | undefined
+): value is MoreInfoView =>
+  value !== undefined && (MORE_INFO_VIEWS as readonly string[]).includes(value);
 
 export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -97,7 +113,7 @@ export const computeShowHistoryComponent = (
   hass: HomeAssistant,
   entityId: string
 ) =>
-  isComponentLoaded(hass, "history") &&
+  isComponentLoaded(hass.config, "history") &&
   !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(entityId));
 
 export const computeShowLogBookComponent = (
@@ -105,7 +121,7 @@ export const computeShowLogBookComponent = (
   entityId: string,
   sensorNumericalDeviceClasses: string[] = []
 ): boolean => {
-  if (!isComponentLoaded(hass, "logbook")) {
+  if (!isComponentLoaded(hass.config, "logbook")) {
     return false;
   }
 

@@ -13,6 +13,7 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { animationStyles } from "../../../../../resources/theme/animations.globals";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -26,20 +27,19 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import type {
   ZHAConfiguration,
   ZHANetworkBackupAndMetadata,
-  ZHANetworkSettings,
 } from "../../../../../data/zha";
 import {
   createZHANetworkBackup,
   fetchDevices,
   fetchGroups,
   fetchZHAConfiguration,
-  fetchZHANetworkSettings,
 } from "../../../../../data/zha";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 
 @customElement("zha-config-dashboard")
@@ -56,13 +56,11 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _configuration?: ZHAConfiguration;
 
-  @state() private _totalDevices = 0;
-
   @state() private _offlineDevices = 0;
 
-  @state() private _totalGroups = 0;
+  @state() private _totalGroups?: number;
 
-  @state() private _networkSettings?: ZHANetworkSettings;
+  @state() private _asyncDataLoaded = false;
 
   @state() private _error?: string;
 
@@ -72,15 +70,26 @@ class ZHAConfigDashboard extends LitElement {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
       this._fetchConfigEntry();
       this._fetchConfiguration();
-      this._fetchDevicesAndUpdateStatus();
-      this._fetchGroups();
-      this._fetchNetworkSettings();
+      this._fetchDevicesAndGroups();
     }
   }
 
   protected render(): TemplateResult {
+    const devices = this._configEntry
+      ? Object.values(this.hass.devices).filter((device) =>
+          device.config_entries.includes(this._configEntry!.entry_id)
+        )
+      : [];
+    const deviceCount = devices.length;
+
+    let entityCount = 0;
+    for (const entity of Object.values(this.hass.entities)) {
+      if (entity.platform === "zha") {
+        entityCount++;
+      }
+    }
     const deviceOnline =
-      this._offlineDevices < this._totalDevices || this._totalDevices === 0;
+      this._offlineDevices < deviceCount || deviceCount === 0;
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -90,9 +99,9 @@ class ZHAConfigDashboard extends LitElement {
         has-fab
       >
         <div class="container">
-          ${this._renderNetworkStatus(deviceOnline)}
-          ${this._renderMyNetworkCard()} ${this._renderNavigationCard()}
-          ${this._renderBackupCard()}
+          ${this._renderNetworkStatus(deviceOnline, deviceCount)}
+          ${this._renderMyNetworkCard(deviceCount, entityCount)}
+          ${this._renderNavigationCard()} ${this._renderBackupCard()}
         </div>
 
         <a href="/config/zha/add" slot="fab">
@@ -107,7 +116,7 @@ class ZHAConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderNetworkStatus(deviceOnline: boolean) {
+  private _renderNetworkStatus(deviceOnline: boolean, totalDevices: number) {
     return html`
       <ha-card class="content network-status">
         ${this._error
@@ -127,11 +136,11 @@ class ZHAConfigDashboard extends LitElement {
               <small>
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.devices",
-                  { count: this._totalDevices }
+                  { count: totalDevices }
                 )}
               </small>
               <small class="offline">
-                ${this._offlineDevices > 0
+                ${this._asyncDataLoaded && this._offlineDevices > 0
                   ? html`(${this.hass.localize(
                       "ui.panel.config.zha.configuration_page.devices_offline",
                       { count: this._offlineDevices }
@@ -139,26 +148,27 @@ class ZHAConfigDashboard extends LitElement {
                   : nothing}
               </small>
             </div>
+            <img
+              class="logo"
+              alt="Zigbee"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "zha",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
           </div>
         </div>
       </ha-card>
     `;
   }
 
-  private _renderMyNetworkCard() {
-    const deviceIds = this._configEntry
-      ? new Set(
-          Object.values(this.hass.devices)
-            .filter((device) =>
-              device.config_entries.includes(this._configEntry!.entry_id)
-            )
-            .map((device) => device.id)
-        )
-      : new Set<string>();
-    const entityCount = Object.values(this.hass.entities).filter(
-      (entity) => entity.device_id && deviceIds.has(entity.device_id)
-    ).length;
-
+  private _renderMyNetworkCard(deviceCount: number, entityCount: number) {
     return html`
       <ha-card class="nav-card">
         <div class="card-header">
@@ -182,7 +192,7 @@ class ZHAConfigDashboard extends LitElement {
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.device_count",
-                  { count: deviceIds.size }
+                  { count: deviceCount }
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
@@ -205,11 +215,20 @@ class ZHAConfigDashboard extends LitElement {
                 slot="start"
                 .path=${mdiFolderMultipleOutline}
               ></ha-svg-icon>
-              <div slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.zha.configuration_page.group_count",
-                  { count: this._totalGroups }
-                )}
+              <div
+                slot="headline"
+                class=${this._asyncDataLoaded && this._totalGroups !== undefined
+                  ? "fade-in"
+                  : ""}
+              >
+                ${this._asyncDataLoaded && this._totalGroups !== undefined
+                  ? this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.group_count",
+                      { count: this._totalGroups }
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.zha.groups.groups.caption"
+                    )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -304,7 +323,6 @@ class ZHAConfigDashboard extends LitElement {
                 slot="end"
                 size="small"
                 @click=${this._createAndDownloadBackup}
-                .disabled=${!this._networkSettings}
               >
                 <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
@@ -353,10 +371,6 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
-  private async _fetchNetworkSettings(): Promise<void> {
-    this._networkSettings = await fetchZHANetworkSettings(this.hass!);
-  }
-
   private async _createAndDownloadBackup(): Promise<void> {
     let backup_and_metadata: ZHANetworkBackupAndMetadata;
 
@@ -400,29 +414,31 @@ class ZHAConfigDashboard extends LitElement {
     showOptionsFlowDialog(this, this._configEntry);
   }
 
-  private async _fetchGroups(): Promise<void> {
-    try {
-      const groups = await fetchGroups(this.hass);
-      this._totalGroups = groups.length;
-    } catch (_err) {
-      // Groups are optional
-    }
-  }
+  private async _fetchDevicesAndGroups(): Promise<void> {
+    const [devicesResult, groupsResult] = await Promise.allSettled([
+      fetchDevices(this.hass),
+      fetchGroups(this.hass),
+    ]);
 
-  private async _fetchDevicesAndUpdateStatus(): Promise<void> {
-    try {
-      const devices = await fetchDevices(this.hass);
-      this._totalDevices = devices.length;
-      this._offlineDevices =
-        this._totalDevices - devices.filter((d) => d.available).length;
-    } catch (err: any) {
-      this._error = err.message || err;
+    if (devicesResult.status === "fulfilled") {
+      this._offlineDevices = devicesResult.value.filter(
+        (d) => !d.available
+      ).length;
+    } else {
+      this._error = devicesResult.reason?.message || devicesResult.reason;
     }
+
+    if (groupsResult.status === "fulfilled") {
+      this._totalGroups = groupsResult.value.length;
+    }
+
+    this._asyncDataLoaded = true;
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      animationStyles,
       css`
         ha-card {
           margin: auto;
@@ -466,6 +482,13 @@ class ZHAConfigDashboard extends LitElement {
           display: flex;
           align-items: center;
           column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
         }
 
         .network-status div.heading .icon {
@@ -517,6 +540,11 @@ class ZHAConfigDashboard extends LitElement {
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.25px;
           color: var(--secondary-text-color);
+        }
+
+        .network-status small.offline,
+        .fade-in {
+          animation: fade-in var(--ha-animation-duration-slow) ease-in;
         }
 
         .container {

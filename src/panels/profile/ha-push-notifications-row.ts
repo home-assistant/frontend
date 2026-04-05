@@ -12,7 +12,7 @@ class HaPushNotificationsRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render(): TemplateResult {
-    const platformLoaded = isComponentLoaded(this.hass, "html5.notify");
+    const platformLoaded = isComponentLoaded(this.hass.config, "html5.notify");
     let descriptionKey:
       | "error_use_https"
       | "error_load_platform"

@@ -8,6 +8,7 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-floor-picker";
@@ -18,8 +19,8 @@ import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { GenDataTaskResult } from "../../../data/ai_task";
 import type {
   AreaRegistryEntry,
@@ -30,9 +31,9 @@ import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import {
@@ -144,7 +145,7 @@ class DialogAreaDetail
           `
         : nothing}
 
-      <ha-textfield
+      <ha-input
         autofocus
         .value=${this._name}
         @input=${this._nameChanged}
@@ -152,8 +153,9 @@ class DialogAreaDetail
         .validationMessage=${this.hass.localize(
           "ui.panel.config.areas.editor.name_required"
         )}
+        auto-validate
         required
-      ></ha-textfield>
+      ></ha-input>
 
       <ha-icon-picker
         .hass=${this.hass}
@@ -416,9 +418,9 @@ class DialogAreaDetail
     return deviceReg && deviceReg.area_id === areaId;
   };
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HaInput).value ?? "";
   }
 
   private _floorChanged(ev) {
@@ -509,9 +511,6 @@ class DialogAreaDetail
     return [
       haStyleDialog,
       css`
-        ha-textfield {
-          display: block;
-        }
         ha-expansion-panel {
           --expansion-panel-content-padding: 0;
         }

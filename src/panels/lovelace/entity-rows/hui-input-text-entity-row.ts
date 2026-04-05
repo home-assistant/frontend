@@ -1,11 +1,11 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -43,11 +43,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
 
     return html`
       <hui-generic-entity-row
@@ -55,7 +51,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hide-name
       >
-        <ha-textfield
+        <ha-input
           .label=${name}
           .disabled=${stateObj.state === UNAVAILABLE}
           .value=${stateObj.state}
@@ -65,20 +61,21 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
           .pattern=${stateObj.attributes.pattern}
           .type=${stateObj.attributes.mode}
           @change=${this._selectedValueChanged}
-          placeholder="(empty value)"
-        ></ha-textfield>
+          .placeholder=${this.hass.localize("ui.card.text.empty_value")}
+        ></ha-input>
       </hui-generic-entity-row>
     `;
   }
 
-  private _selectedValueChanged(ev): void {
+  private _selectedValueChanged(ev: InputEvent): void {
     const stateObj = this.hass!.states[this._config!.entity];
+    const target = ev.target as HaInput;
 
-    const newValue = ev.target.value;
+    const newValue = target.value ?? "";
 
     // Filter out invalid text states
     if (newValue && isUnavailableState(newValue)) {
-      ev.target.value = stateObj.state;
+      target.value = stateObj.state;
       return;
     }
 
@@ -86,7 +83,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       setValue(this.hass!, stateObj.entity_id, newValue);
     }
 
-    ev.target.blur();
+    target.blur();
   }
 
   static styles = css`
@@ -94,7 +91,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       display: flex;
       align-items: center;
     }
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
   `;

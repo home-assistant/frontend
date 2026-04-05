@@ -7,7 +7,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import type { HistoryStates } from "../../../data/history";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import {
+  limitedHistoryFromStateObj,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
@@ -151,7 +154,7 @@ export class HuiGraphHeaderFooter
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       this._subscribed ||
       !this._config
     ) {
@@ -165,6 +168,13 @@ export class HuiGraphHeaderFooter
           return;
         }
         this._history = combinedHistory;
+        if (!this._history[this._config.entity]?.length) {
+          const stateObj = this.hass!.states[this._config.entity];
+          if (stateObj) {
+            this._history[this._config.entity] =
+              limitedHistoryFromStateObj(stateObj);
+          }
+        }
         this._computeCoordinates();
       },
       this._config.hours_to_show!,
@@ -193,13 +203,19 @@ export class HuiGraphHeaderFooter
         ? Math.max(width / 5, this._config.hours_to_show!)
         : this._config.hours_to_show!
     );
+    const now = Date.now();
     const useMean = this._config.detail !== 2;
     const { points } = coordinatesMinimalResponseCompressedState(
       entityHistory,
       width,
       width / 5,
       maxDetails,
-      { minY: this._config.limits?.min, maxY: this._config.limits?.max },
+      {
+        minX: now - this._config.hours_to_show! * HOUR,
+        maxX: now,
+        minY: this._config.limits?.min,
+        maxY: this._config.limits?.max,
+      },
       useMean
     );
     this._coordinates = points;

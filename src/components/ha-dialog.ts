@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -10,11 +11,12 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { withViewTransition } from "../common/util/view-transition";
+import { localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -82,8 +84,6 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  */
 @customElement("ha-dialog")
 export class HaDialog extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
@@ -123,9 +123,27 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @query(".body") public bodyContainer!: HTMLDivElement;
 
   @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize!: ContextType<typeof localizeContext>;
+
+  // disabled till iOS app fix the "focus_element" implementation
+  // @state()
+  // @consume({ context: authContext, subscribe: true })
+  // private auth?: ContextType<typeof authContext>;
+
+  @state()
   private _bodyScrolled = false;
 
   private _escapePressed = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._open = this.open;
+    this.addEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+  }
 
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
@@ -167,7 +185,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                 <slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
-                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .label=${this.localize?.("ui.common.close") ?? "Close"}
                     .path=${mdiClose}
                   ></ha-icon-button>
                 </slot>
@@ -194,46 +212,74 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     this._open = true;
     fireEvent(this, "opened");
 
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
-        const element = this.querySelector("[autofocus]");
-        if (element !== null) {
-          if (!element.id) {
-            element.id = "ha-dialog-autofocus";
-          }
-          this.hass?.auth.external?.fireMessage({
-            type: "focus_element",
-            payload: {
-              element_id: element.id,
-            },
-          });
-        }
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this.auth?.external && isIosApp(this.auth.external)) {
+      //   const element = this.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-dialog-autofocus";
+      //     }
+      //     this.auth.external.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     fireEvent(this, "after-show");
   };
 
   private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
+      this._setFullscreen(false);
       fireEvent(this, "closed");
     }
   };
 
   public disconnectedCallback(): void {
+    this.removeEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+    this._setFullscreen(false);
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  private _handleFullscreenChanged(ev: HASSDomEvent<boolean>): void {
+    if (!this._open) {
+      this._setFullscreen(ev.detail);
+      return;
+    }
+
+    withViewTransition(() => {
+      this._setFullscreen(ev.detail);
+    });
+  }
+
+  private _setFullscreen(fullscreen: boolean): void {
+    this.toggleAttribute("fullscreen", fullscreen);
   }
 
   @eventOptions({ passive: true })
@@ -301,8 +347,25 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
         }
 
-        :host([width="full"]) wa-dialog {
+        :host([width="full"]) wa-dialog,
+        :host([fullscreen]) wa-dialog {
           --width: var(--full-width);
+        }
+
+        :host([fullscreen]) wa-dialog::part(dialog) {
+          min-height: var(--safe-height);
+          max-height: var(--safe-height);
+          margin-top: 0;
+          transform: none;
+        }
+
+        :host([fullscreen]) .content-wrapper {
+          overflow: hidden;
+        }
+
+        :host([fullscreen]) .body {
+          overflow: hidden;
+          padding: 0;
         }
 
         wa-dialog::part(dialog) {
@@ -465,6 +528,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "dialog-set-fullscreen": boolean;
     opened: undefined;
     "after-show": undefined;
     closed: undefined;

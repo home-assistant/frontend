@@ -768,11 +768,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (isBrandUrl(thumbnailUrl)) {
       // The backend is not aware of the theme used by the users,
       // so we rewrite the URL to show a proper icon
-      return brandsUrl({
-        domain: extractDomainFromBrandUrl(thumbnailUrl),
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      return brandsUrl(
+        {
+          domain: extractDomainFromBrandUrl(thumbnailUrl),
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
     }
 
     if (thumbnailUrl.startsWith("/")) {

@@ -9,7 +9,6 @@ import type { SelectEntity } from "../../../data/select";
 import { setSelectOption } from "../../../data/select";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -32,7 +31,23 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.has("_selectedEntityRow")
+    );
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      this.hass &&
+      this._config &&
+      changedProps.get("hass") &&
+      this.hass.states[this._config.entity] !==
+        changedProps.get("hass").states[this._config.entity]
+    ) {
+      this._selectedEntityRow = undefined;
+    }
   }
 
   protected render() {
@@ -52,11 +67,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
 
     return html`
       <hui-generic-entity-row
@@ -104,6 +115,8 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
     forwardHaptic(this, "light");
 
+    this._selectedEntityRow = option;
+
     setSelectOption(this.hass!, stateObj.entity_id, option)
       .catch((_err) => {
         // silently swallow exception
@@ -112,7 +125,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         setTimeout(() => {
           const newStateObj = this.hass!.states[this._config!.entity];
           if (newStateObj === stateObj) {
-            this._selectedEntityRow = stateObj.state;
+            this._selectedEntityRow = undefined;
           }
         }, 2000)
       );

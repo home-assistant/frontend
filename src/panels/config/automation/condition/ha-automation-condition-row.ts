@@ -107,6 +107,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _collapsed = true;
 
+  @state() private _isNew = false;
+
   @state() private _warnings?: string[];
 
   @property({ attribute: false })
@@ -133,7 +135,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @query("ha-automation-condition-editor")
   public conditionEditor?: HaAutomationConditionEditor;
@@ -160,13 +162,15 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderRow() {
-    const target =
-      "target" in (this.conditionDescriptions[this.condition.condition] || {})
-        ? (this.condition as PlatformCondition).target
-        : "device_id" in this.condition &&
-            (this.condition as DeviceCondition).device_id
-          ? { device_id: [(this.condition as DeviceCondition).device_id] }
-          : undefined;
+    const descriptionHasTarget =
+      "target" in (this.conditionDescriptions[this.condition.condition] || {});
+
+    const target = descriptionHasTarget
+      ? (this.condition as PlatformCondition).target
+      : "device_id" in this.condition &&
+          (this.condition as DeviceCondition).device_id
+        ? { device_id: [(this.condition as DeviceCondition).device_id] }
+        : undefined;
 
     return html`
       <ha-condition-icon
@@ -178,7 +182,9 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || (descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -423,7 +429,10 @@ export default class HaAutomationConditionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -464,10 +473,11 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 
@@ -743,6 +753,16 @@ export default class HaAutomationConditionRow extends LitElement {
     this.openSidebar();
   }
 
+  public markAsNew(): void {
+    this._isNew = true;
+  }
+
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
@@ -751,6 +771,7 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();

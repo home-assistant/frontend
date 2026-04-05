@@ -3,16 +3,12 @@ import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
+import { createErrorCardElement } from "../create-element/create-element-base";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
-import type { StackCardConfig } from "./types";
-import { createErrorCardElement } from "../create-element/create-element-base";
 import type { HuiErrorCard } from "./hui-error-card";
+import type { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -41,15 +37,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   public getCardSize(): number | Promise<number> {
     return 1;
-  }
-
-  public getGridOptions(): LovelaceGridOptions {
-    return {
-      columns: 12,
-      rows: "auto",
-      min_columns: 3,
-      fixed_rows: true,
-    };
   }
 
   public setConfig(config: T): void {
@@ -124,24 +111,26 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     `;
   }
 
-  static sharedStyles = css`
-    .card-header {
-      color: var(--ha-card-header-color, var(--primary-text-color));
-      text-align: var(--ha-stack-title-text-align, start);
-      font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
-      font-weight: var(--ha-font-weight-normal);
-      margin-block-start: 0px;
-      margin-block-end: 0px;
-      letter-spacing: -0.012em;
-      line-height: var(--ha-line-height-condensed);
-      display: block;
-      padding: 24px 16px 16px;
-    }
-    :host([ispanel]) #root {
-      --ha-card-border-radius: var(--restore-card-border-radius);
-      --ha-card-border-width: var(--restore-card-border-width);
-      --ha-card-box-shadow: var(--restore-card-box-shadow);
-    }
-  `;
+  static sharedStyles = [
+    css`
+      .card-header {
+        color: var(--ha-card-header-color, var(--primary-text-color));
+        text-align: var(--ha-stack-title-text-align, start);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+        font-weight: var(--ha-font-weight-normal);
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        letter-spacing: -0.012em;
+        line-height: var(--ha-line-height-condensed);
+        display: block;
+        padding: 24px 16px 16px;
+      }
+      :host([ispanel]) #root {
+        --ha-card-border-radius: var(--restore-card-border-radius);
+        --ha-card-border-width: var(--restore-card-border-width);
+        --ha-card-box-shadow: var(--restore-card-box-shadow);
+      }
+    `,
+  ];
 }

@@ -7,8 +7,10 @@ import "../card-features/hui-climate-swing-horizontal-modes-card-feature";
 import "../card-features/hui-climate-swing-modes-card-feature";
 import "../card-features/hui-counter-actions-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
+import "../card-features/hui-cover-position-favorite-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
+import "../card-features/hui-cover-tilt-favorite-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
 import "../card-features/hui-date-set-card-feature";
 import "../card-features/hui-fan-direction-card-feature";
@@ -20,9 +22,12 @@ import "../card-features/hui-humidifier-toggle-card-feature";
 import "../card-features/hui-lawn-mower-commands-card-feature";
 import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
+import "../card-features/hui-light-color-favorites-card-feature";
 import "../card-features/hui-lock-commands-card-feature";
 import "../card-features/hui-lock-open-door-card-feature";
 import "../card-features/hui-media-player-playback-card-feature";
+import "../card-features/hui-media-player-sound-mode-card-feature";
+import "../card-features/hui-media-player-source-card-feature";
 import "../card-features/hui-media-player-volume-buttons-card-feature";
 import "../card-features/hui-media-player-volume-slider-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
@@ -33,6 +38,7 @@ import "../card-features/hui-toggle-card-feature";
 import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-valve-open-close-card-feature";
+import "../card-features/hui-valve-position-favorite-card-feature";
 import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
@@ -57,7 +63,9 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "climate-preset-modes",
   "counter-actions",
   "cover-open-close",
+  "cover-position-favorite",
   "cover-position",
+  "cover-tilt-favorite",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -70,9 +78,12 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "light-color-favorites",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
@@ -84,6 +95,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "update-actions",
   "vacuum-commands",
   "valve-open-close",
+  "valve-position-favorite",
   "valve-position",
   "water-heater-operation-modes",
 ]);

@@ -7,10 +7,10 @@ import "../../components/ha-button";
 import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-settings-row";
-import "../../components/ha-textfield";
+import "../../components/input/ha-input";
 import {
   saveThemePreferences,
   subscribeThemePreferences,
@@ -153,7 +153,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
             </ha-formfield>
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
-                  <ha-textfield
+                  <ha-input
                     .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
                     type="color"
                     .label=${this.hass.localize(
@@ -161,8 +161,8 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
                     )}
                     .name=${"primaryColor"}
                     @change=${this._handleColorChange}
-                  ></ha-textfield>
-                  <ha-textfield
+                  ></ha-input>
+                  <ha-input
                     .value=${themeSettings?.accentColor || DefaultAccentColor}
                     type="color"
                     .label=${this.hass.localize(
@@ -170,7 +170,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
                     )}
                     .name=${"accentColor"}
                     @change=${this._handleColorChange}
-                  ></ha-textfield>
+                  ></ha-input>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <ha-button
                         appearance="plain"
@@ -327,8 +327,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       align-items: center;
       flex-grow: 1;
     }
-    ha-textfield {
-      --text-field-padding: 8px;
+    ha-input {
       min-width: 75px;
       flex-grow: 1;
       margin: 0 4px;

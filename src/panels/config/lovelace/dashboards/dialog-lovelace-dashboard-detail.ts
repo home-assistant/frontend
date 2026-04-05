@@ -250,7 +250,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private _fillUrlPath(title: string) {
-    if ((this.hass.userData?.showAdvanced && this._urlPathChanged) || !title) {
+    if (this._urlPathChanged || !title) {
       return;
     }
 

@@ -1,13 +1,15 @@
 import { consume } from "@lit/context";
 import {
   mdiAlert,
+  mdiAlertOctagon,
   mdiCodeBraces,
   mdiFormatListBulleted,
   mdiShape,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { css, html, LitElement, type nothing, type TemplateResult } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { isTemplate } from "../../../../common/string/has-template";
@@ -34,6 +36,9 @@ export class HaAutomationRowTargets extends LitElement {
 
   @property({ attribute: false })
   public target?: HassServiceTarget;
+
+  @property({ attribute: false })
+  public targetRequired = false;
 
   @state()
   @consume({ context: localizeContext, subscribe: true })
@@ -63,7 +68,9 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: configEntriesContext, subscribe: true })
   @transform<ConfigEntry[], Record<string, ConfigEntry>>({
     transformer: function (value) {
-      return Object.fromEntries(value.map((entry) => [entry.entry_id, entry]));
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
     },
   })
   private _configEntryLookup?: Record<string, ConfigEntry>;
@@ -71,13 +78,16 @@ export class HaAutomationRowTargets extends LitElement {
   protected render() {
     const length = Object.keys(this.target || {}).length;
     if (!length) {
-      return html`<span class="target">
-        <div class="label">
-          ${this.localize(
-            "ui.panel.config.automation.editor.target_summary.no_target"
-          )}
-        </div>
-      </span>`;
+      return this._renderTargetBadge(
+        this.targetRequired
+          ? html`<ha-svg-icon .path=${mdiAlertOctagon}></ha-svg-icon>`
+          : nothing,
+        this.localize(
+          "ui.panel.config.automation.editor.target_summary.no_target"
+        ),
+        false,
+        this.targetRequired
+      );
     }
     const totalLength = Object.values(this.target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
@@ -152,9 +162,10 @@ export class HaAutomationRowTargets extends LitElement {
   private _renderTargetBadge(
     icon: TemplateResult | typeof nothing,
     label: string,
-    alert = false
+    warning = false,
+    error = false
   ) {
-    return html`<div class="target ${alert ? "alert" : ""}">
+    return html`<div class=${classMap({ target: true, warning, error })}>
       ${icon}
       <div class="label">${label}</div>
     </div>`;
@@ -228,9 +239,13 @@ export class HaAutomationRowTargets extends LitElement {
       overflow: hidden;
       height: 32px;
     }
-    .target.alert {
+    .target.warning {
       background: var(--ha-color-fill-warning-normal-resting);
       color: var(--ha-color-on-warning-normal);
+    }
+    .target.error {
+      background: var(--ha-color-fill-danger-normal-resting);
+      color: var(--ha-color-on-danger-normal);
     }
     .target .label {
       overflow: hidden;

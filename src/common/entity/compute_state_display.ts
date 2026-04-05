@@ -142,6 +142,8 @@ const computeStateToPartsFromEntityAttributes = (
           group: "value",
           decimal: "value",
           fraction: "value",
+          minusSign: "value",
+          plusSign: "value",
           literal: "literal",
           currency: "unit",
         };
@@ -152,7 +154,7 @@ const computeStateToPartsFromEntityAttributes = (
           const type = TYPE_MAP[part.type];
           if (!type) continue;
           const last = valueParts[valueParts.length - 1];
-          // Merge consecutive numeric parts (e.g. "1" + "," + "234" + "." + "56" → "1,234.56")
+          // Merge consecutive value parts (e.g. "-" + "12" + "." + "00" → "-12.00")
           if (type === "value" && last?.type === "value") {
             last.value += part.value;
           } else {
@@ -253,6 +255,7 @@ const computeStateToPartsFromEntityAttributes = (
       "conversation",
       "event",
       "image",
+      "infrared",
       "input_button",
       "notify",
       "scene",

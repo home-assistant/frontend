@@ -2,18 +2,19 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
 @customElement("dialog-tag-detail")
@@ -35,6 +36,8 @@ class DialogTagDetail
 
   @state() private _open = false;
 
+  @state() private _qrReady = false;
+
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -45,6 +48,11 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    // Defer QR until dialog has had a chance to apply styles
+    requestAnimationFrame(() => {
+      this._qrReady = true;
+    });
   }
 
   public closeDialog(): boolean {
@@ -54,6 +62,7 @@ class DialogTagDetail
 
   private _dialogClosed() {
     this._params = undefined;
+    this._qrReady = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -77,13 +86,7 @@ class DialogTagDetail
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            ${this._params.entry
-              ? html`${this.hass!.localize(
-                  "ui.panel.config.tag.detail.tag_id"
-                )}:
-                ${this._params.entry.id}`
-              : ""}
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               .configValue=${"name"}
@@ -93,20 +96,19 @@ class DialogTagDetail
                 "ui.panel.config.tag.detail.required_error_msg"
               )}
               required
-            ></ha-textfield>
-            ${!this._params.entry
-              ? html`<ha-textfield
-                  .value=${this._id || ""}
-                  .configValue=${"id"}
-                  @input=${this._valueChanged}
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.tag.detail.tag_id"
-                  )}
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.config.tag.detail.tag_id_placeholder"
-                  )}
-                ></ha-textfield>`
-              : ""}
+            ></ha-input>
+            <ha-input
+              .value=${this._params.entry
+                ? this._params.entry.id
+                : this._id || ""}
+              .readonly=${!!this._params.entry}
+              .configValue=${"id"}
+              @input=${this._valueChanged}
+              .label=${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}
+              .placeholder=${this.hass!.localize(
+                "ui.panel.config.tag.detail.tag_id_placeholder"
+              )}
+            ></ha-input>
           </div>
           ${this._params.entry
             ? html`
@@ -125,13 +127,17 @@ class DialogTagDetail
                   </p>
                 </div>
                 <div id="qr">
-                  <ha-qr-code
-                    .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
-                    center-image="/static/icons/favicon-192x192.png"
-                    error-correction-level="quartile"
-                    scale="5"
-                  >
-                  </ha-qr-code>
+                  ${this._qrReady
+                    ? html`
+                        <ha-qr-code
+                          .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
+                          center-image="/static/icons/favicon-192x192.png"
+                          error-correction-level="quartile"
+                          scale="5"
+                        >
+                        </ha-qr-code>
+                      `
+                    : nothing}
                 </div>
               `
             : ``}
@@ -175,9 +181,9 @@ class DialogTagDetail
     `;
   }
 
-  private _valueChanged(ev: Event) {
-    const target = ev.target as any;
-    const configValue = target.configValue;
+  private _valueChanged(ev: InputEvent) {
+    const target = ev.target as HaInput;
+    const configValue = (target as any).configValue;
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
@@ -234,9 +240,11 @@ class DialogTagDetail
         #qr {
           text-align: center;
         }
-        ha-textfield {
-          display: block;
-          margin: 8px 0;
+        ha-input {
+          --ha-input-padding-bottom: 0;
+        }
+        ha-input:not([required]) {
+          margin-bottom: var(--ha-space-5);
         }
         ::slotted(img) {
           height: 100%;

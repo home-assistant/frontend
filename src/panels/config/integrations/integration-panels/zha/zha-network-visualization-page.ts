@@ -4,12 +4,14 @@ import type {
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -38,6 +40,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @state()
   private _devices: ZHADevice[] = [];
 
+  @state() private _searchFilter = "";
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
@@ -55,12 +59,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
+        ${this.narrow
+          ? html`<div slot="header">${this._renderInputSearch()}</div>`
+          : nothing}
         <ha-network-graph
           .hass=${this.hass}
+          .searchFilter=${this._searchFilter}
           .data=${this._networkData}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
           <ha-icon-button
             slot="button"
             class="refresh-button"
@@ -75,6 +85,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
     `;
   }
 
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
+  }
+
   private async _fetchData() {
     this._devices = await fetchDevices(this.hass!);
     this._networkData = createZHANetworkChartData(
@@ -82,6 +101,34 @@ export class ZHANetworkVisualizationPage extends LitElement {
       this.hass,
       this
     );
+  }
+
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices.find((d) => d.ieee === nodeId);
+    if (!device) {
+      return [];
+    }
+    const attributes: string[] = [];
+    if (device.user_given_name) {
+      attributes.push(device.user_given_name);
+    }
+    if (device.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device.model) {
+      attributes.push(device.model);
+    }
+    if (device.device_type) {
+      attributes.push(device.device_type);
+    }
+    if (device.nwk != null) {
+      attributes.push(formatAsPaddedHex(device.nwk));
+    }
+    return attributes;
+  };
+
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
@@ -122,7 +169,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       | DeviceRegistryEntry
       | undefined;
     if (haDevice) {
-      const area = getDeviceContext(haDevice, this.hass).area;
+      const area = getDeviceArea(haDevice, this.hass.areas);
       if (area) {
         label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
@@ -153,6 +200,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
       css`
         ha-network-graph {
           height: 100%;
+        }
+        [slot="header"] {
+          display: flex;
+          align-items: center;
+        }
+        ha-input-search {
+          flex: 1;
         }
       `,
     ];

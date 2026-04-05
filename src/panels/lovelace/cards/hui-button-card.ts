@@ -41,7 +41,6 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -51,6 +50,21 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ButtonCardConfig } from "./types";
+
+const EMPTY_STATE_OBJ = {
+  state: "unavailable",
+  attributes: {
+    friendly_name: "",
+  },
+  entity_id: "___.empty",
+  context: {
+    id: "",
+    parent_id: null,
+    user_id: null,
+  },
+  last_changed: "",
+  last_updated: "",
+} satisfies HassEntity;
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
   entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))
@@ -92,7 +106,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consume<any>({ context: statesContext, subscribe: true })
   @transform({
     transformer: function (this: HuiButtonCard, value: HassEntities) {
-      return this._config?.entity ? value[this._config?.entity] : undefined;
+      return this._config?.entity ? value?.[this._config?.entity] : undefined;
     },
     watch: ["_config"],
   })
@@ -118,7 +132,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consume<any>({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
     transformer: function (this: HuiButtonCard, value) {
-      return this._config?.entity ? value[this._config?.entity] : undefined;
+      return this._config?.entity ? value?.[this._config?.entity] : undefined;
     },
     watch: ["_config"],
   })
@@ -183,9 +197,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
+    const name = this.hass.formatEntityName(
+      stateObj || EMPTY_STATE_OBJ,
       this._config.name
     );
 

@@ -99,8 +99,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
               ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
-            ${isComponentLoaded(this.hass, "system_health") ||
-            isComponentLoaded(this.hass, "hassio")
+            ${isComponentLoaded(this.hass.config, "system_health") ||
+            isComponentLoaded(this.hass.config, "hassio")
               ? html`
                   <ha-dropdown-item value="system_information">
                     ${this.hass.localize(

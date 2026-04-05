@@ -7,9 +7,10 @@ import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewFooterConfig,
+import {
+  DEFAULT_FOOTER_MAX_WIDTH_PX,
+  type LovelaceViewConfig,
+  type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
@@ -19,7 +20,6 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { replaceView } from "../editor/config-util";
 import { showEditViewFooterDialog } from "../editor/view-footer/show-edit-view-footer-dialog";
 import type { Lovelace } from "../types";
-import { DEFAULT_MAX_COLUMNS } from "./hui-sections-view";
 
 @customElement("hui-view-footer")
 export class HuiViewFooter extends LitElement {
@@ -97,13 +97,8 @@ export class HuiViewFooter extends LitElement {
   }
 
   private _configure() {
-    const viewConfig = this.lovelace.config.views[
-      this.viewIndex
-    ] as LovelaceViewConfig;
-
     showEditViewFooterDialog(this, {
       config: this.config || {},
-      maxColumns: viewConfig.max_columns || DEFAULT_MAX_COLUMNS,
       saveConfig: (newConfig: LovelaceViewFooterConfig) => {
         this._saveFooterConfig(newConfig);
       },
@@ -180,13 +175,11 @@ export class HuiViewFooter extends LitElement {
 
     if (!card && !editMode) return nothing;
 
-    const columnSpan = this.config?.column_span || 1;
-
     return html`
       <div
         class=${classMap({ wrapper: true, "edit-mode": editMode })}
         style=${styleMap({
-          "--footer-column-span": String(columnSpan),
+          "--footer-max-width": `${this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH_PX}px`,
         })}
       >
         ${editMode
@@ -228,30 +221,22 @@ export class HuiViewFooter extends LitElement {
 
     :host([sticky]) {
       position: sticky;
-      bottom: 0;
+      bottom: var(--row-gap);
       z-index: 4;
     }
 
     .wrapper {
-      padding: var(--ha-space-4) 0;
-      padding-bottom: max(
-        var(--ha-space-4),
-        var(--safe-area-inset-bottom, 0px)
+      padding: var(--ha-space-2) 0;
+      padding-bottom: calc(
+        max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px))
       );
       box-sizing: content-box;
       margin: 0 auto;
-      max-width: calc(
-        var(--footer-column-span, 1) * var(--column-max-width, 500px) +
-          (var(--footer-column-span, 1) - 1) * var(--column-gap, 32px)
-      );
+      max-width: var(--footer-max-width, 600px);
     }
 
     .wrapper:not(.edit-mode) {
-      --ha-card-box-shadow:
-        0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-        0px 6px 10px 0px rgba(0, 0, 0, 0.14),
-        0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-      --ha-card-border-color: var(--divider-color);
+      --ha-card-box-shadow: var(--ha-box-shadow-l);
     }
 
     .container {
@@ -268,7 +253,10 @@ export class HuiViewFooter extends LitElement {
 
     .container.edit-mode {
       padding: var(--ha-space-2);
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -310,11 +298,14 @@ export class HuiViewFooter extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--primary-text-color);
     }
@@ -332,7 +323,10 @@ export class HuiViewFooter extends LitElement {
       height: 36px;
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

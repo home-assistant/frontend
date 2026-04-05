@@ -1,7 +1,7 @@
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { getDeviceContext } from "../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
@@ -144,11 +144,12 @@ export const getDevices = (
   const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
     const deviceName = computeDeviceNameDisplay(
       device,
-      hass,
+      hass.localize,
+      hass.states,
       deviceEntityLookup[device.id]
     );
 
-    const { area } = getDeviceContext(device, hass);
+    const area = getDeviceArea(device, hass.areas);
 
     const areaName = area ? computeAreaName(area) : undefined;
 

@@ -16,6 +16,7 @@ import {
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
+import { getResolvedTargetEntityCount } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
@@ -37,6 +38,8 @@ export class HaPlatformCondition extends LitElement {
   @state() private _checkedKeys = new Set();
 
   @state() private _manifest?: IntegrationManifest;
+
+  @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformCondition {
     return { condition: "" };
@@ -70,13 +73,16 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      oldValue?.condition !== this.condition?.condition &&
       this.condition &&
+      oldValue?.condition !== this.condition.condition &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.condition;
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.condition);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -92,13 +98,18 @@ export class HaPlatformCondition extends LitElement {
           loadDefaults &&
           field.selector &&
           field.default !== undefined &&
-          updatedOptions[key] === undefined
+          updatedOptions[key] === undefined &&
+          !(
+            key === "behavior" &&
+            this.description?.target &&
+            !this.condition?.target
+          )
         ) {
           updatedDefaultValue = true;
           updatedOptions[key] = field.default;
         }
       });
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.condition,
@@ -106,6 +117,10 @@ export class HaPlatformCondition extends LitElement {
           },
         });
       }
+    }
+
+    if (oldValue?.target !== this.condition?.target) {
+      this._updateResolvedTargetEntityCount(this.condition?.target);
     }
   }
 
@@ -154,19 +169,12 @@ export class HaPlatformCondition extends LitElement {
       </div>
       ${conditionDesc && "target" in conditionDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
               )}</span
             >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
-              )}</span
-            ><ha-selector
+            <ha-selector
               .hass=${this.hass}
               .selector=${this._targetSelector(conditionDesc.target)}
               .disabled=${this.disabled}
@@ -214,51 +222,65 @@ export class HaPlatformCondition extends LitElement {
 
     const showOptional = showOptionalToggle(dataField);
 
-    return dataField.selector
-      ? html`<ha-settings-row narrow>
-          ${!showOptional
-            ? hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing
-            : html`<ha-checkbox
-                .key=${fieldName}
-                .checked=${this._checkedKeys.has(fieldName) ||
-                (this.condition?.options &&
-                  this.condition.options[fieldName] !== undefined)}
-                .disabled=${this.disabled}
-                @change=${this._checkboxChanged}
-                slot="prefix"
-              ></ha-checkbox>`}
-          <span slot="heading"
-            >${this.hass.localize(
-              `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-            ) || conditionName}</span
-          >
-          <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
-            )}</span
-          >
-          <ha-selector
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(fieldName) &&
-              (!this.condition?.options ||
-                this.condition.options[fieldName] === undefined))}
-            .hass=${this.hass}
-            .selector=${selector}
-            .context=${this._generateContext(dataField)}
+    if (!dataField.selector) {
+      return nothing;
+    }
+
+    if (
+      fieldName === "behavior" &&
+      this.description?.target &&
+      (!this.condition?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
+      return nothing;
+    }
+
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
+    );
+
+    return html`<ha-settings-row narrow>
+      ${!showOptional
+        ? hasOptional
+          ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+          : nothing
+        : html`<ha-checkbox
             .key=${fieldName}
-            @value-changed=${this._dataChanged}
-            .value=${this.condition?.options
-              ? this.condition.options[fieldName]
-              : undefined}
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            .required=${dataField.required}
-          ></ha-selector>
-        </ha-settings-row>`
-      : nothing;
+            .checked=${this._checkedKeys.has(fieldName) ||
+            (this.condition?.options &&
+              this.condition.options[fieldName] !== undefined)}
+            .disabled=${this.disabled}
+            @change=${this._checkboxChanged}
+            slot="prefix"
+          ></ha-checkbox>`}
+      <span slot="heading"
+        >${this.hass.localize(
+          `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
+        ) || conditionName}</span
+      >
+      ${description
+        ? html`<span slot="description">${description}</span>`
+        : nothing}
+      <ha-selector
+        .disabled=${this.disabled ||
+        (showOptional &&
+          !this._checkedKeys.has(fieldName) &&
+          (!this.condition?.options ||
+            this.condition.options[fieldName] === undefined))}
+        .hass=${this.hass}
+        .selector=${selector}
+        .context=${this._generateContext(dataField)}
+        .key=${fieldName}
+        @value-changed=${this._dataChanged}
+        .value=${this.condition?.options
+          ? this.condition.options[fieldName]
+          : undefined}
+        .placeholder=${dataField.default}
+        .localizeValue=${this._localizeValueCallback}
+        .required=${dataField.required}
+      ></ha-selector>
+    </ha-settings-row>`;
   };
 
   private _generateContext(
@@ -392,6 +414,50 @@ export class HaPlatformCondition extends LitElement {
       // eslint-disable-next-line no-console
       console.log(`Unable to fetch integration manifest for ${integration}`);
       // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
+  }
+
+  private _resolveTargetEntityCount = memoizeOne(
+    async (target: PlatformCondition["target"]) =>
+      getResolvedTargetEntityCount(this.hass, target)
+  );
+
+  private async _updateResolvedTargetEntityCount(
+    target: PlatformCondition["target"]
+  ) {
+    this._resolvedTargetEntityCount =
+      await this._resolveTargetEntityCount(target);
+
+    if (
+      (!target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1)) &&
+      this.condition.options?.behavior !== undefined
+    ) {
+      const options = { ...this.condition.options };
+      delete options.behavior;
+
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.condition,
+          options,
+        },
+      });
+    } else if (
+      target &&
+      this._resolvedTargetEntityCount !== undefined &&
+      this._resolvedTargetEntityCount > 1 &&
+      this.condition.options?.behavior === undefined
+    ) {
+      const behaviorDefault = this.description?.fields?.behavior?.default;
+      if (behaviorDefault !== undefined) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.condition,
+            options: { ...this.condition.options, behavior: behaviorDefault },
+          },
+        });
+      }
     }
   }
 

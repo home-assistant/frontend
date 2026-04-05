@@ -1,11 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
-import "../components/ha-textfield";
+import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -74,18 +74,22 @@ class StateCardNumber extends LitElement {
             </div>
           `
         : html` <div class="flex state">
-            <ha-textfield
+            <ha-input
               .disabled=${this.stateObj.state === UNAVAILABLE}
               pattern="[0-9]+([\\.][0-9]+)?"
               .step=${Number(this.stateObj.attributes.step)}
               .min=${Number(this.stateObj.attributes.min)}
               .max=${Number(this.stateObj.attributes.max)}
               .value=${Number(this.stateObj.state).toString()}
-              .suffix=${this.stateObj.attributes.unit_of_measurement || ""}
               type="number"
               @change=${this._selectedValueChanged}
             >
-            </ha-textfield>
+              ${this.stateObj.attributes.unit_of_measurement
+                ? html`<span slot="end"
+                    >${this.stateObj.attributes.unit_of_measurement}</span
+                  >`
+                : nothing}
+            </ha-input>
           </div>`}
     `;
   }
@@ -146,7 +150,7 @@ class StateCardNumber extends LitElement {
           min-width: 45px;
           text-align: end;
         }
-        ha-textfield {
+        ha-input::part(wa-input) {
           text-align: end;
         }
         ha-slider {

@@ -1,16 +1,49 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-icon";
+import "../../../components/ha-switch";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES_ICONS,
+  type HomeSummary,
+} from "../../lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
+
+interface SummaryInfo {
+  key: string;
+  icon: string;
+  color: string;
+}
+
+// Ordered to match dashboard rendering order
+const SUMMARY_ITEMS: SummaryInfo[] = [
+  { key: "light", icon: HOME_SUMMARIES_ICONS.light, color: "amber" },
+  { key: "climate", icon: HOME_SUMMARIES_ICONS.climate, color: "deep-orange" },
+  {
+    key: "security",
+    icon: HOME_SUMMARIES_ICONS.security,
+    color: "blue-grey",
+  },
+  {
+    key: "media_players",
+    icon: HOME_SUMMARIES_ICONS.media_players,
+    color: "blue",
+  },
+  { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
+  { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
+];
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -50,11 +83,14 @@ export class DialogEditHome
       return nothing;
     }
 
+    const hiddenSummaries = new Set(this._config?.hidden_summaries || []);
+
     return html`
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <p class="description">
@@ -77,6 +113,33 @@ export class DialogEditHome
           reorder
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
+
+        <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.summaries")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize("ui.panel.home.editor.summaries_description")}
+        </p>
+        <div class="summary-toggles">
+          ${SUMMARY_ITEMS.map((item) => {
+            const label = this._getSummaryLabel(item.key);
+            const color = computeCssColor(item.color);
+            return html`
+              <label class="summary-toggle">
+                <ha-icon
+                  .icon=${item.icon}
+                  style=${styleMap({ "--mdc-icon-size": "24px", color })}
+                ></ha-icon>
+                <span class="summary-label">${label}</span>
+                <ha-switch
+                  .checked=${!hiddenSummaries.has(item.key)}
+                  .summary=${item.key}
+                  @change=${this._summaryToggleChanged}
+                ></ha-switch>
+              </label>
+            `;
+          })}
+        </div>
 
         <ha-alert alert-type="info">
           ${this.hass.localize("ui.panel.home.editor.areas_hint", {
@@ -107,6 +170,38 @@ export class DialogEditHome
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _getSummaryLabel(key: string): string {
+    if (key === "weather") {
+      return this.hass.localize(
+        "ui.panel.lovelace.strategy.home.summary_list.weather"
+      );
+    }
+    return getSummaryLabel(this.hass.localize, key as HomeSummary);
+  }
+
+  private _summaryToggleChanged(ev: Event): void {
+    const target = ev.target as HTMLElement & {
+      checked: boolean;
+      summary: string;
+    };
+    const summary = target.summary;
+    const checked = target.checked;
+
+    const hiddenSummaries = new Set(this._config?.hidden_summaries || []);
+
+    if (checked) {
+      hiddenSummaries.delete(summary);
+    } else {
+      hiddenSummaries.add(summary);
+    }
+
+    this._config = {
+      ...this._config,
+      hidden_summaries:
+        hiddenSummaries.size > 0 ? [...hiddenSummaries] : undefined,
+    };
   }
 
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
@@ -145,6 +240,36 @@ export class DialogEditHome
       .description {
         margin: 0 0 var(--ha-space-4) 0;
         color: var(--secondary-text-color);
+      }
+
+      .section-header {
+        font-size: 16px;
+        font-weight: 500;
+        margin: var(--ha-space-6) 0 var(--ha-space-1) 0;
+      }
+
+      .section-description {
+        margin: 0 0 var(--ha-space-2) 0;
+        color: var(--secondary-text-color);
+        font-size: 14px;
+      }
+
+      .summary-toggles {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .summary-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-3);
+        padding: var(--ha-space-2) 0;
+        cursor: pointer;
+      }
+
+      .summary-label {
+        flex: 1;
+        font-size: 14px;
       }
 
       ha-entities-picker {

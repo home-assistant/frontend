@@ -3,19 +3,23 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
-import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-dialog";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
+import type { TodoItem } from "../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -27,8 +31,6 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
-import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
-import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -109,7 +111,8 @@ class DialogTodoItemEditor extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    const isCreate = this._params.item === undefined;
+    const isCreate =
+      this._params.item === undefined || !("uid" in this._params.item);
     const listName =
       this._params.entity in this.hass.states
         ? computeStateName(this.hass.states[this._params.entity])
@@ -143,7 +146,7 @@ class DialogTodoItemEditor extends LitElement {
               @change=${this._checkedCanged}
               .disabled=${isCreate || !canUpdate}
             ></ha-checkbox>
-            <ha-textfield
+            <ha-input
               class="summary"
               name="summary"
               .label=${this.hass.localize("ui.components.todo.item.summary")}
@@ -155,7 +158,7 @@ class DialogTodoItemEditor extends LitElement {
                 "ui.common.error_required"
               )}
               .disabled=${!canUpdate}
-            ></ha-textfield>
+            ></ha-input>
           </div>
           ${this._completedTime
             ? html`<div class="italic">
@@ -299,8 +302,8 @@ class DialogTodoItemEditor extends LitElement {
     this._checked = ev.target.checked;
   }
 
-  private _handleSummaryChanged(ev) {
-    this._summary = ev.target.value;
+  private _handleSummaryChanged(ev: InputEvent) {
+    this._summary = (ev.target as HaInput).value ?? "";
   }
 
   private _handleDescriptionChanged(ev) {
@@ -364,7 +367,7 @@ class DialogTodoItemEditor extends LitElement {
 
     try {
       await updateItem(this.hass!, this._params!.entity, {
-        ...entry,
+        ...(entry as TodoItem),
         summary: this._summary,
         description:
           this._description ||
@@ -416,7 +419,9 @@ class DialogTodoItemEditor extends LitElement {
       return;
     }
     try {
-      await deleteItems(this.hass!, this._params!.entity, [entry.uid]);
+      await deleteItems(this.hass!, this._params!.entity, [
+        (entry as TodoItem).uid,
+      ]);
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
       return;
@@ -434,7 +439,9 @@ class DialogTodoItemEditor extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
-        ha-textfield,
+        ha-input {
+          width: 100%;
+        }
         ha-textarea {
           display: block;
           width: 100%;

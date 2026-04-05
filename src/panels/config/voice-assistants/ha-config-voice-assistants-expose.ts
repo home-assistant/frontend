@@ -200,15 +200,19 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        template: (entry) =>
-          entry.aliases.length === 0
+        template: (entry) => {
+          const aliases = entry.aliases.filter(
+            (a: string | null) => a !== null
+          );
+          return aliases.length === 0
             ? "-"
-            : entry.aliases.length === 1
-              ? entry.aliases[0]
+            : aliases.length === 1
+              ? aliases[0]
               : this.hass.localize(
                   "ui.panel.config.voice_assistants.expose.aliases",
-                  { count: entry.aliases.length }
-                ),
+                  { count: aliases.length }
+                );
+        },
       },
       remove: {
         title: "",
@@ -318,7 +322,7 @@ export class VoiceAssistantsExpose extends LitElement {
           (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
         const _assistants = Object.keys(
-          exposedEntities?.[entityState.entity_id]
+          exposedEntities?.[entityState.entity_id] ?? {}
         ).filter(
           (key) =>
             showAssistants.includes(key) &&
@@ -380,7 +384,7 @@ export class VoiceAssistantsExpose extends LitElement {
               assistants: [
                 ...(exposedEntities
                   ? Object.keys(
-                      exposedEntities?.[entityState.entity_id]
+                      exposedEntities?.[entityState.entity_id] ?? {}
                     ).filter(
                       (key) =>
                         showAssistants.includes(key) &&

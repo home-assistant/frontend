@@ -36,6 +36,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -79,7 +80,6 @@ import {
   showSceneSaveDialog,
   type EntityRegistryUpdate,
 } from "./scene-save-dialog/show-dialog-scene-save";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceEntities {
   id: string;
@@ -123,7 +123,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaSceneEditor, value) {
-      return value.find(
+      return value?.find(
         ({ entity_id }) => entity_id === this._scene?.entity_id
       );
     },
@@ -178,7 +178,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           outputDevices.push({
             name: computeDeviceNameDisplay(
               device,
-              this.hass,
+              this.hass.localize,
+              this.hass.states,
               this._deviceEntityLookup[device.id]
             ),
             id: device.id,

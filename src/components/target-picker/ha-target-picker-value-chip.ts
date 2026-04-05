@@ -161,7 +161,13 @@ export class HaTargetPickerValueChip extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : itemId,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : itemId,
         fallbackIconPath: mdiDevices,
       };
     }
@@ -203,11 +209,14 @@ export class HaTargetPickerValueChip extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl({
-        domain: domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      this._iconImg = brandsUrl(
+        {
+          domain: domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
 
       this._setDomainName(domain);
     } catch {
@@ -215,7 +224,7 @@ export class HaTargetPickerValueChip extends LitElement {
     }
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -223,7 +232,7 @@ export class HaTargetPickerValueChip extends LitElement {
     });
   }
 
-  private _handleExpand(ev) {
+  private _handleExpand(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "expand-target-item", {
       type: this.type,

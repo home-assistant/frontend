@@ -15,7 +15,6 @@ import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
-import { addBrandsAuth } from "../../util/brands-url";
 import "../ha-state-icon";
 
 @customElement("state-badge")
@@ -138,7 +137,6 @@ export class StateBadge extends LitElement {
           let imageUrl =
             stateObj.attributes.entity_picture_local ||
             stateObj.attributes.entity_picture;
-          imageUrl = addBrandsAuth(imageUrl);
           if (this.hass) {
             imageUrl = this.hass.hassUrl(imageUrl);
           }

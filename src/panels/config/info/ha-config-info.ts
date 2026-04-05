@@ -273,7 +273,7 @@ class HaConfigInfo extends LitElement {
       }
     }, 2000);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._loadSupervisorInfo();
     }
 

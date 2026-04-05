@@ -355,7 +355,7 @@ class MoreInfoUpdate extends LitElement {
       this._fetchEntitySources().then(() => {
         const type = getUpdateType(this.stateObj!, this._entitySources!);
         if (
-          isComponentLoaded(this.hass, "hassio") &&
+          isComponentLoaded(this.hass.config, "hassio") &&
           ["addon", "home_assistant", "home_assistant_os"].includes(type)
         ) {
           this._fetchUpdateBackupConfig(type);

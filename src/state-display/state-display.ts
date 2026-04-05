@@ -14,7 +14,7 @@ import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
 
-const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
+const TIMESTAMP_STATE_DOMAINS = ["button", "infrared", "input_button", "scene"];
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "remaining_time",

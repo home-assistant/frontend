@@ -13,8 +13,8 @@ import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import {
   ALARM_MODES,
@@ -28,7 +28,6 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
@@ -233,11 +232,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     return html`
       <ha-card>
@@ -280,15 +275,15 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         ${!stateObj.attributes.code_format || defaultCode
           ? nothing
           : html`
-              <ha-textfield
+              <ha-input
                 .value=${this._value || ""}
                 @input=${this._handleInput}
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
-                .inputMode=${stateObj.attributes.code_format === FORMAT_NUMBER
+                .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
                   ? "numeric"
                   : "text"}
-              ></ha-textfield>
+              ></ha-input>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode
           ? nothing
@@ -340,7 +335,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _handleInput(e: Event): void {
-    this._value = (e.currentTarget as HaTextField).value;
+    this._value = (e.currentTarget as HaInput).value;
   }
 
   private _handlePadClick(e: MouseEvent): void {
@@ -407,26 +402,26 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
     }
 
-    ha-textfield {
-      display: block;
-      margin: 8px;
+    ha-input {
+      margin: var(--ha-space-2);
       max-width: 150px;
       text-align: center;
+      --ha-input-padding-bottom: 0;
     }
 
     .state {
-      margin-left: 16px;
-      margin-inline-start: 16px;
+      margin-left: var(--ha-space-4);
+      margin-inline-start: var(--ha-space-4);
       margin-inline-end: initial;
       position: relative;
-      bottom: 16px;
+      bottom: var(--ha-space-4);
       color: var(--alarm-state-color);
       animation: none;
     }
 
     .keypad {
       --keypad-columns: 3;
-      padding: 12px;
+      padding: var(--ha-space-3);
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
@@ -453,10 +448,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
     }
 
     .actions ha-button {
-      margin: 0 4px 4px;
+      margin: var(--ha-space-1);
     }
   `;
 }

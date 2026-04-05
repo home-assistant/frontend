@@ -95,6 +95,8 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -175,7 +177,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _uiModeAvailable = true;
 
@@ -184,6 +186,8 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
+
+  @state() private _isNew = false;
 
   @state() private _warnings?: string[];
 
@@ -237,12 +241,20 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const target =
-      type === "service" && "target" in this.action
-        ? (this.action as ServiceAction).target
-        : type === "device_id" && (this.action as DeviceAction).device_id
-          ? { device_id: (this.action as DeviceAction).device_id }
-          : undefined;
+    const action = type === "service" && (this.action as ServiceAction).action;
+
+    const actionHasTarget =
+      action &&
+      "target" in
+        (this.hass.services?.[computeDomain(action)]?.[
+          computeObjectId(action)
+        ] || {});
+
+    const target = actionHasTarget
+      ? (this.action as ServiceAction).target
+      : type === "device_id" && (this.action as DeviceAction).device_id
+        ? { device_id: (this.action as DeviceAction).device_id }
+        : undefined;
 
     return html`
       ${type === "service" && "action" in this.action && this.action.action
@@ -265,7 +277,9 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || (actionHasTarget && !this._isNew)
+          ? this._renderTargets(target, actionHasTarget && !this._isNew)
+          : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
@@ -545,7 +559,10 @@ export default class HaAutomationActionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -575,10 +592,11 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 
@@ -802,6 +820,12 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -810,6 +834,10 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     this.openSidebar();
+  }
+
+  public markAsNew(): void {
+    this._isNew = true;
   }
 
   public openSidebar(action?: Action): void {
@@ -822,6 +850,7 @@ export default class HaAutomationActionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();

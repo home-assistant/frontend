@@ -26,8 +26,9 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-date-range-picker";
+import "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
@@ -50,7 +51,6 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
-import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
@@ -169,7 +169,6 @@ class HaPanelHistory extends LitElement {
         <div class="flex content ha-scrollbar">
           <div class="filters">
             <ha-date-range-picker
-              .hass=${this.hass}
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}

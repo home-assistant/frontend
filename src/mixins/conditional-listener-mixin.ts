@@ -1,10 +1,13 @@
-import type { ReactiveElement } from "lit";
+import { consume } from "@lit/context";
+import type { PropertyValues, ReactiveElement } from "lit";
+import { state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
-import {
-  setupMediaQueryListeners,
-  setupTimeListeners,
-} from "../common/condition/listeners";
-import type { Condition } from "../panels/lovelace/common/validate-condition";
+import { setupConditionListeners } from "../common/condition/listeners";
+import { maxColumnsContext } from "../panels/lovelace/common/context";
+import type {
+  Condition,
+  ConditionContext,
+} from "../panels/lovelace/common/validate-condition";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
 
@@ -32,6 +35,7 @@ export interface ConditionalConfig {
  * - Sets up listeners when component connects to DOM
  * - Cleans up listeners when component disconnects from DOM
  * - Handles conditional visibility based on defined conditions
+ * - Consumes column count from the view via Lit Context
  */
 export const ConditionalListenerMixin = <
   TConfig extends ConditionalConfig = ConditionalConfig,
@@ -47,6 +51,12 @@ export const ConditionalListenerMixin = <
 
     public hass?: HomeAssistant;
 
+    @state()
+    @consume({ context: maxColumnsContext, subscribe: true })
+    protected _maxColumns?: number;
+
+    protected _conditionContext: ConditionContext = {};
+
     protected _updateElement?(config: TConfig): void;
 
     protected _updateVisibility?(conditionsMet?: boolean): void;
@@ -59,6 +69,20 @@ export const ConditionalListenerMixin = <
     public disconnectedCallback() {
       super.disconnectedCallback();
       this.clearConditionalListeners();
+    }
+
+    protected willUpdate(changedProperties: PropertyValues) {
+      super.willUpdate(changedProperties);
+      if (changedProperties.has("_maxColumns")) {
+        this._conditionContext = { max_columns: this._maxColumns };
+      }
+    }
+
+    protected updated(changedProperties: PropertyValues) {
+      super.updated(changedProperties);
+      if (changedProperties.has("_maxColumns")) {
+        this._updateVisibility?.();
+      }
     }
 
     /**
@@ -106,26 +130,18 @@ export const ConditionalListenerMixin = <
         return;
       }
 
-      const onUpdate = (conditionsMet: boolean) => {
-        if (this._updateVisibility) {
-          this._updateVisibility(conditionsMet);
-        } else if (this._updateElement && config) {
-          this._updateElement(config);
-        }
-      };
-
-      setupMediaQueryListeners(
+      setupConditionListeners(
         finalConditions,
         this.hass,
         (unsub) => this.addConditionalListener(unsub),
-        onUpdate
-      );
-
-      setupTimeListeners(
-        finalConditions,
-        this.hass,
-        (unsub) => this.addConditionalListener(unsub),
-        onUpdate
+        (conditionsMet) => {
+          if (this._updateVisibility) {
+            this._updateVisibility(conditionsMet);
+          } else if (this._updateElement && config) {
+            this._updateElement(config);
+          }
+        },
+        () => this._conditionContext
       );
     }
   }

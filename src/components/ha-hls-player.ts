@@ -140,7 +140,7 @@ class HaHLSPlayer extends LitElement {
     this._cleanUp();
     this._resetError();
 
-    if (!isComponentLoaded(this.hass!, "stream")) {
+    if (!isComponentLoaded(this.hass.config, "stream")) {
       this._setFatalError("Streaming component is not loaded.");
       return;
     }

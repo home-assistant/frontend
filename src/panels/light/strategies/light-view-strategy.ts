@@ -15,8 +15,9 @@ import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpe
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
+} from "../../lovelace/strategies/helpers/view-columns-conditions";
 import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -75,6 +76,7 @@ const processAreasForLight = (
           {
             type: "button",
             icon: "mdi:power",
+            text: hass.localize("ui.panel.lovelace.strategy.light.off"),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_on",
@@ -89,11 +91,12 @@ const processAreasForLight = (
                 conditions: [anyOnCondition],
               },
             ],
-          },
+          } satisfies ButtonHeadingBadgeConfig,
           {
             type: "button",
             icon: "mdi:power",
-            color: "amber",
+            color: "orange",
+            text: hass.localize("ui.panel.lovelace.strategy.light.on"),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_off",
@@ -102,7 +105,7 @@ const processAreasForLight = (
               },
             },
             visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
-          },
+          } satisfies ButtonHeadingBadgeConfig,
         ] satisfies LovelaceCardConfig[],
       });
 

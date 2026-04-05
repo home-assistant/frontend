@@ -2,7 +2,6 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { stringCompare } from "../../common/string/compare";
@@ -53,16 +52,15 @@ class HaDataTableLabels extends LitElement {
   }
 
   private _renderLabel(label: LabelRegistryEntry, clickAction: boolean) {
-    const color = label?.color ? computeCssColor(label.color) : undefined;
     return html`
       <ha-label
         dense
         role="button"
         tabindex="0"
+        .color=${label.color}
         .item=${label}
         @click=${clickAction ? this._labelClicked : undefined}
         @keydown=${clickAction ? this._labelClicked : undefined}
-        style=${color ? `--color: ${color}` : ""}
         .description=${label.description}
       >
         ${label?.icon
@@ -101,10 +99,6 @@ class HaDataTableLabels extends LitElement {
     ha-chip-set {
       position: fixed;
       flex-wrap: nowrap;
-    }
-    ha-label {
-      --ha-label-background-color: var(--color, var(--grey-color));
-      --ha-label-background-opacity: 0.5;
     }
     .plus {
       --ha-label-background-color: transparent;
