@@ -16,6 +16,7 @@
     "security": "Security",
     "climate": "Climate",
     "home": "Overview",
+    "maintenance": "Maintenance",
     "notfound": "Page not found"
   },
   "state": {
@@ -217,6 +218,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
       },
@@ -1060,6 +1063,7 @@
           "this_month": "This month",
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
+          "now-365d": "Last 365 days",
           "this_year": "This year",
           "now-12m": "Last 12 months"
         }
@@ -1440,7 +1444,7 @@
       },
       "safe_mode": {
         "title": "Safe mode",
-        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+        "text": "Home Assistant is running in safe mode, community integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
         "commands_title": "Commands",
@@ -2007,9 +2011,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
+          "description": "Restarts Home Assistant without loading any community integrations and frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_description": "This will restart Home Assistant without loading any community integrations and frontend modules.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
@@ -4337,8 +4341,8 @@
             "info": "INFO",
             "debug": "DEBUG"
           },
-          "custom_integration": "custom integration",
-          "error_from_custom_integration": "This error originated from a custom integration.",
+          "custom_integration": "community integration",
+          "error_from_custom_integration": "This error originated from a community integration.",
           "show_full_logs": "Show raw logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
@@ -6682,9 +6686,9 @@
                 "device": "device"
               }
             },
-            "custom_integration": "Custom integration",
+            "custom_integration": "Community integration",
             "legacy_integration": "Legacy integration",
-            "custom_overwrites_core": "Custom integration that replaces a Core component",
+            "custom_overwrites_core": "Community integration that replaces a Core component",
             "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be set up from the UI",
             "no_config_flow": "This integration was not set up from the UI",
@@ -7811,7 +7815,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
-            "manage_lock": "Manage lock",
+            "manage_lock": "Manage access",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7854,8 +7858,8 @@
             "copy_code": "Copy code"
           },
           "lock": {
-            "manage": "Manage lock",
-            "dialog_title": "Manage lock",
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
             "users": {
               "title": "Users",
               "add": "Add user",
@@ -7939,6 +7943,10 @@
               "load_failed": "Failed to load lock information",
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
+              "no_user_management": "This lock does not support user management. Users and credentials cannot be managed here.",
+              "pin_not_supported": "This lock does not support PIN codes. You can still view and manage existing users.",
+              "no_credential_types_supported": "This lock does not support any credential types that can be managed here. You can still view existing users.",
+              "learn_more": "Learn more about lock management",
               "user_not_found": "User not found",
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",
@@ -8006,7 +8014,7 @@
         },
         "labs": {
           "caption": "Labs",
-          "custom_integration": "Custom integration",
+          "custom_integration": "Community integration",
           "description": "Preview new features",
           "description_enabled": "Preview features are enabled",
           "intro_title": "Home Assistant Labs",
@@ -8256,6 +8264,7 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
+              "maintenance": "Maintenance",
               "energy": "Today's energy",
               "persons": "Presence"
             },
@@ -8291,6 +8300,10 @@
             "other_devices": "Other devices"
           },
           "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "maintenance": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },
@@ -10004,7 +10017,7 @@
           },
           "badge_picker": {
             "no_description": "No description available.",
-            "custom_badge": "Custom",
+            "custom_badge": "Community",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
@@ -10703,7 +10716,7 @@
         "external_panel": {
           "question_trust": "Do you trust the external panel {name} at {link}?",
           "complete_access": "It will have access to all data in Home Assistant.",
-          "hide_message": "Check docs for the panel_custom component to hide this message"
+          "hide_message": "Check docs for the 'Custom panel' integration to hide this message"
         }
       },
       "energy": {

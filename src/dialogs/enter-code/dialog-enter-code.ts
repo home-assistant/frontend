@@ -87,7 +87,7 @@ export class DialogEnterCode
 
   private _numberClick(e: MouseEvent): void {
     const val = (e.currentTarget! as any).value;
-    this._input!.value = this._input!.value + val;
+    this._input!.value = (this._input!.value ?? "") + val;
     this._showClearButton = true;
   }
 
