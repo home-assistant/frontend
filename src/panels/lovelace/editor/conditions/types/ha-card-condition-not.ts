@@ -25,7 +25,7 @@ export class HaCardConditionNot extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public noEntity = false;
 
   @property({ attribute: false }) public presetStates: PresetState[] = [];
 
@@ -43,7 +43,7 @@ export class HaCardConditionNot extends LitElement {
         nested
         .hass=${this.hass}
         .conditions=${this.condition.conditions}
-        .no_entity=${this.no_entity}
+        .noEntity=${this.noEntity}
         .presetStates=${this.presetStates}
         @value-changed=${this._valueChanged}
       >
