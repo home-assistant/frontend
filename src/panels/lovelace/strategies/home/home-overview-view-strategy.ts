@@ -223,6 +223,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
+    const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+      (filter) => generateEntityFilter(hass, filter)
+    );
+
     const hasLights =
       hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
@@ -233,6 +237,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
+    const hasMaintenance =
+      hass.panels.maintenance &&
+      findEntities(allEntities, maintenanceFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -320,6 +327,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
+          },
+        } satisfies HomeSummaryCard),
+      hasMaintenance &&
+        ({
+          type: "home-summary",
+          summary: "maintenance",
+          tap_action: {
+            action: "navigate",
+            navigation_path: config.home_panel
+              ? "/maintenance?historyBack=1&backPath=/home"
+              : "/maintenance?historyBack=1",
           },
         } satisfies HomeSummaryCard),
       weatherEntity &&
