@@ -34,6 +34,7 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
+import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -43,6 +44,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
+  maintenance: "grey",
   energy: "amber",
   persons: "green",
 };
@@ -254,6 +256,31 @@ export class HuiHomeSummaryCard
               count: playingMedia.length,
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
+      }
+      case "maintenance": {
+        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
+        );
+
+        const maintenanceEntities = findEntities(
+          allEntities,
+          maintenanceFilters
+        );
+
+        const needsAttentionEntities = filterNeedsAttentionEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        if (needsAttentionEntities.length > 0) {
+          return this.hass.localize(
+            "ui.card.home-summary.count_maintenance_issues",
+            {
+              count: needsAttentionEntities.length,
+            }
+          );
+        }
+        return this.hass.localize("ui.card.home-summary.all_maintenance_good");
       }
       case "energy": {
         if (!this._energyData) {

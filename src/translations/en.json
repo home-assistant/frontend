@@ -16,6 +16,7 @@
     "security": "Security",
     "climate": "Climate",
     "home": "Overview",
+    "maintenance": "Maintenance",
     "notfound": "Page not found"
   },
   "state": {
@@ -217,6 +218,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
       },
@@ -8255,6 +8258,7 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
+              "maintenance": "Maintenance",
               "energy": "Today's energy",
               "persons": "Presence"
             },
@@ -8290,6 +8294,10 @@
             "other_devices": "Other devices"
           },
           "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "maintenance": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },
