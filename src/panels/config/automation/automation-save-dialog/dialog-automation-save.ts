@@ -165,10 +165,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               "ui.panel.config.automation.editor.description.placeholder"
             )}
             name="description"
-            autogrow
+            resize="auto"
             .value=${this._newDescription}
-            .helper=${supportsMarkdownHelper(this.hass.localize)}
-            helperPersistent
+            .hint=${supportsMarkdownHelper(this.hass.localize)}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}

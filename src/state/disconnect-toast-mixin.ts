@@ -73,7 +73,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
                 "Safe mode",
               text:
                 this.hass!.localize("ui.dialogs.safe_mode.text") ||
-                "Home Assistant is running in safe mode, custom integrations and modules are not available. Restart Home Assistant to exit safe mode.",
+                "Home Assistant is running in safe mode, community integrations and frontend modules are not available. Restart Home Assistant to exit safe mode.",
             });
           }
         );

@@ -65,15 +65,14 @@ export class HaTextSelector extends LitElement {
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
-        .helper=${this.helper}
-        helperPersistent
+        .hint=${this.helper}
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
         .autocomplete=${this.selector.text?.autocomplete}
         spellcheck="false"
         .required=${this.required}
-        autogrow
+        resize="auto"
       ></ha-textarea>`;
     }
     return html`<ha-input
