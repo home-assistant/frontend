@@ -40,7 +40,7 @@ export class HaCardConditionState extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public noEntity = false;
+  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
   @property({ attribute: false }) public presetStates: PresetState[] = [];
 
