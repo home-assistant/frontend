@@ -38,7 +38,7 @@ export class HaEntityStatePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public noEntity = false;
 
   private _getItems = memoizeOne(
     (
@@ -127,7 +127,7 @@ export class HaEntityStatePicker extends LitElement {
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled ||
-        (!this.entityId && this.no_entity === false)}
+        (!this.entityId && this.noEntity === false)}
         .autofocus=${this.autofocus}
         .required=${this.required}
         .label=${this.label ??
