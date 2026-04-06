@@ -64,7 +64,7 @@ export class HaCardConditionsEditor extends LitElement {
     | LegacyCondition
   )[];
 
-  @property({ attribute: "no-entity", type: Boolean }) public no_entity = false;
+  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
   @property({ attribute: false }) public presetStates: PresetState[] = [];
 
@@ -111,7 +111,7 @@ export class HaCardConditionsEditor extends LitElement {
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
-              .no_entity=${this.no_entity}
+              .noEntity=${this.noEntity}
               .presetStates=${this.presetStates}
             ></ha-card-condition-editor>
           `
@@ -169,7 +169,7 @@ export class HaCardConditionsEditor extends LitElement {
       conditions.push(newCondition);
     } else {
       const elClass = customElements.get(
-        getConditionClassName(condition, this.no_entity)
+        getConditionClassName(condition, this.noEntity)
       ) as LovelaceConditionEditorConstructor | undefined;
 
       const defaultConfig = elClass?.defaultConfig;
