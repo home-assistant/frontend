@@ -4170,12 +4170,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:0.5.20":
-  version: 0.5.20
-  resolution: "@swc/helpers@npm:0.5.20"
+"@swc/helpers@npm:0.5.21":
+  version: 0.5.21
+  resolution: "@swc/helpers@npm:0.5.21"
   dependencies:
     tslib: "npm:^2.8.0"
-  checksum: 10/a46030291484f8fd57505c4ae13cb179aa1f0cef201b14a065d857cfe3c3f41aab46d410a9cec7785f4768ac5b78dc4d07c344086c0ea2cacf67ba034fbed7a2
+  checksum: 10/3b637f836282a0a0f2c21e27a2354f09659a4ffa6fad7fbb464a94ff235704b224a578ac04df320cc633471681c61a7316ca02079c90d39e9713ad3422aea0dc
   languageName: node
   linkType: hard
 
@@ -8900,7 +8900,7 @@ __metadata:
     "@rsdoctor/rspack-plugin": "npm:1.5.7"
     "@rspack/core": "npm:1.7.11"
     "@rspack/dev-server": "npm:1.2.1"
-    "@swc/helpers": "npm:0.5.20"
+    "@swc/helpers": "npm:0.5.21"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@tsparticles/engine": "npm:3.9.1"
     "@tsparticles/preset-links": "npm:3.2.0"
