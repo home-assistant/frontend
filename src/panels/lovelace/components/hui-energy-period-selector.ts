@@ -77,6 +77,7 @@ const RANGE_KEYS: DateRange[] = [
   "this_year",
   "now-7d",
   "now-30d",
+  "now-365d",
   "now-12m",
 ];
 

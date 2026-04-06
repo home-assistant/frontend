@@ -1060,6 +1060,7 @@
           "this_month": "This month",
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
+          "now-365d": "Last 365 days",
           "this_year": "This year",
           "now-12m": "Last 12 months"
         }
