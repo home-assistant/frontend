@@ -54,14 +54,14 @@ const NO_ENTITY_CONDITIONS_EXT = [
   ...NO_ENTITY_CONDITIONS,
 ];
 
-const isNoEntityCondition = (condition: string, no_entity: boolean): boolean =>
-  NO_ENTITY_CONDITIONS.includes(condition) && no_entity;
+const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
+  NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
 
 export const getConditionClassName = (
   condition: string,
-  no_entity: boolean
+  noEntity: boolean
 ) => {
-  if (isNoEntityCondition(condition, no_entity)) {
+  if (isNoEntityCondition(condition, noEntity)) {
     return `ha-card-condition-${condition}-no_entity`;
   }
   return `ha-card-condition-${condition}`;
@@ -69,9 +69,9 @@ export const getConditionClassName = (
 
 const containsNoEntityCondition = (
   condition: Condition,
-  no_entity: boolean
+  noEntity: boolean
 ): boolean =>
-  no_entity &&
+  noEntity &&
   CONTAINER_CONDITIONS.includes(condition.condition) &&
   (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
     (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
@@ -83,7 +83,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
-  @property({ type: Boolean }) public no_entity = false;
+  @property({ type: Boolean }) public noEntity = false;
 
   @property({ attribute: false }) public presetStates: PresetState[] = [];
 
@@ -108,7 +108,7 @@ export class HaCardConditionEditor extends LitElement {
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
-      getConditionClassName(this._condition.condition, this.no_entity)
+      getConditionClassName(this._condition.condition, this.noEntity)
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
@@ -179,8 +179,8 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${isNoEntityCondition(condition.condition, this.no_entity) ||
-            containsNoEntityCondition(condition, this.no_entity)
+            ${isNoEntityCondition(condition.condition, this.noEntity) ||
+            containsNoEntityCondition(condition, this.noEntity)
               ? nothing
               : html`<ha-dropdown-item value="test">
                   ${this.hass.localize(
@@ -261,14 +261,14 @@ export class HaCardConditionEditor extends LitElement {
                 `
               : html`
                   ${dynamicElement(
-                    getConditionClassName(condition.condition, this.no_entity),
+                    getConditionClassName(condition.condition, this.noEntity),
                     {
                       hass: this.hass,
                       condition: condition,
-                      ...(this.no_entity &&
+                      ...(this.noEntity &&
                       NO_ENTITY_CONDITIONS_EXT.includes(condition.condition)
                         ? {
-                            no_entity: this.no_entity,
+                            noEntity: this.noEntity,
                             ...(condition.condition === "numeric_state"
                               ? {}
                               : { presetStates: this.presetStates }),
