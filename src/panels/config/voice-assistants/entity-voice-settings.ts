@@ -63,7 +63,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   > = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (!isComponentLoaded(this.hass, "cloud")) {
+    if (!isComponentLoaded(this.hass.config, "cloud")) {
       return;
     }
     if (changedProps.has("entityId") && this.entityId) {

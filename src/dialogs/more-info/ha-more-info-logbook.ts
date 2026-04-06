@@ -6,8 +6,8 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../panels/logbook/ha-logbook";
-import type { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -22,7 +22,7 @@ export class MoreInfoLogbook extends LitElement {
   private _entityIdAsList = memoizeOne((entityId: string) => [entityId]);
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "logbook") || !this.entityId) {
+    if (!isComponentLoaded(this.hass.config, "logbook") || !this.entityId) {
       return nothing;
     }
     const stateObj = this.hass.states[this.entityId];

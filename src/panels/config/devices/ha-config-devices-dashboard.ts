@@ -445,9 +445,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         );
 
         const labels = labelReg && device?.labels;
-        const labelsEntries = (labels || []).map(
-          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-        );
+        const labelsEntries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
         let floorName;
         if (
@@ -465,7 +465,8 @@ export class HaConfigDeviceDashboard extends LitElement {
           ...device,
           name: computeDeviceNameDisplay(
             device,
-            this.hass,
+            this.hass.localize,
+            this.hass.states,
             deviceEntityLookup[device.id]
           ),
           model:

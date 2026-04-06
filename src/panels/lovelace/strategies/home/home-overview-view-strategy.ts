@@ -243,7 +243,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .filter(weatherFilter)
       .sort()[0];
 
-    const energyPrefs = isComponentLoaded(hass, "energy")
+    const energyPrefs = isComponentLoaded(hass.config, "energy")
       ? // It raises if not configured, just swallow that.
         await getEnergyPreferences(hass).catch(() => undefined)
       : undefined;

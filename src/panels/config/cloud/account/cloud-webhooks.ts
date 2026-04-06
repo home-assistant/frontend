@@ -2,10 +2,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-card";
 import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
 import { createCloudhook, deleteCloudhook } from "../../../../data/cloud";
@@ -197,7 +197,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    if (!isComponentLoaded(this.hass!, "webhook")) {
+    if (!isComponentLoaded(this.hass!.config, "webhook")) {
       this._localHooks = [];
       return;
     }

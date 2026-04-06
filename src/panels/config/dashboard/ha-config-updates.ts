@@ -6,7 +6,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { getDeviceContext } from "../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
@@ -112,7 +112,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
           const areaName =
             deviceEntry && deviceEntry.entry_type !== "service"
-              ? getDeviceContext(deviceEntry, this.hass).area?.name ||
+              ? getDeviceArea(deviceEntry, this.hass.areas)?.name ||
                 this.hass.localize("ui.panel.config.updates.no_area")
               : undefined;
 
@@ -146,7 +146,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </div>
               <span slot="headline"
                 >${deviceEntry
-                  ? computeDeviceNameDisplay(deviceEntry, this.hass)
+                  ? computeDeviceNameDisplay(
+                      deviceEntry,
+                      this.hass.localize,
+                      this.hass.states
+                    )
                   : entity.attributes.friendly_name}</span
               >
               <span slot="supporting-text">

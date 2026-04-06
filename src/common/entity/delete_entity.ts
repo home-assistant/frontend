@@ -27,7 +27,7 @@ export const isDeletableEntity = (
   const entityRegEntry = entityRegistry.find((e) => e.entity_id === entity_id);
   if (isHelperDomain(domain)) {
     return !!(
-      isComponentLoaded(hass, domain) &&
+      isComponentLoaded(hass.config, domain) &&
       entityRegEntry &&
       fetchedHelpers.some((e) => e.id === entityRegEntry.unique_id)
     );
@@ -56,7 +56,7 @@ export const deleteEntity = (
   const domain = computeDomain(entity_id);
   const entityRegEntry = entityRegistry.find((e) => e.entity_id === entity_id);
   if (isHelperDomain(domain)) {
-    if (isComponentLoaded(hass, domain)) {
+    if (isComponentLoaded(hass.config, domain)) {
       if (
         entityRegEntry &&
         fetchedHelpers.some((e) => e.id === entityRegEntry.unique_id)

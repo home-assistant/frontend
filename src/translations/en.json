@@ -5041,7 +5041,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Manual event received",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
@@ -5534,7 +5534,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Fire manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
@@ -7612,7 +7612,20 @@
             "stop_rebuilding_routes": "Stop rebuilding routes",
             "rebuilding_routes_complete": "Routes have been rebuilt.",
             "rebuilding_routes_failed": "Route rebuilding failed. Additional information may be available in the logs.",
-            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled."
+            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled.",
+            "progress": {
+              "in_progress": "{count} in progress",
+              "completed": "{count} completed",
+              "failed": "{count} failed",
+              "skipped": "{count} skipped"
+            },
+            "details": {
+              "pending": "{count} pending devices",
+              "done": "{count} completed devices",
+              "failed": "{count} failed devices",
+              "skipped": "{count} skipped devices",
+              "no_devices": "No devices"
+            }
           },
           "rebuild_node_routes": {
             "title": "Rebuild routes for a Z-Wave device",
@@ -9310,7 +9323,7 @@
               "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
-              "manual_description": "Need to add a custom card or just want to manually write the YAML?",
+              "manual_description": "Need to add a community card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
               "paste": "Paste from clipboard",
@@ -9333,7 +9346,7 @@
               "suggested_cards": "Suggested cards",
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
-              "custom_cards": "Custom cards",
+              "custom_cards": "Community cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
@@ -9647,12 +9660,12 @@
             },
             "generic": {
               "manual": "Manual",
-              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "manual_description": "Need to add a community badge or just want to manually write the YAML?",
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} badge from the clipboard",
               "suggested_badges": "Suggested badges",
               "other_badges": "Other badges",
-              "custom_badges": "Custom badges"
+              "custom_badges": "Community badges"
             }
           },
           "entities": {

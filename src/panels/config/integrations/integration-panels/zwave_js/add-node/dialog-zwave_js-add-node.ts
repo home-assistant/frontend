@@ -508,9 +508,12 @@ class DialogZWaveJSAddNode extends LitElement {
 
     if (this._controllerSupportsLongRange === undefined) {
       try {
-        const zwaveNetwork = await fetchZwaveNetworkStatus(this.hass, {
-          entry_id: this._entryId,
-        });
+        const zwaveNetwork = await fetchZwaveNetworkStatus(
+          this.hass.connection,
+          {
+            entry_id: this._entryId,
+          }
+        );
         this._controllerSupportsLongRange =
           zwaveNetwork?.controller?.supports_long_range;
       } catch (err) {

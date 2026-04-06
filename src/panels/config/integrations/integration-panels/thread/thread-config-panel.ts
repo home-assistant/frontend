@@ -480,7 +480,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     listThreadDataSets(this.hass).then((datasets) => {
       this._datasets = datasets.datasets;
     });
-    if (!isComponentLoaded(this.hass, "otbr")) {
+    if (!isComponentLoaded(this.hass.config, "otbr")) {
       return;
     }
     try {

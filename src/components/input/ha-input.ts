@@ -19,6 +19,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
 
 export type InputType =
   | "date"
@@ -288,7 +289,9 @@ export class HaInput extends LitElement {
   }
 
   public checkValidity(): boolean {
-    return this._input?.checkValidity() ?? true;
+    return nativeElementInternalsSupported
+      ? (this._input?.checkValidity() ?? true)
+      : true;
   }
 
   public reportValidity(): boolean {
@@ -630,7 +633,7 @@ export class HaInput extends LitElement {
     }
 
     wa-input::part(hint) {
-      height: var(--ha-space-5);
+      min-height: var(--ha-space-5);
       margin-block-start: 0;
       margin-inline-start: var(--ha-space-3);
       font-size: var(--ha-font-size-xs);
@@ -641,6 +644,7 @@ export class HaInput extends LitElement {
 
     wa-input.hint-hidden::part(hint) {
       height: 0;
+      min-height: 0;
     }
 
     .error {

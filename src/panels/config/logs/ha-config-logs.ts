@@ -132,7 +132,7 @@ export class HaConfigLogs extends LitElement {
         .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
-        ${isComponentLoaded(this.hass, "hassio") && this._logProviders
+        ${isComponentLoaded(this.hass.config, "hassio") && this._logProviders
           ? html`
               <ha-generic-picker
                 slot="toolbar-icon"
@@ -213,13 +213,13 @@ export class HaConfigLogs extends LitElement {
   }
 
   private async _init() {
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._getInstalledAddons();
     }
     const providerKey = extractSearchParam("provider");
     if (providerKey) {
       if (
-        isComponentLoaded(this.hass, "hassio") &&
+        isComponentLoaded(this.hass.config, "hassio") &&
         this._logProviders.find((p) => p.key === providerKey)
       ) {
         this._selectedLogProvider = providerKey;

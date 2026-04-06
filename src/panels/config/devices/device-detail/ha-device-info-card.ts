@@ -11,9 +11,9 @@ import { createSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
+import { labelsContext } from "../../../../data/context";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import { labelsContext } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -145,7 +145,7 @@ export class HaDeviceCard extends LitElement {
             ([type, value]) => html`
               <div class="extra-info">
                 ${type === "bluetooth" &&
-                isComponentLoaded(this.hass, "bluetooth")
+                isComponentLoaded(this.hass.config, "bluetooth")
                   ? html`${titleCase(type)}:
                       <a
                         href="/config/bluetooth/advertisement-monitor?${createSearchParam(
@@ -153,7 +153,8 @@ export class HaDeviceCard extends LitElement {
                         )}"
                         >${value.toUpperCase()}</a
                       >`
-                  : type === "mac" && isComponentLoaded(this.hass, "dhcp")
+                  : type === "mac" &&
+                      isComponentLoaded(this.hass.config, "dhcp")
                     ? html`MAC:
                         <a
                           href="/config/dhcp?${createSearchParam({
@@ -206,7 +207,7 @@ export class HaDeviceCard extends LitElement {
   private _computeDeviceNameDisplay(deviceId: string) {
     const device = this.hass.devices[deviceId];
     return device
-      ? computeDeviceNameDisplay(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : `<${this.hass.localize(
           "ui.panel.config.integrations.config_entry.unknown_via_device"
         )}>`;

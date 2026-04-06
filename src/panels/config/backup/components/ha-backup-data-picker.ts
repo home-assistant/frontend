@@ -67,7 +67,7 @@ export class HaBackupDataPicker extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    if (this.hass && isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass && isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchAddonInfo();
     }
   }

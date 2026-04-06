@@ -1101,7 +1101,7 @@ ${rejected
     this._setFiltersFromUrl();
     this._fetchEntitySources();
 
-    if (isComponentLoaded(this.hass, "diagnostics")) {
+    if (isComponentLoaded(this.hass.config, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
         for (const info of infos) {
@@ -1349,7 +1349,7 @@ ${rejected
         );
         if (
           !entityReg?.unique_id ||
-          !isComponentLoaded(this.hass, helper.type)
+          !isComponentLoaded(this.hass.config, helper.type)
         ) {
           throw new Error(
             this.hass.localize("ui.panel.config.helpers.picker.delete_failed")

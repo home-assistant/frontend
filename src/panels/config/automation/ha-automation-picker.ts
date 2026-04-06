@@ -1087,7 +1087,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   }
 
   private _createNew() {
-    if (isComponentLoaded(this.hass, "blueprint")) {
+    if (isComponentLoaded(this.hass.config, "blueprint")) {
       showNewAutomationDialog(this, { mode: "automation" });
     } else {
       navigate("/config/automation/edit/new");
