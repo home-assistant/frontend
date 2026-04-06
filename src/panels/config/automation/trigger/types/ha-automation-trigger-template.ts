@@ -1,4 +1,3 @@
-import "../../../../../components/ha-textarea";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
