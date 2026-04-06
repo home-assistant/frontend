@@ -105,8 +105,8 @@ export const calcDateRange = (
       ];
     case "now-365d":
       return [
-        calcDate(today, subMonths, locale, hassConfig, 12),
-        calcDate(today, subMonths, locale, hassConfig, 0),
+        calcDate(today, subDays, locale, hassConfig, 365),
+        calcDate(today, subDays, locale, hassConfig, 0),
       ];
     case "now-1h":
       return [
