@@ -38,7 +38,7 @@ export class HaEntityStatePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public noEntity = false;
+  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
   private _getItems = memoizeOne(
     (
