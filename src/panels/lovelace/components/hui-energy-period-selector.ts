@@ -795,8 +795,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       position: absolute;
       right: var(--ha-space-2);
       align-items: center;
-      margin-inline-end: var(--ha-space-2);
-      margin-inline-start: var(--ha-space-2);
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal) ease-in-out;
     }
