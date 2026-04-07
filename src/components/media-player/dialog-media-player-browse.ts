@@ -249,8 +249,6 @@ class DialogMediaPlayerBrowse extends LitElement {
             --media-browser-max-height: calc(
               100vh - 145px - var(--safe-area-inset-y)
             );
-            width: auto;
-            height: 100vh;
           }
         }
 
