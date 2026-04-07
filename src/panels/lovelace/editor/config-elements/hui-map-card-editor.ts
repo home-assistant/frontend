@@ -34,15 +34,14 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-selector/ha-selector-select";
+import "../../../../components/ha-switch";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import {
   mapMarkerBadgeOrderProperties,
   mapBadgeConfigStruct,
 } from "../../../../components/map/ha-map-marker-badge";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-selector/ha-selector-select";
-import "../../../../components/ha-switch";
-import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import { UNAVAILABLE_STATES } from "../../../../data/entity/entity";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
