@@ -127,7 +127,7 @@ export class DialogEditHome
               ${this.hass.localize("ui.panel.home.editor.welcome_message")}
             </span>
             <ha-switch
-              .checked=${!this._config?.hidden_welcome_message}
+              .checked=${!this._config?.hide_welcome_message}
               @change=${this._welcomeMessageToggleChanged}
             ></ha-switch>
           </label>
@@ -227,7 +227,7 @@ export class DialogEditHome
     const checked = (ev.target as HTMLElement & { checked: boolean }).checked;
     this._config = {
       ...this._config,
-      hidden_welcome_message: checked ? undefined : true,
+      hide_welcome_message: checked ? undefined : true,
     };
   }
 

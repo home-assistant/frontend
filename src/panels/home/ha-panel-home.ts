@@ -319,7 +319,7 @@ class PanelHome extends LitElement {
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
         hidden_summaries: this._config.hidden_summaries,
-        hidden_welcome_message: this._config.hidden_welcome_message,
+        hide_welcome_message: this._config.hide_welcome_message,
       },
     };
 

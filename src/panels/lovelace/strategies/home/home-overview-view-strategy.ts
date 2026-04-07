@@ -40,7 +40,7 @@ export interface HomeOverviewViewStrategyConfig {
   favorite_entities?: string[];
   home_panel?: boolean;
   hidden_summaries?: string[];
-  hidden_welcome_message?: boolean;
+  hide_welcome_message?: boolean;
 }
 
 const computeAreaCard = (
@@ -475,7 +475,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       type: "sections",
       max_columns: maxColumns,
       sections: sections,
-      ...(!config.hidden_welcome_message && {
+      ...(!config.hide_welcome_message && {
         header: {
           layout: "responsive",
           card: {
