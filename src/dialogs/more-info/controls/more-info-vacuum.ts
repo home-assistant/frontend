@@ -1,4 +1,5 @@
 import {
+  mdiChevronRight,
   mdiFan,
   mdiHomeImportOutline,
   mdiMapMarker,
@@ -7,7 +8,7 @@ import {
   mdiPlayPause,
   mdiStop,
   mdiTargetVariant,
-  mdiViewDashboardVariant,
+  mdiTextureBox,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -390,50 +391,70 @@ class MoreInfoVacuum extends LitElement {
                         </ha-control-button>
                       `
                     : nothing}
-                  ${supportsCleanArea
-                    ? html`
-                        <ha-control-button
-                          .label=${this.hass.localize(
-                            "ui.dialogs.more_info_control.vacuum.clean_areas"
-                          )}
-                          @click=${this._handleCleanAreas}
-                          .disabled=${isUnavailable}
-                        >
-                          <ha-svg-icon
-                            .path=${mdiViewDashboardVariant}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
                 </ha-control-button-group>
               </div>
             `
           : nothing}
       </div>
 
-      ${supportsFanSpeed && stateObj.attributes.fan_speed_list
+      ${(supportsFanSpeed && stateObj.attributes.fan_speed_list) ||
+      supportsCleanArea
         ? html`
             <ha-more-info-control-select-container>
-              <ha-control-select-menu
-                .hass=${this.hass}
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "fan_speed"
-                )}
-                .value=${stateObj.attributes.fan_speed}
-                .disabled=${isUnavailable}
-                @wa-select=${this._handleFanSpeedChanged}
-                .options=${stateObj.attributes.fan_speed_list.map((mode) => ({
-                  value: mode,
-                  label: this.hass.formatEntityAttributeValue(
-                    stateObj,
-                    "fan_speed",
-                    mode
-                  ),
-                }))}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
-              </ha-control-select-menu>
+              ${supportsFanSpeed && stateObj.attributes.fan_speed_list
+                ? html`
+                    <ha-control-select-menu
+                      .hass=${this.hass}
+                      .label=${this.hass.formatEntityAttributeName(
+                        stateObj,
+                        "fan_speed"
+                      )}
+                      .value=${stateObj.attributes.fan_speed}
+                      .disabled=${isUnavailable}
+                      @wa-select=${this._handleFanSpeedChanged}
+                      .options=${stateObj.attributes.fan_speed_list.map(
+                        (mode) => ({
+                          value: mode,
+                          label: this.hass.formatEntityAttributeValue(
+                            stateObj,
+                            "fan_speed",
+                            mode
+                          ),
+                        })
+                      )}
+                    >
+                      <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                    </ha-control-select-menu>
+                  `
+                : nothing}
+              ${supportsCleanArea
+                ? html`
+                    <button
+                      class="clean-areas-button"
+                      ?disabled=${isUnavailable}
+                      @click=${this._handleCleanAreas}
+                    >
+                      <div class="icon">
+                        <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
+                      </div>
+                      <div class="content">
+                        <p class="label">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.cleaning"
+                          )}
+                        </p>
+                        <p class="value">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.by_area"
+                          )}
+                        </p>
+                      </div>
+                      <div class="icon">
+                        <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+                      </div>
+                    </button>
+                  `
+                : nothing}
             </ha-more-info-control-select-container>
           `
         : nothing}
@@ -471,6 +492,83 @@ class MoreInfoVacuum extends LitElement {
         ha-control-button-group {
           --control-button-group-thickness: 48px;
           max-width: 450px;
+        }
+
+        .clean-areas-button {
+          --mdc-icon-size: 20px;
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          width: auto;
+          max-width: 100%;
+          height: 48px;
+          padding: 6px 10px;
+          border: none;
+          border-radius: var(--ha-border-radius-lg);
+          background: none;
+          color: var(--primary-text-color);
+          font-family: inherit;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: 1.4;
+          letter-spacing: 0.25px;
+          text-align: left;
+          cursor: pointer;
+          overflow: hidden;
+          box-sizing: border-box;
+          -webkit-tap-highlight-color: transparent;
+          z-index: 0;
+          transition: box-shadow 180ms ease-in-out;
+        }
+        .clean-areas-button::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--disabled-color);
+          opacity: 0.2;
+          transition:
+            background-color 180ms ease-in-out,
+            opacity 180ms ease-in-out;
+        }
+        .clean-areas-button:hover::before {
+          background-color: var(--ha-color-on-neutral-quiet);
+        }
+        .clean-areas-button:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 2px var(--secondary-text-color);
+        }
+        .clean-areas-button[disabled] {
+          cursor: not-allowed;
+          color: var(--disabled-color);
+        }
+        .clean-areas-button .icon {
+          display: flex;
+          --mdc-icon-size: 20px;
+        }
+        .clean-areas-button .content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+        }
+        .clean-areas-button .content p {
+          margin: 0;
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .clean-areas-button .label {
+          font-size: var(--ha-font-size-s);
+          letter-spacing: 0.4px;
+        }
+        .clean-areas-button .value {
+          font-size: var(--ha-font-size-m);
         }
       `,
     ];

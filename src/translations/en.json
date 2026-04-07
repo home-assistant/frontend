@@ -1666,8 +1666,13 @@
           "return_home": "Return home",
           "start_pause": "Start/pause",
           "clean_areas": "Clean areas",
+          "cleaning": "Cleaning",
+          "by_area": "By area",
           "start_cleaning_areas": "Start cleaning",
-          "no_areas_available": "No areas available"
+          "no_areas_header": "No areas mapped",
+          "no_areas_text": "Map your vacuum's segments to areas in your home to start cleaning by area.",
+          "configure_area_mapping": "Configure area mapping",
+          "configure": "Configure"
         },
         "person": {
           "create_zone": "Create zone from current location"

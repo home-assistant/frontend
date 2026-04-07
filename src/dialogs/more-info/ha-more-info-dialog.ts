@@ -79,6 +79,7 @@ import {
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
+import { loadVacuumSegmentMappingView } from "./components/vacuum/show-view-vacuum-segment-mapping";
 import "./ha-more-info-add-to";
 import "./ha-more-info-details";
 import "./ha-more-info-history-and-logbook";
@@ -138,7 +139,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
 
-  @state() private _childView?: ChildView;
+  @state() private _childViewStack: ChildView[] = [];
+
+  private get _childView(): ChildView | undefined {
+    return this._childViewStack[this._childViewStack.length - 1];
+  }
 
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
@@ -168,7 +173,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._data = params.data;
     this._currView = view;
     this._initialView = view;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._infoEditMode = false;
     this._detailsYamlMode = false;
 
@@ -208,7 +213,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._detailsYamlMode = false;
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -279,7 +284,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       if (dialog) {
         fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
       }
-      this._childView = undefined;
+      this._childViewStack = this._childViewStack.slice(0, -1);
       this._detailsYamlMode = false;
       return;
     }
@@ -314,12 +319,30 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._setView("settings");
   }
 
+  private get _hasVacuumAreaMapping(): boolean {
+    const areaMapping = this._entry?.options?.vacuum?.area_mapping;
+    return !!areaMapping && Object.keys(areaMapping).length > 0;
+  }
+
+  private _goToVacuumSegmentMapping(): void {
+    if (!this._entityId) return;
+    this._pushChildView({
+      viewTag: "ha-more-info-view-vacuum-segment-mapping",
+      viewImport: loadVacuumSegmentMappingView,
+      viewTitle: this.hass.localize("ui.dialogs.vacuum_segment_mapping.title"),
+      viewParams: { entityId: this._entityId },
+    });
+  }
+
   private _showChildView(ev: CustomEvent): void {
-    const view = ev.detail as ChildView;
+    this._pushChildView(ev.detail as ChildView);
+  }
+
+  private _pushChildView(view: ChildView): void {
     if (view.viewImport) {
       view.viewImport();
     }
-    this._childView = view;
+    this._childViewStack = [...this._childViewStack, view];
   }
 
   private _goToDevice(): void {
@@ -800,7 +823,21 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                     @click=${this._toggleDetailsYamlMode}
                   ></ha-icon-button>
                 `
-              : nothing}
+              : this._childView?.viewTag ===
+                    "ha-more-info-view-vacuum-clean-areas" &&
+                  this._hasVacuumAreaMapping &&
+                  isAdmin
+                ? html`
+                    <ha-icon-button
+                      slot="headerActionItems"
+                      .label=${this.hass.localize(
+                        "ui.dialogs.more_info_control.vacuum.configure_area_mapping"
+                      )}
+                      .path=${mdiCogOutline}
+                      @click=${this._goToVacuumSegmentMapping}
+                    ></ha-icon-button>
+                  `
+                : nothing}
         <div
           class=${classMap({
             "content-wrapper": true,
@@ -973,7 +1010,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._initialView = view;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._loadEntityRegistryEntry();
   }
 
