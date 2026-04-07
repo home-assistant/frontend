@@ -15,8 +15,8 @@ import {
 } from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
 
-@customElement("ha-more-info-view-vacuum-clean-rooms")
-export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
+@customElement("ha-more-info-view-vacuum-clean-areas")
+export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public params!: { entityId: string };
@@ -52,7 +52,7 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
         (areaId) => this.hass.areas[areaId]
       );
     } catch (err: any) {
-      this._error = err.message || "Failed to load rooms";
+      this._error = err.message || "Failed to load areas";
     } finally {
       this._loading = false;
     }
@@ -135,7 +135,7 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
         <div class="content">
           <p class="empty">
             ${this.hass.localize(
-              "ui.dialogs.more_info_control.vacuum.no_rooms_available"
+              "ui.dialogs.more_info_control.vacuum.no_areas_available"
             )}
           </p>
         </div>
@@ -155,7 +155,7 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
           .disabled=${this._selectedAreaIds.size === 0 || this._submitting}
         >
           ${this.hass.localize(
-            "ui.dialogs.more_info_control.vacuum.start_cleaning_rooms"
+            "ui.dialogs.more_info_control.vacuum.start_cleaning_areas"
           )}
           ${this._selectedAreaIds.size > 0
             ? ` (${this._selectedAreaIds.size})`
@@ -272,6 +272,6 @@ export class HaMoreInfoViewVacuumCleanRooms extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-view-vacuum-clean-rooms": HaMoreInfoViewVacuumCleanRooms;
+    "ha-more-info-view-vacuum-clean-areas": HaMoreInfoViewVacuumCleanAreas;
   }
 }

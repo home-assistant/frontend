@@ -1665,9 +1665,9 @@
           "locate": "Locate",
           "return_home": "Return home",
           "start_pause": "Start/pause",
-          "clean_rooms": "Clean rooms",
-          "start_cleaning_rooms": "Start cleaning",
-          "no_rooms_available": "No rooms available"
+          "clean_areas": "Clean areas",
+          "start_cleaning_areas": "Start cleaning",
+          "no_areas_available": "No areas available"
         },
         "person": {
           "create_zone": "Create zone from current location"

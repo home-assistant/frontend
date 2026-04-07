@@ -42,7 +42,7 @@ import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
-import { showVacuumCleanRoomsView } from "../components/vacuum/show-view-vacuum-clean-rooms";
+import { showVacuumCleanAreasView } from "../components/vacuum/show-view-vacuum-clean-areas";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("more-info-vacuum")
@@ -184,8 +184,8 @@ class MoreInfoVacuum extends LitElement {
     this._callVacuumService("clean_spot");
   }
 
-  private _handleCleanRooms() {
-    showVacuumCleanRoomsView(
+  private _handleCleanAreas() {
+    showVacuumCleanAreasView(
       this,
       this.hass.localize,
       this.stateObj!.entity_id
@@ -394,9 +394,9 @@ class MoreInfoVacuum extends LitElement {
                     ? html`
                         <ha-control-button
                           .label=${this.hass.localize(
-                            "ui.dialogs.more_info_control.vacuum.clean_rooms"
+                            "ui.dialogs.more_info_control.vacuum.clean_areas"
                           )}
-                          @click=${this._handleCleanRooms}
+                          @click=${this._handleCleanAreas}
                           .disabled=${isUnavailable}
                         >
                           <ha-svg-icon
