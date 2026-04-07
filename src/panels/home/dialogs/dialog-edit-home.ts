@@ -8,6 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import "../../../components/ha-switch";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
@@ -117,21 +118,18 @@ export class DialogEditHome
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.greeting")}
         </h3>
-        <div class="summary-toggles">
-          <label class="summary-toggle">
-            <ha-icon
-              icon="mdi:hand-wave"
-              style=${styleMap({ "--mdc-icon-size": "24px" })}
-            ></ha-icon>
-            <span class="summary-label">
-              ${this.hass.localize("ui.panel.home.editor.welcome_message")}
-            </span>
-            <ha-switch
-              .checked=${!this._config?.hide_welcome_message}
-              @change=${this._welcomeMessageToggleChanged}
-            ></ha-switch>
-          </label>
-        </div>
+        <ha-form
+          .hass=${this.hass}
+          .data=${{ welcome_message: !this._config?.hide_welcome_message }}
+          .schema=${[
+            {
+              name: "welcome_message",
+              selector: { boolean: {} },
+            },
+          ]}
+          .computeLabel=${this._computeWelcomeLabel}
+          @value-changed=${this._welcomeMessageToggleChanged}
+        ></ha-form>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
@@ -223,11 +221,13 @@ export class DialogEditHome
     };
   }
 
-  private _welcomeMessageToggleChanged(ev: Event): void {
-    const checked = (ev.target as HTMLElement & { checked: boolean }).checked;
+  private _computeWelcomeLabel = () =>
+    this.hass.localize("ui.panel.home.editor.welcome_message");
+
+  private _welcomeMessageToggleChanged(ev: CustomEvent): void {
     this._config = {
       ...this._config,
-      hide_welcome_message: checked ? undefined : true,
+      hide_welcome_message: ev.detail.value.welcome_message ? undefined : true,
     };
   }
 
