@@ -85,6 +85,7 @@ export class HuiPictureHeaderFooter
     img {
       display: block;
       width: 100%;
+      -webkit-touch-callout: none;
     }
   `;
 
