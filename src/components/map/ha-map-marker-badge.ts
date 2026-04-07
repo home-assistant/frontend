@@ -12,25 +12,24 @@ import type { HomeAssistant } from "../../types";
 import "../entity/state-badge";
 import "../ha-svg-icon";
 
-export const MAP_CARD_BADGE_DISPLAY_MODES = [
+export const MAP_CARD_BADGE_LABEL_MODES = [
   "label",
   "state",
   "attribute",
   "icon",
   "image",
 ] as const;
-export type MapCardBadgeDisplayMode =
-  (typeof MAP_CARD_BADGE_DISPLAY_MODES)[number];
+export type MapCardBadgeLabelMode = (typeof MAP_CARD_BADGE_LABEL_MODES)[number];
 
 export interface MapMarkerBadgeConfig {
   // entity_id to be processed
   entity?: string;
-  display_mode?: MapCardBadgeDisplayMode;
-  // only processed if `display_mode: label`; used to display a state/attribute value or any text
+  label_mode?: MapCardBadgeLabelMode;
+  // only processed if `label_mode: label`; used to display a state/attribute value or any text
   label?: string;
-  // chooses an attribute; only processed if `display_mode: attribute`
+  // chooses an attribute; only processed if `label_mode: attribute`
   attribute?: string;
-  // sets a unit for an attribute value; only processed if `display_mode: attribute`
+  // sets a unit for an attribute value; only processed if `label_mode: attribute`
   unit?: string;
   // overrides an `entity_picture` if an `entity` is defined; or set an image if no `entity` defined
   image?: string;
@@ -48,7 +47,7 @@ export interface MapMarkerBadgeConfig {
 
 export const mapBadgeConfigStruct = object({
   entity: optional(string()),
-  display_mode: optional(string()),
+  label_mode: optional(string()),
   label: optional(union([string(), number()])), // allow values like "label: 123"
   attribute: optional(string()),
   unit: optional(string()),
@@ -78,7 +77,7 @@ export class HaMapMarkerBadge extends LitElement {
   @property({ attribute: "border_color" }) public borderColor?: string;
 
   protected render() {
-    const display_mode = this.badge.display_mode;
+    const label_mode = this.badge.label_mode;
     const stateObj = this.badge.entity
       ? this.hass.states[this.badge.entity]
       : undefined;
@@ -88,7 +87,7 @@ export class HaMapMarkerBadge extends LitElement {
       !icon &&
       stateObj &&
       stateObj.attributes.entity_picture &&
-      display_mode === "icon"
+      label_mode === "icon"
     ) {
       icon = stateObj?.attributes.icon;
       if (!icon) {
@@ -97,9 +96,9 @@ export class HaMapMarkerBadge extends LitElement {
     }
 
     let label;
-    if (display_mode === "label") {
+    if (label_mode === "label") {
       label = this.badge.label;
-    } else if (display_mode === "state" && stateObj) {
+    } else if (label_mode === "state" && stateObj) {
       if (this.badge.hide_unit) {
         const stateParts = this.hass.formatEntityStateToParts(stateObj);
         label = stateParts
@@ -109,11 +108,7 @@ export class HaMapMarkerBadge extends LitElement {
       } else {
         label = this.hass.formatEntityState(stateObj);
       }
-    } else if (
-      display_mode === "attribute" &&
-      this.badge.attribute &&
-      stateObj
-    ) {
+    } else if (label_mode === "attribute" && this.badge.attribute && stateObj) {
       if (this.badge.hide_unit) {
         const attrParts = this.hass.formatEntityAttributeValueToParts(
           stateObj,
@@ -136,19 +131,19 @@ export class HaMapMarkerBadge extends LitElement {
     }
 
     const clsImageOnly =
-      display_mode === "image" && this.badge.image && !stateObj;
+      label_mode === "image" && this.badge.image && !stateObj;
     const clsLabel =
-      ((display_mode === "state" ||
-        (display_mode === "attribute" && this.badge.attribute)) &&
+      ((label_mode === "state" ||
+        (label_mode === "attribute" && this.badge.attribute)) &&
         stateObj) ||
-      (display_mode === "label" && this.badge.label);
+      (label_mode === "label" && this.badge.label);
 
     const error =
-      (!display_mode && !stateObj) ||
-      (display_mode === "label" && !this.badge.label) ||
-      (display_mode === "state" && !stateObj) ||
-      (display_mode === "attribute" && !stateObj) ||
-      (display_mode === "attribute" && !this.badge.attribute);
+      (!label_mode && !stateObj) ||
+      (label_mode === "label" && !this.badge.label) ||
+      (label_mode === "state" && !stateObj) ||
+      (label_mode === "attribute" && !stateObj) ||
+      (label_mode === "attribute" && !this.badge.attribute);
 
     return html`
       <div
@@ -159,7 +154,7 @@ export class HaMapMarkerBadge extends LitElement {
           colored:
             this.badge.color &&
             !error &&
-            (((!display_mode || display_mode === "icon") &&
+            (((!label_mode || label_mode === "icon") &&
               !this.badge.state_color) ||
               clsLabel),
         })}
@@ -176,7 +171,7 @@ export class HaMapMarkerBadge extends LitElement {
         })}
         @click=${this._badgeTap}
       >
-        ${!display_mode && stateObj
+        ${!label_mode && stateObj
           ? html`<state-badge
               .hass=${this.hass}
               .stateObj=${stateObj}
@@ -185,7 +180,7 @@ export class HaMapMarkerBadge extends LitElement {
               .stateColor=${this.badge.state_color}
             ></state-badge>`
           : nothing}
-        ${display_mode === "icon"
+        ${label_mode === "icon"
           ? html`<state-badge
               .hass=${this.hass}
               .stateObj=${stateObj}
@@ -193,7 +188,7 @@ export class HaMapMarkerBadge extends LitElement {
               .stateColor=${this.badge.state_color}
             ></state-badge>`
           : nothing}
-        ${display_mode === "image" && stateObj
+        ${label_mode === "image" && stateObj
           ? html`<state-badge
               .hass=${this.hass}
               .stateObj=${stateObj}
