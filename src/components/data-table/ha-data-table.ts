@@ -266,17 +266,11 @@ export class HaDataTable extends LitElement {
     }
 
     if (
-      this.autoHeight ||
-      (document.activeElement &&
-        !AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(
-          document.activeElement.tagName
-        ))
+      changedProps.has("selectable") ||
+      (!this.autoHeight &&
+        document.activeElement &&
+        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(document.activeElement.tagName))
     ) {
-      return;
-    }
-
-    // Refocus on toggle checkbox changes
-    if (changedProps.has("selectable")) {
       this._focusScroller();
     }
   }
