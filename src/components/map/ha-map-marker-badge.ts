@@ -51,8 +51,8 @@ export const mapBadgeConfigStruct = object({
   label: optional(union([string(), number()])), // allow values like "label: 123"
   attribute: optional(string()),
   unit: optional(string()),
-  image: optional(string()),
   icon: optional(string()),
+  image: optional(union([string(), object()])),
   color: optional(string()),
   background_color: optional(string()),
   state_color: optional(boolean()),
