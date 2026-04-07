@@ -38,6 +38,17 @@ export const computeInitialHaFormData = (
         // Only add expandable data if it's required or any of its children have initial values.
         data[field.name] = expandableData;
       }
+    } else if (field.type === "tabs") {
+      const tabsData: Record<string, unknown> = {};
+      for (const tab of field.tabs) {
+        Object.assign(tabsData, computeInitialHaFormData(tab.schema));
+      }
+      const flattenTabs = field.flatten ?? !field.name;
+      if (flattenTabs) {
+        Object.assign(data, tabsData);
+      } else if (field.required || Object.keys(tabsData).length) {
+        data[field.name] = tabsData;
+      }
     } else if (!field.required) {
       // Do nothing.
     } else if (field.type === "boolean") {

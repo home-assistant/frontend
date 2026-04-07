@@ -14,7 +14,8 @@ export type HaFormSchema =
   | HaFormSelector
   | HaFormGridSchema
   | HaFormExpandableSchema
-  | HaFormOptionalActionsSchema;
+  | HaFormOptionalActionsSchema
+  | HaFormTabsSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -52,6 +53,21 @@ export interface HaFormOptionalActionsSchema extends HaFormBaseSchema {
   type: "optional_actions";
   flatten?: boolean;
   schema: readonly HaFormSchema[];
+}
+
+/** One tab pane inside a {@link HaFormTabsSchema} (not a standalone form field). */
+export interface HaFormTabDefinition {
+  name: string;
+  icon?: string;
+  iconPath?: string;
+  schema: readonly HaFormSchema[];
+}
+
+export interface HaFormTabsSchema extends HaFormBaseSchema {
+  type: "tabs";
+  /** When true (default), tab field values merge into the parent data object. */
+  flatten?: boolean;
+  tabs: readonly HaFormTabDefinition[];
 }
 
 export interface HaFormSelector extends HaFormBaseSchema {
@@ -104,6 +120,13 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
 }
 
 // Type utility to unionize a schema array by flattening any grid schemas
+type SchemaUnionTabs<T extends readonly HaFormTabDefinition[]> =
+  T[number] extends infer Tab
+    ? Tab extends HaFormTabDefinition
+      ? SchemaUnion<Tab["schema"]>
+      : never
+    : never;
+
 export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
   Schema = SchemaArray[number],
@@ -112,7 +135,9 @@ export type SchemaUnion<
   | HaFormExpandableSchema
   | HaFormOptionalActionsSchema
   ? SchemaUnion<Schema["schema"]> | Schema
-  : Schema;
+  : Schema extends HaFormTabsSchema
+    ? SchemaUnionTabs<Schema["tabs"]> | Schema
+    : Schema;
 
 export type HaFormDataContainer = Record<string, HaFormData>;
 

@@ -75,7 +75,17 @@ class StepFlowForm extends LitElement {
               handleReadOnlyField(sectionField)
             ),
           }
-        : handleReadOnlyField(field)
+        : field.type === "tabs" && field.tabs
+          ? {
+              ...field,
+              tabs: field.tabs.map((tab) => ({
+                ...tab,
+                schema: tab.schema.map((tabField) =>
+                  handleReadOnlyField(tabField)
+                ),
+              })),
+            }
+          : handleReadOnlyField(field)
     );
   });
 

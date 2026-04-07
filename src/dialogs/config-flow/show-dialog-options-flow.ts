@@ -103,6 +103,16 @@ export const showOptionsFlowDialog = (
           );
         }
 
+        if (field.type === "tabs" && options?.tab) {
+          const sectionPrefix = field.name ? `sections.${field.name}.` : "";
+          return (
+            hass.localize(
+              `component.${configEntry.domain}.options.step.${step.step_id}.${sectionPrefix}tabs.${options.tab}.name`,
+              step.description_placeholders
+            ) || options.tab
+          );
+        }
+
         const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
 
         return (
@@ -119,6 +129,20 @@ export const showOptionsFlowDialog = (
             `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.sections.${field.name}.description`,
             step.description_placeholders
           );
+        }
+
+        if (field.type === "tabs" && options?.tab) {
+          const sectionPrefix = field.name ? `sections.${field.name}.` : "";
+          const tabDescription = hass.localize(
+            `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.${sectionPrefix}tabs.${options.tab}.description`,
+            step.description_placeholders
+          );
+          return tabDescription
+            ? html`<ha-markdown
+                breaks
+                .content=${tabDescription}
+              ></ha-markdown>`
+            : "";
         }
 
         const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";

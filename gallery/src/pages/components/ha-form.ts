@@ -488,6 +488,42 @@ const SCHEMAS: {
       },
     ],
   },
+  {
+    title: "Tabs",
+    translations: {
+      settings: "Settings",
+      tab_general: "General",
+      tab_appearance: "Appearance",
+      name: "Name",
+      entity: "Entity",
+      theme: "Theme",
+      state_color: "Color on state",
+    },
+    schema: [
+      {
+        type: "tabs",
+        name: "settings",
+        tabs: [
+          {
+            name: "general",
+            icon: "mdi:cog",
+            schema: [
+              { name: "name", selector: { text: {} } },
+              { name: "entity", required: true, selector: { entity: {} } },
+            ],
+          },
+          {
+            name: "appearance",
+            icon: "mdi:palette",
+            schema: [
+              { name: "theme", selector: { theme: {} } },
+              { name: "state_color", selector: { boolean: {} } },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 @customElement("demo-components-ha-form")
@@ -535,8 +571,12 @@ class DemoHaForm extends LitElement {
                   .error=${info.error}
                   .disabled=${this.disabled[idx]}
                   .computeError=${(error) => translations[error] || error}
-                  .computeLabel=${(schema) =>
-                    translations[schema.name] || schema.name}
+                  .computeLabel=${(schema, _data, options) => {
+                    if (options?.tab) {
+                      return translations[`tab_${options.tab}`] || options.tab;
+                    }
+                    return translations[schema.name] || schema.name;
+                  }}
                   .computeHelper=${() => "Helper text"}
                   @value-changed=${this._handleValueChanged}
                   .sampleIdx=${idx}

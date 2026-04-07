@@ -14,6 +14,7 @@ const LOAD_ELEMENTS = {
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),
+  tabs: () => import("./ha-form-tabs"),
   integer: () => import("./ha-form-integer"),
   multi_select: () => import("./ha-form-multi_select"),
   positive_time_period_dict: () =>

@@ -95,6 +95,16 @@ export const showSubConfigFlowDialog = (
         );
       }
 
+      if (field.type === "tabs" && options?.tab) {
+        const sectionPrefix = field.name ? `sections.${field.name}.` : "";
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${sectionPrefix}tabs.${options.tab}.name`,
+            step.description_placeholders
+          ) || options.tab
+        );
+      }
+
       const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
 
       return (
@@ -111,6 +121,17 @@ export const showSubConfigFlowDialog = (
           `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.description`,
           step.description_placeholders
         );
+      }
+
+      if (field.type === "tabs" && options?.tab) {
+        const sectionPrefix = field.name ? `sections.${field.name}.` : "";
+        const tabDescription = hass.localize(
+          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${sectionPrefix}tabs.${options.tab}.description`,
+          step.description_placeholders
+        );
+        return tabDescription
+          ? html`<ha-markdown breaks .content=${tabDescription}></ha-markdown>`
+          : "";
       }
 
       const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
