@@ -65,7 +65,6 @@
     "@material/mwc-checkbox": "0.27.0",
     "@material/mwc-dialog": "0.27.0",
     "@material/mwc-drawer": "0.27.0",
-    "@material/mwc-fab": "0.27.0",
     "@material/mwc-floating-label": "0.27.0",
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch",
     "@material/mwc-linear-progress": "0.27.0",

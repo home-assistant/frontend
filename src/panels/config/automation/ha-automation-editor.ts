@@ -32,7 +32,6 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -547,19 +546,19 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     .showErrors=${false}
                     disable-fullscreen
                   ></ha-yaml-editor>
-                  <ha-fab
+                  <ha-button
                     slot="fab"
+                    size="large"
                     class=${this.dirty ? "dirty" : ""}
-                    .label=${this.hass.localize("ui.common.save")}
                     .disabled=${this.saving}
-                    extended
                     @click=${this._handleSaveAutomation}
                   >
                     <ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiContentSave}
                     ></ha-svg-icon>
-                  </ha-fab>`
+                    ${this.hass.localize("ui.common.save")}
+                  </ha-button>`
               : nothing}
         </div>
       </hass-subpage>

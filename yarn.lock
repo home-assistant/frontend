@@ -2680,17 +2680,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-fab@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-fab@npm:0.27.0"
-  dependencies:
-    "@material/mwc-ripple": "npm:^0.27.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/17d315fd77b0150c002f4091610dba03e6a420875e6ad2e9ea200f76863404c89c2f61cf4afa3c6a4390fad7b0acd2c3e6703581feb5cd7ac2e59409464e15c7
-  languageName: node
-  linkType: hard
-
 "@material/mwc-floating-label@npm:0.27.0, @material/mwc-floating-label@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-floating-label@npm:0.27.0"
@@ -9078,7 +9067,6 @@ __metadata:
     "@material/mwc-checkbox": "npm:0.27.0"
     "@material/mwc-dialog": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
-    "@material/mwc-fab": "npm:0.27.0"
     "@material/mwc-floating-label": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-linear-progress": "npm:0.27.0"

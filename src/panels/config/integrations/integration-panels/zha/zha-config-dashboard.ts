@@ -17,7 +17,7 @@ import { animationStyles } from "../../../../../resources/theme/animations.globa
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -105,12 +105,10 @@ class ZHAConfigDashboard extends LitElement {
         </div>
 
         <a href="/config/zha/add" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize("ui.panel.config.zha.add_device")}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
+          <ha-button size="large">
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.zha.add_device")}
+          </ha-button>
         </a>
       </hass-subpage>
     `;

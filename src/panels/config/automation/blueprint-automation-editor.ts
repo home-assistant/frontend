@@ -6,7 +6,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
-import "../../../components/ha-fab";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
@@ -56,16 +55,16 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         : nothing}
       ${this.renderCard()}
 
-      <ha-fab
+      <ha-button
         slot="fab"
+        size="large"
         class=${this.dirty ? "dirty" : ""}
-        .label=${this.hass.localize("ui.common.save")}
         .disabled=${this.saving}
-        extended
         @click=${this._saveAutomation}
       >
-        <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-      </ha-fab>
+        <ha-svg-icon slot="start" .path=${mdiContentSave}></ha-svg-icon>
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
     `;
   }
 
@@ -109,8 +108,9 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               )
           );
         }
-        ha-fab {
+        ha-button[slot="fab"] {
           position: fixed;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
       `,
     ];

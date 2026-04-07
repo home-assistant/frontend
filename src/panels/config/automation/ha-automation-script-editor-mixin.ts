@@ -50,13 +50,14 @@ export const automationScriptEditorStyles: CSSResult = css`
   p {
     margin-bottom: 0;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: fixed;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
   ha-tooltip ha-svg-icon {

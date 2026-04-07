@@ -21,7 +21,6 @@ import { customElement, property, state } from "lit/decorators";
 import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
@@ -167,20 +166,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               `
             : nothing}
         </div>
-        <ha-fab
+        <ha-button
           slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.zwave_js.common.add_node"
-          )}
-          extended
+          size="large"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
             this._network?.controller.inclusion_state !==
               InclusionState.SmartStart)}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.zwave_js.common.add_node")}
+        </ha-button>
       </hass-subpage>
     `;
   }

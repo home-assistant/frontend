@@ -41,8 +41,8 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -101,22 +101,21 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { configSections } from "../ha-panel-config";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
-  getLabelsTableColumn,
   getEditableTableColumn,
+  getLabelsTableColumn,
   renderRelativeTimeColumn,
 } from "../common/data-table-columns";
+import { configSections } from "../ha-panel-config";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -680,16 +679,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               </ha-button>
             </div>`
           : nothing}
-        <a href="/config/scene/edit/new" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.scene.picker.add_scene"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button href="/config/scene/edit/new" size="large" slot="fab">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
