@@ -187,6 +187,22 @@ interface EMOutgoingMessageFocusElement extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageOnHomeAssistantSetTheme extends EMMessage {
+  type: "onHomeAssistantSetTheme";
+}
+
+interface EMOutgoingMessageHandleBlob extends EMMessage {
+  type: "handleBlob";
+}
+
+// These messages are handled internally by the Android app via postMessage.
+// They are not sent by the frontend and should not be used directly.
+// They are intentionally excluded from EMOutgoingMessageWithoutAnswer so that
+// fireMessage() will reject them at compile time.
+export type EMAndroidInternalMessage =
+  | EMOutgoingMessageOnHomeAssistantSetTheme
+  | EMOutgoingMessageHandleBlob;
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
