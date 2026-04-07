@@ -135,7 +135,7 @@ export const showConfigFlowDialog = (
         );
         return tabDescription
           ? html`<ha-markdown breaks .content=${tabDescription}></ha-markdown>`
-          : "";
+          : nothing;
       }
 
       const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
