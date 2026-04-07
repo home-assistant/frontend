@@ -1,9 +1,11 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-state-icon";
+import "./ha-map-marker-badge";
+import type { MapMarkerBadgeConfig } from "./ha-map-marker-badge";
 
 @customElement("ha-entity-marker")
 class HaEntityMarker extends LitElement {
@@ -20,6 +22,8 @@ class HaEntityMarker extends LitElement {
   @property({ attribute: "entity-color" }) public entityColor?: string;
 
   @property({ attribute: "show-icon", type: Boolean }) public showIcon = false;
+
+  @property({ attribute: false }) public badge?: MapMarkerBadgeConfig;
 
   protected render() {
     return html`
@@ -51,7 +55,13 @@ class HaEntityMarker extends LitElement {
                   >
                 `}
       </div>
-    `;
+      ${this.badge
+        ? html`<ha-map-marker-badge
+            .hass=${this.hass}
+            .badge=${this.badge}
+            .borderColor=${this.entityColor}
+          ></ha-map-marker-badge>`
+        : nothing}`;
   }
 
   private _badgeTap(ev: Event) {
