@@ -1,6 +1,5 @@
 // @ts-check
 
-/* eslint-disable import/no-extraneous-dependencies */
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import path from "node:path";
@@ -13,6 +12,7 @@ import { configs as litConfigs } from "eslint-plugin-lit";
 import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
+import importX from "eslint-plugin-import-x";
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
@@ -22,8 +22,27 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
+// Load airbnb-base via FlatCompat for non-import rules only.
+// eslint-plugin-import is incompatible with ESLint 10 (uses removed APIs),
+// so we strip its plugin/rules/settings and use eslint-plugin-import-x instead.
+const airbnbConfigs = compat.extends("airbnb-base").map((config) => {
+  const { plugins = {}, rules = {}, settings = {}, ...rest } = config;
+  return {
+    ...rest,
+    plugins: Object.fromEntries(
+      Object.entries(plugins).filter(([key]) => key !== "import")
+    ),
+    rules: Object.fromEntries(
+      Object.entries(rules).filter(([key]) => !key.startsWith("import/"))
+    ),
+    settings: Object.fromEntries(
+      Object.entries(settings).filter(([key]) => !key.startsWith("import/"))
+    ),
+  };
+});
+
 export default tseslint.config(
-  ...compat.extends("airbnb-base"),
+  ...airbnbConfigs,
   eslintConfigPrettier,
   litConfigs["flat/all"],
   tseslint.configs.recommended,
@@ -31,6 +50,7 @@ export default tseslint.config(
   tseslint.configs.stylistic,
   wcConfigs["flat/recommended"],
   a11yConfigs.recommended,
+  importX.flatConfigs.recommended,
   {
     plugins: {
       "unused-imports": unusedImports,
@@ -58,7 +78,7 @@ export default tseslint.config(
     },
 
     settings: {
-      "import/resolver": {
+      "import-x/resolver": {
         webpack: {
           config: "./rspack.config.cjs",
         },
@@ -87,12 +107,20 @@ export default tseslint.config(
       "prefer-destructuring": "off",
       "no-restricted-globals": [2, "event"],
       "prefer-promise-reject-errors": "off",
-      "import/prefer-default-export": "off",
-      "import/no-default-export": "off",
-      "import/no-unresolved": "off",
-      "import/no-cycle": "off",
+      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+      "object-curly-newline": "off",
+      "default-case": "off",
+      "wc/no-self-class": "off",
+      "no-shadow": "off",
+      "no-use-before-define": "off",
 
-      "import/extensions": [
+      // import-x rules (migrated from eslint-plugin-import / airbnb-base)
+      "import-x/named": "off",
+      "import-x/prefer-default-export": "off",
+      "import-x/no-default-export": "off",
+      "import-x/no-unresolved": "off",
+      "import-x/no-cycle": "off",
+      "import-x/extensions": [
         "error",
         "ignorePackages",
         {
@@ -100,12 +128,24 @@ export default tseslint.config(
           js: "never",
         },
       ],
+      "import-x/no-mutable-exports": "error",
+      "import-x/no-amd": "error",
+      "import-x/first": "error",
+      "import-x/order": [
+        "error",
+        { groups: [["builtin", "external", "internal"]] },
+      ],
+      "import-x/newline-after-import": "error",
+      "import-x/no-absolute-path": "error",
+      "import-x/no-dynamic-require": "error",
+      "import-x/no-webpack-loader-syntax": "error",
+      "import-x/no-named-default": "error",
+      "import-x/no-self-import": "error",
+      "import-x/no-useless-path-segments": ["error", { commonjs: true }],
+      "import-x/no-import-module-exports": ["error", { exceptions: [] }],
+      "import-x/no-relative-packages": "error",
 
-      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
-      "object-curly-newline": "off",
-      "default-case": "off",
-      "wc/no-self-class": "off",
-      "no-shadow": "off",
+      // TypeScript rules
       "@typescript-eslint/camelcase": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-use-before-define": "off",
@@ -185,13 +225,18 @@ export default tseslint.config(
           allowObjectTypes: "always",
         },
       ],
-      "no-use-before-define": "off",
     },
   },
   {
     files: ["src/util/recorder-worklet.js"],
     languageOptions: {
       globals: globals.audioWorklet,
+    },
+  },
+  {
+    files: ["src/entrypoints/service-worker.ts"],
+    languageOptions: {
+      globals: globals.serviceworker,
     },
   },
   {

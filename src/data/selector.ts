@@ -458,6 +458,7 @@ export interface StateSelector {
     attribute?: string;
     hide_states?: string[];
     multiple?: boolean;
+    no_entity?: boolean;
   } | null;
 }
 

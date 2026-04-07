@@ -8,14 +8,14 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type {
   HassioAddonInfo,
-  HassioAddonsInfo,
   HassioAddonRepository,
+  HassioAddonsInfo,
 } from "../../../data/hassio/addon";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -195,13 +195,10 @@ export class HaConfigAppsRepositories extends LitElement {
           id="slug"
           has-fab
         ></ha-data-table>
-        <ha-fab
-          .label=${this.hass.localize("ui.panel.config.apps.repositories.add")}
-          extended
-          @click=${this._showAddRepositoryDialog}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button size="large" @click=${this._showAddRepositoryDialog}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.repositories.add")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -295,13 +292,14 @@ export class HaConfigAppsRepositories extends LitElement {
     ha-icon-button.delete {
       color: var(--error-color);
     }
-    ha-fab {
+    ha-button[size="large"] {
       position: fixed;
       right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
       inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

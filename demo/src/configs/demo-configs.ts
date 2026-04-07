@@ -11,9 +11,9 @@ export const demoConfigs: (() => Promise<DemoConfig>)[] = [
   () => import("./jimpower").then((mod) => mod.demoJimpower),
 ];
 
-// eslint-disable-next-line import/no-mutable-exports
+// eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfigIndex = 0;
-// eslint-disable-next-line import/no-mutable-exports
+// eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
   demoConfigs[selectedDemoConfigIndex]();
 

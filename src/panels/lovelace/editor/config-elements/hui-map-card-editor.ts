@@ -15,10 +15,19 @@ import {
   string,
   union,
 } from "superstruct";
+import { arrayLiteralIncludes } from "../../../../common/array/literal-includes";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import {
+  FIXED_DOMAIN_STATES,
+  getStatesDomain,
+} from "../../../../common/entity/get_states";
 import { hasLocation } from "../../../../common/entity/has_location";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -33,22 +42,26 @@ import {
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
+import { UNAVAILABLE_STATES } from "../../../../data/entity/entity";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
 import "../../components/hui-entity-editor";
-import "../hui-sub-element-editor";
-import type {
-  EditDetailElementEvent,
-  SubElementEditorConfig,
-  EntitiesEditorEvent,
-} from "../types";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardEditor } from "../../types";
+import "../conditions/ha-card-condition-editor";
+import type { PresetState } from "../conditions/types/ha-card-condition-state";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type {
+  EditDetailElementEvent,
+  EntitiesEditorEvent,
+  SubElementEditorConfig,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 export const mapEntitiesConfigStruct = union([
@@ -110,6 +123,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
   private _locationEntities: string[] = [];
+
+  @state() private _presetStates: PresetState[] = [];
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -232,6 +247,31 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     })
   );
 
+  private _preparePresetStates() {
+    if (!this.hass || this._presetStates.length) {
+      return;
+    }
+
+    const states = getStatesDomain(this.hass!, "device_tracker");
+    this._presetStates = states.map((stateRaw) => {
+      let stateTranslated;
+      if (arrayLiteralIncludes(UNAVAILABLE_STATES)(stateRaw)) {
+        stateTranslated = this.hass!.localize(
+          `state.default.${stateRaw}` as LocalizeKeys
+        );
+      } else if (
+        arrayLiteralIncludes(FIXED_DOMAIN_STATES.device_tracker)(stateRaw)
+      ) {
+        stateTranslated = this.hass!.localize(
+          `component.device_tracker.entity_component._.state.${stateRaw}`
+        );
+      } else {
+        stateTranslated = stateRaw;
+      }
+      return { value: stateRaw, label: stateTranslated };
+    });
+  }
+
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
 
@@ -265,6 +305,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       : Object.keys(this.hass!.states).filter((entity_id) =>
           hasLocation(this.hass!.states[entity_id])
         );
+    this._preparePresetStates();
   }
 
   protected render() {
@@ -332,7 +373,43 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           this.hass.localize
         )}
       ></ha-selector-select>
+      ${this.renderConditions()}
     `;
+  }
+
+  renderConditions() {
+    const conditions = this._config?.conditions ?? [];
+    return html`
+      <h3>
+        ${this.hass!.localize("ui.panel.lovelace.editor.card.map.conditions")}
+      </h3>
+      <p class="intro">
+        ${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.map.conditions_helper"
+        )}
+      </p>
+      <ha-card-conditions-editor
+        no-entity
+        .hass=${this.hass!}
+        .conditions=${conditions}
+        .presetStates=${this._presetStates}
+        @value-changed=${this._conditionsChanged}
+      >
+      </ha-card-conditions-editor>
+    `;
+  }
+
+  private _conditionsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const conditions = ev.detail.value as Condition[];
+    const newConfig: MapCardConfig = {
+      ...this._config!,
+      conditions: conditions,
+    };
+    if (newConfig.conditions?.length === 0) {
+      delete newConfig.conditions;
+    }
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _goBack(): void {
@@ -564,7 +641,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   static get styles(): CSSResultGroup {
-    return [configElementStyle, css``];
+    return [
+      configElementStyle,
+      css`
+        .intro {
+          margin: 0;
+          margin-bottom: var(--ha-space-1);
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

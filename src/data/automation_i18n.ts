@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
@@ -68,8 +69,22 @@ const localizeTimeString = (
     return time;
   }
   try {
-    const dt = new Date("1970-01-01T" + time);
-    if (chunks.length === 2 || Number(chunks[2]) === 0) {
+    const hours = Number(chunks[0]);
+    const minutes = Number(chunks[1]);
+    const seconds = chunks.length > 2 ? Number(chunks[2]) : 0;
+    // Create date in the server timezone so formatTime converts correctly
+    // when the user's browser timezone differs from the HA server timezone.
+    const now = new Date();
+    const dt = new TZDate(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hours,
+      minutes,
+      seconds,
+      config.time_zone
+    );
+    if (chunks.length === 2 || seconds === 0) {
       return formatTime(dt, locale, config);
     }
     return formatTimeWithSeconds(dt, locale, config);
@@ -1197,7 +1212,17 @@ const describeLegacyCondition = (
 
       let hasTime = "";
       if (after !== undefined && before !== undefined) {
-        hasTime = "after_before";
+        if (
+          typeof condition.after === "string" &&
+          !condition.after.includes(".") &&
+          typeof condition.before === "string" &&
+          !condition.before.includes(".") &&
+          condition.after > condition.before
+        ) {
+          hasTime = "after_before_or";
+        } else {
+          hasTime = "after_before";
+        }
       } else if (after !== undefined) {
         hasTime = "after";
       } else if (before !== undefined) {

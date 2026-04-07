@@ -132,7 +132,7 @@ export default class HaScriptFieldRow extends LitElement {
             </ha-dropdown-item>
           </ha-dropdown>
 
-          <h3 slot="header">${this.key}</h3>
+          <h3 slot="header">${this.field.name ?? this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
         </ha-automation-row>

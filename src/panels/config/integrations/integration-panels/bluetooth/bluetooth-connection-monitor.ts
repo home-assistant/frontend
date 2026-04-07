@@ -7,7 +7,7 @@ import { storage } from "../../../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-metric";
 import "../../../../../components/ha-relative-time";

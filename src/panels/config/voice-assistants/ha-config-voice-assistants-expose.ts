@@ -30,7 +30,6 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
@@ -587,16 +586,10 @@ export class VoiceAssistantsExpose extends LitElement {
               </div>
             `
           : ""}
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.voice_assistants.expose.add"
-          )}
-          extended
-          @click=${this._addEntry}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addEntry}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.voice_assistants.expose.add")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

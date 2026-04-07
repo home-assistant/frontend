@@ -6,7 +6,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";

@@ -418,6 +418,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
   cluster?: boolean;
+  conditions?: Condition[];
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

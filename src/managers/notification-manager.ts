@@ -36,9 +36,17 @@ class NotificationManager extends LitElement {
   @query("ha-toast")
   private _toast!: HTMLElementTagNameMap["ha-toast"] | undefined;
 
+  private _showDialogId = 0;
+
   public async showDialog(parameters: ShowToastParams) {
+    const showId = ++this._showDialogId;
+
     if (!parameters.id || this._parameters?.id !== parameters.id) {
       await this._toast?.hide();
+    }
+
+    if (showId !== this._showDialogId) {
+      return;
     }
 
     if (parameters.duration === 0) {
@@ -56,6 +64,11 @@ class NotificationManager extends LitElement {
     }
 
     await this.updateComplete;
+
+    if (showId !== this._showDialogId) {
+      return;
+    }
+
     this._toast?.show();
   }
 

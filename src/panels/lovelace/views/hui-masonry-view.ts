@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -89,15 +90,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       ></div>
       ${this.lovelace?.editMode
         ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
-              @click=${this._addCard}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
+            <ha-button size="large" @click=${this._addCard}>
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+            </ha-button>
           `
         : ""}
     `;
@@ -328,13 +324,14 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       margin: var(--masonry-view-card-margin, 4px 4px 8px);
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
 
     @media (max-width: 500px) {
