@@ -4,14 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
-import {
-  boolean,
-  number,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { boolean, number, object, optional, string, union } from "superstruct";
 import { fireEvent } from "../../common/dom/fire_event";
 import { orderProperties } from "../../common/util/order-properties";
 import { entityIcon } from "../../data/icons";
@@ -26,8 +19,7 @@ export const MAP_CARD_BADGE_LABEL_MODES = [
   "icon",
   "image",
 ] as const;
-export type MapCardBadgeLabelMode =
-  (typeof MAP_CARD_BADGE_LABEL_MODES)[number];
+export type MapCardBadgeLabelMode = (typeof MAP_CARD_BADGE_LABEL_MODES)[number];
 
 export interface MapMarkerBadgeConfig {
   // entity_id to be processed
@@ -74,7 +66,7 @@ export const mapMarkerBadgeOrderProperties = (
   const fieldOrderBadge = Object.keys(mapBadgeConfigStruct.schema);
   const orderedConfig = { ...orderProperties(config, fieldOrderBadge) };
   return orderedConfig;
-}
+};
 
 @customElement("ha-map-marker-badge")
 export class HaMapMarkerBadge extends LitElement {
@@ -91,7 +83,12 @@ export class HaMapMarkerBadge extends LitElement {
       : undefined;
 
     let icon = this.badge.icon;
-    if (!icon && stateObj && stateObj.attributes.entity_picture && label_mode === "icon") {
+    if (
+      !icon &&
+      stateObj &&
+      stateObj.attributes.entity_picture &&
+      label_mode === "icon"
+    ) {
       icon = stateObj?.attributes.icon;
       if (!icon) {
         icon = until(entityIcon(this.hass, stateObj));
@@ -124,7 +121,8 @@ export class HaMapMarkerBadge extends LitElement {
       } else {
         label = this.hass.formatEntityAttributeValue(
           stateObj,
-          this.badge.attribute);
+          this.badge.attribute
+        );
         if (this.badge.unit) {
           const composed = `${label} ${this.badge.unit}`;
           label = composed;
@@ -140,7 +138,8 @@ export class HaMapMarkerBadge extends LitElement {
         stateObj) ||
       (label_mode === "label" && this.badge.label);
 
-    const error = (!label_mode && !stateObj) ||
+    const error =
+      (!label_mode && !stateObj) ||
       (label_mode === "label" && !this.badge.label) ||
       (label_mode === "state" && !stateObj) ||
       (label_mode === "attribute" && !stateObj) ||
@@ -152,15 +151,16 @@ export class HaMapMarkerBadge extends LitElement {
           badge: true,
           "image-only": clsImageOnly,
           label: clsLabel,
-          colored: this.badge.color && !error &&
-            (((!label_mode || label_mode === "icon") && !this.badge.state_color)
-              || clsLabel),
+          colored:
+            this.badge.color &&
+            !error &&
+            (((!label_mode || label_mode === "icon") &&
+              !this.badge.state_color) ||
+              clsLabel),
         })}
         style=${styleMap({
           "border-color": this.borderColor,
-          "--color": !this.badge.state_color
-            ? this.badge.color
-            : undefined,
+          "--color": !this.badge.state_color ? this.badge.color : undefined,
           "--background-color": this.badge.background_color,
           "background-image": clsImageOnly
             ? `url(${this.hass.hassUrl(this.badge.image)})`
@@ -195,9 +195,7 @@ export class HaMapMarkerBadge extends LitElement {
               .overrideImage=${this.badge.image}
             ></state-badge>`
           : nothing}
-        ${clsLabel
-          ? label
-          : nothing}
+        ${clsLabel ? label : nothing}
         ${error
           ? html`<div class="error">
               <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
@@ -225,9 +223,7 @@ export class HaMapMarkerBadge extends LitElement {
       );
 
       /* badge size used to define width & height */
-      --badge-size: calc(
-        var(--ha-marker-size, 48px) / var(--badge-ratio)
-      );
+      --badge-size: calc(var(--ha-marker-size, 48px) / var(--badge-ratio));
 
       top: calc(var(--badge-size) * 0.25 * -1);
       left: calc(var(--ha-marker-size, 48px) - var(--badge-size) * 0.75);
@@ -246,10 +242,7 @@ export class HaMapMarkerBadge extends LitElement {
       box-sizing: border-box;
       border: 1px solid var(--ha-marker-color, var(--primary-color));
       border-radius: var(--ha-marker-badge-border-radius, 50%);
-      background-color: var(
-        --background-color,
-        var(--card-background-color)
-      );
+      background-color: var(--background-color, var(--card-background-color));
       transition: background-color 280ms ease-in-out;
     }
     .image-only {
@@ -261,9 +254,7 @@ export class HaMapMarkerBadge extends LitElement {
       /* 0.7 - coefficient to get smaller fonts than ha-font-size-xs */
       font-size: var(
         --ha-marker-badge-font-size,
-        calc(
-          var(--font-size) * 0.7 * var(--ha-marker-size, 48px) / 48px
-        )
+        calc(var(--font-size) * 0.7 * var(--ha-marker-size, 48px) / 48px)
       );
       font-weight: var(--ha-font-weight-light);
       text-align: center;
