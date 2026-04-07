@@ -508,10 +508,7 @@ export class HaScriptEditor extends SubscribeMixin(
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptId)
     ) {
-      // fullEntitiesContext is lazy; registry may not be loaded yet (e.g. navigate from more info).
-      if (this.entityRegistry) {
-        this._setEntityId();
-      }
+      this._setEntityId();
       this.loadConfig(this.scriptId);
     }
 
