@@ -524,6 +524,43 @@ const SCHEMAS: {
       },
     ],
   },
+  {
+    title: "Tabs (compact)",
+    translations: {
+      settings: "Settings",
+      tab_general: "General",
+      tab_appearance: "Appearance",
+      name: "Name",
+      entity: "Entity",
+      theme: "Theme",
+      state_color: "Color on state",
+    },
+    schema: [
+      {
+        type: "tabs",
+        name: "settings",
+        fill_tabs: false,
+        tabs: [
+          {
+            name: "general",
+            icon: "mdi:cog",
+            schema: [
+              { name: "name", selector: { text: {} } },
+              { name: "entity", required: true, selector: { entity: {} } },
+            ],
+          },
+          {
+            name: "appearance",
+            icon: "mdi:palette",
+            schema: [
+              { name: "theme", selector: { theme: {} } },
+              { name: "state_color", selector: { boolean: {} } },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 @customElement("demo-components-ha-form")

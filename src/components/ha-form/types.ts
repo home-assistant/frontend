@@ -67,6 +67,11 @@ export interface HaFormTabsSchema extends HaFormBaseSchema {
   type: "tabs";
   /** When true (default), tab field values merge into the parent data object. */
   flatten?: boolean;
+  /**
+   * When true (default), tab labels share width equally across the tab bar.
+   * Set to false for compact tabs that only use their natural width.
+   */
+  fill_tabs?: boolean;
   tabs: readonly HaFormTabDefinition[];
 }
 

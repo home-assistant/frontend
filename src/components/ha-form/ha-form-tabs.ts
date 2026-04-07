@@ -118,9 +118,10 @@ export class HaFormTabs extends LitElement implements HaFormElement {
     }
 
     const active = this._activeTab ?? tabs[0]!.name;
+    const fillTabs = this.schema.fill_tabs !== false;
 
     return html`
-      <ha-tab-group @wa-tab-show=${this._handleTabShow}>
+      <ha-tab-group ?fill-tabs=${fillTabs} @wa-tab-show=${this._handleTabShow}>
         ${tabs.map(
           (tab) => html`
             <ha-tab-group-tab

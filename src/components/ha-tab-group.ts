@@ -13,6 +13,10 @@ export class HaTabGroup extends TabGroup {
 
   @property({ attribute: "tab-only", type: Boolean }) tabOnly = true;
 
+  /** When true (default), each tab trigger grows to fill the tab row evenly. */
+  @property({ type: Boolean, reflect: true, attribute: "fill-tabs" })
+  fillTabs = true;
+
   connectedCallback(): void {
     super.connectedCallback();
     // Prevent the tab group from consuming Alt+Arrow and Cmd+Arrow keys,
@@ -69,6 +73,14 @@ export class HaTabGroup extends TabGroup {
 
         .scroll-button::part(base):hover {
           background-color: transparent;
+        }
+
+        /* Match hui-card-element-editor tab layout when fill-tabs is set (default). */
+        :host([fill-tabs]) .tab-group-top .tabs ::slotted(ha-tab-group-tab),
+        :host([fill-tabs]) .tab-group-bottom .tabs ::slotted(ha-tab-group-tab) {
+          flex: 1;
+          --ha-tab-base-width: 100%;
+          --ha-tab-base-justify-content: center;
         }
       `,
     ];

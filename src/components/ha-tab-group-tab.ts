@@ -26,6 +26,11 @@ export class HaTabGroupTab extends Tab {
           opacity: 1;
         }
 
+        .tab {
+          width: var(--ha-tab-base-width, auto);
+          justify-content: var(--ha-tab-base-justify-content, flex-start);
+        }
+
         @media (hover: hover) {
           :host(:hover:not([disabled]):not([active])) .tab {
             color: var(--wa-color-brand-on-quiet);
