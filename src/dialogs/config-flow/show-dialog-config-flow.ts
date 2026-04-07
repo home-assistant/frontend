@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html } from "lit";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -135,7 +135,7 @@ export const showConfigFlowDialog = (
         );
         return tabDescription
           ? html`<ha-markdown breaks .content=${tabDescription}></ha-markdown>`
-          : nothing;
+          : "";
       }
 
       const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
@@ -228,7 +228,7 @@ export const showConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : nothing}
+          : ""}
       `;
     },
 

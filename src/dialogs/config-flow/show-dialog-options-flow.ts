@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html } from "lit";
 import type { ConfigEntry } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import {
@@ -142,7 +142,7 @@ export const showOptionsFlowDialog = (
                 breaks
                 .content=${tabDescription}
               ></ha-markdown>`
-            : nothing;
+            : "";
         }
 
         const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
