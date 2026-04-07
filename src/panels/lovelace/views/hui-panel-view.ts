@@ -6,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -73,18 +74,16 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
         ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
+            <ha-button
+              size="large"
               @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(this.hass!),
               })}
             >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+            </ha-button>
           `
         : ""}
     `;
@@ -137,7 +136,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       --ha-card-box-shadow: none;
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
@@ -145,6 +144,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       float: var(--float-end);
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

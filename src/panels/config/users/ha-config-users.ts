@@ -11,7 +11,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { User } from "../../../data/user";
 import {
@@ -195,14 +195,10 @@ export class HaConfigUsers extends LitElement {
         has-fab
         clickable
       >
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.users.picker.add_user")}
-          extended
-          @click=${this._addUser}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addUser}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.users.picker.add_user")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

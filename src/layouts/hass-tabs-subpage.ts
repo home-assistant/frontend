@@ -420,6 +420,7 @@ export class HassTabsSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow][show-tabs]) #fab {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

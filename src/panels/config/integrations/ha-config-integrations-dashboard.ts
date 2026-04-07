@@ -21,7 +21,6 @@ import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
@@ -715,16 +714,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     `
                   : ""}
         </div>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.integrations.add_integration"
-          )}
-          extended
-          @click=${this._createFlow}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._createFlow}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.integrations.add_integration")}
+        </ha-button>
       </hass-tabs-subpage>
     `;
   }
