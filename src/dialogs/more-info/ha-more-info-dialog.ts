@@ -16,7 +16,7 @@ import {
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -79,7 +79,6 @@ import {
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
-import { loadVacuumSegmentMappingView } from "./components/vacuum/show-view-vacuum-segment-mapping";
 import "./ha-more-info-add-to";
 import "./ha-more-info-details";
 import "./ha-more-info-history-and-logbook";
@@ -102,6 +101,7 @@ interface ChildView {
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
+  viewHeaderAction?: (hass: HomeAssistant) => TemplateResult | typeof nothing;
 }
 
 declare global {
@@ -317,21 +317,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goToSettings(): void {
     this._setView("settings");
-  }
-
-  private get _hasVacuumAreaMapping(): boolean {
-    const areaMapping = this._entry?.options?.vacuum?.area_mapping;
-    return !!areaMapping && Object.keys(areaMapping).length > 0;
-  }
-
-  private _goToVacuumSegmentMapping(): void {
-    if (!this._entityId) return;
-    this._pushChildView({
-      viewTag: "ha-more-info-view-vacuum-segment-mapping",
-      viewImport: loadVacuumSegmentMappingView,
-      viewTitle: this.hass.localize("ui.dialogs.vacuum_segment_mapping.title"),
-      viewParams: { entityId: this._entityId },
-    });
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -610,6 +595,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
+        @show-child-view=${this._showChildView}
         .preventScrimClose=${this._currView === "settings" ||
         !this._isEscapeEnabled}
         flexcontent
@@ -812,32 +798,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   @click=${this._toggleDetailsYamlMode}
                 ></ha-icon-button>
               `
-            : this._childView?.viewTag === "ha-more-info-details"
-              ? html`
-                  <ha-icon-button
-                    slot="headerActionItems"
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.toggle_yaml_mode"
-                    )}
-                    .path=${mdiCodeBraces}
-                    @click=${this._toggleDetailsYamlMode}
-                  ></ha-icon-button>
-                `
-              : this._childView?.viewTag ===
-                    "ha-more-info-view-vacuum-clean-areas" &&
-                  this._hasVacuumAreaMapping &&
-                  isAdmin
-                ? html`
-                    <ha-icon-button
-                      slot="headerActionItems"
-                      .label=${this.hass.localize(
-                        "ui.dialogs.more_info_control.vacuum.configure_area_mapping"
-                      )}
-                      .path=${mdiCogOutline}
-                      @click=${this._goToVacuumSegmentMapping}
-                    ></ha-icon-button>
-                  `
-                : nothing}
+            : this._childView?.viewHeaderAction
+              ? this._childView.viewHeaderAction(this.hass)
+              : nothing}
         <div
           class=${classMap({
             "content-wrapper": true,
@@ -850,7 +813,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
               <div
                 class="content ha-scrollbar"
                 tabindex="-1"
-                @show-child-view=${this._showChildView}
                 @entity-entry-updated=${this._entryUpdated}
                 @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
                 @hass-more-info=${this._handleMoreInfoEvent}

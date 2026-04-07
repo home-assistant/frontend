@@ -263,26 +263,40 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       align-items: center;
       justify-content: center;
       padding: var(--ha-space-3) var(--ha-space-2);
-      border-radius: var(--ha-border-radius-xl);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       background: var(--card-background-color, #fff);
-      border: 1.5px solid var(--divider-color);
+      border: 1px solid var(--divider-color);
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
-      transition:
-        border-color 180ms ease,
-        background-color 180ms ease;
+      overflow: hidden;
+      transition: border-color 180ms ease-in-out;
       min-height: 80px;
     }
 
-    .area-card:hover {
-      background: var(--secondary-background-color);
+    .area-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: transparent;
+      pointer-events: none;
+      opacity: 0.2;
+      transition:
+        background-color 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+
+    .area-card:hover::before {
+      background-color: var(--divider-color);
     }
 
     .area-card.selected {
       border-color: var(--primary-color);
-      background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+    }
+
+    .area-card.selected::before {
+      background-color: var(--primary-color);
     }
 
     .area-card .check {
@@ -296,7 +310,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     .area-icon {
       --mdc-icon-size: 28px;
       color: var(--secondary-text-color);
-      margin-bottom: var(--ha-space-1);
+      margin: var(--ha-space-2) 0;
     }
 
     .area-card.selected .area-icon {
@@ -304,8 +318,8 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     }
 
     .area-name {
-      flex: 1;
       display: flex;
+      height: var(--ha-space-8);
       align-items: center;
       font-size: var(--ha-font-size-s);
       text-align: center;
