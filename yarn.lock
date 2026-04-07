@@ -2546,7 +2546,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/linear-progress@npm:14.0.0-canary.53b3cad2f.0, @material/linear-progress@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/linear-progress@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/linear-progress@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2744,19 +2744,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/eed28db589004c3f6484c094c6ccaef91ae864f4a5d2b3bf023a8965e922904929310235cf41b8b0f6abe719a340bdd6787317c675b582b1038aad9b9042d674
-  languageName: node
-  linkType: hard
-
-"@material/mwc-linear-progress@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-linear-progress@npm:0.27.0"
-  dependencies:
-    "@material/linear-progress": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/theme": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/5358712b52ee9dc17854eb1fb254d7a9a7416b6544b7bd44d7eee97b72fb55614b7c0f6544484748a1b233b3668b085dcf7512224ce47bac9305d4b6da6aac38
   languageName: node
   linkType: hard
 
@@ -9081,7 +9068,6 @@ __metadata:
     "@material/mwc-fab": "npm:0.27.0"
     "@material/mwc-floating-label": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
-    "@material/mwc-linear-progress": "npm:0.27.0"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-select": "npm:0.27.0"

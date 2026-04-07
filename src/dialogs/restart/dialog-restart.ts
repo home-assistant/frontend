@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiAutoFix,
   mdiLifebuoy,
@@ -19,6 +18,7 @@ import "../../components/ha-icon-next";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
+import "../../components/progress/ha-progress-bar";
 import { fetchBackupInfo } from "../../data/backup";
 import type { BackupManagerState } from "../../data/backup_manager";
 import {
@@ -120,9 +120,7 @@ class DialogRestart extends LitElement {
           <div class="action-loader">
             ${this._loadingBackupInfo
               ? html`<ha-fade-in .delay=${250}>
-                  <mwc-linear-progress
-                    .indeterminate=${true}
-                  ></mwc-linear-progress>
+                  <ha-progress-bar indeterminate></ha-progress-bar>
                 </ha-fade-in>`
               : nothing}
           </div>
@@ -464,7 +462,8 @@ class DialogRestart extends LitElement {
           padding: 24px;
         }
         .action-loader {
-          height: 4px;
+          --ha-progress-bar-track-height: 4px;
+          --ha-progress-bar-border-radius: 0;
         }
       `,
     ];

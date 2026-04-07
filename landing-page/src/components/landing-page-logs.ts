@@ -1,6 +1,5 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
