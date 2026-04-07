@@ -2,6 +2,7 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
+import type { MapMarkerBadgeConfig } from "../../../components/map/ha-map-marker-badge";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -391,6 +392,7 @@ export interface MapEntityConfig extends EntityConfig {
   focus?: boolean;
   name?: string;
   color?: string;
+  badge?: MapMarkerBadgeConfig;
 }
 
 export interface GeoLocationSourceConfig {
@@ -399,6 +401,7 @@ export interface GeoLocationSourceConfig {
   attribute?: string;
   unit?: string;
   focus?: boolean;
+  badge?: MapMarkerBadgeConfig;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
