@@ -94,7 +94,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     @state()
     @consume({ context: fullEntitiesContext, subscribe: true })
-    entityRegistry!: EntityRegistryEntry[];
+    entityRegistry?: EntityRegistryEntry[];
 
     @state() protected dirty = false;
 
@@ -235,7 +235,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
           goBack("/config");
           return;
         }
-        const entity = this.entityRegistry.find(
+        const entity = this.entityRegistry?.find(
           (ent) => ent.platform === domain && ent.unique_id === id
         );
         if (entity) {
