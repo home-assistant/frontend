@@ -544,8 +544,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           if (typeof entry !== "string") {
             ordered = orderProperties(entry, value);
             if (entry.badge) {
-              const badgeOrderedCfg = mapMarkerBadgeOrderProperties(entry.badge);
-              ordered = { ...ordered, ...{badge: badgeOrderedCfg} };
+              const badgeOrderedCfg = mapMarkerBadgeOrderProperties(
+                entry.badge
+              );
+              ordered = { ...ordered, ...{ badge: badgeOrderedCfg } };
             }
           } else {
             ordered = entry;
