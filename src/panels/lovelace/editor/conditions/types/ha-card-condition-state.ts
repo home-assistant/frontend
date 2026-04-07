@@ -64,7 +64,7 @@ export class HaCardConditionState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (noEntity: boolean, localize: LocalizeFunc) =>
+    (noEntity: boolean, localize: LocalizeFunc, presetStates: PresetState[]) =>
       [
         ...(noEntity ? [] : [{ name: "entity", selector: { entity: {} } }]),
         {
@@ -100,7 +100,7 @@ export class HaCardConditionState extends LitElement {
                     name: "state",
                     selector: {
                       state: {
-                        extra_options: this.presetStates,
+                        extra_options: presetStates,
                         no_entity: true,
                       },
                     },
@@ -134,7 +134,7 @@ export class HaCardConditionState extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this.noEntity, this.hass.localize)}
+        .schema=${this._schema(this.noEntity, this.hass.localize, this.presetStates)}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}

@@ -117,7 +117,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   private _locationEntities: string[] = [];
 
-  @state private _presetStates: PresetState[] = [];
+  @state() private _presetStates: PresetState[] = [];
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -246,7 +246,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
 
     const states = getStatesDomain(this.hass!, "device_tracker");
-    states.forEach((stateRaw) => {
+    this._presetStates = states.map((stateRaw) => {
       let stateTranslated;
       if (arrayLiteralIncludes(UNAVAILABLE_STATES)(stateRaw)) {
         stateTranslated = this.hass!.localize(
@@ -261,10 +261,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       } else {
         stateTranslated = stateRaw;
       }
-      this._presetStates.push({
-        value: stateRaw,
-        label: stateTranslated,
-      });
+      return { value: stateRaw, label: stateTranslated };
     });
   }
 
