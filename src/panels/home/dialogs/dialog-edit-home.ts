@@ -135,7 +135,7 @@ export class DialogEditHome
             ${this.hass.localize("ui.panel.home.editor.suggested_entities")}
           </span>
           <ha-switch
-            .checked=${this._config?.show_suggested_entities !== false}
+            .checked=${!this._config?.hide_suggested_entities}
             @change=${this._suggestedEntitiesToggleChanged}
           ></ha-switch>
         </label>
@@ -252,7 +252,7 @@ export class DialogEditHome
     const checked = (ev.target as HTMLInputElement).checked;
     this._config = {
       ...this._config,
-      show_suggested_entities: checked ? undefined : false,
+      hide_suggested_entities: checked ? undefined : true,
     };
   }
 

@@ -19,7 +19,7 @@ export interface HomeDashboardStrategyConfig {
   home_panel?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
-  show_suggested_entities?: boolean;
+  hide_suggested_entities?: boolean;
 }
 
 @customElement("home-dashboard-strategy")
@@ -99,7 +99,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
             home_panel: config.home_panel,
             hidden_summaries: config.hidden_summaries,
             hide_welcome_message: config.hide_welcome_message,
-            show_suggested_entities: config.show_suggested_entities,
+            hide_suggested_entities: config.hide_suggested_entities,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
