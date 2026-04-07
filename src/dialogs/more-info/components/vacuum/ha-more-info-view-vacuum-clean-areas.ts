@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon";
@@ -77,8 +78,10 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     try {
       await this.hass.callService("vacuum", "clean_area", {
         entity_id: this.params.entityId,
-        area: [...this._selectedAreaIds],
+        cleaning_area_id: [...this._selectedAreaIds],
       });
+      this._selectedAreaIds = new Set();
+      fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message || "Failed to start cleaning";
     } finally {

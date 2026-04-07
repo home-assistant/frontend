@@ -111,6 +111,9 @@ declare global {
   interface HASSDomEvents {
     "toggle-edit-mode": boolean;
   }
+  interface HASSDomEvents {
+    "close-child-view": undefined;
+  }
 }
 
 const DEFAULT_VIEW: MoreInfoView = "info";
@@ -915,6 +918,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
+    this.addEventListener("close-child-view", () => this._goBack());
     this._loadNumericDeviceClasses();
   }
 

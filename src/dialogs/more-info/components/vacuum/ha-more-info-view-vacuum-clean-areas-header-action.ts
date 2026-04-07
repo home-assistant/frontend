@@ -1,7 +1,8 @@
 import { mdiCogOutline } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-icon-button";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
 import { showVacuumSegmentMappingView } from "./show-view-vacuum-segment-mapping";
 
@@ -11,8 +12,26 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
 
   @property({ attribute: false }) public entityId!: string;
 
+  @state() private _hasMapping = false;
+
+  protected firstUpdated() {
+    this._loadMapping();
+  }
+
+  private async _loadMapping() {
+    if (!this.entityId) return;
+    const entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this.entityId
+    ).catch(() => undefined);
+    const areaMapping = entry?.options?.vacuum?.area_mapping;
+    this._hasMapping =
+      !!areaMapping &&
+      Object.keys(areaMapping).some((areaId) => this.hass.areas[areaId]);
+  }
+
   protected render() {
-    if (!this.hass.user?.is_admin) {
+    if (!this.hass.user?.is_admin || !this._hasMapping) {
       return nothing;
     }
     return html`

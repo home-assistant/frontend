@@ -76,6 +76,59 @@ export class HaStateControlVacuumStatus extends LitElement {
 
           <!-- Robot body group -->
           <g class="vacuum-body">
+            <!-- Side brush (front-right, rendered before body so body covers half) -->
+            <g class="brush brush-right">
+              <g class="brush-spokes">
+                <line
+                  x1="174"
+                  y1="76"
+                  x2="174"
+                  y2="64"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  opacity="0.5"
+                />
+                <line
+                  x1="174"
+                  y1="76"
+                  x2="174"
+                  y2="88"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  opacity="0.5"
+                />
+                <line
+                  x1="174"
+                  y1="76"
+                  x2="162"
+                  y2="76"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  opacity="0.5"
+                />
+                <line
+                  x1="174"
+                  y1="76"
+                  x2="186"
+                  y2="76"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  opacity="0.5"
+                />
+              </g>
+              <circle
+                cx="174"
+                cy="76"
+                r="2"
+                fill="var(--vacuum-color)"
+                opacity="0.5"
+              />
+            </g>
+
             <!-- Outer body shell -->
             <circle
               cx="120"
@@ -135,11 +188,11 @@ export class HaStateControlVacuumStatus extends LitElement {
               />
             </g>
 
-            <!-- LIDAR turret (center-top, the signature element) -->
+            <!-- LIDAR turret (static) -->
             <circle
               cx="120"
-              cy="96"
-              r="16"
+              cy="108"
+              r="14"
               fill="var(--card-background-color, #fff)"
               stroke="var(--vacuum-color)"
               stroke-width="2"
@@ -147,34 +200,15 @@ export class HaStateControlVacuumStatus extends LitElement {
             />
             <circle
               cx="120"
-              cy="96"
-              r="10"
+              cy="108"
+              r="9"
               fill="none"
               stroke="var(--vacuum-color)"
-              stroke-width="1"
+              stroke-width="0.8"
               opacity="0.25"
-              class="lidar-ring"
-            />
-            <circle
-              cx="120"
-              cy="96"
-              r="4"
-              fill="var(--vacuum-color)"
-              opacity="0.35"
-              class="lidar-dot"
             />
 
-            <!-- Front IR sensor -->
-            <circle
-              cx="120"
-              cy="54"
-              r="3"
-              fill="var(--vacuum-color)"
-              opacity="0.5"
-              class="sensor"
-            />
-
-            <!-- Power button area (lower center) -->
+            <!-- Power button area (center) -->
             <circle
               cx="120"
               cy="140"
@@ -193,117 +227,114 @@ export class HaStateControlVacuumStatus extends LitElement {
             />
           </g>
 
-          <!-- Side brushes (outside body, subtle) -->
-          <g class="brush brush-left">
-            <circle
-              cx="58"
-              cy="148"
-              r="14"
-              fill="none"
-              stroke="var(--vacuum-color)"
-              stroke-width="1"
-              opacity="0.2"
-              stroke-dasharray="4 3"
-            />
-            <circle
-              cx="58"
-              cy="148"
-              r="2.5"
-              fill="var(--vacuum-color)"
-              opacity="0.3"
-            />
-          </g>
-          <g class="brush brush-right">
-            <circle
-              cx="182"
-              cy="148"
-              r="14"
-              fill="none"
-              stroke="var(--vacuum-color)"
-              stroke-width="1"
-              opacity="0.2"
-              stroke-dasharray="4 3"
-            />
-            <circle
-              cx="182"
-              cy="148"
-              r="2.5"
-              fill="var(--vacuum-color)"
-              opacity="0.3"
-            />
-          </g>
-
-          <!-- Dust particles (cleaning state) -->
+          <!-- Dust particles (cleaning state) - sucked toward vacuum -->
           <g class="particles">
-            <circle cx="32" cy="100" r="2" fill="var(--vacuum-color)" />
-            <circle cx="208" cy="140" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="28" cy="155" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="212" cy="90" r="2" fill="var(--vacuum-color)" />
-            <circle cx="50" cy="185" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="190" cy="60" r="1.5" fill="var(--vacuum-color)" />
-            <circle cx="38" cy="70" r="1" fill="var(--vacuum-color)" />
-            <circle cx="202" cy="170" r="1" fill="var(--vacuum-color)" />
+            <circle
+              class="particle p1"
+              cx="120"
+              cy="120"
+              r="2"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p2"
+              cx="120"
+              cy="120"
+              r="1.5"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p3"
+              cx="120"
+              cy="120"
+              r="1.5"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p4"
+              cx="120"
+              cy="120"
+              r="2"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p5"
+              cx="120"
+              cy="120"
+              r="1.5"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p6"
+              cx="120"
+              cy="120"
+              r="1.5"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p7"
+              cx="120"
+              cy="120"
+              r="1"
+              fill="var(--vacuum-color)"
+            />
+            <circle
+              class="particle p8"
+              cx="120"
+              cy="120"
+              r="1"
+              fill="var(--vacuum-color)"
+            />
           </g>
 
           <!-- Dock station (docked state) -->
           <g class="dock-indicator">
+            <!-- Dock base plate -->
             <rect
-              x="100"
-              y="202"
-              width="40"
-              height="6"
-              rx="3"
-              fill="var(--vacuum-color)"
-              opacity="0.25"
-            />
-            <rect
-              x="112"
-              y="199"
-              width="16"
-              height="3"
-              rx="1.5"
-              fill="var(--vacuum-color)"
-              opacity="0.15"
-            />
-          </g>
-
-          <!-- Return path (returning state) -->
-          <g class="return-path">
-            <path
-              d="M 105 198 C 95 180, 90 170, 100 160"
-              fill="none"
+              x="76"
+              y="188"
+              width="88"
+              height="28"
+              rx="8"
+              fill="var(--card-background-color, #fff)"
               stroke="var(--vacuum-color)"
-              stroke-width="1.5"
-              stroke-dasharray="4 4"
-              opacity="0.35"
-              class="path-line"
+              stroke-width="2"
             />
-            <polygon
-              points="120,210 114,200 126,200"
+            <!-- Charging contact pads -->
+            <rect
+              x="104"
+              y="186"
+              width="6"
+              height="4"
+              rx="1"
               fill="var(--vacuum-color)"
-              opacity="0.35"
+              stroke="var(--vacuum-color)"
+              stroke-width="2"
+              opacity="0.6"
+            />
+            <rect
+              x="130"
+              y="186"
+              width="6"
+              height="4"
+              rx="1"
+              fill="var(--vacuum-color)"
+              stroke="var(--vacuum-color)"
+              stroke-width="2"
+              opacity="0.6"
             />
           </g>
 
-          <!-- Error indicator -->
-          <g class="error-indicator">
-            <circle
-              cx="120"
-              cy="120"
-              r="20"
+          <!-- Return arrow (returning state) -->
+          <g class="return-path">
+            <polygon
+              points="120,220 110,206 130,206"
               fill="var(--vacuum-color)"
-              opacity="0.1"
+              stroke="var(--vacuum-color)"
+              stroke-width="2"
+              stroke-linejoin="round"
+              opacity="0.55"
             />
-            <text
-              x="120"
-              y="128"
-              text-anchor="middle"
-              font-size="24"
-              font-weight="bold"
-              fill="var(--vacuum-color)"
-            >
-              !
-            </text>
           </g>
         </svg>
       </div>
@@ -331,8 +362,7 @@ export class HaStateControlVacuumStatus extends LitElement {
     /* -- Hide state-specific elements by default -- */
     .particles,
     .dock-indicator,
-    .return-path,
-    .error-indicator {
+    .return-path {
       opacity: 0;
       transition: opacity 400ms ease;
     }
@@ -341,45 +371,80 @@ export class HaStateControlVacuumStatus extends LitElement {
     /* CLEANING                 */
     /* ======================== */
     .cleaning .vacuum-body {
-      animation: vacuum-wander 6s ease-in-out infinite;
+      animation: vacuum-wander 12s ease-in-out infinite;
       transform-origin: 120px 120px;
     }
 
-    .cleaning .brush-left {
-      animation: brush-spin 0.8s linear infinite;
-      transform-origin: 58px 148px;
-    }
-
-    .cleaning .brush-right {
-      animation: brush-spin 0.8s linear infinite reverse;
-      transform-origin: 182px 148px;
-    }
-
-    .cleaning .lidar-ring {
-      animation: lidar-scan 2s linear infinite;
-      transform-origin: 120px 96px;
+    .cleaning .brush-right .brush-spokes {
+      animation: brush-spin 0.6s linear infinite;
+      transform-origin: 174px 76px;
     }
 
     .cleaning .particles {
       opacity: 1;
     }
 
-    .cleaning .particles circle {
-      animation: particle-float 3s ease-in-out infinite;
+    .cleaning .particle {
+      animation: particle-suck 2.4s ease-in infinite;
+      transform-origin: 120px 120px;
     }
 
-    .cleaning .particles circle:nth-child(2n) {
-      animation-delay: -1s;
-      animation-duration: 2.5s;
+    .cleaning .p1 {
+      animation-delay: 0s;
+    }
+    .cleaning .p2 {
+      animation-delay: -0.3s;
+    }
+    .cleaning .p3 {
+      animation-delay: -0.6s;
+    }
+    .cleaning .p4 {
+      animation-delay: -0.9s;
+    }
+    .cleaning .p5 {
+      animation-delay: -1.2s;
+    }
+    .cleaning .p6 {
+      animation-delay: -1.5s;
+    }
+    .cleaning .p7 {
+      animation-delay: -1.8s;
+    }
+    .cleaning .p8 {
+      animation-delay: -2.1s;
     }
 
-    .cleaning .particles circle:nth-child(3n) {
-      animation-delay: -0.5s;
-      animation-duration: 3.5s;
+    .cleaning .p1 {
+      --particle-x: -90px;
+      --particle-y: -25px;
     }
-
-    .cleaning .sensor {
-      animation: sensor-blink 1.2s ease-in-out infinite;
+    .cleaning .p2 {
+      --particle-x: 90px;
+      --particle-y: 20px;
+    }
+    .cleaning .p3 {
+      --particle-x: -85px;
+      --particle-y: 40px;
+    }
+    .cleaning .p4 {
+      --particle-x: 85px;
+      --particle-y: -35px;
+    }
+    .cleaning .p5 {
+      --particle-x: -65px;
+      --particle-y: 70px;
+    }
+    .cleaning .p6 {
+      --particle-x: 70px;
+      --particle-y: -65px;
+    }
+    .cleaning .p7 {
+      --particle-x: -75px;
+      --particle-y: -55px;
+    }
+    .cleaning .p8 {
+      --particle-x: 80px;
+      --particle-y: 55px;
     }
 
     .cleaning .nav-lines {
@@ -390,22 +455,15 @@ export class HaStateControlVacuumStatus extends LitElement {
     /* RETURNING                */
     /* ======================== */
     .returning .vacuum-body {
-      animation: vacuum-glide 2.5s ease-in-out infinite;
+      animation: returning-drift 3s ease-in-out infinite;
     }
 
     .returning .return-path {
       opacity: 1;
+      animation: return-arrow 1.6s ease-in-out infinite;
+      transform-origin: 120px 210px;
     }
 
-    .returning .path-line {
-      animation: path-dash 1.2s linear infinite;
-    }
-
-    .returning .sensor {
-      animation: sensor-blink 0.8s ease-in-out infinite;
-    }
-
-    .returning .brush-left,
     .returning .brush-right {
       opacity: 0.4;
     }
@@ -429,53 +487,15 @@ export class HaStateControlVacuumStatus extends LitElement {
       animation: charge-pulse 2.5s ease-in-out infinite;
     }
 
-    .docked .lidar-dot {
-      opacity: 0.15;
-    }
-
-    .docked .brush-left,
     .docked .brush-right {
       opacity: 0.5;
     }
 
     /* ======================== */
-    /* PAUSED                   */
-    /* ======================== */
-    .paused .vacuum-body {
-      animation: paused-breathe 4s ease-in-out infinite;
-      transform-origin: 120px 120px;
-    }
-
-    .paused .power-dot {
-      animation: paused-blink 2s ease-in-out infinite;
-    }
-
-    .paused .brush-left,
-    .paused .brush-right {
-      opacity: 0.6;
-    }
-
-    /* ======================== */
     /* ERROR                    */
     /* ======================== */
-    .error .vacuum-body {
-      animation: error-shake 0.6s ease-in-out infinite;
-      transform-origin: 120px 120px;
-    }
-
-    .error .error-indicator {
-      opacity: 1;
-      animation: error-pulse 1s ease-in-out infinite;
-    }
-
-    .error .power-dot,
-    .error .power-ring {
-      opacity: 0;
-    }
-
-    .error .sensor {
-      opacity: 1;
-      animation: error-pulse 0.5s ease-in-out infinite;
+    .error .glow {
+      animation: error-glow 1.8s ease-in-out infinite;
     }
 
     /* ======================== */
@@ -485,7 +505,6 @@ export class HaStateControlVacuumStatus extends LitElement {
       opacity: 0.65;
     }
 
-    .idle .brush-left,
     .idle .brush-right {
       opacity: 0.4;
     }
@@ -495,18 +514,38 @@ export class HaStateControlVacuumStatus extends LitElement {
     /* ============================== */
 
     @keyframes vacuum-wander {
-      0%,
-      100% {
-        transform: rotate(0deg) translateX(0);
+      0% {
+        transform: rotate(0deg) translate(0, 0);
+      }
+      15% {
+        transform: rotate(0deg) translate(0, -30px);
       }
       25% {
-        transform: rotate(3deg) translateX(2px);
+        transform: rotate(0deg) translate(0, 0);
       }
-      50% {
-        transform: rotate(-2deg) translateX(-1px);
+      32% {
+        transform: rotate(-18deg) translate(0, 0);
       }
-      75% {
-        transform: rotate(1deg) translateX(1px);
+      47% {
+        transform: rotate(-18deg) translate(0, -28px);
+      }
+      57% {
+        transform: rotate(-18deg) translate(0, 0);
+      }
+      63% {
+        transform: rotate(12deg) translate(0, 0);
+      }
+      78% {
+        transform: rotate(12deg) translate(0, -25px);
+      }
+      88% {
+        transform: rotate(12deg) translate(0, 0);
+      }
+      95% {
+        transform: rotate(0deg) translate(0, 0);
+      }
+      100% {
+        transform: rotate(0deg) translate(0, 0);
       }
     }
 
@@ -516,31 +555,20 @@ export class HaStateControlVacuumStatus extends LitElement {
       }
     }
 
-    @keyframes lidar-scan {
-      to {
-        transform: rotate(360deg);
+    @keyframes particle-suck {
+      0% {
+        opacity: 0;
+        transform: translate(var(--particle-x), var(--particle-y)) scale(1.2);
       }
-    }
-
-    @keyframes particle-float {
-      0%,
-      100% {
-        opacity: 0.2;
-        transform: translateY(0) scale(1);
+      15% {
+        opacity: 0.8;
       }
-      50% {
-        opacity: 0.7;
-        transform: translateY(-6px) scale(1.3);
-      }
-    }
-
-    @keyframes sensor-blink {
-      0%,
-      100% {
+      85% {
         opacity: 0.5;
       }
-      50% {
-        opacity: 1;
+      100% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.2);
       }
     }
 
@@ -554,19 +582,25 @@ export class HaStateControlVacuumStatus extends LitElement {
       }
     }
 
-    @keyframes vacuum-glide {
+    @keyframes returning-drift {
       0%,
       100% {
-        transform: translateY(0);
+        transform: translateY(-6px);
       }
       50% {
-        transform: translateY(-5px);
+        transform: translateY(4px);
       }
     }
 
-    @keyframes path-dash {
-      to {
-        stroke-dashoffset: -16;
+    @keyframes return-arrow {
+      0%,
+      100% {
+        transform: translateY(-6px);
+        opacity: 0.3;
+      }
+      50% {
+        transform: translateY(4px);
+        opacity: 0.85;
       }
     }
 
@@ -590,78 +624,27 @@ export class HaStateControlVacuumStatus extends LitElement {
       }
     }
 
-    @keyframes paused-breathe {
+    @keyframes error-glow {
       0%,
       100% {
-        transform: scale(1);
+        opacity: 0.08;
       }
       50% {
-        transform: scale(0.98);
-      }
-    }
-
-    @keyframes paused-blink {
-      0%,
-      60%,
-      100% {
-        opacity: 0.25;
-      }
-      30% {
-        opacity: 0.06;
-      }
-    }
-
-    @keyframes error-shake {
-      0%,
-      100% {
-        transform: translateX(0);
-      }
-      15% {
-        transform: translateX(-4px);
-      }
-      30% {
-        transform: translateX(4px);
-      }
-      45% {
-        transform: translateX(-3px);
-      }
-      60% {
-        transform: translateX(3px);
-      }
-      75% {
-        transform: translateX(-1px);
-      }
-    }
-
-    @keyframes error-pulse {
-      0%,
-      100% {
-        opacity: 0.6;
-      }
-      50% {
-        opacity: 1;
+        opacity: 0.35;
       }
     }
 
     /* Respect prefers-reduced-motion */
     @media (prefers-reduced-motion: reduce) {
       .cleaning .vacuum-body,
-      .cleaning .brush-left,
-      .cleaning .brush-right,
-      .cleaning .lidar-ring,
-      .cleaning .particles circle,
-      .cleaning .sensor,
+      .cleaning .brush-right .brush-spokes,
+      .cleaning .particle,
       .cleaning .nav-lines,
       .returning .vacuum-body,
-      .returning .path-line,
-      .returning .sensor,
+      .returning .return-path,
       .docked .glow,
       .docked .power-ring,
-      .paused .vacuum-body,
-      .paused .power-dot,
-      .error .vacuum-body,
-      .error .error-indicator,
-      .error .sensor {
+      .error .glow {
         animation: none;
       }
     }
