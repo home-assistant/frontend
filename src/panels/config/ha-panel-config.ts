@@ -215,7 +215,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
-      requireAdmin: false,
+      requireAdmin: true,
     },
   ],
   backup: [
@@ -541,7 +541,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
-      requireAdmin: false,
+      requireAdmin: true,
     },
   ],
 };
