@@ -189,8 +189,6 @@ export class HaDataTable extends LitElement {
 
   private _lastUpdate = 0;
 
-  private _didAutoFocusScroller = false;
-
   // @ts-ignore
   @restoreScroll(".scroller") private _savedScrollPos?: number;
 
@@ -267,7 +265,15 @@ export class HaDataTable extends LitElement {
       this.style.removeProperty("--table-row-width");
     }
 
-    this._focusTableOnLoad();
+    if (
+      this.autoHeight ||
+      (document.activeElement &&
+        !AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(
+          document.activeElement.tagName
+        ))
+    ) {
+      return;
+    }
 
     // Refocus on toggle checkbox changes
     if (changedProps.has("selectable")) {
@@ -1008,21 +1014,6 @@ export class HaDataTable extends LitElement {
     }
     this._lastSelectedRowId = null;
     this._debounceSearch((ev.target as HTMLInputElement).value);
-  }
-
-  private _focusTableOnLoad() {
-    if (
-      this._didAutoFocusScroller ||
-      this.autoHeight ||
-      (document.activeElement &&
-        !AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(
-          document.activeElement.tagName
-        ))
-    ) {
-      return;
-    }
-
-    this._focusScroller();
   }
 
   private _focusScroller(): void {
