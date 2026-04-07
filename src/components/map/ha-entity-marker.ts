@@ -26,8 +26,7 @@ class HaEntityMarker extends LitElement {
   @property({ attribute: false }) public badge?: MapMarkerBadgeConfig;
 
   protected render() {
-    return html`
-      <div
+    return html`<div
         class="marker ${this.entityPicture ? "picture" : ""}"
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
