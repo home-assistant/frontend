@@ -105,10 +105,6 @@ const generateNavigationConfigSectionCommands = (
   hass: HomeAssistant,
   filterOptions: NavigationFilterOptions = {}
 ): BaseNavigationCommand[] => {
-  if (!hass.user?.is_admin) {
-    return [];
-  }
-
   const items: NavigationInfo[] = [];
   const allPages = Object.values(configSections).flat();
   const visiblePages = filterNavigationPages(hass, allPages, filterOptions);

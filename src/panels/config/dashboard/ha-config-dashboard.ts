@@ -112,12 +112,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       >`,
     };
 
-    tips.push(
-      {
+    if (hass.user?.is_admin) {
+      tips.push({
         content: hass.localize("ui.tips.key_c_tip", localizeParam),
         weight: 1,
         narrow: false,
-      },
+      });
+    }
+    tips.push(
       {
         content: hass.localize("ui.tips.key_m_tip", localizeParam),
         weight: 1,

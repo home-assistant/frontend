@@ -34,6 +34,8 @@ export interface PageNavigation {
   not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
+  /** Hide from non-admin users in filtered navigation and quick bar. */
+  requireAdmin?: boolean;
   iconPath?: string;
   iconSecondaryPath?: string;
   iconViewBox?: string;
