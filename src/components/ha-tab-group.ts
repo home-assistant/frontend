@@ -75,7 +75,6 @@ export class HaTabGroup extends TabGroup {
           background-color: transparent;
         }
 
-        /* Match hui-card-element-editor tab layout when fill-tabs is set (default). */
         :host([fill-tabs]) .tab-group-top .tabs ::slotted(ha-tab-group-tab),
         :host([fill-tabs]) .tab-group-bottom .tabs ::slotted(ha-tab-group-tab) {
           flex: 1;
