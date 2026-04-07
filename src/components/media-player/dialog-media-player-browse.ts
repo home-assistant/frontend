@@ -79,6 +79,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        width="large"
         flexcontent
         @closed=${this.closeDialog}
         @opened=${this._dialogOpened}
