@@ -255,8 +255,8 @@ export class HaMap extends ReactiveElement {
     this._loading = true;
     try {
       [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
-        latitude: this.hass?.config.latitude ?? 0,
-        longitude: this.hass?.config.longitude ?? 0,
+        latitude: this.hass?.config.latitude ?? 52.3731339,
+        longitude: this.hass?.config.longitude ?? 4.8903147,
         zoom: this.zoom,
       });
       this._updateMapStyle();
