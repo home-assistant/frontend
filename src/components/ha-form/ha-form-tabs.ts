@@ -130,14 +130,9 @@ export class HaFormTabs extends LitElement implements HaFormElement {
               .active=${active === tab.name}
             >
               ${tab.icon
-                ? html`<ha-icon slot="start" .icon=${tab.icon}></ha-icon>`
+                ? html`<ha-icon .icon=${tab.icon}></ha-icon>`
                 : tab.iconPath
-                  ? html`
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${tab.iconPath}
-                      ></ha-svg-icon>
-                    `
+                  ? html`<ha-svg-icon .path=${tab.iconPath}></ha-svg-icon>`
                   : nothing}
               ${this._tabTitle(tab.name)}
             </ha-tab-group-tab>
@@ -182,8 +177,10 @@ export class HaFormTabs extends LitElement implements HaFormElement {
     ha-tab-group {
       display: block;
     }
-    ha-icon,
-    ha-svg-icon {
+    ha-tab-group-tab ha-icon,
+    ha-tab-group-tab ha-svg-icon {
+      flex-shrink: 0;
+      margin-inline-end: var(--ha-space-2);
       color: var(--secondary-text-color);
     }
   `;
