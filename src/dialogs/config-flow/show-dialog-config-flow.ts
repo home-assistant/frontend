@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -228,7 +228,7 @@ export const showConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}
+          : nothing}
       `;
     },
 
