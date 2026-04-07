@@ -28,6 +28,7 @@ import type {
   HaMapPaths,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
+import type { MapMarkerBadgeConfig } from "../../../components/map/ha-map-marker-badge";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
@@ -53,6 +54,7 @@ interface GeoEntity {
   attribute?: string;
   unit?: string;
   focus: boolean;
+  badge?: MapMarkerBadgeConfig;
 }
 
 @customElement("hui-map-card")
@@ -280,6 +282,22 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const badgeEntities: string[] = [];
+    this._mapEntities.forEach((entityConfig) => {
+      if (entityConfig.badge?.entity) {
+        badgeEntities.push(entityConfig.badge.entity);
+      }
+    });
+    const uniqueBadgeEntities = [...new Set(badgeEntities)];
+    if (
+      uniqueBadgeEntities.some(
+        (badgeEntity) =>
+          oldHass.states[badgeEntity] !== this.hass.states[badgeEntity]
+      )
+    ) {
+      return true;
+    }
+
     return this._config?.entities
       ? hasConfigOrEntitiesChanged(this, changedProps)
       : hasConfigChanged(this, changedProps);
@@ -459,6 +477,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
+          badge: { ...sourceObj?.badge, entity: stateObj.entity_id },
         });
       }
     }
@@ -477,6 +496,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         unit: entityConf.unit,
         focus: entityConf.focus,
         name: entityConf.name,
+        badge: entityConf.badge,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
         ...entity,
