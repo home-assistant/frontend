@@ -134,7 +134,11 @@ export class HaCardConditionState extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this.noEntity, this.hass.localize, this.presetStates)}
+        .schema=${this._schema(
+          this.noEntity,
+          this.hass.localize,
+          this.presetStates
+        )}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
