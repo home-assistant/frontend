@@ -26,6 +26,10 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
+import {
+  mapMarkerBadgeOrderProperties,
+  mapBadgeConfigStruct,
+} from "../../../../components/map/ha-map-marker-badge";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
@@ -56,6 +60,7 @@ export const mapEntitiesConfigStruct = union([
     attribute: optional(string()),
     unit: optional(string()),
     focus: optional(boolean()),
+    badge: optional(mapBadgeConfigStruct),
   }),
   string(),
 ]);
@@ -67,6 +72,7 @@ const geoSourcesConfigStruct = union([
     attribute: optional(string()),
     unit: optional(string()),
     focus: optional(boolean()),
+    badge: optional(mapBadgeConfigStruct),
   }),
   string(),
 ]);
@@ -533,9 +539,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     Object.entries(orders).forEach(([key, value]) => {
       let orderedCfg;
       if (config[key]) {
-        orderedCfg = config[key].map((entry: MapEntityConfig | string) =>
-          typeof entry !== "string" ? orderProperties(entry, value) : entry
-        );
+        orderedCfg = config[key].map((entry: MapEntityConfig | string) => {
+          let ordered;
+          if (typeof entry !== "string") {
+            ordered = orderProperties(entry, value);
+            if (entry.badge) {
+              const badgeOrderedCfg = mapMarkerBadgeOrderProperties(entry.badge);
+              ordered = { ...ordered, ...{badge: badgeOrderedCfg} };
+            }
+          } else {
+            ordered = entry;
+          }
+          return ordered;
+        });
       }
       if (orderedCfg) {
         orderedConfig = { ...orderedConfig, ...{ [key]: orderedCfg } };
