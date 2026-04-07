@@ -1,12 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fileDownload } from "../../src/util/file_download";
 
-vi.mock("../../src/data/external", () => ({
-  get isExternalAndroid() {
-    return (window as any).externalApp || (window as any).externalAppV2;
-  },
-}));
-
 describe("fileDownload", () => {
   let appendChildSpy: ReturnType<typeof vi.spyOn>;
   let removeChildSpy: ReturnType<typeof vi.spyOn>;

@@ -6,9 +6,9 @@ import type { EMMessage } from "./external_messaging";
 import { ExternalMessaging } from "./external_messaging";
 
 /**
- * WARNING: These const should not be changed as the native app relies on these
- * exact string values to know which callback to call
- * after getting a response from the native app.
+ * WARNING: These constants should not be changed, as the native app relies on
+ * these exact string values to know which callback to call.
+ * This happens after getting a response from the native app.
  */
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";

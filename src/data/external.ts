@@ -3,4 +3,5 @@ export const isExternal =
   window.externalApp ||
   window.webkit?.messageHandlers?.getExternalAuth ||
   location.search.includes("external_auth=1");
-export const isExternalAndroid = window.externalApp || window.externalAppV2;
+export const isExternalAndroid = () =>
+  Boolean(window.externalApp || window.externalAppV2);
