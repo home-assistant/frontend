@@ -148,7 +148,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this._newAutomationId &&
       changedProps.has("entityRegistry")
     ) {
-      const automation = this.entityRegistry.find(
+      const automation = this.entityRegistry?.find(
         (entity: EntityRegistryEntry) =>
           entity.platform === "automation" &&
           entity.unique_id === this._newAutomationId
