@@ -1212,7 +1212,17 @@ const describeLegacyCondition = (
 
       let hasTime = "";
       if (after !== undefined && before !== undefined) {
-        hasTime = "after_before";
+        if (
+          typeof condition.after === "string" &&
+          !condition.after.includes(".") &&
+          typeof condition.before === "string" &&
+          !condition.before.includes(".") &&
+          condition.after > condition.before
+        ) {
+          hasTime = "after_before_or";
+        } else {
+          hasTime = "after_before";
+        }
       } else if (after !== undefined) {
         hasTime = "after";
       } else if (before !== undefined) {
