@@ -19,7 +19,8 @@ export const MAP_CARD_BADGE_DISPLAY_MODES = [
   "icon",
   "image",
 ] as const;
-export type MapCardBadgeDisplayMode = (typeof MAP_CARD_BADGE_DISPLAY_MODES)[number];
+export type MapCardBadgeDisplayMode =
+  (typeof MAP_CARD_BADGE_DISPLAY_MODES)[number];
 
 export interface MapMarkerBadgeConfig {
   // entity_id to be processed
@@ -108,7 +109,11 @@ export class HaMapMarkerBadge extends LitElement {
       } else {
         label = this.hass.formatEntityState(stateObj);
       }
-    } else if (display_mode === "attribute" && this.badge.attribute && stateObj) {
+    } else if (
+      display_mode === "attribute" &&
+      this.badge.attribute &&
+      stateObj
+    ) {
       if (this.badge.hide_unit) {
         const attrParts = this.hass.formatEntityAttributeValueToParts(
           stateObj,
