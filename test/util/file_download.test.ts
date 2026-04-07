@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fileDownload } from "../../src/util/file_download";
 
+vi.mock("../../src/data/external", () => ({
+  get isExternalAndroid() {
+    return (window as any).externalApp || (window as any).externalAppV2;
+  },
+}));
+
 describe("fileDownload", () => {
   let appendChildSpy: ReturnType<typeof vi.spyOn>;
   let removeChildSpy: ReturnType<typeof vi.spyOn>;
@@ -25,6 +31,7 @@ describe("fileDownload", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     delete (window as any).externalApp;
+    delete (window as any).externalAppV2;
   });
 
   it("sets href, download, and triggers a click", () => {
@@ -55,8 +62,19 @@ describe("fileDownload", () => {
     );
   });
 
-  it("revokes blob URL after delay on Android", () => {
+  it("revokes blob URL after delay on Android (externalApp)", () => {
     (window as any).externalApp = {};
+    fileDownload("blob:http://localhost/abc-123", "file.json");
+    vi.advanceTimersByTime(9_999);
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith(
+      "blob:http://localhost/abc-123"
+    );
+  });
+
+  it("revokes blob URL after delay on Android (externalAppV2)", () => {
+    (window as any).externalAppV2 = { postMessage: vi.fn() };
     fileDownload("blob:http://localhost/abc-123", "file.json");
     vi.advanceTimersByTime(9_999);
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();

@@ -473,7 +473,11 @@ export class ExternalMessaging {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
     }
-    if (window.externalApp) {
+    if (window.externalAppV2) {
+      window.externalAppV2.postMessage(
+        JSON.stringify({ type: "externalBus", payload: msg })
+      );
+    } else if (window.externalApp) {
       window.externalApp.externalBus(JSON.stringify(msg));
     } else {
       window.webkit!.messageHandlers.externalBus.postMessage(msg);

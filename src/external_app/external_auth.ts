@@ -5,6 +5,11 @@ import { Auth } from "home-assistant-js-websocket";
 import type { EMMessage } from "./external_messaging";
 import { ExternalMessaging } from "./external_messaging";
 
+/**
+ * WARNING: These const should not be changed as the native app relies on these
+ * exact string values to know which callback to call
+ * after getting a response from the native app.
+ */
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
 
@@ -28,6 +33,9 @@ declare global {
       revokeExternalAuth(payload: string);
       externalBus(payload: string);
     };
+    externalAppV2?: {
+      postMessage(payload: string): void;
+    };
     webkit?: {
       messageHandlers: {
         getExternalAuth: {
@@ -44,9 +52,9 @@ declare global {
   }
 }
 
-if (!window.externalApp && !window.webkit) {
+if (!window.externalApp && !window.webkit && !window.externalAppV2) {
   throw new Error(
-    "External auth requires either externalApp or webkit defined on Window object."
+    "External auth requires either externalApp, externalAppV2, or webkit defined on Window object."
   );
 }
 
@@ -95,7 +103,11 @@ export class ExternalAuth extends Auth {
     // we sleep 1 microtask to get the promise to actually set it on the window object.
     await Promise.resolve();
 
-    if (window.externalApp) {
+    if (window.externalAppV2) {
+      window.externalAppV2.postMessage(
+        JSON.stringify({ type: "getExternalAuth", payload })
+      );
+    } else if (window.externalApp) {
       window.externalApp.getExternalAuth(JSON.stringify(payload));
     } else {
       window.webkit!.messageHandlers.getExternalAuth.postMessage(payload);
@@ -119,7 +131,11 @@ export class ExternalAuth extends Auth {
     // we sleep 1 microtask to get the promise to actually set it on the window object.
     await Promise.resolve();
 
-    if (window.externalApp) {
+    if (window.externalAppV2) {
+      window.externalAppV2.postMessage(
+        JSON.stringify({ type: "revokeExternalAuth", payload })
+      );
+    } else if (window.externalApp) {
       window.externalApp.revokeExternalAuth(JSON.stringify(payload));
     } else {
       window.webkit!.messageHandlers.revokeExternalAuth.postMessage(payload);
@@ -132,6 +148,7 @@ export class ExternalAuth extends Auth {
 export const createExternalAuth = async (hassUrl: string) => {
   const auth = new ExternalAuth(hassUrl);
   if (
+    window.externalAppV2 ||
     window.externalApp?.externalBus ||
     (window.webkit && window.webkit.messageHandlers.externalBus)
   ) {
