@@ -29,6 +29,7 @@ import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+import type { MapMarkerBadgeConfig } from "./ha-map-marker-badge";
 
 declare global {
   // for fire event
@@ -71,6 +72,7 @@ export interface HaMapEntity {
   unit?: string;
   name?: string;
   focus?: boolean;
+  badge?: MapMarkerBadgeConfig;
 }
 
 @customElement("ha-map")
@@ -178,8 +180,19 @@ export class HaMap extends ReactiveElement {
       this._drawEntities();
       autoFitRequired = !this._pauseAutoFit;
     } else if (this._loaded && oldHass && this.entities) {
+      // compose a list of tracked entities
+      const badgeEntities: string[] = [];
+      this.entities.forEach((entityConfig: string | HaMapEntity) => {
+        if (typeof entityConfig !== "string" && entityConfig.badge?.entity) {
+          badgeEntities.push(entityConfig.badge.entity);
+        }
+      });
+      const uniqueBadgeEntities = [...new Set(badgeEntities)];
+      // uniqueBadgeEntities - list of entity_ids
+      // this.entities - list of entity_ids or dicts
+      const allEntities = [...uniqueBadgeEntities, ...this.entities];
       // Check if any state has changed
-      for (const entity of this.entities) {
+      for (const entity of allEntities) {
         if (
           oldHass.states[getEntityId(entity)] !==
           this.hass!.states[getEntityId(entity)]
@@ -672,6 +685,7 @@ export class HaMap extends ReactiveElement {
           : "";
       if (typeof entity !== "string") {
         entityMarker.entityColor = entity.color;
+        entityMarker.badge = entity.badge;
       }
 
       // create marker with the icon
