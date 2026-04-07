@@ -1444,7 +1444,7 @@
       },
       "safe_mode": {
         "title": "Safe mode",
-        "text": "Home Assistant is running in safe mode, community integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+        "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
         "commands_title": "Commands",
@@ -2011,9 +2011,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restarts Home Assistant without loading any community integrations and frontend modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any community integrations and frontend modules.",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
@@ -4339,8 +4339,8 @@
             "info": "INFO",
             "debug": "DEBUG"
           },
-          "custom_integration": "community integration",
-          "error_from_custom_integration": "This error originated from a community integration.",
+          "custom_integration": "custom integration",
+          "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show raw logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
@@ -6684,9 +6684,9 @@
                 "device": "device"
               }
             },
-            "custom_integration": "Community integration",
+            "custom_integration": "Custom integration",
             "legacy_integration": "Legacy integration",
-            "custom_overwrites_core": "Community integration that replaces a Core component",
+            "custom_overwrites_core": "Custom integration that replaces a Core component",
             "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be set up from the UI",
             "no_config_flow": "This integration was not set up from the UI",
@@ -8012,7 +8012,7 @@
         },
         "labs": {
           "caption": "Labs",
-          "custom_integration": "Community integration",
+          "custom_integration": "Custom integration",
           "description": "Preview new features",
           "description_enabled": "Preview features are enabled",
           "intro_title": "Home Assistant Labs",
