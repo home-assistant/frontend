@@ -308,6 +308,10 @@ export class LovelacePanel extends LitElement {
       this._fetchConfigOnConnect = true;
       return;
     }
+    if (!this.lovelace?.editMode && this._panelState !== "yaml-editor") {
+      this._fetchConfig(false);
+      return;
+    }
     this._startExternalUpdateReloadCountdown();
   }
 
