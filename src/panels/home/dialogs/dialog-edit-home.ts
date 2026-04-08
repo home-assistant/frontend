@@ -10,8 +10,8 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
-import "../../../components/ha-input-helper-text";
 import "../../../components/ha-switch";
+import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
@@ -28,6 +28,10 @@ interface SummaryInfo {
   icon: string;
   color: string;
 }
+
+const SUGGESTED_ENTITIES_SCHEMA: HaFormSchema[] = [
+  { name: "show_suggested", selector: { boolean: {} } },
+];
 
 // Ordered to match dashboard rendering order
 const SUMMARY_ITEMS: SummaryInfo[] = [
@@ -130,20 +134,14 @@ export class DialogEditHome
           @value-changed=${this._welcomeMessageToggleChanged}
         ></ha-form>
 
-        <label class="summary-toggle">
-          <span class="summary-label">
-            ${this.hass.localize("ui.panel.home.editor.suggested_entities")}
-          </span>
-          <ha-switch
-            .checked=${!this._config?.hide_suggested_entities}
-            @change=${this._suggestedEntitiesToggleChanged}
-          ></ha-switch>
-        </label>
-        <ha-input-helper-text>
-          ${this.hass.localize(
-            "ui.panel.home.editor.suggested_entities_description"
-          )}
-        </ha-input-helper-text>
+        <ha-form
+          .hass=${this.hass}
+          .data=${{ show_suggested: !this._config?.hide_suggested_entities }}
+          .schema=${SUGGESTED_ENTITIES_SCHEMA}
+          .computeLabel=${this._computeSuggestedLabel}
+          .computeHelper=${this._computeSuggestedHelper}
+          @value-changed=${this._suggestedEntitiesChanged}
+        ></ha-form>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
@@ -248,11 +246,18 @@ export class DialogEditHome
     };
   }
 
-  private _suggestedEntitiesToggleChanged(ev: Event): void {
-    const checked = (ev.target as HTMLInputElement).checked;
+  private _computeSuggestedLabel = (_schema: HaFormSchema): string =>
+    this.hass.localize("ui.panel.home.editor.suggested_entities");
+
+  private _computeSuggestedHelper = (_schema: HaFormSchema): string =>
+    this.hass.localize("ui.panel.home.editor.suggested_entities_description");
+
+  private _suggestedEntitiesChanged(ev: CustomEvent): void {
+    const showSuggested = (ev.detail.value as { show_suggested: boolean })
+      .show_suggested;
     this._config = {
       ...this._config,
-      hide_suggested_entities: checked ? undefined : true,
+      hide_suggested_entities: showSuggested ? undefined : true,
     };
   }
 
