@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -15,6 +14,7 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
+import "../../../components/progress/ha-progress-bar";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -191,11 +191,11 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.attributes.in_progress
             ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
               this.stateObj.attributes.update_percentage !== null
-              ? html`<mwc-linear-progress
-                  .progress=${this.stateObj.attributes.update_percentage / 100}
-                  buffer=""
-                ></mwc-linear-progress>`
-              : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              ? html`<ha-progress-bar
+                  loading
+                  .value=${this.stateObj.attributes.update_percentage}
+                ></ha-progress-bar>`
+              : html`<ha-progress-bar indeterminate></ha-progress-bar>`
             : nothing}
           <h3>${this.stateObj.attributes.title}</h3>
           ${this._error
@@ -520,10 +520,6 @@ class MoreInfoUpdate extends LitElement {
       display: flex;
       justify-content: center;
       align-items: center;
-    }
-    mwc-linear-progress {
-      margin-bottom: calc(var(--ha-space-2) * -1);
-      margin-top: var(--ha-space-1);
     }
     ha-markdown {
       direction: ltr;

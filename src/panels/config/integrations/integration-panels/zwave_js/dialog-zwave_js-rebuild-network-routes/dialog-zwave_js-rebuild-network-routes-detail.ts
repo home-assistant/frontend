@@ -1,5 +1,4 @@
 import { consume, type ContextType } from "@lit/context";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
