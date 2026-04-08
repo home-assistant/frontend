@@ -98,7 +98,11 @@ export const renderConfigEntryError = (
   }
   return html`
     <br />
-    ${hass.localize("ui.panel.config.integrations.config_entry.check_the_logs")}
+    <a href=${`/config/logs?filter=${encodeURIComponent(entry.domain)}`}>
+      ${hass.localize(
+        "ui.panel.config.integrations.config_entry.check_the_logs"
+      )}
+    </a>
   `;
 };
 
