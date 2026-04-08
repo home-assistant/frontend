@@ -187,21 +187,10 @@ interface EMOutgoingMessageFocusElement extends EMMessage {
   };
 }
 
-interface EMOutgoingMessageOnHomeAssistantSetTheme extends EMMessage {
-  type: "onHomeAssistantSetTheme";
-}
-
-interface EMOutgoingMessageHandleBlob extends EMMessage {
-  type: "handleBlob";
-}
-
-// These messages are handled internally by the Android app via postMessage.
+// These types are handled internally by the Android app via postMessage.
 // They are not sent by the frontend and should not be used directly.
-// They are intentionally excluded from EMOutgoingMessageWithoutAnswer so that
-// fireMessage() will reject them at compile time.
-export type EMAndroidInternalMessage =
-  | EMOutgoingMessageOnHomeAssistantSetTheme
-  | EMOutgoingMessageHandleBlob;
+// They are intentionally listed here to prevent anyone from using them unintentionally.
+type RejectedEMMessageType = "onHomeAssistantSetTheme" | "handleBlob";
 
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
@@ -227,6 +216,10 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageAddEntityTo
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageAssistSettings;
+
+type EMOutgoingMessage =
+  | EMOutgoingMessageWithAnswer[keyof EMOutgoingMessageWithAnswer]["request"]
+  | EMOutgoingMessageWithoutAnswer;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -484,7 +477,14 @@ export class ExternalMessaging {
     }
   }
 
-  protected _sendExternal(msg: EMMessage) {
+  protected _sendExternal<T extends string>(
+    msg: EMOutgoingMessage & {
+      type: T &
+        (T extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
+  ) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);

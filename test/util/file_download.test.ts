@@ -1,11 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fileDownload } from "../../src/util/file_download";
 
 describe("fileDownload", () => {
   let appendChildSpy: ReturnType<typeof vi.spyOn>;
   let removeChildSpy: ReturnType<typeof vi.spyOn>;
   let dispatchEventSpy: ReturnType<typeof vi.spyOn>;
   let createdElement: HTMLAnchorElement;
+  let fileDownload: (href: string, filename?: string) => void;
+
+  /**
+   * Because isExternalAndroid is a module-level constant, we must set
+   * window.externalApp / externalAppV2 *before* importing the module.
+   * This helper resets the module registry and re-imports file_download
+   * so the constant is evaluated with the current window state.
+   */
+  async function loadFileDownload() {
+    vi.resetModules();
+    const mod = await import("../../src/util/file_download");
+    fileDownload = mod.fileDownload;
+  }
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -28,7 +40,8 @@ describe("fileDownload", () => {
     delete (window as any).externalAppV2;
   });
 
-  it("sets href, download, and triggers a click", () => {
+  it("sets href, download, and triggers a click", async () => {
+    await loadFileDownload();
     fileDownload("https://example.com/file.json", "file.json");
 
     expect(createdElement.href).toBe("https://example.com/file.json");
@@ -38,26 +51,30 @@ describe("fileDownload", () => {
     expect(removeChildSpy).toHaveBeenCalledWith(createdElement);
   });
 
-  it("defaults filename to empty string", () => {
+  it("defaults filename to empty string", async () => {
+    await loadFileDownload();
     fileDownload("https://example.com/file.json");
     expect(createdElement.download).toBe("");
   });
 
-  it("does not revoke non-blob URLs", () => {
+  it("does not revoke non-blob URLs", async () => {
+    await loadFileDownload();
     fileDownload("https://example.com/file.json", "file.json");
     vi.runAllTimers();
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
   });
 
-  it("revokes blob URLs immediately outside Android", () => {
+  it("revokes blob URLs immediately outside Android", async () => {
+    await loadFileDownload();
     fileDownload("blob:http://localhost/abc-123", "file.json");
     expect(URL.revokeObjectURL).toHaveBeenCalledWith(
       "blob:http://localhost/abc-123"
     );
   });
 
-  it("revokes blob URL after delay on Android (externalApp)", () => {
+  it("revokes blob URL after delay on Android (externalApp)", async () => {
     (window as any).externalApp = {};
+    await loadFileDownload();
     fileDownload("blob:http://localhost/abc-123", "file.json");
     vi.advanceTimersByTime(9_999);
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
@@ -67,8 +84,9 @@ describe("fileDownload", () => {
     );
   });
 
-  it("revokes blob URL after delay on Android (externalAppV2)", () => {
+  it("revokes blob URL after delay on Android (externalAppV2)", async () => {
     (window as any).externalAppV2 = { postMessage: vi.fn() };
+    await loadFileDownload();
     fileDownload("blob:http://localhost/abc-123", "file.json");
     vi.advanceTimersByTime(9_999);
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
