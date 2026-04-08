@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlus,
+  mdiTextBoxOutline,
   mdiWeb,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -358,6 +359,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           slot="details"
                           .path=${mdiOpenInNew}
                         ></ha-svg-icon>
+                      </ha-dropdown-item>
+                    </a>
+                  `
+                : nothing}
+              ${this._logInfo
+                ? html`
+                    <a
+                      href=${`/config/logs?filter=${encodeURIComponent(this.domain)}`}
+                    >
+                      <ha-dropdown-item>
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiTextBoxOutline}
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.panel.config.logs.caption")}
+                        <ha-icon-next slot="details"></ha-icon-next>
                       </ha-dropdown-item>
                     </a>
                   `
