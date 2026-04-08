@@ -361,7 +361,7 @@ export class LovelacePanel extends LitElement {
       clearInterval(this._externalUpdateCountdownTimer);
       this._externalUpdateCountdownTimer = undefined;
     }
-    if (hideToast && this.isConnected) {
+    if (hideToast) {
       showToast(this, {
         id: EXTERNAL_UPDATE_TOAST_ID,
         message: "",
