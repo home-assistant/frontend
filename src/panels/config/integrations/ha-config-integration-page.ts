@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlus,
+  mdiTextBoxOutline,
   mdiWeb,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -97,7 +98,11 @@ export const renderConfigEntryError = (
   }
   return html`
     <br />
-    ${hass.localize("ui.panel.config.integrations.config_entry.check_the_logs")}
+    <a href=${`/config/logs?filter=${encodeURIComponent(entry.domain)}`}>
+      ${hass.localize(
+        "ui.panel.config.integrations.config_entry.check_the_logs"
+      )}
+    </a>
   `;
 };
 
@@ -363,28 +368,40 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
               ${this._logInfo
-                ? html`<ha-dropdown-item
-                    @click=${this._logInfo.level === LogSeverity.DEBUG
-                      ? this._handleDisableDebugLogging
-                      : this._handleEnableDebugLogging}
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .variant=${this._logInfo.level === LogSeverity.DEBUG
-                        ? "danger"
-                        : "default"}
-                      .path=${this._logInfo.level === LogSeverity.DEBUG
-                        ? mdiBugStop
-                        : mdiBugPlay}
-                    ></ha-svg-icon>
-                    ${this._logInfo.level === LogSeverity.DEBUG
-                      ? this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.disable_debug_logging"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.enable_debug_logging"
-                        )}
-                  </ha-dropdown-item>`
+                ? html`<a
+                      href=${`/config/logs?filter=${encodeURIComponent(this.domain)}`}
+                    >
+                      <ha-dropdown-item>
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiTextBoxOutline}
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.panel.config.logs.caption")}
+                        <ha-icon-next slot="details"></ha-icon-next>
+                      </ha-dropdown-item>
+                    </a>
+                    <ha-dropdown-item
+                      @click=${this._logInfo.level === LogSeverity.DEBUG
+                        ? this._handleDisableDebugLogging
+                        : this._handleEnableDebugLogging}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .variant=${this._logInfo.level === LogSeverity.DEBUG
+                          ? "danger"
+                          : "default"}
+                        .path=${this._logInfo.level === LogSeverity.DEBUG
+                          ? mdiBugStop
+                          : mdiBugPlay}
+                      ></ha-svg-icon>
+                      ${this._logInfo.level === LogSeverity.DEBUG
+                        ? this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.disable_debug_logging"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.enable_debug_logging"
+                          )}
+                    </ha-dropdown-item>`
                 : nothing}
             </ha-dropdown>`
           : nothing}
