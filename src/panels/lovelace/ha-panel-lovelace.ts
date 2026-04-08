@@ -112,6 +112,7 @@ export class LovelacePanel extends LitElement {
 
   public disconnectedCallback(): void {
     this._clearExternalUpdateReloadCountdown();
+    this._hideExternalUpdateReloadToast();
     super.disconnectedCallback();
     // On the main dashboard we want to stay subscribed as that one is cached.
     if (this.urlPath !== null && this._unsubUpdates) {
@@ -356,22 +357,24 @@ export class LovelacePanel extends LitElement {
     });
   }
 
-  private _clearExternalUpdateReloadCountdown(hideToast = false) {
+  private _clearExternalUpdateReloadCountdown() {
     if (this._externalUpdateCountdownTimer) {
       clearInterval(this._externalUpdateCountdownTimer);
       this._externalUpdateCountdownTimer = undefined;
     }
-    if (hideToast) {
-      showToast(this, {
-        id: EXTERNAL_UPDATE_TOAST_ID,
-        message: "",
-        duration: 0,
-      });
-    }
+  }
+
+  private _hideExternalUpdateReloadToast() {
+    showToast(this, {
+      id: EXTERNAL_UPDATE_TOAST_ID,
+      message: "",
+      duration: 0,
+    });
   }
 
   private _refreshNowExternalUpdateReload = () => {
-    this._clearExternalUpdateReloadCountdown(true);
+    this._clearExternalUpdateReloadCountdown();
+    this._hideExternalUpdateReloadToast();
     this._fetchConfig();
   };
 
