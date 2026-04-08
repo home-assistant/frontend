@@ -2730,7 +2730,7 @@
             "title": "App store",
             "check_updates": "Check for updates",
             "repositories": "Repositories",
-            "registries": "Registries",
+            "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
           },
           "repositories": {
