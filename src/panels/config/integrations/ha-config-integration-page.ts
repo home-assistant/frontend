@@ -156,6 +156,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _subEntries: Record<string, SubEntry[]> = {};
 
+  private _subEntriesFetchId = 0;
+
   @state() private _domainEntities: Record<string, string[]> = {};
 
   @queryAll("ha-config-entry-row")
@@ -858,6 +860,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchAllSubEntries(entries: ConfigEntry[]) {
+    const fetchId = ++this._subEntriesFetchId;
     const entriesWithSubs = entries.filter((e) => e.num_subentries > 0);
     if (!entriesWithSubs.length) {
       this._subEntries = {};
@@ -881,6 +884,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
       })
     );
+    if (fetchId !== this._subEntriesFetchId) {
+      return;
+    }
     this._subEntries = results;
   }
 
