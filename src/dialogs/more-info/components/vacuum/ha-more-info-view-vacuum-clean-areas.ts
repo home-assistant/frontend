@@ -43,11 +43,8 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     this._error = undefined;
 
     try {
-      const entry: ExtEntityRegistryEntry | undefined =
-        await getExtendedEntityRegistryEntry(
-          this.hass,
-          this.params.entityId
-        ).catch(() => undefined);
+      const entry: ExtEntityRegistryEntry =
+        await getExtendedEntityRegistryEntry(this.hass, this.params.entityId);
 
       const areaMapping = entry?.options?.vacuum?.area_mapping || {};
       this._mappedAreaIds = Object.keys(areaMapping).filter(

@@ -107,11 +107,7 @@ interface ChildView {
 declare global {
   interface HASSDomEvents {
     "show-child-view": ChildView;
-  }
-  interface HASSDomEvents {
     "toggle-edit-mode": boolean;
-  }
-  interface HASSDomEvents {
     "close-child-view": undefined;
   }
 }
