@@ -162,12 +162,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _registerShortcut() {
       const shortcutManager = new ShortcutManager();
       shortcutManager.add({
-        // Those are for latin keyboards that have e, c, m keys
+        // These are for latin keyboards that have e, c, m keys
         e: { handler: (ev) => this._showQuickBar(ev, "entity") },
-        c: { handler: (ev) => this._showQuickBar(ev, "command") },
         m: { handler: (ev) => this._createMyLink(ev) },
         a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
-        d: { handler: (ev) => this._showQuickBar(ev, "device") },
         "$mod+k": {
           handler: (ev) => this._toggleQuickBar(ev),
           allowWhenTextSelected: true,
@@ -175,18 +173,27 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
         "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
-        // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
+        // These are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: { handler: (ev) => this._showQuickBar(ev, "entity") },
-        KeyC: { handler: (ev) => this._showQuickBar(ev, "command") },
         KeyM: { handler: (ev) => this._createMyLink(ev) },
         KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
-        KeyD: { handler: (ev) => this._showQuickBar(ev, "device") },
         "$mod+KeyK": {
           handler: (ev) => this._toggleQuickBar(ev),
           allowWhenTextSelected: true,
           allowInInput: true,
         },
       });
+
+      if (this.hass?.user?.is_admin) {
+        shortcutManager.add({
+          // Latin keyboards
+          c: { handler: (ev) => this._showQuickBar(ev, "command") },
+          d: { handler: (ev) => this._showQuickBar(ev, "device") },
+          // Non-latin keyboards
+          KeyC: { handler: (ev) => this._showQuickBar(ev, "command") },
+          KeyD: { handler: (ev) => this._showQuickBar(ev, "device") },
+        });
+      }
     }
 
     private _conversation = memoizeOne((_components) =>
@@ -228,7 +235,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _toggleQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {
-      if (!this._canToggleQuickBar()) {
+      if (!this.hass?.enableShortcuts) {
         return;
       }
 
@@ -316,13 +323,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _canShowQuickBar(e: KeyboardEvent) {
       return (
         !this._quickBarOpen &&
-        this.hass?.user?.is_admin &&
-        this.hass.enableShortcuts &&
+        !!this.hass?.enableShortcuts &&
         canOverrideAlphanumericInput(e.composedPath())
       );
-    }
-
-    private _canToggleQuickBar() {
-      return this.hass?.user?.is_admin && this.hass.enableShortcuts;
     }
   };

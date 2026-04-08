@@ -63,6 +63,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiDevices,
       iconColor: "#0D47A1",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/automation",
@@ -70,6 +71,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiRobot,
       iconColor: "#518C43",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/areas",
@@ -77,6 +79,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiSofa,
       iconColor: "#E48629",
       component: "zone",
+      adminOnly: true,
     },
     {
       path: "/config/apps",
@@ -84,6 +87,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
       component: "hassio",
+      adminOnly: true,
     },
     {
       path: "/config/lovelace/dashboards",
@@ -91,12 +95,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
       component: "lovelace",
+      adminOnly: true,
     },
     {
       path: "/config/voice-assistants",
       translationKey: "voice_assistants",
       iconPath: mdiMicrophone,
       iconColor: "#3263C3",
+      adminOnly: true,
     },
   ],
   dashboard_external_settings: [
@@ -116,6 +122,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#2458B3",
       component: "matter",
       translationKey: "matter",
+      adminOnly: true,
     },
     {
       path: "/config/zha",
@@ -123,6 +130,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#E74011",
       component: "zha",
       translationKey: "zha",
+      adminOnly: true,
     },
     {
       path: "/config/zwave_js",
@@ -130,6 +138,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#153163",
       component: "zwave_js",
       translationKey: "zwave_js",
+      adminOnly: true,
     },
     {
       path: "/knx",
@@ -138,6 +147,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#4EAA66",
       component: "knx",
       translationKey: "knx",
+      adminOnly: true,
     },
     {
       path: "/config/thread",
@@ -146,6 +156,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#ED7744",
       component: "thread",
       translationKey: "thread",
+      adminOnly: true,
     },
     {
       path: "/config/bluetooth",
@@ -153,6 +164,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
+      adminOnly: true,
     },
     {
       path: "/insteon",
@@ -161,6 +173,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#E4002C",
       component: "insteon",
       translationKey: "insteon",
+      adminOnly: true,
     },
     {
       path: "/config/tags",
@@ -168,6 +181,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiNfcVariant,
       iconColor: "#616161",
       component: "tag",
+      adminOnly: true,
     },
   ],
   dashboard_3: [
@@ -177,6 +191,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiAccount,
       iconColor: "#5A87FA",
       component: ["person", "users"],
+      adminOnly: true,
     },
     {
       path: "/config/system",
@@ -184,6 +199,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiCog,
       iconColor: "#301ABE",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/developer-tools",
@@ -191,6 +207,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/info",
@@ -198,6 +215,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
+      adminOnly: true,
     },
   ],
   backup: [
@@ -207,6 +225,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBackupRestore,
       iconColor: "#4084CD",
       component: "backup",
+      adminOnly: true,
     },
   ],
   devices: [
@@ -217,6 +236,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiPuzzle,
       iconColor: "#2D338F",
       core: true,
+      adminOnly: true,
     },
     {
       component: "devices",
@@ -225,6 +245,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiDevices,
       iconColor: "#2D338F",
       core: true,
+      adminOnly: true,
     },
     {
       component: "entities",
@@ -233,6 +254,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiShape,
       iconColor: "#2D338F",
       core: true,
+      adminOnly: true,
     },
     {
       component: "helpers",
@@ -241,6 +263,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiTools,
       iconColor: "#4D2EA4",
       core: true,
+      adminOnly: true,
     },
   ],
   automations: [
@@ -250,6 +273,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.automation.caption",
       iconPath: mdiRobot,
       iconColor: "#518C43",
+      adminOnly: true,
     },
     {
       component: "scene",
@@ -257,6 +281,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.scene.caption",
       iconPath: mdiPalette,
       iconColor: "#518C43",
+      adminOnly: true,
     },
     {
       component: "script",
@@ -264,6 +289,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.script.caption",
       iconPath: mdiScriptText,
       iconColor: "#518C43",
+      adminOnly: true,
     },
     {
       component: "blueprint",
@@ -271,6 +297,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.blueprint.caption",
       iconPath: mdiPaletteSwatch,
       iconColor: "#518C43",
+      adminOnly: true,
     },
   ],
   tags: [
@@ -280,6 +307,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
       iconColor: "#616161",
+      adminOnly: true,
     },
   ],
   voice_assistants: [
@@ -288,6 +316,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.dashboard.voice_assistants.main",
       iconPath: mdiMicrophone,
       iconColor: "#3263C3",
+      adminOnly: true,
     },
   ],
   developer_tools: [
@@ -297,6 +326,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
       core: true,
+      adminOnly: true,
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
@@ -307,6 +337,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.energy.caption",
       iconPath: mdiLightningBolt,
       iconColor: "#F1C447",
+      adminOnly: true,
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
@@ -317,6 +348,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.network.discovery.dhcp",
       iconPath: mdiNetwork,
       iconColor: "#B1345C",
+      adminOnly: true,
     },
     {
       component: "ssdp",
@@ -324,6 +356,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.network.discovery.ssdp",
       iconPath: mdiNetwork,
       iconColor: "#B1345C",
+      adminOnly: true,
     },
     {
       component: "zeroconf",
@@ -331,6 +364,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.network.discovery.zeroconf",
       iconPath: mdiNetwork,
       iconColor: "#B1345C",
+      adminOnly: true,
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
@@ -340,6 +374,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.application_credentials.caption",
       iconPath: mdiPuzzle,
       iconColor: "#2D338F",
+      adminOnly: true,
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
@@ -350,6 +385,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.mqtt.title",
       iconPath: mdiPuzzle,
       iconColor: "#2D338F",
+      adminOnly: true,
     },
   ],
   lovelace: [
@@ -359,6 +395,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.lovelace.caption",
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
+      adminOnly: true,
     },
   ],
   persons: [
@@ -368,6 +405,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.person.caption",
       iconPath: mdiAccount,
       iconColor: "#5A87FA",
+      adminOnly: true,
     },
     {
       component: "users",
@@ -377,6 +415,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#5A87FA",
       core: true,
       advancedOnly: true,
+      adminOnly: true,
     },
   ],
   areas: [
@@ -387,6 +426,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiSofa,
       iconColor: "#2D338F",
       core: true,
+      adminOnly: true,
     },
     {
       component: "labels",
@@ -395,6 +435,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiLabel,
       iconColor: "#2D338F",
       core: true,
+      adminOnly: true,
     },
     {
       component: "zone",
@@ -402,6 +443,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.zone.caption",
       iconPath: mdiMapMarkerRadius,
       iconColor: "#E48629",
+      adminOnly: true,
     },
   ],
   general: [
@@ -411,18 +453,21 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiCog,
       iconColor: "#653249",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/updates",
       translationKey: "updates",
       iconPath: mdiUpdate,
       iconColor: "#3B808E",
+      adminOnly: true,
     },
     {
       path: "/config/repairs",
       translationKey: "repairs",
       iconPath: mdiScrewdriver,
       iconColor: "#5c995c",
+      adminOnly: true,
     },
     {
       component: "logs",
@@ -431,6 +476,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiTextBoxOutline,
       iconColor: "#C65326",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/backup",
@@ -438,12 +484,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
+      adminOnly: true,
     },
     {
       path: "/config/analytics",
       translationKey: "analytics",
       iconPath: mdiShape,
       iconColor: "#f1c447",
+      adminOnly: true,
     },
     {
       path: "/config/ai-tasks",
@@ -451,6 +499,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiStarFourPoints,
       iconColor: "#8B69E3",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/labs",
@@ -458,12 +507,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiFlask,
       iconColor: "#b1b134",
       core: true,
+      adminOnly: true,
     },
     {
       path: "/config/network",
       translationKey: "network",
       iconPath: mdiNetwork,
       iconColor: "#B1345C",
+      adminOnly: true,
     },
     {
       path: "/config/storage",
@@ -471,6 +522,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiDatabase,
       iconColor: "#518C43",
       component: "hassio",
+      adminOnly: true,
     },
     {
       path: "/config/hardware",
@@ -478,6 +530,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiMemory,
       iconColor: "#301A8E",
       component: ["hassio", "hardware"],
+      adminOnly: true,
     },
   ],
   about: [
@@ -488,6 +541,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
+      adminOnly: true,
     },
   ],
 };
