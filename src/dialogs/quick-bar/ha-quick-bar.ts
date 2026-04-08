@@ -57,7 +57,11 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
+import {
+  effectiveQuickBarMode,
+  type QuickBarParams,
+  type QuickBarSection,
+} from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
 
@@ -100,7 +104,7 @@ export class QuickBar extends LitElement {
       this._translationsLoaded = true;
     }
     this._initialize();
-    this._selectedSection = params.mode;
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
 
     this._relatedResult = params.contextItem ? params.related : undefined;
