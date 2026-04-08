@@ -97,7 +97,7 @@ class HaConfigAppsInfo extends LitElement {
       showAlertDialog(this, { text: (err as Error).message });
       return;
     }
-    navigate("/config");
+    navigate("/config", { replace: true });
   }
 
   static get styles(): CSSResultGroup {
