@@ -2298,27 +2298,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/button@npm:14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/button@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/density": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/focus-ring": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/tokens": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/touch-target": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/0a62c82bcab90089f1b78fb7da17ecb7953ce780f038d1156756bf6f05033d694e941ff83cc3d22ba017da13dcffb35b12aaeb81a4903cbb74a8774c460ecc09
-  languageName: node
-  linkType: hard
-
 "@material/checkbox@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/checkbox@npm:14.0.0-canary.53b3cad2f.0"
@@ -2396,29 +2375,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/dialog@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/dialog@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/icon-button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/tokens": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/touch-target": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/97f0dca5070eba3aee36c55ed018361fb27fb0fd94bf3da675d039a87141b3f9a26db5a716f3f0dd2b312eb65680492906bdf933a52c71b95db10485caca9876
-  languageName: node
-  linkType: hard
-
 "@material/dom@npm:14.0.0-canary.53b3cad2f.0, @material/dom@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/dom@npm:14.0.0-canary.53b3cad2f.0"
@@ -2472,7 +2428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/floating-label@npm:14.0.0-canary.53b3cad2f.0, @material/floating-label@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/floating-label@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/floating-label@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2533,7 +2489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/line-ripple@npm:14.0.0-canary.53b3cad2f.0, @material/line-ripple@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/line-ripple@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/line-ripple@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2580,7 +2536,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/menu-surface@npm:14.0.0-canary.53b3cad2f.0, @material/menu-surface@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/menu-surface@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/menu-surface@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2596,7 +2552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/menu@npm:14.0.0-canary.53b3cad2f.0, @material/menu@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/menu@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/menu@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2626,18 +2582,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-button@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-button@npm:0.27.0"
-  dependencies:
-    "@material/mwc-icon": "npm:^0.27.0"
-    "@material/mwc-ripple": "npm:^0.27.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/426278c6d79a2d661768c8841dfce84b2c1b05f99d1a714a043aaa5e846ee36e5d8718d36ae8cab8e9f8235bf04ace7ab296159f492bfbd94a97252da87de447
-  languageName: node
-  linkType: hard
-
 "@material/mwc-checkbox@npm:0.27.0, @material/mwc-checkbox@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-checkbox@npm:0.27.0"
@@ -2647,22 +2591,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/064a32f238e6582f1d83f545a7f953a14f4774b0f7205f440fd34531d3cc72c9bfdd3e87c9a309eec0c4f42b1de9fb29ac8b35ccf2bdb76fd3216dfed2f387ad
-  languageName: node
-  linkType: hard
-
-"@material/mwc-dialog@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-dialog@npm:0.27.0"
-  dependencies:
-    "@material/dialog": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/mwc-button": "npm:^0.27.0"
-    blocking-elements: "npm:^0.1.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-    wicg-inert: "npm:^3.0.0"
-  checksum: 10/e199f8d6ded85e1a9fff641595b63c529a3a8d18cde63bd4e5c99cff256f10b17a35803c8cbbb223afdb4324770b06f0463b4e79786f2dc94161ff07a0e39dbc
   languageName: node
   linkType: hard
 
@@ -2677,17 +2605,6 @@ __metadata:
     tslib: "npm:^2.0.1"
     wicg-inert: "npm:^3.0.0"
   checksum: 10/5f329a216cb72e1431ffcab83855aa694bcfb58fc65abc62e4d5258d10240fe03815089c532ea604a8758c4719a6c284ccbb2e8cd117f8d7f4f58b79046fb650
-  languageName: node
-  linkType: hard
-
-"@material/mwc-floating-label@npm:0.27.0, @material/mwc-floating-label@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-floating-label@npm:0.27.0"
-  dependencies:
-    "@material/floating-label": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/fbb3abf9b666a4caaf2fc148cf4e996a6483afe4484a928e2fbd44d9dca865773c7a40d9aa7cb1ab831937f2a50741cff3e78ea4c877f3d0478327fda4cec1cd
   languageName: node
   linkType: hard
 
@@ -2712,27 +2629,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/20827383c78c06f8e38eee6ec7cce84d2f79bd4ba74f83de0d97479865dee34d6c4c558063afd7ef2315db4697427b52dfa3d1fae6088187c389d50438de5a48
-  languageName: node
-  linkType: hard
-
-"@material/mwc-icon@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-icon@npm:0.27.0"
-  dependencies:
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/65c89ebab97505c35c7850e1788c6d129a1e8c14f730576b91eea628096977cb93a15f8bde3170d9c81d42862387a66f4007fc32c3b0f24d255e5410231faab3
-  languageName: node
-  linkType: hard
-
-"@material/mwc-line-ripple@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-line-ripple@npm:0.27.0"
-  dependencies:
-    "@material/line-ripple": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/eed28db589004c3f6484c094c6ccaef91ae864f4a5d2b3bf023a8965e922904929310235cf41b8b0f6abe719a340bdd6787317c675b582b1038aad9b9042d674
   languageName: node
   linkType: hard
 
@@ -2770,34 +2666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-menu@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-menu@npm:0.27.0"
-  dependencies:
-    "@material/menu": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/menu-surface": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/mwc-list": "npm:^0.27.0"
-    "@material/shape": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/10c1c35947f1b1b0b6667f89d1799246a27d28dc19f590adbe8783fb811a6f0aeb920b0631fa223fbe78becf7917cd7748bf8c551a7f54284c59ad87eb0188ae
-  languageName: node
-  linkType: hard
-
-"@material/mwc-notched-outline@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-notched-outline@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/notched-outline": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/5b2b246a5c0eacd4a9026d3eebd7b5a6075bcc66250ea2628c3dea002ac330e9578bafecf8bc104bc3f6a578d5f97aae976f8dace0e00c3eea7c7a8612b6ec78
-  languageName: node
-  linkType: hard
-
 "@material/mwc-radio@npm:0.27.0, @material/mwc-radio@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-radio@npm:0.27.0"
@@ -2821,28 +2689,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/360053c9a0ba8be23ba95b6103bed4977eb19265e85beb10701c39dc405a3016789eacbb3b44d961471a0a5864026932d4c52dafb911405ef20e0d12a2520585
-  languageName: node
-  linkType: hard
-
-"@material/mwc-select@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-select@npm:0.27.0"
-  dependencies:
-    "@material/dom": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/floating-label": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/line-ripple": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/list": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/mwc-floating-label": "npm:^0.27.0"
-    "@material/mwc-icon": "npm:^0.27.0"
-    "@material/mwc-line-ripple": "npm:^0.27.0"
-    "@material/mwc-list": "npm:^0.27.0"
-    "@material/mwc-menu": "npm:^0.27.0"
-    "@material/mwc-notched-outline": "npm:^0.27.0"
-    "@material/select": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/4504dea948ab69ee34cca31ff5f1cccd7beeadc37df1115ee4a713a50dc155f893c233ce7c4d64705a761b0cc54dec51721b9d2af34241c4fce2ae0a7c7aa9ac
   languageName: node
   linkType: hard
 
@@ -2883,7 +2729,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/notched-outline@npm:14.0.0-canary.53b3cad2f.0, @material/notched-outline@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/notched-outline@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/notched-outline@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2950,7 +2796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/select@npm:14.0.0-canary.53b3cad2f.0, @material/select@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/select@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/select@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -2977,7 +2823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/shape@npm:14.0.0-canary.53b3cad2f.0, @material/shape@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/shape@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/shape@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -3010,7 +2856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/theme@npm:14.0.0-canary.53b3cad2f.0, @material/theme@npm:=14.0.0-canary.53b3cad2f.0":
+"@material/theme@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/theme@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
@@ -9052,13 +8898,10 @@ __metadata:
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-checkbox": "npm:0.27.0"
-    "@material/mwc-dialog": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
-    "@material/mwc-floating-label": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"
-    "@material/mwc-select": "npm:0.27.0"
     "@material/mwc-switch": "npm:0.27.0"
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
