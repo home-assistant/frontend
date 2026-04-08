@@ -364,8 +364,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
               ${this._logInfo
-                ? html`
-                    <a
+                ? html`<a
                       href=${`/config/logs?filter=${encodeURIComponent(this.domain)}`}
                     >
                       <ha-dropdown-item>
@@ -377,31 +376,28 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-icon-next slot="details"></ha-icon-next>
                       </ha-dropdown-item>
                     </a>
-                  `
-                : nothing}
-              ${this._logInfo
-                ? html`<ha-dropdown-item
-                    @click=${this._logInfo.level === LogSeverity.DEBUG
-                      ? this._handleDisableDebugLogging
-                      : this._handleEnableDebugLogging}
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .variant=${this._logInfo.level === LogSeverity.DEBUG
-                        ? "danger"
-                        : "default"}
-                      .path=${this._logInfo.level === LogSeverity.DEBUG
-                        ? mdiBugStop
-                        : mdiBugPlay}
-                    ></ha-svg-icon>
-                    ${this._logInfo.level === LogSeverity.DEBUG
-                      ? this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.disable_debug_logging"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.enable_debug_logging"
-                        )}
-                  </ha-dropdown-item>`
+                    <ha-dropdown-item
+                      @click=${this._logInfo.level === LogSeverity.DEBUG
+                        ? this._handleDisableDebugLogging
+                        : this._handleEnableDebugLogging}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .variant=${this._logInfo.level === LogSeverity.DEBUG
+                          ? "danger"
+                          : "default"}
+                        .path=${this._logInfo.level === LogSeverity.DEBUG
+                          ? mdiBugStop
+                          : mdiBugPlay}
+                      ></ha-svg-icon>
+                      ${this._logInfo.level === LogSeverity.DEBUG
+                        ? this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.disable_debug_logging"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.enable_debug_logging"
+                          )}
+                    </ha-dropdown-item>`
                 : nothing}
             </ha-dropdown>`
           : nothing}
