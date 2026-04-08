@@ -10069,7 +10069,7 @@
           "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "externally_updated_toast": {
-          "countdown_message": "Dashboard updated in another session. This page will refresh in {seconds} seconds.",
+          "countdown_message": "Dashboard updated in another session. This page will refresh in {seconds, plural, one {# second} other {# seconds}}.",
           "refresh_now": "Refresh now"
         },
         "components": {

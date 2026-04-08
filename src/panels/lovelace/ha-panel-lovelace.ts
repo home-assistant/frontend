@@ -337,7 +337,7 @@ export class LovelacePanel extends LitElement {
       message: this.hass!.localize(
         "ui.panel.lovelace.externally_updated_toast.countdown_message",
         {
-          seconds: String(this._externalUpdateCountdownSeconds),
+          seconds: this._externalUpdateCountdownSeconds,
         }
       ),
       action: {
