@@ -18,11 +18,11 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -74,6 +74,7 @@ import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 export interface SubEntryData {
   subEntry: SubEntry;
@@ -322,13 +323,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       normalEntries,
       this.hass.devices,
       this._subEntries,
-      this.hass.locale.language
+      this.hass.locale.language,
+      this.hass.localize
     );
     const attentionData = this._buildAttentionEntryData(
       attentionEntries,
       this.hass.devices,
       this._subEntries,
-      this.hass.locale.language
+      this.hass.locale.language,
+      this.hass.localize
     );
 
     const devicesRegs = this._getDevices(configEntries, this.hass.devices);
@@ -895,12 +898,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     entries: ConfigEntry[],
     devices: HomeAssistant["devices"],
     subEntries: Record<string, SubEntry[]>,
-    language: string
+    language: string,
+    localize: LocalizeFunc
   ): ConfigEntryData[] => {
+    // We intentially don't pass states as parameter as it's only a fallback
+    // and we want to avoid unnecessary recomputations when states change
     const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
       caseInsensitiveStringCompare(
-        computeDeviceName(a) || "",
-        computeDeviceName(b) || "",
+        computeDeviceNameDisplay(a, localize, this.hass.states) || "",
+        computeDeviceNameDisplay(b, localize, this.hass.states) || "",
         language
       );
 
