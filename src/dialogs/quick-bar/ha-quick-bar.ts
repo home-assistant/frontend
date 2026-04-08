@@ -104,7 +104,7 @@ export class QuickBar extends LitElement {
       this._translationsLoaded = true;
     }
     this._initialize();
-    this._selectedSection = effectiveQuickBarMode(this.hass, params.mode);
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
 
     this._relatedResult = params.contextItem ? params.related : undefined;
