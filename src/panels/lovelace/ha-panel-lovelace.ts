@@ -40,6 +40,7 @@ import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
 import { generateDefaultView } from "./views/default-view";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
+import type { ToastCloseReason } from "../../components/ha-toast";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -340,6 +341,11 @@ export class LovelacePanel extends LitElement {
         text: this.hass!.localize(
           "ui.panel.lovelace.externally_updated_toast.refresh_now"
         ),
+      },
+      onClose: (reason: ToastCloseReason) => {
+        if (reason === "dismiss") {
+          this._clearExternalUpdateReloadCountdown();
+        }
       },
       duration: -1,
       dismissable: true,

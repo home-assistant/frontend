@@ -7,7 +7,10 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
-import type { ToastClosedEventDetail } from "../components/ha-toast";
+import type {
+  ToastCloseReason,
+  ToastClosedEventDetail,
+} from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -17,6 +20,7 @@ export interface ShowToastParams {
     | string
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
   action?: ToastActionParams;
+  onClose?: (reason: ToastCloseReason) => void;
   duration?: number;
   dismissable?: boolean;
 }
@@ -74,7 +78,8 @@ class NotificationManager extends LitElement {
     this._toast?.show();
   }
 
-  private _toastClosed(_ev: HASSDomEvent<ToastClosedEventDetail>) {
+  private _toastClosed(ev: HASSDomEvent<ToastClosedEventDetail>) {
+    this._parameters?.onClose?.(ev.detail.reason);
     this._parameters = undefined;
   }
 
