@@ -28,10 +28,7 @@ export const effectiveQuickBarMode = (
   hass: HomeAssistant,
   mode?: QuickBarSection
 ): QuickBarSection | undefined => {
-  if (mode === undefined) {
-    return undefined;
-  }
-  if (hass.user?.is_admin) {
+  if (mode && hass.user?.is_admin) {
     return mode;
   }
   if (mode === "command" || mode === "device" || mode === "area") {
