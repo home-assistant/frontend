@@ -8551,10 +8551,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:7.2.0":
-  version: 7.2.0
-  resolution: "fuse.js@npm:7.2.0"
-  checksum: 10/42030979980782549448ab85ce9010bb9636cc48322794002d7f2a6eab3c17e91edf80ddb4bc4ce34bf41743cce1226ae5cff735486369ef6d6ff6a5e0e6306f
+"fuse.js@npm:7.3.0":
+  version: 7.3.0
+  resolution: "fuse.js@npm:7.3.0"
+  checksum: 10/b2cdc39e46acb9524fe900356af74c987ecb1dbc67412df651a5291fa072d212e6d74457f0b5d1c39baf79539481f62b613ac792afd8995dd1fc3d20b5354914
   languageName: node
   linkType: hard
 
@@ -9141,7 +9141,7 @@ __metadata:
     eslint-plugin-wc: "npm:3.1.0"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.4"
-    fuse.js: "npm:7.2.0"
+    fuse.js: "npm:7.3.0"
     glob: "npm:13.0.6"
     globals: "npm:17.4.0"
     google-timezones-json: "npm:1.2.0"

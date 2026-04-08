@@ -450,8 +450,10 @@ export class HaAutomationAddSearch extends LitElement {
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     area: memoizeOne((states: PickerComboBoxItem[]) =>

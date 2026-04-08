@@ -656,8 +656,10 @@ export class QuickBar extends LitElement {
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     entity: memoizeOne((states: PickerComboBoxItem[]) =>
