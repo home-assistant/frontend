@@ -19,6 +19,9 @@ export interface ShowToastParams {
   message:
     | string
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
+  announceMessage?:
+    | string
+    | { translationKey: LocalizeKeys; args?: Record<string, string> };
   action?: ToastActionParams;
   onClose?: (reason: ToastCloseReason) => void;
   duration?: number;
@@ -95,6 +98,14 @@ class NotificationManager extends LitElement {
               this._parameters.message.args
             )
           : this._parameters.message}
+        .announceText=${this._parameters.announceMessage
+          ? typeof this._parameters.announceMessage !== "string"
+            ? this.hass.localize(
+                this._parameters.announceMessage.translationKey,
+                this._parameters.announceMessage.args
+              )
+            : this._parameters.announceMessage
+          : undefined}
         .timeoutMs=${this._parameters.duration!}
         @toast-closed=${this._toastClosed}
       >

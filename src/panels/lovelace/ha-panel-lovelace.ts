@@ -52,6 +52,8 @@ let editorLoaded = false;
 let resourcesLoaded = false;
 const EXTERNAL_UPDATE_RELOAD_DELAY = 60;
 const EXTERNAL_UPDATE_TOAST_ID = "lovelace_external_update";
+const EXTERNAL_UPDATE_A11Y_ANNOUNCE_INTERVAL = 20;
+const EXTERNAL_UPDATE_A11Y_FINAL_ANNOUNCE_SECONDS = 5;
 
 declare global {
   interface HASSDomEvents {
@@ -89,6 +91,10 @@ export class LovelacePanel extends LitElement {
   private _externalUpdateCountdownSeconds = EXTERNAL_UPDATE_RELOAD_DELAY;
 
   private _externalUpdateCountdownTimer?: number;
+
+  private _externalUpdateLastAnnouncedSeconds?: number;
+
+  private _externalUpdateAnnouncementMessage?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -319,6 +325,8 @@ export class LovelacePanel extends LitElement {
   private _startExternalUpdateReloadCountdown() {
     this._clearExternalUpdateReloadCountdown();
     this._externalUpdateCountdownSeconds = EXTERNAL_UPDATE_RELOAD_DELAY;
+    this._externalUpdateLastAnnouncedSeconds = undefined;
+    this._externalUpdateAnnouncementMessage = undefined;
     this._showExternalUpdateReloadToast();
     this._externalUpdateCountdownTimer = window.setInterval(() => {
       this._externalUpdateCountdownSeconds -= 1;
@@ -332,6 +340,24 @@ export class LovelacePanel extends LitElement {
   }
 
   private _showExternalUpdateReloadToast() {
+    const shouldAnnounce =
+      this._externalUpdateLastAnnouncedSeconds === undefined ||
+      this._externalUpdateCountdownSeconds ===
+        EXTERNAL_UPDATE_A11Y_FINAL_ANNOUNCE_SECONDS ||
+      this._externalUpdateCountdownSeconds %
+        EXTERNAL_UPDATE_A11Y_ANNOUNCE_INTERVAL ===
+        0;
+    if (shouldAnnounce) {
+      this._externalUpdateLastAnnouncedSeconds =
+        this._externalUpdateCountdownSeconds;
+      this._externalUpdateAnnouncementMessage = this.hass!.localize(
+        "ui.panel.lovelace.externally_updated_toast.countdown_message",
+        {
+          seconds: this._externalUpdateCountdownSeconds,
+        }
+      );
+    }
+
     showToast(this, {
       id: EXTERNAL_UPDATE_TOAST_ID,
       message: this.hass!.localize(
@@ -340,6 +366,7 @@ export class LovelacePanel extends LitElement {
           seconds: this._externalUpdateCountdownSeconds,
         }
       ),
+      announceMessage: this._externalUpdateAnnouncementMessage,
       action: {
         action: this._refreshNowExternalUpdateReload,
         primary: true,
@@ -362,6 +389,8 @@ export class LovelacePanel extends LitElement {
       clearInterval(this._externalUpdateCountdownTimer);
       this._externalUpdateCountdownTimer = undefined;
     }
+    this._externalUpdateLastAnnouncedSeconds = undefined;
+    this._externalUpdateAnnouncementMessage = undefined;
   }
 
   private _hideExternalUpdateReloadToast() {
