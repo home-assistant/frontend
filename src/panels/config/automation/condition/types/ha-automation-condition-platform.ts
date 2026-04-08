@@ -257,7 +257,7 @@ export class HaPlatformCondition extends LitElement {
       <span slot="heading"
         >${this.hass.localize(
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || conditionName}</span
+        ) || fieldName}</span
       >
       ${description
         ? html`<span slot="description">${description}</span>`
