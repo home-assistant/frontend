@@ -319,7 +319,7 @@ export class LovelacePanel extends LitElement {
       this._externalUpdateCountdownSeconds -= 1;
       if (this._externalUpdateCountdownSeconds <= 0) {
         this._clearExternalUpdateReloadCountdown();
-        location.reload();
+        this._refreshNowExternalUpdateReload();
         return;
       }
       this._showExternalUpdateReloadToast();
