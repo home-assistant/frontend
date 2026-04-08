@@ -16,6 +16,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiTextBoxOutline,
   mdiWrench,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -298,6 +299,22 @@ export class HaConfigEntryRow extends LitElement {
                       `ui.panel.config.integrations.config_entry.entities`,
                       { count: entities.length }
                     )}
+                    <ha-icon-next slot="details"></ha-icon-next>
+                  </ha-dropdown-item>
+                </a>
+              `
+            : nothing}
+          ${ERROR_STATES.includes(item.state)
+            ? html`
+                <a
+                  href=${`/config/logs?filter=${encodeURIComponent(item.domain)}`}
+                >
+                  <ha-dropdown-item value="logs">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiTextBoxOutline}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.panel.config.logs.caption")}
                     <ha-icon-next slot="details"></ha-icon-next>
                   </ha-dropdown-item>
                 </a>
