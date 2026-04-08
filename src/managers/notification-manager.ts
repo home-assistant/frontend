@@ -82,8 +82,9 @@ class NotificationManager extends LitElement {
   }
 
   private _toastClosed(ev: HASSDomEvent<ToastClosedEventDetail>) {
-    this._parameters?.onClose?.(ev.detail.reason);
+    const onClose = this._parameters?.onClose;
     this._parameters = undefined;
+    onClose?.(ev.detail.reason);
   }
 
   protected render() {
