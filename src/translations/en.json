@@ -10069,9 +10069,7 @@
           "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "externally_updated_toast": {
-          "message": "Dashboard updated in another session. Refreshing will discard your unsaved changes.",
           "countdown_message": "Dashboard updated in another session. This page will refresh in {seconds} seconds.",
-          "cancel": "Cancel",
           "refresh_now": "Refresh now"
         },
         "components": {
