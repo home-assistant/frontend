@@ -49,6 +49,8 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 let resourcesLoaded = false;
+const EXTERNAL_UPDATE_RELOAD_DELAY = 60;
+const EXTERNAL_UPDATE_TOAST_ID = "lovelace_external_update";
 
 declare global {
   interface HASSDomEvents {
@@ -83,6 +85,10 @@ export class LovelacePanel extends LitElement {
 
   private _loading = false;
 
+  private _externalUpdateCountdownSeconds = EXTERNAL_UPDATE_RELOAD_DELAY;
+
+  private _externalUpdateCountdownTimer?: number;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (
@@ -98,12 +104,13 @@ export class LovelacePanel extends LitElement {
       );
     } else if (this._fetchConfigOnConnect) {
       // Config was changed when we were not at the lovelace panel
-      this._fetchConfig(false);
+      this._fetchConfig();
     }
     window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback(): void {
+    this._clearExternalUpdateReloadCountdown();
     super.disconnectedCallback();
     // On the main dashboard we want to stay subscribed as that one is cached.
     if (this.urlPath !== null && this._unsubUpdates) {
@@ -171,7 +178,7 @@ export class LovelacePanel extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.lovelace && this._panelState !== "error" && !this._loading) {
-      this._fetchConfig(false);
+      this._fetchConfig();
     }
   }
 
@@ -273,7 +280,7 @@ export class LovelacePanel extends LitElement {
   private _handleConnectionStatus = (ev) => {
     // reload lovelace on reconnect so we are sure we have the latest config
     if (ev.detail === "connected") {
-      this._fetchConfig(false);
+      this._fetchConfig();
     }
   };
 
@@ -300,22 +307,63 @@ export class LovelacePanel extends LitElement {
       this._fetchConfigOnConnect = true;
       return;
     }
-    if (!this.lovelace?.editMode && this._panelState !== "yaml-editor") {
-      this._fetchConfig(false);
-      return;
-    }
+    this._startExternalUpdateReloadCountdown();
+  }
+
+  private _startExternalUpdateReloadCountdown() {
+    this._clearExternalUpdateReloadCountdown();
+    this._externalUpdateCountdownSeconds = EXTERNAL_UPDATE_RELOAD_DELAY;
+    this._showExternalUpdateReloadToast();
+    this._externalUpdateCountdownTimer = window.setInterval(() => {
+      this._externalUpdateCountdownSeconds -= 1;
+      if (this._externalUpdateCountdownSeconds <= 0) {
+        this._clearExternalUpdateReloadCountdown();
+        location.reload();
+        return;
+      }
+      this._showExternalUpdateReloadToast();
+    }, 1000);
+  }
+
+  private _showExternalUpdateReloadToast() {
     showToast(this, {
+      id: EXTERNAL_UPDATE_TOAST_ID,
       message: this.hass!.localize(
-        "ui.panel.lovelace.externally_updated_toast.message"
+        "ui.panel.lovelace.externally_updated_toast.countdown_message",
+        {
+          seconds: String(this._externalUpdateCountdownSeconds),
+        }
       ),
       action: {
-        action: () => this._fetchConfig(false),
-        text: this.hass!.localize("ui.common.refresh"),
+        action: this._refreshNowExternalUpdateReload,
+        primary: true,
+        text: this.hass!.localize(
+          "ui.panel.lovelace.externally_updated_toast.refresh_now"
+        ),
       },
       duration: -1,
-      dismissable: false,
+      dismissable: true,
     });
   }
+
+  private _clearExternalUpdateReloadCountdown(hideToast = false) {
+    if (this._externalUpdateCountdownTimer) {
+      clearInterval(this._externalUpdateCountdownTimer);
+      this._externalUpdateCountdownTimer = undefined;
+    }
+    if (hideToast && this.isConnected) {
+      showToast(this, {
+        id: EXTERNAL_UPDATE_TOAST_ID,
+        message: "",
+        duration: 0,
+      });
+    }
+  }
+
+  private _refreshNowExternalUpdateReload = () => {
+    this._clearExternalUpdateReloadCountdown(true);
+    this._fetchConfig();
+  };
 
   public get urlPath() {
     return this.panel!.url_path;
@@ -325,7 +373,7 @@ export class LovelacePanel extends LitElement {
     this._fetchConfig(true);
   }
 
-  private async _fetchConfig(forceDiskRefresh: boolean) {
+  private async _fetchConfig(forceDiskRefresh = false) {
     this._loading = true;
 
     let conf: LovelaceConfig;

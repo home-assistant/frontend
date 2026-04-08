@@ -1,5 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
+import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
@@ -22,6 +23,7 @@ export interface ShowToastParams {
 
 export interface ToastActionParams {
   action: () => void;
+  primary?: boolean;
   text:
     | string
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
@@ -94,7 +96,9 @@ class NotificationManager extends LitElement {
         ${this._parameters?.action
           ? html`
               <ha-button
-                appearance="plain"
+                appearance=${ifDefined(
+                  this._parameters?.action.primary ? undefined : "plain"
+                )}
                 size="small"
                 slot="action"
                 @click=${this._buttonClicked}
