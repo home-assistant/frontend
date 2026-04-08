@@ -217,10 +217,6 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageAssistSettings;
 
-type EMOutgoingMessage =
-  | EMOutgoingMessageWithAnswer[keyof EMOutgoingMessageWithAnswer]["request"]
-  | EMOutgoingMessageWithoutAnswer;
-
 export interface EMIncomingMessageRestart {
   id: number;
   type: "command";
@@ -402,8 +398,16 @@ export class ExternalMessaging {
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T extends keyof EMOutgoingMessageWithAnswer>(
-    msg: EMOutgoingMessageWithAnswer[T]["request"]
+  public sendMessage<
+    T extends keyof EMOutgoingMessageWithAnswer,
+    TType extends string = EMOutgoingMessageWithAnswer[T]["request"]["type"],
+  >(
+    msg: EMOutgoingMessageWithAnswer[T]["request"] & {
+      type: TType &
+        (TType extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
   ): Promise<EMOutgoingMessageWithAnswer[T]["response"]> {
     const msgId = ++this.msgId;
     msg.id = msgId;
@@ -421,7 +425,14 @@ export class ExternalMessaging {
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(msg: EMOutgoingMessageWithoutAnswer) {
+  public fireMessage<T extends string>(
+    msg: EMOutgoingMessageWithoutAnswer & {
+      type: T &
+        (T extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
+  ) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
@@ -477,14 +488,7 @@ export class ExternalMessaging {
     }
   }
 
-  protected _sendExternal<T extends string>(
-    msg: EMOutgoingMessage & {
-      type: T &
-        (T extends RejectedEMMessageType
-          ? "ERROR: message type is rejected"
-          : {});
-    }
-  ) {
+  protected _sendExternal(msg: EMMessage) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
