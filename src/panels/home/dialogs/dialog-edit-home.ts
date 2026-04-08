@@ -115,9 +115,6 @@ export class DialogEditHome
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
 
-        <h3 class="section-header">
-          ${this.hass.localize("ui.panel.home.editor.greeting")}
-        </h3>
         <ha-form
           .hass=${this.hass}
           .data=${{ welcome_message: !this._config?.hide_welcome_message }}
