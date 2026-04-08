@@ -22,6 +22,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -317,13 +318,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         );
       });
 
-    const normalData = this._buildEntryData(
+    const normalData = this._buildNormalEntryData(
       normalEntries,
       this.hass.devices,
       this._subEntries,
       this.hass.locale.language
     );
-    const attentionData = this._buildEntryData(
+    const attentionData = this._buildAttentionEntryData(
       attentionEntries,
       this.hass.devices,
       this._subEntries,
@@ -890,74 +891,76 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     this._subEntries = results;
   }
 
-  private _buildEntryData = memoizeOne(
-    (
-      entries: ConfigEntry[],
-      devices: HomeAssistant["devices"],
-      subEntries: Record<string, SubEntry[]>,
-      language: string
-    ): ConfigEntryData[] => {
-      const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
-        caseInsensitiveStringCompare(
-          a.name_by_user || a.name || "",
-          b.name_by_user || b.name || "",
-          language
-        );
+  private _buildEntryData = (
+    entries: ConfigEntry[],
+    devices: HomeAssistant["devices"],
+    subEntries: Record<string, SubEntry[]>,
+    language: string
+  ): ConfigEntryData[] => {
+    const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
+      caseInsensitiveStringCompare(
+        computeDeviceName(a) || "",
+        computeDeviceName(b) || "",
+        language
+      );
 
-      return entries.map((entry) => {
-        const allDevices = Object.values(devices).filter((device) =>
-          device.config_entries.includes(entry.entry_id)
-        );
+    return entries.map((entry) => {
+      const allDevices = Object.values(devices).filter((device) =>
+        device.config_entries.includes(entry.entry_id)
+      );
 
-        const entrySubs = (subEntries[entry.entry_id] || []).map(
-          (sub): SubEntryData => {
-            const subDevs = allDevices
-              .filter(
-                (d) =>
-                  d.config_entries_subentries[entry.entry_id]?.includes(
-                    sub.subentry_id
-                  ) && d.entry_type !== "service"
-              )
-              .sort(sortDevices);
-            const subServices = allDevices
-              .filter(
-                (d) =>
-                  d.config_entries_subentries[entry.entry_id]?.includes(
-                    sub.subentry_id
-                  ) && d.entry_type === "service"
-              )
-              .sort(sortDevices);
-            return { subEntry: sub, devices: subDevs, services: subServices };
-          }
-        );
+      const entrySubs = (subEntries[entry.entry_id] || []).map(
+        (sub): SubEntryData => {
+          const subDevs = allDevices
+            .filter(
+              (d) =>
+                d.config_entries_subentries[entry.entry_id]?.includes(
+                  sub.subentry_id
+                ) && d.entry_type !== "service"
+            )
+            .sort(sortDevices);
+          const subServices = allDevices
+            .filter(
+              (d) =>
+                d.config_entries_subentries[entry.entry_id]?.includes(
+                  sub.subentry_id
+                ) && d.entry_type === "service"
+            )
+            .sort(sortDevices);
+          return { subEntry: sub, devices: subDevs, services: subServices };
+        }
+      );
 
-        const ownDevices = allDevices
-          .filter(
-            (d) =>
-              (!d.config_entries_subentries[entry.entry_id]?.length ||
-                d.config_entries_subentries[entry.entry_id][0] === null) &&
-              d.entry_type !== "service"
-          )
-          .sort(sortDevices);
+      const ownDevices = allDevices
+        .filter(
+          (d) =>
+            (!d.config_entries_subentries[entry.entry_id]?.length ||
+              d.config_entries_subentries[entry.entry_id][0] === null) &&
+            d.entry_type !== "service"
+        )
+        .sort(sortDevices);
 
-        const ownServices = allDevices
-          .filter(
-            (d) =>
-              (!d.config_entries_subentries[entry.entry_id]?.length ||
-                d.config_entries_subentries[entry.entry_id][0] === null) &&
-              d.entry_type === "service"
-          )
-          .sort(sortDevices);
+      const ownServices = allDevices
+        .filter(
+          (d) =>
+            (!d.config_entries_subentries[entry.entry_id]?.length ||
+              d.config_entries_subentries[entry.entry_id][0] === null) &&
+            d.entry_type === "service"
+        )
+        .sort(sortDevices);
 
-        return {
-          entry,
-          devices: ownDevices,
-          services: ownServices,
-          subEntries: entrySubs,
-        };
-      });
-    }
-  );
+      return {
+        entry,
+        devices: ownDevices,
+        services: ownServices,
+        subEntries: entrySubs,
+      };
+    });
+  };
+
+  private _buildNormalEntryData = memoizeOne(this._buildEntryData);
+
+  private _buildAttentionEntryData = memoizeOne(this._buildEntryData);
 
   private async _handleEnableDebugLogging() {
     const integration = this.domain;
