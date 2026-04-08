@@ -109,7 +109,7 @@ describe("computeEntityNameDisplay", () => {
     expect(result).toBe("Kitchen Light");
   });
 
-  it("replaces entity with device name when entity uses device name", () => {
+  it("returns empty for entity type when entity name is empty", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
@@ -138,10 +138,10 @@ describe("computeEntityNameDisplay", () => {
       hass.floors
     );
 
-    expect(result).toBe("Kitchen Device");
+    expect(result).toBe("");
   });
 
-  it("does not replace entity with device when device is already included", () => {
+  it("returns device name when entity uses device name and device is included", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
@@ -170,8 +170,6 @@ describe("computeEntityNameDisplay", () => {
       hass.floors
     );
 
-    // Since entity name equals device name, entity returns undefined
-    // So we only get the device name
     expect(result).toBe("Kitchen Device");
   });
 

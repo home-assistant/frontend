@@ -3,7 +3,7 @@ import type { HomeAssistant } from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
-import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
+import { computeEntityName } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
 import { computeStateName } from "./compute_state_name";
 import { getEntityContext } from "./context/get_entity_context";
@@ -46,23 +46,13 @@ export const computeEntityNameDisplay = (
     return computeStateName(stateObj);
   }
 
-  let items = ensureArray(name);
+  const items = ensureArray(name);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
   // If all items are text, just join them
   if (items.every((n) => n.type === "text")) {
     return items.map((item) => item.text).join(separator);
-  }
-
-  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
-
-  // If entity uses device name, and device is not already included, replace it with device name
-  if (useDeviceName) {
-    const hasDevice = items.some((n) => n.type === "device");
-    if (!hasDevice) {
-      items = items.map((n) => (n.type === "entity" ? { type: "device" } : n));
-    }
   }
 
   const names = computeEntityNameList(
