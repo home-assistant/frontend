@@ -50,6 +50,7 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 let resourcesLoaded = false;
+const EXTERNAL_UPDATE_INTERVAL = 1000;
 const EXTERNAL_UPDATE_RELOAD_DELAY = 60;
 const EXTERNAL_UPDATE_TOAST_ID = "lovelace_external_update";
 const EXTERNAL_UPDATE_A11Y_ANNOUNCE_INTERVAL = 20;
@@ -336,7 +337,7 @@ export class LovelacePanel extends LitElement {
         return;
       }
       this._showExternalUpdateReloadToast();
-    }, 1000);
+    }, EXTERNAL_UPDATE_INTERVAL);
   }
 
   private _showExternalUpdateReloadToast() {
