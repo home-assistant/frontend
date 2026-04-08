@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
@@ -16,7 +17,6 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
-import { TZDate } from "@date-fns/tz";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../common/datetime/use_am_pm";
@@ -25,7 +25,6 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-button";
 import "../../components/ha-button-toggle-group";
-import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
 import type {
@@ -218,14 +217,10 @@ export class HAFullCalendar extends LitElement {
 
       <div id="calendar"></div>
       ${this.addFab && this._hasMutableCalendars
-        ? html`<ha-fab
-            slot="fab"
-            .label=${this.hass.localize("ui.components.calendar.event.add")}
-            extended
-            @click=${this._createEvent}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>`
+        ? html`<ha-button size="large" slot="fab" @click=${this._createEvent}>
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.components.calendar.event.add")}
+          </ha-button>`
         : nothing}
     `;
   }
@@ -559,13 +554,14 @@ export class HAFullCalendar extends LitElement {
           --ha-icon-button-size: 32px;
         }
 
-        ha-fab {
+        ha-button[slot="fab"] {
           position: absolute;
-          bottom: 16px;
-          right: 16px;
-          inset-inline-end: 16px;
+          bottom: var(--ha-space-4);
+          right: var(--ha-space-4);
+          inset-inline-end: var(--ha-space-4);
           inset-inline-start: initial;
           z-index: 1;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
 
         #calendar {

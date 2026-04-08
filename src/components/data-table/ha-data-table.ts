@@ -17,6 +17,10 @@ import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
@@ -103,6 +107,7 @@ export interface DataTableRowData {
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
+const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
@@ -165,6 +170,10 @@ export class HaDataTable extends LitElement {
   @state() private _headerHeight = 0;
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
+
+  @query(".mdc-data-table__header-row") private _headerRow?: HTMLDivElement;
+
+  @query("lit-virtualizer") private _scroller?: HTMLElement;
 
   @state() private _collapsedGroups: string[] = [];
 
@@ -242,15 +251,27 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
-  protected updated() {
-    const header = this.renderRoot.querySelector(".mdc-data-table__header-row");
-    if (!header) {
+  protected updated(changedProps: PropertyValues) {
+    if (!this._headerRow) {
       return;
     }
-    if (header.scrollWidth > header.clientWidth) {
-      this.style.setProperty("--table-row-width", `${header.scrollWidth}px`);
+
+    if (this._headerRow.scrollWidth > this._headerRow.clientWidth) {
+      this.style.setProperty(
+        "--table-row-width",
+        `${this._headerRow.scrollWidth}px`
+      );
     } else {
       this.style.removeProperty("--table-row-width");
+    }
+
+    if (
+      changedProps.has("selectable") ||
+      (!this.autoHeight &&
+        document.activeElement &&
+        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(document.activeElement.tagName))
+    ) {
+      this._focusScroller();
     }
   }
 
@@ -517,6 +538,7 @@ export class HaDataTable extends LitElement {
                 <lit-virtualizer
                   scroller
                   class="mdc-data-table__content scroller ha-scrollbar"
+                  tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
                   @scroll=${this._saveScrollPos}
                   .items=${this._groupData(
                     this._filteredData,
@@ -829,8 +851,10 @@ export class HaDataTable extends LitElement {
     ): Promise<DataTableRowData[]> => filterData(data, columns, filter)
   );
 
-  private _handleHeaderClick(ev: Event) {
-    const columnId = (ev.currentTarget as any).columnId;
+  private _handleHeaderClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { columnId: string }>
+  ) {
+    const columnId = ev.currentTarget.columnId;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -848,11 +872,12 @@ export class HaDataTable extends LitElement {
       column: columnId,
       direction: this.sortDirection,
     });
+
+    this._focusScroller();
   }
 
-  private _handleHeaderRowCheckboxClick(ev: Event) {
-    const checkbox = ev.target as HaCheckbox;
-    if (checkbox.checked) {
+  private _handleHeaderRowCheckboxClick(ev: HASSDomTargetEvent<HaCheckbox>) {
+    if (ev.target.checked) {
       this.selectAll();
     } else {
       this._checkedRows = [];
@@ -861,9 +886,10 @@ export class HaDataTable extends LitElement {
     this._lastSelectedRowId = null;
   }
 
-  private _handleRowCheckboxClicked = (ev: Event) => {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    const rowId = (checkbox as any).rowId;
+  private _handleRowCheckboxClicked = (
+    ev: HASSDomCurrentTargetEvent<HaCheckbox & { rowId: string }>
+  ) => {
+    const rowId = ev.currentTarget.rowId;
 
     const groupedData = this._groupData(
       this._filteredData,
@@ -900,7 +926,7 @@ export class HaDataTable extends LitElement {
           ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
         ];
       }
-    } else if (!checkbox.checked) {
+    } else if (!ev.currentTarget.checked) {
       if (!this._checkedRows.includes(rowId)) {
         this._checkedRows = [...this._checkedRows, rowId];
       }
@@ -938,7 +964,9 @@ export class HaDataTable extends LitElement {
     return checkedRows;
   }
 
-  private _handleRowClick = (ev: Event) => {
+  private _handleRowClick = (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { rowId: string }>
+  ) => {
     if (
       ev
         .composedPath()
@@ -954,14 +982,13 @@ export class HaDataTable extends LitElement {
     ) {
       return;
     }
-    const rowId = (ev.currentTarget as any).rowId;
+    const rowId = ev.currentTarget.rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
 
-  private _setTitle(ev: Event) {
-    const target = ev.currentTarget as HTMLElement;
-    if (target.scrollWidth > target.offsetWidth) {
-      target.setAttribute("title", target.innerText);
+  private _setTitle(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    if (ev.currentTarget.scrollWidth > ev.currentTarget.offsetWidth) {
+      ev.currentTarget.setAttribute("title", ev.currentTarget.innerText);
     }
   }
 
@@ -983,6 +1010,12 @@ export class HaDataTable extends LitElement {
     this._debounceSearch((ev.target as HTMLInputElement).value);
   }
 
+  private _focusScroller(): void {
+    this._scroller?.focus({
+      preventScroll: true,
+    });
+  }
+
   private async _calcTableHeight() {
     if (this.autoHeight) {
       return;
@@ -992,23 +1025,27 @@ export class HaDataTable extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
-    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
+    this._savedScrollPos = e.target.scrollTop;
 
-    this.renderRoot.querySelector(".mdc-data-table__header-row")!.scrollLeft = (
-      e.target as HTMLDivElement
-    ).scrollLeft;
+    if (this._headerRow) {
+      this._headerRow.scrollLeft = e.target.scrollLeft;
+    }
   }
 
   @eventOptions({ passive: true })
-  private _scrollContent(e: Event) {
-    this.renderRoot.querySelector("lit-virtualizer")!.scrollLeft = (
-      e.target as HTMLDivElement
-    ).scrollLeft;
+  private _scrollContent(e: HASSDomTargetEvent<HTMLDivElement>) {
+    if (!this._scroller) {
+      return;
+    }
+
+    this._scroller.scrollLeft = e.target.scrollLeft;
   }
 
-  private _collapseGroup = (ev: Event) => {
-    const groupName = (ev.currentTarget as any).group;
+  private _collapseGroup = (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { group: string }>
+  ) => {
+    const groupName = ev.currentTarget.group;
     if (this._collapsedGroups.includes(groupName)) {
       this._collapsedGroups = this._collapsedGroups.filter(
         (grp) => grp !== groupName
@@ -1430,6 +1467,11 @@ export class HaDataTable extends LitElement {
         lit-virtualizer {
           contain: size layout !important;
           overscroll-behavior: contain;
+        }
+
+        lit-virtualizer:focus,
+        lit-virtualizer:focus-visible {
+          outline: none;
         }
       `,
     ];

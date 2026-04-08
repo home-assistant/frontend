@@ -4,6 +4,7 @@ export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
   default_panel?: string;
+  apps_info_dismissed?: boolean;
 }
 
 export interface SidebarFrontendUserData {

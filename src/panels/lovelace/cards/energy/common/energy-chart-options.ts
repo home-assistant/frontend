@@ -38,6 +38,18 @@ import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
+/**
+ * Energy chart data point tuple:
+ * [0] displayX  - bar position (midpoint for sub-daily periods, start otherwise)
+ * [1] value     - the energy value
+ * [2] originalStart - original period start timestamp, used for tooltips
+ */
+export type EnergyDataPoint = [
+  displayX: number,
+  value: number,
+  originalStart: number,
+];
+
 // Number of days of padding when showing time axis in months
 const MONTH_TIME_AXIS_PADDING = 5;
 
@@ -207,9 +219,8 @@ function formatTooltip(
   if (!params[0]?.value) {
     return "";
   }
-  // when comparing the first value is offset to match the main period
-  // and the real date is in the third value
-  // find the first param with the real date to handle gap-filled entries
+  // displayX may be shifted from the period start (see EnergyDataPoint);
+  // originalStart has the real date for display. Gap-filled entries lack it.
   const origDate = params.find((p) => p.value?.[2] != null)?.value?.[2];
   const date = new Date(origDate ?? params[0].value?.[0]);
   let period: string;
@@ -371,6 +382,34 @@ export function fillLineGaps(datasets: LineSeriesOption[]) {
   });
 
   return datasets;
+}
+
+/**
+ * Compute the display x-position for an energy bar chart data point.
+ * For sub-daily periods (hour/5minute), returns the midpoint to center bars
+ * between ticks. For daily or longer periods, returns the start timestamp.
+ */
+export function computeStatMidpoint(
+  start: number,
+  end: number,
+  period: string,
+  compareTransform?: (ts: Date) => Date
+): number {
+  const center = period === "hour" || period === "5minute";
+  if (!center) {
+    if (compareTransform) {
+      return compareTransform(new Date(start)).getTime();
+    }
+    return start;
+  }
+  if (compareTransform) {
+    return (
+      (compareTransform(new Date(start)).getTime() +
+        compareTransform(new Date(end)).getTime()) /
+      2
+    );
+  }
+  return (start + end) / 2;
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

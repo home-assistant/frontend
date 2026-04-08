@@ -44,7 +44,7 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -798,16 +798,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.helpers.picker.create_helper"
-          )}
-          extended
-          @click=${this._createHelper}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._createHelper}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -292,7 +292,7 @@ export class HaPlatformTrigger extends LitElement {
       <span slot="heading"
         >${this.hass.localize(
           `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-        ) || triggerName}</span
+        ) || fieldName}</span
       >
       ${description
         ? html`<span slot="description">${description}</span>`

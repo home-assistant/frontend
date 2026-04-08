@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDotsVertical, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";

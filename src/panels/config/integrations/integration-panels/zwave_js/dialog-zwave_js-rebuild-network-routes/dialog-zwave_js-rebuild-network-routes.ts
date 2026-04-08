@@ -1,5 +1,4 @@
 import { consume, provide, type ContextType } from "@lit/context";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiAlert,
   mdiCheckCircle,
@@ -19,6 +18,7 @@ import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-spinner";
+import "../../../../../../components/progress/ha-progress-bar";
 import {
   connectionContext,
   localizeContext,
@@ -130,16 +130,14 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                       )}
                     </p>
                   </div>
-                  <mwc-linear-progress
+                  <ha-progress-bar
+                    loading
                     .indeterminate=${!this._progress}
-                    .progress=${this._progress
-                      ? this._progressPercent(this._progress)
-                      : undefined}
-                    .buffer=${this._progress
+                    .value=${this._progress
                       ? this._progressPercent(this._progress)
                       : undefined}
                   >
-                  </mwc-linear-progress>
+                  </ha-progress-bar>
                   ${this._progress
                     ? html` <div class="progress-detail">
                         <ha-button
@@ -367,7 +365,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
       const done =
         progress.done.length + progress.skipped.length + progress.failed.length;
       const total = done + progress.pending.length;
-      return parseFloat((total > 0 ? done / total : 0).toFixed(2));
+      return total > 0 ? (done / total) * 100 : 0;
     }
   );
 
@@ -424,7 +422,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
           margin-inline-start: initial;
         }
 
-        mwc-linear-progress {
+        ha-progress-bar {
           margin-top: var(--ha-space-8);
         }
 

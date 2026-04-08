@@ -6,8 +6,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
@@ -39,7 +39,6 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-overview")
 class HaConfigBackupOverview extends LitElement {
@@ -228,21 +227,15 @@ class HaConfigBackupOverview extends LitElement {
             : nothing}
         </div>
 
-        <ha-fab
+        <ha-button
           slot="fab"
-          ?disabled=${backupInProgress}
-          .label=${this.hass.localize(
-            "ui.panel.config.backup.overview.new_backup"
-          )}
-          extended
+          size="large"
+          .loading=${backupInProgress}
           @click=${this._newBackup}
         >
-          ${backupInProgress
-            ? html`<div slot="icon" class="loading">
-                <ha-spinner .size=${"small"}></ha-spinner>
-              </div>`
-            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.backup.overview.new_backup")}
+        </ha-button>
       </hass-subpage>
     `;
   }

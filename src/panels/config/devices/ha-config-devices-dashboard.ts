@@ -40,7 +40,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
@@ -779,14 +779,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-          extended
-          @click=${this._addDevice}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addDevice}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.add_device")}
+        </ha-button>
         ${Array.isArray(this._filters.config_entry?.value) &&
         this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">
