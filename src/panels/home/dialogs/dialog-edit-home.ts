@@ -128,6 +128,7 @@ export class DialogEditHome
             },
           ]}
           .computeLabel=${this._computeWelcomeLabel}
+          .computeHelper=${this._computeWelcomeHelper}
           @value-changed=${this._welcomeMessageToggleChanged}
         ></ha-form>
 
@@ -223,6 +224,9 @@ export class DialogEditHome
 
   private _computeWelcomeLabel = () =>
     this.hass.localize("ui.panel.home.editor.welcome_message");
+
+  private _computeWelcomeHelper = () =>
+    this.hass.localize("ui.panel.home.editor.welcome_message_helper");
 
   private _welcomeMessageToggleChanged(ev: CustomEvent): void {
     this._config = {

@@ -2469,6 +2469,7 @@
           "areas_page": "areas page",
           "greeting": "Greeting",
           "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
           "summaries_description": "Choose which summaries to show on your overview page."
         },
