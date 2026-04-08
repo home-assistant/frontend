@@ -25,7 +25,7 @@ export interface QuickBarParams {
 
 /** Non-admin users cannot scope the bar to command, device, or area (those sections are admin-only). */
 export const effectiveQuickBarMode = (
-  hass: HomeAssistant,
+  user: HomeAssistant["user"],
   mode?: QuickBarSection
 ): QuickBarSection | undefined => {
   if (mode && hass.user?.is_admin) {
