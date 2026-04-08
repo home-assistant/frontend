@@ -7,7 +7,7 @@ import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext } from "../../../data/context/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,

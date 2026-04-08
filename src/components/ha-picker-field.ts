@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import {
   css,
@@ -11,9 +11,8 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { localizeContext } from "../data/context";
+import { internationalizationContext } from "../data/context/context";
 import { PickerMixin } from "../mixins/picker-mixin";
-import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon";
@@ -34,8 +33,8 @@ export class HaPickerField extends PickerMixin(LitElement) {
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public async focus() {
     await this.updateComplete;
@@ -89,7 +88,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
               ${this.unknownItemText ||
-              this.localize("ui.components.combo-box.unknown_item")}
+              this._i18n?.localize("ui.components.combo-box.unknown_item")}
             </div>`
           : nothing}
         ${showClearIcon

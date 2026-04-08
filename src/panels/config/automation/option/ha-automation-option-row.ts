@@ -21,6 +21,7 @@ import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -30,7 +31,7 @@ import type {
   OptionSidebarConfig,
 } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import { fullEntitiesContext } from "../../../../data/context";
+import { fullEntitiesContext } from "../../../../data/context/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { Action, Option } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -47,7 +48,6 @@ import {
   overflowStyles,
   rowStyles,
 } from "../styles";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {

@@ -14,7 +14,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { withViewTransition } from "../common/util/view-transition";
-import { localizeContext } from "../data/context";
+import { internationalizationContext } from "../data/context/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-dialog-header";
@@ -123,13 +123,13 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @query(".body") public bodyContainer!: HTMLDivElement;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   // disabled till iOS app fix the "focus_element" implementation
   // @state()
-  // @consume({ context: authContext, subscribe: true })
-  // private auth?: ContextType<typeof authContext>;
+  // @consume({ context: configContext, subscribe: true })
+  // private _hassConfig?: ContextType<typeof configContext>;
 
   @state()
   private _bodyScrolled = false;
@@ -184,7 +184,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                 <slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
-                    .label=${this.localize?.("ui.common.close") ?? "Close"}
+                    .label=${this._i18n?.localize("ui.common.close") ?? "Close"}
                     .path=${mdiClose}
                   ></ha-icon-button>
                 </slot>
@@ -222,13 +222,13 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
     requestAnimationFrame(() => {
       // disabled till iOS app fix the "focus_element" implementation
-      // if (this.auth?.external && isIosApp(this.auth.external)) {
+      // if (this._hassConfig?.auth.external && isIosApp(this._hassConfig.auth.external)) {
       //   const element = this.querySelector("[autofocus]");
       //   if (element !== null) {
       //     if (!element.id) {
       //       element.id = "ha-dialog-autofocus";
       //     }
-      //     this.auth.external.fireMessage({
+      //     this._hassConfig.auth.external.fireMessage({
       //       type: "focus_element",
       //       payload: {
       //         element_id: element.id,

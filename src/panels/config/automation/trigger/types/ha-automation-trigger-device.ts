@@ -9,7 +9,7 @@ import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
 import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
 import "../../../../../components/ha-form/ha-form";
-import { fullEntitiesContext } from "../../../../../data/context";
+import { fullEntitiesContext } from "../../../../../data/context/context";
 import type {
   DeviceCapabilities,
   DeviceTrigger,

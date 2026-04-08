@@ -5,7 +5,7 @@ import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
-import { localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context/context";
 import { isMac } from "../../util/is_mac";
 import { DialogMixin } from "../dialog-mixin";
 
@@ -168,8 +168,8 @@ const _SHORTCUTS: Section[] = [
 @customElement("dialog-shortcuts")
 class DialogShortcuts extends DialogMixin(LitElement) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   private _renderShortcut(
     shortcutKeys: ShortcutString[],
@@ -183,13 +183,15 @@ class DialogShortcuts extends DialogMixin(LitElement) {
               >${shortcutKey === CTRL_CMD
                 ? isMac
                   ? "⌘"
-                  : this.localize("ui.dialogs.shortcuts.keys.ctrl")
+                  : this._i18n.localize("ui.dialogs.shortcuts.keys.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey
-                  : this.localize(shortcutKey.shortcutTranslationKey)}</span
+                  : this._i18n.localize(
+                      shortcutKey.shortcutTranslationKey
+                    )}</span
             >`
         )}
-        ${this.localize(descriptionKey)}
+        ${this._i18n.localize(descriptionKey)}
       </div>
     `;
   }
@@ -198,12 +200,12 @@ class DialogShortcuts extends DialogMixin(LitElement) {
     return html`
       <ha-dialog
         open
-        .headerTitle=${this.localize("ui.dialogs.shortcuts.title")}
+        .headerTitle=${this._i18n.localize("ui.dialogs.shortcuts.title")}
       >
         <div class="content">
           ${_SHORTCUTS.map(
             (section) => html`
-              <h3>${this.localize(section.titleTranslationKey)}</h3>
+              <h3>${this._i18n.localize(section.titleTranslationKey)}</h3>
               <div class="items">
                 ${section.items.map((item) => {
                   if ("shortcut" in item) {
@@ -213,7 +215,7 @@ class DialogShortcuts extends DialogMixin(LitElement) {
                     );
                   }
                   return html`<p>
-                    ${this.localize((item as Text).textTranslationKey)}
+                    ${this._i18n.localize((item as Text).textTranslationKey)}
                   </p>`;
                 })}
               </div>
@@ -222,9 +224,9 @@ class DialogShortcuts extends DialogMixin(LitElement) {
         </div>
 
         <ha-alert slot="footer">
-          ${this.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
+          ${this._i18n.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
             user_profile: html`<a href="/profile/general#shortcuts"
-              >${this.localize(
+              >${this._i18n.localize(
                 "ui.dialogs.shortcuts.enable_shortcuts_hint_user_profile"
               )}</a
             >`,

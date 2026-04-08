@@ -13,7 +13,7 @@ import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
-import { localizeContext } from "../../../data/context";
+import { internationalizationContext } from "../../../data/context/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { ValueChangedEvent } from "../../../types";
@@ -24,8 +24,8 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
   LitElement
 ) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _name!: string;
 
@@ -56,8 +56,8 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
       <ha-dialog
         open
         header-title=${entry
-          ? this.localize("ui.panel.config.category.editor.edit")
-          : this.localize("ui.panel.config.category.editor.create")}
+          ? this._i18n.localize("ui.panel.config.category.editor.edit")
+          : this._i18n.localize("ui.panel.config.category.editor.create")}
         prevent-scrim-close
       >
         ${this._error
@@ -67,8 +67,10 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
           <ha-input
             .value=${this._name}
             @input=${this._nameChanged}
-            .label=${this.localize("ui.panel.config.category.editor.name")}
-            .validationMessage=${this.localize(
+            .label=${this._i18n.localize(
+              "ui.panel.config.category.editor.name"
+            )}
+            .validationMessage=${this._i18n.localize(
               "ui.panel.config.category.editor.required_error_msg"
             )}
             required
@@ -78,7 +80,9 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
           <ha-icon-picker
             .value=${this._icon ?? undefined}
             @value-changed=${this._iconChanged}
-            .label=${this.localize("ui.panel.config.category.editor.icon")}
+            .label=${this._i18n.localize(
+              "ui.panel.config.category.editor.icon"
+            )}
           ></ha-icon-picker>
         </div>
         <ha-dialog-footer slot="footer">
@@ -87,7 +91,7 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -95,8 +99,8 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
             .disabled=${nameInvalid || !!this._submitting}
           >
             ${entry
-              ? this.localize("ui.common.save")
-              : this.localize("ui.common.add")}
+              ? this._i18n.localize("ui.common.save")
+              : this._i18n.localize("ui.common.add")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -135,7 +139,7 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
     } catch (err: any) {
       this._error =
         err.message ||
-        this.localize("ui.panel.config.category.editor.unknown_error");
+        this._i18n.localize("ui.panel.config.category.editor.unknown_error");
     } finally {
       this._submitting = false;
     }

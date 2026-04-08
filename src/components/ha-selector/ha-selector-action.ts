@@ -2,7 +2,7 @@ import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fullEntitiesContext } from "../../data/context";
+import { fullEntitiesContext } from "../../data/context/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { Action } from "../../data/script";
 import { migrateAutomationAction } from "../../data/script";

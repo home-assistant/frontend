@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAlert,
   mdiAlertOctagon,
@@ -16,14 +16,11 @@ import { isTemplate } from "../../../../common/string/has-template";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
-  areasContext,
   configEntriesContext,
-  devicesContext,
-  floorsContext,
+  internationalizationContext,
   labelsContext,
-  localizeContext,
-  statesContext,
-} from "../../../../data/context";
+  registriesContext,
+} from "../../../../data/context/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../../types";
 import { getTargetIcon } from "./get_target_icon";
@@ -41,24 +38,12 @@ export class HaAutomationRowTargets extends LitElement {
   public targetRequired = false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
-  @consume({ context: floorsContext, subscribe: true })
-  private floors!: HomeAssistant["floors"];
-
-  @state()
-  @consume({ context: areasContext, subscribe: true })
-  private areas!: HomeAssistant["areas"];
-
-  @state()
-  @consume({ context: devicesContext, subscribe: true })
-  private devices!: HomeAssistant["devices"];
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private states!: HomeAssistant["states"];
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -82,7 +67,7 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
           ? html`<ha-svg-icon .path=${mdiAlertOctagon}></ha-svg-icon>`
           : nothing,
-        this.localize(
+        this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.no_target"
         ),
         false,
@@ -124,7 +109,7 @@ export class HaAutomationRowTargets extends LitElement {
     return html`<span class="target">
       <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
       <div class="label">
-        ${this.localize(
+        ${this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.targets",
           {
             count: totalLength,
@@ -142,16 +127,16 @@ export class HaAutomationRowTargets extends LitElement {
     targetId: string
   ): boolean {
     if (targetType === "floor") {
-      return !!this.floors[targetId];
+      return !!this._registries.floors[targetId];
     }
     if (targetType === "area") {
-      return !!this.areas[targetId];
+      return !!this._registries.areas[targetId];
     }
     if (targetType === "device") {
-      return !!this.devices[targetId];
+      return !!this._registries.devices[targetId];
     }
     if (targetType === "entity") {
-      return !!this.states[targetId];
+      return !!this._registries.entities[targetId];
     }
     if (targetType === "label") {
       return !!this._getLabel(targetId);
@@ -178,7 +163,7 @@ export class HaAutomationRowTargets extends LitElement {
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       return this._renderTargetBadge(
         html`<ha-svg-icon .path=${mdiShape}></ha-svg-icon>`,
-        this.localize(
+        this._i18n.localize(
           `ui.panel.config.automation.editor.target_summary.${targetId as "all" | "none"}_entities`
         )
       );
@@ -188,7 +173,7 @@ export class HaAutomationRowTargets extends LitElement {
     if (isTemplate(targetId)) {
       return this._renderTargetBadge(
         html`<ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>`,
-        this.localize(
+        this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.template"
         )
       );

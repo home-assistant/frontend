@@ -5,7 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
-import { localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context/context";
 import { haStyle } from "../../resources/styles";
 import "../ha-button";
 import "../ha-icon-button";
@@ -64,8 +64,8 @@ class HaInputMulti extends LitElement {
   public updateOnBlur = false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize?: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   protected render() {
     return html`
@@ -109,7 +109,7 @@ class HaInputMulti extends LitElement {
                     .index=${index}
                     slot="navigationIcon"
                     .label=${this.removeLabel ??
-                    this.localize?.("ui.common.remove") ??
+                    this._i18n?.localize("ui.common.remove") ??
                     "Remove"}
                     @click=${this._removeItem}
                     .path=${mdiDeleteOutline}
@@ -137,10 +137,10 @@ class HaInputMulti extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??
           (this.label
-            ? this.localize?.("ui.components.multi-textfield.add_item", {
+            ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
                 item: this.label,
               })
-            : this.localize?.("ui.common.add")) ??
+            : this._i18n?.localize("ui.common.add")) ??
           "Add"}
         </ha-button>
       </div>

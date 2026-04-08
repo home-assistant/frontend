@@ -8,7 +8,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context";
+import { labelsContext } from "../data/context/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { updateLabelRegistryEntry } from "../data/label/label_registry";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";

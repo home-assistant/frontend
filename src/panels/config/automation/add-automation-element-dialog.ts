@@ -85,7 +85,7 @@ import {
   getConfigEntries,
   type ConfigEntry,
 } from "../../../data/config_entries";
-import { labelsContext } from "../../../data/context";
+import { labelsContext } from "../../../data/context/context";
 import { getDeviceEntityLookup } from "../../../data/device/device_registry";
 import type { EntityComboBoxItem } from "../../../data/entity/entity_picker";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
@@ -99,9 +99,9 @@ import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import { filterSelectorEntities } from "../../../data/selector";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import { subscribeLabFeature } from "../../../data/labs";
+import { filterSelectorEntities } from "../../../data/selector";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,

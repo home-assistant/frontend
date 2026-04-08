@@ -11,7 +11,7 @@ import { createSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
-import { labelsContext } from "../../../../data/context";
+import { labelsContext } from "../../../../data/context/context";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { haStyle } from "../../../../resources/styles";

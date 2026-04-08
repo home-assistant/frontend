@@ -15,7 +15,7 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
-import { fullEntitiesContext } from "../../data/context";
+import { fullEntitiesContext } from "../../data/context/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
 import type {

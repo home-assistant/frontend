@@ -62,7 +62,10 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import {
+  fullEntitiesContext,
+  labelsContext,
+} from "../../../data/context/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
