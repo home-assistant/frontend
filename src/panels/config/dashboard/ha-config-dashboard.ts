@@ -301,7 +301,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                           role="heading"
                           aria-level="2"
                         >
-                          <a href="/config/repairs">
+                          <a href="/config/repairs?historyBack=1">
                             ${this.hass.localize(
                               "ui.panel.config.repairs.title",
                               {
@@ -327,7 +327,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                           role="heading"
                           aria-level="2"
                         >
-                          <a href="/config/updates">
+                          <a href="/config/updates?historyBack=1">
                             ${this.hass.localize(
                               "ui.panel.config.updates.title",
                               {
