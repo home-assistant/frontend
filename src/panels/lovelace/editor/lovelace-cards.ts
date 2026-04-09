@@ -209,6 +209,10 @@ export const energyCards: Card[] = [
     showElement: false,
   },
   {
+    type: "energy-grid-balance",
+    showElement: false,
+  },
+  {
     type: "energy-carbon-consumed-gauge",
     showElement: false,
   },
