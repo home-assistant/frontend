@@ -453,9 +453,14 @@ export class HaChartBase extends LitElement {
       });
       this.chart.on("sankeyroam", () => {
         const option = this.chart!.getOption();
-        this._isZoomed = (option.series as any[])?.some(
+        const series = option.series as any[];
+        this._isZoomed = series?.some(
           (s: any) => s.type === "sankey" && s.zoom !== 1
         );
+        const sankeySeries = series?.find((s: any) => s.type === "sankey");
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
+        // Clear cached emphasis states so labels don't revert to pre-zoom sizes
+        this.chart!.dispatchAction({ type: "downplay" });
       });
 
       if (!this.options?.dataZoom) {
@@ -1032,6 +1037,7 @@ export class HaChartBase extends LitElement {
         })),
       });
       this._isZoomed = false;
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
   }
 
@@ -1403,5 +1409,6 @@ declare global {
       start: number;
       end: number;
     };
+    "chart-sankeyroam": { zoom: number };
   }
 }
