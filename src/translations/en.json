@@ -8853,7 +8853,7 @@
               "background_color": "Color",
               "background_color_default": "Default",
               "background_opacity": "Opacity",
-              "theme": "Section theme",
+              "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             },
             "visibility": {

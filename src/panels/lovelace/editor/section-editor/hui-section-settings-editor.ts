@@ -47,12 +47,6 @@ export class HuiDialogEditSection extends LitElement {
           },
         },
         {
-          name: "theme",
-          selector: {
-            theme: {},
-          },
-        },
-        {
           name: "background_enabled",
           selector: { boolean: {} },
         },
@@ -98,6 +92,12 @@ export class HuiDialogEditSection extends LitElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
+        {
+          name: "theme",
+          selector: {
+            theme: {},
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
