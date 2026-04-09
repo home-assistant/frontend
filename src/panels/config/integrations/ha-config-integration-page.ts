@@ -30,6 +30,7 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/input/ha-input-search";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import {
@@ -64,6 +65,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { multiTermSearch } from "../../../resources/fuseMultiTerm";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -156,6 +158,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
+  @state() private _filter = "";
+
   @state() private _subEntries: Record<string, SubEntry[]> = {};
 
   private _subEntriesFetchId = 0;
@@ -218,6 +222,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
       this._fetchDiagnostics();
@@ -319,19 +324,35 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         );
       });
 
-    const normalData = this._buildNormalEntryData(
-      normalEntries,
-      this.hass.devices,
-      this._subEntries,
-      this.hass.locale.language,
-      this.hass.localize
+    const normalData = this._filterNormalTree(
+      this._buildNormalEntryData(
+        normalEntries,
+        this.hass.devices,
+        this._subEntries,
+        this.hass.locale.language,
+        this.hass.localize
+      ),
+      this._filter,
+      this.hass.areas
     );
-    const attentionData = this._buildAttentionEntryData(
-      attentionEntries,
-      this.hass.devices,
-      this._subEntries,
-      this.hass.locale.language,
-      this.hass.localize
+    const attentionData = this._filterAttentionTree(
+      this._buildAttentionEntryData(
+        attentionEntries,
+        this.hass.devices,
+        this._subEntries,
+        this.hass.locale.language,
+        this.hass.localize
+      ),
+      this._filter,
+      this.hass.areas
+    );
+    const filteredDiscoveryFlows = this._filterFlows(
+      discoveryFlows,
+      this._filter
+    );
+    const filteredAttentionFlows = this._filterFlows(
+      attentionFlows,
+      this._filter
     );
 
     const devicesRegs = this._getDevices(configEntries, this.hass.devices);
@@ -652,6 +673,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
           </div>
 
+          <ha-input-search
+            appearance="outlined"
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
+          ></ha-input-search>
+
           ${this._logInfo?.level === LogSeverity.DEBUG
             ? html`<div class="section">
                 <ha-alert alert-type="warning">
@@ -670,7 +697,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </ha-alert>
               </div>`
             : nothing}
-          ${discoveryFlows.length
+          ${filteredDiscoveryFlows.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -679,7 +706,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-md-list class="discovered">
-                    ${discoveryFlows.map(
+                    ${filteredDiscoveryFlows.map(
                       (flow) =>
                         html`<ha-md-list-item class="discovered">
                           ${flow.localized_title}
@@ -698,7 +725,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </div>
               `
             : nothing}
-          ${attentionFlows.length || attentionData.length
+          ${filteredAttentionFlows.length || attentionData.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -706,9 +733,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `ui.panel.config.integrations.integration_page.attention_entries`
                     )}
                   </h3>
-                  ${attentionFlows.length
+                  ${filteredAttentionFlows.length
                     ? html`<ha-md-list class="attention">
-                        ${attentionFlows.map((flow) => {
+                        ${filteredAttentionFlows.map((flow) => {
                           const attention = ATTENTION_SOURCES.includes(
                             flow.context.source
                           );
@@ -767,17 +794,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </h3>
             ${normalData.length === 0
               ? html`<div class="card-content no-entries">
-                  ${this._manifest &&
-                  !this._manifest.config_flow &&
-                  this.hass.config.components.find(
-                    (comp) => comp.split(".")[0] === this.domain
-                  )
+                  ${this._filter
                     ? this.hass.localize(
-                        "ui.panel.config.integrations.integration_page.yaml_entry"
+                        "ui.panel.config.integrations.none_found"
                       )
-                    : this.hass.localize(
-                        "ui.panel.config.integrations.integration_page.no_entries"
-                      )}
+                    : this._manifest &&
+                        !this._manifest.config_flow &&
+                        this.hass.config.components.find(
+                          (comp) => comp.split(".")[0] === this.domain
+                        )
+                      ? this.hass.localize(
+                          "ui.panel.config.integrations.integration_page.yaml_entry"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.integrations.integration_page.no_entries"
+                        )}
                 </div>`
               : html`
                   ${normalData.map(
@@ -967,6 +998,129 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _buildNormalEntryData = memoizeOne(this._buildEntryData);
 
   private _buildAttentionEntryData = memoizeOne(this._buildEntryData);
+
+  private _filterTree = memoizeOne(
+    (
+      data: ConfigEntryData[],
+      filter: string,
+      areas: HomeAssistant["areas"]
+    ): ConfigEntryData[] => {
+      if (!filter) {
+        return data;
+      }
+
+      const DEVICE_KEYS = [
+        "name",
+        "manufacturer",
+        "model",
+        "sw_version",
+        "area",
+      ];
+
+      const buildDeviceSearchable = (device: DeviceRegistryEntry) => ({
+        device,
+        name: device.name_by_user || device.name || "",
+        manufacturer: device.manufacturer || "",
+        model: device.model || "",
+        sw_version: device.sw_version || "",
+        area: device.area_id ? areas[device.area_id]?.name || "" : "",
+      });
+
+      const matchDevices = (devices: DeviceRegistryEntry[]) =>
+        multiTermSearch(
+          devices.map(buildDeviceSearchable),
+          filter,
+          DEVICE_KEYS,
+          undefined,
+          { keys: DEVICE_KEYS }
+        ).map((r) => r.device);
+
+      const TITLE_KEYS = ["title"];
+
+      const titleMatches = (title: string) =>
+        multiTermSearch([{ title }], filter, TITLE_KEYS, undefined, {
+          keys: TITLE_KEYS,
+        }).length > 0;
+
+      const result: ConfigEntryData[] = [];
+
+      for (const entryData of data) {
+        if (titleMatches(entryData.entry.title)) {
+          result.push(entryData);
+          continue;
+        }
+
+        const filteredDevices = matchDevices(entryData.devices);
+        const filteredServices = matchDevices(entryData.services);
+
+        const filteredSubEntries = entryData.subEntries
+          .map((subData): SubEntryData | null => {
+            if (titleMatches(subData.subEntry.title)) {
+              return subData;
+            }
+            const subDevices = matchDevices(subData.devices);
+            const subServices = matchDevices(subData.services);
+            if (subDevices.length || subServices.length) {
+              return {
+                subEntry: subData.subEntry,
+                devices: subDevices,
+                services: subServices,
+              };
+            }
+            return null;
+          })
+          .filter((s): s is SubEntryData => s !== null);
+
+        if (
+          filteredDevices.length ||
+          filteredServices.length ||
+          filteredSubEntries.length
+        ) {
+          result.push({
+            entry: entryData.entry,
+            devices: filteredDevices,
+            services: filteredServices,
+            subEntries: filteredSubEntries,
+          });
+        }
+      }
+
+      return result;
+    }
+  );
+
+  private _filterNormalTree = memoizeOne(
+    (data: ConfigEntryData[], filter: string, areas: HomeAssistant["areas"]) =>
+      this._filterTree(data, filter, areas)
+  );
+
+  private _filterAttentionTree = memoizeOne(
+    (data: ConfigEntryData[], filter: string, areas: HomeAssistant["areas"]) =>
+      this._filterTree(data, filter, areas)
+  );
+
+  private _filterFlows = memoizeOne(
+    (
+      flows: DataEntryFlowProgressExtended[],
+      filter: string
+    ): DataEntryFlowProgressExtended[] => {
+      if (!filter) {
+        return flows;
+      }
+      const KEYS = ["title"];
+      return multiTermSearch(
+        flows.map((flow) => ({ flow, title: flow.localized_title || "" })),
+        filter,
+        KEYS,
+        undefined,
+        { keys: KEYS }
+      ).map((r) => r.flow);
+    }
+  );
+
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HTMLInputElement).value ?? "";
+  }
 
   private async _handleEnableDebugLogging() {
     const integration = this.domain;
@@ -1197,6 +1351,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           flex-wrap: wrap;
           gap: var(--ha-space-2);
+        }
+        ha-input-search {
+          width: 100%;
+          margin-bottom: 16px;
         }
         .section {
           width: 100%;
