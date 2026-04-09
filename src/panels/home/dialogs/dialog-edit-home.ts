@@ -125,28 +125,32 @@ export class DialogEditHome
           )}
         >
           <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
-          <ha-entities-picker
-            autofocus
-            .hass=${this.hass}
-            .value=${this._config?.favorite_entities || []}
-            .placeholder=${this.hass.localize(
-              "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-            )}
-            .helper=${this.hass.localize(
-              "ui.panel.home.editor.favorite_entities_helper"
-            )}
-            reorder
-            @value-changed=${this._favoriteEntitiesChanged}
-          ></ha-entities-picker>
+          <div class="expansion-content">
+            <ha-entities-picker
+              autofocus
+              .hass=${this.hass}
+              .value=${this._config?.favorite_entities || []}
+              .placeholder=${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
+              )}
+              .helper=${this.hass.localize(
+                "ui.panel.home.editor.favorite_entities_helper"
+              )}
+              reorder
+              @value-changed=${this._favoriteEntitiesChanged}
+            ></ha-entities-picker>
 
-          <ha-form
-            .hass=${this.hass}
-            .data=${{ show_suggested: !this._config?.hide_suggested_entities }}
-            .schema=${SUGGESTED_ENTITIES_SCHEMA}
-            .computeLabel=${this._computeSuggestedLabel}
-            .computeHelper=${this._computeSuggestedHelper}
-            @value-changed=${this._suggestedEntitiesChanged}
-          ></ha-form>
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_suggested: !this._config?.hide_suggested_entities,
+              }}
+              .schema=${SUGGESTED_ENTITIES_SCHEMA}
+              .computeLabel=${this._computeSuggestedLabel}
+              .computeHelper=${this._computeSuggestedHelper}
+              @value-changed=${this._suggestedEntitiesChanged}
+            ></ha-form>
+          </div>
         </ha-expansion-panel>
 
         <h3 class="section-header">
@@ -337,9 +341,13 @@ export class DialogEditHome
 
       ha-expansion-panel {
         display: block;
-        --expansion-panel-content-padding: var(--ha-space-3);
+        --expansion-panel-content-padding: 0;
         border-radius: var(--ha-border-radius-md);
         --ha-card-border-radius: var(--ha-border-radius-md);
+      }
+
+      .expansion-content {
+        padding: var(--ha-space-3);
       }
 
       ha-entities-picker {
