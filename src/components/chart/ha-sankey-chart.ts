@@ -86,6 +86,7 @@ export class HaSankeyChart extends LitElement {
     } as ECOption;
 
     return html`<ha-chart-base
+      .hass=${this.hass}
       .data=${this._createData(this.data, this._sizeController.value?.width)}
       .options=${options}
       height="100%"
