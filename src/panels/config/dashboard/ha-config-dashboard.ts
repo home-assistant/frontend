@@ -11,7 +11,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -46,6 +45,7 @@ import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
+import "./ha-config-lovelace-heading";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -293,62 +293,57 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           full-width
         >
           ${repairsIssues.length || canInstallUpdates.length
-            ? html`<ha-card outlined>
+            ? html`<div class="dashboard-alerts">
                 ${repairsIssues.length
                   ? html`
-                      <ha-config-repairs
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalRepairIssues}
-                        .repairsIssues=${repairsIssues}
-                      ></ha-config-repairs>
-                      ${totalRepairIssues > repairsIssues.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/repairs"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.repairs.more_repairs",
-                                {
-                                  count:
-                                    totalRepairIssues - repairsIssues.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <section class="dashboard-alert-section">
+                        <ha-config-lovelace-heading
+                          .hass=${this.hass}
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.repairs.title",
+                            { count: totalRepairIssues }
+                          )}
+                          .icon=${"mdi:wrench"}
+                          .navigationPath=${"/config/repairs"}
+                        ></ha-config-lovelace-heading>
+                        <ha-card outlined>
+                          <ha-config-repairs
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .total=${totalRepairIssues}
+                            .repairsIssues=${repairsIssues}
+                            .hideSectionHeading=${true}
+                          ></ha-config-repairs>
+                        </ha-card>
+                      </section>
                     `
-                  : ""}
-                ${repairsIssues.length && canInstallUpdates.length
-                  ? html`<hr />`
                   : ""}
                 ${canInstallUpdates.length
                   ? html`
-                      <ha-config-updates
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalUpdates}
-                        .updateEntities=${canInstallUpdates}
-                        .isInstallable=${true}
-                      ></ha-config-updates>
-                      ${totalUpdates > canInstallUpdates.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/updates"
-                              label=${this.hass.localize(
-                                "ui.panel.config.updates.more_updates",
-                                {
-                                  count:
-                                    totalUpdates - canInstallUpdates.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <section class="dashboard-alert-section">
+                        <ha-config-lovelace-heading
+                          .hass=${this.hass}
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.updates.title",
+                            { count: totalUpdates }
+                          )}
+                          .icon=${"mdi:package-up"}
+                          .navigationPath=${"/config/updates"}
+                        ></ha-config-lovelace-heading>
+                        <ha-card outlined>
+                          <ha-config-updates
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .total=${totalUpdates}
+                            .updateEntities=${canInstallUpdates}
+                            .isInstallable=${true}
+                            .hideSectionHeading=${true}
+                          ></ha-config-updates>
+                        </ha-card>
+                      </section>
                     `
                   : ""}
-              </ha-card>`
+              </div>`
             : ""}
           ${this._pages(
             this.cloudStatus,
@@ -427,10 +422,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: 24px;
-        }
-
         ha-config-section {
           margin: auto;
           margin-top: -32px;
@@ -439,20 +430,27 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         ha-card {
           overflow: hidden;
+          margin-bottom: 0;
         }
         ha-card a {
           text-decoration: none;
           color: var(--primary-text-color);
         }
 
-        ha-assist-chip {
-          margin: 8px 16px 16px 16px;
+        .dashboard-alerts {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
         }
 
-        .title {
-          font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
+        .dashboard-alert-section {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
+        }
+
+        :host .dashboard-alert-section > ha-card {
+          margin-top: 0;
         }
 
         @media all and (max-width: 600px) {
@@ -476,16 +474,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         .keep-together {
           display: inline-block;
-        }
-
-        hr {
-          height: 1px;
-          background-color: var(
-            --ha-card-border-color,
-            var(--divider-color, #e0e0e0)
-          );
-          border: none;
-          margin-top: 0;
         }
       `,
     ];

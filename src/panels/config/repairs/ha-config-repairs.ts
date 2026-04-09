@@ -35,6 +35,9 @@ class HaConfigRepairs extends LitElement {
   @property({ type: Number })
   public total?: number;
 
+  @property({ type: Boolean, attribute: "hide-section-heading" })
+  public hideSectionHeading = false;
+
   protected render() {
     if (!this.repairsIssues?.length) {
       return nothing;
@@ -43,11 +46,15 @@ class HaConfigRepairs extends LitElement {
     const issues = this.repairsIssues;
 
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("ui.panel.config.repairs.title", {
-          count: this.total || this.repairsIssues.length,
-        })}
-      </div>
+      ${this.hideSectionHeading
+        ? nothing
+        : html`
+            <div class="title" role="heading" aria-level="2">
+              ${this.hass.localize("ui.panel.config.repairs.title", {
+                count: this.total || this.repairsIssues.length,
+              })}
+            </div>
+          `}
       <ha-md-list>
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
