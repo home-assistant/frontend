@@ -15,6 +15,9 @@ export class HaConfigLovelaceHeading extends LitElement {
 
   @property({ attribute: false }) public icon?: string;
 
+  @property({ attribute: false })
+  public headingStyle: "title" | "subtitle" = "title";
+
   @property({ attribute: false }) public navigationPath?: string;
 
   private _headingCardRef = ref<HuiHeadingCard>();
@@ -29,6 +32,7 @@ export class HaConfigLovelaceHeading extends LitElement {
     if (
       changed.has("heading") ||
       changed.has("icon") ||
+      changed.has("headingStyle") ||
       changed.has("navigationPath") ||
       changed.has("hass")
     ) {
@@ -51,7 +55,8 @@ export class HaConfigLovelaceHeading extends LitElement {
     const config: HeadingCardConfig = {
       type: "heading",
       heading: this.heading,
-      icon: this.icon,
+      heading_style: this.headingStyle,
+      ...(this.icon ? { icon: this.icon } : {}),
       tap_action,
     };
     el.setConfig(config);

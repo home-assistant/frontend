@@ -296,51 +296,45 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             ? html`<div class="dashboard-alerts">
                 ${repairsIssues.length
                   ? html`
-                      <section class="dashboard-alert-section">
+                      <ha-card outlined class="dashboard-alert-card">
                         <ha-config-lovelace-heading
                           .hass=${this.hass}
                           .heading=${this.hass.localize(
                             "ui.panel.config.repairs.title",
                             { count: totalRepairIssues }
                           )}
-                          .icon=${"mdi:wrench"}
                           .navigationPath=${"/config/repairs"}
                         ></ha-config-lovelace-heading>
-                        <ha-card outlined>
-                          <ha-config-repairs
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
-                            .total=${totalRepairIssues}
-                            .repairsIssues=${repairsIssues}
-                            .hideSectionHeading=${true}
-                          ></ha-config-repairs>
-                        </ha-card>
-                      </section>
+                        <ha-config-repairs
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .total=${totalRepairIssues}
+                          .repairsIssues=${repairsIssues}
+                          .hideSectionHeading=${true}
+                        ></ha-config-repairs>
+                      </ha-card>
                     `
                   : ""}
                 ${canInstallUpdates.length
                   ? html`
-                      <section class="dashboard-alert-section">
+                      <ha-card outlined class="dashboard-alert-card">
                         <ha-config-lovelace-heading
                           .hass=${this.hass}
                           .heading=${this.hass.localize(
                             "ui.panel.config.updates.title",
                             { count: totalUpdates }
                           )}
-                          .icon=${"mdi:package-up"}
                           .navigationPath=${"/config/updates"}
                         ></ha-config-lovelace-heading>
-                        <ha-card outlined>
-                          <ha-config-updates
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
-                            .total=${totalUpdates}
-                            .updateEntities=${canInstallUpdates}
-                            .isInstallable=${true}
-                            .hideSectionHeading=${true}
-                          ></ha-config-updates>
-                        </ha-card>
-                      </section>
+                        <ha-config-updates
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .total=${totalUpdates}
+                          .updateEntities=${canInstallUpdates}
+                          .isInstallable=${true}
+                          .hideSectionHeading=${true}
+                        ></ha-config-updates>
+                      </ha-card>
                     `
                   : ""}
               </div>`
@@ -440,17 +434,11 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         .dashboard-alerts {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
 
-        .dashboard-alert-section {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-2);
-        }
-
-        :host .dashboard-alert-section > ha-card {
-          margin-top: 0;
+        .dashboard-alert-card ha-config-lovelace-heading {
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
         }
 
         @media all and (max-width: 600px) {
