@@ -8441,7 +8441,7 @@
             },
             "grid_balance": {
               "title": "Grid energy balance",
-              "tooltip": "Imported from grid minus exported to grid equals net grid consumption",
+              "tooltip": "Imported energy from the grid minus exported energy to the grid equals net grid consumption",
               "imported": "Imported: {value} kWh",
               "exported": "Exported: {value} kWh",
               "net_import": "Net imported: {value} kWh",
