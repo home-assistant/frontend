@@ -423,6 +423,7 @@ class HuiEnergySankeyCard
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
+                .hass=${this.hass}
                 .data=${{ nodes, links }}
                 .vertical=${vertical}
                 .valueFormatter=${this._valueFormatter}
