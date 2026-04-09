@@ -51,6 +51,10 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];
 
+const WELCOME_MESSAGE_SCHEMA = [
+  { name: "welcome_message", selector: { boolean: {} } },
+] as const;
+
 @customElement("dialog-edit-home")
 export class DialogEditHome
   extends LitElement
@@ -123,12 +127,7 @@ export class DialogEditHome
         <ha-form
           .hass=${this.hass}
           .data=${{ welcome_message: !this._config?.hide_welcome_message }}
-          .schema=${[
-            {
-              name: "welcome_message",
-              selector: { boolean: {} },
-            },
-          ]}
+          .schema=${WELCOME_MESSAGE_SCHEMA}
           .computeLabel=${this._computeWelcomeLabel}
           .computeHelper=${this._computeWelcomeHelper}
           @value-changed=${this._welcomeMessageToggleChanged}
