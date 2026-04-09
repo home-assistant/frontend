@@ -240,6 +240,10 @@ export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
 }
 
+export interface EnergyGridBalanceCardConfig extends EnergyCardConfig {
+  type: "energy-grid-balance";
+}
+
 export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
   type: "energy-carbon-consumed-gauge";
 }

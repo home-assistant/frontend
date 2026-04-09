@@ -55,6 +55,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
+  "energy-grid-balance": () =>
+    import("../cards/energy/hui-energy-grid-balance-card"),
   "energy-solar-consumed-gauge": () =>
     import("../cards/energy/hui-energy-solar-consumed-gauge-card"),
   "energy-self-sufficiency-gauge": () =>

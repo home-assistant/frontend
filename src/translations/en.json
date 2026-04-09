@@ -8439,6 +8439,14 @@
               "net_consumed_grid": "Net imported from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
+            "grid_balance": {
+              "title": "Grid energy balance",
+              "tooltip": "Imported from grid minus exported to grid equals net grid consumption",
+              "imported": "Imported: {value} kWh",
+              "exported": "Exported: {value} kWh",
+              "net_import": "Net imported: {value} kWh",
+              "net_export": "Net exported: {value} kWh"
+            },
             "energy_distribution": {
               "title_today": "Energy distribution today",
               "grid": "Grid",
