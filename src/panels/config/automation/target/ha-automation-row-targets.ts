@@ -20,6 +20,7 @@ import {
   internationalizationContext,
   labelsContext,
   registriesContext,
+  statesContext,
 } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../../types";
@@ -48,6 +49,9 @@ export class HaAutomationRowTargets extends LitElement {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
@@ -136,7 +140,7 @@ export class HaAutomationRowTargets extends LitElement {
       return !!this._registries.devices[targetId];
     }
     if (targetType === "entity") {
-      return !!this._registries.entities[targetId];
+      return !!this._states[targetId];
     }
     if (targetType === "label") {
       return !!this._getLabel(targetId);
