@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
-import { fullEntitiesContext } from "../../../../../data/context/context";
+import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceCapabilities,
   DeviceCondition,

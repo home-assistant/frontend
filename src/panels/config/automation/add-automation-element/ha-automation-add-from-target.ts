@@ -48,7 +48,7 @@ import {
   labelsContext,
   registriesContext,
   statesContext,
-} from "../../../../data/context/context";
+} from "../../../../data/context";
 import { getDeviceEntityLookup } from "../../../../data/device/device_registry";
 import {
   domainToName,

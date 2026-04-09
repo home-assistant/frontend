@@ -14,7 +14,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { withViewTransition } from "../common/util/view-transition";
-import { internationalizationContext } from "../data/context/context";
+import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-dialog-header";

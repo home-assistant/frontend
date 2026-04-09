@@ -2,7 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiMagnify } from "@mdi/js";
 import { html, type PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
-import { internationalizationContext } from "../../data/context/context";
+import { internationalizationContext } from "../../data/context";
 import { HaInput } from "./ha-input";
 
 /**

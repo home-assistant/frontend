@@ -13,7 +13,7 @@ import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
-import { internationalizationContext } from "../../../data/context/context";
+import { internationalizationContext } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { ValueChangedEvent } from "../../../types";

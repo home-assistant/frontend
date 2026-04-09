@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
-import { internationalizationContext } from "../data/context/context";
+import { internationalizationContext } from "../data/context";
 import type { UiColorExtraOption } from "../data/selector";
 import type { ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";

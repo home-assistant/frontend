@@ -71,10 +71,7 @@ import {
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
-import {
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../data/context/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,

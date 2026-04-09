@@ -15,7 +15,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { labelsContext } from "../data/context/context";
+import { labelsContext } from "../data/context";
 import {
   getLabels,
   labelComboBoxKeys,

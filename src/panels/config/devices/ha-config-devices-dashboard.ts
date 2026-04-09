@@ -52,10 +52,7 @@ import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
-import {
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../data/context/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,

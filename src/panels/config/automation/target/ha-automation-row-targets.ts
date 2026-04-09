@@ -20,7 +20,7 @@ import {
   internationalizationContext,
   labelsContext,
   registriesContext,
-} from "../../../../data/context/context";
+} from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../../types";
 import { getTargetIcon } from "./get_target_icon";

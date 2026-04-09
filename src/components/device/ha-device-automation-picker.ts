@@ -4,7 +4,7 @@ import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { fullEntitiesContext } from "../../data/context/context";
+import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
   deviceAutomationsEqual,

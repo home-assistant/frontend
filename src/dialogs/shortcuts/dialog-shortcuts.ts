@@ -5,7 +5,7 @@ import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
-import { internationalizationContext } from "../../data/context/context";
+import { internationalizationContext } from "../../data/context";
 import { isMac } from "../../util/is_mac";
 import { DialogMixin } from "../dialog-mixin";
 

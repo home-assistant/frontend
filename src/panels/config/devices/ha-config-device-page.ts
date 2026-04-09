@@ -50,7 +50,7 @@ import {
   disableConfigEntry,
   sortConfigEntries,
 } from "../../../data/config_entries";
-import { fullEntitiesContext } from "../../../data/context/context";
+import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
   removeConfigEntryFromDevice,

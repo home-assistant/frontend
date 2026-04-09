@@ -15,7 +15,7 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { internationalizationContext } from "../data/context/context";
+import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,

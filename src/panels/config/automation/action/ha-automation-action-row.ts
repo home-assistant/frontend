@@ -59,7 +59,7 @@ import type {
 } from "../../../../data/automation";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context/context";
+import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type {
   Action,

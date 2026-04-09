@@ -29,7 +29,7 @@ import {
   uiContext,
   userContext,
   userDataContext,
-} from "../data/context/context";
+} from "../data/context";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { subscribeLabelRegistry } from "../data/label/label_registry";

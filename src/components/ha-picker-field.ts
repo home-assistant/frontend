@@ -11,7 +11,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { internationalizationContext } from "../data/context/context";
+import { internationalizationContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";

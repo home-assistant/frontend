@@ -85,7 +85,7 @@ import {
   getConfigEntries,
   type ConfigEntry,
 } from "../../../data/config_entries";
-import { labelsContext } from "../../../data/context/context";
+import { labelsContext } from "../../../data/context";
 import { getDeviceEntityLookup } from "../../../data/device/device_registry";
 import type { EntityComboBoxItem } from "../../../data/entity/entity_picker";
 import { getFloorAreaLookup } from "../../../data/floor_registry";

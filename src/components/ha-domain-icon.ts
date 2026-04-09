@@ -2,11 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
-import {
-  configContext,
-  connectionContext,
-  uiContext,
-} from "../data/context/context";
+import { configContext, connectionContext, uiContext } from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
   domainIcon,

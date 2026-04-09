@@ -12,10 +12,7 @@ import {
   formatISODateOnly,
 } from "../../common/datetime/format_date";
 import { transform } from "../../common/decorators/transform";
-import {
-  configContext,
-  internationalizationContext,
-} from "../../data/context/context";
+import { configContext, internationalizationContext } from "../../data/context";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";

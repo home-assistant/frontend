@@ -23,7 +23,7 @@ import {
   type FloorComboBoxItem,
 } from "../data/area_floor_picker";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
-import { labelsContext } from "../data/context/context";
+import { labelsContext } from "../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,

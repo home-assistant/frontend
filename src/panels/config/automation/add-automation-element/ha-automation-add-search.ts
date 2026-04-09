@@ -40,7 +40,7 @@ import {
 } from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { labelsContext } from "../../../../data/context/context";
+import { labelsContext } from "../../../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,

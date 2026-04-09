@@ -75,10 +75,7 @@ import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
-import {
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../data/context/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,

@@ -10,7 +10,7 @@ import "../../../../src/components/input/ha-input";
 import "../../../../src/components/input/ha-input-copy";
 import "../../../../src/components/input/ha-input-multi";
 import "../../../../src/components/input/ha-input-search";
-import { internationalizationContext } from "../../../../src/data/context/context";
+import { internationalizationContext } from "../../../../src/data/context";
 
 const LOCALIZE_KEYS: Record<string, string> = {
   "ui.common.copy": "Copy",

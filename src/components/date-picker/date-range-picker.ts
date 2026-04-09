@@ -15,10 +15,7 @@ import {
 } from "../../common/datetime/format_date";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  configContext,
-  internationalizationContext,
-} from "../../data/context/context";
+import { configContext, internationalizationContext } from "../../data/context";
 import { TimeZone } from "../../data/translation";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
 import { haStyleScrollbar } from "../../resources/styles";

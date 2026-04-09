@@ -9,7 +9,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context/context";
+import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";

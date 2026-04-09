@@ -55,7 +55,7 @@ import type {
 import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context/context";
+import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../data/trigger";

@@ -23,7 +23,7 @@ import { getEntityContext } from "../../common/entity/context/get_entity_context
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
-import { labelsContext } from "../../data/context/context";
+import { labelsContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { FloorRegistryEntry } from "../../data/floor_registry";

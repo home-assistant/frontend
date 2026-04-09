@@ -21,7 +21,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
-import { labelsContext } from "../../data/context/context";
+import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";

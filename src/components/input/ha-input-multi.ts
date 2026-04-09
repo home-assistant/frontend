@@ -5,7 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
-import { internationalizationContext } from "../../data/context/context";
+import { internationalizationContext } from "../../data/context";
 import { haStyle } from "../../resources/styles";
 import "../ha-button";
 import "../ha-icon-button";

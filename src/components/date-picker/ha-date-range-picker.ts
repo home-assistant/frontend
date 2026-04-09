@@ -17,10 +17,7 @@ import {
 } from "../../common/datetime/format_date_time";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  configContext,
-  internationalizationContext,
-} from "../../data/context/context";
+import { configContext, internationalizationContext } from "../../data/context";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-bottom-sheet";
 import "../ha-icon-button";

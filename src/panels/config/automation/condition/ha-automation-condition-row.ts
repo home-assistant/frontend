@@ -51,7 +51,7 @@ import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context/context";
+import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import {

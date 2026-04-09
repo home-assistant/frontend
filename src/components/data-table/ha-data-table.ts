@@ -26,7 +26,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
-import { internationalizationContext } from "../../data/context/context";
+import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";

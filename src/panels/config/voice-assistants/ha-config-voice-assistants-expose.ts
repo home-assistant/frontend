@@ -34,7 +34,7 @@ import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
-import { entitiesContext } from "../../../data/context/context";
+import { entitiesContext } from "../../../data/context";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getExtendedEntityRegistryEntries } from "../../../data/entity/entity_registry";
 import type { ExposeEntitySettings } from "../../../data/expose";

@@ -22,7 +22,7 @@ import {
   internationalizationContext,
   registriesContext,
   statesContext,
-} from "../../../../../../data/context/context";
+} from "../../../../../../data/context";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceRegistryEntry,

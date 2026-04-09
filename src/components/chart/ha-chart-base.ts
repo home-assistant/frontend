@@ -24,7 +24,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
-import { uiContext } from "../../data/context/context";
+import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";

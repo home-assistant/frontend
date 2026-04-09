@@ -3,7 +3,7 @@ import { mdiDevices, mdiMicrophone } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { CloudStatus } from "../../../data/cloud";
-import { entitiesContext } from "../../../data/context/context";
+import { entitiesContext } from "../../../data/context";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { listExposedEntities } from "../../../data/expose";
 import type { RouterOptions } from "../../../layouts/hass-router-page";

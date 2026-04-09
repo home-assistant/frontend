@@ -22,7 +22,7 @@ import "../../../../../../components/progress/ha-progress-bar";
 import {
   connectionContext,
   internationalizationContext,
-} from "../../../../../../data/context/context";
+} from "../../../../../../data/context";
 import type {
   ZWaveJSNetwork,
   ZWaveJSRebuildRoutesStatusMessage,

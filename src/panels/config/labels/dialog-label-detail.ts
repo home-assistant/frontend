@@ -11,7 +11,7 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/ha-textarea";
 import "../../../components/input/ha-input";
-import { internationalizationContext } from "../../../data/context/context";
+import { internationalizationContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";

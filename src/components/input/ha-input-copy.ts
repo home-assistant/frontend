@@ -3,7 +3,7 @@ import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
-import { internationalizationContext } from "../../data/context/context";
+import { internationalizationContext } from "../../data/context";
 import { showToast } from "../../util/toast";
 import "../ha-button";
 import "../ha-icon-button";

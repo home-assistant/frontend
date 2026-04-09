@@ -8,7 +8,7 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import type { Trigger } from "../../data/automation";
 import { migrateAutomationTrigger } from "../../data/automation";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
-import { fullEntitiesContext, labelsContext } from "../../data/context/context";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { LogbookEntry } from "../../data/logbook";

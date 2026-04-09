@@ -6,7 +6,7 @@ import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
-import { internationalizationContext } from "../../../../../data/context/context";
+import { internationalizationContext } from "../../../../../data/context";
 import type { StopAction } from "../../../../../data/script";
 import type { ActionElement } from "../ha-automation-action-row";
 
