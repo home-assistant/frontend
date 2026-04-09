@@ -155,7 +155,7 @@ export class HuiClockCardDigital extends LitElement {
         "hour-and-minute second"
         "hour-and-minute am-pm";
       font-weight: var(--ha-font-weight-medium);
-      // font-size: clamp is used keeping in mind design choice while resizing
+      /* font-size: clamp is used keeping in mind design choice while resizing */
       font-size: clamp(1rem, calc(1.5rem + 10cqw), var(--font-size));
       line-height: 0.8;
       direction: ltr;

@@ -253,7 +253,7 @@ export class HuiClockCardAnalog extends LitElement {
       width: min(
         100%,
         var(--clock-size)
-      ); // Account for user choice while keeping it responsive to layout size
+      ); /* Account for user choice while keeping it responsive to layout size */
       aspect-ratio: 1;
       background: var(--ha-clock-card-analog-face-background, none);
       border-radius: var(--ha-clock-card-analog-face-border-radius, none);
