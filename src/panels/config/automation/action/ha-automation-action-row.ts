@@ -10,6 +10,7 @@ import {
   mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
@@ -385,6 +386,27 @@ export default class HaAutomationActionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
+        ${this._pasteAvailable()
+          ? html`
+              <ha-dropdown-item value="paste_before">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste_before"
+                  )
+                )}
+              </ha-dropdown-item>
+
+              <ha-dropdown-item value="paste_after">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste_after"
+                  )
+                )}
+              </ha-dropdown-item>
+            `
+          : nothing}
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
@@ -769,6 +791,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _copyAction = () => {
     this._setClipboard();
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(); // refresh sidebar
+    }
     showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.copied_to_clipboard"
@@ -790,6 +815,22 @@ export default class HaAutomationActionRow extends LitElement {
       duration: 2000,
     });
   };
+
+  private _pasteBefore = () => {
+    const action = this._clipboard?.action;
+    if (!action) return;
+
+    fireEvent(this, "paste-before", { item: action });
+  };
+
+  private _pasteAfter = () => {
+    const action = this._clipboard?.action;
+    if (!action) return;
+
+    fireEvent(this, "paste-after", { item: action });
+  };
+
+  private _pasteAvailable = () => !!this._clipboard?.action;
 
   private _moveUp = () => {
     fireEvent(this, "move-up");
@@ -868,6 +909,9 @@ export default class HaAutomationActionRow extends LitElement {
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
+      pasteBefore: this._pasteBefore,
+      pasteAfter: this._pasteAfter,
+      pasteAvailable: this._pasteAvailable,
       duplicate: this._duplicateAction,
       insertAfter: this._insertAfter,
       run: this._runAction,
@@ -960,6 +1004,12 @@ export default class HaAutomationActionRow extends LitElement {
         break;
       case "cut":
         this._cutAction();
+        break;
+      case "paste_before":
+        this._pasteBefore();
+        break;
+      case "paste_after":
+        this._pasteAfter();
         break;
       case "move_up":
         this._moveUp();

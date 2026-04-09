@@ -5479,6 +5479,8 @@
               "run_action_error": "Error running action",
               "run_action_success": "Action ran successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "paste_before": "Paste above",
+              "paste_after": "Paste below",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",

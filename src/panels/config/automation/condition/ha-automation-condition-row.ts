@@ -6,6 +6,7 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
@@ -278,6 +279,27 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
+        ${this._pasteAvailable()
+          ? html`
+              <ha-dropdown-item value="paste_before">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste_before"
+                  )
+                )}
+              </ha-dropdown-item>
+
+              <ha-dropdown-item value="paste_after">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste_after"
+                  )
+                )}
+              </ha-dropdown-item>
+            `
+          : nothing}
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
@@ -665,6 +687,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _copyCondition = () => {
     this._setClipboard();
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(); // refresh sidebar
+    }
     showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.copied_to_clipboard"
@@ -686,6 +711,22 @@ export default class HaAutomationConditionRow extends LitElement {
       duration: 2000,
     });
   };
+
+  private _pasteBefore = () => {
+    const condition = this._clipboard?.condition;
+    if (!condition) return;
+
+    fireEvent(this, "paste-before", { item: condition });
+  };
+
+  private _pasteAfter = () => {
+    const condition = this._clipboard?.condition;
+    if (!condition) return;
+
+    fireEvent(this, "paste-after", { item: condition });
+  };
+
+  private _pasteAvailable = () => !!this._clipboard?.condition;
 
   private _moveUp = () => {
     fireEvent(this, "move-up");
@@ -790,6 +831,9 @@ export default class HaAutomationConditionRow extends LitElement {
       insertAfter: this._insertAfter,
       copy: this._copyCondition,
       cut: this._cutCondition,
+      pasteBefore: this._pasteBefore,
+      pasteAfter: this._pasteAfter,
+      pasteAvailable: this._pasteAvailable,
       test: this._testCondition,
       config: sidebarCondition,
       uiSupported: this._uiSupported(
@@ -857,6 +901,12 @@ export default class HaAutomationConditionRow extends LitElement {
         break;
       case "cut":
         this._cutCondition();
+        break;
+      case "paste_before":
+        this._pasteBefore();
+        break;
+      case "paste_after":
+        this._pasteAfter();
         break;
       case "move_up":
         this._moveUp();

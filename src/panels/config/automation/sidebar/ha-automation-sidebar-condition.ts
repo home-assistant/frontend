@@ -3,6 +3,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiFlask,
   mdiPlayCircleOutline,
@@ -221,6 +222,36 @@ export default class HaAutomationSidebarCondition extends LitElement {
             : nothing}
         </div>
       </ha-dropdown-item>
+      ${this.config.pasteAvailable()
+        ? html`
+            <ha-dropdown-item
+              slot="menu-items"
+              value="paste_before"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.paste_before"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              slot="menu-items"
+              value="paste_after"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.paste_after"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>
+          `
+        : nothing}
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -435,6 +466,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
         break;
       case "cut":
         this.config.cut();
+        break;
+      case "paste_before":
+        this.config.pasteBefore();
+        break;
+      case "paste_after":
+        this.config.pasteAfter();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();

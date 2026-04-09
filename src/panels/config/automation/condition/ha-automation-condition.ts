@@ -226,6 +226,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this.duplicateItem}
+                @paste-before=${this.pasteBefore}
+                @paste-after=${this.pasteAfter}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
