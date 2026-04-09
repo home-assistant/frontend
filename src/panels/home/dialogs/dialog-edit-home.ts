@@ -5,6 +5,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
@@ -107,23 +108,6 @@ export class DialogEditHome
           ${this.hass.localize("ui.panel.home.editor.description")}
         </p>
 
-        <ha-entities-picker
-          autofocus
-          .hass=${this.hass}
-          .value=${this._config?.favorite_entities || []}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
-          )}
-          .placeholder=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.home.editor.favorite_entities_helper"
-          )}
-          reorder
-          @value-changed=${this._favoriteEntitiesChanged}
-        ></ha-entities-picker>
-
         <ha-form
           .hass=${this.hass}
           .data=${{ welcome_message: !this._config?.hide_welcome_message }}
@@ -133,14 +117,37 @@ export class DialogEditHome
           @value-changed=${this._welcomeMessageToggleChanged}
         ></ha-form>
 
-        <ha-form
-          .hass=${this.hass}
-          .data=${{ show_suggested: !this._config?.hide_suggested_entities }}
-          .schema=${SUGGESTED_ENTITIES_SCHEMA}
-          .computeLabel=${this._computeSuggestedLabel}
-          .computeHelper=${this._computeSuggestedHelper}
-          @value-changed=${this._suggestedEntitiesChanged}
-        ></ha-form>
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize(
+            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
+          )}
+        >
+          <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
+          <ha-entities-picker
+            autofocus
+            .hass=${this.hass}
+            .value=${this._config?.favorite_entities || []}
+            .placeholder=${this.hass.localize(
+              "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.home.editor.favorite_entities_helper"
+            )}
+            reorder
+            @value-changed=${this._favoriteEntitiesChanged}
+          ></ha-entities-picker>
+
+          <ha-form
+            .hass=${this.hass}
+            .data=${{ show_suggested: !this._config?.hide_suggested_entities }}
+            .schema=${SUGGESTED_ENTITIES_SCHEMA}
+            .computeLabel=${this._computeSuggestedLabel}
+            .computeHelper=${this._computeSuggestedHelper}
+            @value-changed=${this._suggestedEntitiesChanged}
+          ></ha-form>
+        </ha-expansion-panel>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
@@ -326,6 +333,13 @@ export class DialogEditHome
       .summary-label {
         flex: 1;
         font-size: 14px;
+      }
+
+      ha-expansion-panel {
+        display: block;
+        --expansion-panel-content-padding: var(--ha-space-3);
+        border-radius: var(--ha-border-radius-md);
+        --ha-card-border-radius: var(--ha-border-radius-md);
       }
 
       ha-entities-picker {
