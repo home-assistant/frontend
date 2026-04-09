@@ -219,6 +219,7 @@ export class HaTargetPickerValueChip extends LitElement {
       padding-inline-start: 0;
       overflow: hidden;
       max-width: 100%;
+      color: var(--primary-text-color);
     }
 
     wa-tag.entity {
@@ -236,6 +237,7 @@ export class HaTargetPickerValueChip extends LitElement {
     wa-tag.label {
       border-color: var(--color);
       --background-color: var(--color);
+      --icon-primary-color: var(--primary-text-color);
     }
 
     .name {
