@@ -1010,6 +1010,26 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+    // Handle sankey chart double-click zoom
+    const option = this.chart.getOption();
+    const allSeries = option.series as any[];
+    const sankeySeries = allSeries?.filter((s: any) => s.type === "sankey");
+    if (sankeySeries?.length) {
+      if (this._isZoomed) {
+        this._handleZoomReset();
+      } else {
+        this.chart.setOption({
+          series: sankeySeries.map((s: any) => ({
+            id: s.id,
+            zoom: 2,
+          })),
+        });
+        this._isZoomed = true;
+      }
+      if (sankeySeries.length === allSeries?.length) {
+        return;
+      }
+    }
     const range = this._isZoomed
       ? [0, 100]
       : [
