@@ -241,6 +241,8 @@ export class HuiClockCardAnalog extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
+      height: 100%;
     }
 
     .analog-clock {
@@ -248,8 +250,11 @@ export class HuiClockCardAnalog extends LitElement {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: var(--clock-size);
-      height: var(--clock-size);
+      width: min(
+        100%,
+        var(--clock-size)
+      ); // Account for user choice while keeping it responsive to layout size
+      aspect-ratio: 1;
       background: var(--ha-clock-card-analog-face-background, none);
       border-radius: var(--ha-clock-card-analog-face-border-radius, none);
       padding: var(--ha-clock-card-analog-face-padding, none);
@@ -292,7 +297,7 @@ export class HuiClockCardAnalog extends LitElement {
       left: 50%;
       transform: translateX(-50%);
       width: 1px;
-      height: calc(var(--clock-size) * 0.04);
+      height: 4%;
       background: var(--primary-text-color);
       opacity: 0.5;
       border-radius: 1px;
@@ -300,18 +305,18 @@ export class HuiClockCardAnalog extends LitElement {
 
     .tick.hour .line {
       width: 2px;
-      height: calc(var(--clock-size) * 0.07);
+      height: 7%;
       opacity: 0.8;
     }
 
     .tick.hour .line.numbers,
     .tick.hour .line.roman {
-      height: calc(var(--clock-size) * 0.03);
+      height: 3%;
     }
 
     .tick.minute .line.numbers,
     .tick.minute .line.roman {
-      height: calc(var(--clock-size) * 0.015);
+      height: 1.5%;
     }
 
     .tick .number {
@@ -368,7 +373,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     .hand.hour {
       width: 4px;
-      height: calc(var(--clock-size) * 0.25); /* 25% of the clock size */
+      height: 25%;
       background: var(--primary-text-color);
       box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
       z-index: 1;
@@ -377,7 +382,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     .hand.minute {
       width: 3px;
-      height: calc(var(--clock-size) * 0.35); /* 35% of the clock size */
+      height: 35%;
       background: var(--primary-text-color);
       box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.9;
@@ -387,7 +392,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     .hand.second {
       width: 2px;
-      height: calc(var(--clock-size) * 0.42); /* 42% of the clock size */
+      height: 42%;
       background: var(--ha-color-border-danger-normal);
       box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.8;
