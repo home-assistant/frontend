@@ -674,6 +674,16 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface EmptyTileCardConfig extends LovelaceCardConfig {
+  name: string;
+  icon?: string;
+  icon_path?: string;
+  color?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {
   title: string;
   entities: string[];

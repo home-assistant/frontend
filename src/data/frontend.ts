@@ -18,11 +18,17 @@ export interface CoreFrontendSystemData {
   onboarded_date?: string;
 }
 
+export interface CustomNavigationItem {
+  path: string;
+  name: string;
+}
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
+  custom_navigation_paths?: CustomNavigationItem[];
 }
 
 declare global {

@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -10,8 +11,17 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-navigation-picker";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
+import "../../../components/input/ha-input";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
+import {
+  getPanelIcon,
+  getPanelIconPath,
+  getPanelTitleFromUrlPath,
+} from "../../../data/panel";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
   getSummaryLabel,
@@ -44,6 +54,16 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   },
   { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
+];
+
+// Paths already covered by built-in summaries
+const SUMMARY_PANEL_PATHS = [
+  "/home",
+  "/light",
+  "/climate",
+  "/security",
+  "/energy",
+  "/maintenance",
 ];
 
 const WELCOME_MESSAGE_SCHEMA = [
@@ -153,6 +173,46 @@ export class DialogEditHome
               </label>
             `;
           })}
+          ${(this._config?.custom_navigation_paths || []).map((item, index) => {
+            const panelUrlPath = item.path.replace(/^\//, "").split(/[/?]/)[0];
+            const panel = this.hass.panels[panelUrlPath];
+            const icon = panel ? getPanelIcon(panel) : undefined;
+            const iconPath = panel ? getPanelIconPath(panel) : undefined;
+            return html`
+              <div class="navigation-item">
+                ${iconPath
+                  ? html`<ha-svg-icon
+                      .path=${iconPath}
+                      style="--mdc-icon-size: 24px"
+                    ></ha-svg-icon>`
+                  : html`<ha-icon
+                      .icon=${icon || "mdi:link"}
+                      style="--mdc-icon-size: 24px"
+                    ></ha-icon>`}
+                <div class="navigation-item-info">
+                  <ha-input
+                    .value=${item.name}
+                    .index=${index}
+                    @change=${this._navigationNameChanged}
+                  ></ha-input>
+                  <span class="navigation-path">${item.path}</span>
+                </div>
+                <ha-icon-button
+                  .path=${mdiClose}
+                  .index=${index}
+                  @click=${this._removeNavigationPath}
+                ></ha-icon-button>
+              </div>
+            `;
+          })}
+          <ha-navigation-picker
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              "ui.panel.home.editor.add_custom_navigation"
+            )}
+            .excludePaths=${SUMMARY_PANEL_PATHS}
+            @value-changed=${this._addNavigationPath}
+          ></ha-navigation-picker>
         </div>
 
         <ha-alert alert-type="info">
@@ -231,6 +291,49 @@ export class DialogEditHome
     };
   }
 
+  private _addNavigationPath(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const path = ev.detail.value as string;
+    if (!path) return;
+
+    // Reset the picker
+    (ev.currentTarget as any).value = "";
+
+    const paths = [...(this._config?.custom_navigation_paths || [])];
+    if (paths.some((item) => item.path === path)) return;
+
+    // Auto-resolve name from panel title
+    const panelUrlPath = path.replace(/^\//, "").split(/[/?]/)[0];
+    const name =
+      getPanelTitleFromUrlPath(this.hass, panelUrlPath) || panelUrlPath;
+
+    this._config = {
+      ...this._config,
+      custom_navigation_paths: [...paths, { path, name }],
+    };
+  }
+
+  private _removeNavigationPath(ev: Event): void {
+    const index = (ev.currentTarget as any).index as number;
+    const paths = [...(this._config?.custom_navigation_paths || [])];
+    paths.splice(index, 1);
+    this._config = {
+      ...this._config,
+      custom_navigation_paths: paths.length > 0 ? paths : undefined,
+    };
+  }
+
+  private _navigationNameChanged(ev: Event): void {
+    const index = (ev.currentTarget as any).index as number;
+    const name = (ev.currentTarget as any).value as string;
+    const paths = [...(this._config?.custom_navigation_paths || [])];
+    paths[index] = { ...paths[index], name };
+    this._config = {
+      ...this._config,
+      custom_navigation_paths: paths,
+    };
+  }
+
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
     const entities = ev.detail.value as string[];
     this._config = {
@@ -297,6 +400,28 @@ export class DialogEditHome
       .summary-label {
         flex: 1;
         font-size: 14px;
+      }
+
+      .navigation-item {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-3);
+        padding: var(--ha-space-2) 0;
+      }
+
+      .navigation-item-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .navigation-path {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+      }
+
+      ha-navigation-picker {
+        display: block;
+        padding-top: var(--ha-space-2);
       }
 
       ha-entities-picker {
