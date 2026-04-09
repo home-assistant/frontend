@@ -180,6 +180,8 @@ export class HaSankeyChart extends LitElement {
       })),
       links,
       draggable: false,
+      roam: true,
+      scaleLimit: { min: 1, max: 4 },
       orient: this.vertical ? "vertical" : "horizontal",
       nodeWidth: 15,
       nodeGap: NODE_GAP,

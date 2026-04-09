@@ -451,6 +451,12 @@ export class HaChartBase extends LitElement {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
+      this.chart.on("sankeyroam", () => {
+        const option = this.chart!.getOption();
+        this._isZoomed = (option.series as any[])?.some(
+          (s: any) => s.type === "sankey" && s.zoom !== 1
+        );
+      });
 
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
@@ -1012,6 +1018,21 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // Reset sankey roam zoom
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          zoom: 1,
+          center: null,
+        })),
+      });
+      this._isZoomed = false;
+    }
   }
 
   private _handleDataZoomEvent(e: any) {
