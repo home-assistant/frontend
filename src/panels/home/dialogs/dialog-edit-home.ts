@@ -51,9 +51,9 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];
 
-const WELCOME_MESSAGE_SCHEMA = [
+const WELCOME_MESSAGE_SCHEMA: HaFormSchema[] = [
   { name: "welcome_message", selector: { boolean: {} } },
-] as const;
+];
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -245,10 +245,10 @@ export class DialogEditHome
     };
   }
 
-  private _computeSuggestedLabel = (_schema: HaFormSchema): string =>
+  private _computeSuggestedLabel = (): string =>
     this.hass.localize("ui.panel.home.editor.suggested_entities");
 
-  private _computeSuggestedHelper = (_schema: HaFormSchema): string =>
+  private _computeSuggestedHelper = (): string =>
     this.hass.localize("ui.panel.home.editor.suggested_entities_description");
 
   private _suggestedEntitiesChanged(ev: CustomEvent): void {
