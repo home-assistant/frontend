@@ -1328,7 +1328,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-input-search {
           width: 100%;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .section {
           width: 100%;
