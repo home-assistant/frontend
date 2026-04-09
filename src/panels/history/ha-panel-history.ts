@@ -668,6 +668,8 @@ class HaPanelHistory extends LitElement {
 
         ha-target-picker {
           flex: 1;
+          max-width: 100%;
+          min-width: 0;
         }
 
         @media all and (max-width: 1025px) {
