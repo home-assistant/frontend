@@ -152,32 +152,41 @@ export class DialogEditHome
           </div>
         </ha-expansion-panel>
 
-        <h3 class="section-header">
-          ${this.hass.localize("ui.panel.home.editor.summaries")}
-        </h3>
-        <p class="section-description">
-          ${this.hass.localize("ui.panel.home.editor.summaries_description")}
-        </p>
-        <div class="summary-toggles">
-          ${SUMMARY_ITEMS.map((item) => {
-            const label = this._getSummaryLabel(item.key);
-            const color = computeCssColor(item.color);
-            return html`
-              <label class="summary-toggle">
-                <ha-icon
-                  .icon=${item.icon}
-                  style=${styleMap({ "--mdc-icon-size": "24px", color })}
-                ></ha-icon>
-                <span class="summary-label">${label}</span>
-                <ha-switch
-                  .checked=${!hiddenSummaries.has(item.key)}
-                  .summary=${item.key}
-                  @change=${this._summaryToggleChanged}
-                ></ha-switch>
-              </label>
-            `;
-          })}
-        </div>
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.summaries")}
+          .secondary=${this.hass.localize(
+            "ui.panel.home.editor.summaries_description"
+          )}
+        >
+          <ha-icon
+            slot="leading-icon"
+            icon="mdi:view-dashboard-outline"
+          ></ha-icon>
+          <div class="expansion-content">
+            <div class="summary-toggles">
+              ${SUMMARY_ITEMS.map((item) => {
+                const label = this._getSummaryLabel(item.key);
+                const color = computeCssColor(item.color);
+                return html`
+                  <label class="summary-toggle">
+                    <ha-icon
+                      .icon=${item.icon}
+                      style=${styleMap({ "--mdc-icon-size": "24px", color })}
+                    ></ha-icon>
+                    <span class="summary-label">${label}</span>
+                    <ha-switch
+                      .checked=${!hiddenSummaries.has(item.key)}
+                      .summary=${item.key}
+                      @change=${this._summaryToggleChanged}
+                    ></ha-switch>
+                  </label>
+                `;
+              })}
+            </div>
+          </div>
+        </ha-expansion-panel>
 
         <ha-alert alert-type="info">
           ${this.hass.localize("ui.panel.home.editor.areas_hint", {
@@ -338,6 +347,10 @@ export class DialogEditHome
         --expansion-panel-content-padding: 0;
         border-radius: var(--ha-border-radius-md);
         --ha-card-border-radius: var(--ha-border-radius-md);
+      }
+
+      ha-expansion-panel + ha-expansion-panel {
+        margin-top: var(--ha-space-2);
       }
 
       .expansion-content {
