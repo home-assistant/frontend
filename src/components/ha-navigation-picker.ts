@@ -289,7 +289,10 @@ export class HaNavigationPicker extends LitElement {
     const views: NavigationItem[] = [];
     const otherRoutes: NavigationItem[] = [];
 
+    const HIDDEN_PANELS = ["_my_redirect", "notfound"];
+
     for (const panel of panels) {
+      if (HIDDEN_PANELS.includes(panel.id)) continue;
       const path = `/${panel.url_path}`;
       const panelTitle = getPanelTitle(this.hass, panel);
       const primary = panelTitle || path;
