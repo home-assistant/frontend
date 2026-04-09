@@ -90,8 +90,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    // Only include if we have grid return configured
-    if (hasReturn) {
+    // Only include if we have both grid import and export configured
+    if (hasGrid && hasReturn) {
       const gridResultCard = {
         type: "energy-grid-balance",
         collection_key: collectionKey,

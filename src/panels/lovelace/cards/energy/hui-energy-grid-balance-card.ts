@@ -76,7 +76,10 @@ class HuiEnergyGridBalanceCard
 
     const { summedData } = getSummedData(this._data);
 
-    if (!("from_grid" in summedData.total)) {
+    if (
+      !("from_grid" in summedData.total) ||
+      !("to_grid" in summedData.total)
+    ) {
       return nothing;
     }
 
