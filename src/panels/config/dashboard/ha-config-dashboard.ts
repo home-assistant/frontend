@@ -45,7 +45,6 @@ import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
-import "./ha-config-lovelace-heading";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -297,14 +296,21 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 ${repairsIssues.length
                   ? html`
                       <ha-card outlined class="dashboard-alert-card">
-                        <ha-config-lovelace-heading
-                          .hass=${this.hass}
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.repairs.title",
-                            { count: totalRepairIssues }
-                          )}
-                          .navigationPath=${"/config/repairs"}
-                        ></ha-config-lovelace-heading>
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/repairs">
+                            ${this.hass.localize(
+                              "ui.panel.config.repairs.title",
+                              {
+                                count: totalRepairIssues,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
                         <ha-config-repairs
                           .hass=${this.hass}
                           .narrow=${this.narrow}
@@ -316,14 +322,21 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 ${canInstallUpdates.length
                   ? html`
                       <ha-card outlined class="dashboard-alert-card">
-                        <ha-config-lovelace-heading
-                          .hass=${this.hass}
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.updates.title",
-                            { count: totalUpdates }
-                          )}
-                          .navigationPath=${"/config/updates"}
-                        ></ha-config-lovelace-heading>
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/updates">
+                            ${this.hass.localize(
+                              "ui.panel.config.updates.title",
+                              {
+                                count: totalUpdates,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
                         <ha-config-updates
                           .hass=${this.hass}
                           .narrow=${this.narrow}
@@ -432,8 +445,21 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           gap: var(--ha-space-4);
         }
 
-        .dashboard-alert-card ha-config-lovelace-heading {
+        .dashboard-alert-title {
           padding: var(--ha-space-4) var(--ha-space-4) 0;
+          font-size: var(--ha-font-size-l);
+        }
+
+        .dashboard-alert-title a {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+
+        .dashboard-alert-title ha-icon-next {
+          color: var(--secondary-text-color);
+          width: 20px;
+          height: 20px;
         }
 
         @media all and (max-width: 600px) {

@@ -19,7 +19,6 @@ import {
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import "../dashboard/ha-config-lovelace-heading";
 import "./ha-config-repairs";
 import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
 import { showSystemInformationDialog } from "./show-system-information-dialog";
@@ -122,15 +121,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
             <div class="card-content">
               ${issues.length
                 ? html`
-                    <ha-config-lovelace-heading
-                      .hass=${this.hass}
-                      .heading=${this.hass.localize(
-                        "ui.panel.config.repairs.title",
-                        {
-                          count: issues.length,
-                        }
-                      )}
-                    ></ha-config-lovelace-heading>
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize("ui.panel.config.repairs.title", {
+                        count: issues.length,
+                      })}
+                    </div>
                     <ha-config-repairs
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -203,8 +198,9 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
       padding: 0;
     }
 
-    ha-config-lovelace-heading {
+    .title {
       padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-repairs {

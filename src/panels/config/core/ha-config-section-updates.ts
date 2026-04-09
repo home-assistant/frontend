@@ -32,7 +32,6 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "../dashboard/ha-config-lovelace-heading";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
@@ -123,15 +122,11 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
-                    <ha-config-lovelace-heading
-                      .hass=${this.hass}
-                      .heading=${this.hass.localize(
-                        "ui.panel.config.updates.title",
-                        {
-                          count: canInstallUpdates.length,
-                        }
-                      )}
-                    ></ha-config-lovelace-heading>
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize("ui.panel.config.updates.title", {
+                        count: canInstallUpdates.length,
+                      })}
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -146,15 +141,14 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
-                    <ha-config-lovelace-heading
-                      .hass=${this.hass}
-                      .heading=${this.hass.localize(
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize(
                         "ui.panel.config.updates.title_not_installable",
                         {
                           count: notInstallableUpdates.length,
                         }
                       )}
-                    ></ha-config-lovelace-heading>
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -253,8 +247,9 @@ class HaConfigSectionUpdates extends LitElement {
       padding: 0;
     }
 
-    ha-config-lovelace-heading {
+    .title {
       padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-updates {
