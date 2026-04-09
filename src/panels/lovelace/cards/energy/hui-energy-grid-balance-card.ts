@@ -84,7 +84,14 @@ class HuiEnergyGridBalanceCard
     const exported = summedData.total.to_grid ?? 0;
     const net = imported - exported;
 
-    const formatOpts = { maximumFractionDigits: 2 };
+    const fmt = (value: number) =>
+      formatNumber(
+        value,
+        this.hass.locale,
+        Math.abs(value) < 0.01
+          ? { maximumSignificantDigits: 2 }
+          : { maximumFractionDigits: 2 }
+      );
 
     const isConsumption = net >= 0;
     const max = Math.max(imported, exported);
@@ -108,16 +115,12 @@ class HuiEnergyGridBalanceCard
               )}
             </span>
             <span slot="secondary" class="equation" id="equation">
-              <span class="imported">
-                ${formatNumber(imported, this.hass.locale, formatOpts)} kWh
-              </span>
+              <span class="imported"> ${fmt(imported)} kWh </span>
               <span class="operator"> - </span>
-              <span class="exported">
-                ${formatNumber(exported, this.hass.locale, formatOpts)} kWh
-              </span>
+              <span class="exported"> ${fmt(exported)} kWh </span>
               <span class="operator"> = </span>
               <span class="net ${isConsumption ? "consumption" : "return"}">
-                ${formatNumber(net, this.hass.locale, formatOpts)} kWh
+                ${fmt(net)} kWh
               </span>
             </span>
           </ha-tile-info>
@@ -137,7 +140,7 @@ class HuiEnergyGridBalanceCard
             <ha-tooltip for="bar-exported" placement="top">
               ${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.exported",
-                { value: formatNumber(exported, this.hass.locale, formatOpts) }
+                { value: fmt(exported) }
               )}
             </ha-tooltip>
             ${!isConsumption
@@ -150,11 +153,7 @@ class HuiEnergyGridBalanceCard
                     ${this.hass.localize(
                       "ui.panel.lovelace.cards.energy.grid_balance.net_export",
                       {
-                        value: formatNumber(
-                          Math.abs(net),
-                          this.hass.locale,
-                          formatOpts
-                        ),
+                        value: fmt(Math.abs(net)),
                       }
                     )}
                   </ha-tooltip>`
@@ -170,7 +169,7 @@ class HuiEnergyGridBalanceCard
             <ha-tooltip for="bar-imported" placement="top">
               ${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.imported",
-                { value: formatNumber(imported, this.hass.locale, formatOpts) }
+                { value: fmt(imported) }
               )}
             </ha-tooltip>
             ${isConsumption
@@ -183,11 +182,7 @@ class HuiEnergyGridBalanceCard
                     ${this.hass.localize(
                       "ui.panel.lovelace.cards.energy.grid_balance.net_import",
                       {
-                        value: formatNumber(
-                          Math.abs(net),
-                          this.hass.locale,
-                          formatOpts
-                        ),
+                        value: fmt(Math.abs(net)),
                       }
                     )}
                   </ha-tooltip>`
@@ -283,10 +278,19 @@ class HuiEnergyGridBalanceCard
     }
 
     .bar-fill {
+      position: absolute;
+      top: 0;
       height: 100%;
-      flex-shrink: 0;
       opacity: 0.3;
       transition: width 180ms ease-in-out;
+    }
+
+    .bar-left .bar-fill {
+      right: 0;
+    }
+
+    .bar-right .bar-fill {
+      left: 0;
     }
 
     .bar-fill.consumption {
