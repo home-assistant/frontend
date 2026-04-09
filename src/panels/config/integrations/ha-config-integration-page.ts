@@ -324,37 +324,30 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         );
       });
 
-    const normalData = this._filterNormalTree(
-      this._buildNormalEntryData(
-        normalEntries,
-        this.hass.devices,
-        this._subEntries,
-        this.hass.locale.language,
-        this.hass.localize
-      ),
+    const normalData = this._buildNormalEntryData(
+      normalEntries,
+      this.hass.devices,
+      this._subEntries,
+      this.hass.locale.language,
+      this.hass.localize
+    );
+    const attentionData = this._buildAttentionEntryData(
+      attentionEntries,
+      this.hass.devices,
+      this._subEntries,
+      this.hass.locale.language,
+      this.hass.localize
+    );
+    const filteredNormalData = this._filterNormalTree(
+      normalData,
       this._filter,
       this.hass.areas
     );
-    const attentionData = this._filterAttentionTree(
-      this._buildAttentionEntryData(
-        attentionEntries,
-        this.hass.devices,
-        this._subEntries,
-        this.hass.locale.language,
-        this.hass.localize
-      ),
+    const filteredAttentionData = this._filterAttentionTree(
+      attentionData,
       this._filter,
       this.hass.areas
     );
-    const filteredDiscoveryFlows = this._filterFlows(
-      discoveryFlows,
-      this._filter
-    );
-    const filteredAttentionFlows = this._filterFlows(
-      attentionFlows,
-      this._filter
-    );
-
     const devicesRegs = this._getDevices(configEntries, this.hass.devices);
     const entities = this._getEntities(configEntries, this._entities);
     let numberOfEntities = entities.length;
@@ -697,7 +690,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </ha-alert>
               </div>`
             : nothing}
-          ${filteredDiscoveryFlows.length
+          ${discoveryFlows.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -706,7 +699,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-md-list class="discovered">
-                    ${filteredDiscoveryFlows.map(
+                    ${discoveryFlows.map(
                       (flow) =>
                         html`<ha-md-list-item class="discovered">
                           ${flow.localized_title}
@@ -725,7 +718,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </div>
               `
             : nothing}
-          ${filteredAttentionFlows.length || attentionData.length
+          ${attentionFlows.length || filteredAttentionData.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -733,9 +726,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `ui.panel.config.integrations.integration_page.attention_entries`
                     )}
                   </h3>
-                  ${filteredAttentionFlows.length
+                  ${attentionFlows.length
                     ? html`<ha-md-list class="attention">
-                        ${filteredAttentionFlows.map((flow) => {
+                        ${attentionFlows.map((flow) => {
                           const attention = ATTENTION_SOURCES.includes(
                             flow.context.source
                           );
@@ -765,7 +758,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         })}
                       </ha-md-list>`
                     : nothing}
-                  ${attentionData.map(
+                  ${filteredAttentionData.map(
                     (data) =>
                       html`<ha-config-entry-row
                         class="attention"
@@ -792,7 +785,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     `ui.panel.config.integrations.integration_page.entries`
                   )}
             </h3>
-            ${normalData.length === 0
+            ${filteredNormalData.length === 0
               ? html`<div class="card-content no-entries">
                   ${this._filter
                     ? this.hass.localize(
@@ -811,7 +804,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         )}
                 </div>`
               : html`
-                  ${normalData.map(
+                  ${filteredNormalData.map(
                     (data) =>
                       html`<ha-config-entry-row
                         .hass=${this.hass}
@@ -1097,25 +1090,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _filterAttentionTree = memoizeOne(
     (data: ConfigEntryData[], filter: string, areas: HomeAssistant["areas"]) =>
       this._filterTree(data, filter, areas)
-  );
-
-  private _filterFlows = memoizeOne(
-    (
-      flows: DataEntryFlowProgressExtended[],
-      filter: string
-    ): DataEntryFlowProgressExtended[] => {
-      if (!filter) {
-        return flows;
-      }
-      const KEYS = ["title"];
-      return multiTermSearch(
-        flows.map((flow) => ({ flow, title: flow.localized_title || "" })),
-        filter,
-        KEYS,
-        undefined,
-        { keys: KEYS }
-      ).map((r) => r.flow);
-    }
   );
 
   private _handleSearchChange(ev: InputEvent) {
