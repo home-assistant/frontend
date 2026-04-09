@@ -174,6 +174,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           // drag to zoom
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
@@ -192,6 +193,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
             key: "dataZoomSelect",
@@ -267,6 +269,9 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
+      if (chartOptions.series) {
+        this._updateSankeyRoam();
+      }
     }
   }
 
@@ -454,10 +459,15 @@ export class HaChartBase extends LitElement {
       this.chart.on("sankeyroam", () => {
         const option = this.chart!.getOption();
         const series = option.series as any[];
-        this._isZoomed = series?.some(
-          (s: any) => s.type === "sankey" && s.zoom !== 1
-        );
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
+        const zoomed = sankeySeries.zoom !== 1;
+        this._isZoomed = zoomed;
+        if (!zoomed) {
+          // Reset center when fully zoomed out
+          this.chart!.setOption({
+            series: [{ id: sankeySeries.id, center: null }],
+          });
+        }
         fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
@@ -560,6 +570,7 @@ export class HaChartBase extends LitElement {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._updateSankeyRoam();
     } finally {
       this._loading = false;
     }
@@ -1038,6 +1049,21 @@ export class HaChartBase extends LitElement {
       });
       this._isZoomed = false;
       fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+  }
+
+  private _updateSankeyRoam() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+        })),
+      });
     }
   }
 
