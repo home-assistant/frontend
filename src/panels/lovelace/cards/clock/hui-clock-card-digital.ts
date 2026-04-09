@@ -8,6 +8,21 @@ import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 
 const INTERVAL = 1000;
 
+const TIME_SIZES: Record<NonNullable<ClockCardConfig["clock_size"]>, string> = {
+  small: "1.5rem",
+  medium: "3rem",
+  large: "4rem",
+};
+
+const OPTIONAL_ELEMENTS_SIZES: Record<
+  NonNullable<ClockCardConfig["clock_size"]>,
+  { margin: string; fontSize: string }
+> = {
+  small: { margin: "0.25rem", fontSize: "var(--ha-font-size-xs)" },
+  medium: { margin: "0.375rem", fontSize: "var(--ha-font-size-l)" },
+  large: { margin: "0.5rem", fontSize: "var(--ha-font-size-2xl)" },
+};
+
 @customElement("hui-clock-card-digital")
 export class HuiClockCardDigital extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -98,14 +113,22 @@ export class HuiClockCardDigital extends LitElement {
   render() {
     if (!this.config) return nothing;
 
-    const sizeClass = this.config.clock_size
-      ? `size-${this.config.clock_size}`
-      : "";
+    const mappedFontSize = TIME_SIZES[this.config.clock_size || "small"];
+    const optionalFontSize =
+      OPTIONAL_ELEMENTS_SIZES[this.config.clock_size || "small"].fontSize;
+    const optionalMargin =
+      OPTIONAL_ELEMENTS_SIZES[this.config.clock_size || "small"].margin;
 
     return html`
-      <div class="time-parts ${sizeClass}">
-        <div class="time-part hour">${this._timeHour}</div>
-        <div class="time-part minute">${this._timeMinute}</div>
+      <div
+        class="time-parts"
+        style="--font-size:${mappedFontSize};--optional-font-size:${optionalFontSize};--optional-margin:${optionalMargin}"
+      >
+        <div class="time-part hour-and-minute">
+          <span>${this._timeHour}</span>
+          <span>:</span>
+          <span>${this._timeMinute}</span>
+        </div>
         ${this._timeSecond !== undefined
           ? html`<div class="time-part second">${this._timeSecond}</div>`
           : nothing}
@@ -119,51 +142,71 @@ export class HuiClockCardDigital extends LitElement {
   static styles = css`
     :host {
       display: block;
+      container-name: digital-time;
+      container-type: inline-size;
+      width: 100%;
+      overflow: hidden;
     }
 
     .time-parts {
       align-items: center;
       display: grid;
       grid-template-areas:
-        "hour minute second"
-        "hour minute am-pm";
-
-      font-size: 1.5rem;
+        "hour-and-minute second"
+        "hour-and-minute am-pm";
       font-weight: var(--ha-font-weight-medium);
+      // font-size: clamp is used keeping in mind design choice while resizing
+      font-size: clamp(1rem, calc(1.5rem + 10cqw), var(--font-size));
       line-height: 0.8;
       direction: ltr;
     }
 
-    .time-title + .time-parts {
-      font-size: 1.5rem;
+    .time-parts .time-part.second,
+    .time-parts .time-part.am-pm {
+      font-size: clamp(
+        var(--ha-font-size-xs),
+        0.75rem + 1cqw,
+        var(--optional-font-size)
+      );
+      margin-left: var(--optional-margin);
     }
 
-    .time-parts.size-medium {
-      font-size: 3rem;
+    @container digital-time (inline-size > 9rem) {
+      .time-parts {
+        font-size: clamp(1rem, calc(1.5rem + 13cqw), var(--font-size));
+      }
+      .time-parts .time-part.second,
+      .time-parts .time-part.am-pm {
+        font-size: clamp(
+          var(--ha-font-size-xs),
+          0.75rem + 3cqw,
+          var(--optional-font-size)
+        );
+      }
     }
 
-    .time-parts.size-large {
-      font-size: 4rem;
+    @container digital-time (inline-size > 12rem) {
+      .time-parts {
+        font-size: clamp(1rem, calc(1.5rem + 17cqw), var(--font-size));
+      }
+      .time-parts .time-part.second,
+      .time-parts .time-part.am-pm {
+        font-size: clamp(
+          var(--ha-font-size-xs),
+          0.75rem + 7cqw,
+          var(--optional-font-size)
+        );
+      }
     }
 
-    .time-parts.size-medium .time-part.second,
-    .time-parts.size-medium .time-part.am-pm {
-      font-size: var(--ha-font-size-l);
-      margin-left: 6px;
+    .time-parts .time-part.hour-and-minute {
+      grid-area: hour-and-minute;
+      justify-self: end;
     }
 
-    .time-parts.size-large .time-part.second,
-    .time-parts.size-large .time-part.am-pm {
-      font-size: var(--ha-font-size-2xl);
-      margin-left: 8px;
-    }
-
-    .time-parts .time-part.hour {
-      grid-area: hour;
-    }
-
-    .time-parts .time-part.minute {
-      grid-area: minute;
+    .hour-and-minute {
+      display: flex;
+      gap: 0.125rem;
     }
 
     .time-parts .time-part.second {
@@ -176,17 +219,6 @@ export class HuiClockCardDigital extends LitElement {
       grid-area: am-pm;
       line-height: 0.9;
       opacity: 0.6;
-    }
-
-    .time-parts .time-part.second,
-    .time-parts .time-part.am-pm {
-      font-size: var(--ha-font-size-xs);
-      margin-left: 4px;
-    }
-
-    .time-parts .time-part.hour:after {
-      content: ":";
-      margin: 0 2px;
     }
   `;
 }
