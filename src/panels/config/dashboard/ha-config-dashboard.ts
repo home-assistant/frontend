@@ -308,9 +308,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                         <ha-config-repairs
                           .hass=${this.hass}
                           .narrow=${this.narrow}
-                          .total=${totalRepairIssues}
                           .repairsIssues=${repairsIssues}
-                          .hideSectionHeading=${true}
                         ></ha-config-repairs>
                       </ha-card>
                     `
@@ -329,10 +327,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                         <ha-config-updates
                           .hass=${this.hass}
                           .narrow=${this.narrow}
-                          .total=${totalUpdates}
                           .updateEntities=${canInstallUpdates}
-                          .isInstallable=${true}
-                          .hideSectionHeading=${true}
                         ></ha-config-updates>
                       </ha-card>
                     `
