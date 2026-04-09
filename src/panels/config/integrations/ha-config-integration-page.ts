@@ -24,6 +24,7 @@ import {
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
@@ -31,6 +32,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import {
@@ -76,7 +78,6 @@ import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 
 export interface SubEntryData {
   subEntry: SubEntry;
@@ -666,12 +667,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
           </div>
 
-          <ha-input-search
-            appearance="outlined"
-            .value=${this._filter}
-            @input=${this._handleSearchChange}
-          ></ha-input-search>
-
+          ${normalData.length + attentionData.length > 0
+            ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
+              ></ha-input-search>`
+            : nothing}
           ${this._logInfo?.level === LogSeverity.DEBUG
             ? html`<div class="section">
                 <ha-alert alert-type="warning">
@@ -1093,7 +1095,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   );
 
   private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HTMLInputElement).value ?? "";
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private async _handleEnableDebugLogging() {
