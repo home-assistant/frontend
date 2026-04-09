@@ -16,6 +16,7 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
+import { deepActiveElement } from "../../../common/dom/deep-active-element";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
@@ -428,6 +429,17 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
 
     if (this.configEntries && this.configEntriesInProgress) {
+      const activeElement = deepActiveElement();
+
+      if (
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        (activeElement as HTMLElement | null)?.isContentEditable
+      ) {
+        return;
+      }
+
       this._tabsSubpage?.focusContentScroller();
     }
   }
