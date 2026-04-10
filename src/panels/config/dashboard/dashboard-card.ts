@@ -72,6 +72,9 @@ export class DashboardCard extends LitElement {
     .preview {
       padding: var(--ha-space-4);
     }
+    .preview img {
+      max-height: 160px;
+    }
     h2 {
       margin: 0 0 var(--ha-space-2) 0;
       font-size: 1.2rem;
