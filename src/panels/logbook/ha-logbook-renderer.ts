@@ -422,14 +422,6 @@ class HaLogbookRenderer extends LitElement {
       item.context_event_type === "automation_triggered" ||
       item.context_event_type === "script_started"
     ) {
-      // context_source is available in 2022.6 and later
-      const triggerMsg = item.context_source
-        ? item.context_source
-        : item.context_message.replace("triggered by ", "");
-      const contextTriggerSource = localizeTriggerSource(
-        this.hass.localize,
-        triggerMsg
-      );
       return html`${this.hass.localize(
         item.context_event_type === "automation_triggered"
           ? "ui.components.logbook.triggered_by_automation"
@@ -439,22 +431,17 @@ class HaLogbookRenderer extends LitElement {
         item.context_entity_id,
         item.context_entity_id_name,
         noLink
-      )}
-      ${item.context_message
-        ? this._formatMessageWithPossibleEntity(
-            contextTriggerSource,
-            seenEntityIds,
-            undefined,
-            noLink
-          )
-        : ""}`;
+      )} `;
     }
     // Generic externally described logbook platform
     // These are not localizable
+    // Check if the message is just a repeat of "triggered"
+    const cleanMessage =
+      item.context_message === "triggered" ? "" : item.context_message;
     return html` ${this.hass.localize("ui.components.logbook.triggered_by")}
     ${item.context_name}
     ${this._formatMessageWithPossibleEntity(
-      item.context_message,
+      cleanMessage,
       seenEntityIds,
       item.context_entity_id,
       noLink
