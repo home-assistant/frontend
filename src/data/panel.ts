@@ -13,6 +13,7 @@ import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant, PanelInfo } from "../types";
 
 export const HOME_PANEL = "home";
+export const MY_REDIRECT_PANEL = "_my_redirect";
 export const NOT_FOUND_PANEL = "notfound";
 export const PROFILE_PANEL = "profile";
 export const LOVELACE_PANEL = "lovelace";

@@ -8,7 +8,12 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
-import { getPanelIcon, getPanelTitle } from "../data/panel";
+import {
+  getPanelIcon,
+  getPanelTitle,
+  MY_REDIRECT_PANEL,
+  NOT_FOUND_PANEL,
+} from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
@@ -24,6 +29,8 @@ import {
 } from "./ha-picker-combo-box";
 
 type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
+
+const HIDDEN_PANELS = [MY_REDIRECT_PANEL, NOT_FOUND_PANEL];
 
 const RELATED_SORT_PREFIX = {
   area_view: "0_area_view",
@@ -288,8 +295,6 @@ export class HaNavigationPicker extends LitElement {
     const dashboards: NavigationItem[] = [];
     const views: NavigationItem[] = [];
     const otherRoutes: NavigationItem[] = [];
-
-    const HIDDEN_PANELS = ["_my_redirect", "notfound"];
 
     for (const panel of panels) {
       if (HIDDEN_PANELS.includes(panel.id)) continue;
