@@ -35,7 +35,10 @@ import {
 } from "../helpers/view-columns-conditions";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { getPanelIcon, getPanelIconPath } from "../../../../data/panel";
-import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import {
+  HOME_SUMMARIES_FILTERS,
+  NAV_TILE_COLORS,
+} from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
@@ -370,16 +373,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     ].filter(Boolean) as LovelaceCardConfig[];
 
     // Append custom navigation tiles
-    const NAV_TILE_COLORS = [
-      "blue",
-      "teal",
-      "purple",
-      "green",
-      "deep-orange",
-      "indigo",
-      "pink",
-      "cyan",
-    ];
     const customNavPaths = config.custom_navigation_paths || [];
     for (let i = 0; i < customNavPaths.length; i++) {
       const navItem = customNavPaths[i];

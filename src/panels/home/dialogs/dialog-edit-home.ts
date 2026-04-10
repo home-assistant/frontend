@@ -26,6 +26,7 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
+  NAV_TILE_COLORS,
   type HomeSummary,
 } from "../../lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
@@ -54,17 +55,6 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   },
   { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
-];
-
-const NAV_TILE_COLORS = [
-  "blue",
-  "teal",
-  "purple",
-  "green",
-  "deep-orange",
-  "indigo",
-  "pink",
-  "cyan",
 ];
 
 // Paths already covered by built-in summaries
@@ -145,9 +135,7 @@ export class DialogEditHome
           )}
         </h3>
         <p class="section-description">
-          ${this.hass.localize(
-            "ui.panel.home.editor.favorite_entities_helper"
-          )}
+          ${this.hass.localize("ui.panel.home.editor.favorite_entities_helper")}
         </p>
         <ha-entities-picker
           autofocus
@@ -164,9 +152,7 @@ export class DialogEditHome
           ${this.hass.localize("ui.panel.home.editor.welcome_message")}
         </h3>
         <p class="section-description">
-          ${this.hass.localize(
-            "ui.panel.home.editor.welcome_message_helper"
-          )}
+          ${this.hass.localize("ui.panel.home.editor.welcome_message_helper")}
         </p>
         <ha-form
           .hass=${this.hass}
