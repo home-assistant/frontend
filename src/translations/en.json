@@ -5371,6 +5371,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
                   "before": "Before",
                   "after": "After",
+                  "between": "Between",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",

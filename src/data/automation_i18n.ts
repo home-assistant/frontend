@@ -2,6 +2,7 @@ import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
+  formatDurationDigital,
   formatDurationLong,
   formatNumericDuration,
 } from "../common/datetime/format_duration";
@@ -1252,7 +1253,16 @@ const describeLegacyCondition = (
       } else if (typeof condition.after_offset === "string") {
         afterDuration = condition.after_offset;
       } else {
-        afterDuration = JSON.stringify(condition.after_offset);
+        try {
+          afterDuration = formatDurationDigital(
+            hass.locale,
+            condition.after_offset
+          );
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("Error formatting sun after_offset duration", e);
+          afterDuration = JSON.stringify(condition.after_offset);
+        }
       }
     }
 
@@ -1263,7 +1273,16 @@ const describeLegacyCondition = (
       } else if (typeof condition.before_offset === "string") {
         beforeDuration = condition.before_offset;
       } else {
-        beforeDuration = JSON.stringify(condition.before_offset);
+        try {
+          beforeDuration = formatDurationDigital(
+            hass.locale,
+            condition.before_offset
+          );
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("Error formatting sun before_offset duration", e);
+          beforeDuration = JSON.stringify(condition.before_offset);
+        }
       }
     }
 
