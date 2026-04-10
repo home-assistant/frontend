@@ -8,6 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import "../../../components/ha-switch";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
@@ -44,6 +45,10 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];
+
+const WELCOME_MESSAGE_SCHEMA = [
+  { name: "welcome_message", selector: { boolean: {} } },
+] as const;
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -113,6 +118,15 @@ export class DialogEditHome
           reorder
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
+
+        <ha-form
+          .hass=${this.hass}
+          .data=${{ welcome_message: !this._config?.hide_welcome_message }}
+          .schema=${WELCOME_MESSAGE_SCHEMA}
+          .computeLabel=${this._computeWelcomeLabel}
+          .computeHelper=${this._computeWelcomeHelper}
+          @value-changed=${this._welcomeMessageToggleChanged}
+        ></ha-form>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
@@ -201,6 +215,19 @@ export class DialogEditHome
       ...this._config,
       hidden_summaries:
         hiddenSummaries.size > 0 ? [...hiddenSummaries] : undefined,
+    };
+  }
+
+  private _computeWelcomeLabel = () =>
+    this.hass.localize("ui.panel.home.editor.welcome_message");
+
+  private _computeWelcomeHelper = () =>
+    this.hass.localize("ui.panel.home.editor.welcome_message_helper");
+
+  private _welcomeMessageToggleChanged(ev: CustomEvent): void {
+    this._config = {
+      ...this._config,
+      hide_welcome_message: ev.detail.value.welcome_message ? undefined : true,
     };
   }
 

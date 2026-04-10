@@ -122,11 +122,15 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize("ui.panel.config.updates.title", {
+                        count: canInstallUpdates.length,
+                      })}
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
-                      .isInstallable=${true}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -137,11 +141,18 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.title_not_installable",
+                        {
+                          count: notInstallableUpdates.length,
+                        }
+                      )}
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
-                      .isInstallable=${false}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -234,6 +245,11 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+
+    .title {
+      padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-updates {

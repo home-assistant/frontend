@@ -178,6 +178,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           // drag to zoom
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
@@ -196,6 +197,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
             key: "dataZoomSelect",
@@ -271,6 +273,9 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
+      if (chartOptions.series) {
+        this._updateSankeyRoam();
+      }
     }
   }
 
@@ -455,6 +460,22 @@ export class HaChartBase extends LitElement {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
+      this.chart.on("sankeyroam", () => {
+        const option = this.chart!.getOption();
+        const series = option.series as any[];
+        const sankeySeries = series?.find((s: any) => s.type === "sankey");
+        const zoomed = sankeySeries.zoom !== 1;
+        this._isZoomed = zoomed;
+        if (!zoomed) {
+          // Reset center when fully zoomed out
+          this.chart!.setOption({
+            series: [{ id: sankeySeries.id, center: null }],
+          });
+        }
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
+        // Clear cached emphasis states so labels don't revert to pre-zoom sizes
+        this.chart!.dispatchAction({ type: "downplay" });
+      });
 
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
@@ -553,6 +574,7 @@ export class HaChartBase extends LitElement {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._updateSankeyRoam();
     } finally {
       this._loading = false;
     }
@@ -992,6 +1014,26 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+    // Handle sankey chart double-click zoom
+    const option = this.chart.getOption();
+    const allSeries = option.series as any[];
+    const sankeySeries = allSeries?.filter((s: any) => s.type === "sankey");
+    if (sankeySeries?.length) {
+      if (this._isZoomed) {
+        this._handleZoomReset();
+      } else {
+        this.chart.setOption({
+          series: sankeySeries.map((s: any) => ({
+            id: s.id,
+            zoom: 2,
+          })),
+        });
+        this._isZoomed = true;
+      }
+      if (sankeySeries.length === allSeries?.length) {
+        return;
+      }
+    }
     const range = this._isZoomed
       ? [0, 100]
       : [
@@ -1016,6 +1058,37 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // Reset sankey roam zoom
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          zoom: 1,
+          center: null,
+        })),
+      });
+      this._isZoomed = false;
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+  }
+
+  private _updateSankeyRoam() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+        })),
+      });
+    }
   }
 
   private _handleDataZoomEvent(e: any) {
@@ -1386,5 +1459,6 @@ declare global {
       start: number;
       end: number;
     };
+    "chart-sankeyroam": { zoom: number };
   }
 }

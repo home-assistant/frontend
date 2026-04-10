@@ -2467,6 +2467,8 @@
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
+          "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
           "summaries_description": "Choose which summaries to show on your overview page."
         },
@@ -2730,7 +2732,7 @@
             "title": "App store",
             "check_updates": "Check for updates",
             "repositories": "Repositories",
-            "registries": "Registries",
+            "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
           },
           "repositories": {

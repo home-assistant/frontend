@@ -16,6 +16,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomTargetEvent,
@@ -261,11 +262,13 @@ export class HaDataTable extends LitElement {
       this.style.removeProperty("--table-row-width");
     }
 
+    const activeElement = deepActiveElement();
+
     if (
       changedProps.has("selectable") ||
       (!this.autoHeight &&
-        document.activeElement &&
-        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(document.activeElement.tagName))
+        activeElement &&
+        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(activeElement.tagName))
     ) {
       this._focusScroller();
     }
