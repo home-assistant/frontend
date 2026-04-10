@@ -67,8 +67,7 @@ const updateApi = (
     value.callApiRaw !== hass.callApiRaw ||
     value.callWS !== hass.callWS ||
     value.sendWS !== hass.sendWS ||
-    value.fetchWithAuth !== hass.fetchWithAuth ||
-    value.hassUrl !== hass.hassUrl
+    value.fetchWithAuth !== hass.fetchWithAuth
   ) {
     return {
       callService: hass.callService,
@@ -77,7 +76,6 @@ const updateApi = (
       callWS: hass.callWS,
       sendWS: hass.sendWS,
       fetchWithAuth: hass.fetchWithAuth,
-      hassUrl: hass.hassUrl,
     };
   }
   return value;
@@ -91,12 +89,14 @@ const updateConnection = (
     !value ||
     value.connection !== hass.connection ||
     value.connected !== hass.connected ||
-    value.debugConnection !== hass.debugConnection
+    value.debugConnection !== hass.debugConnection ||
+    value.hassUrl !== hass.hassUrl
   ) {
     return {
       connection: hass.connection,
       connected: hass.connected,
       debugConnection: hass.debugConnection,
+      hassUrl: hass.hassUrl,
     };
   }
   return value;

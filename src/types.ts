@@ -254,7 +254,6 @@ export interface HomeAssistantInternationalization {
 }
 
 export interface HomeAssistantApi {
-  hassUrl(path?): string;
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
@@ -306,6 +305,7 @@ export interface HomeAssistantConnection {
   connection: Connection;
   connected: boolean;
   debugConnection: boolean;
+  hassUrl(path?): string;
 }
 
 export interface HomeAssistantUI {
