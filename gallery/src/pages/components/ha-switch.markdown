@@ -3,37 +3,68 @@ title: Switch / Toggle
 ---
 
 <style>
-  ha-switch {
-    display: block;
+  .wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: center;
   }
 </style>
 
 # Switch `<ha-switch>`
 
-A toggle switch can represent two states: on and off.
+A toggle switch representing two states: on and off.
 
-## Examples
+## Implementation
 
-Switch in on state
+### Example usage
+
+<div class="wrapper">
+  <ha-switch checked></ha-switch>
+  <ha-switch></ha-switch>
+  <ha-switch disabled></ha-switch>
+  <ha-switch disabled checked></ha-switch>
+</div>
+
+```html
 <ha-switch checked></ha-switch>
 
-Switch in off state
 <ha-switch></ha-switch>
 
-Disabled switch
 <ha-switch disabled></ha-switch>
 
-## CSS variables
+<ha-switch disabled checked></ha-switch>
+```
 
-For the switch / toggle there are always two variables, one for the on / checked state and one for the off / unchecked state.
+### API
 
-The track element (background rounded rectangle that the round circular handle travels on) is set to being half transparent, so the final color will also be impacted by the color behind the track.
+This component is based on the webawesome switch component.
+Check the [webawesome documentation](https://webawesome.com/docs/components/switch/) for more details.
 
-`switch-checked-color` / `switch-unchecked-color`  
-Set both the color of the round handle and the track behind it. If you want to control them separately, use the variables below instead.
+**Properties/Attributes**
 
-`switch-checked-button-color` / `switch-unchecked-button-color`  
-Color of the round handle
+| Name     | Type    | Default | Description                                                                                                         |
+| -------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| checked  | Boolean | false   | The checked state of the switch.                                                                                    |
+| disabled | Boolean | false   | Disables the switch and prevents user interaction.                                                                  |
+| required | Boolean | false   | Makes the switch a required field.                                                                                  |
+| haptic   | Boolean | false   | Enables haptic vibration on toggle. Only use when the new state is applied immediately (not when save is required). |
 
-`switch-checked-track-color` / `switch-unchecked-track-color`  
-Color of the track behind the round handle
+**CSS Custom Properties**
+
+- `--ha-switch-size` - The size of the switch track height. Defaults to `14px`.
+- `--ha-switch-thumb-size` - The size of the thumb. Defaults to `20px`.
+- `--ha-switch-width` - The width of the switch track. Defaults to `36px`.
+- `--ha-switch-box-shadow` - The box shadow of the thumb. Defaults to `var(--ha-box-shadow-s)`.
+- `--ha-switch-background-color` - Background color of the unchecked track.
+- `--ha-switch-border-color` - Border color of the unchecked track and thumb.
+- `--ha-switch-thumb-background-color` - Background color of the unchecked thumb.
+- `--ha-switch-background-color-hover` - Background color of the unchecked track on hover.
+- `--ha-switch-thumb-background-color-hover` - Background color of the unchecked thumb on hover.
+- `--ha-switch-checked-background-color` - Background color of the checked track.
+- `--ha-switch-checked-border-color` - Border color of the checked track.
+- `--ha-switch-checked-thumb-background-color` - Background color of the checked thumb.
+- `--ha-switch-checked-thumb-border-color` - Border color of the checked thumb.
+- `--ha-switch-checked-background-color-hover` - Background color of the checked track on hover.
+- `--ha-switch-checked-thumb-background-color-hover` - Background color of the checked thumb on hover.
+- `--ha-switch-required-marker` - The marker shown after the label for required fields. Defaults to `"*"`.
+- `--ha-switch-required-marker-offset` - Offset of the required marker. Defaults to `0.1rem`.
