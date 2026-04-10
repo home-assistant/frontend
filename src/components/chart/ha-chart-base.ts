@@ -18,15 +18,16 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
-import { themesContext } from "../../data/context";
+import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -74,8 +75,11 @@ export class HaChartBase extends LitElement {
   public extraComponents?: any[];
 
   @state()
-  @consume({ context: themesContext, subscribe: true })
-  _themes!: Themes;
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   @state() private _isZoomed = false;
 

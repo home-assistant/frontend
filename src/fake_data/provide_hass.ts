@@ -303,7 +303,6 @@ export const provideHass = (
     debugConnection: false,
     kioskMode: false,
     suspendWhenHidden: false,
-    moreInfoEntityId: null as any,
     // @ts-ignore
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
