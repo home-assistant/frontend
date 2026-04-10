@@ -15,6 +15,8 @@ import {
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant

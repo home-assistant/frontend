@@ -26,6 +26,8 @@ export interface CommonControlSectionStrategyConfig {
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     config: CommonControlSectionStrategyConfig,
     hass: HomeAssistant

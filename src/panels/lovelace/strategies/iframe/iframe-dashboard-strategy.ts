@@ -8,6 +8,8 @@ export type IframeDashboardStrategyConfig = IframeViewStrategyConfig;
 
 @customElement("iframe-dashboard-strategy")
 export class IframeDashboardStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     config: IframeDashboardStrategyConfig
   ): Promise<LovelaceConfig> {

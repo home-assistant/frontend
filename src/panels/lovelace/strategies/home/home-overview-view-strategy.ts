@@ -74,6 +74,14 @@ const computeAreaCard = (
 
 @customElement("home-overview-view-strategy")
 export class HomeOverviewViewStrategy extends ReactiveElement {
+  static registryDependencies = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+    "panels",
+  ];
+
   static async generate(
     config: HomeOverviewViewStrategyConfig,
     hass: HomeAssistant

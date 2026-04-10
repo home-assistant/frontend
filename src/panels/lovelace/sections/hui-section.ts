@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -24,7 +25,10 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { addCard, replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
-import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceSectionStrategy,
+} from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
 
@@ -105,8 +109,35 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       (!oldConfig || this.config !== oldConfig)
     ) {
       this._initializeConfig();
+      return;
+    }
+
+    if (!changedProperties.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    if (
+      oldHass &&
+      this.hass &&
+      isStrategySection(this.config) &&
+      this.hass.config.state === "RUNNING" &&
+      (oldHass.config.state !== "RUNNING" ||
+        checkStrategyShouldRegenerate(
+          "section",
+          this.config.strategy,
+          oldHass,
+          this.hass
+        ))
+    ) {
+      this._debounceRefreshConfig();
     }
   }
+
+  private _debounceRefreshConfig = debounce(
+    () => this._initializeConfig(),
+    200
+  );
 
   public disconnectedCallback() {
     super.disconnectedCallback();

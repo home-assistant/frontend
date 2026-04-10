@@ -7,6 +7,8 @@ export type MapDashboardStrategyConfig = MapViewStrategyConfig;
 
 @customElement("map-dashboard-strategy")
 export class MapDashboardStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     config: MapDashboardStrategyConfig
   ): Promise<LovelaceConfig> {

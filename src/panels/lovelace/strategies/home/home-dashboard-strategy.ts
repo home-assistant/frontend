@@ -23,6 +23,8 @@ export interface HomeDashboardStrategyConfig {
 
 @customElement("home-dashboard-strategy")
 export class HomeDashboardStrategy extends ReactiveElement {
+  static registryDependencies = ["areas"];
+
   static async generate(
     config: HomeDashboardStrategyConfig,
     hass: HomeAssistant

@@ -10,6 +10,8 @@ export interface MapViewStrategyConfig {
 
 @customElement("map-view-strategy")
 export class MapViewStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     _config: MapViewStrategyConfig,
     hass: HomeAssistant
