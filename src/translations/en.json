@@ -2471,7 +2471,7 @@
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
           "summaries_description": "Choose which summaries to show on your overview page.",
-          "add_custom_navigation": "Add navigation tile"
+          "add_custom_navigation": "Add other page to summary"
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",

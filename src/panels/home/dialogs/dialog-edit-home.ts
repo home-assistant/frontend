@@ -56,6 +56,17 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];
 
+const NAV_TILE_COLORS = [
+  "blue",
+  "teal",
+  "purple",
+  "green",
+  "deep-orange",
+  "indigo",
+  "pink",
+  "cyan",
+];
+
 // Paths already covered by built-in summaries
 const SUMMARY_PANEL_PATHS = [
   "/home",
@@ -118,33 +129,50 @@ export class DialogEditHome
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <p class="description">
-          ${this.hass.localize("ui.panel.home.editor.description")}
-        </p>
+        <ha-alert alert-type="info">
+          ${this.hass.localize("ui.panel.home.editor.areas_hint", {
+            areas_page: html`<a
+              href="/config/areas?historyBack=1"
+              @click=${this.closeDialog}
+              >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
+            >`,
+          })}
+        </ha-alert>
 
+        <h3 class="section-header">
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
+          )}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.home.editor.favorite_entities_helper"
+          )}
+        </p>
         <ha-entities-picker
           autofocus
           .hass=${this.hass}
           .value=${this._config?.favorite_entities || []}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
-          )}
           .placeholder=${this.hass.localize(
             "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.home.editor.favorite_entities_helper"
           )}
           reorder
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
 
+        <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.welcome_message")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.home.editor.welcome_message_helper"
+          )}
+        </p>
         <ha-form
           .hass=${this.hass}
           .data=${{ welcome_message: !this._config?.hide_welcome_message }}
           .schema=${WELCOME_MESSAGE_SCHEMA}
           .computeLabel=${this._computeWelcomeLabel}
-          .computeHelper=${this._computeWelcomeHelper}
           @value-changed=${this._welcomeMessageToggleChanged}
         ></ha-form>
 
@@ -178,25 +206,32 @@ export class DialogEditHome
             const panel = this.hass.panels[panelUrlPath];
             const icon = panel ? getPanelIcon(panel) : undefined;
             const iconPath = panel ? getPanelIconPath(panel) : undefined;
+            const color = computeCssColor(
+              NAV_TILE_COLORS[index % NAV_TILE_COLORS.length]
+            );
             return html`
               <div class="navigation-item">
                 ${iconPath
                   ? html`<ha-svg-icon
                       .path=${iconPath}
-                      style="--mdc-icon-size: 24px"
+                      style=${styleMap({
+                        "--mdc-icon-size": "24px",
+                        color,
+                      })}
                     ></ha-svg-icon>`
                   : html`<ha-icon
                       .icon=${icon || "mdi:link"}
-                      style="--mdc-icon-size: 24px"
+                      style=${styleMap({
+                        "--mdc-icon-size": "24px",
+                        color,
+                      })}
                     ></ha-icon>`}
-                <div class="navigation-item-info">
-                  <ha-input
-                    .value=${item.name}
-                    .index=${index}
-                    @change=${this._navigationNameChanged}
-                  ></ha-input>
-                  <span class="navigation-path">${item.path}</span>
-                </div>
+                <ha-input
+                  .value=${item.name}
+                  .hint=${item.path}
+                  .index=${index}
+                  @change=${this._navigationNameChanged}
+                ></ha-input>
                 <ha-icon-button
                   .path=${mdiClose}
                   .index=${index}
@@ -214,16 +249,6 @@ export class DialogEditHome
             @value-changed=${this._addNavigationPath}
           ></ha-navigation-picker>
         </div>
-
-        <ha-alert alert-type="info">
-          ${this.hass.localize("ui.panel.home.editor.areas_hint", {
-            areas_page: html`<a
-              href="/config/areas?historyBack=1"
-              @click=${this.closeDialog}
-              >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
-            >`,
-          })}
-        </ha-alert>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -280,9 +305,6 @@ export class DialogEditHome
 
   private _computeWelcomeLabel = () =>
     this.hass.localize("ui.panel.home.editor.welcome_message");
-
-  private _computeWelcomeHelper = () =>
-    this.hass.localize("ui.panel.home.editor.welcome_message_helper");
 
   private _welcomeMessageToggleChanged(ev: CustomEvent): void {
     this._config = {
@@ -367,11 +389,6 @@ export class DialogEditHome
         --dialog-content-padding: var(--ha-space-6);
       }
 
-      .description {
-        margin: 0 0 var(--ha-space-4) 0;
-        color: var(--secondary-text-color);
-      }
-
       .section-header {
         font-size: 16px;
         font-weight: 500;
@@ -404,19 +421,23 @@ export class DialogEditHome
 
       .navigation-item {
         display: flex;
-        align-items: center;
+        align-items: start;
         gap: var(--ha-space-3);
         padding: var(--ha-space-2) 0;
       }
 
-      .navigation-item-info {
-        flex: 1;
-        min-width: 0;
+      .navigation-item > ha-icon,
+      .navigation-item > ha-svg-icon {
+        margin-top: 16px;
       }
 
-      .navigation-path {
-        font-size: 12px;
-        color: var(--secondary-text-color);
+      .navigation-item > ha-icon-button {
+        margin-top: 4px;
+      }
+
+      .navigation-item > ha-input {
+        flex: 1;
+        min-width: 0;
       }
 
       ha-navigation-picker {
@@ -430,7 +451,7 @@ export class DialogEditHome
 
       ha-alert {
         display: block;
-        margin-top: var(--ha-space-4);
+        margin: 0 calc(-1 * var(--dialog-content-padding));
       }
     `,
   ];
