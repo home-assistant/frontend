@@ -1115,7 +1115,14 @@ const describeLegacyCondition = (
     );
   }
 
-  // Numeric State Condition
+  // Numeric State Condition - Fallback for no entity
+  if (condition.condition === "numeric_state" && !condition.entity_id) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.numeric_state.description.no_conditions`
+    );
+  }
+
+  // Numeric State Condition - Full handler with entity
   if (condition.condition === "numeric_state" && condition.entity_id) {
     const entity_ids = ensureArray(condition.entity_id);
     const stateObj = hass.states[entity_ids[0]] as HassEntity | undefined;
@@ -1171,6 +1178,10 @@ const describeLegacyCondition = (
         }
       );
     }
+    // Fallback for no bounds set
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.numeric_state.description.no_conditions`
+    );
   }
 
   // Time condition
@@ -1241,6 +1252,10 @@ const describeLegacyCondition = (
         }
       );
     }
+    // Fallback for no time settings selected
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.time.description.no_conditions`
+    );
   }
 
   // Sun condition
@@ -1279,9 +1294,22 @@ const describeLegacyCondition = (
       }
     );
   }
+  if (condition.condition === "sun") {
+    // Fallback for no sun settings selected
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.sun.description.no_conditions`
+    );
+  }
 
   // Zone condition
-  if (condition.condition === "zone" && condition.entity_id && condition.zone) {
+  if (condition.condition === "zone") {
+    if (!condition.entity_id || !condition.zone) {
+      // Fallback for missing entity or zone
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.zone.description.no_conditions`
+      );
+    }
+
     const entities: string[] = [];
     const zones: string[] = [];
 
@@ -1328,7 +1356,13 @@ const describeLegacyCondition = (
     );
   }
 
-  if (condition.condition === "device" && condition.device_id) {
+  if (condition.condition === "device") {
+    if (!condition.device_id) {
+      // Fallback for no device selected
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.device.description.no_conditions`
+      );
+    }
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
       hass,
