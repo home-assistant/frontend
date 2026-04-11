@@ -120,43 +120,30 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    if (type === "manual") {
-      const params = await showGenerateBackupDialog(this, {
-        cloudStatus: this.cloudStatus,
-      });
-
-      if (!params) {
-        return;
-      }
-
-      try {
-        await generateBackup(this.hass, params);
-      } catch (err: any) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.backup.overview.create_backup_failed"
-          ),
-          text: err.message,
+    try {
+      if (type === "manual") {
+        const params = await showGenerateBackupDialog(this, {
+          cloudStatus: this.cloudStatus,
         });
-        return;
+
+        if (!params) {
+          return;
+        }
+
+        await generateBackup(this.hass, params);
+      } else if (type === "automatic") {
+        await generateBackupWithAutomaticSettings(this.hass);
       }
-      fireEvent(this, "ha-refresh-backup-info");
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
       return;
     }
-    if (type === "automatic") {
-      try {
-        await generateBackupWithAutomaticSettings(this.hass);
-      } catch (err: any) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.backup.overview.create_backup_failed"
-          ),
-          text: err.message,
-        });
-        return;
-      }
-      fireEvent(this, "ha-refresh-backup-info");
-    }
+    fireEvent(this, "ha-refresh-backup-info");
   }
 
   private get _needsOnboarding() {
