@@ -30,6 +30,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
@@ -87,7 +88,17 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     fireEvent(this, "ha-refresh-backup-config");
-    await generateBackupWithAutomaticSettings(this.hass);
+    try {
+      await generateBackupWithAutomaticSettings(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
+      return;
+    }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
@@ -118,12 +129,32 @@ class HaConfigBackupOverview extends LitElement {
         return;
       }
 
-      await generateBackup(this.hass, params);
+      try {
+        await generateBackup(this.hass, params);
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.backup.overview.create_backup_failed"
+          ),
+          text: err.message,
+        });
+        return;
+      }
       fireEvent(this, "ha-refresh-backup-info");
       return;
     }
     if (type === "automatic") {
-      await generateBackupWithAutomaticSettings(this.hass);
+      try {
+        await generateBackupWithAutomaticSettings(this.hass);
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.backup.overview.create_backup_failed"
+          ),
+          text: err.message,
+        });
+        return;
+      }
       fireEvent(this, "ha-refresh-backup-info");
     }
   }
