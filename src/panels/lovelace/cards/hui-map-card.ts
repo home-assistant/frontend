@@ -270,6 +270,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
+    // Allow update when components list changes so we can retry subscription
+    if (
+      !this._subscribed &&
+      !this._error &&
+      this._config &&
+      oldHass.config.components !== this.hass.config.components
+    ) {
+      return true;
+    }
+
     if (changedProps.has("_stateHistory")) {
       return true;
     }
@@ -329,12 +339,27 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (this.hasUpdated && this._configEntities?.length) {
       this._subscribeHistory();
     }
+    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
+    window.removeEventListener(
+      "connection-status",
+      this._handleConnectionStatus
+    );
   }
+
+  private _handleConnectionStatus = (ev: Event) => {
+    if ((ev as CustomEvent).detail === "connected") {
+      this._unsubscribeHistory();
+      this._error = undefined;
+      if (this._configEntities?.length) {
+        this._subscribeHistory();
+      }
+    }
+  };
 
   private _subscribeHistory() {
     if (
@@ -367,14 +392,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _unsubscribeHistory() {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
-      if (!this._subscribed || changedProps.has("_config")) {
+      if ((!this._subscribed && !this._error) || changedProps.has("_config")) {
         this._unsubscribeHistory();
         this._subscribeHistory();
       }

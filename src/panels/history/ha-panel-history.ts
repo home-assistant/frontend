@@ -407,7 +407,7 @@ class HaPanelHistory extends LitElement {
       this._interval = undefined;
     }
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }

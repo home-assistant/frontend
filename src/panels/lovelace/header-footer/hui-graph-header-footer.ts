@@ -145,12 +145,25 @@ export class HuiGraphHeaderFooter
     if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
+    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
+    window.removeEventListener(
+      "connection-status",
+      this._handleConnectionStatus
+    );
   }
+
+  private _handleConnectionStatus = (ev: Event) => {
+    if ((ev as CustomEvent).detail === "connected") {
+      this._unsubscribeHistory();
+      this._error = undefined;
+      this._subscribeHistory();
+    }
+  };
 
   private _subscribeHistory() {
     if (
@@ -264,24 +277,29 @@ export class HuiGraphHeaderFooter
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
     this._history = undefined;
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass || !changedProps.has("_config")) {
+    if (!this._config || !this.hass) {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
-    if (
-      !oldConfig ||
-      !this._subscribed ||
-      oldConfig.entity !== this._config.entity
-    ) {
-      this._unsubscribeHistory();
+    if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
+      if (
+        !oldConfig ||
+        !this._subscribed ||
+        oldConfig.entity !== this._config.entity
+      ) {
+        this._unsubscribeHistory();
+        this._subscribeHistory();
+      }
+    } else if (!this._subscribed && !this._error && changedProps.has("hass")) {
+      // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
   }

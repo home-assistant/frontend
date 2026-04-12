@@ -138,7 +138,8 @@ export const subscribeHistory = (
   const stream = new HistoryStream(hass);
   return hass.connection.subscribeMessage<HistoryStreamMessage>(
     (message) => callbackFunction(stream.processMessage(message)),
-    params
+    params,
+    { resubscribe: false }
   );
 };
 
@@ -256,7 +257,8 @@ export const subscribeHistoryStatesTimeWindow = (
   const stream = new HistoryStream(hass, hoursToShow);
   return hass.connection.subscribeMessage<HistoryStreamMessage>(
     (message) => callbackFunction(stream.processMessage(message)),
-    params
+    params,
+    { resubscribe: false }
   );
 };
 
