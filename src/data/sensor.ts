@@ -33,10 +33,10 @@ export const getSensorNumericDeviceClasses = async (
     return sensorNumericDeviceClassesCache;
   }
   sensorNumericDeviceClassesCache = hass
-    .callWS({
+    .callWS<SensorNumericDeviceClasses>({
       type: "sensor/numeric_device_classes",
     })
-    .catch((err) => {
+    .catch((err: Error) => {
       sensorNumericDeviceClassesCache = undefined;
       throw err;
     });
