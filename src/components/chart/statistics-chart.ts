@@ -35,7 +35,7 @@ import type { HomeAssistant } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
-import { fillDataGapsAndRoundCaps } from "../../panels/lovelace/cards/energy/common/energy-chart-options";
+import { fillDataGapsAndRoundCaps } from "./round-caps";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
