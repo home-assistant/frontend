@@ -367,7 +367,9 @@ class DialogMediaManage extends LitElement {
           font-style: italic;
         }
         .title {
-          all: inherit;
+          font: inherit;
+          font-size: inherit;
+          margin: inherit;
         }
       `,
     ];
