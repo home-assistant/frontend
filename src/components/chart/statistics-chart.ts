@@ -35,6 +35,7 @@ import type { HomeAssistant } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
+import { fillDataGapsAndRoundCaps } from "../../panels/lovelace/cards/energy/common/energy-chart-options";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -67,7 +68,11 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: false })
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
-  @property({ attribute: false }) public chartType: "line" | "bar" = "line";
+  @property({ attribute: false }) public chartType:
+    | "line"
+    | "line-stack"
+    | "bar"
+    | "bar-stack" = "line";
 
   @property({ attribute: false }) public minYAxis?: number;
 
@@ -326,7 +331,7 @@ export class StatisticsChart extends LitElement {
         },
         position: computeRTL(this.hass) ? "right" : "left",
         scale:
-          this.chartType !== "bar" ||
+          this.chartType.startsWith("line") ||
           this.logarithmicScale ||
           minYAxis !== undefined ||
           maxYAxis !== undefined,
@@ -386,6 +391,8 @@ export class StatisticsChart extends LitElement {
       (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     let colorIndex = 0;
+    const chartType = this.chartType.startsWith("line") ? "line" : "bar";
+    const chartStacked = this.chartType.endsWith("stack");
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
     const legendData: {
@@ -471,7 +478,7 @@ export class StatisticsChart extends LitElement {
         }
         statDataSets.forEach((d, i) => {
           if (
-            this.chartType === "line" &&
+            chartType === "line" &&
             prevEndTime &&
             prevValues &&
             prevEndTime.getTime() !== start.getTime()
@@ -503,7 +510,8 @@ export class StatisticsChart extends LitElement {
         this.statTypes.includes("max") && statisticsHaveType(stats, "max");
       const hasMin =
         this.statTypes.includes("min") && statisticsHaveType(stats, "min");
-      const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
+      const drawBands =
+        !chartStacked && [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
 
       const hasState = this.statTypes.includes("state");
 
@@ -535,8 +543,8 @@ export class StatisticsChart extends LitElement {
           const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
-            type: this.chartType,
-            smooth: this.chartType === "line" ? 0.4 : false,
+            type: chartType,
+            smooth: chartType === "line" ? 0.4 : false,
             cursor: "default",
             data: [],
             name: name
@@ -555,16 +563,24 @@ export class StatisticsChart extends LitElement {
               width: 1.5,
             },
             itemStyle:
-              this.chartType === "bar"
+              chartType === "bar"
                 ? {
-                    borderRadius: [4, 4, 0, 0],
+                    borderRadius: chartStacked ? [0, 0, 0, 0] : [4, 4, 0, 0],
                     borderColor,
                     borderWidth: 1.5,
                   }
                 : undefined,
-            color: this.chartType === "bar" ? backgroundColor : borderColor,
+            color: chartType === "bar" ? backgroundColor : borderColor,
           };
-          if (band && this.chartType === "line") {
+          if (chartStacked) {
+            series.stack = `band-stacked`;
+            series.stackStrategy = "samesign";
+            if (chartType === "line") {
+              (series as LineSeriesOption).areaStyle = {
+                color: color + "3F",
+              };
+            }
+          } else if (band && chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
             if (this._hiddenStats.has(`${statistic_id}-${bandBottom}`)) {
@@ -621,7 +637,7 @@ export class StatisticsChart extends LitElement {
             }
           } else if (
             type === bandTop &&
-            this.chartType === "line" &&
+            chartType === "line" &&
             drawBands &&
             !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
           ) {
@@ -645,7 +661,7 @@ export class StatisticsChart extends LitElement {
       // For line charts, close out the last stat segment at prevEndTime
       const lastEndTime = prevEndTime;
       const lastValues = prevValues;
-      if (this.chartType === "line" && lastEndTime && lastValues) {
+      if (chartType === "line" && lastEndTime && lastValues) {
         statDataSets.forEach((d, i) => {
           d.data!.push(
             this._transformDataValue([lastEndTime, ...lastValues[i]!])
@@ -657,6 +673,7 @@ export class StatisticsChart extends LitElement {
       const statisticUnit = getDisplayUnit(this.hass, statistic_id, meta);
       if (
         displayCurrentState &&
+        !chartStacked &&
         (!this.unit || !statisticUnit || this.unit === statisticUnit)
       ) {
         // Skip external statistics
@@ -677,7 +694,7 @@ export class StatisticsChart extends LitElement {
                 const val: (number | null)[] = [];
                 if (
                   type === bandTop &&
-                  this.chartType === "line" &&
+                  chartType === "line" &&
                   drawBands &&
                   !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
                 ) {
@@ -701,6 +718,10 @@ export class StatisticsChart extends LitElement {
       Array.prototype.push.apply(legendData, statLegendData);
     });
 
+    if (chartStacked && chartType === "bar") {
+      fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[]);
+    }
+
     legendData.forEach(({ id, name, color, borderColor }) => {
       // Add an empty series for the legend
       totalDataSets.push({
@@ -710,7 +731,7 @@ export class StatisticsChart extends LitElement {
         itemStyle: {
           borderColor,
         },
-        type: this.chartType,
+        type: chartType,
         data: [],
         xAxisIndex: 1,
       });

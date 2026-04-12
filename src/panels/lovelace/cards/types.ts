@@ -473,7 +473,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
-  chart_type?: "line" | "bar";
+  chart_type?: "line" | "bar" | "line-stack" | "bar-stack";
   min_y_axis?: number;
   max_y_axis?: number;
   fit_y_data?: boolean;
