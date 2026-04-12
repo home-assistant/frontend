@@ -249,7 +249,9 @@ class DialogBox extends LitElement {
       width: 100%;
     }
     .title {
-      all: inherit;
+      font: inherit;
+      font-size: inherit;
+      margin: inherit;
     }
     .title.alert {
       padding: 0 var(--ha-space-2);
