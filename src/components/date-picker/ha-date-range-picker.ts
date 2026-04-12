@@ -3,6 +3,7 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiCalendar } from "@mdi/js";
 import "cally";
 import { isThisYear } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,12 +15,10 @@ import {
   formatShortDateTime,
   formatShortDateTimeWithYear,
 } from "../../common/datetime/format_date_time";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  configContext,
-  localeContext,
-  localizeContext,
-} from "../../data/context";
+import { configContext, internationalizationContext } from "../../data/context";
+import type { HomeAssistantConfig } from "../../types";
 import "../ha-bottom-sheet";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
@@ -43,16 +42,15 @@ const EXTENDED_RANGE_KEYS: DateRange[] = [
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
-
-  @state()
-  @consume({ context: localeContext, subscribe: true })
-  private locale!: ContextType<typeof localeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
   @consume({ context: configContext, subscribe: true })
-  private hassConfig!: ContextType<typeof configContext>;
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @property({ attribute: false }) public startDate!: Date;
 
@@ -117,8 +115,8 @@ export class HaDateRangePicker extends LitElement {
     this._ranges = {};
     rangeKeys.forEach((key) => {
       this._ranges![
-        this.localize(`ui.components.date-range-picker.ranges.${key}`)
-      ] = calcDateRange(this.locale, this.hassConfig, key);
+        this._i18n.localize(`ui.components.date-range-picker.ranges.${key}`)
+      ] = calcDateRange(this._i18n.locale, this._hassConfig, key);
     });
   }
 
@@ -140,41 +138,43 @@ export class HaDateRangePicker extends LitElement {
                   .value=${(isThisYear(this.startDate)
                     ? formatShortDateTime(
                         this.startDate,
-                        this.locale,
-                        this.hassConfig
+                        this._i18n.locale,
+                        this._hassConfig
                       )
                     : formatShortDateTimeWithYear(
                         this.startDate,
-                        this.locale,
-                        this.hassConfig
+                        this._i18n.locale,
+                        this._hassConfig
                       )) +
                   (window.innerWidth >= 459 ? " - " : " - \n") +
                   (isThisYear(this.endDate)
                     ? formatShortDateTime(
                         this.endDate,
-                        this.locale,
-                        this.hassConfig
+                        this._i18n.locale,
+                        this._hassConfig
                       )
                     : formatShortDateTimeWithYear(
                         this.endDate,
-                        this.locale,
-                        this.hassConfig
+                        this._i18n.locale,
+                        this._hassConfig
                       ))}
-                  .label=${this.localize(
+                  .label=${this._i18n.localize(
                     "ui.components.date-range-picker.start_date"
                   ) +
                   " - " +
-                  this.localize("ui.components.date-range-picker.end_date")}
+                  this._i18n.localize(
+                    "ui.components.date-range-picker.end_date"
+                  )}
                   .disabled=${this.disabled}
                   readonly
                 ></ha-textarea>
                 <ha-icon-button-prev
-                  .label=${this.localize("ui.common.previous")}
+                  .label=${this._i18n.localize("ui.common.previous")}
                   @click=${this._handlePrev}
                 >
                 </ha-icon-button-prev>
                 <ha-icon-button-next
-                  .label=${this.localize("ui.common.next")}
+                  .label=${this._i18n.localize("ui.common.next")}
                   @click=${this._handleNext}
                 >
                 </ha-icon-button-next>`
@@ -182,7 +182,7 @@ export class HaDateRangePicker extends LitElement {
                 @click=${this._openPicker}
                 .disabled=${this.disabled}
                 id="field"
-                .label=${this.localize(
+                .label=${this._i18n.localize(
                   "ui.components.date-range-picker.select_date_range"
                 )}
                 .path=${mdiCalendar}
@@ -290,8 +290,8 @@ export class HaDateRangePicker extends LitElement {
       this.startDate,
       this.endDate,
       forward,
-      this.locale,
-      this.hassConfig
+      this._i18n.locale,
+      this._hassConfig
     );
     this.startDate = start;
     this.endDate = end;

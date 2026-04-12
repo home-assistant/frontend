@@ -16,17 +16,18 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
-import { fireEvent } from "../../common/dom/fire_event";
+import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
-import { localeContext, localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -112,12 +113,8 @@ const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private _localize?: ContextType<typeof localizeContext>;
-
-  @state()
-  @consume({ context: localeContext, subscribe: true })
-  private _locale?: ContextType<typeof localeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -265,11 +262,13 @@ export class HaDataTable extends LitElement {
       this.style.removeProperty("--table-row-width");
     }
 
+    const activeElement = deepActiveElement();
+
     if (
       changedProps.has("selectable") ||
       (!this.autoHeight &&
-        document.activeElement &&
-        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(document.activeElement.tagName))
+        activeElement &&
+        AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(activeElement.tagName))
     ) {
       this._focusScroller();
     }
@@ -528,7 +527,9 @@ export class HaDataTable extends LitElement {
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText ||
-                      this._localize?.("ui.components.data-table.no-data") ||
+                      this._i18n?.localize?.(
+                        "ui.components.data-table.no-data"
+                      ) ||
                       "No data"}
                     </div>
                   </div>
@@ -542,8 +543,8 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                   .items=${this._groupData(
                     this._filteredData,
-                    this._localize,
-                    this._locale,
+                    this._i18n?.localize,
+                    this._i18n?.locale,
                     this.appendRow,
                     this.groupColumn,
                     this.groupOrder,
@@ -713,7 +714,7 @@ export class HaDataTable extends LitElement {
             this._sortColumns[this.sortColumn],
             this.sortDirection,
             this.sortColumn,
-            this._locale?.language
+            this._i18n?.locale?.language
           )
         : filteredData;
 
@@ -893,8 +894,8 @@ export class HaDataTable extends LitElement {
 
     const groupedData = this._groupData(
       this._filteredData,
-      this._localize,
-      this._locale,
+      this._i18n?.localize,
+      this._i18n?.locale,
       this.appendRow,
       this.groupColumn,
       this.groupOrder,

@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume, type ContextType } from "@lit/context";
 import { mdiBackspace, mdiCalendarToday } from "@mdi/js";
 import "cally";
+import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import {
@@ -10,12 +11,10 @@ import {
   formatDateYear,
   formatISODateOnly,
 } from "../../common/datetime/format_date";
-import {
-  configContext,
-  localeContext,
-  localizeContext,
-} from "../../data/context";
+import { transform } from "../../common/decorators/transform";
+import { configContext, internationalizationContext } from "../../data/context";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
+import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";
 import type { DatePickerDialogParams } from "../ha-date-input";
 import "../ha-dialog";
@@ -40,16 +39,15 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   LitElement
 ) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
-
-  @state()
-  @consume({ context: localeContext, subscribe: true })
-  private locale!: ContextType<typeof localeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
   @consume({ context: configContext, subscribe: true })
-  private hassConfig!: ContextType<typeof configContext>;
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @state() private _value?: {
     year: string;
@@ -74,14 +72,26 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
         ? new Date(`${this.params.value.split("T")[0]}T00:00:00`)
         : new Date();
 
-      this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
-      this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
+      this._pickerYear = formatDateYear(
+        date,
+        this._i18n.locale,
+        this._hassConfig
+      );
+      this._pickerMonth = formatDateMonth(
+        date,
+        this._i18n.locale,
+        this._hassConfig
+      );
 
       this._value = this.params.value
         ? {
             year: this._pickerYear,
-            title: formatDateShort(date, this.locale, this.hassConfig),
-            dateString: formatISODateOnly(date, this.locale, this.hassConfig),
+            title: formatDateShort(date, this._i18n.locale, this._hassConfig),
+            dateString: formatISODateOnly(
+              date,
+              this._i18n.locale,
+              this._hassConfig
+            ),
           }
         : undefined;
     }
@@ -95,7 +105,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       open
       width="small"
       .headerTitle=${this._value?.title ||
-      this.localize("ui.dialogs.date-picker.title")}
+      this._i18n.localize("ui.dialogs.date-picker.title")}
       .headerSubtitle=${this._value?.year}
       header-subtitle-position="above"
     >
@@ -103,7 +113,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
         ? html`
             <ha-icon-button
               .path=${mdiBackspace}
-              .label=${this.localize("ui.dialogs.date-picker.clear")}
+              .label=${this._i18n.localize("ui.dialogs.date-picker.clear")}
               slot="headerActionItems"
               @click=${this._clear}
             ></ha-icon-button>
@@ -131,7 +141,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           <ha-icon-button
             @click=${this._setToday}
             .path=${mdiCalendarToday}
-            .label=${this.localize("ui.dialogs.date-picker.today")}
+            .label=${this._i18n.localize("ui.dialogs.date-picker.today")}
           ></ha-icon-button>
         </div>
         <ha-icon-button-next tabindex="-1" slot="next"></ha-icon-button-next>
@@ -143,10 +153,10 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           slot="secondaryAction"
           @click=${this.closeDialog}
         >
-          ${this.localize("ui.common.cancel")}
+          ${this._i18n.localize("ui.common.cancel")}
         </ha-button>
         <ha-button slot="primaryAction" @click=${this._setValue}>
-          ${this.localize("ui.common.ok")}
+          ${this._i18n.localize("ui.common.ok")}
         </ha-button>
       </ha-dialog-footer>
     </ha-dialog>`;
@@ -164,23 +174,39 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       ? new Date(`${value.split("T")[0]}T00:00:00`)
       : new Date();
     this._value = {
-      year: formatDateYear(date, this.locale, this.hassConfig),
-      title: formatDateShort(date, this.locale, this.hassConfig),
+      year: formatDateYear(date, this._i18n.locale, this._hassConfig),
+      title: formatDateShort(date, this._i18n.locale, this._hassConfig),
       dateString:
-        value || formatISODateOnly(date, this.locale, this.hassConfig),
+        value || formatISODateOnly(date, this._i18n.locale, this._hassConfig),
     };
 
     if (setFocusDay) {
       this._focusDate = this._value.dateString;
-      this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
-      this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
+      this._pickerMonth = formatDateMonth(
+        date,
+        this._i18n.locale,
+        this._hassConfig
+      );
+      this._pickerYear = formatDateYear(
+        date,
+        this._i18n.locale,
+        this._hassConfig
+      );
     }
   }
 
   private _focusChanged(ev: CustomEvent<Date>) {
     const date = ev.detail;
-    this._pickerMonth = formatDateMonth(date, this.locale, this.hassConfig);
-    this._pickerYear = formatDateYear(date, this.locale, this.hassConfig);
+    this._pickerMonth = formatDateMonth(
+      date,
+      this._i18n.locale,
+      this._hassConfig
+    );
+    this._pickerYear = formatDateYear(
+      date,
+      this._i18n.locale,
+      this._hassConfig
+    );
     this._focusDate = undefined;
   }
 

@@ -36,6 +36,7 @@ import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -76,7 +77,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;

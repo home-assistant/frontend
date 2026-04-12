@@ -225,21 +225,14 @@ export interface ServiceCallRequest {
   target?: HassServiceTarget;
 }
 
-export interface HomeAssistant {
-  auth: Auth & { external?: ExternalMessaging };
-  connection: Connection;
-  connected: boolean;
-  states: HassEntities;
+export interface HomeAssistantRegistries {
   entities: Record<string, EntityRegistryDisplayEntry>;
   devices: Record<string, DeviceRegistryEntry>;
   areas: Record<string, AreaRegistryEntry>;
   floors: Record<string, FloorRegistryEntry>;
-  services: HassServices;
-  config: HassConfig;
-  themes: Themes;
-  selectedTheme: ThemeSettings | null;
-  panels: Panels;
-  panelUrl: string;
+}
+
+export interface HomeAssistantInternationalization {
   // i18n
   // current effective language in that order:
   //   - backend saved user selected language
@@ -250,20 +243,17 @@ export interface HomeAssistant {
   // local stored language, keep that name for backward compatibility
   selectedLanguage: string | null;
   locale: FrontendLocaleData;
-  resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
-  suspendWhenHidden: boolean;
-  enableShortcuts: boolean;
-  vibrate: boolean;
-  debugConnection: boolean;
-  kioskMode: boolean;
-  dockedSidebar: "docked" | "always_hidden" | "auto";
-  moreInfoEntityId: string | null;
-  user?: CurrentUser;
-  userData?: CoreFrontendUserData;
-  systemData?: CoreFrontendSystemData;
-  hassUrl(path?): string;
+  loadBackendTranslation(
+    category: Parameters<typeof getHassTranslations>[2],
+    integrations?: Parameters<typeof getHassTranslations>[3],
+    configFlow?: Parameters<typeof getHassTranslations>[4]
+  ): Promise<LocalizeFunc>;
+  loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
+}
+
+export interface HomeAssistantApi {
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
@@ -288,12 +278,9 @@ export interface HomeAssistant {
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
-  loadBackendTranslation(
-    category: Parameters<typeof getHassTranslations>[2],
-    integrations?: Parameters<typeof getHassTranslations>[3],
-    configFlow?: Parameters<typeof getHassTranslations>[4]
-  ): Promise<LocalizeFunc>;
-  loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
+}
+
+export interface HomeAssistantFormatters {
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
@@ -312,6 +299,47 @@ export interface HomeAssistant {
     type: string | EntityNameItem | EntityNameItem[] | undefined,
     separator?: EntityNameOptions
   ): string;
+}
+
+export interface HomeAssistantConnection {
+  connection: Connection;
+  connected: boolean;
+  debugConnection: boolean;
+  hassUrl(path?): string;
+}
+
+export interface HomeAssistantUI {
+  themes: Themes;
+  selectedTheme: ThemeSettings | null;
+  panels: Panels;
+  panelUrl: string;
+  dockedSidebar: "docked" | "always_hidden" | "auto";
+  kioskMode: boolean;
+  enableShortcuts: boolean;
+  vibrate: boolean;
+  suspendWhenHidden: boolean;
+}
+
+export interface HomeAssistantConfig {
+  auth: Auth & { external?: ExternalMessaging };
+  config: HassConfig;
+  user?: CurrentUser;
+  userData?: CoreFrontendUserData;
+  systemData?: CoreFrontendSystemData;
+}
+
+export interface HomeAssistant
+  extends
+    HomeAssistantRegistries,
+    HomeAssistantInternationalization,
+    HomeAssistantApi,
+    HomeAssistantFormatters,
+    HomeAssistantConnection,
+    HomeAssistantUI,
+    HomeAssistantConfig {
+  states: HassEntities;
+  services: HassServices;
+  resources: Resources;
 }
 
 export interface Route {

@@ -3388,6 +3388,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",

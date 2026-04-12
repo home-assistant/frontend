@@ -30,6 +30,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
@@ -87,7 +88,17 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     fireEvent(this, "ha-refresh-backup-config");
-    await generateBackupWithAutomaticSettings(this.hass);
+    try {
+      await generateBackupWithAutomaticSettings(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
+      return;
+    }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
@@ -109,23 +120,30 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    if (type === "manual") {
-      const params = await showGenerateBackupDialog(this, {
-        cloudStatus: this.cloudStatus,
-      });
+    try {
+      if (type === "manual") {
+        const params = await showGenerateBackupDialog(this, {
+          cloudStatus: this.cloudStatus,
+        });
 
-      if (!params) {
-        return;
+        if (!params) {
+          return;
+        }
+
+        await generateBackup(this.hass, params);
+      } else if (type === "automatic") {
+        await generateBackupWithAutomaticSettings(this.hass);
       }
-
-      await generateBackup(this.hass, params);
-      fireEvent(this, "ha-refresh-backup-info");
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
       return;
     }
-    if (type === "automatic") {
-      await generateBackupWithAutomaticSettings(this.hass);
-      fireEvent(this, "ha-refresh-backup-info");
-    }
+    fireEvent(this, "ha-refresh-backup-info");
   }
 
   private get _needsOnboarding() {

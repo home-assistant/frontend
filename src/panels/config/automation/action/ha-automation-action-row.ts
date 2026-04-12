@@ -31,6 +31,8 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -95,8 +97,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
