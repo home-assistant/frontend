@@ -68,10 +68,10 @@ const cardConfigStruct = assign(
     ),
     chart_type: optional(
       union([
-        literal("bar"),
-        literal("bar-stack"),
         literal("line"),
         literal("line-stack"),
+        literal("bar"),
+        literal("bar-stack"),
       ])
     ),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
@@ -87,7 +87,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const chartTypes = ["bar", "bar-stack", "line", "line-stack"] as const;
+const chartTypes = ["line", "line-stack", "bar", "bar-stack"] as const;
 const periods = ["5minute", "hour", "day", "week", "month", "year"] as const;
 const energyPeriods = [...periods, "auto"] as const;
 
