@@ -190,18 +190,30 @@ export class HUIViewBackground extends LitElement {
   }
 
   static styles = css`
-    :host {
+    /* Fixed background hack for Safari iOS */
+    :host([fixed-background]) {
       display: block;
+      z-index: -1;
+      position: fixed;
+      background-attachment: scroll !important;
+    }
+    :host(:not([fixed-background])) {
+      z-index: -1;
+      position: absolute;
+    }
+    :host {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 100%;
       background: var(
         --view-background,
         var(--lovelace-background, var(--primary-background-color))
       );
       opacity: var(--view-background-opacity, 1);
       transition: background 0.3s ease;
-    }
-    /* Fixed background hack for Safari iOS */
-    :host([fixed-background]) {
-      background-attachment: scroll !important;
     }
   `;
 }
