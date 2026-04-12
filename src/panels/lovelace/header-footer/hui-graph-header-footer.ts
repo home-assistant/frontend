@@ -3,7 +3,8 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
+import type { ConnectionStatus } from "../../../data/connection-status";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import type { HistoryStates } from "../../../data/history";
@@ -157,8 +158,8 @@ export class HuiGraphHeaderFooter
     );
   }
 
-  private _handleConnectionStatus = (ev: Event) => {
-    if ((ev as CustomEvent).detail === "connected") {
+  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
+    if (ev.detail === "connected") {
       this._unsubscribeHistory();
       this._error = undefined;
       this._subscribeHistory();
