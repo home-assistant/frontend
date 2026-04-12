@@ -95,13 +95,12 @@ export class DialogEditHome
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
+        .headerSubtitle=${this.hass.localize(
+          "ui.panel.home.editor.description"
+        )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <p class="description">
-          ${this.hass.localize("ui.panel.home.editor.description")}
-        </p>
-
         <ha-entities-picker
           autofocus
           .hass=${this.hass}
@@ -262,11 +261,6 @@ export class DialogEditHome
     css`
       ha-dialog {
         --dialog-content-padding: var(--ha-space-6);
-      }
-
-      .description {
-        margin: 0 0 var(--ha-space-4) 0;
-        color: var(--secondary-text-color);
       }
 
       .section-header {
