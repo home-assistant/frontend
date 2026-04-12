@@ -8,7 +8,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
-import { getPanelIcon, getPanelTitle } from "../data/panel";
+import { getPanelIcon, getPanelTitle, SYSTEM_PANELS } from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
@@ -274,6 +274,7 @@ export class HaNavigationPicker extends LitElement {
     const otherRoutes: NavigationItem[] = [];
 
     for (const panel of panels) {
+      if (SYSTEM_PANELS.includes(panel.id)) continue;
       const path = `/${panel.url_path}`;
       const panelTitle = getPanelTitle(this.hass, panel);
       const primary = panelTitle || path;
