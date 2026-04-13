@@ -204,9 +204,6 @@ export class HaCodeEditor extends ReactiveElement {
       transactions.push({
         effects: [
           this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
-          this._loadedCodeMirror!.foldingCompartment.reconfigure(
-            this._getFoldingExtensions()
-          ),
         ],
       });
     }
@@ -273,6 +270,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
+      this._loadedCodeMirror.foldGutter(),
       this._loadedCodeMirror.history(),
       this._loadedCodeMirror.drawSelection(),
       this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
@@ -307,9 +305,6 @@ export class HaCodeEditor extends ReactiveElement {
         this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
-      this._loadedCodeMirror.foldingCompartment.of(
-        this._getFoldingExtensions()
-      ),
       this._loadedCodeMirror.tooltips({
         position: "absolute",
       }),
@@ -317,21 +312,21 @@ export class HaCodeEditor extends ReactiveElement {
     ];
 
     if (!this.readOnly) {
-      const completionSources: CompletionSource[] = [];
+      const completionSources: CompletionSource[] = [
+        this._loadedCodeMirror.jinjaCompletionSource(),
+      ];
       if (this.autocompleteEntities && this.hass) {
         completionSources.push(this._entityCompletions.bind(this));
       }
       if (this.autocompleteIcons) {
         completionSources.push(this._mdiCompletions.bind(this));
       }
-      if (completionSources.length > 0) {
-        extensions.push(
-          this._loadedCodeMirror.autocompletion({
-            override: completionSources,
-            maxRenderedOptions: 10,
-          })
-        );
-      }
+      extensions.push(
+        this._loadedCodeMirror.autocompletion({
+          override: completionSources,
+          maxRenderedOptions: 10,
+        })
+      );
     }
 
     // Create the code editor
@@ -987,17 +982,6 @@ export class HaCodeEditor extends ReactiveElement {
     this._value = update.state.doc.toString();
     this._canCopy = this._value?.length > 0;
     fireEvent(this, "value-changed", { value: this._value });
-  };
-
-  private _getFoldingExtensions = (): Extension => {
-    if (this.mode === "yaml") {
-      return [
-        this._loadedCodeMirror!.foldGutter(),
-        this._loadedCodeMirror!.foldingOnIndent,
-      ];
-    }
-
-    return [];
   };
 
   static get styles(): CSSResultGroup {
