@@ -12,7 +12,7 @@ import {
   lightSupportsFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LightColorFavoritesCardFeatureConfig,
@@ -135,6 +135,13 @@ class HuiLightColorFavoritesCardFeature
     return {
       type: "light-color-favorites",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-light-color-favorites-card-feature-editor");
+    return document.createElement(
+      "hui-light-color-favorites-card-feature-editor"
+    );
   }
 
   public setConfig(config: LightColorFavoritesCardFeatureConfig): void {
