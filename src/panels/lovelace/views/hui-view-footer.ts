@@ -173,7 +173,7 @@ export class HuiViewFooter extends LitElement {
     const editMode = Boolean(this.lovelace?.editMode);
     const card = this.card;
 
-    if (!card && !editMode) return nothing;
+    if (!editMode && (!card || card.hasAttribute("hidden"))) return nothing;
 
     return html`
       <div
