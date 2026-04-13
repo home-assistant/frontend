@@ -802,54 +802,37 @@ const HA_TESTS: Completion[] = completions(
   "function"
 );
 
-// HA-specific filters (used after `|` pipe)
-const HA_FILTERS: Completion[] = completions(
+// HA-specific filters (used after `|` pipe).
+// Derived automatically from HA_FUNCTION_DEFS (every function that takes at
+// least one argument can be used as a filter) plus a small set of HA-specific
+// filters that exist only as filters (no function form in HA_FUNCTION_DEFS).
+const HA_FILTER_ONLY: Completion[] = completions(
   [
-    "as_datetime",
-    "as_local",
-    "as_timedelta",
-    "as_timestamp",
-    "base64_decode",
-    "base64_encode",
-    "bool",
-    "combine",
-    "difference",
-    "expand",
-    "flatten",
-    "from_hex",
-    "from_json",
-    "iif",
-    "intersect",
+    // These exist as HA filters but have no entry in HA_FUNCTION_DEFS.
     "is_defined",
-    "is_number",
-    "log",
-    "md5",
     "multiply",
     "ordinal",
-    "pack",
-    "regex_findall",
-    "regex_findall_index",
-    "regex_replace",
-    "regex_search",
     "relative_time",
-    "sha256",
-    "shuffle",
     "slugify",
-    "sqrt",
-    "symmetric_difference",
-    "time_since",
-    "time_until",
-    "timestamp_custom",
-    "timestamp_local",
-    "timestamp_utc",
-    "to_json",
-    "typeof",
-    "union",
-    "unpack",
     "version",
   ],
   "function"
 );
+
+// Zero-argument functions from HA_FUNCTION_DEFS that don't make sense as
+// filters (nothing to pipe into them).
+const _FILTER_EXCLUDES = new Set(["now", "utcnow"]);
+
+const HA_FILTERS: Completion[] = [
+  ...HA_FILTER_ONLY,
+  ...HA_FUNCTION_DEFS.filter((d) => {
+    const fnName = d.snippet.split("(")[0];
+    return !_FILTER_EXCLUDES.has(fnName);
+  }).map((d) => ({
+    label: d.snippet.split("(")[0],
+    type: "function" as const,
+  })),
+];
 
 // Combined lists for each context
 const ALL_FILTERS: Completion[] = [...JINJA_FILTERS, ...HA_FILTERS];
