@@ -16,13 +16,14 @@ import {
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -101,7 +102,8 @@ interface ChildView {
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-  viewHeaderAction?: (hass: HomeAssistant) => TemplateResult | typeof nothing;
+  viewHeaderTag?: string;
+  viewHeaderImport?: () => Promise<unknown>;
 }
 
 declare global {
@@ -325,6 +327,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   private _pushChildView(view: ChildView): void {
     if (view.viewImport) {
       view.viewImport();
+    }
+    if (view.viewHeaderImport) {
+      view.viewHeaderImport();
     }
     this._childViewStack = [...this._childViewStack, view];
   }
@@ -797,8 +802,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   @click=${this._toggleDetailsYamlMode}
                 ></ha-icon-button>
               `
-            : this._childView?.viewHeaderAction
-              ? this._childView.viewHeaderAction(this.hass)
+            : this._childView?.viewHeaderTag
+              ? dynamicElement(this._childView.viewHeaderTag, {
+                  slot: "headerActionItems",
+                  hass: this.hass,
+                  params: this._childView.viewParams,
+                })
               : nothing}
         <div
           class=${classMap({
@@ -820,32 +829,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   this._childView
                     ? html`
                         <div class="child-view">
-                          ${this._childView.viewTag ===
-                          "ha-more-info-view-voice-assistants"
-                            ? html`
-                                <ha-more-info-view-voice-assistants
-                                  .hass=${this.hass}
-                                  .entry=${this._entry!}
-                                  .params=${this._childView.viewParams}
-                                ></ha-more-info-view-voice-assistants>
-                              `
-                            : this._childView.viewTag ===
-                                "ha-more-info-view-vacuum-segment-mapping"
-                              ? html`
-                                  <ha-more-info-view-vacuum-segment-mapping
-                                    .hass=${this.hass}
-                                    .params=${this._childView.viewParams}
-                                  ></ha-more-info-view-vacuum-segment-mapping>
-                                `
-                              : this._childView.viewTag ===
-                                  "ha-more-info-view-vacuum-clean-areas"
-                                ? html`
-                                    <ha-more-info-view-vacuum-clean-areas
-                                      .hass=${this.hass}
-                                      .params=${this._childView.viewParams}
-                                    ></ha-more-info-view-vacuum-clean-areas>
-                                  `
-                                : nothing}
+                          ${dynamicElement(this._childView.viewTag, {
+                            hass: this.hass,
+                            entry: this._entry,
+                            params: this._childView.viewParams,
+                          })}
                         </div>
                       `
                     : this._currView === "info"

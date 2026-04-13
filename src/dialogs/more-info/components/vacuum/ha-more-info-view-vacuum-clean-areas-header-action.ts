@@ -10,7 +10,7 @@ import { showVacuumSegmentMappingView } from "./show-view-vacuum-segment-mapping
 export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property({ attribute: false }) public params!: { entityId: string };
 
   @state() private _hasMapping = false;
 
@@ -19,10 +19,10 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
   }
 
   private async _loadMapping() {
-    if (!this.entityId) return;
+    if (!this.params.entityId) return;
     const entry = await getExtendedEntityRegistryEntry(
       this.hass,
-      this.entityId
+      this.params.entityId
     ).catch(() => undefined);
     const areaMapping = entry?.options?.vacuum?.area_mapping;
     this._hasMapping =
@@ -46,7 +46,11 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
   }
 
   private _handleClick() {
-    showVacuumSegmentMappingView(this, this.hass.localize, this.entityId);
+    showVacuumSegmentMappingView(
+      this,
+      this.hass.localize,
+      this.params.entityId
+    );
   }
 }
 
