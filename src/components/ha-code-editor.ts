@@ -10,6 +10,7 @@ import type {
 import { redo, redoDepth, undo, undoDepth } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import type { SyntaxNode } from "@lezer/common";
 import { placeholder } from "@codemirror/view";
 import {
   mdiArrowCollapse,
@@ -635,6 +636,54 @@ export class HaCodeEditor extends ReactiveElement {
     return completionInfo;
   };
 
+  private _renderAttributeInfo = (
+    entityId: string,
+    attribute: string
+  ): CompletionInfo | null => {
+    if (!this.hass) return null;
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj) return null;
+
+    const translatedName = this.hass.formatEntityAttributeName(
+      stateObj,
+      attribute
+    );
+    const formattedValue = this.hass.formatEntityAttributeValue(
+      stateObj,
+      attribute
+    );
+    const rawValue = stateObj.attributes[attribute];
+    const rawValueStr =
+      rawValue !== null && rawValue !== undefined
+        ? String(rawValue)
+        : undefined;
+
+    const completionItems: CompletionItem[] = [
+      {
+        label: translatedName,
+        value: formattedValue,
+        // Show raw value as sub-value only when it differs from the formatted one
+        subValue:
+          rawValueStr !== undefined && rawValueStr !== formattedValue
+            ? rawValueStr
+            : undefined,
+      },
+    ];
+
+    const completionInfo = document.createElement("div");
+    completionInfo.classList.add("completion-info");
+    render(
+      html`
+        <ha-code-editor-completion-items
+          .items=${completionItems}
+        ></ha-code-editor-completion-items>
+      `,
+      completionInfo
+    );
+
+    return completionInfo;
+  };
+
   private _getCompletionInfo = (
     completion: Completion
   ): CompletionInfo | Promise<CompletionInfo> | null => {
@@ -644,6 +693,11 @@ export class HaCodeEditor extends ReactiveElement {
 
     if (completion.label.startsWith("mdi:")) {
       return renderIcon(completion);
+    }
+
+    // Attribute completions attach an info function directly on the object.
+    if (typeof completion.info === "function") {
+      return completion.info(completion);
     }
 
     return null;
@@ -1062,7 +1116,58 @@ export class HaCodeEditor extends ReactiveElement {
     const argType = argTypeMap.get(argIndex);
     if (!argType) return undefined;
 
+    // For attribute completions, try to resolve the entity_id from the
+    // sibling argument whose type is entity_id in the same call.
+    if (argType === "attribute") {
+      const entityId = this._entityIdFromSiblingArg(
+        argList,
+        argTypeMap,
+        editorState
+      );
+      return this._attributeCompletionResult(node, entityId);
+    }
+
     return this._completionResultForArgType(argType, node);
+  }
+
+  /**
+   * Scans the ArgumentList for the first argument whose type is `entity_id`
+   * and returns the literal string value it contains, or null if not found /
+   * not a plain string literal.
+   */
+  private _entityIdFromSiblingArg(
+    argList: SyntaxNode,
+    argTypeMap: Map<number, JinjaArgType>,
+    editorState: CompletionContext["state"]
+  ): string | null {
+    // Find the index of the entity_id argument in the type map.
+    let entityArgIndex: number | undefined;
+    for (const [idx, type] of argTypeMap) {
+      if (type === "entity_id") {
+        entityArgIndex = idx;
+        break;
+      }
+    }
+    if (entityArgIndex === undefined) return null;
+
+    // Walk the ArgumentList to find that argument node.
+    let idx = 0;
+    let child = argList.firstChild?.nextSibling; // skip "("
+    while (child) {
+      if (child.name === ")") break;
+      if (child.name !== ",") {
+        if (idx === entityArgIndex) {
+          // child should be a StringLiteral — extract its content without quotes.
+          if (child.name !== "StringLiteral") return null;
+          const raw = editorState.doc.sliceString(child.from, child.to);
+          // Strip surrounding quote character (single or double).
+          return raw.slice(1, -1);
+        }
+        idx++;
+      }
+      child = child.nextSibling;
+    }
+    return null;
   }
 
   /**
@@ -1090,9 +1195,39 @@ export class HaCodeEditor extends ReactiveElement {
         return this._floorCompletionResult(stringNode) ?? empty;
       case "label_id":
         return this._labelCompletionResult(stringNode) ?? empty;
+      case "attribute":
+        // No entity context available — return empty to suppress other sources.
+        return empty;
       default:
         return empty;
     }
+  }
+
+  /**
+   * Build a CompletionResult for attribute names of a specific entity.
+   * `entityId` may be null when the sibling entity arg is not yet filled in,
+   * in which case an empty result is returned (other sources stay suppressed).
+   */
+  private _attributeCompletionResult(
+    stringNode: { from: number; to: number },
+    entityId: string | null
+  ): CompletionResult {
+    const from = stringNode.from + 1;
+    const empty: CompletionResult = { from, options: [] };
+    if (!entityId || !this.hass) return empty;
+    const entityState = this.hass.states[entityId];
+    if (!entityState) return empty;
+    const attrs = Object.keys(entityState.attributes).sort();
+    if (!attrs.length) return empty;
+    return {
+      from,
+      options: attrs.map((a) => ({
+        label: a,
+        type: "property",
+        info: () => this._renderAttributeInfo(entityId, a),
+      })),
+      validFor: /^[\w.]*$/,
+    };
   }
 
   /** Build a CompletionResult for entity IDs, with `from` set inside the quotes. */
@@ -1119,7 +1254,8 @@ export class HaCodeEditor extends ReactiveElement {
         .filter((device) => !device.disabled_by)
         .map((device) => ({
           type: "variable",
-          label: computeDeviceName(device) ?? device.id,
+          label: `${computeDeviceName(device)} ${device.id}`,
+          displayLabel: computeDeviceName(device) ?? device.id,
           detail: device.id,
           apply: device.id,
         }))
