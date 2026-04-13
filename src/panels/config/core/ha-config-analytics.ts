@@ -322,7 +322,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           0% {
             box-shadow:
               0 0 0 var(--ha-border-width-md) var(--primary-color),
-              0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+              0 0 12px rgba(var(--rgb-primary-color), 0.4);
           }
           100% {
             box-shadow:
