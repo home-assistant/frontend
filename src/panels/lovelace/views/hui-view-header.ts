@@ -25,6 +25,7 @@ import type { Lovelace } from "../types";
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
 export const DEFAULT_VIEW_HEADER_BADGES_WRAP = "wrap";
+export const DEFAULT_VIEW_HEADER_BADGES_FLOATING = false;
 
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
@@ -85,6 +86,12 @@ export class HuiViewHeader extends LitElement {
     if (changedProperties.has("config") || changedProperties.has("lovelace")) {
       this._dragScrollController.enabled =
         !this.lovelace.editMode && this.config?.badges_wrap === "scroll";
+
+      this.toggleAttribute(
+        "floating-badges",
+        !this.lovelace.editMode &&
+          (this.config?.badges_floating ?? DEFAULT_VIEW_HEADER_BADGES_FLOATING)
+      );
     }
 
     if (changedProperties.has("config")) {
@@ -202,9 +209,9 @@ export class HuiViewHeader extends LitElement {
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
     const badgesWrap =
       this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
-    const badgeDragging = this._dragScrollController.scrolling
-      ? "dragging"
-      : "";
+    const badgeDragging = this._dragScrollController.scrolling;
+    const badgesFloating =
+      this.config?.badges_floating ?? DEFAULT_VIEW_HEADER_BADGES_FLOATING;
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
@@ -267,7 +274,13 @@ export class HuiViewHeader extends LitElement {
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
                 <div
-                  class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
+                  class=${classMap({
+                    badges: true,
+                    [badgesPosition]: true,
+                    [badgesWrap]: true,
+                    floating: badgesFloating,
+                    dragging: badgeDragging,
+                  })}
                 >
                   <hui-view-badges
                     .badges=${this.badges}
@@ -287,6 +300,15 @@ export class HuiViewHeader extends LitElement {
   static styles = css`
     :host([hidden]) {
       display: none !important;
+    }
+
+    :host([floating-badges]) {
+      position: sticky;
+      top: calc(
+        var(--header-height, 56px) + var(--safe-area-inset-top, 0px) +
+          var(--ha-space-2)
+      );
+      z-index: 4;
     }
 
     .container {

@@ -9,11 +9,8 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewHeaderConfig,
-} from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import {
   DEFAULT_VIEW_HEADER_BADGES_POSITION,
   DEFAULT_VIEW_HEADER_BADGES_WRAP,
@@ -117,6 +114,10 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             },
           },
         },
+        {
+          name: "badges_floating",
+          selector: { boolean: {} },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -130,6 +131,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       badges_position:
         this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
       badges_wrap: this.config?.badges_wrap || DEFAULT_VIEW_HEADER_BADGES_WRAP,
+      badges_floating: this.config?.badges_floating ?? false,
     };
 
     const narrow = this.narrow;
@@ -147,13 +149,12 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<LovelaceViewHeaderConfig>): void {
     ev.stopPropagation();
-    const newData = ev.detail.value as LovelaceViewConfig;
 
     const config: LovelaceViewHeaderConfig = {
       ...this.config,
-      ...newData,
+      ...ev.detail.value,
     };
 
     fireEvent(this, "config-changed", { config });
@@ -166,6 +167,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       case "layout":
       case "badges_position":
       case "badges_wrap":
+      case "badges_floating":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}`
         );

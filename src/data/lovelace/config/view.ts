@@ -35,6 +35,7 @@ export interface LovelaceViewHeaderConfig {
   layout?: "start" | "center" | "responsive";
   badges_position?: "bottom" | "top";
   badges_wrap?: "wrap" | "scroll";
+  badges_floating?: boolean;
 }
 
 export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;

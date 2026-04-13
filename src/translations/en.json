@@ -8707,7 +8707,8 @@
                 "wrap": "Wrap",
                 "scroll": "Scroll",
                 "scroll_description": "Touchscreen-friendly"
-              }
+              },
+              "badges_floating": "Floating badges"
             }
           },
           "edit_view_footer": {
