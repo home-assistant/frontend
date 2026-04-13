@@ -1,6 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-alert";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceCardFeatureConfig,
@@ -28,7 +29,8 @@ export class HuiCardFeatureMoreInfoHintEditor
       return nothing;
     }
 
-    const descriptionKey = `ui.panel.lovelace.editor.features.types.${this._config.type}.description`;
+    const descriptionKey =
+      `ui.panel.lovelace.editor.features.types.${this._config.type}.description` satisfies LocalizeKeys;
 
     return html`
       <ha-alert alert-type="info">
