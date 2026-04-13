@@ -5,6 +5,7 @@ import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
+import { findRelated, type RelatedResult } from "../data/search";
 import type {
   QuickBarContextItem,
   QuickBarParams,
@@ -14,7 +15,6 @@ import {
   closeQuickBar,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { findRelated, type RelatedResult } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Constructor, HomeAssistant } from "../types";
@@ -148,6 +148,17 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
 
       this._registerShortcut();
+    }
+
+    protected updated(changedProperties: PropertyValues): void {
+      super.updated(changedProperties);
+
+      if (
+        changedProperties.has("hass") &&
+        changedProperties.get("hass")?.user !== this.hass?.user
+      ) {
+        this._registerShortcut();
+      }
     }
 
     public disconnectedCallback() {
