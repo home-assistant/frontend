@@ -2467,6 +2467,8 @@
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
+          "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
           "summaries_description": "Choose which summaries to show on your overview page."
         },
@@ -3384,6 +3386,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -9764,7 +9767,8 @@
                 "label": "Light brightness"
               },
               "light-color-favorites": {
-                "label": "Light color favorites"
+                "label": "Light color favorites",
+                "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
               },
               "light-color-temp": {
                 "label": "Light color temperature"

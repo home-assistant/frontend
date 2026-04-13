@@ -136,7 +136,9 @@ class HaPanelHistory extends LitElement {
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `}
-        <div slot="title">${this.hass.localize("panel.history")}</div>
+        <h1 class="page-title" slot="title">
+          ${this.hass.localize("panel.history")}
+        </h1>
         ${entitiesSelected
           ? html`
               <ha-icon-button
@@ -625,6 +627,12 @@ class HaPanelHistory extends LitElement {
           height: 100vh;
           overflow-x: hidden;
           overflow-y: visible;
+        }
+
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
         }
 
         .content {

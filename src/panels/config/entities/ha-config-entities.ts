@@ -55,9 +55,10 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
-import "../../../components/ha-button";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
@@ -109,6 +110,14 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import {
+  getAreaTableColumn,
+  getCreatedAtTableColumn,
+  getDomainTableColumn,
+  getEntityIdTableColumn,
+  getLabelsTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import type { Helper } from "../helpers/const";
 import { isHelperDomain } from "../helpers/const";
@@ -116,19 +125,10 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
-  getEntityIdTableColumn,
-  getDomainTableColumn,
-  getAreaTableColumn,
-  getLabelsTableColumn,
-  getCreatedAtTableColumn,
-  getModifiedAtTableColumn,
-} from "../common/data-table-columns";
-import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,

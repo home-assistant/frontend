@@ -17,12 +17,10 @@ import "../../../../../../components/ha-md-list";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-spinner";
 import {
-  areasContext,
   configEntriesContext,
   devicesContext,
-  entitiesContext,
-  localeContext,
-  localizeContext,
+  internationalizationContext,
+  registriesContext,
   statesContext,
 } from "../../../../../../data/context";
 import {
@@ -38,8 +36,8 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
   LitElement
 ) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private _localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
@@ -84,14 +82,8 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
-
-  @consume({ context: localeContext, subscribe: true })
-  private _locale!: ContextType<typeof localeContext>;
-
-  @consume({ context: areasContext, subscribe: true })
-  private _areas!: ContextType<typeof areasContext>;
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   protected render() {
     if (!this.params) {
@@ -102,7 +94,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
       <ha-dialog
         open
         width="small"
-        .headerTitle=${this._localize(
+        .headerTitle=${this._i18n.localize(
           `ui.panel.config.zwave_js.rebuild_network_routes.details.${this.params.type}`,
           {
             count: this._progress ? this._progress.length : 0,
@@ -117,7 +109,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
             `
           : !this._progress || this._progress.length === 0
             ? html`<p>
-                ${this._localize(
+                ${this._i18n.localize(
                   "ui.panel.config.zwave_js.rebuild_network_routes.details.no_devices"
                 )}
               </p>`
@@ -165,7 +157,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
       });
 
       const deviceEntityLookup = getDeviceEntityDisplayLookup(
-        Object.values(this._entities)
+        Object.values(this._registries.entities)
       );
 
       const configEntryLookup = Object.fromEntries(
@@ -177,12 +169,13 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
           const name =
             computeDeviceNameDisplay(
               device,
-              this._localize,
+              this._i18n.localize,
               this._states,
               deviceEntityLookup[device.id]
-            ) || this._localize("ui.components.device-picker.unnamed_device");
+            ) ||
+            this._i18n.localize("ui.components.device-picker.unnamed_device");
 
-          const area = getDeviceArea(device, this._areas);
+          const area = getDeviceArea(device, this._registries.areas);
 
           const areaName = area ? computeAreaName(area) : undefined;
 
@@ -200,7 +193,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
           caseInsensitiveStringCompare(
             [entry1.name, entry1.areaName].filter(Boolean).join(" "),
             [entry2.name, entry2.areaName].filter(Boolean).join(" "),
-            this._locale.language
+            this._i18n.locale.language
           )
         );
     }

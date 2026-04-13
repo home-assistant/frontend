@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -13,13 +14,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -33,6 +34,7 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
+import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -44,8 +46,6 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import { fullEntitiesContext } from "../../../data/context";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {

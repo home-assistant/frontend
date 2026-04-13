@@ -6,7 +6,6 @@ import {
   normalizeValveFavoritePositions,
   valveSupportsPosition,
 } from "../../../data/valve";
-import type { LovelaceCardFeatureEditor } from "../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -16,6 +15,7 @@ import type {
   LovelaceCardFeatureContext,
   ValvePositionFavoriteCardFeatureConfig,
 } from "./types";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const valvePositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefinition<ValveEntity> =
   {
@@ -58,12 +58,7 @@ class HuiValvePositionFavoriteCardFeature extends HuiNumericFavoriteCardFeatureB
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-valve-position-favorite-card-feature-editor");
-    return document.createElement(
-      "hui-valve-position-favorite-card-feature-editor"
-    );
-  }
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 }
 
 declare global {
