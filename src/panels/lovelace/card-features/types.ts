@@ -251,6 +251,11 @@ export interface AreaControlsCardFeatureConfig {
   controls?: AreaControl[];
 }
 
+export interface AutomationTriggerCardFeatureConfig {
+  type: "automation-trigger";
+  action_name?: string;
+}
+
 export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
   min?: number;
@@ -261,6 +266,8 @@ export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | AreaControlsCardFeatureConfig
+  | AutomationTriggerCardFeatureConfig
   | ButtonCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
@@ -305,7 +312,6 @@ export type LovelaceCardFeatureConfig =
   | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
-  | AreaControlsCardFeatureConfig
   | BarGaugeCardFeatureConfig;
 
 export interface LovelaceCardFeatureContext {

@@ -9971,6 +9971,9 @@
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               },
+              "automation-trigger": {
+                "label": "Trigger"
+              },
               "bar-gauge": {
                 "label": "Bar gauge",
                 "min": "Minimum value",

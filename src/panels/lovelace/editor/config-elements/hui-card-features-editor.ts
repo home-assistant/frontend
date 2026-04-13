@@ -26,6 +26,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsAutomationTriggerCardFeature } from "../../card-features/hui-automation-trigger-card-feature";
 import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
@@ -86,6 +87,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "automation-trigger",
   "bar-gauge",
   "button",
   "climate-fan-modes",
@@ -166,6 +168,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  "automation-trigger": supportsAutomationTriggerCardFeature,
   "bar-gauge": supportsBarGaugeCardFeature,
   button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
