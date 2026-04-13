@@ -3,13 +3,13 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-alert";
 import type { HomeAssistant } from "../../../../types";
 import type {
-  CoverPositionFavoriteCardFeatureConfig,
+  LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-cover-position-favorite-card-feature-editor")
-export class HuiCoverPositionFavoriteCardFeatureEditor
+@customElement("hui-card-feature-more-info-hint-editor")
+export class HuiCardFeatureMoreInfoHintEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
@@ -17,9 +17,9 @@ export class HuiCoverPositionFavoriteCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: CoverPositionFavoriteCardFeatureConfig;
+  @state() private _config?: LovelaceCardFeatureConfig;
 
-  public setConfig(config: CoverPositionFavoriteCardFeatureConfig): void {
+  public setConfig(config: LovelaceCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -28,11 +28,11 @@ export class HuiCoverPositionFavoriteCardFeatureEditor
       return nothing;
     }
 
+    const descriptionKey = `ui.panel.lovelace.editor.features.types.${this._config.type}.description`;
+
     return html`
       <ha-alert alert-type="info">
-        ${this.hass.localize(
-          "ui.panel.lovelace.editor.features.types.cover-position-favorite.description"
-        )}
+        ${this.hass.localize(descriptionKey)}
       </ha-alert>
     `;
   }
@@ -40,6 +40,6 @@ export class HuiCoverPositionFavoriteCardFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-position-favorite-card-feature-editor": HuiCoverPositionFavoriteCardFeatureEditor;
+    "hui-card-feature-more-info-hint-editor": HuiCardFeatureMoreInfoHintEditor;
   }
 }
