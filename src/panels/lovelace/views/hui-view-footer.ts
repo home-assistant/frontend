@@ -12,7 +12,7 @@ import {
   type LovelaceViewConfig,
   type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
@@ -33,14 +33,9 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
-  private _cardHidden?: boolean;
-
   public connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener(
-      "card-visibility-changed",
-      this._cardVisibilityChanged as EventListener
-    );
+    this.addEventListener("card-visibility-changed", this._checkHidden);
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
@@ -70,18 +65,13 @@ export class HuiViewFooter extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener(
-      "card-visibility-changed",
-      this._cardVisibilityChanged as EventListener
-    );
+    this.removeEventListener("card-visibility-changed", this._checkHidden);
   }
 
   private _checkHidden() {
     const hidden =
       !this.lovelace?.editMode &&
-      (!this.card || this._cardHidden !== undefined
-        ? this._cardHidden
-        : this.card.hasAttribute("hidden"));
+      (!this.card || this.card.hasAttribute("hidden"));
     this.toggleAttribute("hidden", hidden);
     this.toggleAttribute("sticky", Boolean(this.card));
   }
@@ -236,11 +226,6 @@ export class HuiViewFooter extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  private _cardVisibilityChanged(ev: ValueChangedEvent<boolean>) {
-    this._cardHidden = !ev.detail.value;
-    this._checkHidden();
   }
 
   static styles = css`
