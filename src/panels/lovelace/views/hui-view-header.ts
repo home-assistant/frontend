@@ -305,8 +305,9 @@ export class HuiViewHeader extends LitElement {
     :host([floating-badges]) {
       position: sticky;
       top: calc(
-        var(--header-height, 56px) + var(--safe-area-inset-top, 0px) +
-          var(--ha-space-2)
+        var(--header-height, 56px) +
+          var(--safe-area-inset-top, 0px) - var(--row-gap, 0px) +
+          var(--ha-space-1)
       );
       z-index: 4;
     }
