@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 
 export interface NewDashboardDialogParams {
-  selectConfig: (config: LovelaceConfig | undefined) => any;
+  selectConfig: (config: LovelaceRawConfig | undefined) => void | Promise<void>;
 }
 
 export const loadNewDashboardDialog = () => import("./dialog-new-dashboard");

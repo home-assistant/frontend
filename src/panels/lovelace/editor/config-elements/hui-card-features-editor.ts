@@ -150,6 +150,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
+  "light-color-favorites",
   "media-player-volume-buttons",
   "numeric-input",
   "select-options",

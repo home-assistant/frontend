@@ -2314,30 +2314,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/chips@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/chips@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/checkbox": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/density": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/focus-ring": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/tokens": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/touch-target": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/32d6f31acb691f1ef811e356abd09924861200c0429a895b3ee76c2140ca1dedf67a864ebffbf3887db1c555a68de39c41cf8afc3c81dc024665054f9cf093ed
-  languageName: node
-  linkType: hard
-
 "@material/data-table@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/data-table@npm:14.0.0-canary.53b3cad2f.0"
@@ -3935,22 +3911,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:^15.1.1":
-  version: 15.1.1
-  resolution: "@sinonjs/fake-timers@npm:15.1.1"
+"@sinonjs/fake-timers@npm:^15.3.0":
+  version: 15.3.0
+  resolution: "@sinonjs/fake-timers@npm:15.3.0"
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
-  checksum: 10/f262d613ea7f7cdb1b5d90c0cae01b7c6b797d6d0f1ca0fe30b7b69012e3076bb8a0f69d735bc69d2824b9bb1efb8554ca9765b4a6bb22defdec9ce79e7cd8a4
+  checksum: 10/657766c969f61af47d480e63112c126bb3088d3b0cfd6a609c90979971c5e98f388c189b7c46c05525edaa543f91d627d01b0007705eac679f7cdf4f66b1959e
   languageName: node
   linkType: hard
 
-"@sinonjs/samsam@npm:^9.0.3":
-  version: 9.0.3
-  resolution: "@sinonjs/samsam@npm:9.0.3"
+"@sinonjs/samsam@npm:^10.0.0":
+  version: 10.0.1
+  resolution: "@sinonjs/samsam@npm:10.0.1"
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
     type-detect: "npm:^4.1.0"
-  checksum: 10/bbb94c9d5e4a64dccf7de7679d17434aae1c16f209b25534a75eea2b0fb37b4d55829116c51fb24aa83f180a2c698fcdf9444747bd436726068cbc419c89aa2a
+  checksum: 10/b5eac2408a30aba64d0d5bfbde0bc422354793e4ac19be46cb1b01f754f56e7dd69766739b62a849d93f03eeb14cc93f180e2a79a05f6ec05789e2b95bb89421
   languageName: node
   linkType: hard
 
@@ -6990,10 +6966,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "diff@npm:8.0.3"
-  checksum: 10/52f957e1fa53db4616ff5f4811b92b22b97a160c12a2f86f22debd4181227b0f6751aa8fd711d6a8fcf4618acb13b86bc702e6d9d6d6ed82acfd00c9cb26ace2
+"diff@npm:^8.0.4":
+  version: 8.0.4
+  resolution: "diff@npm:8.0.4"
+  checksum: 10/b4036ceda0d1e10683a2313079ed52c5e6b09553ae29da87bce81d98714d9725dbf3c0f6f7c3b1f16eec049fe17087e38ee329e732580fa62f6ec1c2487b2435
   languageName: node
   linkType: hard
 
@@ -8892,7 +8868,6 @@ __metadata:
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
     "@lokalise/node-api": "npm:15.7.1"
-    "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-checkbox": "npm:0.27.0"
@@ -9002,7 +8977,7 @@ __metadata:
     node-vibrant: "npm:4.0.4"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
-    prettier: "npm:3.8.1"
+    prettier: "npm:3.8.2"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
     qrcode: "npm:1.5.4"
@@ -9010,7 +8985,7 @@ __metadata:
     rrule: "npm:2.8.1"
     rspack-manifest-plugin: "npm:5.2.1"
     serve: "npm:14.2.6"
-    sinon: "npm:21.0.3"
+    sinon: "npm:21.1.0"
     sortablejs: "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
@@ -11794,12 +11769,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.1":
-  version: 3.8.1
-  resolution: "prettier@npm:3.8.1"
+"prettier@npm:3.8.2":
+  version: 3.8.2
+  resolution: "prettier@npm:3.8.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/3da1cf8c1ef9bea828aa618553696c312e951f810bee368f6887109b203f18ee869fe88f66e65f9cf60b7cb1f2eae859892c860a300c062ff8ec69c381fc8dbd
+  checksum: 10/fd784175bc600c07eb2c44d7ec4ee7133f95f26492adad61b6a15c06f438b858181faf096ab74163d7f49500ad80cff4479c6abb084e161a2e85a9df5974ecd1
   languageName: node
   linkType: hard
 
@@ -12834,16 +12809,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:21.0.3":
-  version: 21.0.3
-  resolution: "sinon@npm:21.0.3"
+"sinon@npm:21.1.0":
+  version: 21.1.0
+  resolution: "sinon@npm:21.1.0"
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
-    "@sinonjs/fake-timers": "npm:^15.1.1"
-    "@sinonjs/samsam": "npm:^9.0.3"
-    diff: "npm:^8.0.3"
-    supports-color: "npm:^7.2.0"
-  checksum: 10/af1018ce4ae854ef30435fd6dd130c1fbb067561fba6fbc3930fd5da807267851f2a7e7abb2902b0882b878f50d281f2a88f88f559a49d7c4190712a2da536c5
+    "@sinonjs/fake-timers": "npm:^15.3.0"
+    "@sinonjs/samsam": "npm:^10.0.0"
+    diff: "npm:^8.0.4"
+    supports-color: "npm:^10.2.2"
+  checksum: 10/cb9b174fbb0f5efb8004d93fc0e0a6152118cbbfe66ef45446ec40924483fa899e5b2196b3eed0da140549cc630ab29955d4935605fe1a79f150b8aa2c30723b
   languageName: node
   linkType: hard
 
@@ -13396,6 +13371,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"supports-color@npm:^10.2.2":
+  version: 10.2.2
+  resolution: "supports-color@npm:10.2.2"
+  checksum: 10/bd132705fc07213a4024131fb061f0a46a48b49ecaf434bb029c0a5aa0339b969236d496d63969e3c248a90fdcac16d4f9c5bf187e7be0bfb5e804ed13bef6b0
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -13405,7 +13387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^7.1.0, supports-color@npm:^7.2.0":
+"supports-color@npm:^7.1.0":
   version: 7.2.0
   resolution: "supports-color@npm:7.2.0"
   dependencies:
