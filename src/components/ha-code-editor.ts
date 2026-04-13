@@ -807,6 +807,204 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.JINJA_FUNCTION_ARG_TYPES;
   }
 
+  // The accessible properties on TemplateStateBase (from HA core source).
+  // These are valid completions at `states.<domain>.<entity>.___`.
+  private static readonly _STATE_FIELDS: string[] = [
+    "state",
+    "attributes",
+    "last_changed",
+    "last_updated",
+    "context",
+    "domain",
+    "object_id",
+    "name",
+    "entity_id",
+    "state_with_unit",
+  ];
+
+  /**
+   * Handles `states.<domain>.<entity>.<field>.<attr>` dot-notation completions.
+   *
+   * Walks the MemberExpression chain in the Jinja syntax tree rooted at the
+   * `states` VariableName and offers completions depending on depth:
+   *   - `states.`           → all domains
+   *   - `states.<d>.`       → all entity object_ids for that domain
+   *   - `states.<d>.<e>.`   → fixed state fields
+   *   - `states.<d>.<e>.attributes.` → attribute names from hass.states
+   *
+   * Returns undefined to fall through when the cursor is not inside a
+   * `states.` chain; returns null/CompletionResult to short-circuit.
+   */
+  private _statesDotNotationCompletions(
+    context: CompletionContext
+  ): CompletionResult | null | undefined {
+    if (!this.hass) return undefined;
+
+    const { state: editorState, pos } = context;
+    const tree = this._loadedCodeMirror!.syntaxTree(editorState);
+    const node = tree.resolveInner(pos, -1);
+
+    // We act on two cursor positions:
+    //   (a) cursor is ON a PropertyName node   → partially typed identifier
+    //   (b) cursor is on/just-after a "." node → right after the dot
+    // In both cases the parent is a MemberExpression.
+    const memberNode = node.parent;
+    // "from" for the completion result (start of what the user is currently typing)
+    let completionFrom = pos;
+
+    if (
+      node.name === "PropertyName" &&
+      memberNode?.name === "MemberExpression"
+    ) {
+      // Cursor is on a PropertyName — replace from start of that name.
+      completionFrom = node.from;
+    } else if (node.name === "." && memberNode?.name === "MemberExpression") {
+      // Cursor just after "." — insert from current position.
+      completionFrom = pos;
+    } else {
+      return undefined;
+    }
+
+    // Walk up the MemberExpression chain to collect property segments and
+    // find the root VariableName.
+    //
+    // Each MemberExpression has the shape:  <object> "." <PropertyName>
+    // so the last PropertyName in the chain is the one directly under the
+    // outermost member expression.  We walk *up* to find the root, collecting
+    // each intermediate PropertyName text along the way.
+    //
+    // Example for  states.light.living_room.attributes  at cursor after the
+    // last dot:
+    //   MemberExpression          <- memberNode (cursor's parent)
+    //     MemberExpression        <- depth 3  (states.light.living_room)
+    //       MemberExpression      <- depth 2  (states.light)
+    //         VariableName "states"
+    //         "."
+    //         PropertyName "light"
+    //       "."
+    //       PropertyName "living_room"
+    //     "."
+    //     (no PropertyName yet — cursor is right here)
+
+    // Collect the segments bottom-up (innermost first).
+    const segments: string[] = [];
+    let cur = memberNode; // the MemberExpression directly containing the cursor
+
+    // If cursor is on a PropertyName, that is part of *this* MemberExpression;
+    // skip it — we don't want to include what the user is currently typing.
+    // We want the segments that lead *up to* the current position.
+
+    // Walk up through parent MemberExpressions collecting PropertyName texts.
+    // Each MemberExpression's last PropertyName child is the segment for that
+    // level — but we skip the innermost one if the cursor is on a PropertyName
+    // (that's the partial input, not a committed segment).
+    let skipFirst = node.name === "PropertyName";
+
+    while (cur?.name === "MemberExpression") {
+      // The PropertyName child of this MemberExpression is its rightmost segment.
+      let propChild = cur.lastChild;
+      while (propChild && propChild.name !== "PropertyName") {
+        propChild = propChild.prevSibling;
+      }
+      if (propChild) {
+        if (skipFirst) {
+          skipFirst = false;
+        } else {
+          segments.unshift(
+            editorState.doc.sliceString(propChild.from, propChild.to)
+          );
+        }
+      }
+      // The object side is the first child of the MemberExpression
+      const objectChild = cur.firstChild;
+      if (!objectChild) break;
+      if (objectChild.name === "VariableName") {
+        // Check if this is the root "states" variable
+        const varName = editorState.doc.sliceString(
+          objectChild.from,
+          objectChild.to
+        );
+        if (varName !== "states") return undefined; // not a states chain
+        break; // found root
+      }
+      if (objectChild.name !== "MemberExpression") return undefined;
+      cur = objectChild;
+    }
+
+    // Verify we actually found a root VariableName "states" (cur must be a
+    // MemberExpression whose first child is VariableName "states").
+    const rootObject = cur?.firstChild;
+    if (!rootObject || rootObject.name !== "VariableName") return undefined;
+    if (
+      editorState.doc.sliceString(rootObject.from, rootObject.to) !== "states"
+    ) {
+      return undefined;
+    }
+
+    const depth = segments.length; // number of segments already committed
+
+    switch (depth) {
+      case 0: {
+        // states.   → offer all unique domains
+        const domains = [
+          ...new Set(
+            Object.keys(this.hass.states).map((id) => id.split(".")[0])
+          ),
+        ].sort();
+        return {
+          from: completionFrom,
+          options: domains.map((d) => ({ label: d, type: "variable" })),
+          validFor: /^\w*$/,
+        };
+      }
+      case 1: {
+        // states.<domain>.   → offer entity object_ids for that domain
+        const [domain] = segments;
+        const entities = Object.keys(this.hass.states)
+          .filter((id) => id.startsWith(`${domain}.`))
+          .map((id) => id.split(".").slice(1).join("."));
+        if (!entities.length) return { from: completionFrom, options: [] };
+        return {
+          from: completionFrom,
+          options: entities.map((e) => ({ label: e, type: "variable" })),
+          validFor: /^\w*$/,
+        };
+      }
+      case 2: {
+        // states.<domain>.<entity>.   → fixed state fields
+        return {
+          from: completionFrom,
+          options: HaCodeEditor._STATE_FIELDS.map((f) => ({
+            label: f,
+            type: "property",
+          })),
+          validFor: /^\w*$/,
+        };
+      }
+      case 3: {
+        // states.<domain>.<entity>.<field>.
+        const [domain, entity, field] = segments;
+        if (field !== "attributes") {
+          // No further completions for non-attribute fields
+          return { from: completionFrom, options: [] };
+        }
+        // Offer attribute names from the entity's state object
+        const entityId = `${domain}.${entity}`;
+        const entityState = this.hass.states[entityId];
+        if (!entityState) return { from: completionFrom, options: [] };
+        const attrNames = Object.keys(entityState.attributes).sort();
+        return {
+          from: completionFrom,
+          options: attrNames.map((a) => ({ label: a, type: "property" })),
+          validFor: /^\w*$/,
+        };
+      }
+      default:
+        // Depth ≥ 4 — no further completions
+        return { from: completionFrom, options: [] };
+    }
+  }
+
   /**
    * Returns completions when inside a quoted Jinja string argument of a known
    * HA function, or inside a states['...'] subscript.
@@ -1023,6 +1221,12 @@ export class HaCodeEditor extends ReactiveElement {
     // Jinja context: offer entity completions inside string arguments of
     // entity-accepting functions, and inside states['...'] subscripts.
     if (this.mode === "yaml" || this.mode === "jinja2") {
+      // First try states.<domain>.<entity>.<field> dot-notation completions.
+      const statesDotResult = this._statesDotNotationCompletions(context);
+      if (statesDotResult !== undefined) {
+        return statesDotResult;
+      }
+
       const jinjaEntityResult = this._jinjaStringArgCompletions(context);
       if (jinjaEntityResult !== undefined) {
         return jinjaEntityResult;
