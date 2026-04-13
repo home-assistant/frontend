@@ -29,6 +29,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
+import { computeDeviceName } from "../common/entity/compute_device_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
 import type { JinjaArgType } from "../resources/jinja_ha_completions";
@@ -857,29 +858,35 @@ export class HaCodeEditor extends ReactiveElement {
   /**
    * Dispatches to the appropriate completion result builder for the given
    * argument type. Add new cases here as completion sources are implemented.
+   *
+   * Always returns a CompletionResult (never null) so that other completion
+   * sources are suppressed when the cursor is inside a known typed string arg.
+   * An empty options list is returned when no completions are available.
    */
   private _completionResultForArgType(
     argType: JinjaArgType,
     stringNode: { from: number; to: number }
-  ): CompletionResult | null {
+  ): CompletionResult {
+    const from = stringNode.from + 1;
+    const empty: CompletionResult = { from, options: [] };
     switch (argType) {
       case "entity_id":
-        return this._entityCompletionResult(stringNode);
+        return this._entityCompletionResult(stringNode) ?? empty;
+      case "device_id":
+        return this._deviceCompletionResult(stringNode) ?? empty;
       // Future cases — add a _xxxCompletionResult method and a case here:
       // case "area_id":
-      //   return this._areaCompletionResult(stringNode);
-      // case "device_id":
-      //   return this._deviceCompletionResult(stringNode);
+      //   return this._areaCompletionResult(stringNode) ?? empty;
       // case "floor_id":
-      //   return this._floorCompletionResult(stringNode);
+      //   return this._floorCompletionResult(stringNode) ?? empty;
       // case "label_id":
-      //   return this._labelCompletionResult(stringNode);
+      //   return this._labelCompletionResult(stringNode) ?? empty;
       // case "integration":
-      //   return this._integrationCompletionResult(stringNode);
+      //   return this._integrationCompletionResult(stringNode) ?? empty;
       // case "attribute":
-      //   return this._attributeCompletionResult(stringNode);
+      //   return this._attributeCompletionResult(stringNode) ?? empty;
       default:
-        return null;
+        return empty;
     }
   }
 
@@ -898,6 +905,33 @@ export class HaCodeEditor extends ReactiveElement {
       from,
       options: states,
       validFor: /^[\w.]*$/,
+    };
+  }
+
+  private _getDevices = memoizeOne(
+    (devices: HomeAssistant["devices"]): Completion[] =>
+      Object.values(devices)
+        .filter((device) => !device.disabled_by)
+        .map((device) => ({
+          type: "variable",
+          label: computeDeviceName(device) ?? device.id,
+          detail: device.id,
+          apply: device.id,
+        }))
+  );
+
+  /** Build a CompletionResult for device IDs, with `from` set inside the quotes. */
+  private _deviceCompletionResult(stringNode: {
+    from: number;
+    to: number;
+  }): CompletionResult | null {
+    if (!this.hass?.devices) return null;
+    const devices = this._getDevices(this.hass.devices);
+    if (!devices.length) return null;
+    return {
+      from: stringNode.from + 1,
+      options: devices,
+      validFor: /^[^"]*$/,
     };
   }
 
