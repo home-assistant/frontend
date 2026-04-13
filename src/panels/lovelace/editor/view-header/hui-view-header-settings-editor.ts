@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,6 +16,7 @@ import {
   DEFAULT_VIEW_HEADER_BADGES_POSITION,
   DEFAULT_VIEW_HEADER_BADGES_WRAP,
   DEFAULT_VIEW_HEADER_LAYOUT,
+  VIEW_HEADER_LAYOUT_INTEGRATED,
 } from "../../views/hui-view-header";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 
@@ -25,6 +27,8 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
 
   @state({ attribute: false }) private narrow = false;
+
+  @state() private _selectedLayout = DEFAULT_VIEW_HEADER_LAYOUT;
 
   private _unsubMql?: () => void;
 
@@ -41,16 +45,32 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     this._unsubMql = undefined;
   }
 
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has("config")) {
+      this._selectedLayout = this.config?.layout ?? DEFAULT_VIEW_HEADER_LAYOUT;
+    }
+  }
+
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, isRTL: boolean, narrow: boolean) =>
+    (
+      localize: LocalizeFunc,
+      isRTL: boolean,
+      narrow: boolean,
+      integratedLayout: boolean
+    ) =>
       [
         {
           name: "layout",
           selector: {
             select: {
               mode: "box",
-              box_max_columns: narrow ? 1 : 3,
-              options: ["responsive", "start", "center"].map((value) => {
+              box_max_columns: narrow ? 1 : 4,
+              options: [
+                "responsive",
+                "start",
+                "center",
+                VIEW_HEADER_LAYOUT_INTEGRATED,
+              ].map((value) => {
                 const labelKey =
                   value === "start" && isRTL ? `${value}_rtl` : value;
                 return {
@@ -62,8 +82,8 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
                     `ui.panel.lovelace.editor.edit_view_header.settings.layout_options.${value}_description`
                   ),
                   image: {
-                    src: `/static/images/form/view_header_layout_${value}.svg`,
-                    src_dark: `/static/images/form/view_header_layout_${value}_dark.svg`,
+                    src: `/static/images/form/view_header_layout_${value === VIEW_HEADER_LAYOUT_INTEGRATED ? "responsive" : value}.svg`,
+                    src_dark: `/static/images/form/view_header_layout_${value === VIEW_HEADER_LAYOUT_INTEGRATED ? "responsive" : value}_dark.svg`,
                     flip_rtl: true,
                   },
                 };
@@ -73,6 +93,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         },
         {
           name: "badges_position",
+          disabled: integratedLayout,
           selector: {
             select: {
               mode: "box",
@@ -92,6 +113,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         },
         {
           name: "badges_wrap",
+          disabled: integratedLayout,
           selector: {
             select: {
               mode: "box",
@@ -114,10 +136,6 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             },
           },
         },
-        {
-          name: "badges_floating",
-          selector: { boolean: {} },
-        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -126,17 +144,27 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       return nothing;
     }
 
+    const layout = this._selectedLayout;
+    const integratedLayout = layout === VIEW_HEADER_LAYOUT_INTEGRATED;
+
     const data = {
-      layout: this.config?.layout || DEFAULT_VIEW_HEADER_LAYOUT,
-      badges_position:
-        this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
-      badges_wrap: this.config?.badges_wrap || DEFAULT_VIEW_HEADER_BADGES_WRAP,
-      badges_floating: this.config?.badges_floating ?? false,
+      layout,
+      badges_position: integratedLayout
+        ? "top"
+        : (this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION),
+      badges_wrap: integratedLayout
+        ? "scroll"
+        : (this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP),
     };
 
     const narrow = this.narrow;
     const isRTL = computeRTL(this.hass);
-    const schema = this._schema(this.hass.localize, isRTL, narrow);
+    const schema = this._schema(
+      this.hass.localize,
+      isRTL,
+      narrow,
+      integratedLayout
+    );
 
     return html`
       <ha-form
@@ -152,10 +180,23 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
   private _valueChanged(ev: ValueChangedEvent<LovelaceViewHeaderConfig>): void {
     ev.stopPropagation();
 
+    const layout =
+      ev.detail.value.layout ??
+      this._selectedLayout ??
+      DEFAULT_VIEW_HEADER_LAYOUT;
+    this._selectedLayout = layout;
+
+    const integratedLayout = layout === VIEW_HEADER_LAYOUT_INTEGRATED;
+
     const config: LovelaceViewHeaderConfig = {
       ...this.config,
       ...ev.detail.value,
     };
+
+    if (integratedLayout) {
+      config.badges_position = "top";
+      config.badges_wrap = "scroll";
+    }
 
     fireEvent(this, "config-changed", { config });
   }
@@ -167,7 +208,6 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       case "layout":
       case "badges_position":
       case "badges_wrap":
-      case "badges_floating":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}`
         );

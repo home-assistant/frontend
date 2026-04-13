@@ -26,6 +26,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
+import { DragScrollController } from "../../common/controllers/drag-scroll-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -50,6 +51,7 @@ import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area/area_registry";
+import type { LovelaceViewElement } from "../../data/lovelace";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -90,11 +92,15 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
+import type { HuiBadge } from "./badges/hui-badge";
 import type { Lovelace } from "./types";
+import "./badges/hui-view-badges";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+
+const VIEW_HEADER_LAYOUT_INTEGRATED = "integrated";
 
 interface ActionItem {
   icon: string;
@@ -157,6 +163,11 @@ class HUIRoot extends LitElement {
   private _configChangedByUndo = false;
 
   private _viewCache: Record<string, HUIView> = {};
+
+  private _toolbarBadgeDragScrollController = new DragScrollController(this, {
+    selector: ".toolbar-badges.scroll",
+    enabled: false,
+  });
 
   private _viewScrollPositions: Record<string, number> = {};
 
@@ -538,6 +549,13 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
+    const headerConfig = curViewConfig?.header;
+    const showToolbarBadges =
+      !this._editMode &&
+      !this.narrow &&
+      headerConfig?.layout === VIEW_HEADER_LAYOUT_INTEGRATED &&
+      typeof this._curView === "number";
+    const toolbarBadges = showToolbarBadges ? this._getCurrentViewBadges() : [];
 
     return html`
       <div
@@ -548,7 +566,12 @@ class HUIRoot extends LitElement {
       >
         <div class="header">
           <slot name="toolbar">
-            <div class="toolbar">
+            <div
+              class=${classMap({
+                toolbar: true,
+                "integrated-badges": showToolbarBadges,
+              })}
+            >
               ${this._editMode
                 ? html`
                     <div class="main-title">
@@ -593,6 +616,27 @@ class HUIRoot extends LitElement {
                               ${views[0]?.title ?? dashboardTitle}
                             </div>
                           `}
+                    ${showToolbarBadges && toolbarBadges.length > 0
+                      ? html`
+                          <div
+                            class=${classMap({
+                              "toolbar-badges": true,
+                              scroll: true,
+                              dragging:
+                                this._toolbarBadgeDragScrollController
+                                  .scrolling,
+                            })}
+                          >
+                            <hui-view-badges
+                              .badges=${toolbarBadges}
+                              .hass=${this.hass}
+                              .lovelace=${this.lovelace!}
+                              .viewIndex=${this._curView as number}
+                              .showAddLabel=${false}
+                            ></hui-view-badges>
+                          </div>
+                        `
+                      : nothing}
                     <div class="action-items">${this._renderActionItems()}</div>
                   `}
             </div>
@@ -826,6 +870,19 @@ class HUIRoot extends LitElement {
         this._selectView(newSelectView);
       });
     }
+
+    const currentViewHeaderConfig =
+      typeof this._curView === "number"
+        ? this.config.views[this._curView]?.header
+        : undefined;
+    const integratedLayout =
+      currentViewHeaderConfig?.layout === VIEW_HEADER_LAYOUT_INTEGRATED;
+    const toolbarBadges = this._getCurrentViewBadges();
+    this._toolbarBadgeDragScrollController.enabled =
+      !this._editMode &&
+      !this.narrow &&
+      integratedLayout &&
+      toolbarBadges.length > 0;
   }
 
   private get config(): LovelaceConfig {
@@ -842,6 +899,16 @@ class HUIRoot extends LitElement {
 
   private get _viewRoot(): HTMLDivElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
+  }
+
+  private _getCurrentViewBadges(): HuiBadge[] {
+    if (typeof this._curView !== "number") {
+      return [];
+    }
+
+    const view = this._viewCache[this._curView];
+    const layout = view?.firstElementChild as LovelaceViewElement | null;
+    return layout?.badges || [];
   }
 
   private _handleRefresh = () => {
@@ -1323,7 +1390,7 @@ class HUIRoot extends LitElement {
           display: flex;
           align-items: center;
           font-size: var(--ha-font-size-xl);
-          padding: 0px 12px;
+          padding: 0 var(--ha-space-3);
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
@@ -1331,7 +1398,7 @@ class HUIRoot extends LitElement {
           border-bottom: none;
         }
         .narrow .toolbar {
-          padding: 0 4px;
+          padding: 0 var(--ha-space-1);
         }
         .main-title {
           margin-inline-start: var(--ha-space-6);
@@ -1342,6 +1409,9 @@ class HUIRoot extends LitElement {
           white-space: nowrap;
           min-width: 0;
         }
+        .toolbar.integrated-badges .main-title {
+          flex-grow: 0;
+        }
         .narrow .main-title {
           margin-inline-start: var(--ha-space-2);
         }
@@ -1349,6 +1419,37 @@ class HUIRoot extends LitElement {
           white-space: nowrap;
           display: flex;
           align-items: center;
+        }
+        .toolbar-badges {
+          display: flex;
+          align-items: center;
+          min-width: 0;
+          width: auto;
+          flex: 1 1 0;
+          max-width: none;
+          margin-inline-start: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-1);
+        }
+        .toolbar-badges.scroll {
+          overflow: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: none;
+          mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            black 16px,
+            black calc(100% - 16px),
+            transparent 100%
+          );
+        }
+        .toolbar-badges.dragging {
+          pointer-events: none;
+        }
+        .toolbar-badges hui-view-badges {
+          width: 100%;
+          --badges-wrap: nowrap;
+          --badges-aligmnent: flex-start;
+          --badge-padding: var(--ha-space-4);
         }
         ha-tab-group {
           --ha-tab-indicator-color: var(

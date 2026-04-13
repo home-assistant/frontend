@@ -32,10 +32,9 @@ export interface LovelaceViewBackgroundConfig {
 
 export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
-  layout?: "start" | "center" | "responsive";
+  layout?: "start" | "center" | "responsive" | "integrated";
   badges_position?: "bottom" | "top";
   badges_wrap?: "wrap" | "scroll";
-  badges_floating?: boolean;
 }
 
 export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;

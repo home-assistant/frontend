@@ -202,6 +202,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <hui-view-header
           .hass=${this.hass}
           .badges=${this.badges}
+          .narrow=${this.narrow}
           .lovelace=${this.lovelace}
           .viewIndex=${this.index}
           .config=${this._config?.header}

@@ -8695,7 +8695,9 @@
                 "start_description": "Always stacked",
                 "start_rtl": "Right aligned",
                 "center": "Centered",
-                "center_description": "Always stacked"
+                "center_description": "Always stacked",
+                "integrated": "Integrated into toolbar",
+                "integrated_description": "Badges are shown in the top app bar on desktop"
               },
               "badges_position": "Badges position",
               "badges_position_options": {
@@ -8707,8 +8709,7 @@
                 "wrap": "Wrap",
                 "scroll": "Scroll",
                 "scroll_description": "Touchscreen-friendly"
-              },
-              "badges_floating": "Floating badges"
+              }
             }
           },
           "edit_view_footer": {
