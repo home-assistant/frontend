@@ -192,8 +192,8 @@ const HA_FUNCTION_DEFS: HaFunctionDef[] = [
     info: "Returns the state of an entity as a string.",
   },
   {
-    snippet: 'is_state("${entity_id}", "${state}")',
-    detail: "entity_id, state",
+    snippet: 'is_state("${entity_id}", "${value}")',
+    detail: "entity_id, value",
     info: "Returns true if the entity state matches the given value (or one of the values in a list).",
   },
   {
@@ -717,7 +717,6 @@ const PLACEHOLDER_TYPES: Record<string, JinjaArgType> = {
   "${device_id_or_entity}": "device_id",
   "${floor_id}": "floor_id",
   "${label_id}": "label_id",
-  "${label_name}": "label_id",
   "${integration}": "integration",
   "${attribute}": "attribute",
 };
@@ -942,6 +941,12 @@ export function haJinjaCompletionSource(
   }
   if (context.explicit && before === "{%") {
     return { options: ALL_TAGS, from: pos, validFor: VALID_FOR };
+  }
+
+  // Never offer expression completions inside a string literal — those are
+  // handled by the context-aware string-arg completion source in ha-code-editor.
+  if (node.name === "StringLiteral" || node.parent?.name === "StringLiteral") {
+    return null;
   }
 
   // Expression context: {{ ... }}, after `is`, function args, etc.

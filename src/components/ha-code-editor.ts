@@ -26,15 +26,20 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import { computeAreaName } from "../common/entity/compute_area_name";
+import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
 import type { JinjaArgType } from "../resources/jinja_ha_completions";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
+import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-code-editor-completion-items";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
@@ -110,6 +115,10 @@ export class HaCodeEditor extends ReactiveElement {
   @state() private _canRedo = false;
 
   @state() private _canCopy = false;
+
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
@@ -784,6 +793,7 @@ export class HaCodeEditor extends ReactiveElement {
       type: "variable",
       label: key,
       detail: states[key].attributes.friendly_name,
+      apply: key,
     }));
 
     return options;
@@ -874,17 +884,12 @@ export class HaCodeEditor extends ReactiveElement {
         return this._entityCompletionResult(stringNode) ?? empty;
       case "device_id":
         return this._deviceCompletionResult(stringNode) ?? empty;
-      // Future cases — add a _xxxCompletionResult method and a case here:
-      // case "area_id":
-      //   return this._areaCompletionResult(stringNode) ?? empty;
-      // case "floor_id":
-      //   return this._floorCompletionResult(stringNode) ?? empty;
-      // case "label_id":
-      //   return this._labelCompletionResult(stringNode) ?? empty;
-      // case "integration":
-      //   return this._integrationCompletionResult(stringNode) ?? empty;
-      // case "attribute":
-      //   return this._attributeCompletionResult(stringNode) ?? empty;
+      case "area_id":
+        return this._areaCompletionResult(stringNode) ?? empty;
+      case "floor_id":
+        return this._floorCompletionResult(stringNode) ?? empty;
+      case "label_id":
+        return this._labelCompletionResult(stringNode) ?? empty;
       default:
         return empty;
     }
@@ -931,6 +936,81 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: stringNode.from + 1,
       options: devices,
+      validFor: /^[^"]*$/,
+    };
+  }
+
+  private _getAreas = memoizeOne(
+    (areas: HomeAssistant["areas"]): Completion[] =>
+      Object.values(areas).map((area) => ({
+        type: "variable",
+        label: computeAreaName(area) ?? area.area_id,
+        detail: area.area_id,
+        apply: area.area_id,
+      }))
+  );
+
+  /** Build a CompletionResult for area IDs, with `from` set inside the quotes. */
+  private _areaCompletionResult(stringNode: {
+    from: number;
+    to: number;
+  }): CompletionResult | null {
+    if (!this.hass?.areas) return null;
+    const areas = this._getAreas(this.hass.areas);
+    if (!areas.length) return null;
+    return {
+      from: stringNode.from + 1,
+      options: areas,
+      validFor: /^[^"]*$/,
+    };
+  }
+
+  private _getFloors = memoizeOne(
+    (floors: HomeAssistant["floors"]): Completion[] =>
+      Object.values(floors).map((floor) => ({
+        type: "variable",
+        label: computeFloorName(floor) ?? floor.floor_id,
+        detail: floor.floor_id,
+        apply: floor.floor_id,
+      }))
+  );
+
+  /** Build a CompletionResult for floor IDs, with `from` set inside the quotes. */
+  private _floorCompletionResult(stringNode: {
+    from: number;
+    to: number;
+  }): CompletionResult | null {
+    if (!this.hass?.floors) return null;
+    const floors = this._getFloors(this.hass.floors);
+    if (!floors.length) return null;
+    return {
+      from: stringNode.from + 1,
+      options: floors,
+      validFor: /^[^"]*$/,
+    };
+  }
+
+  private _getLabels = memoizeOne(
+    (labels: LabelRegistryEntry[]): Completion[] =>
+      labels.map((label) => ({
+        type: "variable",
+        label: label.name.trim() || label.label_id,
+        detail: label.label_id,
+        apply: label.label_id,
+      }))
+  );
+
+  /** Build a CompletionResult for label IDs, with `from` set inside the quotes. */
+  private _labelCompletionResult(stringNode: {
+    from: number;
+    to: number;
+  }): CompletionResult | null {
+    if (!this._labels?.length) return null;
+    const labels = this._getLabels(this._labels);
+    if (!labels.length) return null;
+    return {
+      from: stringNode.from + 1,
+      options: labels,
       validFor: /^[^"]*$/,
     };
   }
