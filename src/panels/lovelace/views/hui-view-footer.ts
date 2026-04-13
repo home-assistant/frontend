@@ -1,7 +1,7 @@
 import { mdiPencil, mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-ripple";
@@ -12,7 +12,7 @@ import {
   type LovelaceViewConfig,
   type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
@@ -33,7 +33,10 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
-  @state() private _cardHidden?: boolean;
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("card-visibility-changed", this._checkHidden);
+  }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
     if (changedProperties.has("config")) {
@@ -60,8 +63,15 @@ export class HuiViewFooter extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("card-visibility-changed", this._checkHidden);
+  }
+
   private _checkHidden() {
-    const hidden = !this.card && !this.lovelace?.editMode;
+    const hidden =
+      !this.lovelace?.editMode &&
+      (!this.card || this.card.hasAttribute("hidden"));
     this.toggleAttribute("hidden", hidden);
     this.toggleAttribute("sticky", Boolean(this.card));
   }
@@ -149,7 +159,6 @@ export class HuiViewFooter extends LitElement {
         style=${styleMap({
           "--row-size": typeof rows === "number" ? String(rows) : undefined,
         })}
-        @card-visibility-changed=${this._cardVisibilityChanged}
       >
         ${editMode
           ? html`
@@ -176,13 +185,7 @@ export class HuiViewFooter extends LitElement {
     const editMode = Boolean(this.lovelace?.editMode);
     const card = this.card;
 
-    if (
-      !editMode &&
-      (!card ||
-        (this._cardHidden !== undefined
-          ? this._cardHidden
-          : card.hasAttribute("hidden")))
-    ) {
+    if (!editMode && !card) {
       return nothing;
     }
 
@@ -223,10 +226,6 @@ export class HuiViewFooter extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  private _cardVisibilityChanged(ev: ValueChangedEvent<boolean>) {
-    this._cardHidden = !ev.detail.value;
   }
 
   static styles = css`
