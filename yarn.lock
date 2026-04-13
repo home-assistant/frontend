@@ -2785,19 +2785,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-switch@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-switch@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/mwc-ripple": "npm:^0.27.0"
-    "@material/switch": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/620d55add1ee7064e21f4ab649b2d017ec235106a0dcd5f3f29c26a0ea2ec3f8b3c01489081609574f8475a8daa38a4b24fe6129b0fcc82d69e6d58e5483b7c2
-  languageName: node
-  linkType: hard
-
 "@material/mwc-top-app-bar-fixed@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-top-app-bar-fixed@npm:0.27.0"
@@ -2925,27 +2912,6 @@ __metadata:
     "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
     tslib: "npm:^2.1.0"
   checksum: 10/d8bca18cde6b8d479396e695afff9aaf911be1f85160e0c8a923ca39ef0950e7042786f3ec787d4df551fe479e1f2b1b97db217129e2e80d7602d07676ae4695
-  languageName: node
-  linkType: hard
-
-"@material/switch@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/switch@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/density": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/focus-ring": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/tokens": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/445415165ac20c6c80854bf5c8688ea9c2bc88844602b1ebe1f4a9325c9802a295b90c15b860e2af831657b163bd45f64ea5eb6e99e90de8198b100d6c9e52bc
   languageName: node
   linkType: hard
 
@@ -8994,7 +8960,6 @@ __metadata:
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"
-    "@material/mwc-switch": "npm:0.27.0"
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
