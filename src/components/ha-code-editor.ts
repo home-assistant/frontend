@@ -575,7 +575,10 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
-    const key = completion.label;
+    const key =
+      typeof completion.apply === "string"
+        ? completion.apply
+        : completion.label;
     const context = getEntityContext(
       this.hass!.states[key],
       this.hass!.entities,
@@ -687,7 +690,11 @@ export class HaCodeEditor extends ReactiveElement {
   private _getCompletionInfo = (
     completion: Completion
   ): CompletionInfo | Promise<CompletionInfo> | null => {
-    if (this.hass && completion.label in this.hass.states) {
+    if (
+      this.hass &&
+      typeof completion.apply === "string" &&
+      completion.apply in this.hass.states
+    ) {
       return this._renderInfo(completion);
     }
 
@@ -847,7 +854,10 @@ export class HaCodeEditor extends ReactiveElement {
 
     const options = Object.keys(states).map((key) => ({
       type: "variable",
-      label: key,
+      label: states[key].attributes.friendly_name
+        ? `${states[key].attributes.friendly_name} ${key}` // label is used for searching, so include both name and entity_id here
+        : key,
+      displayLabel: key,
       detail: states[key].attributes.friendly_name,
       apply: key,
     }));
@@ -1252,13 +1262,16 @@ export class HaCodeEditor extends ReactiveElement {
     (devices: HomeAssistant["devices"]): Completion[] =>
       Object.values(devices)
         .filter((device) => !device.disabled_by)
-        .map((device) => ({
-          type: "variable",
-          label: `${computeDeviceName(device)} ${device.id}`,
-          displayLabel: computeDeviceName(device) ?? device.id,
-          detail: device.id,
-          apply: device.id,
-        }))
+        .map((device) => {
+          const name = computeDeviceName(device);
+          return {
+            type: "variable",
+            label: `${name} ${device.id}`,
+            displayLabel: name ?? device.id,
+            detail: device.id,
+            apply: device.id,
+          };
+        })
   );
 
   /** Build a CompletionResult for device IDs, with `from` set inside the quotes. */
@@ -1278,12 +1291,16 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getAreas = memoizeOne(
     (areas: HomeAssistant["areas"]): Completion[] =>
-      Object.values(areas).map((area) => ({
-        type: "variable",
-        label: computeAreaName(area) ?? area.area_id,
-        detail: area.area_id,
-        apply: area.area_id,
-      }))
+      Object.values(areas).map((area) => {
+        const name = computeAreaName(area) ?? area.area_id;
+        return {
+          type: "variable",
+          label: `${name} ${area.area_id}`, // label is used for searching, so include both name and ID here
+          displayLabel: name,
+          detail: area.area_id,
+          apply: area.area_id,
+        };
+      })
   );
 
   /** Build a CompletionResult for area IDs, with `from` set inside the quotes. */
@@ -1303,12 +1320,16 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getFloors = memoizeOne(
     (floors: HomeAssistant["floors"]): Completion[] =>
-      Object.values(floors).map((floor) => ({
-        type: "variable",
-        label: computeFloorName(floor) ?? floor.floor_id,
-        detail: floor.floor_id,
-        apply: floor.floor_id,
-      }))
+      Object.values(floors).map((floor) => {
+        const name = computeFloorName(floor) ?? floor.floor_id;
+        return {
+          type: "variable",
+          label: `${name} ${floor.floor_id}`, // label is used for searching, so include both name and ID here
+          displayLabel: name,
+          detail: floor.floor_id,
+          apply: floor.floor_id,
+        };
+      })
   );
 
   /** Build a CompletionResult for floor IDs, with `from` set inside the quotes. */
@@ -1328,12 +1349,16 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getLabels = memoizeOne(
     (labels: LabelRegistryEntry[]): Completion[] =>
-      labels.map((label) => ({
-        type: "variable",
-        label: label.name.trim() || label.label_id,
-        detail: label.label_id,
-        apply: label.label_id,
-      }))
+      labels.map((label) => {
+        const name = label.name.trim() || label.label_id;
+        return {
+          type: "variable",
+          label: `${name} ${label.label_id}`, // label is used for searching, so include both name and ID here
+          displayLabel: name,
+          detail: label.label_id,
+          apply: label.label_id,
+        };
+      })
   );
 
   /** Build a CompletionResult for label IDs, with `from` set inside the quotes. */
