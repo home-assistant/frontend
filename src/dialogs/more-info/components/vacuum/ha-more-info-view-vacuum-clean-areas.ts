@@ -75,7 +75,9 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     try {
       await this.hass.callService("vacuum", "clean_area", {
         entity_id: this.params.entityId,
-        cleaning_area_id: [...this._selectedAreaIds],
+        cleaning_area_id: this._mappedAreaIds!.filter((id) =>
+          this._selectedAreaIds.has(id)
+        ),
       });
       this._selectedAreaIds = new Set();
       fireEvent(this, "close-child-view");
