@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 
-const SHADOWS = ["s", "m", "l", "xl"] as const;
+const SHADOWS = ["s", "m", "l"] as const;
 
 @customElement("demo-misc-box-shadow")
 export class DemoMiscBoxShadow extends LitElement {
