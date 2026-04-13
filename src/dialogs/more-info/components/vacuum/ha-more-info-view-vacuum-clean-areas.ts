@@ -1,4 +1,4 @@
-import { mdiCheckCircle, mdiCogOutline, mdiTextureBox } from "@mdi/js";
+import { mdiCogOutline, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -25,7 +25,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
   @state() private _mappedAreaIds?: string[];
 
-  @state() private _selectedAreaIds = new Set<string>();
+  @state() private _selectedAreaIds: string[] = [];
 
   @state() private _loading = true;
 
@@ -59,27 +59,26 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
   private _toggleArea(ev: Event) {
     const areaId = (ev.currentTarget as HTMLElement).dataset.areaId!;
-    const selected = new Set(this._selectedAreaIds);
-    if (selected.has(areaId)) {
-      selected.delete(areaId);
+    const index = this._selectedAreaIds.indexOf(areaId);
+    if (index >= 0) {
+      this._selectedAreaIds = this._selectedAreaIds.filter(
+        (id) => id !== areaId
+      );
     } else {
-      selected.add(areaId);
+      this._selectedAreaIds = [...this._selectedAreaIds, areaId];
     }
-    this._selectedAreaIds = selected;
   }
 
   private async _startCleaning() {
-    if (!this.params.entityId || this._selectedAreaIds.size === 0) return;
+    if (!this.params.entityId || this._selectedAreaIds.length === 0) return;
     this._submitting = true;
 
     try {
       await this.hass.callService("vacuum", "clean_area", {
         entity_id: this.params.entityId,
-        cleaning_area_id: this._mappedAreaIds!.filter((id) =>
-          this._selectedAreaIds.has(id)
-        ),
+        cleaning_area_id: this._selectedAreaIds,
       });
-      this._selectedAreaIds = new Set();
+      this._selectedAreaIds = [];
       fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message || "Failed to start cleaning";
@@ -100,7 +99,8 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     const area: AreaRegistryEntry | undefined = this.hass.areas[areaId];
     if (!area) return nothing;
 
-    const isSelected = this._selectedAreaIds.has(areaId);
+    const selectionIndex = this._selectedAreaIds.indexOf(areaId);
+    const isSelected = selectionIndex >= 0;
 
     return html`
       <div
@@ -109,10 +109,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         @click=${this._toggleArea}
       >
         ${isSelected
-          ? html`<ha-svg-icon
-              class="check"
-              .path=${mdiCheckCircle}
-            ></ha-svg-icon>`
+          ? html`<span class="badge">${selectionIndex + 1}</span>`
           : nothing}
         <div class="area-icon">
           ${area.icon
@@ -183,18 +180,23 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         <div class="area-grid">
           ${this._mappedAreaIds.map((areaId) => this._renderAreaCard(areaId))}
         </div>
+        <p class="hint">
+          ${this.hass.localize(
+            "ui.dialogs.more_info_control.vacuum.clean_areas_order_hint"
+          )}
+        </p>
       </div>
 
       <div class="footer">
         <ha-button
           @click=${this._startCleaning}
-          .disabled=${this._selectedAreaIds.size === 0 || this._submitting}
+          .disabled=${this._selectedAreaIds.length === 0 || this._submitting}
         >
           ${this.hass.localize(
             "ui.dialogs.more_info_control.vacuum.start_cleaning_areas"
           )}
-          ${this._selectedAreaIds.size > 0
-            ? ` (${this._selectedAreaIds.size})`
+          ${this._selectedAreaIds.length > 0
+            ? ` (${this._selectedAreaIds.length})`
             : ""}
         </ha-button>
       </div>
@@ -301,12 +303,20 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       background-color: var(--primary-color);
     }
 
-    .area-card .check {
+    .area-card .badge {
       position: absolute;
       top: 6px;
       inset-inline-end: 6px;
-      color: var(--primary-color);
-      --mdc-icon-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: var(--text-primary-color);
+      font-size: var(--ha-font-size-xs);
+      font-weight: 500;
     }
 
     .area-icon {
@@ -327,6 +337,13 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       text-align: center;
       line-height: var(--ha-line-height-condensed);
       word-break: break-word;
+    }
+
+    .hint {
+      margin: var(--ha-space-3) 0 0;
+      text-align: center;
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
     }
 
     .footer {
