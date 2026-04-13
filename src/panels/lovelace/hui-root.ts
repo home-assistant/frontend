@@ -63,6 +63,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { isStrategyView } from "../../data/lovelace/config/view";
 import { fetchLovelaceInfo } from "../../data/lovelace/resource";
 import { getPanelTitle } from "../../data/panel";
 import { createPerson } from "../../data/person";
@@ -549,7 +550,10 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
-    const headerConfig = curViewConfig?.header;
+    const headerConfig =
+      curViewConfig && !isStrategyView(curViewConfig)
+        ? curViewConfig.header
+        : undefined;
     const showToolbarBadges =
       !this._editMode &&
       !this.narrow &&
@@ -871,9 +875,13 @@ class HUIRoot extends LitElement {
       });
     }
 
-    const currentViewHeaderConfig =
+    const currentViewConfig =
       typeof this._curView === "number"
-        ? this.config.views[this._curView]?.header
+        ? this.config.views[this._curView]
+        : undefined;
+    const currentViewHeaderConfig =
+      currentViewConfig && !isStrategyView(currentViewConfig)
+        ? currentViewConfig.header
         : undefined;
     const integratedLayout =
       currentViewHeaderConfig?.layout === VIEW_HEADER_LAYOUT_INTEGRATED;
