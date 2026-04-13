@@ -1,16 +1,25 @@
 import { indentLess, indentMore } from "@codemirror/commands";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
-import { jinja } from "@codemirror/lang-jinja";
+import { jinja, closePercentBrace } from "@codemirror/lang-jinja";
 import { yaml } from "@codemirror/lang-yaml";
-import { Compartment } from "@codemirror/state";
+import { Compartment, EditorState, Prec } from "@codemirror/state";
 import type { KeyBinding } from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
-import { haJinjaCompletionSource } from "./jinja_ha_completions";
 
-export { autocompletion, selectedCompletion } from "@codemirror/autocomplete";
+export {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  selectedCompletion,
+} from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-export { foldGutter, highlightingFor } from "@codemirror/language";
+export {
+  foldGutter,
+  highlightingFor,
+  bracketMatching,
+  syntaxTree,
+} from "@codemirror/language";
 export {
   closeSearchPanel,
   highlightSelectionMatches,
@@ -40,7 +49,21 @@ export const langs = {
   yaml: _yamlWithJinja,
 };
 
-export { haJinjaCompletionSource };
+// @codemirror/lang-jinja registers closeBrackets language data with only "{",
+// which overrides the full default set and breaks "[" and quote auto-closing.
+// This higher-priority override restores the full default bracket set.
+export const closeBracketsOverride = Prec.highest(
+  EditorState.languageData.of(() => [
+    { closeBrackets: { brackets: ["(", "[", "{", "'", '"'] } },
+  ])
+);
+
+export {
+  haJinjaCompletionSource,
+  JINJA_FUNCTION_ARG_TYPES,
+} from "./jinja_ha_completions";
+export type { JinjaArgType } from "./jinja_ha_completions";
+export { closePercentBrace };
 
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();

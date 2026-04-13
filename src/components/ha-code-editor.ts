@@ -31,6 +31,7 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
+import type { JinjaArgType } from "../resources/jinja_ha_completions";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import "./ha-code-editor-completion-items";
@@ -271,6 +272,7 @@ export class HaCodeEditor extends ReactiveElement {
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
       this._loadedCodeMirror.foldGutter(),
+      this._loadedCodeMirror.bracketMatching(),
       this._loadedCodeMirror.history(),
       this._loadedCodeMirror.drawSelection(),
       this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
@@ -288,6 +290,9 @@ export class HaCodeEditor extends ReactiveElement {
         },
       }),
       this._loadedCodeMirror.keymap.of([
+        // closeBracketsKeymap must come before defaultKeymap so its Backspace
+        // handler runs before the default delete-character binding.
+        ...(!this.readOnly ? this._loadedCodeMirror.closeBracketsKeymap : []),
         ...this._loadedCodeMirror.defaultKeymap,
         ...this._loadedCodeMirror.searchKeymap,
         ...this._loadedCodeMirror.historyKeymap,
@@ -325,7 +330,10 @@ export class HaCodeEditor extends ReactiveElement {
         this._loadedCodeMirror.autocompletion({
           override: completionSources,
           maxRenderedOptions: 10,
-        })
+        }),
+        this._loadedCodeMirror.closeBrackets(),
+        this._loadedCodeMirror.closeBracketsOverride,
+        this._loadedCodeMirror.closePercentBrace
       );
     }
 
@@ -780,9 +788,131 @@ export class HaCodeEditor extends ReactiveElement {
     return options;
   });
 
+  // Map of HA Jinja function name → (arg index → JinjaArgType).
+  // Derived from the snippet definitions in jinja_ha_completions.ts.
+  private get _jinjaFunctionArgTypes() {
+    return this._loadedCodeMirror!.JINJA_FUNCTION_ARG_TYPES;
+  }
+
+  /**
+   * Returns completions when inside a quoted Jinja string argument of a known
+   * HA function, or inside a states['...'] subscript.
+   * Returns undefined to signal the caller should fall through to other logic.
+   */
+  private _jinjaStringArgCompletions(
+    context: CompletionContext
+  ): CompletionResult | null | undefined {
+    const { state: editorState, pos } = context;
+    const node = this._loadedCodeMirror!.syntaxTree(editorState).resolveInner(
+      pos,
+      -1
+    );
+
+    // Must be inside a StringLiteral
+    if (node.name !== "StringLiteral") return undefined;
+
+    // Case 1: states['entity_id'] — StringLiteral inside SubscriptExpression
+    // whose object is the `states` variable.
+    const subscript = node.parent;
+    if (subscript?.name === "SubscriptExpression") {
+      const obj = subscript.firstChild;
+      if (obj && editorState.doc.sliceString(obj.from, obj.to) === "states") {
+        return this._completionResultForArgType("entity_id", node);
+      }
+    }
+
+    // Case 2: string argument of a known HA function call.
+    const argList = node.parent;
+    if (argList?.name !== "ArgumentList") return undefined;
+
+    const callExpr = argList.parent;
+    if (callExpr?.name !== "CallExpression") return undefined;
+
+    const fnNode = callExpr.firstChild;
+    if (!fnNode) return undefined;
+
+    const fnName = editorState.doc.sliceString(fnNode.from, fnNode.to);
+    const argTypeMap = this._jinjaFunctionArgTypes.get(fnName);
+    if (!argTypeMap) return undefined;
+
+    // Walk ArgumentList children to find the zero-based index of this node.
+    // Children are: "(" arg0 "," arg1 "," arg2 ... ")" — skip punctuation.
+    let argIndex = 0;
+    let child = argList.firstChild?.nextSibling; // skip opening "("
+    while (child) {
+      if (child.name === ")") break;
+      if (child.name !== ",") {
+        if (child.from === node.from) break;
+        argIndex++;
+      }
+      child = child.nextSibling;
+    }
+
+    const argType = argTypeMap.get(argIndex);
+    if (!argType) return undefined;
+
+    return this._completionResultForArgType(argType, node);
+  }
+
+  /**
+   * Dispatches to the appropriate completion result builder for the given
+   * argument type. Add new cases here as completion sources are implemented.
+   */
+  private _completionResultForArgType(
+    argType: JinjaArgType,
+    stringNode: { from: number; to: number }
+  ): CompletionResult | null {
+    switch (argType) {
+      case "entity_id":
+        return this._entityCompletionResult(stringNode);
+      // Future cases — add a _xxxCompletionResult method and a case here:
+      // case "area_id":
+      //   return this._areaCompletionResult(stringNode);
+      // case "device_id":
+      //   return this._deviceCompletionResult(stringNode);
+      // case "floor_id":
+      //   return this._floorCompletionResult(stringNode);
+      // case "label_id":
+      //   return this._labelCompletionResult(stringNode);
+      // case "integration":
+      //   return this._integrationCompletionResult(stringNode);
+      // case "attribute":
+      //   return this._attributeCompletionResult(stringNode);
+      default:
+        return null;
+    }
+  }
+
+  /** Build a CompletionResult for entity IDs, with `from` set inside the quotes. */
+  private _entityCompletionResult(stringNode: {
+    from: number;
+    to: number;
+  }): CompletionResult | null {
+    const states = this._getStates(this.hass!.states);
+    if (!states?.length) return null;
+    // from is stringNode.from + 1 to skip the opening quote character.
+    const from = stringNode.from + 1;
+    // Always offer completions inside a known entity-string context, including
+    // immediately after the opening quote (e.g. after snippet insertion).
+    return {
+      from,
+      options: states,
+      validFor: /^[\w.]*$/,
+    };
+  }
+
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
+    // Jinja context: offer entity completions inside string arguments of
+    // entity-accepting functions, and inside states['...'] subscripts.
+    if (this.mode === "yaml" || this.mode === "jinja2") {
+      const jinjaEntityResult = this._jinjaStringArgCompletions(context);
+      if (jinjaEntityResult !== undefined) {
+        return jinjaEntityResult;
+      }
+    }
+
     // Check for YAML mode and entity-related fields
     if (this.mode === "yaml") {
       const currentLine = context.state.doc.lineAt(context.pos);
@@ -914,7 +1044,13 @@ export class HaCodeEditor extends ReactiveElement {
       }
     }
 
-    // Original entity completion logic for non-YAML or when not in entity_id field
+    // Original entity completion logic for non-YAML or when not in entity_id field.
+    // Not used in jinja2 mode — Jinja string-arg completions are handled above via
+    // _jinjaStringArgCompletions() which is context-aware.
+    if (this.mode === "jinja2") {
+      return null;
+    }
+
     const entityWord = context.matchBefore(/[a-z_]{3,}\.\w*/);
 
     if (
