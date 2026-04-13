@@ -313,6 +313,8 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
       this._loadedCodeMirror.haSyntaxHighlighting,
+      this._loadedCodeMirror.yamlScalarHighlighter,
+      this._loadedCodeMirror.yamlScalarHighlightStyle,
       this._loadedCodeMirror.readonlyCompartment.of(
         this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
       ),
@@ -1058,8 +1060,16 @@ export class HaCodeEditor extends ReactiveElement {
       const listItemMatch = lineText.match(/^\s*-\s+/);
 
       if (entityFieldMatch) {
-        // Calculate the position after the entity field
+        // Calculate the position after the entity field key+colon.
+        // The regex consumes trailing spaces too, so afterField lands right
+        // where the entity ID should start. If the cursor is sitting directly
+        // after the colon with no space (e.g. "entity:|"), we need to insert
+        // a space before the entity ID, so we shift `from` back to the colon
+        // and use an `apply` that prepends the space.
         const afterField = currentLine.from + entityFieldMatch[0].length;
+        const needsSpace =
+          afterField > 0 &&
+          context.state.doc.sliceString(afterField - 1, afterField) === ":";
 
         // If cursor is after the entity field, show all entities
         if (context.pos >= afterField) {
@@ -1081,9 +1091,13 @@ export class HaCodeEditor extends ReactiveElement {
               )
             : states;
 
+          const options = needsSpace
+            ? filteredStates.map((s) => ({ ...s, apply: ` ${s.label}` }))
+            : filteredStates;
+
           return {
             from: afterField,
-            options: filteredStates,
+            options,
             validFor: /^[a-z_]*\.?\w*$/,
           };
         }
