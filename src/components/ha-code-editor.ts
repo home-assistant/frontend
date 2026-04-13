@@ -313,7 +313,7 @@ export class HaCodeEditor extends ReactiveElement {
 
     if (!this.readOnly) {
       const completionSources: CompletionSource[] = [
-        this._loadedCodeMirror.jinjaCompletionSource(),
+        this._loadedCodeMirror.haJinjaCompletionSource,
       ];
       if (this.autocompleteEntities && this.hass) {
         completionSources.push(this._entityCompletions.bind(this));

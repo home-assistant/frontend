@@ -1,11 +1,12 @@
 import { indentLess, indentMore } from "@codemirror/commands";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
-import { jinja, jinjaCompletionSource } from "@codemirror/lang-jinja";
+import { jinja } from "@codemirror/lang-jinja";
 import { yaml } from "@codemirror/lang-yaml";
 import { Compartment } from "@codemirror/state";
 import type { KeyBinding } from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
+import { haJinjaCompletionSource } from "./jinja_ha_completions";
 
 export { autocompletion, selectedCompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
@@ -39,7 +40,7 @@ export const langs = {
   yaml: _yamlWithJinja,
 };
 
-export { jinjaCompletionSource };
+export { haJinjaCompletionSource };
 
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
