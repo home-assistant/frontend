@@ -76,7 +76,6 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      hass: HomeAssistant,
       stateObj: HassEntity | undefined,
       customizeModes: boolean
     ) => {
@@ -116,7 +115,7 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
                       .getAvailableModesOrdered(stateObj)
                       .map((mode) => ({
                         value: mode,
-                        label: d.getModeLabel(hass, stateObj, mode),
+                        label: d.getModeLabel(this.hass!, stateObj, mode),
                       })),
                   },
                 },
@@ -146,7 +145,6 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
 
     const schema = this._schema(
       this.hass.localize,
-      this.hass,
       stateObj,
       data.customize_modes
     );
