@@ -153,6 +153,7 @@ class HuiWeatherForecastCardFeature
     )?.type;
     const hourly = forecastType === "hourly";
     const dayNight = forecastType === "twice_daily";
+    const todayKey = this._dayKeyFromDate(new Date());
 
     return html`
       <div
@@ -168,7 +169,8 @@ class HuiWeatherForecastCardFeature
               index,
               forecast,
               dayNight,
-              hourly
+              hourly,
+              todayKey
             )}
             <div class="item">
               <div class="label">
@@ -206,20 +208,22 @@ class HuiWeatherForecastCardFeature
     index: number,
     forecast: ForecastAttribute[],
     dayNight: boolean,
-    hourly: boolean
+    hourly: boolean,
+    todayKey: string
   ) {
     if (!dayNight && !hourly) {
       return nothing;
     }
     const previousItem = forecast[index - 1];
+    const itemDayKey = this._dayKeyForForecast(item);
     const dayChanged =
-      !previousItem ||
-      this._dayKeyForForecast(item) !== this._dayKeyForForecast(previousItem);
-    return dayChanged
-      ? html`<div class="item label-only">
-          <div class="label">${this._dayLabelForForecast(item)}</div>
-        </div>`
-      : nothing;
+      !previousItem || itemDayKey !== this._dayKeyForForecast(previousItem);
+    if (!dayChanged || itemDayKey === todayKey) {
+      return nothing;
+    }
+    return html`<div class="item label-only">
+      <div class="label">${this._dayLabelForForecast(item)}</div>
+    </div>`;
   }
 
   private get _stateObj() {
@@ -326,7 +330,10 @@ class HuiWeatherForecastCardFeature
   }
 
   private _dayKeyForForecast(item: ForecastAttribute) {
-    const date = new Date(item.datetime);
+    return this._dayKeyFromDate(new Date(item.datetime));
+  }
+
+  private _dayKeyFromDate(date: Date) {
     return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
   }
 
