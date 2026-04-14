@@ -162,7 +162,25 @@ class HuiWeatherForecastCardFeature
         })}
       >
         ${forecast.map(
-          (item) => html`
+          (item, index) => html`
+            ${dayNight || hourly
+              ? (() => {
+                  const previousItem = forecast[index - 1];
+                  const dayChanged =
+                    !previousItem ||
+                    this._dayKeyForForecast(item) !==
+                      this._dayKeyForForecast(previousItem);
+                  return dayChanged
+                    ? html`
+                        <div class="item label-only">
+                          <div class="label">
+                            ${this._dayLabelForForecast(item)}
+                          </div>
+                        </div>
+                      `
+                    : nothing;
+                })()
+              : nothing}
             <div class="item">
               <div class="label">
                 ${this._labelForForecast(item, hourly, dayNight)}
@@ -286,11 +304,20 @@ class HuiWeatherForecastCardFeature
         ? this.hass!.localize("ui.card.weather.day")
         : this.hass!.localize("ui.card.weather.night");
     }
+    return this._dayLabelForForecast(item);
+  }
+
+  private _dayLabelForForecast(item: ForecastAttribute) {
     return formatDateWeekdayShort(
       new Date(item.datetime),
       this.hass!.locale,
       this.hass!.config
     );
+  }
+
+  private _dayKeyForForecast(item: ForecastAttribute) {
+    const date = new Date(item.datetime);
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
   }
 
   static styles = [
@@ -355,6 +382,15 @@ class HuiWeatherForecastCardFeature
         align-items: center;
         text-align: center;
         gap: var(--ha-space-1);
+      }
+
+      .item.label-only {
+        justify-content: flex-start;
+      }
+
+      .item.label-only .label {
+        color: var(--secondary-text-color);
+        font-weight: var(--ha-font-weight-bold);
       }
 
       .label,
