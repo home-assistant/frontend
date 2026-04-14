@@ -662,6 +662,7 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
   icon?: string;
   tap_action?: ActionConfig;
   badges?: LovelaceHeadingBadgeConfig[];
+  badges_wrap?: "wrap" | "scroll";
   /** @deprecated Use `badges` instead */
   entities?: LovelaceHeadingBadgeConfig[];
 }

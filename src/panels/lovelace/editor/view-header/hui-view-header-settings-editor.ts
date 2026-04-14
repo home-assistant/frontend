@@ -14,12 +14,13 @@ import type {
   LovelaceViewHeaderConfig,
 } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
 import {
   DEFAULT_VIEW_HEADER_BADGES_POSITION,
   DEFAULT_VIEW_HEADER_BADGES_WRAP,
   DEFAULT_VIEW_HEADER_LAYOUT,
 } from "../../views/hui-view-header";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { getViewHeaderBadgesWrapFormSchema } from "./view-header-badges-wrap-form-schema";
 
 @customElement("hui-view-header-settings-editor")
 export class HuiViewHeaderSettingsEditor extends LitElement {
@@ -93,30 +94,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             },
           },
         },
-        {
-          name: "badges_wrap",
-          selector: {
-            select: {
-              mode: "box",
-              options: ["wrap", "scroll"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.edit_view_header.settings.badges_wrap_options.${value}`
-                ),
-                ...(value === "scroll" && {
-                  description: localize(
-                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_wrap_options.${value}_description`
-                  ),
-                }),
-                image: {
-                  src: `/static/images/form/view_header_badges_wrap_${value}.svg`,
-                  src_dark: `/static/images/form/view_header_badges_wrap_${value}_dark.svg`,
-                  flip_rtl: true,
-                },
-              })),
-            },
-          },
-        },
+        getViewHeaderBadgesWrapFormSchema(localize, narrow),
       ] as const satisfies HaFormSchema[]
   );
 

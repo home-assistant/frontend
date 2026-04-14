@@ -1,6 +1,9 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -17,6 +20,7 @@ import type {
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
+import { DEFAULT_VIEW_HEADER_BADGES_WRAP } from "../views/hui-view-header";
 import type { HeadingCardConfig } from "./types";
 
 export const migrateHeadingCardConfig = (
@@ -51,13 +55,28 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: HeadingCardConfig;
 
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".badges.scroll",
+    enabled: false,
+  });
+
   public setConfig(config: HeadingCardConfig): void {
     this._config = {
       tap_action: {
         action: "none",
       },
+      badges_wrap: DEFAULT_VIEW_HEADER_BADGES_WRAP,
       ...migrateHeadingCardConfig(config),
     };
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<typeof this>): void {
+    if (!changedProperties.size) {
+      return;
+    }
+
+    this._dragScrollController.enabled =
+      !this.preview && this._config?.badges_wrap === "scroll";
   }
 
   public getCardSize(): number {
@@ -86,6 +105,9 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     const style = this._config.heading_style || "title";
 
     const badges = this._config.badges;
+    const badgesWrap =
+      this._config.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
+    const badgeDragging = this._dragScrollController.scrolling;
 
     return html`
       <ha-card>
@@ -107,7 +129,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
           </div>
           ${badges?.length
             ? html`
-                <div class="badges">
+                <div
+                  class=${classMap({
+                    badges: true,
+                    [badgesWrap]: true,
+                    dragging: badgeDragging,
+                  })}
+                >
                   ${badges.map(
                     (config) => html`
                       <hui-heading-badge
@@ -148,7 +176,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transition: transform 180ms ease-in-out;
     }
     .container {
-      padding: 0 4px;
+      padding: 0 var(--ha-space-1);
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -168,7 +196,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       min-width: fit-content;
     }
     .container .badges {
-      flex: 0 0 auto;
+      flex: 0 1 auto;
       min-width: 0;
     }
     .content {
@@ -223,8 +251,48 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex-direction: row;
       align-items: center;
       justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: var(--ha-space-2);
+    }
+    /* Use before and after because padding doesn't work well with scrolling */
+    .badges::before,
+    .badges::after {
+      content: "";
+      position: relative;
+      display: block;
+      min-width: var(--badge-padding, 0);
+      height: var(--ha-space-4);
+      background-color: transparent;
+    }
+    .badges::before {
+      margin-inline-start: calc(var(--ha-space-2) * -1);
+      margin-inline-end: 0;
+    }
+    .badges::after {
+      margin-inline-end: calc(var(--ha-space-2) * -1);
+      margin-inline-start: 0;
+    }
+    .badges > * {
+      min-width: fit-content;
+    }
+    .badges.scroll {
+      justify-content: flex-start;
       flex-wrap: nowrap;
-      gap: var(--ha-space-1) 10px;
+      --badge-padding: var(--ha-space-4);
+      overflow: auto;
+      max-width: 100%;
+      scrollbar-color: var(--scrollbar-thumb-color) transparent;
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        black var(--ha-space-4),
+        black calc(100% - var(--ha-space-4)),
+        transparent 100%
+      );
+    }
+    .badges.dragging {
+      pointer-events: none;
     }
   `;
 }
