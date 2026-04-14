@@ -9784,7 +9784,8 @@
                 "label": "Lock open door"
               },
               "media-player-playback": {
-                "label": "Media player playback controls"
+                "label": "Media player playback controls",
+                "controls": "Controls"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode"
