@@ -136,16 +136,18 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                     dragging: badgeDragging,
                   })}
                 >
-                  ${badges.map(
-                    (config) => html`
-                      <hui-heading-badge
-                        .config=${config}
-                        .hass=${this.hass}
-                        .preview=${this.preview}
-                      >
-                      </hui-heading-badge>
-                    `
-                  )}
+                  <div class="badges-row">
+                    ${badges.map(
+                      (config) => html`
+                        <hui-heading-badge
+                          .config=${config}
+                          .hass=${this.hass}
+                          .preview=${this.preview}
+                        >
+                        </hui-heading-badge>
+                      `
+                    )}
+                  </div>
                 </div>
               `
             : nothing}
@@ -195,10 +197,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     .container .content:not(:has(p)) {
       min-width: fit-content;
     }
-    .container .badges {
-      flex: 0 1 auto;
-      min-width: 0;
-    }
     .content {
       display: flex;
       flex-direction: row;
@@ -247,16 +245,23 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       );
     }
     .badges {
+      position: relative;
+      display: flex;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    .badges-row {
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: flex-end;
-      flex-wrap: wrap;
+      flex-wrap: var(--badges-wrap, wrap);
+      justify-content: var(--badges-aligmnent, flex-end);
       gap: var(--ha-space-2);
+      margin: 0;
     }
     /* Use before and after because padding doesn't work well with scrolling */
-    .badges::before,
-    .badges::after {
+    .badges-row::before,
+    .badges-row::after {
       content: "";
       position: relative;
       display: block;
@@ -264,21 +269,18 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       height: var(--ha-space-4);
       background-color: transparent;
     }
-    .badges::before {
+    .badges-row::before {
       margin-inline-start: calc(var(--ha-space-2) * -1);
       margin-inline-end: 0;
     }
-    .badges::after {
+    .badges-row::after {
       margin-inline-end: calc(var(--ha-space-2) * -1);
       margin-inline-start: 0;
     }
-    .badges > * {
+    .badges-row > * {
       min-width: fit-content;
     }
     .badges.scroll {
-      justify-content: flex-start;
-      flex-wrap: nowrap;
-      --badge-padding: var(--ha-space-4);
       overflow: auto;
       max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
@@ -290,6 +292,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         black calc(100% - var(--ha-space-4)),
         transparent 100%
       );
+    }
+    .badges.scroll .badges-row {
+      --badges-wrap: nowrap;
+      --badges-aligmnent: flex-start;
+      --badge-padding: var(--ha-space-4);
     }
     .badges.dragging {
       pointer-events: none;
