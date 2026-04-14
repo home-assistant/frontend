@@ -28,8 +28,7 @@ import type {
   LovelaceCardFeaturePosition,
   WeatherForecastCardFeatureConfig,
 } from "./types";
-
-export const DEFAULT_FORECAST_SLOTS = 5;
+import { DEFAULT_FORECAST_SLOTS } from "../editor/config-elements/hui-weather-forecast-card-feature-editor";
 
 export const supportsWeatherForecastCardFeature = (
   hass: HomeAssistant,

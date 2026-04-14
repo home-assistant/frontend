@@ -13,12 +13,14 @@ import type {
 } from "../../../../data/weather";
 import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
-import { DEFAULT_FORECAST_SLOTS } from "../../card-features/hui-weather-forecast-card-feature";
 import type {
   LovelaceCardFeatureContext,
   WeatherForecastCardFeatureConfig,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+
+export const DEFAULT_FORECAST_SLOTS = 12;
+const MAX_FORECAST_SLOTS = 48;
 
 @customElement("hui-weather-forecast-card-feature-editor")
 export class HuiWeatherForecastCardFeatureEditor
@@ -140,7 +142,7 @@ export class HuiWeatherForecastCardFeatureEditor
           selector: {
             number: {
               min: 1,
-              max: 48,
+              max: MAX_FORECAST_SLOTS,
               mode: "slider",
             },
           },
@@ -168,8 +170,8 @@ export class HuiWeatherForecastCardFeatureEditor
     );
 
     const data: WeatherForecastCardFeatureConfig = {
-      forecast_slots: this._config.forecast_slots ?? DEFAULT_FORECAST_SLOTS,
       ...this._config,
+      forecast_slots: this._config.forecast_slots ?? DEFAULT_FORECAST_SLOTS,
       forecast_type: this._config.forecast_type ?? defaultForecastType,
       type: "weather-forecast",
     };
