@@ -5,7 +5,10 @@ import type {
 } from "@codemirror/autocomplete";
 import { snippetCompletion } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
+import type { EditorView, Tooltip } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
+import "../components/ha-code-editor-jinja-hover";
+import type { HaCodeEditorJinjaHover } from "../components/ha-code-editor-jinja-hover";
 
 // ---------------------------------------------------------------------------
 // Standard Jinja2 completions (from @codemirror/lang-jinja internals).
@@ -1631,4 +1634,111 @@ export function haJinjaCompletionSource(
   const word = context.matchBefore(/[\w\u00c0-\uffff]+$/);
   if (!word || !isInsideJinja(node)) return null;
   return { options: ALL_EXPRESSIONS, from: word.from, validFor: VALID_FOR };
+}
+
+// ---------------------------------------------------------------------------
+// Hover tooltip
+//
+// Lookup maps built once from the completion arrays so hover resolution is O(1).
+// ---------------------------------------------------------------------------
+
+/** Maps filter name → Completion (merged Jinja2 + HA filters). */
+const FILTER_MAP = new Map<string, Completion>(
+  ALL_FILTERS.map((c) => [c.label, c])
+);
+
+/** Maps tag name → Completion. */
+const TAG_MAP = new Map<string, Completion>(ALL_TAGS.map((c) => [c.label, c]));
+
+/** Maps expression / function / variable / test name → Completion. */
+const EXPRESSION_MAP = new Map<string, Completion>(
+  ALL_EXPRESSIONS.map((c) => [c.label, c])
+);
+
+/** Builds a tooltip DOM node for a Completion. Returns null when there is nothing to show. */
+function buildTooltipDom(
+  completion: Completion,
+  docUrl?: string
+): HTMLElement | null {
+  const info =
+    typeof completion.info === "string" ? completion.info : undefined;
+  if (!info && !completion.detail) return null;
+
+  const el = document.createElement(
+    "ha-code-editor-jinja-hover"
+  ) as HaCodeEditorJinjaHover;
+  el.completion = completion;
+  if (docUrl) el.docUrl = docUrl;
+  return el;
+}
+
+/** Word regex — same as VALID_FOR but anchored at both ends. */
+const WORD_RE = /[\w\u00c0-\uffff]+/;
+
+/**
+ * CodeMirror hoverTooltip source for Jinja2 + HA constructs.
+ *
+ * Detects the word under the pointer, determines context from the syntax tree
+ * (filter / tag / expression), looks up the matching Completion, and returns
+ * a tooltip with detail + info if available.
+ *
+ * @param docBaseUrl  Optional base URL (e.g. "https://www.home-assistant.io")
+ *                    used to build per-function documentation links. When
+ *                    provided, non-tag completions get a link icon pointing to
+ *                    /template-functions/<label>/.
+ */
+export function haJinjaHoverSource(
+  view: EditorView,
+  pos: number,
+  docBaseUrl?: string
+): Tooltip | null {
+  const { state } = view;
+  const node = syntaxTree(state).resolveInner(pos);
+
+  // Determine the word span at `pos`
+  const lineText = state.doc.lineAt(pos).text;
+  const lineStart = state.doc.lineAt(pos).from;
+  const relPos = pos - lineStart;
+
+  // Walk left/right on the line to find the word boundary
+  let start = relPos;
+  let end = relPos;
+  while (start > 0 && WORD_RE.test(lineText[start - 1])) start--;
+  while (end < lineText.length && WORD_RE.test(lineText[end])) end++;
+  if (start === end) return null;
+
+  const word = lineText.slice(start, end);
+  const from = lineStart + start;
+  const to = lineStart + end;
+
+  // Resolve context from syntax tree
+  let completion: Completion | undefined;
+  let isTag = false;
+
+  if (node.name === "FilterName") {
+    completion = FILTER_MAP.get(word);
+  } else if (node.name === "TagName") {
+    completion = TAG_MAP.get(word);
+    isTag = true;
+  } else if (isInsideJinja(node)) {
+    const beforeWord = state.doc.sliceString(Math.max(0, from - 20), from);
+    if (/\|\s*$/.test(beforeWord)) {
+      completion = FILTER_MAP.get(word);
+    } else {
+      completion = EXPRESSION_MAP.get(word);
+    }
+  }
+
+  if (!completion) return null;
+
+  // Build doc URL for non-tag completions when a base URL is available
+  const docUrl =
+    docBaseUrl && !isTag
+      ? `${docBaseUrl}/template-functions/${completion.label}/`
+      : undefined;
+
+  const dom = buildTooltipDom(completion, docUrl);
+  if (!dom) return null;
+
+  return { pos: from, end: to, above: true, create: () => ({ dom }) };
 }
