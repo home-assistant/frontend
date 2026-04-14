@@ -91,6 +91,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public error = false;
 
+  @property({ type: Boolean }) public lint = false;
+
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
@@ -159,6 +161,38 @@ export class HaCodeEditor extends ReactiveElement {
     return !!this.renderRoot.querySelector(`span.${className}`);
   }
 
+  /**
+   * Push a YAML parse error (or null to clear) into the lint gutter as a
+   * diagnostic. Avoids re-parsing the document — the caller (ha-yaml-editor)
+   * already has the error from its own js-yaml load() call.
+   */
+  public setYamlError(
+    err: { mark?: { position: number }; message?: string } | null
+  ): void {
+    if (!this.codemirror || !this._loadedCodeMirror) return;
+    let diagnostics: {
+      from: number;
+      to: number;
+      severity: "error";
+      message: string;
+    }[] = [];
+    if (err) {
+      const doc = this.codemirror.state.doc;
+      const pos = err.mark ? Math.min(err.mark.position, doc.length) : 0;
+      const line = doc.lineAt(pos);
+      const message = err.message
+        ? err.message
+            .replace(/^YAMLException:\s*/i, "")
+            .split("\n")[0]
+            .trim()
+        : "YAML syntax error";
+      diagnostics = [{ from: pos, to: line.to, severity: "error", message }];
+    }
+    this.codemirror.dispatch(
+      this._loadedCodeMirror.setDiagnostics(this.codemirror.state, diagnostics)
+    );
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     this.classList.toggle("in-dialog", this.inDialog);
@@ -216,16 +250,37 @@ export class HaCodeEditor extends ReactiveElement {
       transactions.push({
         effects: [
           this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
+          this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+            this.lint && !this.readOnly
+              ? [this._loadedCodeMirror!.lintGutter()]
+              : []
+          ),
         ],
       });
     }
     if (changedProps.has("readOnly")) {
       transactions.push({
-        effects: this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
-          this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
-        ),
+        effects: [
+          this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
+            this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
+          ),
+          this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+            this.lint && !this.readOnly
+              ? [this._loadedCodeMirror!.lintGutter()]
+              : []
+          ),
+        ],
       });
       this._updateToolbarButtons();
+    }
+    if (changedProps.has("lint")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+          this.lint && !this.readOnly
+            ? [this._loadedCodeMirror!.lintGutter()]
+            : []
+        ),
+      });
     }
     if (changedProps.has("linewrap")) {
       transactions.push({
@@ -308,6 +363,7 @@ export class HaCodeEditor extends ReactiveElement {
         ...this._loadedCodeMirror.searchKeymap,
         ...this._loadedCodeMirror.historyKeymap,
         ...this._loadedCodeMirror.tabKeyBindings,
+        ...this._loadedCodeMirror.lintKeymap,
         saveKeyBinding,
       ]),
       this._loadedCodeMirror.search({ top: true }),
@@ -321,6 +377,9 @@ export class HaCodeEditor extends ReactiveElement {
       ),
       this._loadedCodeMirror.linewrapCompartment.of(
         this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
+      ),
+      this._loadedCodeMirror.yamlLintCompartment.of(
+        this.lint && !this.readOnly ? [this._loadedCodeMirror.lintGutter()] : []
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
       this._loadedCodeMirror.tooltips({

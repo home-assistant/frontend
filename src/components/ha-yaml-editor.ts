@@ -8,7 +8,6 @@ import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import "./ha-alert";
 import "./ha-button";
 import "./ha-code-editor";
 import type { HaCodeEditor } from "./ha-code-editor";
@@ -58,14 +57,7 @@ export class HaYamlEditor extends LitElement {
   @property({ attribute: "has-extra-actions", type: Boolean })
   public hasExtraActions = false;
 
-  @property({ attribute: "show-errors", type: Boolean })
-  public showErrors = true;
-
   @state() private _yaml = "";
-
-  @state() private _error = "";
-
-  @state() private _showingError = false;
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
@@ -126,16 +118,13 @@ export class HaYamlEditor extends LitElement {
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}
         mode="yaml"
+        lint
         autocomplete-entities
         autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
-        @blur=${this._onBlur}
         dir="ltr"
       ></ha-code-editor>
-      ${this._showingError
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
       ${this.copyClipboard || this.hasExtraActions
         ? html`
             <div class="card-actions">
@@ -161,6 +150,8 @@ export class HaYamlEditor extends LitElement {
     let parsed;
     let isValid = true;
     let errorMsg;
+    let yamlError: { mark?: { position: number }; message?: string } | null =
+      null;
 
     if (this._yaml) {
       try {
@@ -168,15 +159,13 @@ export class HaYamlEditor extends LitElement {
       } catch (err: any) {
         // Invalid YAML
         isValid = false;
+        yamlError = err;
         errorMsg = `${this.hass.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this.hass.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       }
     } else {
       parsed = {};
     }
-    this._error = errorMsg ?? "";
-    if (isValid) {
-      this._showingError = false;
-    }
+    this._codeEditor?.setYamlError(yamlError);
 
     this.value = parsed;
     this.isValid = isValid;
@@ -186,12 +175,6 @@ export class HaYamlEditor extends LitElement {
       isValid,
       errorMsg,
     } as any);
-  }
-
-  private _onBlur(): void {
-    if (this.showErrors && this._error) {
-      this._showingError = true;
-    }
   }
 
   get yaml() {
