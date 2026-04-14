@@ -140,7 +140,7 @@ export class HuiWeatherForecastCardFeatureEditor
           selector: {
             number: {
               min: 1,
-              max: 12,
+              max: 48,
               mode: "slider",
             },
           },

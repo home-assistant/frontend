@@ -63,7 +63,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { type: "weather-forecast", entity: foundEntities[0] || "" };
+    return {
+      type: "weather-forecast",
+      entity: foundEntities[0] || "",
+      forecast_slots: 12,
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;

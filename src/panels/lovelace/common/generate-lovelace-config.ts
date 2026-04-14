@@ -205,6 +205,7 @@ export const computeCards = (
         type: "weather-forecast",
         entity: entityId,
         show_forecast: false,
+        forecast_slots: 12,
       };
       cards.push(cardConfig);
     } else if (
