@@ -1,12 +1,9 @@
-import { mdiContentCopy } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
-import "../../../../components/ha-icon-button";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/ha-code-editor";
 import type { HomeAssistant } from "../../../../types";
-import { showToast } from "../../../../util/toast";
 
 const ENV_INSETS = [
   "safe-area-inset-top",
@@ -100,21 +97,6 @@ function collectMediaFeatureMatches(): Record<string, boolean> {
   return out;
 }
 
-interface NavigatorWithExtras extends Navigator {
-  readonly connection?: NetworkInformation;
-  readonly deviceMemory?: number;
-  readonly userAgentData?: { brands: { brand: string; version: string }[] };
-  readonly virtualKeyboard?: { boundingRect: DOMRect };
-}
-
-interface PerformanceWithMemory extends Performance {
-  memory?: {
-    jsHeapSizeLimit: number;
-    totalJSHeapSize: number;
-    usedJSHeapSize: number;
-  };
-}
-
 interface ViewportEnvironmentSnapshot {
   cssEnvironment: Record<string, string>;
   cssVariables: Record<string, string>;
@@ -135,7 +117,6 @@ interface ViewportEnvironmentSnapshot {
     clientHeight: number;
     scrollWidth: number;
     scrollHeight: number;
-    inlineStyle: string | null;
   };
   screen: {
     width: number;
@@ -158,42 +139,6 @@ interface ViewportEnvironmentSnapshot {
     pageLeft: number;
     pageTop: number;
   };
-  navigator: {
-    maxTouchPoints: number;
-    userAgent: string;
-    platform: string;
-    language: string;
-    languages: readonly string[];
-    hardwareConcurrency: number;
-    cookieEnabled: boolean;
-    onLine: boolean;
-    deviceMemory: number | undefined;
-    userAgentDataBrands: { brand: string; version: string }[] | undefined;
-  };
-  connection: null | {
-    effectiveType?: string;
-    downlink?: number;
-    rtt?: number;
-    saveData?: boolean;
-    type?: string;
-  };
-  intl: {
-    locale: string;
-    timeZone: string;
-    calendar: string;
-    numberingSystem: string;
-  };
-  performanceMemory: null | {
-    jsHeapSizeLimit: number;
-    totalJSHeapSize: number;
-    usedJSHeapSize: number;
-  };
-  virtualKeyboardRect: null | {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
 }
 
 function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
@@ -215,11 +160,6 @@ function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
   }
 
   const vv = window.visualViewport;
-  const nav = navigator as NavigatorWithExtras;
-  const conn = nav.connection;
-  const intlOpts = Intl.DateTimeFormat().resolvedOptions();
-  const perfMem = (performance as PerformanceWithMemory).memory;
-  const vkRect = nav.virtualKeyboard?.boundingRect;
 
   let orientation: ViewportEnvironmentSnapshot["screen"]["orientation"] = null;
   try {
@@ -251,7 +191,6 @@ function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
       clientHeight: document.documentElement.clientHeight,
       scrollWidth: document.documentElement.scrollWidth,
       scrollHeight: document.documentElement.scrollHeight,
-      inlineStyle: document.documentElement.getAttribute("style"),
     },
     screen: {
       width: window.screen.width,
@@ -271,48 +210,6 @@ function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
           offsetTop: vv.offsetTop,
           pageLeft: vv.pageLeft,
           pageTop: vv.pageTop,
-        }
-      : null,
-    navigator: {
-      maxTouchPoints: navigator.maxTouchPoints,
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      language: navigator.language,
-      languages: navigator.languages,
-      hardwareConcurrency: navigator.hardwareConcurrency,
-      cookieEnabled: navigator.cookieEnabled,
-      onLine: navigator.onLine,
-      deviceMemory: nav.deviceMemory,
-      userAgentDataBrands: nav.userAgentData?.brands,
-    },
-    connection: conn
-      ? {
-          effectiveType: conn.effectiveType,
-          downlink: conn.downlink,
-          rtt: conn.rtt,
-          saveData: conn.saveData,
-          type: conn.type,
-        }
-      : null,
-    intl: {
-      locale: intlOpts.locale,
-      timeZone: intlOpts.timeZone,
-      calendar: intlOpts.calendar,
-      numberingSystem: intlOpts.numberingSystem,
-    },
-    performanceMemory: perfMem
-      ? {
-          jsHeapSizeLimit: perfMem.jsHeapSizeLimit,
-          totalJSHeapSize: perfMem.totalJSHeapSize,
-          usedJSHeapSize: perfMem.usedJSHeapSize,
-        }
-      : null,
-    virtualKeyboardRect: vkRect
-      ? {
-          x: vkRect.x,
-          y: vkRect.y,
-          width: vkRect.width,
-          height: vkRect.height,
         }
       : null,
   };
@@ -361,39 +258,28 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
       : "";
 
     return html`
-      <ha-card>
-        <div class="card-header card-header-with-action">
-          <span class="card-header-title"
-            >${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.debug.viewport_environment.title"
-            )}</span
-          >
-          <ha-icon-button
-            .path=${mdiContentCopy}
-            .label=${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.debug.viewport_environment.copy"
-            )}
-            @click=${this._copy}
-          ></ha-icon-button>
-        </div>
+      <ha-card
+        .header=${this.hass.localize(
+          "ui.panel.config.developer-tools.tabs.debug.viewport_environment.title"
+        )}
+      >
         <div class="card-content">
           <p class="explanation">
             ${this.hass.localize(
               "ui.panel.config.developer-tools.tabs.debug.viewport_environment.description"
             )}
           </p>
-          <pre class="snapshot" .textContent=${text}></pre>
+          <ha-code-editor
+            class="snapshot-editor"
+            mode="yaml"
+            .hass=${this.hass}
+            .value=${text}
+            read-only
+            .linewrap=${true}
+          ></ha-code-editor>
         </div>
       </ha-card>
     `;
-  }
-
-  private async _copy(): Promise<void> {
-    const snapshot = this._snapshot ?? collectViewportEnvironmentSnapshot();
-    await copyToClipboard(JSON.stringify(snapshot, null, 2));
-    showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
-    });
   }
 
   static styles = css`
@@ -401,32 +287,17 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
       display: block;
       margin-bottom: var(--ha-space-4);
     }
-    .card-header-with-action {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--ha-space-2);
-      padding-inline-end: var(--ha-space-2);
-    }
-    .card-header-title {
-      flex: 1;
-      min-width: 0;
-    }
     .explanation {
       margin: 0 0 var(--ha-space-3);
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-s);
       line-height: var(--ha-line-height-normal);
     }
-    .snapshot {
-      margin: 0;
-      overflow-x: auto;
-      font-family: var(--ha-font-family-code);
-      font-size: var(--ha-font-size-xs);
-      line-height: var(--ha-line-height-normal);
-      white-space: pre-wrap;
-      word-break: break-word;
+    .snapshot-editor {
+      display: block;
+      direction: var(--direction);
+      --code-mirror-height: auto;
+      --code-mirror-max-height: min(60vh, 560px);
     }
   `;
 }
