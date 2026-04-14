@@ -268,10 +268,10 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       align-items: center;
     }
     .handle {
-      padding-right: 8px;
+      padding-right: var(--ha-space-2);
       cursor: move;
       cursor: grab;
-      padding-inline-end: 8px;
+      padding-inline-end: var(--ha-space-2);
       padding-inline-start: initial;
       direction: var(--direction);
     }
