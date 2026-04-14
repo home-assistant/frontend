@@ -33,7 +33,6 @@ import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";

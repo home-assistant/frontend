@@ -6,7 +6,6 @@ import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 
 import "../../../../../../components/ha-alert";
-import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-checkbox";
 
 @customElement("zwave-js-add-node-grant-security-classes")
@@ -40,27 +39,22 @@ export class ZWaveJsAddNodeGrantSecurityClasses extends LitElement {
           })
           .map(
             (securityClass) =>
-              html`<ha-formfield
-                .label=${html`<b
-                    >${this.hass.localize(
-                      `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
-                    )}</b
-                  >
-                  <div class="secondary">
-                    ${this.hass.localize(
-                      `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
-                    )}
-                  </div>`}
+              html`<ha-checkbox
+                @change=${this._handleSecurityClassChange}
+                .value=${securityClass.toString()}
+                .checked=${this.selectedSecurityClasses.includes(securityClass)}
               >
-                <ha-checkbox
-                  @change=${this._handleSecurityClassChange}
-                  .value=${securityClass.toString()}
-                  .checked=${this.selectedSecurityClasses.includes(
-                    securityClass
-                  )}
+                <b
+                  >${this.hass.localize(
+                    `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
+                  )}</b
                 >
-                </ha-checkbox>
-              </ha-formfield>`
+                <div class="secondary">
+                  ${this.hass.localize(
+                    `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
+                  )}
+                </div>
+              </ha-checkbox>`
           )}
       </div>
     `;

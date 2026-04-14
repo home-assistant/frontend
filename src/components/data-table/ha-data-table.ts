@@ -927,7 +927,9 @@ export class HaDataTable extends LitElement {
           ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
         ];
       }
-    } else if (!ev.currentTarget.checked) {
+    }
+
+    if (ev.currentTarget.checked) {
       if (!this._checkedRows.includes(rowId)) {
         this._checkedRows = [...this._checkedRows, rowId];
       }
@@ -1473,6 +1475,10 @@ export class HaDataTable extends LitElement {
         lit-virtualizer:focus,
         lit-virtualizer:focus-visible {
           outline: none;
+        }
+
+        ha-checkbox {
+          padding: var(--ha-space-1);
         }
       `,
     ];

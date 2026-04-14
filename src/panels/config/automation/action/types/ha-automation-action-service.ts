@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
+import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-service-control";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
@@ -72,6 +73,12 @@ export class HaServiceAction extends LitElement implements ActionElement {
     const [domain, service] = this._action.action
       ? this._action.action.split(".", 2)
       : [undefined, undefined];
+
+    const optionalResponse =
+      domain && service
+        ? this.hass.services[domain][service].response!.optional
+        : false;
+
     return html`
       <ha-service-control
         .narrow=${this.narrow}
@@ -84,22 +91,29 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response
         ? html`<ha-settings-row .narrow=${this.narrow}>
-            ${this.hass.services[domain][service].response!.optional
+            ${optionalResponse
               ? html`<ha-checkbox
-                  .checked=${this._action.response_variable ||
+                  .checked=${!!this._action.response_variable ||
                   this._responseChecked}
                   .disabled=${this.disabled}
                   @change=${this._responseCheckboxChanged}
                   slot="prefix"
                 ></ha-checkbox>`
               : html`<div slot="prefix" class="checkbox-spacer"></div>`}
-            <span slot="heading"
+            <span
+              slot="heading"
+              class=${optionalResponse ? "clickable" : ""}
+              @click=${optionalResponse ? this._toggleCheckbox : undefined}
               >${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.service.response_variable"
               )}</span
             >
-            <span slot="description">
-              ${this.hass.services[domain][service].response!.optional
+            <span
+              slot="description"
+              class=${optionalResponse ? "clickable" : ""}
+              @click=${optionalResponse ? this._toggleCheckbox : undefined}
+            >
+              ${optionalResponse
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type.service.has_optional_response"
                   )
@@ -109,10 +123,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
             </span>
             <ha-input
               .value=${this._action.response_variable || ""}
-              .required=${!this.hass.services[domain][service].response!
-                .optional}
+              .required=${!optionalResponse}
               .disabled=${this.disabled ||
-              (this.hass.services[domain][service].response!.optional &&
+              (optionalResponse &&
                 !this._action.response_variable &&
                 !this._responseChecked)}
               @change=${this._responseVariableChanged}
@@ -156,6 +169,13 @@ export class HaServiceAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", { value });
   }
 
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
+
   private _responseCheckboxChanged(ev) {
     this._responseChecked = ev.target.checked;
     if (!this._responseChecked) {
@@ -182,13 +202,11 @@ export class HaServiceAction extends LitElement implements ActionElement {
         1px solid var(--divider-color)
       );
     }
-    ha-checkbox {
-      margin-left: -16px;
-      margin-inline-start: -16px;
-      margin-inline-end: initial;
-    }
     .checkbox-spacer {
       width: 32px;
+    }
+    .clickable {
+      cursor: pointer;
     }
   `;
 }

@@ -7,7 +7,6 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-dropdown";
 import "../ha-dropdown-item";
-import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-picker-field";
 
@@ -63,14 +62,14 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         ${this.label}${options.map((item: string | [string, string]) => {
           const value = optionValue(item);
           return html`
-            <ha-formfield .label=${optionLabel(item)}>
-              <ha-checkbox
-                .checked=${data.includes(value)}
-                .value=${value}
-                .disabled=${this.disabled}
-                @change=${this._valueChanged}
-              ></ha-checkbox>
-            </ha-formfield>
+            <ha-checkbox
+              .checked=${data.includes(value)}
+              .value=${value}
+              .disabled=${this.disabled}
+              @change=${this._valueChanged}
+            >
+              ${optionLabel(item)}
+            </ha-checkbox>
           `;
         })}
       </div> `;
@@ -192,11 +191,12 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     ha-dropdown {
       display: block;
     }
-    ha-formfield {
-      display: block;
-      padding-right: 16px;
-      padding-inline-end: 16px;
+    ha-checkbox {
+      display: flex;
+      padding-inline-end: var(--ha-space-4);
       padding-inline-start: initial;
+      min-height: 40px;
+      justify-content: center;
       direction: var(--direction);
     }
     ha-icon-button {

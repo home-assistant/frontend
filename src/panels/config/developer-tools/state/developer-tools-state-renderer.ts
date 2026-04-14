@@ -11,7 +11,6 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import "../../../../components/ha-checkbox";
 import "../../../../components/ha-svg-icon";
 import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";

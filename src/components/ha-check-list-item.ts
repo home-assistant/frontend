@@ -1,9 +1,9 @@
+import { preventDefault } from "@fullcalendar/core/internal";
 import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
 import { styles as controlStyles } from "@material/mwc-list/mwc-control-list-item.css";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-checkbox";
 
@@ -21,11 +21,6 @@ export class HaCheckListItem extends CheckListItemBase {
   }
 
   override render() {
-    const checkboxClasses = {
-      "mdc-deprecated-list-item__graphic": this.left,
-      "mdc-deprecated-list-item__meta": !this.left,
-    };
-
     const text = this.renderText();
     const graphic =
       this.graphic && this.graphic !== "control" && !this.left
@@ -35,17 +30,15 @@ export class HaCheckListItem extends CheckListItemBase {
     const ripple = this.renderRipple();
 
     return html` ${ripple} ${graphic} ${this.left ? "" : text}
-      <span class=${classMap(checkboxClasses)}>
-        <ha-checkbox
-          reducedTouchTarget
-          tabindex=${this.tabindex}
-          .checked=${this.selected}
-          .indeterminate=${this.indeterminate}
-          ?disabled=${this.disabled || this.checkboxDisabled}
-          @change=${this.onChange}
-        >
-        </ha-checkbox>
-      </span>
+      <ha-checkbox
+        tabindex=${this.tabindex}
+        .checked=${this.selected}
+        .indeterminate=${this.indeterminate}
+        ?disabled=${this.disabled || this.checkboxDisabled}
+        @change=${this.onChange}
+        @click=${preventDefault}
+      >
+      </ha-checkbox>
       ${this.left ? text : ""} ${meta}`;
   }
 
@@ -65,11 +58,13 @@ export class HaCheckListItem extends CheckListItemBase {
         margin-inline-start: 0px;
         direction: var(--direction);
       }
-      .mdc-deprecated-list-item__meta {
+      ha-checkbox {
         flex-shrink: 0;
         direction: var(--direction);
         margin-inline-start: auto;
         margin-inline-end: 0;
+        height: 100%;
+        justify-content: center;
       }
       .mdc-deprecated-list-item__graphic {
         margin-top: var(--check-list-item-graphic-margin-top);

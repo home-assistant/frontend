@@ -184,10 +184,14 @@ export class DialogEnergySolarSettings
           ? html`<div class="forecast-options">
               ${this._configEntries?.map(
                 (entry) =>
-                  html`<ha-formfield
-                    .label=${html`<div
-                      style="display: flex; align-items: center;"
-                    >
+                  html`<ha-checkbox
+                    .entry=${entry}
+                    @change=${this._forecastCheckChanged}
+                    .checked=${!!this._source?.config_entry_solar_forecast?.includes(
+                      entry.entry_id
+                    )}
+                  >
+                    <div style="display: flex; align-items: center;">
                       <img
                         alt=""
                         crossorigin="anonymous"
@@ -202,17 +206,8 @@ export class DialogEnergySolarSettings
                           this.hass.auth.data.hassUrl
                         )}
                       />${entry.title}
-                    </div>`}
-                  >
-                    <ha-checkbox
-                      .entry=${entry}
-                      @change=${this._forecastCheckChanged}
-                      .checked=${!!this._source?.config_entry_solar_forecast?.includes(
-                        entry.entry_id
-                      )}
-                    >
-                    </ha-checkbox>
-                  </ha-formfield>`
+                    </div>
+                  </ha-checkbox>`
               )}
               <ha-button
                 appearance="filled"
