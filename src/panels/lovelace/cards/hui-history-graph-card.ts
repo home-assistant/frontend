@@ -139,6 +139,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
     if (ev.detail === "connected") {
       this._unsubscribeHistory();
+      this._stateHistory = undefined;
+      this._statisticsHistory = undefined;
       this._error = undefined;
       this._subscribeHistory();
     }

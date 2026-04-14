@@ -88,7 +88,7 @@ class HaPanelHistory extends LitElement {
   @query("state-history-charts")
   private _stateHistoryCharts?: StateHistoryCharts;
 
-  private _subscribed?: Promise<UnsubscribeFunc>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   private _interval?: number;
 
@@ -124,6 +124,8 @@ class HaPanelHistory extends LitElement {
   private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
     if (ev.detail === "connected") {
       this._unsubscribeHistory();
+      this._stateHistory = undefined;
+      this._statisticsHistory = undefined;
       this._getHistory();
       this._getStats();
     }
@@ -333,18 +335,28 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
-    const statistics = await fetchStatistics(
-      this.hass!,
-      statsStartDate,
-      this._endDate,
-      statisticIds,
-      "hour",
-      undefined,
-      ["mean", "state"]
-    );
+    let statistics;
+    try {
+      statistics = await fetchStatistics(
+        this.hass!,
+        statsStartDate,
+        this._endDate,
+        statisticIds,
+        "hour",
+        undefined,
+        ["mean", "state"]
+      );
+    } catch (_err) {
+      return;
+    }
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass));
+    } catch (_err) {
+      return;
+    }
 
     this._statisticsHistory = convertStatisticsToHistory(
       this.hass!,
@@ -371,8 +383,28 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
+    // Mark as subscribing before the await to prevent re-entrant calls
+    const sentinel = Promise.resolve(undefined) as NonNullable<
+      typeof this._subscribed
+    >;
+    this._subscribed = sentinel;
+
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass));
+    } catch (_err) {
+      if (this._subscribed === sentinel) {
+        this._subscribed = undefined;
+        this._isLoading = false;
+      }
+      return;
+    }
+
+    // Bail out if a newer call replaced our sentinel while we were awaiting
+    if (this._subscribed !== sentinel) {
+      return;
+    }
 
     this._subscribed = subscribeHistory(
       this.hass,

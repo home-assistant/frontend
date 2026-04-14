@@ -129,8 +129,6 @@ export class MoreInfoHistory extends LitElement {
       changedProps.has("hass") &&
       this.entityId &&
       !this._subscribed &&
-      !this._stateHistory &&
-      !this._statistics &&
       !this._error
     ) {
       // Retry when components become available after backend restart

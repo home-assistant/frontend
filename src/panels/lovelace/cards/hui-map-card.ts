@@ -356,6 +356,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
     if (ev.detail === "connected") {
       this._unsubscribeHistory();
+      this._stateHistory = undefined;
       this._error = undefined;
       if (this._configEntities?.length) {
         this._subscribeHistory();
