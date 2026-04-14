@@ -36,7 +36,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
 
     const [localize, energyPrefs] = await Promise.all([
       hass.loadBackendTranslation("title"),
-      isComponentLoaded(hass, "energy")
+      isComponentLoaded(hass.config, "energy")
         ? // It raises if not configured, just swallow that.
           getEnergyPreferences(hass).catch(() => undefined)
         : undefined,

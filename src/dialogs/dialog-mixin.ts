@@ -11,6 +11,8 @@ export const DialogMixin = <
   superClass: T
 ) =>
   class extends superClass implements HassDialogNext<P> {
+    public dialogNext = true as const;
+
     declare public params?: P;
 
     private _closePromise?: Promise<boolean>;

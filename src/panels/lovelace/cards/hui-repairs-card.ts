@@ -31,7 +31,7 @@ export class HuiRepairsCard
 
   @state() private _config?: RepairsCardConfig;
 
-  @state() private _repairsIssues: RepairsIssue[] = [];
+  @state() private _repairsIssues?: RepairsIssue[];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
@@ -99,7 +99,9 @@ export class HuiRepairsCard
     // Update visibility based on admin status and repairs count
     const shouldBeHidden = Boolean(
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._repairsIssues.length === 0)
+      (this._config.hide_empty &&
+        this._repairsIssues &&
+        this._repairsIssues.length === 0)
     );
 
     if (shouldBeHidden !== this.hidden) {
@@ -114,7 +116,9 @@ export class HuiRepairsCard
       return nothing;
     }
 
-    const count = this._repairsIssues.length;
+    const count = Array.isArray(this._repairsIssues)
+      ? this._repairsIssues.length
+      : 0;
 
     const label = this.hass.localize("ui.card.repairs.title");
     const secondary =
@@ -123,6 +127,7 @@ export class HuiRepairsCard
             count,
           })
         : this.hass.localize("ui.card.repairs.no_issues");
+    const secondaryLoading = !this._repairsIssues;
 
     return html`
       <ha-card>
@@ -140,6 +145,7 @@ export class HuiRepairsCard
             slot="info"
             .primary=${label}
             .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
           ></ha-tile-info>
         </ha-tile-container>
       </ha-card>

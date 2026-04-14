@@ -110,11 +110,19 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener(
+      "card-visibility-changed",
+      this._cardVisibilityChanged
+    );
   }
 
   public connectedCallback() {
     super.connectedCallback();
     this._updateVisibility();
+    this.addEventListener(
+      "card-visibility-changed",
+      this._cardVisibilityChanged
+    );
   }
 
   protected update(changedProperties) {
@@ -144,7 +152,11 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
-      if (changedProperties.has("hass") || changedProperties.has("preview")) {
+      if (
+        changedProperties.has("hass") ||
+        changedProperties.has("preview") ||
+        changedProperties.has("_cards")
+      ) {
         this._updateVisibility();
       }
     }
@@ -200,6 +212,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
   }
 
+  private _cardVisibilityChanged = () => {
+    this._updateVisibility();
+  };
+
   protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._layoutElement || !this._config) {
       return;
@@ -218,9 +234,22 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     const visible =
       conditionsMet ??
       (!this._config.visibility ||
-        checkConditionsMet(this._config.visibility, this.hass));
+        checkConditionsMet(
+          this._config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
 
-    this._setElementVisibility(visible);
+    if (!visible) {
+      this._setElementVisibility(false);
+      return;
+    }
+
+    // Hide section when all cards are conditionally hidden
+    const allCardsHidden =
+      this._cards.length > 0 && this._cards.every((card) => card.hidden);
+
+    this._setElementVisibility(!allCardsHidden);
   }
 
   private _setElementVisibility(visible: boolean) {
@@ -232,9 +261,9 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       fireEvent(this, "section-visibility-changed", { value: visible });
     }
 
-    if (!visible && this._layoutElement.parentElement) {
-      this.removeChild(this._layoutElement);
-    } else if (visible && !this._layoutElement.parentElement) {
+    // Always keep layout element connected so cards can still update
+    // their visibility and bubble events back to the section.
+    if (!this._layoutElement.parentElement) {
       this.appendChild(this._layoutElement);
     }
   }

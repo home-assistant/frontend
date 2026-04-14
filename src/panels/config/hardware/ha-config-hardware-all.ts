@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -75,19 +74,14 @@ class HaConfigHardwareAll extends LitElement {
   );
 
   private _data = memoizeOne(
-    (showAdvanced: boolean, hardware: HassioHardwareInfo): DataTableRowData[] =>
-      hardware.devices
-        .filter(
-          (device) =>
-            showAdvanced || ["tty", "gpio", "input"].includes(device.subsystem)
-        )
-        .map((device) => ({
-          ...device,
-          id: device.dev_path,
-          attributes_string: Object.entries(device.attributes)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(" "),
-        }))
+    (hardware: HassioHardwareInfo): DataTableRowData[] =>
+      hardware.devices.map((device) => ({
+        ...device,
+        id: device.dev_path,
+        attributes_string: Object.entries(device.attributes)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(" "),
+      }))
   );
 
   protected firstUpdated(): void {
@@ -104,12 +98,7 @@ class HaConfigHardwareAll extends LitElement {
         .tabs=${hardwareTabs(this.hass)}
         clickable
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._hardware
-          ? this._data(
-              this.hass.userData?.showAdvanced || false,
-              this._hardware
-            )
-          : []}
+        .data=${this._hardware ? this._data(this._hardware) : []}
         .noDataText=${this._error ||
         this.hass.localize("ui.panel.config.hardware.loading_system_data")}
         @row-click=${this._handleRowClicked}

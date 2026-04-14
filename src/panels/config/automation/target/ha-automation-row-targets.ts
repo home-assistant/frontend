@@ -1,25 +1,25 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAlert,
+  mdiAlertOctagon,
   mdiCodeBraces,
   mdiFormatListBulleted,
   mdiShape,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { css, html, LitElement, type nothing, type TemplateResult } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { isTemplate } from "../../../../common/string/has-template";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
-  areasContext,
   configEntriesContext,
-  devicesContext,
-  floorsContext,
+  internationalizationContext,
   labelsContext,
-  localizeContext,
+  registriesContext,
   statesContext,
 } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -35,29 +35,23 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
   public target?: HassServiceTarget;
 
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  @property({ attribute: false })
+  public targetRequired = false;
 
   @state()
-  @consume({ context: floorsContext, subscribe: true })
-  private floors!: HomeAssistant["floors"];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
-  @consume({ context: areasContext, subscribe: true })
-  private areas!: HomeAssistant["areas"];
-
-  @state()
-  @consume({ context: devicesContext, subscribe: true })
-  private devices!: HomeAssistant["devices"];
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private states!: HomeAssistant["states"];
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
@@ -73,13 +67,16 @@ export class HaAutomationRowTargets extends LitElement {
   protected render() {
     const length = Object.keys(this.target || {}).length;
     if (!length) {
-      return html`<span class="target">
-        <div class="label">
-          ${this.localize(
-            "ui.panel.config.automation.editor.target_summary.no_target"
-          )}
-        </div>
-      </span>`;
+      return this._renderTargetBadge(
+        this.targetRequired
+          ? html`<ha-svg-icon .path=${mdiAlertOctagon}></ha-svg-icon>`
+          : nothing,
+        this._i18n.localize(
+          "ui.panel.config.automation.editor.target_summary.no_target"
+        ),
+        false,
+        this.targetRequired
+      );
     }
     const totalLength = Object.values(this.target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
@@ -116,7 +113,7 @@ export class HaAutomationRowTargets extends LitElement {
     return html`<span class="target">
       <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
       <div class="label">
-        ${this.localize(
+        ${this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.targets",
           {
             count: totalLength,
@@ -134,16 +131,16 @@ export class HaAutomationRowTargets extends LitElement {
     targetId: string
   ): boolean {
     if (targetType === "floor") {
-      return !!this.floors[targetId];
+      return !!this._registries.floors[targetId];
     }
     if (targetType === "area") {
-      return !!this.areas[targetId];
+      return !!this._registries.areas[targetId];
     }
     if (targetType === "device") {
-      return !!this.devices[targetId];
+      return !!this._registries.devices[targetId];
     }
     if (targetType === "entity") {
-      return !!this.states[targetId];
+      return !!this._states[targetId];
     }
     if (targetType === "label") {
       return !!this._getLabel(targetId);
@@ -154,9 +151,10 @@ export class HaAutomationRowTargets extends LitElement {
   private _renderTargetBadge(
     icon: TemplateResult | typeof nothing,
     label: string,
-    alert = false
+    warning = false,
+    error = false
   ) {
-    return html`<div class="target ${alert ? "alert" : ""}">
+    return html`<div class=${classMap({ target: true, warning, error })}>
       ${icon}
       <div class="label">${label}</div>
     </div>`;
@@ -169,7 +167,7 @@ export class HaAutomationRowTargets extends LitElement {
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       return this._renderTargetBadge(
         html`<ha-svg-icon .path=${mdiShape}></ha-svg-icon>`,
-        this.localize(
+        this._i18n.localize(
           `ui.panel.config.automation.editor.target_summary.${targetId as "all" | "none"}_entities`
         )
       );
@@ -179,7 +177,7 @@ export class HaAutomationRowTargets extends LitElement {
     if (isTemplate(targetId)) {
       return this._renderTargetBadge(
         html`<ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>`,
-        this.localize(
+        this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.template"
         )
       );
@@ -230,9 +228,13 @@ export class HaAutomationRowTargets extends LitElement {
       overflow: hidden;
       height: 32px;
     }
-    .target.alert {
+    .target.warning {
       background: var(--ha-color-fill-warning-normal-resting);
       color: var(--ha-color-on-warning-normal);
+    }
+    .target.error {
+      background: var(--ha-color-fill-danger-normal-resting);
+      color: var(--ha-color-on-danger-normal);
     }
     .target .label {
       overflow: hidden;

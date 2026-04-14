@@ -542,6 +542,7 @@ export class HuiEnergyDevicesGraphCard
     this._legendData = chartData.map((d) => ({
       ...d,
       name: this._getDeviceName(d.name),
+      value: `${formatNumber(d.value[0], this.hass.locale)} kWh`,
     }));
     // filter out hidden stats in place
     for (let i = chartData.length - 1; i >= 0; i--) {

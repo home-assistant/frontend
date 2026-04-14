@@ -20,6 +20,7 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -46,7 +47,6 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -438,7 +438,7 @@ export class HaAutomationTrace extends LitElement {
       this.automationId,
       this._runId!
     );
-    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -464,7 +464,6 @@ export class HaAutomationTrace extends LitElement {
       url,
       `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
     );
-    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {

@@ -3,7 +3,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { stringCompare } from "../../../../common/string/compare";
@@ -12,9 +11,9 @@ import { createSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
+import { labelsContext } from "../../../../data/context";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import { labelsContext } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -146,7 +145,7 @@ export class HaDeviceCard extends LitElement {
             ([type, value]) => html`
               <div class="extra-info">
                 ${type === "bluetooth" &&
-                isComponentLoaded(this.hass, "bluetooth")
+                isComponentLoaded(this.hass.config, "bluetooth")
                   ? html`${titleCase(type)}:
                       <a
                         href="/config/bluetooth/advertisement-monitor?${createSearchParam(
@@ -154,7 +153,8 @@ export class HaDeviceCard extends LitElement {
                         )}"
                         >${value.toUpperCase()}</a
                       >`
-                  : type === "mac" && isComponentLoaded(this.hass, "dhcp")
+                  : type === "mac" &&
+                      isComponentLoaded(this.hass.config, "dhcp")
                     ? html`MAC:
                         <a
                           href="/config/dhcp?${createSearchParam({
@@ -172,13 +172,9 @@ export class HaDeviceCard extends LitElement {
                 <div class="extra-info labels">
                   ${labels.map((labelId) => {
                     const label = labelMap.get(labelId);
-                    const color =
-                      label?.color && typeof label.color === "string"
-                        ? computeCssColor(label.color)
-                        : undefined;
                     return html`
                       <ha-label
-                        style=${color ? `--color: ${color}` : ""}
+                        .color=${label?.color}
                         .description=${label?.description}
                       >
                         ${label?.icon
@@ -211,7 +207,7 @@ export class HaDeviceCard extends LitElement {
   private _computeDeviceNameDisplay(deviceId: string) {
     const device = this.hass.devices[deviceId];
     return device
-      ? computeDeviceNameDisplay(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : `<${this.hass.localize(
           "ui.panel.config.integrations.config_entry.unknown_via_device"
         )}>`;
@@ -242,12 +238,6 @@ export class HaDeviceCard extends LitElement {
           min-width: 0;
           max-width: 100%;
           flex: 0 1 auto;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
-          --ha-label-text-color: var(--primary-text-color);
-          --ha-label-icon-color: var(--primary-text-color);
         }
         .extra-info {
           margin-top: var(--ha-space-2);

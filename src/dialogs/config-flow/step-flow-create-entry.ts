@@ -170,7 +170,8 @@ class StepFlowCreateEntry extends LitElement {
                           )}
                           .placeholder=${computeDeviceNameDisplay(
                             device,
-                            this.hass
+                            this.hass.localize,
+                            this.hass.states
                           )}
                           .value=${this._deviceUpdate[device.id]?.name ??
                           computeDeviceName(device)}

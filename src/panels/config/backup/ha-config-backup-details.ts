@@ -104,7 +104,7 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       <hass-subpage

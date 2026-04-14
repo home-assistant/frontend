@@ -108,13 +108,16 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (
-      oldValue?.trigger !== this.trigger?.trigger &&
       this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.trigger;
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.trigger);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -142,7 +145,7 @@ export class HaPlatformTrigger extends LitElement {
         }
       });
 
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.trigger,
@@ -202,17 +205,9 @@ export class HaPlatformTrigger extends LitElement {
       </div>
       ${triggerDesc && "target" in triggerDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
               )}</span
             ><ha-selector
               .hass=${this.hass}
@@ -276,6 +271,10 @@ export class HaPlatformTrigger extends LitElement {
       return nothing;
     }
 
+    const description = this.hass.localize(
+      `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
+    );
+
     return html`<ha-settings-row narrow>
       ${!showOptional
         ? hasOptional
@@ -293,13 +292,11 @@ export class HaPlatformTrigger extends LitElement {
       <span slot="heading"
         >${this.hass.localize(
           `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-        ) || triggerName}</span
+        ) || fieldName}</span
       >
-      <span slot="description"
-        >${this.hass.localize(
-          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
-        )}</span
-      >
+      ${description
+        ? html`<span slot="description">${description}</span>`
+        : nothing}
       <ha-selector
         .disabled=${this.disabled ||
         (showOptional &&

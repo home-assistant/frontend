@@ -24,6 +24,8 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -161,7 +163,7 @@ class HaPanelDevState extends LitElement {
                   </div>
                 `
               : nothing}
-            <ha-textfield
+            <ha-input
               .label=${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
               )}
@@ -169,11 +171,11 @@ class HaPanelDevState extends LitElement {
               autocapitalize="none"
               autocomplete="off"
               .autocorrect=${false}
-              input-spellcheck="false"
+              .spellcheck=${false}
               .value=${this._state}
               @change=${this._stateChanged}
               class="state-input"
-            ></ha-textfield>
+            ></ha-input>
             <p>
               ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state_attributes"
@@ -313,8 +315,8 @@ class HaPanelDevState extends LitElement {
     this._expanded = true;
   }
 
-  private _stateChanged(ev) {
-    this._state = ev.target.value;
+  private _stateChanged(ev: InputEvent) {
+    this._state = (ev.target as HaInput).value ?? "";
   }
 
   private _entityFilterChanged(ev: InputEvent) {
@@ -511,10 +513,6 @@ class HaPanelDevState extends LitElement {
         :host ha-input-search {
           width: 100%;
           --ha-input-padding-bottom: 0;
-        }
-
-        ha-textfield {
-          display: block;
         }
 
         .heading {

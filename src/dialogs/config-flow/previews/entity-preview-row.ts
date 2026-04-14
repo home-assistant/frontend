@@ -338,7 +338,7 @@ class EntityPreviewRow extends LitElement {
           .autoValidate=${stateObj.attributes.pattern}
           .pattern=${stateObj.attributes.pattern}
           .type=${stateObj.attributes.mode}
-          placeholder=${this.hass!.localize("ui.card.text.emtpy_value")}
+          .placeholder=${this.hass!.localize("ui.card.text.empty_value")}
         ></ha-input>
       `;
     }

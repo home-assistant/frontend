@@ -6,7 +6,6 @@ import {
   normalizeCoverFavoritePositions,
 } from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeatureEditor } from "../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -16,6 +15,7 @@ import type {
   CoverPositionFavoriteCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const coverPositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefinition<CoverEntity> =
   {
@@ -58,12 +58,7 @@ class HuiCoverPositionFavoriteCardFeature extends HuiNumericFavoriteCardFeatureB
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-cover-position-favorite-card-feature-editor");
-    return document.createElement(
-      "hui-cover-position-favorite-card-feature-editor"
-    );
-  }
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 }
 
 declare global {

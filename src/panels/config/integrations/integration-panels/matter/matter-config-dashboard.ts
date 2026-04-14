@@ -13,7 +13,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -91,16 +91,10 @@ export class MatterConfigDashboard extends LitElement {
           ${this._renderNavigationCard()}
         </div>
 
-        <a href="/config/matter/add" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.matter.panel.add_device"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button slot="fab" href="/config/matter/add" size="large">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.matter.panel.add_device")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -204,7 +198,7 @@ export class MatterConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            ${isComponentLoaded(this.hass, "thread")
+            ${isComponentLoaded(this.hass.config, "thread")
               ? html`<ha-md-list-item type="link" href="/config/thread">
                   <ha-svg-icon slot="start" .path=${THREAD_ICON}></ha-svg-icon>
                   <div slot="headline">

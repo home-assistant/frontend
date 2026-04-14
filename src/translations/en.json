@@ -16,6 +16,7 @@
     "security": "Security",
     "climate": "Climate",
     "home": "Overview",
+    "maintenance": "Maintenance",
     "notfound": "Page not found"
   },
   "state": {
@@ -129,6 +130,8 @@
         "current_temperature": "{name} current temperature",
         "heating": "{name} heating",
         "cooling": "{name} cooling",
+        "drying": "{name} drying",
+        "fan": "{name} fan only",
         "high": "high",
         "low": "low",
         "mode": "Mode",
@@ -214,7 +217,11 @@
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
-        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "all_maintenance_good": "All good",
+        "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
+        "nobody_home": "No one home"
       },
       "toggle-group": {
         "all_off": "All off",
@@ -291,7 +298,7 @@
         "up_to_date": "Up-to-date"
       },
       "text": {
-        "emtpy_value": "(empty value)"
+        "empty_value": "(empty value)"
       },
       "timer": {
         "actions": {
@@ -439,6 +446,7 @@
       "update": "Update",
       "hide": "Hide",
       "close": "Close",
+      "dismiss_alert": "Dismiss alert",
       "clear": "Clear",
       "leave": "Leave",
       "stay": "Stay",
@@ -513,6 +521,24 @@
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
           "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+        },
+        "period": {
+          "periods": {
+            "none": "None",
+            "today": "[%key:ui::panel::lovelace::editor::card::statistic::periods::today%]",
+            "tomorrow": "Tomorrow",
+            "yesterday": "[%key:ui::panel::lovelace::editor::card::statistic::periods::yesterday%]",
+            "this_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_week%]",
+            "last_week": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_week%]",
+            "next_week": "Next week",
+            "this_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_month%]",
+            "last_month": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_month%]",
+            "next_month": "Next month",
+            "this_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::this_year%]",
+            "last_year": "[%key:ui::panel::lovelace::editor::card::statistic::periods::last_year%]",
+            "next_7d": "Next 7 days",
+            "next_30d": "Next 30 days"
+          }
         },
         "selector": {
           "options": "Selector options",
@@ -724,8 +750,10 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
+          "mode_composed": "Composed",
+          "mode_custom": "Custom",
           "add": "Add",
-          "search": "Search or enter custom name",
+          "search": "Search name",
           "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
@@ -1035,6 +1063,7 @@
           "this_month": "This month",
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
+          "now-365d": "Last 365 days",
           "this_year": "This year",
           "now-12m": "Last 12 months"
         }
@@ -1085,7 +1114,6 @@
       "service-control": {
         "required": "This field is required",
         "target": "Targets",
-        "target_secondary": "What should this action use as targeted areas, devices or entities.",
         "action_data": "Action data",
         "integration_doc": "Integration documentation",
         "script_variables": "Script variables"
@@ -1416,7 +1444,7 @@
       },
       "safe_mode": {
         "title": "Safe mode",
-        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+        "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
         "commands_title": "Commands",
@@ -1762,7 +1790,6 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "restore_name": "Restore default name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "default_code": "Default code",
@@ -1984,9 +2011,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
@@ -2439,7 +2466,11 @@
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
-          "areas_page": "areas page"
+          "areas_page": "areas page",
+          "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
+          "summaries": "Summaries",
+          "summaries_description": "Choose which summaries to show on your overview page."
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -2674,6 +2705,15 @@
           "caption": "Apps",
           "description": "Install and manage apps",
           "error_loading": "Error loading apps",
+          "info": {
+            "what_is_an_app": "What is an app?",
+            "what_is_an_app_description": "Apps allow you to extend the functionality around Home Assistant by installing additional applications. They run alongside Home Assistant and provide extra features like network monitoring, code editors, database management, and more.",
+            "why_not_available": "Why you see this page instead of an app store",
+            "why_not_available_description": "Apps are only available if you've used the Home Assistant Operating System installation method. If you installed Home Assistant using any other method then you cannot use apps. Often you can achieve the same result manually, refer to the documentation by the vendor of the application you'd like to install.",
+            "installation_hint": "Apps require the Home Assistant Operating System. Learn more about installation methods in the documentation.",
+            "learn_more": "Learn more",
+            "dismiss": "Don't show again"
+          },
           "state": {
             "update_available": "Update available",
             "installed": "Installed",
@@ -2692,7 +2732,7 @@
             "title": "App store",
             "check_updates": "Check for updates",
             "repositories": "Repositories",
-            "registries": "Registries",
+            "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
           },
           "repositories": {
@@ -2863,7 +2903,8 @@
               "get_changelog": "Failed to get changelog",
               "start_invalid_config": "Invalid configuration",
               "go_to_config": "Go to configuration",
-              "validate_config": "Failed to validate app configuration"
+              "validate_config": "Failed to validate app configuration",
+              "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
               "title": "Uninstall {name}?",
@@ -3345,6 +3386,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -4222,6 +4264,7 @@
           "invalid_url": "Invalid URL"
         },
         "hardware": {
+          "caption": "Hardware",
           "overview": "Overview",
           "description": "Configure your hub and connected hardware",
           "system_hardware": {
@@ -4369,7 +4412,8 @@
               },
               "search_dashboards": "Search dashboards",
               "heading": {
-                "default": "Dashboards"
+                "default": "Dashboards",
+                "custom": "Community dashboards"
               }
             },
             "picker": {
@@ -4914,6 +4958,10 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "tabs": {
+              "target": "By target",
+              "type": "By type"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
@@ -4998,7 +5046,7 @@
                   "before": "Before",
                   "after": "After",
                   "description": {
-                    "picker": "When a calendar event starts or ends.",
+                    "picker": "Triggers when a calendar event starts or ends.",
                     "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
                   }
                 },
@@ -5006,18 +5054,18 @@
                   "label": "Device",
                   "trigger": "Trigger",
                   "description": {
-                    "picker": "When something happens to a device. Great way to start."
+                    "picker": "Triggers when something happens to a device. Great way to start."
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Manual event received",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
-                    "picker": "When an event is being received (event is an advanced concept in Home Assistant).",
+                    "picker": "Triggers when an event is being received (event is an advanced concept in Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -5029,7 +5077,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
-                    "picker": "When an entity created by a geolocation platform appears in or disappears from a zone.",
+                    "picker": "Triggers when an entity created by a geolocation platform appears in or disappears from a zone.",
                     "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
                   }
                 },
@@ -5041,7 +5089,7 @@
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
-                    "picker": "When the state of an entity (or attribute) changes.",
+                    "picker": "Triggers when the state of an entity (or attribute) changes.",
                     "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
@@ -5051,7 +5099,7 @@
                   "start": "Start",
                   "shutdown": "Shutdown",
                   "description": {
-                    "picker": "When Home Assistant starts up or shuts down.",
+                    "picker": "Triggers when Home Assistant starts up or shuts down.",
                     "started": "When Home Assistant is started",
                     "shutdown": "When Home Assistant is shut down"
                   }
@@ -5061,7 +5109,7 @@
                   "topic": "Topic",
                   "payload": "Payload (optional)",
                   "description": {
-                    "picker": "When a specific message is received on a given MQTT topic.",
+                    "picker": "Triggers when a specific message is received on a given MQTT topic.",
                     "full": "When an MQTT message has been received"
                   }
                 },
@@ -5075,7 +5123,7 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
-                    "picker": "When the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
+                    "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
@@ -5092,7 +5140,7 @@
                     "updated": "updated"
                   },
                   "description": {
-                    "picker": "When a persistent notification is added or removed.",
+                    "picker": "Triggers when a persistent notification is added or removed.",
                     "full": "When a persistent notification is updated"
                   }
                 },
@@ -5103,7 +5151,7 @@
                   "sunset": "Sunset",
                   "offset": "Offset in seconds or HH:MM:SS (optional)",
                   "description": {
-                    "picker": "When the sun sets or rises.",
+                    "picker": "Triggers when the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
                     "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
@@ -5115,7 +5163,7 @@
                   "delete": "Delete sentence",
                   "confirm_delete": "Are you sure you want to delete this sentence?",
                   "description": {
-                    "picker": "When Assist matches a sentence from a voice assistant.",
+                    "picker": "Triggers when Assist matches a sentence from a voice assistant.",
                     "empty": "When a sentence is said",
                     "single": "When the sentence ''{sentence}'' is said",
                     "multiple": "When the sentence ''{sentence}'' or {count, plural,\n one {another}\n other {{count} others}\n} are said"
@@ -5124,7 +5172,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
-                    "picker": "When a tag is scanned (tags are usually created from the Companion app).",
+                    "picker": "Triggers when a tag is scanned (tags are usually created from the Companion app).",
                     "full": "When a tag is scanned",
                     "known_tag": "When scanning tag {tag_name}"
                   }
@@ -5134,7 +5182,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "picker": "When a template evaluates to true.",
+                    "picker": "Triggers when a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -5158,7 +5206,7 @@
                     "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
-                    "picker": "At a specific time, or on a specific date.",
+                    "picker": "Triggers at a specific time, or on a specific date.",
                     "full": "When the time is equal to {time}{hasWeekdays, select, \n true { on {weekdays}} \n other {}\n}"
                   }
                 },
@@ -5169,7 +5217,7 @@
                   "minutes": "Minutes",
                   "seconds": "Seconds",
                   "description": {
-                    "picker": "Periodically, at a defined interval.",
+                    "picker": "Triggers periodically, at a defined interval.",
                     "initial": "When a time pattern matches",
                     "invalid": "Invalid time pattern for {parts}",
                     "full": "Trigger {secondsChoice, select, \n every {every second of }\n every_interval {every {seconds} seconds of }\n on_the_xth {on the {secondsWithOrdinal} second of }\n other {}\n} {minutesChoice, select, \n every {every minute of }\n every_interval {every {minutes} minutes of }\n has_seconds {the {minutesWithOrdinal} minute of }\n on_the_xth {on the {minutesWithOrdinal} minute of }\n other {}\n} {hoursChoice, select, \n every {every hour}\n every_interval {every {hours} hours}\n has_seconds_or_minutes {the {hoursWithOrdinal} hour}\n on_the_xth {on the {hoursWithOrdinal} hour}\n other {}\n}",
@@ -5184,7 +5232,7 @@
                   "webhook_id_helper": "Treat this ID like a password: keep it secret and make it hard to guess.",
                   "webhook_settings": "Webhook settings",
                   "description": {
-                    "picker": "When Home Assistant receives a web request to the webhook endpoint.",
+                    "picker": "Triggers when Home Assistant receives a web request to a webhook endpoint.",
                     "full": "When a Webhook payload has been received"
                   }
                 },
@@ -5196,7 +5244,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
-                    "picker": "When someone (or something) enters or leaves a zone.",
+                    "picker": "Triggers when someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 },
@@ -5325,13 +5373,16 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
                   "before": "Before",
                   "after": "After",
+                  "between": "Between",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
+                    "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -5362,7 +5413,7 @@
                   },
                   "description": {
                     "picker": "Tests if the current time is before or after a specified time.",
-                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}}\n after_before_or {time is after {time_after} or before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
@@ -5503,7 +5554,7 @@
                   }
                 },
                 "event": {
-                  "label": "Manual event",
+                  "label": "Fire manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
@@ -7581,7 +7632,20 @@
             "stop_rebuilding_routes": "Stop rebuilding routes",
             "rebuilding_routes_complete": "Routes have been rebuilt.",
             "rebuilding_routes_failed": "Route rebuilding failed. Additional information may be available in the logs.",
-            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled."
+            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled.",
+            "progress": {
+              "in_progress": "{count} in progress",
+              "completed": "{count} completed",
+              "failed": "{count} failed",
+              "skipped": "{count} skipped"
+            },
+            "details": {
+              "pending": "{count} pending devices",
+              "done": "{count} completed devices",
+              "failed": "{count} failed devices",
+              "skipped": "{count} skipped devices",
+              "no_devices": "No devices"
+            }
           },
           "rebuild_node_routes": {
             "title": "Rebuild routes for a Z-Wave device",
@@ -7765,7 +7829,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
-            "manage_lock": "Manage lock",
+            "manage_lock": "Manage access",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7808,8 +7872,8 @@
             "copy_code": "Copy code"
           },
           "lock": {
-            "manage": "Manage lock",
-            "dialog_title": "Manage lock",
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
             "users": {
               "title": "Users",
               "add": "Add user",
@@ -7893,6 +7957,10 @@
               "load_failed": "Failed to load lock information",
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
+              "no_user_management": "This lock does not support user management. Users and credentials cannot be managed here.",
+              "pin_not_supported": "This lock does not support PIN codes. You can still view and manage existing users.",
+              "no_credential_types_supported": "This lock does not support any credential types that can be managed here. You can still view existing users.",
+              "learn_more": "Learn more about lock management",
               "user_not_found": "User not found",
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",
@@ -8210,7 +8278,9 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
-              "energy": "Today's energy"
+              "maintenance": "Maintenance",
+              "energy": "Today's energy",
+              "persons": "Presence"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -8244,6 +8314,10 @@
             "other_devices": "Other devices"
           },
           "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "maintenance": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },
@@ -8838,6 +8912,12 @@
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
+              "view_columns": {
+                "label": "Number of columns",
+                "min": "Minimum",
+                "max": "Maximum",
+                "unit": "columns"
+              },
               "numeric_state": {
                 "label": "Entity numeric state",
                 "above": "Above",
@@ -9088,7 +9168,7 @@
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide upstream devices",
-              "modes": "Chart display mode",
+              "modes": "Chart types",
               "mode_options": {
                 "bar": "Bar",
                 "pie": "Pie"
@@ -9118,8 +9198,8 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
-              "group_by_floor": "Group entities by floor",
-              "group_by_area": "Group entities by area",
+              "group_by_floor": "Group by floor",
+              "group_by_area": "Group by area",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -9252,7 +9332,7 @@
               },
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
-              "collection_key_description": "Optionally connect a collection of date picker, statistics graph and energy cards. Cards with matching key will respond to any connected date picker card. Any energy card on this dashboard with no key will automatically be linked together.",
+              "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
@@ -9272,7 +9352,7 @@
               "label_mode": "Label mode",
               "maximum": "Maximum",
               "manual": "Manual",
-              "manual_description": "Need to add a custom card or just want to manually write the YAML?",
+              "manual_description": "Need to add a community card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
               "paste": "Paste from clipboard",
@@ -9295,7 +9375,7 @@
               "suggested_cards": "Suggested cards",
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
-              "custom_cards": "Custom cards",
+              "custom_cards": "Community cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
@@ -9359,6 +9439,8 @@
                 "state": "State",
                 "attribute": "Attribute"
               },
+              "conditions": "Entity visibility conditions",
+              "conditions_helper": "Each selected entity will be shown when all conditions below are met. If no conditions are set, entities are always shown.",
               "description": "This card allows you to display entities on a map."
             },
             "markdown": {
@@ -9518,6 +9600,8 @@
               "hide_section_headers": "Hide section headers",
               "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
+              "due_date_period": "Due date",
+              "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
               "actions": {
                 "edit": "Default (edit item)",
@@ -9607,12 +9691,12 @@
             },
             "generic": {
               "manual": "Manual",
-              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "manual_description": "Need to add a community badge or just want to manually write the YAML?",
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} badge from the clipboard",
               "suggested_badges": "Suggested badges",
               "other_badges": "Other badges",
-              "custom_badges": "Custom badges"
+              "custom_badges": "Community badges"
             }
           },
           "entities": {
@@ -9687,7 +9771,8 @@
                 "label": "Light brightness"
               },
               "light-color-favorites": {
-                "label": "Light color favorites"
+                "label": "Light color favorites",
+                "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
               },
               "light-color-temp": {
                 "label": "Light color temperature"
@@ -9701,6 +9786,12 @@
               "media-player-playback": {
                 "label": "Media player playback controls",
                 "controls": "Controls"
+              },
+              "media-player-sound-mode": {
+                "label": "Media player sound mode"
+              },
+              "media-player-source": {
+                "label": "Media player source"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
@@ -9944,7 +10035,7 @@
           },
           "badge_picker": {
             "no_description": "No description available.",
-            "custom_badge": "Custom",
+            "custom_badge": "Community",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
@@ -10643,7 +10734,7 @@
         "external_panel": {
           "question_trust": "Do you trust the external panel {name} at {link}?",
           "complete_access": "It will have access to all data in Home Assistant.",
-          "hide_message": "Check docs for the panel_custom component to hide this message"
+          "hide_message": "Check docs for the 'Custom panel' integration to hide this message"
         }
       },
       "energy": {

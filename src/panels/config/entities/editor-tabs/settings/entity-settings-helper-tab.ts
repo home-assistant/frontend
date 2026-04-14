@@ -46,7 +46,10 @@ export class EntitySettingsHelperTab extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    this._componentLoaded = isComponentLoaded(this.hass, this.entry.platform);
+    this._componentLoaded = isComponentLoaded(
+      this.hass.config,
+      this.entry.platform
+    );
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -164,7 +167,7 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
-    const name = computeEntityEntryName(this.entry);
+    const name = computeEntityEntryName(this.entry, this.hass.devices);
     const confirmationText = await getDeleteConfirmationText(
       this.hass,
       this.entry,

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 
 /// <reference path="../types/service-worker.d.ts" />
-/* eslint-env serviceworker */
 import type { RouteHandler } from "workbox-core";
 import { cacheNames } from "workbox-core";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";

@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -11,6 +12,8 @@ import { customElement, property } from "lit/decorators";
  *
  * @slot primary - The primary text container.
  * @slot secondary - The secondary text container.
+ *
+ * @property {boolean} secondaryLoading - Whether the secondary text is loading. Shows a skeleton placeholder.
  *
  * @cssprop --ha-tile-info-primary-font-size - The font size of the primary text. defaults to `var(--ha-font-size-m)`.
  * @cssprop --ha-tile-info-primary-font-weight - The font weight of the primary text. defaults to `var(--ha-font-weight-medium)`.
@@ -29,21 +32,31 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string;
 
+  @property({ type: Boolean, attribute: "secondary-loading" })
+  public secondaryLoading = false;
+
   protected render() {
     return html`
       <div class="info">
         <slot name="primary" class="primary">
           <span>${this.primary}</span>
         </slot>
-        <slot name="secondary" class="secondary">
-          <span>${this.secondary}</span>
-        </slot>
+        ${this.secondaryLoading
+          ? html`<div class="secondary">
+              <wa-skeleton class="placeholder" effect="pulse"></wa-skeleton>
+            </div>`
+          : html`<slot name="secondary" class="secondary">
+              <span>${this.secondary}</span>
+            </slot>`}
       </div>
     `;
   }
 
   static styles = css`
     :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
       --tile-info-primary-font-size: var(
         --ha-tile-info-primary-font-size,
         var(--ha-font-size-m)
@@ -112,6 +125,15 @@ export class HaTileInfo extends LitElement {
       line-height: var(--tile-info-secondary-line-height);
       letter-spacing: var(--tile-info-secondary-letter-spacing);
       color: var(--tile-info-secondary-color);
+      width: 100%;
+    }
+    .placeholder {
+      width: 140px;
+      max-width: 100%;
+      height: var(--tile-info-secondary-font-size);
+      --wa-border-radius-pill: var(--ha-border-radius-sm);
+      --color: var(--ha-color-fill-neutral-normal-resting);
+      --sheen-color: var(--ha-color-fill-neutral-loud-resting);
     }
   `;
 }

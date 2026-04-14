@@ -31,7 +31,6 @@ import type {
   HaDropdownSelectEvent,
 } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -365,7 +364,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
     const data = this._data(
       this.backups,
       this._filters,
@@ -477,24 +476,24 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         ></ha-filter-states>
         ${!this._needsOnboarding
           ? html`
-              <ha-fab
+              <ha-button
                 slot="fab"
+                size="large"
                 ?disabled=${backupInProgress}
-                .label=${this.hass.localize(
-                  "ui.panel.config.backup.backups.new_backup"
-                )}
-                extended
                 @click=${this._newBackup}
               >
                 ${backupInProgress
-                  ? html`<div slot="icon" class="loading">
+                  ? html`<div slot="start" class="loading">
                       <ha-spinner .size=${"small"}></ha-spinner>
                     </div>`
                   : html`<ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiPlus}
                     ></ha-svg-icon>`}
-              </ha-fab>
+                ${this.hass.localize(
+                  "ui.panel.config.backup.backups.new_backup"
+                )}
+              </ha-button>
             `
           : nothing}
       </hass-tabs-subpage-data-table>

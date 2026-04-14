@@ -27,7 +27,7 @@ import type {
   HaDropdownSelectEvent,
 } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import { renderLabelColorBadge } from "../../../components/ha-label-picker";
@@ -234,14 +234,10 @@ export class HaConfigLabels extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.labels.add_label")}
-          extended
-          @click=${this._addLabel}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addLabel}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"

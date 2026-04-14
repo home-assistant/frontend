@@ -451,7 +451,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             `
           : ""}
         <ha-data-table
-          .hass=${this.hass}
           .narrow=${this.narrow}
           .columns=${columns}
           .data=${this._displayData(this._data, this.hass.localize)}

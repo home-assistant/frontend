@@ -155,7 +155,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
   entity?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_name?: boolean;
   icon?: string;
   icon_height?: string;
@@ -415,6 +415,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
   cluster?: boolean;
+  conditions?: Condition[];
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

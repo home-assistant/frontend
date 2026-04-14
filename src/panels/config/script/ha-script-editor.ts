@@ -31,7 +31,6 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
@@ -113,7 +112,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this._newScriptId &&
       changedProps.has("entityRegistry")
     ) {
-      const script = this.entityRegistry.find(
+      const script = this.entityRegistry?.find(
         (entity: EntityRegistryEntry) =>
           entity.platform === "script" && entity.unique_id === this._newScriptId
       );
@@ -467,19 +466,19 @@ export class HaScriptEditor extends SubscribeMixin(
                     @editor-save=${this._handleSaveScript}
                     .showErrors=${false}
                   ></ha-yaml-editor>
-                  <ha-fab
+                  <ha-button
                     slot="fab"
+                    size="large"
                     class=${!this.readOnly && this.dirty ? "dirty" : ""}
-                    .label=${this.hass.localize("ui.common.save")}
                     .disabled=${this.saving}
-                    extended
                     @click=${this._handleSaveScript}
                   >
                     <ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiContentSave}
                     ></ha-svg-icon>
-                  </ha-fab>`
+                    ${this.hass.localize("ui.common.save")}
+                  </ha-button>`
               : nothing}
         </div>
       </hass-subpage>
@@ -487,6 +486,9 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _setEntityId() {
+    if (!this.entityRegistry) {
+      return;
+    }
     const entity = this.entityRegistry.find(
       (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
     );
@@ -536,7 +538,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this.config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
-      const regEntry = this.entityRegistry.find(
+      const regEntry = this.entityRegistry?.find(
         (ent) => ent.entity_id === this.entityId
       );
       if (regEntry?.unique_id) {
@@ -630,7 +632,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _idIsUsed(id: string): boolean {
     return (
       `script.${id}` in this.hass.states ||
-      this.entityRegistry.some((ent) => ent.unique_id === id)
+      (this.entityRegistry?.some((ent) => ent.unique_id === id) ?? false)
     );
   }
 
@@ -638,7 +640,7 @@ export class HaScriptEditor extends SubscribeMixin(
     if (!this.scriptId) {
       return;
     }
-    const entity = this.entityRegistry.find(
+    const entity = this.entityRegistry?.find(
       (entry) => entry.unique_id === this.scriptId
     );
     if (!entity) {
@@ -818,7 +820,7 @@ export class HaScriptEditor extends SubscribeMixin(
         },
         onClose: () => resolve(false),
         entityRegistryUpdate: this.entityRegistryUpdate,
-        entityRegistryEntry: this.entityRegistry.find(
+        entityRegistryEntry: this.entityRegistry?.find(
           (entry) => entry.unique_id === this.scriptId
         ),
       });

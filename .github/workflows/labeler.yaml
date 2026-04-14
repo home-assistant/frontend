@@ -1,6 +1,6 @@
 name: "Pull Request Labeler"
 
-on: pull_request_target
+on: pull_request_target # zizmor: ignore[dangerous-triggers] -- safe: only runs actions/labeler, no PR code checkout
 
 jobs:
   triage:

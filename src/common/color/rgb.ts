@@ -1,4 +1,5 @@
 import { wcagLuminance, wcagContrast } from "culori";
+import { theme2hex } from "./convert-color";
 
 /**
  * Calculates the luminosity of an RGB color.
@@ -48,3 +49,13 @@ export const getRGBContrastRatio = (
   rgb1: [number, number, number],
   rgb2: [number, number, number]
 ) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+
+/**
+ * Returns a contrasted color (black or white) based on the luminance of another color
+ * @param color - Color (HEX, rgb/rgba, named color) to calculate a contrasted color
+ * @returns HEX color ("#000000" for dark backgrounds, "#ffffff" for light backgrounds)
+ */
+export const getContrastedColorHex = (color: string): string => {
+  const lum = wcagLuminance(theme2hex(color));
+  return lum > 0.5 ? "#000000" : "#ffffff";
+};

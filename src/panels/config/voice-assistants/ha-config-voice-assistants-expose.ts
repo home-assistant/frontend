@@ -30,7 +30,6 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
@@ -50,19 +49,19 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import {
-  getEntityIdTableColumn,
-  getDomainTableColumn,
   getAreaTableColumn,
+  getDomainTableColumn,
+  getEntityIdTableColumn,
 } from "../common/data-table-columns";
-import "./expose/expose-assistant-icon";
 import {
-  getAssistantsTableColumn,
   getAssistantsSortableKey,
+  getAssistantsTableColumn,
 } from "./expose/assistants-table-column";
+import { getAvailableAssistants } from "./expose/available-assistants";
+import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
-import { getAvailableAssistants } from "./expose/available-assistants";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -322,7 +321,7 @@ export class VoiceAssistantsExpose extends LitElement {
           (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
         const _assistants = Object.keys(
-          exposedEntities?.[entityState.entity_id]
+          exposedEntities?.[entityState.entity_id] ?? {}
         ).filter(
           (key) =>
             showAssistants.includes(key) &&
@@ -384,7 +383,7 @@ export class VoiceAssistantsExpose extends LitElement {
               assistants: [
                 ...(exposedEntities
                   ? Object.keys(
-                      exposedEntities?.[entityState.entity_id]
+                      exposedEntities?.[entityState.entity_id] ?? {}
                     ).filter(
                       (key) =>
                         showAssistants.includes(key) &&
@@ -587,16 +586,10 @@ export class VoiceAssistantsExpose extends LitElement {
               </div>
             `
           : ""}
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.voice_assistants.expose.add"
-          )}
-          extended
-          @click=${this._addEntry}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addEntry}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.voice_assistants.expose.add")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

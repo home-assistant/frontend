@@ -14,7 +14,6 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -124,11 +123,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
@@ -308,9 +303,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: var(--ha-font-size-l);
+      font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-expanded);
-      padding: 0px 0px var(--ha-space-2) 0px;
       margin: 0;
       text-align: center;
       box-sizing: border-box;
@@ -323,6 +317,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     ha-gauge {
       width: 100%;
+      max-width: 250px;
     }
   `;
 }

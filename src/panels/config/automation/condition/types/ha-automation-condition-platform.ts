@@ -73,13 +73,16 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      oldValue?.condition !== this.condition?.condition &&
       this.condition &&
+      oldValue?.condition !== this.condition.condition &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.condition;
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.condition);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -106,7 +109,7 @@ export class HaPlatformCondition extends LitElement {
           updatedOptions[key] = field.default;
         }
       });
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.condition,
@@ -166,19 +169,12 @@ export class HaPlatformCondition extends LitElement {
       </div>
       ${conditionDesc && "target" in conditionDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
               )}</span
             >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
-              )}</span
-            ><ha-selector
+            <ha-selector
               .hass=${this.hass}
               .selector=${this._targetSelector(conditionDesc.target)}
               .disabled=${this.disabled}
@@ -240,6 +236,10 @@ export class HaPlatformCondition extends LitElement {
       return nothing;
     }
 
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
+    );
+
     return html`<ha-settings-row narrow>
       ${!showOptional
         ? hasOptional
@@ -257,13 +257,11 @@ export class HaPlatformCondition extends LitElement {
       <span slot="heading"
         >${this.hass.localize(
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || conditionName}</span
+        ) || fieldName}</span
       >
-      <span slot="description"
-        >${this.hass.localize(
-          `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
-        )}</span
-      >
+      ${description
+        ? html`<span slot="description">${description}</span>`
+        : nothing}
       <ha-selector
         .disabled=${this.disabled ||
         (showOptional &&

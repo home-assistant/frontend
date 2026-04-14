@@ -169,6 +169,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {
@@ -286,7 +287,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
-        deepClone(this._clipboard!.condition)
+        deepClone(this._clipboard!.condition!)
       );
     } else if (isDynamic(value)) {
       conditions = this.conditions.concat({

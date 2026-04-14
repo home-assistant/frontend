@@ -43,7 +43,6 @@ export const getTargetIcon = (
 
     if (domain) {
       return html`<ha-domain-icon
-        .hass=${hass}
         .domain=${domain}
         brand-fallback
       ></ha-domain-icon>`;

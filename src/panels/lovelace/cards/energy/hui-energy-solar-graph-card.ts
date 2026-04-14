@@ -30,6 +30,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergySolarGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -287,6 +289,7 @@ export class HuiEnergySolarGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     solarSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -308,14 +311,16 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint: (Date | string | number)[] = [
-            point.start,
+          const dataPoint: EnergyDataPoint = [
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              period,
+              compare ? compareTransform : undefined
+            ),
             point.change,
+            point.start,
           ];
-          if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start));
-          }
           solarProductionData.push(dataPoint);
           prevStart = point.start;
         }
@@ -410,8 +415,24 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: LineSeriesOption["data"] = [];
+          // Only center forecast points for sub-daily periods to align with bars.
+          // Only start timestamps available, so estimate midpoint from the gap
+          // between the first two entries. Assumes uniform spacing.
+          let forecastOffset = 0;
+          if (period === "hour" || period === "5minute") {
+            const forecastTimes = Object.keys(forecastsData)
+              .map(Number)
+              .sort((a, b) => a - b);
+            forecastOffset =
+              forecastTimes.length >= 2
+                ? (forecastTimes[1] - forecastTimes[0]) / 2
+                : 0;
+          }
           for (const [time, value] of Object.entries(forecastsData)) {
-            solarForecastData.push([Number(time), value / 1000]);
+            solarForecastData.push([
+              Number(time) + forecastOffset,
+              value / 1000,
+            ]);
           }
 
           if (solarForecastData.length) {

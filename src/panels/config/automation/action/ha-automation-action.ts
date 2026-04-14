@@ -161,6 +161,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {
@@ -197,7 +198,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
   private _addAction = (action: string, target?: HassServiceTarget) => {
     let actions: Action[];
     if (action === PASTE_VALUE) {
-      actions = this.actions.concat(deepClone(this._clipboard!.action));
+      actions = this.actions.concat(deepClone(this._clipboard!.action!));
     } else if (action in VIRTUAL_ACTIONS) {
       actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
     } else if (isDynamic(action)) {

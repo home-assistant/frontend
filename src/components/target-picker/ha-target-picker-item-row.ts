@@ -524,7 +524,13 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : item,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : item,
         context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
         fallbackIconPath: mdiDevices,
         notFound: !device,
@@ -535,7 +541,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       const stateObject: HassEntity | undefined = this.hass.states[item];
       const entityName = stateObject
-        ? computeEntityName(stateObject, this.hass.entities)
+        ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
         : item;
       const { area, device } = stateObject
         ? getEntityContext(

@@ -6,7 +6,7 @@ import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
-import { localizeContext } from "../../../../../data/context";
+import { internationalizationContext } from "../../../../../data/context";
 import type { StopAction } from "../../../../../data/script";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -17,8 +17,8 @@ export class HaStopAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public disabled = false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public static get defaultConfig(): StopAction {
     return { stop: "" };
@@ -29,7 +29,7 @@ export class HaStopAction extends LitElement implements ActionElement {
 
     return html`
       <ha-input
-        .label=${this.localize(
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.stop"
         )}
         .value=${stop}
@@ -37,7 +37,7 @@ export class HaStopAction extends LitElement implements ActionElement {
         @change=${this._stopChanged}
       ></ha-input>
       <ha-input
-        .label=${this.localize(
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.response_variable"
         )}
         .value=${response_variable || ""}
@@ -46,7 +46,7 @@ export class HaStopAction extends LitElement implements ActionElement {
       ></ha-input>
       <ha-formfield
         .disabled=${this.disabled}
-        .label=${this.localize(
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.error"
         )}
       >

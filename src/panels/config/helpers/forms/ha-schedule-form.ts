@@ -13,7 +13,7 @@ import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { Schedule, ScheduleDay } from "../../../../data/schedule";
 import { weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
@@ -121,23 +121,22 @@ class HaScheduleForm extends LitElement {
 
     return html`
       <div class="form">
-        <ha-textfield
+        <ha-input
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          autoValidate
+          auto-validate
           required
           .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
-        ></ha-textfield>
+        ></ha-input>
         <ha-icon-picker
-          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -424,13 +423,13 @@ class HaScheduleForm extends LitElement {
           color: var(--primary-text-color);
         }
 
-        ha-textfield {
-          display: block;
-          margin: 8px 0;
+        ha-input {
+          margin: var(--ha-space-2) 0;
+          --ha-input-padding-bottom: 0;
         }
 
         #calendar {
-          margin: 8px 0;
+          margin: var(--ha-space-2) 0;
           height: 450px;
           width: 100%;
           -webkit-user-select: none;

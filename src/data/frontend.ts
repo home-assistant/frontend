@@ -4,6 +4,7 @@ export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
   default_panel?: string;
+  apps_info_dismissed?: boolean;
 }
 
 export interface SidebarFrontendUserData {
@@ -20,6 +21,8 @@ export interface CoreFrontendSystemData {
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
+  hidden_summaries?: string[];
+  hide_welcome_message?: boolean;
 }
 
 declare global {

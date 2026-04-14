@@ -60,6 +60,7 @@ export type Selector =
   | NumberSelector
   | NumericThresholdSelector
   | ObjectSelector
+  | PeriodSelector
   | AssistPipelineSelector
   | QRCodeSelector
   | SelectSelector
@@ -392,6 +393,27 @@ export interface ObjectSelector {
   } | null;
 }
 
+export type PeriodKey =
+  | "today"
+  | "yesterday"
+  | "tomorrow"
+  | "this_week"
+  | "last_week"
+  | "next_week"
+  | "this_month"
+  | "last_month"
+  | "next_month"
+  | "this_year"
+  | "last_year"
+  | "next_7d"
+  | "next_30d"
+  | "none";
+export interface PeriodSelector {
+  period: {
+    options: readonly PeriodKey[];
+  } | null;
+}
+
 export interface AssistPipelineSelector {
   assist_pipeline: {
     include_last_used?: boolean;
@@ -436,6 +458,7 @@ export interface StateSelector {
     attribute?: string;
     hide_states?: string[];
     multiple?: boolean;
+    no_entity?: boolean;
   } | null;
 }
 

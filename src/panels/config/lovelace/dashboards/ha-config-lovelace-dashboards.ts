@@ -24,7 +24,6 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-overflow-menu";
@@ -36,6 +35,7 @@ import {
   isStrategyDashboard,
   saveConfig,
 } from "../../../../data/lovelace/config/types";
+import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -56,9 +56,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
+import type { WindowWithPreloads } from "../../../../data/preloads";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
+import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
@@ -72,6 +74,7 @@ export const PANEL_DASHBOARDS = [
   "security",
   "climate",
   "energy",
+  "maintenance",
 ] as string[];
 
 type DataTableItem = Pick<
@@ -436,22 +439,34 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="large" @click=${this._addDashboard}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
           )}
-          extended
-          @click=${this._addDashboard}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    const preloadWindow = window as WindowWithPreloads;
+    if (!preloadWindow.llResProm) {
+      preloadWindow.llResProm = fetchResources(this.hass.connection);
+    }
+
+    preloadWindow.llResProm
+      .then((resources) => {
+        loadLovelaceResources(resources, this.hass);
+      })
+      .catch((err: unknown) => {
+        preloadWindow.llResProm = undefined;
+        // eslint-disable-next-line
+        console.error("Unable to preload Lovelace resources", err);
+      });
+
     this._getDashboards();
   }
 

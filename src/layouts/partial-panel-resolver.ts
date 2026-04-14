@@ -34,6 +34,7 @@ const COMPONENTS = {
   light: () => import("../panels/light/ha-panel-light"),
   security: () => import("../panels/security/ha-panel-security"),
   climate: () => import("../panels/climate/ha-panel-climate"),
+  maintenance: () => import("../panels/maintenance/ha-panel-maintenance"),
   home: () => import("../panels/home/ha-panel-home"),
   notfound: () => import("../panels/notfound/ha-panel-notfound"),
 };

@@ -57,7 +57,11 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
+import {
+  effectiveQuickBarMode,
+  type QuickBarParams,
+  type QuickBarSection,
+} from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
 
@@ -100,7 +104,7 @@ export class QuickBar extends LitElement {
       this._translationsLoaded = true;
     }
     this._initialize();
-    this._selectedSection = params.mode;
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
 
     this._relatedResult = params.contextItem ? params.related : undefined;
@@ -129,7 +133,10 @@ export class QuickBar extends LitElement {
       console.error("Error fetching config entries for quick bar", err);
     }
 
-    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = hassioAddonsInfo.addons;
@@ -303,7 +310,6 @@ export class QuickBar extends LitElement {
                 <ha-domain-icon
                   slot="start"
                   style="margin: var(--ha-space-1);"
-                  .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
                 ></ha-domain-icon>
@@ -654,8 +660,10 @@ export class QuickBar extends LitElement {
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     entity: memoizeOne((states: PickerComboBoxItem[]) =>

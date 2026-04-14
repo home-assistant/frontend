@@ -2,7 +2,6 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import type { Action, ParallelAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";

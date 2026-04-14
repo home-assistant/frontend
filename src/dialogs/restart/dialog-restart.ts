@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiAutoFix,
   mdiLifebuoy,
@@ -11,14 +10,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-fade-in";
 import "../../components/ha-icon-next";
-import "../../components/ha-adaptive-dialog";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
+import "../../components/progress/ha-progress-bar";
 import { fetchBackupInfo } from "../../data/backup";
 import type { BackupManagerState } from "../../data/backup_manager";
 import {
@@ -59,7 +59,7 @@ class DialogRestart extends LitElement {
   private _dialogOpen = false;
 
   public async showDialog(): Promise<void> {
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
 
     this._open = true;
     this._dialogOpen = true;
@@ -103,7 +103,6 @@ class DialogRestart extends LitElement {
       return nothing;
     }
 
-    const showReload = this.hass.userData?.showAdvanced;
     const showRebootShutdown = !!this._hostInfo;
 
     const dialogTitle = this.hass.localize("ui.dialogs.restart.heading");
@@ -121,9 +120,7 @@ class DialogRestart extends LitElement {
           <div class="action-loader">
             ${this._loadingBackupInfo
               ? html`<ha-fade-in .delay=${250}>
-                  <mwc-linear-progress
-                    .indeterminate=${true}
-                  ></mwc-linear-progress>
+                  <ha-progress-bar indeterminate></ha-progress-bar>
                 </ha-fade-in>`
               : nothing}
           </div>
@@ -135,30 +132,24 @@ class DialogRestart extends LitElement {
               `
             : html`
                 <ha-md-list dialogInitialFocus>
-                  ${showReload
-                    ? html`
-                        <ha-md-list-item
-                          type="button"
-                          @click=${this._reload}
-                          .disabled=${this._loadingBackupInfo}
-                        >
-                          <div slot="headline">
-                            ${this.hass.localize(
-                              "ui.dialogs.restart.reload.title"
-                            )}
-                          </div>
-                          <div slot="supporting-text">
-                            ${this.hass.localize(
-                              "ui.dialogs.restart.reload.description"
-                            )}
-                          </div>
-                          <div slot="start" class="icon-background reload">
-                            <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-                          </div>
-                          <ha-icon-next slot="end"></ha-icon-next>
-                        </ha-md-list-item>
-                      `
-                    : nothing}
+                  <ha-md-list-item
+                    type="button"
+                    @click=${this._reload}
+                    .disabled=${this._loadingBackupInfo}
+                  >
+                    <div slot="headline">
+                      ${this.hass.localize("ui.dialogs.restart.reload.title")}
+                    </div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.reload.description"
+                      )}
+                    </div>
+                    <div slot="start" class="icon-background reload">
+                      <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>
                   <ha-md-list-item
                     type="button"
                     .action=${"restart"}
@@ -471,7 +462,8 @@ class DialogRestart extends LitElement {
           padding: 24px;
         }
         .action-loader {
-          height: 4px;
+          --ha-progress-bar-track-height: 4px;
+          --ha-progress-bar-border-radius: 0;
         }
       `,
     ];

@@ -257,7 +257,11 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     const visible =
       conditionsMet ??
       (!this.config?.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+        checkConditionsMet(
+          this.config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
     this._setElementVisibility(visible);
   }
 
