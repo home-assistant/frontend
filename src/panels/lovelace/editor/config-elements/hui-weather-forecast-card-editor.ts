@@ -26,6 +26,10 @@ import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
+import {
+  DEFAULT_FORECAST_SLOTS,
+  MAX_FORECAST_SLOTS,
+} from "./hui-weather-forecast-card-feature-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -252,8 +256,8 @@ export class HuiWeatherForecastCardEditor
               },
               {
                 name: "forecast_slots",
-                selector: { number: { min: 1, max: 48 } },
-                default: 12,
+                selector: { number: { min: 1, max: MAX_FORECAST_SLOTS } },
+                default: DEFAULT_FORECAST_SLOTS,
               },
               {
                 name: "interactions",

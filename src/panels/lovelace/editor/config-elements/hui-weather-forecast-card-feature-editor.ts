@@ -20,7 +20,7 @@ import type {
 import type { LovelaceCardFeatureEditor } from "../../types";
 
 export const DEFAULT_FORECAST_SLOTS = 12;
-const MAX_FORECAST_SLOTS = 48;
+export const MAX_FORECAST_SLOTS = 48;
 
 @customElement("hui-weather-forecast-card-feature-editor")
 export class HuiWeatherForecastCardFeatureEditor
