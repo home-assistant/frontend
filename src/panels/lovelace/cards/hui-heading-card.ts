@@ -152,6 +152,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      flex-wrap: nowrap;
       align-items: center;
       overflow: visible;
       gap: var(--ha-space-2);
@@ -160,14 +161,15 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transform: translateX(calc(4px * var(--scale-direction)));
     }
     .container .content {
-      flex: 1 0 fill;
+      flex: 1 0 auto;
       min-width: 100px;
     }
     .container .content:not(:has(p)) {
       min-width: fit-content;
     }
     .container .badges {
-      flex: 0 0;
+      flex: 0 0 auto;
+      min-width: 0;
     }
     .content {
       display: flex;
@@ -221,7 +223,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex-direction: row;
       align-items: center;
       justify-content: flex-end;
-      gap: 4px 10px;
+      flex-wrap: nowrap;
+      gap: var(--ha-space-1) 10px;
     }
   `;
 }
