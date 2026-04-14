@@ -9924,7 +9924,15 @@
                 "label": "Target humidity"
               },
               "weather-forecast": {
-                "label": "Weather forecast"
+                "label": "Weather forecast",
+                "forecast_type": "[%key:ui::panel::lovelace::editor::card::weather-forecast::forecast_type%]",
+                "forecast_slots": "[%key:ui::panel::lovelace::editor::card::weather-forecast::forecast_slots%]",
+                "round_temperature": "[%key:ui::panel::lovelace::editor::card::generic::round_temperature%]",
+                "type_list": {
+                  "daily": "[%key:ui::panel::lovelace::editor::card::weather-forecast::daily%]",
+                  "hourly": "[%key:ui::panel::lovelace::editor::card::weather-forecast::hourly%]",
+                  "twice_daily": "[%key:ui::panel::lovelace::editor::card::weather-forecast::twice_daily%]"
+                }
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",

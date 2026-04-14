@@ -10,6 +10,7 @@ import { DragScrollController } from "../../../common/controllers/drag-scroll-co
 import type {
   ForecastAttribute,
   ForecastEvent,
+  ForecastType,
   ModernForecastType,
   WeatherEntity,
 } from "../../../data/weather";
@@ -21,14 +22,14 @@ import {
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   LovelaceCardFeatureContext,
   LovelaceCardFeaturePosition,
   WeatherForecastCardFeatureConfig,
 } from "./types";
 
-const DEFAULT_FORECAST_SLOTS = 5;
+export const DEFAULT_FORECAST_SLOTS = 5;
 
 export const supportsWeatherForecastCardFeature = (
   hass: HomeAssistant,
@@ -64,7 +65,7 @@ class HuiWeatherForecastCardFeature
 
   @state() private _forecastEvent?: ForecastEvent;
 
-  @state() private _forecastType?: ModernForecastType;
+  @state() private _forecastType?: ForecastType;
 
   @state() private _subscribed?: Promise<() => void>;
 
@@ -77,6 +78,11 @@ class HuiWeatherForecastCardFeature
     return {
       type: "weather-forecast",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-weather-forecast-card-feature-editor");
+    return document.createElement("hui-weather-forecast-card-feature-editor");
   }
 
   public setConfig(config: WeatherForecastCardFeatureConfig): void {
@@ -101,9 +107,7 @@ class HuiWeatherForecastCardFeature
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    const nextForecastType = this._stateObj
-      ? getDefaultForecastType(this._stateObj)
-      : undefined;
+    const nextForecastType = this._effectiveForecastType;
     const forecastTypeChanged = nextForecastType !== this._forecastType;
     if (forecastTypeChanged) {
       this._forecastType = nextForecastType;
@@ -138,10 +142,14 @@ class HuiWeatherForecastCardFeature
       return nothing;
     }
 
+    const temperatureFormatOptions = this._config.round_temperature
+      ? { maximumFractionDigits: 0 }
+      : undefined;
+
     const forecastType = getForecast(
       this._stateObj.attributes,
       this._forecastEvent,
-      this._forecastType ?? "legacy"
+      this._forecastType
     )?.type;
     const hourly = forecastType === "hourly";
     const dayNight = forecastType === "twice_daily";
@@ -172,7 +180,11 @@ class HuiWeatherForecastCardFeature
                 : nothing}
               <div class="temp">
                 ${item.temperature !== undefined && item.temperature !== null
-                  ? `${formatNumber(item.temperature, this.hass!.locale)}°`
+                  ? `${formatNumber(
+                      item.temperature,
+                      this.hass!.locale,
+                      temperatureFormatOptions
+                    )}°`
                   : "—"}
               </div>
             </div>
@@ -199,8 +211,31 @@ class HuiWeatherForecastCardFeature
     return getForecast(
       stateObj.attributes,
       this._forecastEvent,
-      this._forecastType ?? "legacy"
-    )?.forecast?.slice(0, DEFAULT_FORECAST_SLOTS);
+      this._forecastType
+    )?.forecast?.slice(
+      0,
+      this._config?.forecast_slots ?? DEFAULT_FORECAST_SLOTS
+    );
+  }
+
+  private get _effectiveForecastType(): ForecastType | undefined {
+    const stateObj = this._stateObj;
+    if (!stateObj) {
+      return undefined;
+    }
+
+    if (this._config?.forecast_type !== undefined) {
+      return this._config.forecast_type;
+    }
+
+    return (
+      getDefaultForecastType(stateObj) ??
+      ((stateObj.attributes.forecast?.length || 0) > 2 ? "legacy" : undefined)
+    );
+  }
+
+  private get _modernForecastType(): ModernForecastType | undefined {
+    return this._forecastType !== "legacy" ? this._forecastType : undefined;
   }
 
   private _unsubscribeForecastEvents() {
@@ -213,11 +248,13 @@ class HuiWeatherForecastCardFeature
 
   private _subscribeForecastEvents() {
     this._unsubscribeForecastEvents();
+    const modernForecastType = this._modernForecastType;
+
     if (
       !this.isConnected ||
       !this.hass ||
       !this._stateObj ||
-      !this._forecastType
+      !modernForecastType
     ) {
       return;
     }
@@ -225,7 +262,7 @@ class HuiWeatherForecastCardFeature
     this._subscribed = subscribeForecast(
       this.hass,
       this._stateObj.entity_id,
-      this._forecastType,
+      modernForecastType,
       (event) => {
         this._forecastEvent = event;
       }

@@ -1,5 +1,6 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
+import type { ForecastType } from "../../../data/weather";
 import type { OperationMode } from "../../../data/water_heater";
 
 export type ButtonCardData = Record<string, any>;
@@ -228,6 +229,9 @@ export interface TrendGraphCardFeatureConfig {
 
 export interface WeatherForecastCardFeatureConfig {
   type: "weather-forecast";
+  forecast_type?: ForecastType;
+  forecast_slots?: number;
+  round_temperature?: boolean;
 }
 
 export const AREA_CONTROL_DOMAINS = [

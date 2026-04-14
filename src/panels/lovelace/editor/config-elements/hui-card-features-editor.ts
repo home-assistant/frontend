@@ -160,6 +160,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "update-actions",
   "vacuum-commands",
   "valve-position-favorite",
+  "weather-forecast",
   "water-heater-operation-modes",
 ]);
 
