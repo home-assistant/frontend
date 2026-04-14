@@ -3689,6 +3689,11 @@
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
                 "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+              },
+              "viewport_environment": {
+                "title": "Device and browser environment",
+                "description": "CSS env() and theme variables, media features, screen and viewport metrics, navigator, connection, locale, and other browser values for this device. Updates when the viewport changes.",
+                "copy": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
               }
             },
             "events": {

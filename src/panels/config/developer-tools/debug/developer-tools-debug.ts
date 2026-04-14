@@ -9,6 +9,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-debug-connection-row";
 import "./ha-debug-disable-view-transition-row";
+import "./ha-debug-viewport-environment-card";
 import {
   getStatisticMetadata,
   validateStatistics,
@@ -42,6 +43,9 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             ></ha-debug-disable-view-transition-row>
           </ha-md-list>
         </ha-card>
+        <ha-debug-viewport-environment-card
+          .hass=${this.hass}
+        ></ha-debug-viewport-environment-card>
         <ha-card
           .header=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
