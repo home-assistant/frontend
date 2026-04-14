@@ -9,6 +9,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -158,6 +159,16 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
+          <ha-tip .hass=${this.hass}>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
+              {
+                autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+                search: html`<kbd>Ctrl</kbd>+<kbd>F</kbd>`,
+                fullscreen: html`<kbd>F11</kbd>`,
+              }
+            )}
+          </ha-tip>
         </ha-card>
 
         <ha-card
@@ -359,6 +370,22 @@ ${type === "object"
 
         .all_listeners {
           color: var(--warning-color);
+        }
+
+        ha-tip {
+          padding: 0 var(--ha-space-4) var(--ha-space-4);
+          display: block;
+        }
+
+        kbd {
+          display: inline-block;
+          font-family: var(--ha-font-family-code);
+          font-size: 0.85em;
+          padding: 1px 5px;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-xs);
+          background-color: var(--secondary-background-color);
+          white-space: nowrap;
         }
 
         @media all and (max-width: 870px) {
