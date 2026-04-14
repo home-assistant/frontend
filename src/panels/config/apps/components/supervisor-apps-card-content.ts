@@ -52,7 +52,7 @@ class SupervisorAppsCardContent extends LitElement {
                 .title=${this.iconTitle}
                 alt=${this.iconTitle ?? ""}
               />
-              <div></div>
+              <div class=${this.iconClass === "update" ? "dot" : ""}></div>
             </div>
           `
         : html`
