@@ -9413,6 +9413,13 @@
               },
               "default_heading": "Kitchen"
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A tile that triggers an action like navigating to a page, opening a URL, or calling a service.",
+              "label": "Label",
+              "card_description": "Description",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]"
+            },
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
