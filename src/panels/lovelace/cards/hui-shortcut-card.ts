@@ -53,7 +53,12 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   private _subscribedPath?: string;
 
   public setConfig(config: ShortcutCardConfig): void {
-    this._config = config;
+    this._config = {
+      tap_action: {
+        action: "none",
+      },
+      ...config,
+    };
   }
 
   public connectedCallback(): void {

@@ -9418,7 +9418,8 @@
               "description": "A tile that triggers an action like navigating to a page, opening a URL, or calling a service.",
               "label": "Label",
               "card_description": "Description",
-              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]"
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "additional_interactions": "Additional interactions"
             },
             "map": {
               "name": "Map",

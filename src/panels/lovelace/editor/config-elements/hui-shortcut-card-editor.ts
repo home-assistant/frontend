@@ -1,4 +1,4 @@
-import { mdiTextShort } from "@mdi/js";
+import { mdiGestureTap, mdiTextShort } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,10 +16,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
 import type { ShortcutCardConfig } from "../../cards/types";
-import {
-  ACTION_RELATED_CONTEXT,
-  type UiAction,
-} from "../../components/hui-action-editor";
+import type { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -42,6 +39,8 @@ const cardConfigStruct = assign(
     color: optional(string()),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
   })
 );
 
@@ -118,13 +117,12 @@ export class HuiShortcutCardEditor
       [
         {
           name: "tap_action",
+          required: true,
           selector: {
             ui_action: {
-              default_action: "none",
               actions,
             },
           },
-          context: ACTION_RELATED_CONTEXT,
         },
         {
           name: "content",
@@ -191,6 +189,32 @@ export class HuiShortcutCardEditor
             },
           ],
         },
+        {
+          name: "additional_interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "none",
+                  actions,
+                },
+              },
+            },
+            {
+              name: "double_tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "none",
+                  actions,
+                },
+              },
+            },
+          ],
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -247,6 +271,7 @@ export class HuiShortcutCardEditor
     switch (schema.name) {
       case "label":
       case "content_layout":
+      case "additional_interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.shortcut.${schema.name}`
         );
