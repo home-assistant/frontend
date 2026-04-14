@@ -1634,7 +1634,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         .entityId {
           direction: ltr;
-    }
+        }
       `,
     ];
   }
