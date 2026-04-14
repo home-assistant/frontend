@@ -9,6 +9,9 @@ import type { EditorView, Tooltip } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
 import "../components/ha-code-editor-jinja-hover";
 import type { HaCodeEditorJinjaHover } from "../components/ha-code-editor-jinja-hover";
+import "../components/ha-code-editor-jinja-arg-hover";
+import type { HaCodeEditorJinjaArgHover } from "../components/ha-code-editor-jinja-arg-hover";
+import type { CompletionItem } from "../components/ha-code-editor-completion-items";
 
 // ---------------------------------------------------------------------------
 // Standard Jinja2 completions (from @codemirror/lang-jinja internals).
@@ -1642,6 +1645,46 @@ export function haJinjaCompletionSource(
 // Lookup maps built once from the completion arrays so hover resolution is O(1).
 // ---------------------------------------------------------------------------
 
+/**
+ * Minimal HA data passed from ha-code-editor into haJinjaHoverSource so the
+ * hover tooltip can resolve entity / device / area friendly names without
+ * importing the full HomeAssistant type into this resource file.
+ */
+export interface HassArgHoverContext {
+  /** Live entity states keyed by entity_id. */
+  states: Record<
+    string,
+    { state: string; attributes: Record<string, unknown> }
+  >;
+  /** Device registry keyed by device_id. */
+  devices: Record<
+    string,
+    {
+      name: string | null;
+      name_by_user: string | null;
+      area_id?: string | null;
+    }
+  >;
+  /** Area registry keyed by area_id. */
+  areas: Record<string, { name: string; floor_id?: string | null }>;
+  /** Floor registry keyed by floor_id. */
+  floors: Record<string, { name: string }>;
+  /** Entity registry (display entries) keyed by entity_id. */
+  entities: Record<string, { device_id?: string; area_id?: string }>;
+  /** Label registry entries keyed by label_id. */
+  labels: Record<string, { name: string; description?: string | null }>;
+  /** Returns a localised, formatted entity state string for the given entity_id. */
+  formatEntityState(entityId: string): string;
+  /** Returns the friendly name of an entity (from attributes or registry). */
+  formatEntityName(entityId: string): string | undefined;
+  /** Returns a localised attribute name for the given entity + attribute key. */
+  formatAttributeName(entityId: string, attribute: string): string;
+  /** Returns a localised, formatted attribute value for the given entity + attribute key. */
+  formatAttributeValue(entityId: string, attribute: string): string;
+  /** Returns a translated label for a well-known UI key, e.g. "State". */
+  localize(key: string): string;
+}
+
 /** Maps filter name → Completion (merged Jinja2 + HA filters). */
 const FILTER_MAP = new Map<string, Completion>(
   ALL_FILTERS.map((c) => [c.label, c])
@@ -1672,6 +1715,245 @@ function buildTooltipDom(
   return el;
 }
 
+/**
+ * Builds a tooltip DOM node for a string argument value resolved via hass data.
+ * Returns null when no hass context is available or the value can't be resolved.
+ * `siblingEntityId` is only used for `attribute` arg types.
+ */
+function buildArgTooltipDom(
+  argType: JinjaArgType,
+  value: string,
+  ctx: HassArgHoverContext,
+  siblingEntityId?: string | null
+): HTMLElement | null {
+  let heading: string | undefined;
+  const items: CompletionItem[] = [];
+
+  if (argType === "entity_id") {
+    const stateObj = ctx.states[value];
+    if (!stateObj) return null;
+
+    heading = ctx.formatEntityName(value) ?? value;
+
+    const formattedState = ctx.formatEntityState(value);
+    items.push({
+      label: ctx.localize("ui.components.entity.entity-state-picker.state"),
+      value: formattedState,
+      subValue: stateObj.state === formattedState ? undefined : stateObj.state,
+    });
+
+    const entry = ctx.entities[value];
+    if (entry) {
+      const deviceId = entry.device_id;
+      const device = deviceId ? ctx.devices[deviceId] : undefined;
+      const deviceName = device
+        ? (device.name_by_user || device.name)?.trim()
+        : undefined;
+      if (deviceName) {
+        items.push({
+          label: ctx.localize("ui.components.device-picker.device"),
+          value: deviceName,
+        });
+      }
+      const areaId = entry.area_id || device?.area_id || undefined;
+      const area = areaId ? ctx.areas[areaId] : undefined;
+      if (area?.name) {
+        items.push({
+          label: ctx.localize("ui.components.area-picker.area"),
+          value: area.name,
+        });
+        const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+        if (floor?.name) {
+          items.push({
+            label: ctx.localize("ui.components.floor-picker.floor"),
+            value: floor.name,
+          });
+        }
+      }
+    }
+  } else if (argType === "device_id") {
+    const device = ctx.devices[value];
+    if (!device) return null;
+
+    heading = (device.name_by_user || device.name)?.trim();
+    if (!heading) return null;
+
+    const areaId = device.area_id || undefined;
+    const area = areaId ? ctx.areas[areaId] : undefined;
+    if (area?.name) {
+      items.push({
+        label: ctx.localize("ui.components.area-picker.area"),
+        value: area.name,
+      });
+      const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+      if (floor?.name) {
+        items.push({
+          label: ctx.localize("ui.components.floor-picker.floor"),
+          value: floor.name,
+        });
+      }
+    }
+  } else if (argType === "area_id") {
+    const area = ctx.areas[value];
+    if (!area?.name) return null;
+
+    heading = area.name;
+
+    const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+    if (floor?.name) {
+      items.push({
+        label: ctx.localize("ui.components.floor-picker.floor"),
+        value: floor.name,
+      });
+    }
+  } else if (argType === "floor_id") {
+    const floor = ctx.floors[value];
+    if (!floor?.name) return null;
+
+    heading = floor.name;
+  } else if (argType === "label_id") {
+    const label = ctx.labels[value];
+    if (!label?.name) return null;
+
+    heading = label.name;
+
+    if (label.description) {
+      items.push({
+        label: ctx.localize("ui.panel.config.labels.headers.description"),
+        value: label.description,
+      });
+    }
+  } else if (argType === "attribute") {
+    if (!siblingEntityId) return null;
+    const stateObj = ctx.states[siblingEntityId];
+    if (!stateObj || !(value in stateObj.attributes)) return null;
+
+    heading = ctx.formatAttributeName(siblingEntityId, value);
+
+    const formattedValue = ctx.formatAttributeValue(siblingEntityId, value);
+    const rawValue = stateObj.attributes[value];
+    const rawStr =
+      rawValue !== null && rawValue !== undefined
+        ? String(rawValue)
+        : undefined;
+    items.push({
+      label: ctx.localize("ui.components.entity.entity-state-picker.state"),
+      value: formattedValue,
+      subValue:
+        rawStr !== undefined && rawStr !== formattedValue ? rawStr : undefined,
+    });
+  } else {
+    return null;
+  }
+
+  if (!heading && !items.length) return null;
+
+  const el = document.createElement(
+    "ha-code-editor-jinja-arg-hover"
+  ) as HaCodeEditorJinjaArgHover;
+  if (heading) el.heading = heading;
+  el.items = items;
+  return el;
+}
+
+/**
+ * If `pos` is inside a `StringLiteral` that is a known typed argument of an
+ * HA Jinja function (or a subscript on `states`), returns a `{ argType, value }`
+ * describing what the string represents. Returns null otherwise.
+ */
+function resolveStringArgAtPos(
+  state: EditorView["state"],
+  pos: number
+): {
+  argType: JinjaArgType;
+  value: string;
+  from: number;
+  to: number;
+  siblingEntityId?: string | null;
+} | null {
+  const node = syntaxTree(state).resolveInner(pos);
+
+  if (node.name !== "StringLiteral") return null;
+
+  // Strip surrounding quotes to get the actual value.
+  const raw = state.doc.sliceString(node.from, node.to);
+  if (raw.length < 2) return null;
+  const value = raw.slice(1, -1);
+  if (!value) return null;
+
+  const from = node.from;
+  const to = node.to;
+
+  // Case 1: states["entity_id"] — SubscriptExpression with object "states"
+  const subscript = node.parent;
+  if (subscript?.name === "SubscriptExpression") {
+    const obj = subscript.firstChild;
+    if (obj && state.doc.sliceString(obj.from, obj.to) === "states") {
+      return { argType: "entity_id", value, from, to };
+    }
+  }
+
+  // Case 2: known_function("value", ...) — StringLiteral inside ArgumentList
+  const argList = node.parent;
+  if (argList?.name !== "ArgumentList") return null;
+
+  const callExpr = argList.parent;
+  if (callExpr?.name !== "CallExpression") return null;
+
+  const fnNode = callExpr.firstChild;
+  if (!fnNode) return null;
+
+  const fnName = state.doc.sliceString(fnNode.from, fnNode.to);
+  const argTypeMap = JINJA_FUNCTION_ARG_TYPES.get(fnName);
+  if (!argTypeMap) return null;
+
+  // Count the zero-based index of this StringLiteral in the argument list.
+  let argIndex = 0;
+  let child = argList.firstChild?.nextSibling; // skip opening "("
+  while (child) {
+    if (child.name === ")") break;
+    if (child.name !== ",") {
+      if (child.from === node.from) break;
+      argIndex++;
+    }
+    child = child.nextSibling;
+  }
+
+  const argType = argTypeMap.get(argIndex);
+  if (!argType) return null;
+
+  // For attribute args, find the sibling entity_id argument value.
+  if (argType === "attribute") {
+    let entityArgIndex: number | undefined;
+    for (const [idx, type] of argTypeMap) {
+      if (type === "entity_id") {
+        entityArgIndex = idx;
+        break;
+      }
+    }
+    let siblingEntityId: string | null = null;
+    if (entityArgIndex !== undefined) {
+      let idx = 0;
+      let c = argList.firstChild?.nextSibling;
+      while (c) {
+        if (c.name === ")") break;
+        if (c.name !== ",") {
+          if (idx === entityArgIndex && c.name === "StringLiteral") {
+            const r = state.doc.sliceString(c.from, c.to);
+            siblingEntityId = r.slice(1, -1);
+            break;
+          }
+          idx++;
+        }
+        c = c.nextSibling;
+      }
+    }
+    return { argType, value, from, to, siblingEntityId };
+  }
+
+  return { argType, value, from, to };
+}
+
 /** Word regex — same as VALID_FOR but anchored at both ends. */
 const WORD_RE = /[\w\u00c0-\uffff]+/;
 
@@ -1682,17 +1964,43 @@ const WORD_RE = /[\w\u00c0-\uffff]+/;
  * (filter / tag / expression), looks up the matching Completion, and returns
  * a tooltip with detail + info if available.
  *
- * @param docBaseUrl  Optional base URL (e.g. "https://www.home-assistant.io")
- *                    used to build per-function documentation links. When
- *                    provided, non-tag completions get a link icon pointing to
- *                    /template-functions/<label>/.
+ * When the cursor is on a string-literal argument of a known HA Jinja function
+ * (or a `states["…"]` subscript), and `hassContext` is provided, shows the
+ * entity/device/area friendly name instead.
+ *
+ * @param docBaseUrl    Optional base URL for documentation links.
+ * @param hassContext   Optional HA registry data for argument-value tooltips.
  */
 export function haJinjaHoverSource(
   view: EditorView,
   pos: number,
-  docBaseUrl?: string
+  docBaseUrl?: string,
+  hassContext?: HassArgHoverContext
 ): Tooltip | null {
   const { state } = view;
+
+  // --- Argument-value tooltip (entity / device / area hover) -----------------
+  if (hassContext) {
+    const argMatch = resolveStringArgAtPos(state, pos);
+    if (argMatch) {
+      const dom = buildArgTooltipDom(
+        argMatch.argType,
+        argMatch.value,
+        hassContext,
+        argMatch.siblingEntityId
+      );
+      if (dom) {
+        return {
+          pos: argMatch.from,
+          end: argMatch.to,
+          above: true,
+          create: () => ({ dom }),
+        };
+      }
+    }
+  }
+
+  // --- Jinja keyword / function / filter tooltip -----------------------------
   const node = syntaxTree(state).resolveInner(pos);
 
   // Determine the word span at `pos`
