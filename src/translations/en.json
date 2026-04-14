@@ -9699,6 +9699,10 @@
                 "state": "State"
               }
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A badge that triggers an action like navigating to a page, opening a URL, or calling a service."
+            },
             "generic": {
               "manual": "Manual",
               "manual_description": "Need to add a community badge or just want to manually write the YAML?",

@@ -2,19 +2,21 @@ import { mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { NavigationPathInfoController } from "../../../../data/navigation-path-controller";
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
-import type { ShortcutCardConfig } from "../../cards/types";
-import type { UiAction } from "../../components/hui-action-editor";
-import type { LovelaceCardEditor } from "../../types";
+import type { ShortcutBadgeConfig } from "../../badges/types";
+import {
+  ACTION_RELATED_CONTEXT,
+  type UiAction,
+} from "../../components/hui-action-editor";
+import type { LovelaceBadgeEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const actions: UiAction[] = [
@@ -25,33 +27,31 @@ const actions: UiAction[] = [
   "none",
 ];
 
-const cardConfigStruct = assign(
-  baseLovelaceCardConfig,
+const badgeConfigStruct = assign(
+  baseLovelaceBadgeConfig,
   object({
-    label: optional(string()),
-    description: optional(string()),
+    text: optional(string()),
     icon: optional(string()),
     color: optional(string()),
-    vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
   })
 );
 
-@customElement("hui-shortcut-card-editor")
-export class HuiShortcutCardEditor
+@customElement("hui-shortcut-badge-editor")
+export class HuiShortcutBadgeEditor
   extends LitElement
-  implements LovelaceCardEditor
+  implements LovelaceBadgeEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: ShortcutCardConfig;
+  @state() private _config?: ShortcutBadgeConfig;
 
   private _navInfo = new NavigationPathInfoController(this);
 
-  public setConfig(config: ShortcutCardConfig): void {
-    assert(config, cardConfigStruct);
+  public setConfig(config: ShortcutBadgeConfig): void {
+    assert(config, badgeConfigStruct);
     this._config = config;
   }
 
@@ -69,16 +69,17 @@ export class HuiShortcutCardEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, label: string, icon?: string) =>
+    (text: string, icon?: string) =>
       [
         {
           name: "tap_action",
-          required: true,
           selector: {
             ui_action: {
+              default_action: "none",
               actions,
             },
           },
+          context: ACTION_RELATED_CONTEXT,
         },
         {
           name: "content",
@@ -88,20 +89,10 @@ export class HuiShortcutCardEditor
           iconPath: mdiTextShort,
           schema: [
             {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "label",
-                  selector: {
-                    text: { placeholder: label },
-                  },
-                },
-                {
-                  name: "description",
-                  selector: { text: {} },
-                },
-              ],
+              name: "text",
+              selector: {
+                text: { placeholder: text },
+              },
             },
             {
               name: "",
@@ -122,26 +113,6 @@ export class HuiShortcutCardEditor
                   },
                 },
               ],
-            },
-            {
-              name: "content_layout",
-              required: true,
-              selector: {
-                select: {
-                  mode: "box",
-                  options: ["horizontal", "vertical"].map((value) => ({
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
-                    ),
-                    value,
-                    image: {
-                      src: `/static/images/form/tile_content_layout_${value}.svg`,
-                      src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
-                      flip_rtl: true,
-                    },
-                  })),
-                },
-              },
             },
           ],
         },
@@ -185,20 +156,11 @@ export class HuiShortcutCardEditor
       this._navInfo.info
     );
 
-    const data = {
-      ...this._config,
-      content_layout: this._config.vertical ? "vertical" : "horizontal",
-    };
-
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
-        .schema=${this._schema(
-          this.hass.localize,
-          defaults.label,
-          defaults.icon
-        )}
+        .data=${this._config}
+        .schema=${this._schema(defaults.label, defaults.icon)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -210,36 +172,18 @@ export class HuiShortcutCardEditor
     if (!this._config || !this.hass) {
       return;
     }
-
-    const config = { ...ev.detail.value } as ShortcutCardConfig & {
-      content_layout?: string;
-    };
-
-    if (config.content_layout) {
-      config.vertical = config.content_layout === "vertical";
-      delete config.content_layout;
-    }
-
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", {
+      config: ev.detail.value as ShortcutBadgeConfig,
+    });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
-    switch (schema.name) {
-      case "label":
-      case "content_layout":
-      case "additional_interactions":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.shortcut.${schema.name}`
-        );
-      case "description":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.shortcut.card_description"
-        );
-      default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+    if (schema.name === "text") {
+      return this.hass!.localize("ui.panel.lovelace.editor.card.shortcut.text");
     }
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    );
   };
 
   static styles = configElementStyle;
@@ -247,6 +191,6 @@ export class HuiShortcutCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-shortcut-card-editor": HuiShortcutCardEditor;
+    "hui-shortcut-badge-editor": HuiShortcutBadgeEditor;
   }
 }
