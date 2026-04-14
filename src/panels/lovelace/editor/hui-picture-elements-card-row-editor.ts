@@ -270,6 +270,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     .handle {
       padding-right: 8px;
       cursor: move;
+      cursor: grab;
       padding-inline-end: 8px;
       padding-inline-start: initial;
       direction: var(--direction);
