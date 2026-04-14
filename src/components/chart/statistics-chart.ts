@@ -485,12 +485,10 @@ export class StatisticsChart extends LitElement {
           ) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push(
-              this._transformDataValue([prevEndTime, ...prevValues[i]!])
-            );
+            d.data!.push([prevEndTime, ...prevValues[i]!]);
             d.data!.push([prevEndTime, null]);
           }
-          d.data!.push(this._transformDataValue([start, ...dataValues[i]!]));
+          d.data!.push([start, ...dataValues[i]!]);
         });
         prevValues = dataValues;
         prevEndTime = end;
@@ -565,7 +563,6 @@ export class StatisticsChart extends LitElement {
             itemStyle:
               chartType === "bar"
                 ? {
-                    borderRadius: chartStacked ? [0, 0, 0, 0] : [4, 4, 0, 0],
                     borderColor,
                     borderWidth: 1.5,
                   }
@@ -663,9 +660,7 @@ export class StatisticsChart extends LitElement {
       const lastValues = prevValues;
       if (chartType === "line" && lastEndTime && lastValues) {
         statDataSets.forEach((d, i) => {
-          d.data!.push(
-            this._transformDataValue([lastEndTime, ...lastValues[i]!])
-          );
+          d.data!.push([lastEndTime, ...lastValues[i]!]);
         });
       }
 
@@ -704,9 +699,7 @@ export class StatisticsChart extends LitElement {
                 } else {
                   val.push(currentValue);
                 }
-                statDataSets[i].data!.push(
-                  this._transformDataValue([now, ...val])
-                );
+                statDataSets[i].data!.push([now, ...val]);
               });
             }
           }
@@ -718,8 +711,11 @@ export class StatisticsChart extends LitElement {
       Array.prototype.push.apply(legendData, statLegendData);
     });
 
-    if (chartStacked && chartType === "bar") {
-      fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[]);
+    if (chartType === "bar") {
+      fillDataGapsAndRoundCaps(
+        totalDataSets as BarSeriesOption[],
+        chartStacked
+      );
     }
 
     legendData.forEach(({ id, name, color, borderColor }) => {
@@ -747,13 +743,6 @@ export class StatisticsChart extends LitElement {
             undefined;
     }
     this._statisticIds = statisticIds;
-  }
-
-  private _transformDataValue(val: [Date, ...(number | null)[]]) {
-    if (this.chartType === "bar" && val[1] && val[1] < 0) {
-      return { value: val, itemStyle: { borderRadius: [0, 0, 4, 4] } };
-    }
-    return val;
   }
 
   private _clampYAxis(value?: number | ((values: any) => number)) {

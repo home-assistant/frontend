@@ -1,6 +1,42 @@
 import type { BarSeriesOption } from "echarts/types/dist/shared";
 
-export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
+export function fillDataGapsAndRoundCaps(
+  datasets: BarSeriesOption[],
+  stacked = true
+) {
+  if (!stacked) {
+    // For non-stacked charts, we can simply apply an overall border to each stack
+    // to curve the top of the bar, and then override on any negative bars.
+    datasets.forEach((dataset) => {
+      // Add upper border radius to stack
+      dataset.itemStyle = {
+        ...dataset.itemStyle,
+        borderRadius: [4, 4, 0, 0],
+      };
+      // And override any negative points to have bottom border curved
+      for (let pointIdx = 0; pointIdx < dataset.data!.length; pointIdx++) {
+        const dataPoint = dataset.data![pointIdx];
+        const item: any =
+          dataPoint && typeof dataPoint === "object" && "value" in dataPoint
+            ? dataPoint
+            : { value: dataPoint };
+        if (item.value?.[1] < 0) {
+          dataset.data![pointIdx] = {
+            ...item,
+            itemStyle: {
+              ...item.itemStyle,
+              borderRadius: [0, 0, 4, 4],
+            },
+          };
+        }
+      }
+    });
+    return;
+  }
+
+  // For stacked charts, we need to carefully work through the data points in each
+  // stack to ensure only the lowermost negative and uppermost positive values have
+  // a curved border.
   const buckets = Array.from(
     new Set(
       datasets
