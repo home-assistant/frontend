@@ -255,8 +255,11 @@ export class HaSelectSelector extends LitElement {
     (selector: SelectSelector) =>
       selector.select?.options?.map((option) =>
         typeof option === "object"
-          ? (option as SelectOption)
-          : ({ value: option, label: option } as SelectOption)
+          ? {
+              ...option,
+              value: String(option.value),
+            }
+          : ({ value: String(option), label: option } as SelectOption)
       ) || []
   );
 
