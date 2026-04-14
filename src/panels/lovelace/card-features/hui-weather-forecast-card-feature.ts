@@ -24,6 +24,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import type {
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
   WeatherForecastCardFeatureConfig,
 } from "./types";
 
@@ -55,6 +56,9 @@ class HuiWeatherForecastCardFeature
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @property({ reflect: true })
+  public position?: LovelaceCardFeaturePosition;
 
   @state() private _config?: WeatherForecastCardFeatureConfig;
 
@@ -257,13 +261,19 @@ class HuiWeatherForecastCardFeature
     css`
       :host {
         display: block;
-        width: 100%;
+        width: calc(100% + 16px);
+        margin: 0 -8px;
         pointer-events: auto;
+        --icon-size: 28px;
+      }
+
+      :host([position="inline"]) {
+        --icon-size: 20px;
       }
 
       .forecast {
         display: flex;
-        align-items: flex-start;
+        justify-content: space-between;
         max-width: 100%;
         overflow: auto;
         scrollbar-color: var(--scrollbar-thumb-color) transparent;
@@ -303,38 +313,40 @@ class HuiWeatherForecastCardFeature
 
       .item {
         display: flex;
-        min-width: 54px;
+        min-width: 40px;
         flex-direction: column;
         align-items: center;
         text-align: center;
         gap: var(--ha-space-1);
       }
 
+      .label,
+      .temp {
+        line-height: 1;
+        white-space: nowrap;
+      }
+
       .label {
         color: var(--secondary-text-color);
         font-size: var(--ha-font-size-s);
-        line-height: 1;
-        white-space: nowrap;
       }
 
       .icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
+        width: var(--icon-size);
+        height: var(--icon-size);
       }
 
       .icon > * {
         width: 100%;
         height: 100%;
-        --mdc-icon-size: 28px;
+        --mdc-icon-size: var(--icon-size);
       }
 
       .temp {
         font-size: var(--ha-font-size-m);
-        line-height: var(--ha-line-height-condensed);
-        white-space: nowrap;
       }
     `,
   ];
