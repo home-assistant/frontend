@@ -264,7 +264,6 @@ class HuiWeatherForecastCardFeature
       .forecast {
         display: flex;
         align-items: flex-start;
-        gap: var(--ha-space-2);
         max-width: 100%;
         overflow: auto;
         scrollbar-color: var(--scrollbar-thumb-color) transparent;
