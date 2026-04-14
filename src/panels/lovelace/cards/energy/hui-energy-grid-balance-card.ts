@@ -91,13 +91,6 @@ class HuiEnergyGridBalanceCard
 
     const { summedData } = getSummedData(this._data);
 
-    if (
-      !("from_grid" in summedData.total) ||
-      !("to_grid" in summedData.total)
-    ) {
-      return nothing;
-    }
-
     const imported = summedData.total.from_grid ?? 0;
     const exported = summedData.total.to_grid ?? 0;
     const net = imported - exported;
@@ -128,7 +121,8 @@ class HuiEnergyGridBalanceCard
           </ha-tile-icon>
           <ha-tile-info>
             <span slot="primary">
-              ${this.hass.localize(
+              ${this._config.title ||
+              this.hass.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.title"
               )}
             </span>

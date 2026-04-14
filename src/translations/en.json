@@ -9228,6 +9228,10 @@
               "name": "Self-sufficiency gauge",
               "description": "This card shows how self-sufficient from the grid your home is."
             },
+            "energy-grid-balance": {
+              "name": "Grid energy balance",
+              "description": "This card shows the balance between imported and exported grid energy."
+            },
             "energy-grid-neutrality-gauge": {
               "name": "Grid neutrality gauge",
               "description": "This card shows your energy dependency on the grid."
