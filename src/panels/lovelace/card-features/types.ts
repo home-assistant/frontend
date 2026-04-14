@@ -226,6 +226,10 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
+export interface WeatherForecastCardFeatureConfig {
+  type: "weather-forecast";
+}
+
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -299,6 +303,7 @@ export type LovelaceCardFeatureConfig =
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig
+  | WeatherForecastCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig

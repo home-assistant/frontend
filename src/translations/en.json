@@ -9923,6 +9923,9 @@
               "target-humidity": {
                 "label": "Target humidity"
               },
+              "weather-forecast": {
+                "label": "Weather forecast"
+              },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
                 "operation_modes": "Operation modes",
