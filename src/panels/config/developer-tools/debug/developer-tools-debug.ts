@@ -43,9 +43,6 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             ></ha-debug-disable-view-transition-row>
           </ha-md-list>
         </ha-card>
-        <ha-debug-viewport-environment-card
-          .hass=${this.hass}
-        ></ha-debug-viewport-environment-card>
         <ha-card
           .header=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
@@ -71,6 +68,9 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             >
           </div>
         </ha-card>
+        <ha-debug-viewport-environment-card
+          .hass=${this.hass}
+        ></ha-debug-viewport-environment-card>
       </div>
     `;
   }
