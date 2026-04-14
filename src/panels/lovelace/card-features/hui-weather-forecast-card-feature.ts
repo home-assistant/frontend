@@ -163,24 +163,13 @@ class HuiWeatherForecastCardFeature
       >
         ${forecast.map(
           (item, index) => html`
-            ${dayNight || hourly
-              ? (() => {
-                  const previousItem = forecast[index - 1];
-                  const dayChanged =
-                    !previousItem ||
-                    this._dayKeyForForecast(item) !==
-                      this._dayKeyForForecast(previousItem);
-                  return dayChanged
-                    ? html`
-                        <div class="item label-only">
-                          <div class="label">
-                            ${this._dayLabelForForecast(item)}
-                          </div>
-                        </div>
-                      `
-                    : nothing;
-                })()
-              : nothing}
+            ${this._renderDayGroupLabel(
+              item,
+              index,
+              forecast,
+              dayNight,
+              hourly
+            )}
             <div class="item">
               <div class="label">
                 ${this._labelForForecast(item, hourly, dayNight)}
@@ -210,6 +199,27 @@ class HuiWeatherForecastCardFeature
         )}
       </div>
     `;
+  }
+
+  private _renderDayGroupLabel(
+    item: ForecastAttribute,
+    index: number,
+    forecast: ForecastAttribute[],
+    dayNight: boolean,
+    hourly: boolean
+  ) {
+    if (!dayNight && !hourly) {
+      return nothing;
+    }
+    const previousItem = forecast[index - 1];
+    const dayChanged =
+      !previousItem ||
+      this._dayKeyForForecast(item) !== this._dayKeyForForecast(previousItem);
+    return dayChanged
+      ? html`<div class="item label-only">
+          <div class="label">${this._dayLabelForForecast(item)}</div>
+        </div>`
+      : nothing;
   }
 
   private get _stateObj() {
