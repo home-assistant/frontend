@@ -72,7 +72,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       !["camera", "image", "person"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
-      !config.camera_image
+      !config.camera_image &&
+      !config.use_entity_picture
     ) {
       throw new Error("No image source configured");
     }
@@ -143,10 +144,19 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain: string = computeDomain(this._config.entity);
-    let image: string | undefined =
-      (typeof this._config?.image === "object" &&
-        this._config.image.media_content_id) ||
-      (this._config.image as string | undefined);
+    let image: string | undefined;
+
+    // Check if we should use entity_picture from the entity
+    if (this._config.use_entity_picture && stateObj.attributes.entity_picture) {
+      image = stateObj.attributes.entity_picture;
+    } else {
+      // Use configured image
+      image =
+        (typeof this._config?.image === "object" &&
+          this._config.image.media_content_id) ||
+        (this._config.image as string | undefined);
+    }
+
     if (!image) {
       switch (domain) {
         case "image":

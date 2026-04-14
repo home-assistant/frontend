@@ -9366,6 +9366,8 @@
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
+              "use_entity_picture": "Use entity picture",
+              "use_entity_picture_helper": "Use the entity's entity_picture attribute instead of a manually configured image",
               "camera_view": "Camera view",
               "camera_view_options": {
                 "auto": "Auto",

@@ -531,6 +531,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
+  use_entity_picture?: boolean;
   name?: string | EntityNameItem | EntityNameItem[];
   image?: string | MediaSelectorValue;
   camera_image?: string;
