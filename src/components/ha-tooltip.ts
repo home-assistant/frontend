@@ -1,6 +1,6 @@
 import Tooltip from "@home-assistant/webawesome/dist/components/tooltip/tooltip";
-import { css } from "lit";
 import type { CSSResultGroup } from "lit";
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tooltip")
@@ -17,12 +17,12 @@ export class HaTooltip extends Tooltip {
       css`
         :host {
           --wa-tooltip-background-color: var(
-            --ha-color-surface-default-inverted,
-            var(--secondary-background-color)
+            --ha-tooltip-background-color,
+            var(--ha-color-surface-default-inverted)
           );
           --wa-tooltip-content-color: var(
-            --ha-color-text-primary-inverted,
-            var(--primary-text-color)
+            --ha-tooltip-text-color,
+            var(--ha-color-text-primary-inverted)
           );
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
@@ -51,7 +51,7 @@ export class HaTooltip extends Tooltip {
         }
 
         .tooltip::part(popup) {
-          animation: none !important;
+          animation-duration: var(--ha-tooltip-animation-duration, 0);
         }
       `,
     ];
