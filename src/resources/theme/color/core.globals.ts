@@ -13,7 +13,7 @@ export const coreColorStyles = css`
     /* pure */
     --ha-color-black: #000000;
     --ha-color-white: #ffffff;
-    
+
     /* primary */
     --ha-color-primary-05: #001721;
     --ha-color-primary-10: #002e3e;
