@@ -6,10 +6,7 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
-import type {
-  ToastClosedEventDetail,
-  ToastPosition,
-} from "../components/ha-toast";
+import type { ToastClosedEventDetail } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -21,7 +18,7 @@ export interface ShowToastParams {
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
-  position?: ToastPosition;
+  bottomOffset?: number;
 }
 
 export interface ToastActionParams {
@@ -93,7 +90,7 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
-        .position=${this._parameters.position ?? "bottom"}
+        .bottomOffset=${this._parameters.bottomOffset ?? 0}
         @toast-closed=${this._toastClosed}
       >
         ${this._parameters?.action
