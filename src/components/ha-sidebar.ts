@@ -8,12 +8,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import {
-  customElement,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -445,15 +440,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
         <span class="item-text" slot="headline">${title}</span>
       </ha-md-list-item>
-      <ha-tooltip
-        for="sidebar-panel-${urlPath}"
-        show-delay="0"
-        hide-delay="0"
-        placement="right"
-        .disabled=${this.alwaysExpand}
-      >
-        ${title}
-      </ha-tooltip>
+      ${!this.alwaysExpand && title
+        ? this._renderToolTip(`sidebar-panel-${urlPath}`, title)
+        : nothing}
     `;
   }
 
@@ -493,9 +482,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             `
           : nothing}
       </ha-md-list-item>
-      <ha-tooltip for="sidebar-config" show-delay="0" hide-delay="0" placement="right" .disabled=${this.alwaysExpand}>
-        ${this.hass.localize("panel.config")}
-      </ha-tooltip>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-config",
+            this.hass.localize("panel.config")
+          )
+        : nothing}
     `;
   }
 
@@ -524,15 +516,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : nothing}
       </ha-md-list-item>
-      <ha-tooltip
-        for="sidebar-notifications"
-        show-delay="0"
-        hide-delay="0"
-        placement="right"
-        .disabled=${this.alwaysExpand}
-      >
-        ${this.hass.localize("ui.notification_drawer.title")}
-      </ha-tooltip>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-notifications",
+            this.hass.localize("ui.notification_drawer.title")
+          )
+        : nothing}
     `;
   }
 
@@ -560,9 +549,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           >${this.hass.user ? this.hass.user.name : ""}</span
         >
       </ha-md-list-item>
-      <ha-tooltip for="sidebar-profile" show-delay="0" hide-delay="0" placement="right" .disabled=${this.alwaysExpand}>
-        ${this.hass.user ? this.hass.user.name : ""}
-      </ha-tooltip>
+      ${!this.alwaysExpand && this.hass.user
+        ? this._renderToolTip("sidebar-profile", this.hass.user.name)
+        : nothing}
     `;
   }
 
@@ -581,16 +570,24 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
         >
       </ha-md-list-item>
-      <ha-tooltip
-        for="sidebar-external-config"
-        show-delay="0"
-        hide-delay="0"
-        placement="right"
-        .disabled=${this.alwaysExpand}
-      >
-        ${this.hass.localize("ui.sidebar.external_app_configuration")}
-      </ha-tooltip>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-external-config",
+            this.hass.localize("ui.sidebar.external_app_configuration")
+          )
+        : nothing}
     `;
+  }
+
+  private _renderToolTip(id: string, text: string) {
+    return html`<ha-tooltip
+      for=${id}
+      show-delay="0"
+      hide-delay="0"
+      placement="right"
+    >
+      ${text}
+    </ha-tooltip>`;
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
