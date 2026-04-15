@@ -393,7 +393,20 @@ export default class HaAutomationActionRow extends LitElement {
                 ${this._renderOverflowLabel(
                   this.hass.localize(
                     "ui.panel.config.automation.editor.actions.paste"
-                  )
+                  ),
+                  html`<span class="shortcut">
+                    <span
+                      >${isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )}</span
+                    >
+                    <span>+</span>
+                    <span>V</span>
+                  </span>`
                 )}
               </ha-dropdown-item>
             `
