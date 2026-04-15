@@ -74,7 +74,6 @@ const LAZY_LOAD_TYPES = {
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
-  "empty-tile": () => import("../cards/hui-empty-tile-card"),
   "home-summary": () => import("../cards/hui-home-summary-card"),
   shortcut: () => import("../cards/hui-shortcut-card"),
   "discovered-devices": () => import("../cards/hui-discovered-devices-card"),

@@ -57,6 +57,8 @@ export class HaNavigationPicker extends LitElement {
 
   @property({ attribute: false }) public excludePaths?: string[];
 
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @state() private _loading = true;
 
   @property({ attribute: false }) public context?: ActionRelatedContext;
@@ -126,6 +128,7 @@ export class HaNavigationPicker extends LitElement {
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
+        .addButtonLabel=${this.addButtonLabel}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

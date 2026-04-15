@@ -16,16 +16,16 @@ import type {
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { CustomNavigationItem } from "../../../../data/frontend";
+import type { CustomShortcutItem } from "../../../../data/frontend";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
-  EmptyTileCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   RepairsCardConfig,
+  ShortcutCardConfig,
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
@@ -34,11 +34,7 @@ import {
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
-import { getPanelIcon, getPanelIconPath } from "../../../../data/panel";
-import {
-  HOME_SUMMARIES_FILTERS,
-  NAV_TILE_COLORS,
-} from "./helpers/home-summaries";
+import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
@@ -47,7 +43,7 @@ export interface HomeOverviewViewStrategyConfig {
   home_panel?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
-  custom_navigation_paths?: CustomNavigationItem[];
+  custom_shortcuts?: CustomShortcutItem[];
 }
 
 const computeAreaCard = (
@@ -372,23 +368,15 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
 
-    // Append custom navigation tiles
-    const customNavPaths = config.custom_navigation_paths || [];
-    for (let i = 0; i < customNavPaths.length; i++) {
-      const navItem = customNavPaths[i];
-      const panelUrlPath = navItem.path.replace(/^\//, "").split(/[/?]/)[0];
-      const panel = hass.panels[panelUrlPath];
-      const icon = panel ? getPanelIcon(panel) : undefined;
-      const iconPath = panel ? getPanelIconPath(panel) : undefined;
-      const color = NAV_TILE_COLORS[i % NAV_TILE_COLORS.length];
+    // Append custom shortcut cards
+    for (const shortcut of config.custom_shortcuts || []) {
       summaryCards.push({
-        type: "empty-tile",
-        name: navItem.name,
-        icon: icon || (!iconPath ? "mdi:link" : undefined),
-        icon_path: iconPath,
-        color: color,
-        tap_action: { action: "navigate", navigation_path: navItem.path },
-      } satisfies EmptyTileCardConfig);
+        type: "shortcut",
+        label: shortcut.label,
+        icon: shortcut.icon,
+        color: shortcut.color,
+        tap_action: { action: "navigate", navigation_path: shortcut.path },
+      } satisfies ShortcutCardConfig);
     }
 
     // Build summary cards for sidebar (full width: columns 12)

@@ -37,17 +37,6 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   persons: [{ domain: "person" }],
 };
 
-export const NAV_TILE_COLORS = [
-  "blue",
-  "teal",
-  "purple",
-  "green",
-  "deep-orange",
-  "indigo",
-  "pink",
-  "cyan",
-];
-
 export const getSummaryLabel = (
   localize: LocalizeFunc,
   summary: HomeSummary

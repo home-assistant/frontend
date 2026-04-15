@@ -1,9 +1,8 @@
-import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -11,27 +10,23 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-navigation-picker";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import "../../../components/input/ha-input";
-import type { HomeFrontendSystemData } from "../../../data/frontend";
-import {
-  getPanelIcon,
-  getPanelIconPath,
-  getPanelTitleFromUrlPath,
-} from "../../../data/panel";
+import type {
+  CustomShortcutItem,
+  HomeFrontendSystemData,
+} from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
-  NAV_TILE_COLORS,
   type HomeSummary,
 } from "../../lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../components/home-shortcut-list-item";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
+import { showEditShortcutDialog } from "./show-dialog-edit-shortcut";
 
 interface SummaryInfo {
   key: string;
@@ -110,6 +105,11 @@ export class DialogEditHome
     }
 
     const hiddenSummaries = new Set(this._config?.hidden_summaries || []);
+    const customShortcuts = this._config?.custom_shortcuts || [];
+    const excludePaths = [
+      ...SUMMARY_PANEL_PATHS,
+      ...customShortcuts.map((s) => s.path),
+    ];
 
     return html`
       <ha-dialog
@@ -171,17 +171,17 @@ export class DialogEditHome
         <p class="section-description">
           ${this.hass.localize("ui.panel.home.editor.summaries_description")}
         </p>
-        <div class="summary-toggles">
+        <div class="home-list">
           ${SUMMARY_ITEMS.map((item) => {
             const label = this._getSummaryLabel(item.key);
             const color = computeCssColor(item.color);
             return html`
-              <label class="summary-toggle">
+              <label class="home-list-item summary-toggle">
                 <ha-icon
                   .icon=${item.icon}
                   style=${styleMap({ "--mdc-icon-size": "24px", color })}
                 ></ha-icon>
-                <span class="summary-label">${label}</span>
+                <span class="label">${label}</span>
                 <ha-switch
                   .checked=${!hiddenSummaries.has(item.key)}
                   .summary=${item.key}
@@ -190,54 +190,38 @@ export class DialogEditHome
               </label>
             `;
           })}
-          ${(this._config?.custom_navigation_paths || []).map((item, index) => {
-            const panelUrlPath = item.path.replace(/^\//, "").split(/[/?]/)[0];
-            const panel = this.hass.panels[panelUrlPath];
-            const icon = panel ? getPanelIcon(panel) : undefined;
-            const iconPath = panel ? getPanelIconPath(panel) : undefined;
-            const color = computeCssColor(
-              NAV_TILE_COLORS[index % NAV_TILE_COLORS.length]
-            );
-            return html`
-              <div class="navigation-item">
-                ${iconPath
-                  ? html`<ha-svg-icon
-                      .path=${iconPath}
-                      style=${styleMap({
-                        "--mdc-icon-size": "24px",
-                        color,
-                      })}
-                    ></ha-svg-icon>`
-                  : html`<ha-icon
-                      .icon=${icon || "mdi:link"}
-                      style=${styleMap({
-                        "--mdc-icon-size": "24px",
-                        color,
-                      })}
-                    ></ha-icon>`}
-                <ha-input
-                  .value=${item.name}
-                  .hint=${item.path}
-                  .index=${index}
-                  @change=${this._navigationNameChanged}
-                ></ha-input>
-                <ha-icon-button
-                  .path=${mdiClose}
-                  .index=${index}
-                  @click=${this._removeNavigationPath}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          <ha-navigation-picker
-            .hass=${this.hass}
-            .label=${this.hass.localize(
-              "ui.panel.home.editor.add_custom_navigation"
-            )}
-            .excludePaths=${SUMMARY_PANEL_PATHS}
-            @value-changed=${this._addNavigationPath}
-          ></ha-navigation-picker>
         </div>
+
+        <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.custom_shortcuts")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.home.editor.custom_shortcuts_description"
+          )}
+        </p>
+        <div class="home-list">
+          ${customShortcuts.map(
+            (item, index) => html`
+              <home-shortcut-list-item
+                class="home-list-item"
+                .hass=${this.hass}
+                .item=${item}
+                .index=${index}
+                @edit-shortcut=${this._editShortcut}
+                @delete-shortcut=${this._removeShortcut}
+              ></home-shortcut-list-item>
+            `
+          )}
+        </div>
+        <ha-navigation-picker
+          .hass=${this.hass}
+          .addButtonLabel=${this.hass.localize(
+            "ui.panel.home.editor.add_custom_shortcut"
+          )}
+          .excludePaths=${excludePaths}
+          @value-changed=${this._addShortcut}
+        ></ha-navigation-picker>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -302,47 +286,52 @@ export class DialogEditHome
     };
   }
 
-  private _addNavigationPath(ev: CustomEvent): void {
+  private _updateShortcuts(
+    updater: (shortcuts: CustomShortcutItem[]) => CustomShortcutItem[]
+  ): void {
+    const next = updater([...(this._config?.custom_shortcuts || [])]);
+    this._config = {
+      ...this._config,
+      custom_shortcuts: next.length > 0 ? next : undefined,
+    };
+  }
+
+  private _addShortcut(ev: CustomEvent): void {
     ev.stopPropagation();
     const path = ev.detail.value as string;
     if (!path) return;
 
-    // Reset the picker
     (ev.currentTarget as any).value = "";
 
-    const paths = [...(this._config?.custom_navigation_paths || [])];
-    if (paths.some((item) => item.path === path)) return;
-
-    // Auto-resolve name from panel title
-    const panelUrlPath = path.replace(/^\//, "").split(/[/?]/)[0];
-    const name =
-      getPanelTitleFromUrlPath(this.hass, panelUrlPath) || panelUrlPath;
-
-    this._config = {
-      ...this._config,
-      custom_navigation_paths: [...paths, { path, name }],
-    };
+    this._updateShortcuts((shortcuts) =>
+      shortcuts.some((item) => item.path === path)
+        ? shortcuts
+        : [...shortcuts, { path }]
+    );
   }
 
-  private _removeNavigationPath(ev: Event): void {
-    const index = (ev.currentTarget as any).index as number;
-    const paths = [...(this._config?.custom_navigation_paths || [])];
-    paths.splice(index, 1);
-    this._config = {
-      ...this._config,
-      custom_navigation_paths: paths.length > 0 ? paths : undefined,
-    };
+  private _editShortcut(ev: HASSDomEvent<{ index: number }>): void {
+    const { index } = ev.detail;
+    const item = this._config?.custom_shortcuts?.[index];
+    if (!item) return;
+
+    showEditShortcutDialog(this, {
+      item,
+      saveCallback: (updated) => {
+        this._updateShortcuts((shortcuts) => {
+          shortcuts[index] = updated;
+          return shortcuts;
+        });
+      },
+    });
   }
 
-  private _navigationNameChanged(ev: Event): void {
-    const index = (ev.currentTarget as any).index as number;
-    const name = (ev.currentTarget as any).value as string;
-    const paths = [...(this._config?.custom_navigation_paths || [])];
-    paths[index] = { ...paths[index], name };
-    this._config = {
-      ...this._config,
-      custom_navigation_paths: paths,
-    };
+  private _removeShortcut(ev: HASSDomEvent<{ index: number }>): void {
+    const { index } = ev.detail;
+    this._updateShortcuts((shortcuts) => {
+      shortcuts.splice(index, 1);
+      return shortcuts;
+    });
   }
 
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
@@ -390,7 +379,7 @@ export class DialogEditHome
         font-size: 14px;
       }
 
-      .summary-toggles {
+      .home-list {
         display: flex;
         flex-direction: column;
       }
@@ -403,30 +392,9 @@ export class DialogEditHome
         cursor: pointer;
       }
 
-      .summary-label {
+      .summary-toggle .label {
         flex: 1;
         font-size: 14px;
-      }
-
-      .navigation-item {
-        display: flex;
-        align-items: start;
-        gap: var(--ha-space-3);
-        padding: var(--ha-space-2) 0;
-      }
-
-      .navigation-item > ha-icon,
-      .navigation-item > ha-svg-icon {
-        margin-top: 16px;
-      }
-
-      .navigation-item > ha-icon-button {
-        margin-top: 4px;
-      }
-
-      .navigation-item > ha-input {
-        flex: 1;
-        min-width: 0;
       }
 
       ha-navigation-picker {

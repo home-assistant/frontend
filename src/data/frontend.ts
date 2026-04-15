@@ -18,9 +18,11 @@ export interface CoreFrontendSystemData {
   onboarded_date?: string;
 }
 
-export interface CustomNavigationItem {
+export interface CustomShortcutItem {
   path: string;
-  name: string;
+  label?: string;
+  icon?: string;
+  color?: string;
 }
 
 export interface HomeFrontendSystemData {
@@ -28,7 +30,7 @@ export interface HomeFrontendSystemData {
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
-  custom_navigation_paths?: CustomNavigationItem[];
+  custom_shortcuts?: CustomShortcutItem[];
 }
 
 declare global {
