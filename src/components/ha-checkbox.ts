@@ -32,6 +32,8 @@ import { customElement } from "lit/decorators";
  * @cssprop --ha-checkbox-checked-icon-scale - The size of the checked and indeterminate icons relative to the checkbox. Defaults to `0.9`.
  * @cssprop --ha-checkbox-border-radius - The border radius of the checkbox control. Defaults to `--ha-border-radius-sm`.
  * @cssprop --ha-checkbox-border-width - The border width of the checkbox control. Defaults to `--ha-border-width-md`.
+ * @cssprop --ha-checkbox-required-marker - The marker shown after the label for required fields. Defaults to `"*"`.
+ * @cssprop --ha-checkbox-required-marker-offset - Offset of the required marker. Defaults to `0.1rem`.
  *
  * @attr {boolean} checked - Draws the checkbox in a checked state.
  * @attr {boolean} disabled - Disables the checkbox.
@@ -85,6 +87,14 @@ export class HaCheckbox extends WaCheckbox {
           -webkit-tap-highlight-color: transparent;
 
           --checked-icon-scale: var(--ha-checkbox-checked-icon-scale, 0.9);
+          --wa-form-control-required-content: var(
+            --ha-checkbox-required-marker,
+            var(--ha-input-required-marker, "*")
+          );
+          --wa-form-control-required-content-offset: var(
+            --ha-checkbox-required-marker-offset,
+            0.1rem
+          );
         }
 
         [part~="base"] {

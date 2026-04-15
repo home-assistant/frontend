@@ -1,9 +1,9 @@
-import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
-import type { HomeAssistant } from "../../../../../../types";
-import { SecurityClass } from "../../../../../../data/zwave_js";
-import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
+import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
+import { SecurityClass } from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-checkbox";
@@ -87,6 +87,7 @@ export class ZWaveJsAddNodeGrantSecurityClasses extends LitElement {
     .flex-column {
       display: flex;
       flex-direction: column;
+      gap: var(--ha-space-4);
     }
     .secondary {
       color: var(--secondary-text-color);

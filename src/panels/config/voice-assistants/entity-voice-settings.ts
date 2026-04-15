@@ -427,11 +427,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           display: block;
           margin-top: 16px;
         }
-        ha-checkbox {
-          margin-left: -8px;
-          margin-inline-start: -8px;
-          margin-inline-end: initial;
-        }
         .unsupported {
           display: flex;
           align-items: center;
