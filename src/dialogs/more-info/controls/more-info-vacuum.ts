@@ -107,18 +107,16 @@ class MoreInfoVacuum extends LitElement {
         : undefined;
 
       return html`
-        <div class="battery">
-          <span>
-            ${batteryDomain === "binary_sensor"
-              ? ""
-              : `${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%`}
-            <ha-battery-icon
-              .hass=${this.hass}
-              .batteryStateObj=${battery}
-              .batteryChargingStateObj=${batteryCharging}
-            ></ha-battery-icon>
-          </span>
-        </div>
+        <span class="battery" slot="after-time">
+          ${batteryDomain === "binary_sensor"
+            ? ""
+            : `${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%`}
+          <ha-battery-icon
+            .hass=${this.hass}
+            .batteryStateObj=${battery}
+            .batteryChargingStateObj=${batteryCharging}
+          ></ha-battery-icon>
+        </span>
       `;
     }
 
@@ -128,14 +126,12 @@ class MoreInfoVacuum extends LitElement {
       this.stateObj.attributes.battery_level
     ) {
       return html`
-        <div class="battery">
-          <span>
-            ${Math.round(
-              this.stateObj.attributes.battery_level
-            )}${blankBeforePercent(this.hass.locale)}%
-            <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
-          </span>
-        </div>
+        <span class="battery" slot="after-time">
+          ${Math.round(
+            this.stateObj.attributes.battery_level
+          )}${blankBeforePercent(this.hass.locale)}%
+          <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
+        </span>
       `;
     }
 
@@ -310,9 +306,9 @@ class MoreInfoVacuum extends LitElement {
         .hass=${this.hass}
         .stateObj=${this.stateObj}
         .stateOverride=${this._stateOverride}
-      ></ha-more-info-state-header>
-
-      ${this._renderBattery()}
+      >
+        ${this._renderBattery()}
+      </ha-more-info-state-header>
 
       <div class="controls">
         <ha-state-control-vacuum-status
@@ -466,18 +462,11 @@ class MoreInfoVacuum extends LitElement {
       moreInfoControlStyle,
       css`
         .battery {
-          text-align: end;
-          font-size: var(--ha-font-size-s);
-          color: var(--secondary-text-color);
-          margin-top: calc(var(--ha-space-4) * -1);
-          margin-bottom: var(--ha-space-2);
-          padding-inline-end: var(--ha-space-2);
-        }
-
-        .battery span {
           display: inline-flex;
           align-items: center;
           gap: var(--ha-space-1);
+          font-size: var(--ha-font-size-s);
+          color: var(--secondary-text-color);
         }
 
         .battery ha-battery-icon,
@@ -491,7 +480,13 @@ class MoreInfoVacuum extends LitElement {
 
         ha-control-button-group {
           --control-button-group-thickness: 48px;
-          max-width: 450px;
+          justify-content: center;
+        }
+
+        ha-control-button-group ha-control-button {
+          flex: 0 0 auto;
+          width: var(--control-button-group-thickness);
+          --control-button-border-radius: var(--ha-border-radius-lg);
         }
 
         .clean-areas-button {

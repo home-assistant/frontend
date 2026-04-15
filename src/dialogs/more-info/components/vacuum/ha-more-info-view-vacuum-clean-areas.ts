@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon";
@@ -266,7 +267,8 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: var(--ha-space-3) var(--ha-space-2);
+      gap: var(--ha-space-2);
+      padding: 12px;
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       background: var(--card-background-color, #fff);
       border: 1px solid var(--divider-color);
@@ -275,14 +277,15 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
       overflow: hidden;
-      transition: border-color 180ms ease-in-out;
       min-height: 80px;
+      color: var(--primary-text-color);
     }
 
     .area-card::before {
       content: "";
-      position: absolute;
+      display: block;
       inset: 0;
+      position: absolute;
       background-color: transparent;
       pointer-events: none;
       opacity: 0.2;
@@ -293,10 +296,6 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     .area-card:hover::before {
       background-color: var(--divider-color);
-    }
-
-    .area-card.selected {
-      border-color: var(--primary-color);
     }
 
     .area-card.selected::before {
@@ -316,13 +315,13 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       background-color: var(--primary-color);
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-xs);
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
+      z-index: 1;
     }
 
     .area-icon {
       --mdc-icon-size: 28px;
       color: var(--secondary-text-color);
-      margin: var(--ha-space-2) 0;
     }
 
     .area-card.selected .area-icon {
@@ -331,9 +330,11 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     .area-name {
       display: flex;
-      height: var(--ha-space-8);
       align-items: center;
-      font-size: var(--ha-font-size-s);
+      justify-content: center;
+      min-height: var(--ha-space-8);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
       text-align: center;
       line-height: var(--ha-line-height-condensed);
       word-break: break-word;

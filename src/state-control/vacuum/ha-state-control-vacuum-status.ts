@@ -75,156 +75,158 @@ export class HaStateControlVacuumStatus extends LitElement {
           />
 
           <!-- Robot body group -->
-          <g class="vacuum-body">
-            <!-- Side brush (front-right, rendered before body so body covers half) -->
-            <g class="brush brush-right">
-              <g class="brush-spokes">
-                <line
-                  x1="174"
-                  y1="76"
-                  x2="174"
-                  y2="64"
-                  stroke="var(--vacuum-color)"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  opacity="0.5"
-                />
-                <line
-                  x1="174"
-                  y1="76"
-                  x2="174"
-                  y2="88"
-                  stroke="var(--vacuum-color)"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  opacity="0.5"
-                />
-                <line
-                  x1="174"
-                  y1="76"
-                  x2="162"
-                  y2="76"
-                  stroke="var(--vacuum-color)"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  opacity="0.5"
-                />
-                <line
-                  x1="174"
-                  y1="76"
-                  x2="186"
-                  y2="76"
-                  stroke="var(--vacuum-color)"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
+          <g class="vacuum-body-rotate">
+            <g class="vacuum-body">
+              <!-- Side brush (front-right, rendered before body so body covers half) -->
+              <g class="brush brush-right">
+                <g class="brush-spokes">
+                  <line
+                    x1="174"
+                    y1="76"
+                    x2="174"
+                    y2="64"
+                    stroke="var(--vacuum-color)"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    opacity="0.5"
+                  />
+                  <line
+                    x1="174"
+                    y1="76"
+                    x2="174"
+                    y2="88"
+                    stroke="var(--vacuum-color)"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    opacity="0.5"
+                  />
+                  <line
+                    x1="174"
+                    y1="76"
+                    x2="162"
+                    y2="76"
+                    stroke="var(--vacuum-color)"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    opacity="0.5"
+                  />
+                  <line
+                    x1="174"
+                    y1="76"
+                    x2="186"
+                    y2="76"
+                    stroke="var(--vacuum-color)"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    opacity="0.5"
+                  />
+                </g>
+                <circle
+                  cx="174"
+                  cy="76"
+                  r="2"
+                  fill="var(--vacuum-color)"
                   opacity="0.5"
                 />
               </g>
+
+              <!-- Outer body shell -->
               <circle
-                cx="174"
-                cy="76"
-                r="2"
+                cx="120"
+                cy="120"
+                r="72"
+                fill="var(--card-background-color, #fff)"
+                stroke="var(--vacuum-color)"
+                stroke-width="2"
+              />
+
+              <!-- Inner body ring -->
+              <circle
+                cx="120"
+                cy="120"
+                r="66"
+                fill="none"
+                stroke="var(--vacuum-color)"
+                stroke-width="0.8"
+                opacity="0.2"
+              />
+
+              <!-- Bumper arc (front half, prominent) -->
+              <path
+                d="M 60 94 A 68 68 0 0 1 180 94"
+                fill="none"
+                stroke="var(--vacuum-color)"
+                stroke-width="3"
+                stroke-linecap="round"
+                class="bumper"
+              />
+
+              <!-- Direction indicator lines (navigation feel) -->
+              <g class="nav-lines" opacity="0.15">
+                <line
+                  x1="120"
+                  y1="56"
+                  x2="120"
+                  y2="74"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="88"
+                  y1="63"
+                  x2="96"
+                  y2="78"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="152"
+                  y1="63"
+                  x2="144"
+                  y2="78"
+                  stroke="var(--vacuum-color)"
+                  stroke-width="1.5"
+                />
+              </g>
+
+              <!-- LIDAR turret (static) -->
+              <circle
+                cx="120"
+                cy="108"
+                r="14"
+                fill="var(--card-background-color, #fff)"
+                stroke="var(--vacuum-color)"
+                stroke-width="2"
+                class="lidar-housing"
+              />
+              <circle
+                cx="120"
+                cy="108"
+                r="9"
+                fill="none"
+                stroke="var(--vacuum-color)"
+                stroke-width="0.8"
+                opacity="0.25"
+              />
+
+              <!-- Power button area (center) -->
+              <circle
+                cx="120"
+                cy="140"
+                r="8"
                 fill="var(--vacuum-color)"
-                opacity="0.5"
+                opacity="0.08"
+                class="power-ring"
+              />
+              <circle
+                cx="120"
+                cy="140"
+                r="4"
+                fill="var(--vacuum-color)"
+                opacity="0.25"
+                class="power-dot"
               />
             </g>
-
-            <!-- Outer body shell -->
-            <circle
-              cx="120"
-              cy="120"
-              r="72"
-              fill="var(--card-background-color, #fff)"
-              stroke="var(--vacuum-color)"
-              stroke-width="2"
-            />
-
-            <!-- Inner body ring -->
-            <circle
-              cx="120"
-              cy="120"
-              r="66"
-              fill="none"
-              stroke="var(--vacuum-color)"
-              stroke-width="0.8"
-              opacity="0.2"
-            />
-
-            <!-- Bumper arc (front half, prominent) -->
-            <path
-              d="M 60 94 A 68 68 0 0 1 180 94"
-              fill="none"
-              stroke="var(--vacuum-color)"
-              stroke-width="3"
-              stroke-linecap="round"
-              class="bumper"
-            />
-
-            <!-- Direction indicator lines (navigation feel) -->
-            <g class="nav-lines" opacity="0.15">
-              <line
-                x1="120"
-                y1="56"
-                x2="120"
-                y2="74"
-                stroke="var(--vacuum-color)"
-                stroke-width="1.5"
-              />
-              <line
-                x1="88"
-                y1="63"
-                x2="96"
-                y2="78"
-                stroke="var(--vacuum-color)"
-                stroke-width="1.5"
-              />
-              <line
-                x1="152"
-                y1="63"
-                x2="144"
-                y2="78"
-                stroke="var(--vacuum-color)"
-                stroke-width="1.5"
-              />
-            </g>
-
-            <!-- LIDAR turret (static) -->
-            <circle
-              cx="120"
-              cy="108"
-              r="14"
-              fill="var(--card-background-color, #fff)"
-              stroke="var(--vacuum-color)"
-              stroke-width="2"
-              class="lidar-housing"
-            />
-            <circle
-              cx="120"
-              cy="108"
-              r="9"
-              fill="none"
-              stroke="var(--vacuum-color)"
-              stroke-width="0.8"
-              opacity="0.25"
-            />
-
-            <!-- Power button area (center) -->
-            <circle
-              cx="120"
-              cy="140"
-              r="8"
-              fill="var(--vacuum-color)"
-              opacity="0.08"
-              class="power-ring"
-            />
-            <circle
-              cx="120"
-              cy="140"
-              r="4"
-              fill="var(--vacuum-color)"
-              opacity="0.25"
-              class="power-dot"
-            />
           </g>
 
           <!-- Dust particles (cleaning state) - sucked toward vacuum -->
@@ -299,29 +301,6 @@ export class HaStateControlVacuumStatus extends LitElement {
               fill="var(--card-background-color, #fff)"
               stroke="var(--vacuum-color)"
               stroke-width="2"
-            />
-            <!-- Charging contact pads -->
-            <rect
-              x="104"
-              y="186"
-              width="6"
-              height="4"
-              rx="1"
-              fill="var(--vacuum-color)"
-              stroke="var(--vacuum-color)"
-              stroke-width="2"
-              opacity="0.6"
-            />
-            <rect
-              x="130"
-              y="186"
-              width="6"
-              height="4"
-              rx="1"
-              fill="var(--vacuum-color)"
-              stroke="var(--vacuum-color)"
-              stroke-width="2"
-              opacity="0.6"
             />
           </g>
 
@@ -454,6 +433,16 @@ export class HaStateControlVacuumStatus extends LitElement {
     /* ======================== */
     /* RETURNING                */
     /* ======================== */
+    .vacuum-body-rotate {
+      transform-origin: 120px 120px;
+      transform: rotate(0deg);
+      transition: transform 600ms ease-in-out;
+    }
+
+    .returning .vacuum-body-rotate {
+      transform: rotate(180deg);
+    }
+
     .returning .vacuum-body {
       animation: returning-drift 3s ease-in-out infinite;
     }
@@ -560,15 +549,24 @@ export class HaStateControlVacuumStatus extends LitElement {
         opacity: 0;
         transform: translate(var(--particle-x), var(--particle-y)) scale(1.2);
       }
-      15% {
+      25% {
         opacity: 0.8;
       }
-      85% {
-        opacity: 0.5;
+      80% {
+        opacity: 0;
+        transform: translate(
+            calc(var(--particle-x) * 0.82),
+            calc(var(--particle-y) * 0.82)
+          )
+          scale(0.6);
       }
       100% {
         opacity: 0;
-        transform: translate(0, 0) scale(0.2);
+        transform: translate(
+            calc(var(--particle-x) * 0.82),
+            calc(var(--particle-y) * 0.82)
+          )
+          scale(0.6);
       }
     }
 
@@ -646,6 +644,9 @@ export class HaStateControlVacuumStatus extends LitElement {
       .docked .power-ring,
       .error .glow {
         animation: none;
+      }
+      .vacuum-body-rotate {
+        transition: none;
       }
     }
   `;
