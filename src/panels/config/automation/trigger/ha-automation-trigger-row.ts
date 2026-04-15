@@ -317,20 +317,11 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         ${this._pasteAvailable()
           ? html`
-              <ha-dropdown-item value="paste_before">
+              <ha-dropdown-item value="paste">
                 <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_before"
-                  )
-                )}
-              </ha-dropdown-item>
-
-              <ha-dropdown-item value="paste_after">
-                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-                ${this._renderOverflowLabel(
-                  this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_after"
+                    "ui.panel.config.automation.editor.actions.paste"
                   )
                 )}
               </ha-dropdown-item>
@@ -644,8 +635,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       copy: this._copyTrigger,
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
-      pasteBefore: this._pasteBefore,
-      pasteAfter: this._pasteAfter,
+      paste: this._pasteTrigger,
       pasteAvailable: this._pasteAvailable,
       insertAfter: this._insertAfter,
       config: trigger,
@@ -812,18 +802,11 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   };
 
-  private _pasteBefore = () => {
+  private _pasteTrigger = () => {
     const trigger = this._clipboard?.trigger;
     if (!trigger) return;
 
-    fireEvent(this, "paste-before", { item: trigger });
-  };
-
-  private _pasteAfter = () => {
-    const trigger = this._clipboard?.trigger;
-    if (!trigger) return;
-
-    fireEvent(this, "paste-after", { item: trigger });
+    fireEvent(this, "paste", { item: trigger });
   };
 
   private _pasteAvailable = () => !!this._clipboard?.trigger;
@@ -900,11 +883,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       case "cut":
         this._cutTrigger();
         break;
-      case "paste_before":
-        this._pasteBefore();
-        break;
-      case "paste_after":
-        this._pasteAfter();
+      case "paste":
+        this._pasteTrigger();
         break;
       case "move_up":
         this._moveUp();

@@ -214,28 +214,13 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ? html`
               <ha-dropdown-item
                 slot="menu-items"
-                value="paste_before"
+                value="paste"
                 .disabled=${this.disabled}
               >
                 <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
                 <div class="overflow-label">
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_before"
-                  )}
-                  <span
-                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
-                  ></span>
-                </div>
-              </ha-dropdown-item>
-              <ha-dropdown-item
-                slot="menu-items"
-                value="paste_after"
-                .disabled=${this.disabled}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-                <div class="overflow-label">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_after"
+                    "ui.panel.config.automation.editor.actions.paste"
                   )}
                   <span
                     class="shortcut-placeholder ${isMac ? "mac" : ""}"
@@ -386,11 +371,8 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       case "cut":
         this.config.cut();
         break;
-      case "paste_before":
-        this.config.pasteBefore();
-        break;
-      case "paste_after":
-        this.config.pasteAfter();
+      case "paste":
+        this.config.paste();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();

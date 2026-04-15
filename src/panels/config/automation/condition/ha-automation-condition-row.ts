@@ -281,20 +281,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
         ${this._pasteAvailable()
           ? html`
-              <ha-dropdown-item value="paste_before">
+              <ha-dropdown-item value="paste">
                 <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_before"
-                  )
-                )}
-              </ha-dropdown-item>
-
-              <ha-dropdown-item value="paste_after">
-                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-                ${this._renderOverflowLabel(
-                  this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_after"
+                    "ui.panel.config.automation.editor.actions.paste"
                   )
                 )}
               </ha-dropdown-item>
@@ -712,18 +703,11 @@ export default class HaAutomationConditionRow extends LitElement {
     });
   };
 
-  private _pasteBefore = () => {
+  private _pasteCondition = () => {
     const condition = this._clipboard?.condition;
     if (!condition) return;
 
-    fireEvent(this, "paste-before", { item: condition });
-  };
-
-  private _pasteAfter = () => {
-    const condition = this._clipboard?.condition;
-    if (!condition) return;
-
-    fireEvent(this, "paste-after", { item: condition });
+    fireEvent(this, "paste", { item: condition });
   };
 
   private _pasteAvailable = () => !!this._clipboard?.condition;
@@ -831,8 +815,7 @@ export default class HaAutomationConditionRow extends LitElement {
       insertAfter: this._insertAfter,
       copy: this._copyCondition,
       cut: this._cutCondition,
-      pasteBefore: this._pasteBefore,
-      pasteAfter: this._pasteAfter,
+      paste: this._pasteCondition,
       pasteAvailable: this._pasteAvailable,
       test: this._testCondition,
       config: sidebarCondition,
@@ -902,11 +885,8 @@ export default class HaAutomationConditionRow extends LitElement {
       case "cut":
         this._cutCondition();
         break;
-      case "paste_before":
-        this._pasteBefore();
-        break;
-      case "paste_after":
-        this._pasteAfter();
+      case "paste":
+        this._pasteCondition();
         break;
       case "move_up":
         this._moveUp();

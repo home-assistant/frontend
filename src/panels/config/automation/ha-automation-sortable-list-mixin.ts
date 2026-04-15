@@ -165,27 +165,18 @@ export const AutomationSortableListMixin = <T extends object>(
       });
     }
 
-    protected pasteBefore(ev: CustomEvent) {
-      this.pasteItem(ev, "before");
-    }
-
-    protected pasteAfter(ev: CustomEvent) {
-      this.pasteItem(ev, "after");
-    }
-
-    protected pasteItem(ev: CustomEvent, mode: "before" | "after") {
+    protected pasteItem(ev: CustomEvent) {
       ev.stopPropagation();
       if (!ev.detail.item) return;
 
       const index = (ev.target as any).index;
       const clonedItem = deepClone(ev.detail.item);
-      const offset = mode === "before" ? 0 : 1;
 
       this.setHighlightedItems(ensureArray(clonedItem));
 
       fireEvent(this, "value-changed", {
         // @ts-expect-error Requires library bump to ES2023
-        value: this.items.toSpliced(index + offset, 0, clonedItem),
+        value: this.items.toSpliced(index + 1, 0, clonedItem),
       });
     }
 

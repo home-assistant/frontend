@@ -137,8 +137,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 .trigger=${trg}
                 .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this.duplicateItem}
-                @paste-before=${this.pasteBefore}
-                @paste-after=${this.pasteAfter}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}

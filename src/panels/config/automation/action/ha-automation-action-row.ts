@@ -388,20 +388,11 @@ export default class HaAutomationActionRow extends LitElement {
 
         ${this._pasteAvailable()
           ? html`
-              <ha-dropdown-item value="paste_before">
+              <ha-dropdown-item value="paste">
                 <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_before"
-                  )
-                )}
-              </ha-dropdown-item>
-
-              <ha-dropdown-item value="paste_after">
-                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-                ${this._renderOverflowLabel(
-                  this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste_after"
+                    "ui.panel.config.automation.editor.actions.paste"
                   )
                 )}
               </ha-dropdown-item>
@@ -816,18 +807,11 @@ export default class HaAutomationActionRow extends LitElement {
     });
   };
 
-  private _pasteBefore = () => {
+  private _pasteAction = () => {
     const action = this._clipboard?.action;
     if (!action) return;
 
-    fireEvent(this, "paste-before", { item: action });
-  };
-
-  private _pasteAfter = () => {
-    const action = this._clipboard?.action;
-    if (!action) return;
-
-    fireEvent(this, "paste-after", { item: action });
+    fireEvent(this, "paste", { item: action });
   };
 
   private _pasteAvailable = () => !!this._clipboard?.action;
@@ -909,8 +893,7 @@ export default class HaAutomationActionRow extends LitElement {
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
-      pasteBefore: this._pasteBefore,
-      pasteAfter: this._pasteAfter,
+      paste: this._pasteAction,
       pasteAvailable: this._pasteAvailable,
       duplicate: this._duplicateAction,
       insertAfter: this._insertAfter,
@@ -1005,11 +988,8 @@ export default class HaAutomationActionRow extends LitElement {
       case "cut":
         this._cutAction();
         break;
-      case "paste_before":
-        this._pasteBefore();
-        break;
-      case "paste_after":
-        this._pasteAfter();
+      case "paste":
+        this._pasteAction();
         break;
       case "move_up":
         this._moveUp();
