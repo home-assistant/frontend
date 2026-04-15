@@ -126,21 +126,43 @@ class HuiEnergyGridBalanceCard
                 "ui.panel.lovelace.cards.energy.grid_balance.title"
               )}
             </span>
-            <span slot="secondary" class="equation" id="equation">
-              <span class="imported"> ${fmt(imported)} kWh </span>
+            <span slot="secondary" class="equation">
+              <span class="imported" id="eq-imported">
+                ${fmt(imported)} kWh
+              </span>
+              <ha-tooltip for="eq-imported" placement="top">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.grid_balance.imported",
+                  { value: fmt(imported) }
+                )}
+              </ha-tooltip>
               <span class="operator"> - </span>
-              <span class="exported"> ${fmt(exported)} kWh </span>
+              <span class="exported" id="eq-exported">
+                ${fmt(exported)} kWh
+              </span>
+              <ha-tooltip for="eq-exported" placement="top">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.grid_balance.exported",
+                  { value: fmt(exported) }
+                )}
+              </ha-tooltip>
               <span class="operator"> = </span>
-              <span class="net ${isConsumption ? "consumption" : "return"}">
+              <span
+                class="net ${isConsumption ? "consumption" : "return"}"
+                id="eq-net"
+              >
                 ${fmt(net)} kWh
               </span>
+              <ha-tooltip for="eq-net" placement="top">
+                ${this.hass.localize(
+                  isConsumption
+                    ? "ui.panel.lovelace.cards.energy.grid_balance.net_import"
+                    : "ui.panel.lovelace.cards.energy.grid_balance.net_export",
+                  { value: fmt(Math.abs(net)) }
+                )}
+              </ha-tooltip>
             </span>
           </ha-tile-info>
-          <ha-tooltip for="equation" placement="top">
-            ${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.grid_balance.tooltip"
-            )}
-          </ha-tooltip>
         </div>
         <div class="bar">
           <div class="bar-half bar-left">
