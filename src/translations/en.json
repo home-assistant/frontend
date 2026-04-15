@@ -3692,7 +3692,7 @@
               },
               "viewport_environment": {
                 "title": "Device and browser environment",
-                "description": "CSS env() and theme variables, media features, screen and viewport metrics, and other layout values for this device. Updates when the viewport changes. Use the editor toolbar to copy."
+                "description": "Snapshot of CSS environment values, media features, and viewport-related values."
               }
             },
             "events": {
