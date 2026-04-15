@@ -104,8 +104,7 @@ export class HaSelectSelector extends LitElement {
     if (
       !this.selector.select?.custom_value &&
       !this.selector.select?.reorder &&
-      this._mode === "list" &&
-      false
+      this._mode === "list"
     ) {
       if (!this.selector.select?.multiple) {
         return html`
