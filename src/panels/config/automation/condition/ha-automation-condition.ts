@@ -25,6 +25,7 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../automation-editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -43,6 +44,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   @property({ attribute: false }) public highlightedConditions?: Condition[];
 
   @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
@@ -280,6 +283,9 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 

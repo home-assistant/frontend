@@ -101,6 +101,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .highlightedTriggers=${this.pastedConfig?.triggers}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
+        .editorDirty=${this.dirty}
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this.openSidebar}
@@ -136,6 +137,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .highlightedConditions=${this.pastedConfig?.conditions}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
+        .editorDirty=${this.dirty}
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this.openSidebar}
@@ -170,6 +172,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         @request-close-sidebar=${this.triggerCloseSidebar}
         @close-sidebar=${this.handleCloseSidebar}
         .hass=${this.hass}
+        .editorDirty=${this.dirty}
         .narrow=${this.narrow}
         .disabled=${this.disabled || this.saving}
         root

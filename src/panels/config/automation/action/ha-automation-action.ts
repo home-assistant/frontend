@@ -16,6 +16,7 @@ import {
 } from "../../../../data/action";
 import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
+import { AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../automation-editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -30,6 +31,8 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
   LitElement
 ) {
   @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
   @property({ attribute: false }) public actions!: Action[];
 
@@ -192,6 +195,9 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
       type: "action",
       add: this._addAction,
       clipboardItem: getAutomationActionType(this._clipboard?.action),
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 
