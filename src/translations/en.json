@@ -9701,7 +9701,7 @@
             },
             "shortcut": {
               "name": "Shortcut",
-              "description": "A badge that triggers an action like navigating to a page, opening a URL, or calling a service."
+              "description": "A badge that triggers navigating to a page, opening a URL, or performing an action."
             },
             "generic": {
               "manual": "Manual",
