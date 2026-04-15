@@ -40,10 +40,10 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
 
   public setConfig(config: ShortcutBadgeConfig): void {
     this._config = {
-      ...config,
       tap_action: {
         action: "none",
       },
+      ...config,
     };
   }
 
@@ -82,7 +82,7 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
       this._config.tap_action,
       this._navInfo.info
     );
-    const text = this._config.text || defaults.label;
+    const text = (this._config.text || defaults.label).trim();
     const icon = this._config.icon || defaults.icon;
     const iconPath = icon ? undefined : defaults.iconPath;
 
