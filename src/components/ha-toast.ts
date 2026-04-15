@@ -22,11 +22,15 @@ export interface ToastClosedEventDetail {
   reason: ToastCloseReason;
 }
 
+export type ToastPosition = "bottom" | "top";
+
 @customElement("ha-toast")
 export class HaToast extends LitElement {
   @property({ attribute: "label-text" }) public labelText = "";
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
+
+  @property({ type: String }) public position: ToastPosition = "bottom";
 
   @query(".toast")
   private _toast?: HTMLDivElement;
@@ -185,6 +189,7 @@ export class HaToast extends LitElement {
           toast: true,
           active: this._active,
           visible: this._visible,
+          "position-top": this.position === "top",
         })}
         role="status"
         aria-live="polite"
@@ -202,11 +207,7 @@ export class HaToast extends LitElement {
   static override styles = css`
     .toast {
       position: fixed;
-      inset-block-start: auto;
       inset-inline-end: auto;
-      inset-block-end: calc(
-        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
-      );
       inset-inline-start: 50%;
       margin: 0;
       width: max-content;
@@ -226,19 +227,40 @@ export class HaToast extends LitElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: var(--wa-shadow-l);
       opacity: 0;
-      transform: translate(-50%, var(--ha-space-2));
       transition:
         opacity var(--ha-animation-duration-fast, 150ms) ease,
         transform var(--ha-animation-duration-fast, 150ms) ease;
     }
 
-    .toast:not(.active) {
-      display: none;
+    .toast:not(.position-top) {
+      inset-block-start: auto;
+      inset-block-end: calc(
+        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
+      );
+      transform: translate(-50%, var(--ha-space-2));
     }
 
-    .toast.visible {
+    .toast:not(.position-top).visible {
       opacity: 1;
       transform: translate(-50%, 0);
+    }
+
+    .toast.position-top {
+      inset-block-end: auto;
+      inset-block-start: max(
+        var(--safe-area-inset-top, 0px),
+        calc(var(--header-height, 56px) + var(--ha-space-2))
+      );
+      transform: translate(-50%, calc(-1 * var(--ha-space-2)));
+    }
+
+    .toast.position-top.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .toast:not(.active) {
+      display: none;
     }
 
     .message {
