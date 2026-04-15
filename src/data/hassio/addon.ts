@@ -1,9 +1,14 @@
+import { getCollection, type Connection } from "home-assistant-js-websocket";
 import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import type { HomeAssistant, TranslationDict } from "../../types";
 import { supervisorApiCall } from "../supervisor/common";
 import type { StoreAddonDetails } from "../supervisor/store";
-import type { Supervisor, SupervisorArch } from "../supervisor/supervisor";
+import {
+  supervisorApiWsRequest,
+  type Supervisor,
+  type SupervisorArch,
+} from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
 import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
 
@@ -405,6 +410,32 @@ export const fetchAddonInfo = (
       ? `/store/addons/${addonSlug}` // Use /store/addons when app is not installed
       : `/addons/${addonSlug}/info` // Use /addons when app is installed
   );
+
+export interface AddonPanelInfo {
+  title: string;
+  icon: string;
+}
+
+type AddonPanelInfoMap = Record<string, AddonPanelInfo>;
+
+interface IngressPanelsResponse {
+  panels: Record<string, { title: string; icon: string }>;
+}
+
+export const getAddonPanelInfoCollection = (conn: Connection) =>
+  getCollection<AddonPanelInfoMap>(conn, "_addonPanelInfo", async (conn2) => {
+    const result = await supervisorApiWsRequest<IngressPanelsResponse>(conn2, {
+      endpoint: "/ingress/panels",
+    });
+    const map: AddonPanelInfoMap = {};
+    for (const [slug, panel] of Object.entries(result.panels)) {
+      map[slug] = {
+        title: panel.title,
+        icon: panel.icon,
+      };
+    }
+    return map;
+  });
 
 export const rebuildLocalAddon = async (
   hass: HomeAssistant,
