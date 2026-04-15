@@ -130,15 +130,6 @@ interface ViewportEnvironmentSnapshot {
       angle: number;
     };
   };
-  visualViewport: null | {
-    width: number;
-    height: number;
-    scale: number;
-    offsetLeft: number;
-    offsetTop: number;
-    pageLeft: number;
-    pageTop: number;
-  };
 }
 
 function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
@@ -158,8 +149,6 @@ function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
   for (const name of HA_LAYOUT_CSS_VARS) {
     cssVariables[name] = rootStyle.getPropertyValue(name).trim();
   }
-
-  const vv = window.visualViewport;
 
   let orientation: ViewportEnvironmentSnapshot["screen"]["orientation"] = null;
   try {
@@ -201,17 +190,6 @@ function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
       pixelDepth: window.screen.pixelDepth,
       orientation,
     },
-    visualViewport: vv
-      ? {
-          width: vv.width,
-          height: vv.height,
-          scale: vv.scale,
-          offsetLeft: vv.offsetLeft,
-          offsetTop: vv.offsetTop,
-          pageLeft: vv.pageLeft,
-          pageTop: vv.pageTop,
-        }
-      : null,
   };
 }
 
@@ -253,9 +231,7 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const text = this._snapshot
-      ? JSON.stringify(this._snapshot, null, 2)
-      : "";
+    const text = this._snapshot ? JSON.stringify(this._snapshot, null, 2) : "";
 
     return html`
       <ha-card
