@@ -20,7 +20,6 @@ import type {
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
-import { DEFAULT_VIEW_HEADER_BADGES_WRAP } from "../views/hui-view-header";
 import type { HeadingCardConfig } from "./types";
 
 export const migrateHeadingCardConfig = (
@@ -56,7 +55,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
   @state() private _config?: HeadingCardConfig;
 
   private _dragScrollController = new DragScrollController(this, {
-    selector: ".badges.scroll",
+    selector: ".badges",
     enabled: false,
   });
 
@@ -65,7 +64,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       tap_action: {
         action: "none",
       },
-      badges_wrap: DEFAULT_VIEW_HEADER_BADGES_WRAP,
       ...migrateHeadingCardConfig(config),
     };
   }
@@ -75,8 +73,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._dragScrollController.enabled =
-      !this.preview && this._config?.badges_wrap === "scroll";
+    this._dragScrollController.enabled = !this.preview;
   }
 
   public getCardSize(): number {
@@ -105,8 +102,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     const style = this._config.heading_style || "title";
 
     const badges = this._config.badges;
-    const badgesWrap =
-      this._config.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
     const badgeDragging = this._dragScrollController.scrolling;
 
     return html`
@@ -132,7 +127,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                 <div
                   class=${classMap({
                     badges: true,
-                    [badgesWrap]: true,
                     dragging: badgeDragging,
                   })}
                 >
@@ -249,13 +243,24 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       display: flex;
       flex: 0 1 auto;
       min-width: 0;
+      overflow: auto;
+      max-width: 100%;
+      scrollbar-color: var(--scrollbar-thumb-color) transparent;
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        black var(--ha-space-4),
+        black calc(100% - var(--ha-space-4)),
+        transparent 100%
+      );
     }
     .badges-row {
       display: flex;
       flex-direction: row;
       align-items: center;
-      flex-wrap: var(--badges-wrap, wrap);
-      justify-content: var(--badges-aligmnent, flex-end);
+      flex-wrap: nowrap;
+      justify-content: flex-start;
       gap: var(--ha-space-2);
       margin: 0;
     }
@@ -280,22 +285,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     .badges-row > * {
       min-width: fit-content;
     }
-    .badges.scroll {
-      overflow: auto;
-      max-width: 100%;
-      scrollbar-color: var(--scrollbar-thumb-color) transparent;
-      scrollbar-width: none;
-      mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        black var(--ha-space-4),
-        black calc(100% - var(--ha-space-4)),
-        transparent 100%
-      );
-    }
-    .badges.scroll .badges-row {
-      --badges-wrap: nowrap;
-      --badges-aligmnent: flex-start;
+    .badges .badges-row {
       --badge-padding: var(--ha-space-4);
     }
     .badges.dragging {

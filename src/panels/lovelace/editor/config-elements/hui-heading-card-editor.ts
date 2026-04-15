@@ -12,7 +12,6 @@ import {
   optional,
   string,
 } from "superstruct";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -26,7 +25,6 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 import type { HeadingCardConfig } from "../../cards/types";
-import { DEFAULT_VIEW_HEADER_BADGES_WRAP } from "../../views/hui-view-header";
 import {
   ACTION_RELATED_CONTEXT,
   type UiAction,
@@ -41,7 +39,6 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-heading-badges-editor";
-import { getViewHeaderBadgesWrapFormSchema } from "../view-header/view-header-badges-wrap-form-schema";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -53,7 +50,6 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
     badges: optional(array(any())),
-    badges_wrap: optional(enums(["wrap", "scroll"])),
   })
 );
 
@@ -65,23 +61,6 @@ export class HuiHeadingCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HeadingCardConfig;
-
-  @state({ attribute: false }) private narrow = false;
-
-  private _unsubMql?: () => void;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(max-width: 600px)", (matches) => {
-      this.narrow = matches;
-    });
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
 
   public setConfig(config: HeadingCardConfig): void {
     this._config = migrateHeadingCardConfig(config);
@@ -138,11 +117,6 @@ export class HuiHeadingCardEditor
       badges || []
   );
 
-  private _badgesWrapSchema = memoizeOne(
-    (localize: LocalizeFunc, narrow: boolean) =>
-      [getViewHeaderBadgesWrapFormSchema(localize, narrow)] as const
-  );
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -157,15 +131,6 @@ export class HuiHeadingCardEditor
     }
 
     const schema = this._schema(this.hass!.localize);
-    const hasBadges = (this._config.badges?.length ?? 0) > 0;
-    const badgesWrapData = {
-      ...data,
-      badges_wrap: data.badges_wrap || DEFAULT_VIEW_HEADER_BADGES_WRAP,
-    };
-    const badgesWrapSchema = this._badgesWrapSchema(
-      this.hass.localize,
-      this.narrow
-    );
 
     return html`
       <ha-form
@@ -188,18 +153,6 @@ export class HuiHeadingCardEditor
             @edit-heading-badge=${this._editBadge}
           >
           </hui-heading-badges-editor>
-          ${hasBadges
-            ? html`
-                <ha-form
-                  class="features-form"
-                  .hass=${this.hass}
-                  .data=${badgesWrapData}
-                  .schema=${badgesWrapSchema}
-                  .computeLabel=${this._computeBadgesWrapLabel}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `
-            : nothing}
         </div>
       </ha-expansion-panel>
     `;
@@ -270,15 +223,6 @@ export class HuiHeadingCardEditor
     }
   };
 
-  private _computeBadgesWrapLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._badgesWrapSchema>>
-  ) =>
-    schema.name === "badges_wrap"
-      ? this.hass!.localize(
-          "ui.panel.lovelace.editor.edit_view_header.settings.badges_wrap"
-        )
-      : "";
-
   static get styles() {
     return [
       configElementStyle,
@@ -290,10 +234,6 @@ export class HuiHeadingCardEditor
         ha-form {
           display: block;
           margin-bottom: var(--ha-space-6);
-        }
-        .features-form {
-          margin-top: var(--ha-space-6);
-          margin-bottom: 0;
         }
       `,
     ];
