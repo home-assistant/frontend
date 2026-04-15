@@ -128,6 +128,17 @@ export class HaIcon extends LitElement {
       return;
     }
 
+    if (iconName === "music-assistant") {
+      const icon = (await import("../resources/music-assistant-logo-svg"))
+        .mdiMusicAssistant;
+
+      if (this.icon === requestedIcon) {
+        this._path = icon;
+      }
+      cachedIcons[iconName] = icon;
+      return;
+    }
+
     let databaseIcon: string | undefined;
     try {
       databaseIcon = await getIcon(iconName);
