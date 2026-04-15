@@ -78,7 +78,7 @@ export class HaTextSelector extends LitElement {
     return html`<ha-input
       .name=${this.name}
       .value=${this.value || ""}
-      .placeholder=${this.placeholder || ""}
+      .placeholder=${this.placeholder || this.selector.text?.placeholder || ""}
       .hint=${this.helper}
       .disabled=${this.disabled}
       .type=${this.selector.text?.type}
