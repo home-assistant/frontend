@@ -76,7 +76,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
     const optionalResponse =
       domain && service
-        ? this.hass.services[domain][service].response!.optional
+        ? !!this.hass.services[domain]?.[service]?.response?.optional
         : false;
 
     return html`

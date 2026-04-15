@@ -1,10 +1,10 @@
-import { preventDefault } from "@fullcalendar/core/internal";
 import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
 import { styles as controlStyles } from "@material/mwc-list/mwc-control-list-item.css";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { preventDefault } from "../common/dom/prevent_default";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-checkbox";
 
