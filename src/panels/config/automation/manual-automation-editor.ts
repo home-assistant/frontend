@@ -32,7 +32,7 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { showToast } from "../../../util/toast";
+import { showAutomationEditorToast } from "./automation-editor-toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
@@ -223,7 +223,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     try {
       loaded = load(paste);
     } catch (_err: any) {
-      showToast(this, {
+      showAutomationEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.automation.editor.paste_invalid_yaml"
         ),
@@ -297,7 +297,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     try {
       assert(normalized, automationConfigStruct);
     } catch (_err: any) {
-      showToast(this, {
+      showAutomationEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.automation.editor.paste_invalid_config"
         ),
@@ -391,7 +391,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
   }
 
   protected showPastedToastWithUndo() {
-    showToast(this, {
+    showAutomationEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.paste_toast_message"
       ),

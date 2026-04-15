@@ -37,7 +37,7 @@ import type { Action, Option } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showToast } from "../../../../util/toast";
+import { showAutomationEditorToast } from "../automation-editor-toast";
 import "../action/ha-automation-action";
 import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
@@ -385,7 +385,7 @@ export default class HaAutomationOptionRow extends LitElement {
         fireEvent(this, "close-sidebar");
       }
 
-      showToast(this, {
+      showAutomationEditorToast(this, {
         message: this.hass.localize("ui.common.successfully_deleted"),
         duration: 4000,
         action: {
