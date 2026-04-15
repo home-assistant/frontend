@@ -3,8 +3,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import type { ConnectionStatus } from "../../../data/connection-status";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
@@ -124,27 +122,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     if (this.hasUpdated) {
       this._subscribeHistory();
     }
-    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
-    window.removeEventListener(
-      "connection-status",
-      this._handleConnectionStatus
-    );
   }
-
-  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
-    if (ev.detail === "connected") {
-      this._unsubscribeHistory();
-      this._stateHistory = undefined;
-      this._statisticsHistory = undefined;
-      this._error = undefined;
-      this._subscribeHistory();
-    }
-  };
 
   private async _subscribeHistory() {
     if (!isComponentLoaded(this.hass!.config, "history") || this._subscribed) {

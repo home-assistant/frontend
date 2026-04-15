@@ -3,8 +3,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
-import type { ConnectionStatus } from "../../data/connection-status";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
@@ -147,29 +145,12 @@ export class MoreInfoHistory extends LitElement {
     if (this.hasUpdated && this.entityId) {
       this._getStateHistory();
     }
-    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
-    window.removeEventListener(
-      "connection-status",
-      this._handleConnectionStatus
-    );
   }
-
-  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
-    if (ev.detail === "connected") {
-      this._unsubscribeHistory();
-      this._stateHistory = undefined;
-      this._statistics = undefined;
-      this._error = undefined;
-      if (this.entityId) {
-        this._getStateHistory();
-      }
-    }
-  };
 
   private _unsubscribeHistory() {
     clearInterval(this._interval);

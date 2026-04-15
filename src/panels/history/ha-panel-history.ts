@@ -16,8 +16,6 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
-import type { ConnectionStatus } from "../../data/connection-status";
 import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -109,27 +107,12 @@ class HaPanelHistory extends LitElement {
     if (this.hasUpdated) {
       this._getHistory();
     }
-    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
-    window.removeEventListener(
-      "connection-status",
-      this._handleConnectionStatus
-    );
   }
-
-  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
-    if (ev.detail === "connected") {
-      this._unsubscribeHistory();
-      this._stateHistory = undefined;
-      this._statisticsHistory = undefined;
-      this._getHistory();
-      this._getStats();
-    }
-  };
 
   private _goBack(): void {
     goBack();

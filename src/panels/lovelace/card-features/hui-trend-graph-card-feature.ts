@@ -3,11 +3,9 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
 import "../../../components/ha-spinner";
-import type { ConnectionStatus } from "../../../data/connection-status";
 import {
   limitedHistoryFromStateObj,
   subscribeHistoryStatesTimeWindow,
@@ -83,17 +81,12 @@ class HuiHistoryChartCardFeature
     if (this.hasUpdated) {
       this._subscribeHistory();
     }
-    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearInterval(this._interval);
     this._unsubscribeHistory();
-    window.removeEventListener(
-      "connection-status",
-      this._handleConnectionStatus
-    );
   }
 
   protected firstUpdated() {
@@ -130,15 +123,6 @@ class HuiHistoryChartCardFeature
       ></hui-graph-base>
     `;
   }
-
-  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
-    if (ev.detail === "connected") {
-      this._unsubscribeHistory();
-      this._coordinates = undefined;
-      this._error = undefined;
-      this._subscribeHistory();
-    }
-  };
 
   private _unsubscribeHistory() {
     if (this._subscribed) {
