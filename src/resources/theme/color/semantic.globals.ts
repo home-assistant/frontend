@@ -316,8 +316,8 @@ export const darkSemanticColorStyles = css`
     --ha-color-form-background-disabled: var(--ha-color-neutral-20);
     --ha-color-surface-low: var(--ha-color-neutral-05);
     --ha-color-surface-lower: var(--ha-color-black);
-    --ha-color-surface-default-inverted: var(--ha-color-white);  // Will be used for ha-tooltip task
-    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);  // Will be used for ha-tooltip task
-    --ha-color-surface-lower-inverted: var(--ha-color-90);  // Will be used for ha-tooltip task
+    --ha-color-surface-default-inverted: var(--ha-color-white);
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
+    --ha-color-surface-lower-inverted: var(--ha-color-90);
   }
 `;
