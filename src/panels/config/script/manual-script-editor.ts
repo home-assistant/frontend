@@ -30,7 +30,7 @@ import {
   normalizeScriptConfig,
 } from "../../../data/script";
 import { documentationUrl } from "../../../util/documentation-url";
-import { showAutomationEditorToast } from "../automation/automation-editor-toast";
+import { showEditorToast } from "../automation/editor-toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import { ManualEditorMixin } from "../automation/ha-manual-editor-mixin";
@@ -199,7 +199,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     try {
       loaded = load(paste);
     } catch (_err: any) {
-      showAutomationEditorToast(this, {
+      showEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.script.editor.paste_invalid_config"
         ),
@@ -249,7 +249,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     try {
       assert(normalized, scriptConfigStruct);
     } catch (_err: any) {
-      showAutomationEditorToast(this, {
+      showEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.script.editor.paste_invalid_config"
         ),
@@ -334,7 +334,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
   }
 
   protected showPastedToastWithUndo() {
-    showAutomationEditorToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.script.editor.paste_toast_message"
       ),

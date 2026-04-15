@@ -25,7 +25,7 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../automation-editor-toast";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -284,7 +284,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
       clipboardPasteToastBottomOffset: this.editorDirty
-        ? AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
     });
   }

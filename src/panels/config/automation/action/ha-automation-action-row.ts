@@ -77,7 +77,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showAutomationEditorToast } from "../automation-editor-toast";
+import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
@@ -688,7 +688,7 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
 
-    showAutomationEditorToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.run_action_success"
       ),
@@ -701,7 +701,7 @@ export default class HaAutomationActionRow extends LitElement {
       fireEvent(this, "close-sidebar");
     }
 
-    showAutomationEditorToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.successfully_deleted"),
       duration: 4000,
       action: {
@@ -769,7 +769,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _copyAction = () => {
     this._setClipboard();
-    showAutomationEditorToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.copied_to_clipboard"
       ),
@@ -783,7 +783,7 @@ export default class HaAutomationActionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
-    showAutomationEditorToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.cut_to_clipboard"
       ),

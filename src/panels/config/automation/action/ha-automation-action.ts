@@ -16,7 +16,7 @@ import {
 } from "../../../../data/action";
 import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
-import { AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../automation-editor-toast";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -196,7 +196,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
       add: this._addAction,
       clipboardItem: getAutomationActionType(this._clipboard?.action),
       clipboardPasteToastBottomOffset: this.editorDirty
-        ? AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
     });
   }

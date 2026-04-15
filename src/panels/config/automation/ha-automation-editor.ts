@@ -71,7 +71,7 @@ import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showAutomationEditorToast } from "./automation-editor-toast";
+import { showEditorToast } from "./editor-toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
@@ -914,7 +914,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private async _handleSaveAutomation(): Promise<void> {
     if (this.yamlErrors) {
-      showAutomationEditorToast(this, {
+      showEditorToast(this, {
         message: this.yamlErrors,
       });
       return;
@@ -997,7 +997,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.dirty = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
-      showAutomationEditorToast(this, {
+      showEditorToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;

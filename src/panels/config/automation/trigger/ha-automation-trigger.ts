@@ -23,7 +23,7 @@ import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../automation-editor-toast";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -201,7 +201,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
           ? "list"
           : this._clipboard?.trigger?.trigger,
       clipboardPasteToastBottomOffset: this.editorDirty
-        ? AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
     });
   }
