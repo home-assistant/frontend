@@ -104,7 +104,8 @@ export class HaSelectSelector extends LitElement {
     if (
       !this.selector.select?.custom_value &&
       !this.selector.select?.reorder &&
-      this._mode === "list"
+      this._mode === "list" &&
+      false
     ) {
       if (!this.selector.select?.multiple) {
         return html`
@@ -231,7 +232,9 @@ export class HaSelectSelector extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${typeof this.value === "string" ? this.value : ""}
+        .value=${["string", "number"].includes(typeof this.value)
+          ? (this.value as string | number)
+          : ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -255,10 +258,7 @@ export class HaSelectSelector extends LitElement {
     (selector: SelectSelector) =>
       selector.select?.options?.map((option) =>
         typeof option === "object"
-          ? {
-              ...option,
-              value: String(option.value),
-            }
+          ? (option as SelectOption)
           : ({ value: String(option), label: option } as SelectOption)
       ) || []
   );
@@ -303,7 +303,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private _valueChanged(ev) {
-    const value = ev.detail?.value || ev.target.value;
+    const value = ev.detail?.value ?? ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
     }
