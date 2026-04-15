@@ -216,14 +216,12 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
     this._snapshot = collectViewportEnvironmentSnapshot();
     window.addEventListener("resize", this._boundRefresh);
     window.visualViewport?.addEventListener("resize", this._boundRefresh);
-    window.visualViewport?.addEventListener("scroll", this._boundRefresh);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._boundRefresh);
     window.visualViewport?.removeEventListener("resize", this._boundRefresh);
-    window.visualViewport?.removeEventListener("scroll", this._boundRefresh);
     if (this._raf) {
       cancelAnimationFrame(this._raf);
       this._raf = 0;
