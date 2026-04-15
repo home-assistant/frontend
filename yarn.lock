@@ -2556,7 +2556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-checkbox@npm:0.27.0, @material/mwc-checkbox@npm:^0.27.0":
+"@material/mwc-checkbox@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-checkbox@npm:0.27.0"
   dependencies:
@@ -8892,7 +8892,6 @@ __metadata:
     "@lokalise/node-api": "npm:15.7.1"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
-    "@material/mwc-checkbox": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
