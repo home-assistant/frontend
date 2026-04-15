@@ -1,4 +1,3 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -7,12 +6,8 @@ import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import {
-  DEFAULT_NAVIGATION_PATH_INFO,
-  subscribeNavigationPathInfo,
-  type NavigationPathInfo,
-} from "../../../data/compute-navigation-path-info";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -46,11 +41,7 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ShortcutCardConfig;
 
-  private _navInfo: NavigationPathInfo = DEFAULT_NAVIGATION_PATH_INFO;
-
-  private _unsubNavInfo?: UnsubscribeFunc;
-
-  private _subscribedPath?: string;
+  private _navInfo = new NavigationPathInfoController(this);
 
   public setConfig(config: ShortcutCardConfig): void {
     this._config = {
@@ -59,20 +50,6 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
       },
       ...config,
     };
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._updateNavInfo();
-    }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._unsubNavInfo?.();
-    this._unsubNavInfo = undefined;
-    this._subscribedPath = undefined;
   }
 
   public getCardSize(): number {
@@ -97,37 +74,16 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if (changedProps.has("hass") || changedProps.has("_config")) {
-      this._updateNavInfo();
+    if (
+      (changedProps.has("hass") || changedProps.has("_config")) &&
+      this.hass
+    ) {
+      const action = this._config?.tap_action;
+      this._navInfo.update(
+        this.hass,
+        action?.action === "navigate" ? action.navigation_path : undefined
+      );
     }
-  }
-
-  private _updateNavInfo(): void {
-    if (!this.hass) return;
-
-    const action = this._config?.tap_action;
-    const navPath =
-      action?.action === "navigate" ? action.navigation_path : undefined;
-
-    if (navPath === this._subscribedPath) return;
-
-    this._unsubNavInfo?.();
-    this._unsubNavInfo = undefined;
-    this._subscribedPath = navPath;
-
-    if (!navPath) {
-      this._navInfo = DEFAULT_NAVIGATION_PATH_INFO;
-      return;
-    }
-
-    this._unsubNavInfo = subscribeNavigationPathInfo(
-      this.hass,
-      navPath,
-      (info) => {
-        this._navInfo = info;
-        this.requestUpdate();
-      }
-    );
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -150,7 +106,7 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
     const defaults = getShortcutCardDefaults(
       this.hass,
       this._config.tap_action,
-      this._navInfo
+      this._navInfo.info
     );
     const label = this._config.label || defaults.label;
     const description = this._config.description;

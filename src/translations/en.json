@@ -9417,9 +9417,10 @@
             },
             "shortcut": {
               "name": "Shortcut",
-              "description": "A tile that triggers an action like navigating to a page, opening a URL, or calling a service.",
+              "description": "A card that triggers navigating to a page, opening a URL, or performing an action.",
               "label": "Label",
               "card_description": "Description",
+              "text": "Text",
               "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
               "additional_interactions": "Additional interactions"
             },
@@ -9698,6 +9699,10 @@
                 "name": "Name",
                 "state": "State"
               }
+            },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A badge that triggers navigating to a page, opening a URL, or performing an action."
             },
             "generic": {
               "manual": "Manual",
