@@ -178,10 +178,7 @@ export class HuiHeadingCardEditor
       return;
     }
 
-    const config: HeadingCardConfig = {
-      ...this._config,
-      ...(ev.detail.value as Partial<HeadingCardConfig>),
-    };
+    const config = ev.detail.value as HeadingCardConfig;
 
     fireEvent(this, "config-changed", { config });
   }
