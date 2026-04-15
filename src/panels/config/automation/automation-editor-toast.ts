@@ -5,7 +5,10 @@ import { showToast } from "../../../util/toast";
 export const AUTOMATION_SAVE_FAB_TOAST_BOTTOM_OFFSET = 60;
 
 function automationEditorSaveFabVisibleFrom(el: HTMLElement): boolean {
-  if (el.localName === "ha-automation-editor") {
+  if (
+    el.localName === "ha-automation-editor" ||
+    el.localName === "ha-script-editor"
+  ) {
     return Boolean((el as { dirty?: boolean }).dirty);
   }
   const holder = closestWithProperty(el, "dirty", false) as
