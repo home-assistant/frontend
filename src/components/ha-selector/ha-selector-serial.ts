@@ -51,7 +51,9 @@ export class HaSerialSelector extends LitElement {
   private async _loadSerialPorts(): Promise<void> {
     try {
       this._serialPorts = await listSerialPorts(this.hass);
-    } catch {
+    } catch (err: unknown) {
+      // eslint-disable-next-line no-console
+      console.error(err);
       this._serialPorts = undefined;
     }
   }
@@ -68,10 +70,15 @@ export class HaSerialSelector extends LitElement {
   }
 
   private _getPickerItems = (): (PickerComboBoxItem | string)[] | undefined =>
-    this._serialPorts ? this._getItems(this._serialPorts) : undefined;
+    this._serialPorts
+      ? this._getItems(this._serialPorts, this.hass.localize)
+      : undefined;
 
   private _getItems = memoizeOne(
-    (ports: SerialPort[]): (PickerComboBoxItem | string)[] => {
+    (
+      ports: SerialPort[],
+      localize: HomeAssistant["localize"]
+    ): (PickerComboBoxItem | string)[] => {
       const items: (PickerComboBoxItem | string)[] = ports.map((port) => ({
         id: port.device,
         primary: this._humanReadablePort(port),
@@ -88,9 +95,7 @@ export class HaSerialSelector extends LitElement {
       }));
       items.push({
         id: MANUAL_ENTRY_ID,
-        primary: this.hass.localize(
-          "ui.components.selectors.serial.enter_manually"
-        ),
+        primary: localize("ui.components.selectors.serial.enter_manually"),
         secondary: undefined,
       });
       return items;
