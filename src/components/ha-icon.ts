@@ -30,6 +30,17 @@ const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
 const cachedIcons: Record<string, string> = {};
 
+const CUSTOM_ICONS: Record<string, () => Promise<string>> = {
+  "home-assistant": () =>
+    import("../resources/home-assistant-logo-svg").then(
+      (mod) => mod.mdiHomeAssistant
+    ),
+  "music-assistant": () =>
+    import("../resources/music-assistant-logo-svg").then(
+      (mod) => mod.mdiMusicAssistant
+    ),
+};
+
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
@@ -117,21 +128,8 @@ export class HaIcon extends LitElement {
       return;
     }
 
-    if (iconName === "home-assistant") {
-      const icon = (await import("../resources/home-assistant-logo-svg"))
-        .mdiHomeAssistant;
-
-      if (this.icon === requestedIcon) {
-        this._path = icon;
-      }
-      cachedIcons[iconName] = icon;
-      return;
-    }
-
-    if (iconName === "music-assistant") {
-      const icon = (await import("../resources/music-assistant-logo-svg"))
-        .mdiMusicAssistant;
-
+    if (iconName in CUSTOM_ICONS) {
+      const icon = await CUSTOM_ICONS[iconName]();
       if (this.icon === requestedIcon) {
         this._path = icon;
       }
