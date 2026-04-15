@@ -24,5 +24,6 @@ export function showAutomationEditorToast(
   showToast(el, {
     ...params,
     ...(offset !== undefined ? { bottomOffset: offset } : {}),
+    dismissable: true,
   });
 }

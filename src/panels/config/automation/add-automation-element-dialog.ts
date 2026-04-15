@@ -2122,6 +2122,7 @@ class DialogAddAutomationElement
             ),
           }
         ),
+        dismissable: true,
         ...(this._params.clipboardPasteToastBottomOffset != null
           ? {
               bottomOffset: this._params.clipboardPasteToastBottomOffset,
