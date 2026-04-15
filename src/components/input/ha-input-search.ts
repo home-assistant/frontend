@@ -1,6 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
 import { mdiMagnify } from "@mdi/js";
-import { html, type PropertyValues } from "lit";
+import { css, html, type PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
 import { internationalizationContext } from "../../data/context";
 import { HaInput } from "./ha-input";
@@ -42,6 +42,15 @@ export class HaInputSearch extends HaInput {
   protected renderStartDefault() {
     return html`<ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>`;
   }
+
+  static styles = [
+    ...HaInput.styles,
+    css`
+      :host([appearance="outlined"]) wa-input.no-label::part(base) {
+        height: 40px;
+      }
+    `,
+  ];
 }
 
 declare global {
