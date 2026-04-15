@@ -473,7 +473,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
-  chart_type?: "line" | "bar";
+  chart_type?: "line" | "bar" | "line-stack" | "bar-stack";
   min_y_axis?: number;
   max_y_axis?: number;
   fit_y_data?: boolean;
@@ -668,6 +668,17 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface ShortcutCardConfig extends LovelaceCardConfig {
+  label?: string;
+  description?: string;
+  icon?: string;
+  color?: string;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

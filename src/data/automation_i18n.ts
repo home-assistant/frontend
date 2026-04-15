@@ -2,6 +2,7 @@ import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
+  formatDurationDigital,
   formatDurationLong,
   formatNumericDuration,
 } from "../common/datetime/format_duration";
@@ -872,6 +873,27 @@ const describeLegacyTrigger = (
   return undefined;
 };
 
+const formatSunOffset = (
+  hass: HomeAssistant,
+  offset?: number | string | ForDict
+): string => {
+  if (!offset) {
+    return "";
+  }
+  if (typeof offset === "number") {
+    return secondsToDuration(offset)!;
+  }
+  if (typeof offset === "string") {
+    return offset;
+  }
+  try {
+    const formatted = formatDurationDigital(hass.locale, offset);
+    return formatted.startsWith("-") ? formatted : `+${formatted}`;
+  } catch (_e) {
+    return JSON.stringify(offset);
+  }
+};
+
 export const describeCondition = (
   condition: Condition,
   hass: HomeAssistant,
@@ -1245,30 +1267,15 @@ const describeLegacyCondition = (
 
   // Sun condition
   if (condition.condition === "sun" && (condition.before || condition.after)) {
-    let afterDuration = "";
-    if (condition.after && condition.after_offset) {
-      if (typeof condition.after_offset === "number") {
-        afterDuration = secondsToDuration(condition.after_offset)!;
-      } else if (typeof condition.after_offset === "string") {
-        afterDuration = condition.after_offset;
-      } else {
-        afterDuration = JSON.stringify(condition.after_offset);
-      }
-    }
-
-    let beforeDuration = "";
-    if (condition.before && condition.before_offset) {
-      if (typeof condition.before_offset === "number") {
-        beforeDuration = secondsToDuration(condition.before_offset)!;
-      } else if (typeof condition.before_offset === "string") {
-        beforeDuration = condition.before_offset;
-      } else {
-        beforeDuration = JSON.stringify(condition.before_offset);
-      }
-    }
+    const afterDuration = condition.after
+      ? formatSunOffset(hass, condition.after_offset)
+      : "";
+    const beforeDuration = condition.before
+      ? formatSunOffset(hass, condition.before_offset)
+      : "";
 
     return hass.localize(
-      `${conditionsTranslationBaseKey}.sun.description.full`,
+      `${conditionsTranslationBaseKey}.sun.description.${condition.before && condition.after ? "between" : condition.before ? "before" : "after"}`,
       {
         afterChoice: condition.after ?? "other",
         afterOffsetChoice: afterDuration !== "" ? "offset" : "other",
