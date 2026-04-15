@@ -7,6 +7,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
@@ -73,6 +74,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   @state() private _forecastEvent?: ForecastEvent;
 
   @state() private _subscribed?: Promise<() => void>;
+
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".forecast",
+    enabled: false,
+  });
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => {
@@ -209,6 +215,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+
+    const stateObj = this.hass.states[this._config.entity] as
+      | WeatherEntity
+      | undefined;
+
+    this._dragScrollController.enabled = Boolean(
+      stateObj &&
+      stateObj.state !== UNAVAILABLE &&
+      this._config.show_forecast !== false &&
+      getForecast(
+        stateObj.attributes,
+        this._forecastEvent,
+        this._config.forecast_type
+      )?.forecast?.length
+    );
   }
 
   protected render() {
@@ -242,14 +263,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config?.forecast_type
     );
 
-    let itemsToShow = this._config?.forecast_slots ?? 5;
-    if (this._sizeController.value?.width === "very-very-narrow") {
-      itemsToShow = Math.min(3, itemsToShow);
-    } else if (this._sizeController.value?.width === "very-narrow") {
-      itemsToShow = Math.min(5, itemsToShow);
-    } else if (this._sizeController.value?.width === "narrow") {
-      itemsToShow = Math.min(7, itemsToShow);
-    }
+    const itemsToShow = this._config?.forecast_slots ?? 5;
 
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
@@ -394,7 +408,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           : ""}
         ${forecast
           ? html`
-              <div class="forecast">
+              <div
+                class=${classMap({
+                  forecast: true,
+                  dragging: this._dragScrollController.scrolling,
+                })}
+              >
                 ${forecast.map((item) =>
                   this._showValue(item.templow) ||
                   this._showValue(item.temperature)
@@ -625,10 +644,38 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           display: flex;
           justify-content: space-around;
           padding: 0 16px;
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: none;
+          mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            black 16px,
+            black calc(100% - 16px),
+            transparent 100%
+          );
+          user-select: none;
+          cursor: grab;
+        }
+
+        .forecast.dragging {
+          cursor: grabbing;
+        }
+
+        .forecast.dragging * {
+          pointer-events: none;
+        }
+
+        .forecast::-webkit-scrollbar {
+          display: none;
         }
 
         .forecast > div {
           text-align: center;
+          min-width: 48px;
+          flex: 0 0 auto;
         }
 
         .forecast .icon,
