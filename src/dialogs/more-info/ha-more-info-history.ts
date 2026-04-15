@@ -7,6 +7,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
+import "../../components/ha-alert";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -48,7 +49,7 @@ export class MoreInfoHistory extends LitElement {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
-  private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
@@ -80,7 +81,10 @@ export class MoreInfoHistory extends LitElement {
                 >`}
           </div>
           ${this._error
-            ? html`<div class="errors">${this._error}</div>`
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize("ui.components.history_charts.error")}:
+                ${this._error.message || this._error.code}
+              </ha-alert>`
             : this._statistics
               ? html`<statistics-chart
                   .hass=${this.hass}

@@ -49,7 +49,7 @@ class HuiHistoryChartCardFeature
 
   @state() private _yAxisOrigin?: number;
 
-  @state() private _error?: Error;
+  @state() private _error?: { code: string; message: string };
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
@@ -101,6 +101,13 @@ class HuiHistoryChartCardFeature
       !supportsTrendGraphCardFeature(this.hass, this.context)
     ) {
       return nothing;
+    }
+    if (this._error) {
+      return html`
+        <div class="container">
+          <div class="info">${this._error.message || this._error.code}</div>
+        </div>
+      `;
     }
     if (!this._coordinates) {
       return html`
