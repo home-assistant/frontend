@@ -3387,6 +3387,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -4412,7 +4413,8 @@
               },
               "search_dashboards": "Search dashboards",
               "heading": {
-                "default": "Dashboards"
+                "default": "Dashboards",
+                "custom": "Community dashboards"
               }
             },
             "picker": {
@@ -5372,13 +5374,16 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
                   "before": "Before",
                   "after": "After",
+                  "between": "Between",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
+                    "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -9248,7 +9253,9 @@
               "chart_type": "Chart type",
               "chart_type_labels": {
                 "line": "Line",
-                "bar": "Bar"
+                "line-stack": "Stacked Line",
+                "bar": "Bar",
+                "bar-stack": "Stacked Bar"
               },
               "periods": {
                 "auto": "Auto",
@@ -9408,6 +9415,15 @@
                 "visibility_explanation": "The button will be shown when ALL conditions below are fulfilled. If no conditions are set, the button will always be shown."
               },
               "default_heading": "Kitchen"
+            },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A card that triggers navigating to a page, opening a URL, or performing an action.",
+              "label": "Label",
+              "card_description": "Description",
+              "text": "Text",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "additional_interactions": "Additional interactions"
             },
             "map": {
               "name": "Map",
@@ -9685,6 +9701,10 @@
                 "state": "State"
               }
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A badge that triggers navigating to a page, opening a URL, or performing an action."
+            },
             "generic": {
               "manual": "Manual",
               "manual_description": "Need to add a community badge or just want to manually write the YAML?",
@@ -9767,7 +9787,8 @@
                 "label": "Light brightness"
               },
               "light-color-favorites": {
-                "label": "Light color favorites"
+                "label": "Light color favorites",
+                "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
               },
               "light-color-temp": {
                 "label": "Light color temperature"
@@ -9779,7 +9800,8 @@
                 "label": "Lock open door"
               },
               "media-player-playback": {
-                "label": "Media player playback controls"
+                "label": "Media player playback controls",
+                "controls": "Controls"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode"

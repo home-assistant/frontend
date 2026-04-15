@@ -54,8 +54,23 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
+export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
+  "turn_on",
+  "turn_off",
+  "media_play",
+  "media_pause",
+  "media_play_pause",
+  "media_stop",
+  "media_previous_track",
+  "media_next_track",
+] as const;
+
+export type MediaPlayerPlaybackControl =
+  (typeof MEDIA_PLAYER_PLAYBACK_CONTROLS)[number];
+
 export interface MediaPlayerPlaybackCardFeatureConfig {
   type: "media-player-playback";
+  controls?: MediaPlayerPlaybackControl[];
 }
 
 export interface MediaPlayerSourceCardFeatureConfig {

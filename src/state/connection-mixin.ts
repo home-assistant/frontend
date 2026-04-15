@@ -89,7 +89,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         debugConnection: __DEV__,
         suspendWhenHidden: true,
         enableShortcuts: true,
-        moreInfoEntityId: null,
         hassUrl: (path = "") =>
           addBrandsAuth(
             new URL(path, auth.data.hassUrl).toString(),
