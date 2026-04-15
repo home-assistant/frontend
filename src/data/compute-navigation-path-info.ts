@@ -2,7 +2,7 @@ import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
-import { getAddonPanelInfoCollection } from "./hassio/addon";
+import { getIngressPanelInfoCollection } from "./hassio/ingress";
 import { getLovelaceCollection } from "./lovelace";
 import type { LovelaceRawConfig } from "./lovelace/config/types";
 import { computeViewIcon, computeViewTitle } from "./lovelace/config/view";
@@ -156,7 +156,7 @@ export const subscribeNavigationPathInfo = (
     isComponentLoaded(hass.config, "hassio")
   ) {
     const addonSlug = segments[1];
-    const collection = getAddonPanelInfoCollection(hass.connection);
+    const collection = getIngressPanelInfoCollection(hass.connection);
     return collection.subscribe((addonMap) => {
       const addon = addonMap[addonSlug];
       if (addon) {
