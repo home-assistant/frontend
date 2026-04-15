@@ -10,10 +10,7 @@ import { NavigationPathInfoController } from "../../../../data/navigation-path-c
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
 import type { ShortcutBadgeConfig } from "../../badges/types";
-import {
-  ACTION_RELATED_CONTEXT,
-  type UiAction,
-} from "../../components/hui-action-editor";
+import type { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceBadgeEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
@@ -79,7 +76,6 @@ export class HuiShortcutBadgeEditor
               actions,
             },
           },
-          context: ACTION_RELATED_CONTEXT,
         },
         {
           name: "content",
@@ -178,12 +174,17 @@ export class HuiShortcutBadgeEditor
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
-    if (schema.name === "text") {
-      return this.hass!.localize("ui.panel.lovelace.editor.card.shortcut.text");
+    switch (schema.name) {
+      case "text":
+      case "additional_interactions":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.shortcut.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
-    );
   };
 
   static styles = configElementStyle;
