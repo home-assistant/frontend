@@ -178,7 +178,7 @@ class SupervisorAppConfig extends LitElement {
     path: string[]
   ): Selector | null {
     if (entry.type === "select") {
-      return { select: { options: entry.options } };
+      return { select: { options: entry.options, multiple: entry.multiple } };
     }
     if (entry.type === "string") {
       return entry.multiple
