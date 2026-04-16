@@ -73,7 +73,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       !config.image &&
       !config.state_image &&
       !config.camera_image &&
-      !config.use_entity_picture
+      !config.show_entity_picture
     ) {
       throw new Error("No image source configured");
     }
@@ -147,8 +147,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     let image: string | undefined;
 
     // Check if we should use entity_picture from the entity
-    if (this._config.use_entity_picture && stateObj.attributes.entity_picture) {
-      image = stateObj.attributes.entity_picture;
+    if (this._config.show_entity_picture) {
+      image =
+        stateObj.attributes.entity_picture_local ||
+        stateObj.attributes.entity_picture;
     } else {
       // Use configured image
       image =

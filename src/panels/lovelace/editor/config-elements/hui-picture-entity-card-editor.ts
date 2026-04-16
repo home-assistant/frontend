@@ -35,7 +35,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    use_entity_picture: optional(boolean()),
+    show_entity_picture: optional(boolean()),
     image: optional(union([string(), object()])),
     name: optional(entityNameStruct),
     camera_image: optional(string()),
@@ -69,7 +69,7 @@ export class HuiPictureEntityCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "entity", required: true, selector: { entity: {} } },
-        { name: "use_entity_picture", selector: { boolean: {} } },
+        { name: "show_entity_picture", selector: { boolean: {} } },
         {
           name: "name",
           selector: {
@@ -217,7 +217,7 @@ export class HuiPictureEntityCardEditor
       (computeDomain(config.entity) === "image" ||
         (computeDomain(config.entity) === "person" &&
           this.hass?.states[config.entity]?.attributes.entity_picture) ||
-        (config.use_entity_picture &&
+        (config.show_entity_picture &&
           this.hass?.states[config.entity]?.attributes.entity_picture)) &&
       config.image === STUB_IMAGE
     ) {
@@ -251,9 +251,9 @@ export class HuiPictureEntityCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "use_entity_picture":
+      case "show_entity_picture":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.use_entity_picture_helper`
+          `ui.panel.lovelace.editor.card.generic.show_entity_picture_helper`
         );
       case "aspect_ratio":
         return typeof this._config?.grid_options?.rows === "number"
