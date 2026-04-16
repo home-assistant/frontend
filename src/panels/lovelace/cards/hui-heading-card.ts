@@ -338,6 +338,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     .badges.overflowing .badges-row {
       --badge-padding: var(--ha-space-4);
     }
+    .badges.overflowing .badges-row > *:first-child {
+      margin-inline-start: calc(var(--ha-space-2) * -1);
+    }
+    .badges.overflowing .badges-row > *:last-child {
+      margin-inline-end: calc(var(--ha-space-2) * -1);
+    }
     .badges.dragging {
       cursor: grabbing;
       pointer-events: none;
