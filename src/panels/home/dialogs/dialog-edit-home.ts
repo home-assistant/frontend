@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-expansion-panel";
@@ -11,9 +11,13 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
+import "../../../components/ha-navigation-picker";
 import "../../../components/ha-switch";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import type { HomeFrontendSystemData } from "../../../data/frontend";
+import type {
+  CustomShortcutItem,
+  HomeFrontendSystemData,
+} from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import {
   getSummaryLabel,
@@ -22,7 +26,9 @@ import {
 } from "../../lovelace/strategies/home/helpers/home-summaries";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../components/home-shortcut-list-item";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
+import { showEditShortcutDialog } from "./show-dialog-edit-shortcut";
 
 interface SummaryInfo {
   key: string;
@@ -52,7 +58,17 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];
 
-const WELCOME_MESSAGE_SCHEMA: HaFormSchema[] = [
+// Paths already covered by built-in summaries
+const SUMMARY_PANEL_PATHS = [
+  "/home",
+  "/light",
+  "/climate",
+  "/security",
+  "/energy",
+  "/maintenance",
+];
+
+const WELCOME_MESSAGE_SCHEMA = [
   { name: "welcome_message", selector: { boolean: {} } },
 ];
 
@@ -95,6 +111,11 @@ export class DialogEditHome
     }
 
     const hiddenSummaries = new Set(this._config?.hidden_summaries || []);
+    const customShortcuts = this._config?.custom_shortcuts || [];
+    const excludePaths = [
+      ...SUMMARY_PANEL_PATHS,
+      ...customShortcuts.map((s) => s.path),
+    ];
 
     return html`
       <ha-dialog
@@ -107,14 +128,15 @@ export class DialogEditHome
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <ha-form
-          .hass=${this.hass}
-          .data=${{ welcome_message: !this._config?.hide_welcome_message }}
-          .schema=${WELCOME_MESSAGE_SCHEMA}
-          .computeLabel=${this._computeWelcomeLabel}
-          .computeHelper=${this._computeWelcomeHelper}
-          @value-changed=${this._welcomeMessageToggleChanged}
-        ></ha-form>
+        <ha-alert alert-type="info">
+          ${this.hass.localize("ui.panel.home.editor.areas_hint", {
+            areas_page: html`<a
+              href="/config/areas?historyBack=1"
+              @click=${this.closeDialog}
+              >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
+            >`,
+          })}
+        </ha-alert>
 
         <ha-expansion-panel
           outlined
@@ -153,22 +175,36 @@ export class DialogEditHome
         </ha-expansion-panel>
 
         <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.welcome_message")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize("ui.panel.home.editor.welcome_message_helper")}
+        </p>
+        <ha-form
+          .hass=${this.hass}
+          .data=${{ welcome_message: !this._config?.hide_welcome_message }}
+          .schema=${WELCOME_MESSAGE_SCHEMA}
+          .computeLabel=${this._computeWelcomeLabel}
+          @value-changed=${this._welcomeMessageToggleChanged}
+        ></ha-form>
+
+        <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.summaries")}
         </h3>
         <p class="section-description">
           ${this.hass.localize("ui.panel.home.editor.summaries_description")}
         </p>
-        <div class="summary-toggles">
+        <div class="home-list">
           ${SUMMARY_ITEMS.map((item) => {
             const label = this._getSummaryLabel(item.key);
             const color = computeCssColor(item.color);
             return html`
-              <label class="summary-toggle">
+              <label class="home-list-item summary-toggle">
                 <ha-icon
                   .icon=${item.icon}
                   style=${styleMap({ "--mdc-icon-size": "24px", color })}
                 ></ha-icon>
-                <span class="summary-label">${label}</span>
+                <span class="label">${label}</span>
                 <ha-switch
                   .checked=${!hiddenSummaries.has(item.key)}
                   .summary=${item.key}
@@ -179,15 +215,36 @@ export class DialogEditHome
           })}
         </div>
 
-        <ha-alert alert-type="info">
-          ${this.hass.localize("ui.panel.home.editor.areas_hint", {
-            areas_page: html`<a
-              href="/config/areas?historyBack=1"
-              @click=${this.closeDialog}
-              >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
-            >`,
-          })}
-        </ha-alert>
+        <h3 class="section-header">
+          ${this.hass.localize("ui.panel.home.editor.custom_shortcuts")}
+        </h3>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.home.editor.custom_shortcuts_description"
+          )}
+        </p>
+        <div class="home-list">
+          ${customShortcuts.map(
+            (item, index) => html`
+              <home-shortcut-list-item
+                class="home-list-item"
+                .hass=${this.hass}
+                .item=${item}
+                .index=${index}
+                @edit-shortcut=${this._editShortcut}
+                @delete-shortcut=${this._removeShortcut}
+              ></home-shortcut-list-item>
+            `
+          )}
+        </div>
+        <ha-navigation-picker
+          .hass=${this.hass}
+          .addButtonLabel=${this.hass.localize(
+            "ui.panel.home.editor.add_custom_shortcut"
+          )}
+          .excludePaths=${excludePaths}
+          @value-changed=${this._addShortcut}
+        ></ha-navigation-picker>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -245,9 +302,6 @@ export class DialogEditHome
   private _computeWelcomeLabel = () =>
     this.hass.localize("ui.panel.home.editor.welcome_message");
 
-  private _computeWelcomeHelper = () =>
-    this.hass.localize("ui.panel.home.editor.welcome_message_helper");
-
   private _welcomeMessageToggleChanged(ev: CustomEvent): void {
     this._config = {
       ...this._config,
@@ -268,6 +322,54 @@ export class DialogEditHome
       ...this._config,
       hide_suggested_entities: showSuggested ? undefined : true,
     };
+  }
+
+  private _updateShortcuts(
+    updater: (shortcuts: CustomShortcutItem[]) => CustomShortcutItem[]
+  ): void {
+    const next = updater([...(this._config?.custom_shortcuts || [])]);
+    this._config = {
+      ...this._config,
+      custom_shortcuts: next.length > 0 ? next : undefined,
+    };
+  }
+
+  private _addShortcut(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const path = ev.detail.value as string;
+    if (!path) return;
+
+    (ev.currentTarget as any).value = "";
+
+    this._updateShortcuts((shortcuts) =>
+      shortcuts.some((item) => item.path === path)
+        ? shortcuts
+        : [...shortcuts, { path }]
+    );
+  }
+
+  private _editShortcut(ev: HASSDomEvent<{ index: number }>): void {
+    const { index } = ev.detail;
+    const item = this._config?.custom_shortcuts?.[index];
+    if (!item) return;
+
+    showEditShortcutDialog(this, {
+      item,
+      saveCallback: (updated) => {
+        this._updateShortcuts((shortcuts) => {
+          shortcuts[index] = updated;
+          return shortcuts;
+        });
+      },
+    });
+  }
+
+  private _removeShortcut(ev: HASSDomEvent<{ index: number }>): void {
+    const { index } = ev.detail;
+    this._updateShortcuts((shortcuts) => {
+      shortcuts.splice(index, 1);
+      return shortcuts;
+    });
   }
 
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
@@ -315,7 +417,7 @@ export class DialogEditHome
         font-size: 14px;
       }
 
-      .summary-toggles {
+      .home-list {
         display: flex;
         flex-direction: column;
       }
@@ -328,7 +430,7 @@ export class DialogEditHome
         cursor: pointer;
       }
 
-      .summary-label {
+      .summary-toggle .label {
         flex: 1;
         font-size: 14px;
       }
@@ -344,13 +446,18 @@ export class DialogEditHome
         padding: var(--ha-space-3);
       }
 
+      ha-navigation-picker {
+        display: block;
+        padding-top: var(--ha-space-2);
+      }
+
       ha-entities-picker {
         display: block;
       }
 
       ha-alert {
         display: block;
-        margin-top: var(--ha-space-4);
+        margin: 0 calc(-1 * var(--dialog-content-padding));
       }
     `,
   ];

@@ -321,6 +321,7 @@ class PanelHome extends LitElement {
         hidden_summaries: this._config.hidden_summaries,
         hide_welcome_message: this._config.hide_welcome_message,
         hide_suggested_entities: this._config.hide_suggested_entities,
+        custom_shortcuts: this._config.custom_shortcuts,
       },
     };
 

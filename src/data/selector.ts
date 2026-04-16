@@ -77,6 +77,7 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
+  | SerialSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
@@ -451,6 +452,10 @@ export interface SelectorSelector {
   selector: {} | null;
 }
 
+export interface SerialSelector {
+  serial: {} | null;
+}
+
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
@@ -494,6 +499,7 @@ export interface StringSelector {
       | "color";
     prefix?: string;
     suffix?: string;
+    placeholder?: string;
     autocomplete?: string;
     multiple?: true;
   } | null;

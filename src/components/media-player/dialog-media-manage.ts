@@ -115,11 +115,11 @@ class DialogMediaManage extends LitElement {
                 ></ha-icon-button
               ></slot>`
             : nothing}
-          <span class="title" slot="title" id="dialog-box-title">
+          <h1 class="title" slot="title" id="dialog-box-title">
             ${this.hass.localize(
               "ui.components.media-browser.file_management.title"
             )}
-          </span>
+          </h1>
           ${this._selected.size === 0
             ? html`<ha-media-upload-button
                 .hass=${this.hass}
@@ -365,6 +365,11 @@ class DialogMediaManage extends LitElement {
         .folders {
           color: var(--secondary-text-color);
           font-style: italic;
+        }
+        .title {
+          font: inherit;
+          font-size: inherit;
+          margin: inherit;
         }
       `,
     ];

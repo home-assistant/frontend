@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-vacuum-segment-area-mapper";
@@ -77,6 +78,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         options: options,
       });
       this._dirty = false;
+      fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message;
     } finally {

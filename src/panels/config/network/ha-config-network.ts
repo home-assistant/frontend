@@ -5,7 +5,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-network";
 import "../../../components/ha-settings-row";
 import { fetchNetworkInfo } from "../../../data/hassio/network";

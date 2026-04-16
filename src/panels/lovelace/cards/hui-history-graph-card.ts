@@ -134,11 +134,28 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass!);
+    // Mark as subscribing before the first await to prevent re-entrant calls
+    const sentinel = Promise.resolve(undefined) as NonNullable<
+      typeof this._subscribed
+    >;
+    this._subscribed = sentinel;
 
-    if (!this.isConnected) {
-      return; // Skip subscribe if we already disconnected while awaiting
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass!));
+    } catch (_err) {
+      if (this._subscribed === sentinel) {
+        this._subscribed = undefined;
+      }
+      return;
+    }
+
+    if (!this.isConnected || this._subscribed !== sentinel) {
+      if (this._subscribed === sentinel) {
+        this._subscribed = undefined;
+      }
+      return;
     }
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
@@ -230,12 +247,27 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    // Allow update when components list changes so we can retry subscription
+    if (
+      !this._subscribed &&
+      !this._error &&
+      this._config &&
+      changedProps.has("hass")
+    ) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        oldHass &&
+        oldHass.config.components !== this.hass!.config.components
+      ) {
+        return true;
+      }
+    }
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -268,6 +300,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         oldConfig?.hours_to_show !== this._config.hours_to_show)
     ) {
       this._unsubscribeHistory();
+      this._subscribeHistory();
+    } else if (!this._subscribed && !this._error && changedProps.has("hass")) {
+      // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
   }
