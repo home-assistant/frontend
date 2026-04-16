@@ -1,4 +1,5 @@
 import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -6,110 +7,33 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-icon-button";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity/entity_registry";
+import { forwardHaptic } from "../../../data/haptics";
 import type { LawnMowerEntity } from "../../../data/lawn_mower";
-import { LawnMowerEntityFeature } from "../../../data/lawn_mower";
+import {
+  LawnMowerEntityFeature,
+  canDock,
+  canStartMowing,
+  isMowing,
+} from "../../../data/lawn_mower";
+import "../../../state-control/lawn_mower/ha-state-control-lawn_mower-status";
 import type { HomeAssistant } from "../../../types";
-
-interface LawnMowerCommand {
-  translationKey: string;
-  icon: string;
-  serviceName: string;
-  isVisible: (stateObj: LawnMowerEntity) => boolean;
-}
-
-const LAWN_MOWER_COMMANDS: LawnMowerCommand[] = [
-  {
-    translationKey: "start_mowing",
-    icon: mdiPlay,
-    serviceName: "start_mowing",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, LawnMowerEntityFeature.START_MOWING),
-  },
-  {
-    translationKey: "pause",
-    icon: mdiPause,
-    serviceName: "pause",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, LawnMowerEntityFeature.PAUSE),
-  },
-  {
-    translationKey: "dock",
-    icon: mdiHomeImportOutline,
-    serviceName: "dock",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, LawnMowerEntityFeature.DOCK),
-  },
-];
+import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-lawn_mower")
 class MoreInfoLawnMower extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: LawnMowerEntity;
-
-  protected render() {
-    if (!this.hass || !this.stateObj) {
-      return nothing;
-    }
-
-    const stateObj = this.stateObj;
-
-    return html`
-      ${stateObj.state !== UNAVAILABLE
-        ? html` <div class="flex-horizontal">
-            <div>
-              <span class="status-subtitle"
-                >${this.hass!.localize(
-                  "ui.dialogs.more_info_control.lawn_mower.activity"
-                )}:
-              </span>
-              <span>
-                <strong>${this.hass.formatEntityState(stateObj)}</strong>
-              </span>
-            </div>
-            ${this._renderBattery()}
-          </div>`
-        : nothing}
-      ${LAWN_MOWER_COMMANDS.some((item) => item.isVisible(stateObj))
-        ? html`
-            <div>
-              <p></p>
-              <div class="status-subtitle">
-                ${this.hass!.localize(
-                  "ui.dialogs.more_info_control.lawn_mower.commands"
-                )}
-              </div>
-              <div class="flex-horizontal space-around">
-                ${LAWN_MOWER_COMMANDS.filter((item) =>
-                  item.isVisible(stateObj)
-                ).map(
-                  (item) => html`
-                    <div>
-                      <ha-icon-button
-                        .path=${item.icon}
-                        .entry=${item}
-                        @click=${this._callService}
-                        .label=${this.hass!.localize(
-                          `ui.dialogs.more_info_control.lawn_mower.${item.translationKey}`
-                        )}
-                        .disabled=${stateObj.state === UNAVAILABLE}
-                      ></ha-icon-button>
-                    </div>
-                  `
-                )}
-              </div>
-            </div>
-          `
-        : ""}
-    `;
-  }
 
   private _deviceEntities = memoizeOne(
     (
@@ -121,11 +45,45 @@ class MoreInfoLawnMower extends LitElement {
     }
   );
 
+  private get _supportsStartPause(): boolean {
+    if (!this.stateObj) return false;
+    return (
+      supportsFeature(this.stateObj, LawnMowerEntityFeature.START_MOWING) ||
+      supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
+    );
+  }
+
+  private get _startPauseIcon(): string {
+    if (!this.stateObj) return mdiPlay;
+    return isMowing(this.stateObj) &&
+      supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
+      ? mdiPause
+      : mdiPlay;
+  }
+
+  private get _startPauseLabel(): string {
+    if (!this.stateObj || !this.hass) return "";
+    return isMowing(this.stateObj) &&
+      supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
+      ? this.hass.localize("ui.dialogs.more_info_control.lawn_mower.pause")
+      : this.hass.localize(
+          "ui.dialogs.more_info_control.lawn_mower.start_mowing"
+        );
+  }
+
+  private get _startPauseDisabled(): boolean {
+    if (!this.stateObj) return true;
+    if (this.stateObj.state === UNAVAILABLE) return true;
+    if (isMowing(this.stateObj)) return false;
+    return !canStartMowing(this.stateObj);
+  }
+
   private _renderBattery() {
-    const stateObj = this.stateObj!;
+    if (!this.stateObj || !this.hass) {
+      return nothing;
+    }
 
-    const deviceId = this.hass.entities[stateObj.entity_id]?.device_id;
-
+    const deviceId = this.hass.entities[this.stateObj.entity_id]?.device_id;
     const entities = deviceId
       ? this._deviceEntities(deviceId, this.hass.entities)
       : [];
@@ -134,12 +92,12 @@ class MoreInfoLawnMower extends LitElement {
     const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
-    const batteryIsBinary =
-      battery && computeStateDomain(battery) === "binary_sensor";
-
-    // Use device battery entity
-    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+    if (
+      battery &&
+      (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+    ) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -149,49 +107,145 @@ class MoreInfoLawnMower extends LitElement {
         : undefined;
 
       return html`
-        <div>
-          <span>
-            ${batteryIsBinary
-              ? ""
-              : `${Number(battery.state).toFixed()}${blankBeforePercent(
+        <span class="battery" slot="after-time">
+          ${batteryDomain === "binary_sensor"
+            ? nothing
+            : html`<span
+                >${Number(battery.state).toFixed()}${blankBeforePercent(
                   this.hass.locale
-                )}%`}
-            <ha-battery-icon
-              .hass=${this.hass}
-              .batteryStateObj=${battery}
-              .batteryChargingStateObj=${batteryCharging}
-            ></ha-battery-icon>
-          </span>
-        </div>
+                )}%</span
+              >`}
+          <ha-battery-icon
+            .hass=${this.hass}
+            .batteryStateObj=${battery}
+            .batteryChargingStateObj=${batteryCharging}
+          ></ha-battery-icon>
+        </span>
       `;
     }
 
     return nothing;
   }
 
-  private _callService(ev: CustomEvent) {
-    const entry = (ev.target! as any).entry as LawnMowerCommand;
-    this.hass.callService("lawn_mower", entry.serviceName, {
-      entity_id: this.stateObj!.entity_id,
+  private _handleStartPause() {
+    if (!this.stateObj) return;
+    forwardHaptic(this, "light");
+    if (isMowing(this.stateObj)) {
+      this.hass.callService("lawn_mower", "pause", {
+        entity_id: this.stateObj.entity_id,
+      });
+    } else {
+      this.hass.callService("lawn_mower", "start_mowing", {
+        entity_id: this.stateObj.entity_id,
+      });
+    }
+  }
+
+  private _handleDock() {
+    if (!this.stateObj) return;
+    forwardHaptic(this, "light");
+    this.hass.callService("lawn_mower", "dock", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
-  static styles = css`
-    :host {
-      line-height: var(--ha-line-height-normal);
+  protected render() {
+    if (!this.stateObj) {
+      return nothing;
     }
-    .status-subtitle {
-      color: var(--secondary-text-color);
-    }
-    .flex-horizontal {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .space-around {
-      justify-content: space-around;
-    }
-  `;
+
+    const stateObj = this.stateObj;
+    const isUnavailable = stateObj.state === UNAVAILABLE;
+    const supportsDock = supportsFeature(stateObj, LawnMowerEntityFeature.DOCK);
+
+    const hasAnyCommand = this._supportsStartPause || supportsDock;
+
+    return html`
+      <ha-more-info-state-header .hass=${this.hass} .stateObj=${this.stateObj}>
+        ${this._renderBattery()}
+      </ha-more-info-state-header>
+
+      <div class="controls">
+        <ha-state-control-lawn_mower-status
+          .stateObj=${this.stateObj}
+          .hass=${this.hass}
+        ></ha-state-control-lawn_mower-status>
+
+        ${hasAnyCommand
+          ? html`
+              <div class="buttons">
+                <ha-control-button-group>
+                  ${this._supportsStartPause
+                    ? html`
+                        <ha-control-button
+                          .label=${this._startPauseLabel}
+                          @click=${this._handleStartPause}
+                          .disabled=${this._startPauseDisabled}
+                        >
+                          <ha-svg-icon
+                            .path=${this._startPauseIcon}
+                          ></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsDock
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lawn_mower.dock"
+                          )}
+                          @click=${this._handleDock}
+                          .disabled=${isUnavailable || !canDock(stateObj)}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiHomeImportOutline}
+                          ></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                </ha-control-button-group>
+              </div>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      moreInfoControlStyle,
+      css`
+        .battery {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          font-size: var(--ha-font-size-m);
+          color: var(--secondary-text-color);
+          --mdc-icon-size: 18px;
+        }
+
+        .battery span {
+          height: var(--mdc-icon-size);
+          line-height: var(--mdc-icon-size);
+        }
+
+        ha-state-control-lawn_mower-status {
+          margin-bottom: var(--ha-space-4);
+        }
+
+        ha-control-button-group {
+          --control-button-group-thickness: 48px;
+          justify-content: center;
+        }
+
+        ha-control-button-group ha-control-button {
+          flex: 0 0 auto;
+          width: var(--control-button-group-thickness);
+          --control-button-border-radius: var(--ha-border-radius-lg);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
