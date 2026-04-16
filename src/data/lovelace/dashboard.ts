@@ -34,6 +34,12 @@ export interface LovelaceDashboardCreateParams extends LovelaceDashboardMutableP
   mode: "storage";
 }
 
+/** Optional suggested values for dashboard create form fields (for example from a strategy). */
+export interface LovelaceDashboardFieldSuggestions {
+  title?: string;
+  icon?: string;
+}
+
 export const fetchDashboards = (
   hass: HomeAssistant
 ): Promise<LovelaceDashboard[]> =>

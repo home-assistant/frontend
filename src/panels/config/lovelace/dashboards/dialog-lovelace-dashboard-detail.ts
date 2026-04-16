@@ -42,13 +42,17 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
     } else {
+      const suggestions = this._params.fieldSuggestions;
       this._data = {
         show_in_sidebar: true,
-        icon: undefined,
-        title: "",
+        icon: suggestions?.icon,
+        title: suggestions?.title ?? "",
         require_admin: false,
         mode: "storage",
       };
+      if (suggestions?.title) {
+        this._fillUrlPath(suggestions.title);
+      }
     }
   }
 

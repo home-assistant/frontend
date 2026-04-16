@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardFieldSuggestions,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
 
@@ -9,6 +10,8 @@ export interface LovelaceDashboardDetailsDialogParams {
   dashboard?: LovelaceDashboard;
   urlPath?: string;
   isDefault?: boolean;
+  /** Create flow only; optional suggested values for the form. */
+  fieldSuggestions?: LovelaceDashboardFieldSuggestions;
   createDashboard?: (values: LovelaceDashboardCreateParams) => Promise<unknown>;
   updateDashboard: (
     updates: Partial<LovelaceDashboardMutableParams>
