@@ -11,7 +11,7 @@ export interface LovelaceDashboardDetailsDialogParams {
   urlPath?: string;
   isDefault?: boolean;
   /** Create flow only; optional suggested values for the form. */
-  fieldSuggestions?: LovelaceDashboardSuggestions;
+  suggestions?: LovelaceDashboardSuggestions;
   /**
    * Create flow only; reserved url paths (dashboards, panels, and so on) so
    * auto-generated paths avoid collisions by appending -2, -3, and so on.

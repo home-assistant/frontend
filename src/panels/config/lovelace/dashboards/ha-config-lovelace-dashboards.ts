@@ -615,7 +615,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       dashboard,
       urlPath,
       isDefault: dashboard?.url_path === defaultPanel,
-      fieldSuggestions,
+      suggestions: fieldSuggestions,
       takenUrlPaths: dashboard
         ? undefined
         : this._collectTakenDashboardUrlPaths(),

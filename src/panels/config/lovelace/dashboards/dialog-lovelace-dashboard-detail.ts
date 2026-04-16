@@ -43,7 +43,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
     } else {
-      const suggestions = this._params.fieldSuggestions;
+      const suggestions = this._params.suggestions;
       this._data = {
         show_in_sidebar: true,
         icon: suggestions?.icon,
