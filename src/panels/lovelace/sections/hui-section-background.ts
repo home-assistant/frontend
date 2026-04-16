@@ -37,10 +37,17 @@ export class HuiSectionBackground extends LitElement {
         this.style.setProperty("--section-background-opacity", opacity);
       }
     }
-    if (changedProperties.has("theme") || changedProperties.has("hass")) {
-      if (this.hass && this.theme) {
-        applyThemesOnElement(this, this.hass.themes, this.theme);
-      }
+    if (!this.hass) {
+      return;
+    }
+    const oldHass = changedProperties.get("hass");
+    if (
+      changedProperties.has("theme") ||
+      !oldHass ||
+      this.hass.themes !== oldHass.themes ||
+      this.hass.selectedTheme !== oldHass.selectedTheme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this.theme);
     }
   }
 
