@@ -1,7 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../common/entity/state_color";
 import { UNAVAILABLE } from "../../data/entity/entity";
@@ -55,10 +54,7 @@ export class HaStateControlVacuumStatus extends LitElement {
 
     // Inspired by denysdovhan/vacuum-card SVG design
     return html`
-      <div
-        class="container ${classMap({ [visualState]: true })}"
-        style=${styleMap(style)}
-      >
+      <div class="container ${visualState}" style=${styleMap(style)}>
         <svg
           viewBox="0 0 240 240"
           xmlns="http://www.w3.org/2000/svg"

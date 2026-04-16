@@ -109,8 +109,8 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <span class="battery" slot="after-time">
           ${batteryDomain === "binary_sensor"
-            ? ""
-            : `${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%`}
+            ? nothing
+            : html`<span>${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%</span>`}
           <ha-battery-icon
             .hass=${this.hass}
             .batteryStateObj=${battery}
@@ -127,9 +127,9 @@ class MoreInfoVacuum extends LitElement {
     ) {
       return html`
         <span class="battery" slot="after-time">
-          ${Math.round(
+          <span>${Math.round(
             this.stateObj.attributes.battery_level
-          )}${blankBeforePercent(this.hass.locale)}%
+          )}${blankBeforePercent(this.hass.locale)}%</span>
           <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
         </span>
       `;
@@ -264,7 +264,7 @@ class MoreInfoVacuum extends LitElement {
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return nothing;
     }
 
@@ -465,8 +465,12 @@ class MoreInfoVacuum extends LitElement {
           display: inline-flex;
           align-items: center;
           gap: var(--ha-space-1);
-          font-size: var(--ha-font-size-s);
+          font-size: var(--ha-font-size-m);
           color: var(--secondary-text-color);
+        }
+
+        .battery span {
+          height: var(--mdc-icon-size);
         }
 
         .battery ha-battery-icon,

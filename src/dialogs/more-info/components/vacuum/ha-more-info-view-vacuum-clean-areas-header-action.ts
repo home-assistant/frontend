@@ -19,15 +19,19 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
   }
 
   private async _loadMapping() {
-    if (!this.params.entityId) return;
-    const entry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      this.params.entityId
-    ).catch(() => undefined);
-    const areaMapping = entry?.options?.vacuum?.area_mapping;
-    this._hasMapping =
-      !!areaMapping &&
-      Object.keys(areaMapping).some((areaId) => this.hass.areas[areaId]);
+    if (!this.params.entityId || !this.hass.user?.is_admin) return;
+    try {
+      const entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        this.params.entityId
+      );
+      const areaMapping = entry?.options?.vacuum?.area_mapping;
+      this._hasMapping =
+        !!areaMapping &&
+        Object.keys(areaMapping).some((areaId) => this.hass.areas[areaId]);
+    } catch (_err) {
+      // Keep _hasMapping as false
+    }
   }
 
   protected render() {

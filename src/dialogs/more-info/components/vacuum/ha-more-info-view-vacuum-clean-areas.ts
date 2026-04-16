@@ -2,7 +2,6 @@ import { mdiCogOutline, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 import "../../../../components/ha-alert";
@@ -105,7 +104,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     return html`
       <div
-        class="area-card ${classMap({ selected: isSelected })}"
+        class="area-card ${isSelected ? "selected" : ""}"
         data-area-id=${areaId}
         @click=${this._toggleArea}
       >
@@ -126,7 +125,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     if (this._loading) {
       return html`
         <div class="center">
-          <ha-spinner active></ha-spinner>
+          <ha-spinner></ha-spinner>
         </div>
       `;
     }
@@ -144,14 +143,16 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         <div class="content empty-content">
           <div class="empty">
             <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
-            <h1>
+            <p class="empty-title">
               ${this.hass.localize(
                 "ui.dialogs.more_info_control.vacuum.no_areas_header"
               )}
-            </h1>
+            </p>
             <p>
               ${this.hass.localize(
-                "ui.dialogs.more_info_control.vacuum.no_areas_text"
+                this.hass.user?.is_admin
+                  ? "ui.dialogs.more_info_control.vacuum.no_areas_text"
+                  : "ui.dialogs.more_info_control.vacuum.no_areas_text_non_admin"
               )}
             </p>
             ${this.hass.user?.is_admin
@@ -198,7 +199,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
           )}
           ${this._selectedAreaIds.length > 0
             ? ` (${this._selectedAreaIds.length})`
-            : ""}
+            : nothing}
         </ha-button>
       </div>
     `;
@@ -245,8 +246,9 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       --mdc-icon-size: 18px;
     }
 
-    .empty h1 {
-      font-size: var(--ha-font-size-xl);
+    .empty .empty-title {
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
       color: var(--primary-text-color);
       margin: var(--ha-space-3) 0 var(--ha-space-2);
     }

@@ -1671,6 +1671,7 @@
           "start_cleaning_areas": "Start cleaning",
           "no_areas_header": "No areas mapped",
           "no_areas_text": "Map your vacuum's segments to areas in your home to start cleaning by area.",
+          "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
           "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
