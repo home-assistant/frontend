@@ -10017,6 +10017,10 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "hourly-forecast": {
+                "label": "Hourly forecast",
+                "no_forecast": "No forecast data available"
               }
             }
           },
