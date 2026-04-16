@@ -10,6 +10,7 @@ import { getLovelaceCollection } from "./lovelace";
 import type { LovelaceRawConfig } from "./lovelace/config/types";
 import { computeViewIcon, computeViewTitle } from "./lovelace/config/view";
 import {
+  APP_PANEL,
   getPanelIcon,
   getPanelIconPath,
   getPanelTitleFromUrlPath,
@@ -65,7 +66,7 @@ export const computeNavigationPathInfo = (
   }
 
   // /app/<slug> (ingress addon panel)
-  if (panelUrlPath === "app" && subPath) {
+  if (panelUrlPath === APP_PANEL && subPath) {
     return computeIngressNavigationPathInfo(subPath, ingressPanels);
   }
 
@@ -155,7 +156,7 @@ export const subscribeNavigationPathInfo = (
 
   // Subscribe to ingress panels for /app/<slug> paths
   if (
-    panelUrlPath === "app" &&
+    panelUrlPath === APP_PANEL &&
     segments[1] &&
     isComponentLoaded(hass.config, "hassio")
   ) {
