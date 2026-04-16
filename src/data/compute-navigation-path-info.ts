@@ -144,7 +144,7 @@ const computeIngressNavigationPathInfo = (
 /**
  * Subscribe to navigation path info updates.
  * Resolves synchronously first, then subscribes to lovelace config
- * updates for view paths.
+ * updates for view paths and ingress panel info for app paths.
  */
 export const subscribeNavigationPathInfo = (
   hass: HomeAssistant,
