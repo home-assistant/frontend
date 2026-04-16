@@ -5,13 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { subscribeOne } from "../common/util/subscribe-one";
+import { subscribeOneCollection } from "../common/util/subscribe-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
-import {
-  getIngressPanelInfoCollection,
-  type IngressPanelInfo,
-} from "../data/hassio/ingress";
+import { getIngressPanelInfoCollection } from "../data/hassio/ingress";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { SYSTEM_PANELS } from "../data/panel";
 import { computeNavigationPathInfo } from "../data/compute-navigation-path-info";
@@ -354,10 +351,8 @@ export class HaNavigationPicker extends LitElement {
     // Fetch all ingress add-on panels
     if (isComponentLoaded(this.hass!.config, "hassio")) {
       try {
-        const ingressPanels = await subscribeOne<
-          Record<string, IngressPanelInfo>
-        >(this.hass!.connection, (conn, onChange) =>
-          getIngressPanelInfoCollection(conn).subscribe(onChange)
+        const ingressPanels = await subscribeOneCollection(
+          getIngressPanelInfoCollection(this.hass!.connection)
         );
         for (const [slug, panel] of Object.entries(ingressPanels)) {
           const path = `/app/${slug}`;

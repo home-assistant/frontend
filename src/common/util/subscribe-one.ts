@@ -13,3 +13,15 @@ export const subscribeOne = async <T>(
       resolve(items);
     });
   });
+
+interface Subscribable<T> {
+  subscribe(subscriber: (data: T) => void): UnsubscribeFunc;
+}
+
+export const subscribeOneCollection = async <T>(collection: Subscribable<T>) =>
+  new Promise<T>((resolve) => {
+    const unsub = collection.subscribe((data) => {
+      unsub();
+      resolve(data);
+    });
+  });
