@@ -17,12 +17,12 @@ export class HaTooltip extends Tooltip {
       css`
         :host {
           --wa-tooltip-background-color: var(
-            --ha-tooltip-background-color,
-            var(--ha-color-surface-default-inverted)
+            --ha-color-surface-default,
+            var(--secondary-background-color)
           );
           --wa-tooltip-content-color: var(
-            --ha-tooltip-text-color,
-            var(--ha-color-text-primary-inverted)
+            --ha-color-text-primary,
+            var(--primary-text-color)
           );
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
@@ -52,6 +52,10 @@ export class HaTooltip extends Tooltip {
 
         .tooltip::part(popup) {
           animation-duration: var(--ha-tooltip-animation-duration, 0);
+        }
+
+        .body {
+          box-shadow: var(--ha-tooltip-box-shadow, var(--ha-box-shadow-m));
         }
       `,
     ];
