@@ -9,7 +9,6 @@ import "../components/ha-alert";
 import "../components/ha-button";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
-import "../components/ha-formfield";
 import type { AuthProvider } from "../data/auth";
 import {
   autocompleteLoginFields,
@@ -97,11 +96,6 @@ export class HaAuthFlow extends LitElement {
   protected render() {
     return html`
       <style>
-        ha-auth-flow .store-token {
-          margin-left: -16px;
-          margin-inline-start: -16px;
-          margin-inline-end: initial;
-        }
         a.forgot-password {
           color: var(--primary-color);
           text-decoration: none;
@@ -120,6 +114,9 @@ export class HaAuthFlow extends LitElement {
         ha-auth-form {
           display: block;
           margin-top: 16px;
+        }
+        .action {
+          margin-top: var(--ha-space-5);
         }
         .action ha-button {
           width: 100%;
@@ -249,17 +246,12 @@ export class HaAuthFlow extends LitElement {
             ${this.clientId === genClientId() &&
             !["select_mfa_module", "mfa"].includes(step.step_id)
               ? html`
-                  <ha-formfield
-                    class="store-token"
-                    .label=${this.localize(
-                      "ui.panel.page-authorize.store_token"
-                    )}
+                  <ha-checkbox
+                    .checked=${this._storeToken}
+                    @change=${this._storeTokenChanged}
                   >
-                    <ha-checkbox
-                      .checked=${this._storeToken}
-                      @change=${this._storeTokenChanged}
-                    ></ha-checkbox>
-                  </ha-formfield>
+                    ${this.localize("ui.panel.page-authorize.store_token")}
+                  </ha-checkbox>
                 `
               : ""}
             <a

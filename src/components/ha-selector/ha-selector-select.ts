@@ -136,14 +136,14 @@ export class HaSelectSelector extends LitElement {
           ${this.label}
           ${options.map(
             (item: SelectOption) => html`
-              <ha-formfield .label=${item.label}>
-                <ha-checkbox
-                  .checked=${value.includes(item.value)}
-                  .value=${item.value}
-                  .disabled=${item.disabled || this.disabled}
-                  @change=${this._checkboxChanged}
-                ></ha-checkbox>
-              </ha-formfield>
+              <ha-checkbox
+                .checked=${value.includes(item.value)}
+                .value=${item.value}
+                .disabled=${item.disabled || this.disabled}
+                @change=${this._checkboxChanged}
+              >
+                ${item.label}
+              </ha-checkbox>
             `
           )}
         </div>
@@ -384,6 +384,12 @@ export class HaSelectSelector extends LitElement {
     ha-select,
     ha-formfield {
       display: block;
+    }
+
+    ha-checkbox {
+      display: flex;
+      min-height: 40px;
+      justify-content: center;
     }
     ha-dropdown-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);

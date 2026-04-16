@@ -568,6 +568,9 @@ class HaBackupConfigData extends LitElement {
         width: 140px;
       }
     }
+    ha-expansion-panel {
+      margin-bottom: var(--ha-space-4);
+    }
   `;
 }
 

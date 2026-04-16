@@ -199,9 +199,14 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
     .flex {
       display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
     }
     ha-slider {
       flex: 1;
+    }
+    ha-input-helper-text {
+      margin-top: var(--ha-space-1);
     }
   `;
 }
