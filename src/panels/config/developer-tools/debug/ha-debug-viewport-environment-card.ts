@@ -135,13 +135,7 @@ interface ViewportEnvironmentSnapshot {
 }
 
 function collectViewportEnvironmentSnapshot(): ViewportEnvironmentSnapshot {
-  const cssEnvironment: Record<string, string> = {};
-  for (const name of ENV_INSETS) {
-    cssEnvironment[name] = readCssEnv(name);
-  }
-  for (const name of ENV_EXTRA) {
-    cssEnvironment[name] = readCssEnv(name);
-  }
+  const cssEnvironment = readAllCssEnv([...ENV_INSETS, ...ENV_EXTRA]);
 
   const rootStyle = getComputedStyle(document.documentElement);
   const cssVariables: Record<string, string> = {};
