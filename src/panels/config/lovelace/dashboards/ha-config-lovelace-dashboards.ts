@@ -62,7 +62,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
-import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
+import { loadDashboardStrategyWithCreateSuggestions } from "../../../lovelace/strategies/get-strategy";
 import type { NewDashboardSelection } from "../../dashboard/show-dialog-new-dashboard";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
@@ -568,24 +568,30 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _addDashboard() {
     showNewDashboardDialog(this, {
       selectConfig: async ({ config }: NewDashboardSelection) => {
-        const fieldSuggestions: LovelaceDashboardFieldSuggestions | undefined =
-          undefined;
+        let fieldSuggestions: LovelaceDashboardFieldSuggestions | undefined;
+
         if (config && isStrategyDashboard(config)) {
-          const strategyType = config.strategy.type;
-          const strategyClass = await getLovelaceStrategy(
-            "dashboard",
-            strategyType
-          );
+          const { strategyClass, fieldSuggestions: suggested } =
+            await loadDashboardStrategyWithCreateSuggestions(
+              this.hass,
+              config.strategy.type
+            );
+          fieldSuggestions = suggested;
 
           if (strategyClass.configRequired) {
             showDashboardConfigureStrategyDialog(this, {
               config: config,
               saveConfig: async (updatedConfig) => {
+                const { fieldSuggestions: afterConfigure } =
+                  await loadDashboardStrategyWithCreateSuggestions(
+                    this.hass,
+                    updatedConfig.strategy.type
+                  );
                 this._openDetailDialog(
                   undefined,
                   undefined,
                   updatedConfig,
-                  fieldSuggestions
+                  afterConfigure
                 );
               },
             });
