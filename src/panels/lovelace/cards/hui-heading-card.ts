@@ -230,7 +230,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transform: translateX(calc(4px * var(--scale-direction)));
     }
     .container .content {
-      flex: 1 0 auto;
+      flex: 1 1 0;
       min-width: 100px;
     }
     .container .content:not(:has(p)) {
