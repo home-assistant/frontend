@@ -264,13 +264,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       ? slugifyTitle
       : `dashboard-${slugifyTitle}`;
     const taken = this._params?.takenUrlPaths;
-    const url_path =
-      taken !== undefined
-        ? pickAvailableDashboardUrlPath(baseSlug, taken)
-        : baseSlug;
     this._data = {
       ...this._data,
-      url_path,
+      url_path:
+        taken !== undefined
+          ? pickAvailableDashboardUrlPath(baseSlug, taken)
+          : baseSlug,
     };
   }
 
