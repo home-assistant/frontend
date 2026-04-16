@@ -1,4 +1,14 @@
-import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
+import {
+  mdiDevices,
+  mdiHammer,
+  mdiLink,
+  mdiPalette,
+  mdiPuzzle,
+  mdiRobot,
+  mdiScriptText,
+  mdiShape,
+  mdiTextureBox,
+} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
@@ -12,6 +22,7 @@ import {
   getPanelIconPath,
   getPanelTitleFromUrlPath,
 } from "./panel";
+import type { LocalizeKeys } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 
 export interface NavigationPathInfo {
@@ -26,6 +37,40 @@ export const DEFAULT_NAVIGATION_PATH_INFO: NavigationPathInfo = {
 };
 
 const AREA_VIEW_PREFIX = "areas-";
+
+export const CONFIG_SUB_ROUTES: Record<
+  string,
+  { translationKey: LocalizeKeys; iconPath: string }
+> = {
+  automation: {
+    translationKey: "ui.components.navigation-picker.route.automations",
+    iconPath: mdiRobot,
+  },
+  scene: {
+    translationKey: "ui.components.navigation-picker.route.scenes",
+    iconPath: mdiPalette,
+  },
+  script: {
+    translationKey: "ui.components.navigation-picker.route.scripts",
+    iconPath: mdiScriptText,
+  },
+  "developer-tools": {
+    translationKey: "ui.components.navigation-picker.route.developer_tools",
+    iconPath: mdiHammer,
+  },
+  integrations: {
+    translationKey: "ui.components.navigation-picker.route.integrations",
+    iconPath: mdiPuzzle,
+  },
+  devices: {
+    translationKey: "ui.components.navigation-picker.route.devices",
+    iconPath: mdiDevices,
+  },
+  entities: {
+    translationKey: "ui.components.navigation-picker.route.entities",
+    iconPath: mdiShape,
+  },
+};
 
 /**
  * Resolve a navigation path to a display label and icon.
@@ -59,6 +104,15 @@ export const computeNavigationPathInfo = (
     segments[3]
   ) {
     return computeDeviceNavigationPathInfo(hass, segments[3]);
+  }
+
+  // /config/{subRoute} (e.g. /config/automation, /config/integrations)
+  if (panelUrlPath === "config" && subPath && subPath in CONFIG_SUB_ROUTES) {
+    const route = CONFIG_SUB_ROUTES[subPath];
+    return {
+      label: hass.localize(route.translationKey) || subPath,
+      iconPath: route.iconPath,
+    };
   }
 
   const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;

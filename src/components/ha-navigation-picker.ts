@@ -7,7 +7,10 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { SYSTEM_PANELS } from "../data/panel";
-import { computeNavigationPathInfo } from "../data/compute-navigation-path-info";
+import {
+  CONFIG_SUB_ROUTES,
+  computeNavigationPathInfo,
+} from "../data/compute-navigation-path-info";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
@@ -332,6 +335,19 @@ export class HaNavigationPicker extends LitElement {
           sorting_label: createSortingLabel(viewInfo.label, viewPath),
           group: "views",
         });
+      });
+    }
+
+    for (const [subPath, route] of Object.entries(CONFIG_SUB_ROUTES)) {
+      const path = `/config/${subPath}`;
+      const label = this.hass!.localize(route.translationKey) || subPath;
+      otherRoutes.push({
+        id: path,
+        primary: label,
+        secondary: path,
+        icon_path: route.iconPath,
+        sorting_label: createSortingLabel(label, path),
+        group: "other_routes",
       });
     }
 

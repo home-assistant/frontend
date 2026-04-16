@@ -1435,7 +1435,16 @@
         "related": "Related",
         "views": "Views",
         "area_settings": "{area} - Settings",
-        "other_routes": "Other routes"
+        "other_routes": "Other routes",
+        "route": {
+          "automations": "[%key:ui::panel::config::automation::caption%]",
+          "scenes": "[%key:ui::panel::config::scene::caption%]",
+          "scripts": "[%key:ui::panel::config::script::caption%]",
+          "developer_tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+          "integrations": "[%key:ui::panel::config::integrations::caption%]",
+          "devices": "[%key:ui::panel::config::devices::caption%]",
+          "entities": "[%key:ui::panel::config::entities::caption%]"
+        }
       }
     },
     "dialogs": {
