@@ -492,6 +492,9 @@
     },
     "components": {
       "selectors": {
+        "serial": {
+          "enter_manually": "Enter manually"
+        },
         "media": {
           "pick_media_player": "Select media player",
           "browse_not_supported": "Media player does not support browsing media.",
