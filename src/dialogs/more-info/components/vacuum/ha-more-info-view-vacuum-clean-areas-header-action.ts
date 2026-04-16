@@ -29,8 +29,10 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
       this._hasMapping =
         !!areaMapping &&
         Object.keys(areaMapping).some((areaId) => this.hass.areas[areaId]);
-    } catch (_err) {
-      // Keep _hasMapping as false
+    } catch (err) {
+      this._hasMapping = false;
+      // eslint-disable-next-line no-console
+      console.error("Failed to load area mapping", err);
     }
   }
 
