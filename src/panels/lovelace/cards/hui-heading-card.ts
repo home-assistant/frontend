@@ -127,6 +127,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                 <div
                   class=${classMap({
                     badges: true,
+                    draggable: !this.preview,
                     dragging: badgeDragging,
                   })}
                 >
@@ -255,6 +256,9 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         transparent 100%
       );
     }
+    .badges.draggable {
+      cursor: grab;
+    }
     .badges-row {
       display: flex;
       flex-direction: row;
@@ -289,6 +293,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       --badge-padding: var(--ha-space-4);
     }
     .badges.dragging {
+      cursor: grabbing;
       pointer-events: none;
     }
   `;
