@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { dump } from "js-yaml";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import type { HomeAssistant } from "../../../../types";
@@ -229,7 +230,7 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const text = this._snapshot ? JSON.stringify(this._snapshot, null, 2) : "";
+    const text = this._snapshot ? dump(this._snapshot) : "";
 
     return html`
       <ha-card
