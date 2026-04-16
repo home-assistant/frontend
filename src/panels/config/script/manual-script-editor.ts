@@ -30,7 +30,7 @@ import {
   normalizeScriptConfig,
 } from "../../../data/script";
 import { documentationUrl } from "../../../util/documentation-url";
-import { showToast } from "../../../util/toast";
+import { showEditorToast } from "../automation/editor-toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import { ManualEditorMixin } from "../automation/ha-manual-editor-mixin";
@@ -155,6 +155,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
       @request-close-sidebar=${this.triggerCloseSidebar}
       @close-sidebar=${this.handleCloseSidebar}
       .hass=${this.hass}
+      .editorDirty=${this.dirty}
       .narrow=${this.narrow}
       .disabled=${this.disabled || this.saving}
       root
@@ -198,7 +199,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     try {
       loaded = load(paste);
     } catch (_err: any) {
-      showToast(this, {
+      showEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.script.editor.paste_invalid_config"
         ),
@@ -248,7 +249,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     try {
       assert(normalized, scriptConfigStruct);
     } catch (_err: any) {
-      showToast(this, {
+      showEditorToast(this, {
         message: this.hass.localize(
           "ui.panel.config.script.editor.paste_invalid_config"
         ),
@@ -333,7 +334,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
   }
 
   protected showPastedToastWithUndo() {
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.script.editor.paste_toast_message"
       ),
