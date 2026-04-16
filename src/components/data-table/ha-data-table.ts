@@ -887,10 +887,20 @@ export class HaDataTable extends LitElement {
     this._lastSelectedRowId = null;
   }
 
-  private _handleRowCheckboxClicked = (
-    ev: HASSDomCurrentTargetEvent<HaCheckbox & { rowId: string }>
-  ) => {
-    const rowId = ev.currentTarget.rowId;
+  private _handleRowCheckboxClicked = (ev: MouseEvent) => {
+    // ha-checkbox label dispatches synthetic click on input, so handle the input click only
+    if (!(ev.composedPath()[0] instanceof HTMLInputElement) && !ev.shiftKey) {
+      return;
+    }
+
+    // In range select mode, use label click for Firefox since it doesn't fire input click events
+    if (ev.composedPath()[0] instanceof HTMLInputElement && ev.shiftKey) {
+      ev.preventDefault();
+    }
+
+    const checkboxElement = ev.currentTarget as HaCheckbox & { rowId: string };
+
+    const rowId = checkboxElement.rowId;
 
     const groupedData = this._groupData(
       this._filteredData,
@@ -927,9 +937,7 @@ export class HaDataTable extends LitElement {
           ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
         ];
       }
-    }
-
-    if (ev.currentTarget.checked) {
+    } else if (checkboxElement.checked) {
       if (!this._checkedRows.includes(rowId)) {
         this._checkedRows = [...this._checkedRows, rowId];
       }
