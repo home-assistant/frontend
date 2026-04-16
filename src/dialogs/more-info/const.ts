@@ -42,6 +42,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "fan",
   "humidifier",
   "input_boolean",
+  "lawn_mower",
   "light",
   "lock",
   "siren",
