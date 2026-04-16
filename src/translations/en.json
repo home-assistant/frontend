@@ -2470,7 +2470,17 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page."
+          "summaries_description": "Choose which summaries to show on your overview page.",
+          "custom_shortcuts": "Custom shortcuts",
+          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "add_custom_shortcut": "Add shortcut",
+          "edit_shortcut": "Edit shortcut",
+          "shortcut": {
+            "path": "Navigation path",
+            "label": "Label",
+            "icon": "Icon",
+            "color": "Color"
+          }
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",

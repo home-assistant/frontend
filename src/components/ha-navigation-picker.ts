@@ -55,6 +55,10 @@ export class HaNavigationPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: false }) public excludePaths?: string[];
+
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @state() private _loading = true;
 
   @property({ attribute: false }) public context?: ActionRelatedContext;
@@ -124,6 +128,7 @@ export class HaNavigationPicker extends LitElement {
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
+        .addButtonLabel=${this.addButtonLabel}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -197,10 +202,18 @@ export class HaNavigationPicker extends LitElement {
   };
 
   private _getItems = (searchString?: string, section?: string) => {
+    const excludeSet = this.excludePaths
+      ? new Set(this.excludePaths)
+      : undefined;
+
     const getGroupItems = (group: NavigationGroup) => {
       let items = [...this._navigationGroups[group]].sort(
         this._sortBySortingLabel
       );
+
+      if (excludeSet) {
+        items = items.filter((item) => !excludeSet.has(item.id));
+      }
 
       if (searchString) {
         const fuseIndex = this._fuseIndexes[group](items);

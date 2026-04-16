@@ -18,11 +18,19 @@ export interface CoreFrontendSystemData {
   onboarded_date?: string;
 }
 
+export interface CustomShortcutItem {
+  path: string;
+  label?: string;
+  icon?: string;
+  color?: string;
+}
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
+  custom_shortcuts?: CustomShortcutItem[];
 }
 
 declare global {
