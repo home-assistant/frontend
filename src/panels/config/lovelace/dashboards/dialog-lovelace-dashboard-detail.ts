@@ -17,6 +17,7 @@ import type {
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { pickAvailableDashboardUrlPath } from "./pick-available-dashboard-url-path";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -259,11 +260,17 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
 
     const slugifyTitle = slugify(title, "-");
+    const baseSlug = slugifyTitle.includes("-")
+      ? slugifyTitle
+      : `dashboard-${slugifyTitle}`;
+    const taken = this._params?.takenUrlPaths;
+    const url_path =
+      taken !== undefined
+        ? pickAvailableDashboardUrlPath(baseSlug, taken)
+        : baseSlug;
     this._data = {
       ...this._data,
-      url_path: slugifyTitle.includes("-")
-        ? slugifyTitle
-        : `dashboard-${slugifyTitle}`,
+      url_path,
     };
   }
 

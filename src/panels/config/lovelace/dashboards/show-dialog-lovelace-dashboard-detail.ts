@@ -12,6 +12,11 @@ export interface LovelaceDashboardDetailsDialogParams {
   isDefault?: boolean;
   /** Create flow only; optional suggested values for the form. */
   fieldSuggestions?: LovelaceDashboardSuggestions;
+  /**
+   * Create flow only; reserved url paths (dashboards, panels, and so on) so
+   * auto-generated paths avoid collisions by appending -2, -3, and so on.
+   */
+  takenUrlPaths?: ReadonlySet<string>;
   createDashboard?: (values: LovelaceDashboardCreateParams) => Promise<unknown>;
   updateDashboard: (
     updates: Partial<LovelaceDashboardMutableParams>

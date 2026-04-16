@@ -616,6 +616,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
       urlPath,
       isDefault: dashboard?.url_path === defaultPanel,
       fieldSuggestions,
+      takenUrlPaths: dashboard
+        ? undefined
+        : this._collectTakenDashboardUrlPaths(),
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(
@@ -647,6 +650,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
         return this._deleteDashboard(dashboard);
       },
     });
+  }
+
+  private _collectTakenDashboardUrlPaths(): ReadonlySet<string> {
+    const taken = new Set<string>();
+    for (const d of this._dashboards ?? []) {
+      taken.add(d.url_path);
+    }
+    for (const path of Object.keys(this.hass.panels)) {
+      taken.add(path);
+    }
+    taken.add("lovelace");
+    return taken;
   }
 
   private async _deleteDashboard(
