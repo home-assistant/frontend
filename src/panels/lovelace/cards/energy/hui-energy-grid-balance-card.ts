@@ -108,7 +108,7 @@ class HuiEnergyGridBalanceCard
     const max = Math.max(imported, exported);
     const leftPercent = max > 0 ? (exported / max) * 100 : 0;
     const rightPercent = max > 0 ? (imported / max) * 100 : 0;
-    const netPercent = max > 0 ? (Math.abs(net) / (2 * max)) * 100 : 0;
+    const netBarWidth = max > 0 ? (Math.abs(net) / max) * 100 : 0;
 
     return html`
       <ha-card>
@@ -181,7 +181,7 @@ class HuiEnergyGridBalanceCard
               ? html`<div
                     id="bar-net-left"
                     class="bar-net return"
-                    style="width: ${netPercent * 2}%"
+                    style="width: ${netBarWidth}%"
                   ></div>
                   <ha-tooltip for="bar-net-left" placement="top">
                     ${this.hass.localize(
@@ -210,7 +210,7 @@ class HuiEnergyGridBalanceCard
               ? html`<div
                     id="bar-net-right"
                     class="bar-net consumption"
-                    style="width: ${netPercent * 2}%"
+                    style="width: ${netBarWidth}%"
                   ></div>
                   <ha-tooltip for="bar-net-right" placement="top">
                     ${this.hass.localize(
