@@ -19,6 +19,7 @@ import {
   type CustomStrategyEntry,
 } from "../../../data/lovelace_custom_strategies";
 import { fetchResources } from "../../../data/lovelace/resource";
+import type { LovelaceDashboardStrategyTypeId } from "../../../data/lovelace/config/strategy";
 import type {
   LovelaceConfig,
   LovelaceDashboardStrategyConfig,
@@ -345,13 +346,15 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       return;
     }
 
+    let strategyType: LovelaceDashboardStrategyTypeId | undefined;
     if (target.config) {
       config = target.config;
     } else if (target.strategy) {
+      strategyType = target.strategy as LovelaceDashboardStrategyTypeId;
       config = this._generateStrategyConfig(target.strategy);
     }
 
-    await this._params?.selectConfig(config);
+    await this._params?.selectConfig({ config, strategyType });
     this.closeDialog();
   }
 
