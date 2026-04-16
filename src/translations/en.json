@@ -9367,7 +9367,7 @@
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
               "show_entity_picture": "Show entity picture",
-              "show_entity_picture_helper": "Use the entity's entity_picture attribute instead of a manually configured image",
+              "show_entity_picture_helper": "Use the entity's picture if available; falls back to the configured image",
               "camera_view": "Camera view",
               "camera_view_options": {
                 "auto": "Auto",

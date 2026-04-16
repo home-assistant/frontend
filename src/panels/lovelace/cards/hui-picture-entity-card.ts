@@ -146,13 +146,15 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     const domain: string = computeDomain(this._config.entity);
     let image: string | undefined;
 
-    // Check if we should use entity_picture from the entity
+    // When show_entity_picture is enabled, try entity_picture first
     if (this._config.show_entity_picture) {
       image =
-        (stateObj.attributes as any).entity_picture_local ||
-        stateObj.attributes.entity_picture;
-    } else {
-      // Use configured image
+        (stateObj.attributes as { entity_picture_local?: string })
+          .entity_picture_local || stateObj.attributes.entity_picture;
+    }
+
+    // Fall back to configured image
+    if (!image) {
       image =
         (typeof this._config?.image === "object" &&
           this._config.image.media_content_id) ||
