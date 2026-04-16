@@ -147,6 +147,11 @@ export class DialogEditHome
         >
           <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
           <div class="expansion-content">
+            <p class="section-description">
+              ${this.hass.localize(
+                "ui.panel.home.editor.favorite_entities_description"
+              )}
+            </p>
             <ha-entities-picker
               autofocus
               .hass=${this.hass}

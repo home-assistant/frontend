@@ -2476,7 +2476,8 @@
         "editor": {
           "title": "Edit Overview page",
           "description": "Configure your Overview page display preferences.",
-          "favorite_entities_helper": "Display your favorite entities. They always appear first.",
+          "favorite_entities_description": "Pin entities to always show them on your overview page.",
+          "favorite_entities_helper": "Entities in your favorites always appear first.",
           "suggested_entities": "Suggested entities",
           "suggested_entities_description": "Include additional entities based on your most commonly used devices to fill up to 8 slots including your favorites.",
           "save_failed": "Failed to save Overview page configuration",
