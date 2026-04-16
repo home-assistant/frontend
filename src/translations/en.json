@@ -7792,6 +7792,69 @@
           "picker": {
             "title": "Select Z-Wave network",
             "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
+          },
+          "credentials": {
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "name": "Name",
+              "type": "Type",
+              "no_users": "No users configured",
+              "unnamed_user": "User {index}",
+              "credentials": "Credentials",
+              "user_type": {
+                "general": "Full access",
+                "programming": "Programming",
+                "remote_only": "Remote only"
+              },
+              "user_types": {
+                "general": {
+                  "label": "Full access",
+                  "description": "Can lock/unlock anytime, 24/7"
+                },
+                "programming": {
+                  "label": "Programming",
+                  "description": "Used for device programming"
+                },
+                "remote_only": {
+                  "label": "Remote only",
+                  "description": "Can only operate remotely"
+                }
+              }
+            },
+            "credential_types": {
+              "pin_code": "PIN code",
+              "password": "Password",
+              "rfid_code": "RFID",
+              "finger_biometric": "Fingerprint",
+              "face_biometric": "Face",
+              "eye_biometric": "Eye",
+              "hand_biometric": "Hand",
+              "ble": "BLE",
+              "nfc": "NFC",
+              "uwb": "UWB"
+            },
+            "credential_data": {
+              "type": "Credential type",
+              "pin_code": "PIN code",
+              "password": "Password",
+              "placeholder": "{min}-{max} characters"
+            },
+            "errors": {
+              "load_failed": "Failed to load credential information",
+              "save_failed": "Failed to save changes",
+              "no_user_management": "This device does not support user management. Users and credentials cannot be managed here.",
+              "no_credential_types_supported": "This device does not support any credential types that can be managed here.",
+              "name_required": "Please enter a name for this user.",
+              "credential_required": "Please enter a credential value.",
+              "credential_length": "Credential must be {min}-{max} characters.",
+              "pin_digits_only": "PIN code must contain only numbers."
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted."
           }
         },
         "matter": {

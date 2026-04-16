@@ -1,4 +1,5 @@
 import {
+  mdiAccountKey,
   mdiChatQuestion,
   mdiCog,
   mdiDelete,
@@ -18,8 +19,10 @@ import {
   fetchZwaveProvisioningEntries,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../../data/zwave_js";
+import { getZwaveCredentialCapabilities } from "../../../../../../data/zwave_js-credentials";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
+import { showZwaveCredentialManageDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-credential-manage";
 import { showZWaveJSAddNodeDialog } from "../../../../integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
@@ -143,6 +146,28 @@ export const getZwaveDeviceActions = async (
           }),
       }
     );
+  }
+
+  // Check if this device supports credential management
+  if (!nodeStatus.is_controller_node) {
+    try {
+      const capabilities = await getZwaveCredentialCapabilities(
+        hass,
+        device.id
+      );
+      if (capabilities.supports_user_management) {
+        actions.push({
+          label: hass.localize("ui.panel.config.zwave_js.credentials.manage"),
+          icon: mdiAccountKey,
+          action: () =>
+            showZwaveCredentialManageDialog(el, {
+              device_id: device.id,
+            }),
+        });
+      }
+    } catch {
+      // Device does not support credential management — skip silently
+    }
   }
 
   if (
