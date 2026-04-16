@@ -473,16 +473,12 @@ class MoreInfoVacuum extends LitElement {
           gap: var(--ha-space-1);
           font-size: var(--ha-font-size-m);
           color: var(--secondary-text-color);
+          --mdc-icon-size: 18px;
         }
 
         .battery span {
           height: var(--mdc-icon-size);
-        }
-
-        .battery ha-battery-icon,
-        .battery ha-icon {
-          color: var(--secondary-text-color);
-          --mdc-icon-size: 18px;
+          line-height: var(--mdc-icon-size);
         }
 
         ha-state-control-vacuum-status {
