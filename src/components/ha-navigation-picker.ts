@@ -357,8 +357,8 @@ export class HaNavigationPicker extends LitElement {
         const ingressPanels = await new Promise<
           Record<string, IngressPanelInfo>
         >((resolve) => {
-          const unsub = collection.subscribe((panels) => {
-            resolve(panels);
+          const unsub = collection.subscribe((data) => {
+            resolve(data);
             unsub();
           });
         });
