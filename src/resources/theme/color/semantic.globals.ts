@@ -71,12 +71,15 @@ export const semanticColorStyles = css`
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-95);
+    --ha-color-fill-disabled-quiet-hover: var(--ha-color-neutral-90);
 
     /* fill disabled normal */
     --ha-color-fill-disabled-normal-resting: var(--ha-color-neutral-95);
+    --ha-color-fill-disabled-normal-hover: var(--ha-color-neutral-90);
 
     /* fill disabled loud */
     --ha-color-fill-disabled-loud-resting: var(--ha-color-neutral-80);
+    --ha-color-fill-disabled-loud-hover: var(--ha-color-neutral-70);
 
     /* fill danger quiet */
     --ha-color-fill-danger-quiet-resting: var(--ha-color-red-95);
@@ -212,12 +215,15 @@ export const darkSemanticColorStyles = css`
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10);
+    --ha-color-fill-disabled-quiet-hover: var(--ha-color-neutral-20);
 
     /* fill disabled normal */
     --ha-color-fill-disabled-normal-resting: var(--ha-color-neutral-20);
+    --ha-color-fill-disabled-normal-hover: var(--ha-color-neutral-30);
 
     /* fill disabled loud */
     --ha-color-fill-disabled-loud-resting: var(--ha-color-neutral-30);
+    --ha-color-fill-disabled-loud-hover: var(--ha-color-neutral-40);
 
     /* fill danger quiet */
     --ha-color-fill-danger-quiet-resting: var(--ha-color-red-05);
