@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
@@ -52,12 +52,20 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean }) public preview = false;
 
+  @query(".badges") private _badges?: HTMLDivElement;
+
   @state() private _config?: HeadingCardConfig;
+
+  @state() private _badgesOverflowing = false;
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".badges",
     enabled: false,
   });
+
+  private _resizeObserver?: ResizeObserver;
+
+  private _observedBadges?: HTMLDivElement;
 
   public setConfig(config: HeadingCardConfig): void {
     this._config = {
@@ -76,6 +84,30 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     this._dragScrollController.enabled = !this.preview;
   }
 
+  protected updated(): void {
+    if (!this._resizeObserver) {
+      this._resizeObserver = new ResizeObserver(() => {
+        this._measureBadgesOverflow();
+      });
+    }
+
+    if (this._observedBadges !== this._badges) {
+      this._resizeObserver.disconnect();
+      this._observedBadges = this._badges;
+
+      if (this._observedBadges) {
+        this._resizeObserver.observe(this._observedBadges);
+      }
+    }
+
+    this._measureBadgesOverflow();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+  }
+
   public getCardSize(): number {
     return 1;
   }
@@ -90,6 +122,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _measureBadgesOverflow() {
+    const badges = this._badges;
+    const overflowing = Boolean(
+      badges && badges.scrollWidth > badges.clientWidth + 1
+    );
+
+    if (overflowing !== this._badgesOverflowing) {
+      this._badgesOverflowing = overflowing;
+    }
   }
 
   protected render() {
@@ -128,6 +171,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                   class=${classMap({
                     badges: true,
                     draggable: !this.preview,
+                    overflowing: this._badgesOverflowing,
                     dragging: badgeDragging,
                   })}
                 >
@@ -248,6 +292,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
+    }
+    .badges.overflowing {
       mask-image: linear-gradient(
         90deg,
         transparent 0%,
@@ -256,7 +302,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         transparent 100%
       );
     }
-    .badges.draggable {
+    .badges.draggable.overflowing {
       cursor: grab;
     }
     .badges-row {
@@ -289,7 +335,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     .badges-row > * {
       min-width: fit-content;
     }
-    .badges .badges-row {
+    .badges.overflowing .badges-row {
       --badge-padding: var(--ha-space-4);
     }
     .badges.dragging {
