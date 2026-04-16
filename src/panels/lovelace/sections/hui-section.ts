@@ -4,6 +4,7 @@ import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { deepEqual } from "../../../common/util/deep-equal";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
@@ -123,6 +124,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       "card-visibility-changed",
       this._cardVisibilityChanged
     );
+    // Reapply theme on reconnect (e.g., after navigating away and back)
+    if (this.hass && this._config?.theme) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected update(changedProperties) {
@@ -136,6 +141,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
           element.hass = this.hass;
         });
         this._layoutElement.hass = this.hass;
+        // React to theme or dark mode changes
+        const oldHass = changedProperties.get("hass");
+        if (
+          !oldHass ||
+          this.hass.themes !== oldHass.themes ||
+          this.hass.selectedTheme !== oldHass.selectedTheme
+        ) {
+          applyThemesOnElement(this, this.hass.themes, this._config?.theme);
+        }
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
@@ -184,6 +198,8 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
 
     this._config = sectionConfig;
+    // Apply theme now that config is set (after potential strategy await)
+    applyThemesOnElement(this, this.hass!.themes, this._config.theme);
 
     // Create a new layout element if necessary.
     let addLayoutElement = false;
