@@ -1,10 +1,13 @@
 import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import { getIngressPanelInfoCollection } from "./hassio/ingress";
 import { getLovelaceCollection } from "./lovelace";
 import type { LovelaceRawConfig } from "./lovelace/config/types";
 import { computeViewIcon, computeViewTitle } from "./lovelace/config/view";
 import {
+  APP_PANEL,
   getPanelIcon,
   getPanelIconPath,
   getPanelTitleFromUrlPath,
@@ -142,6 +145,26 @@ export const subscribeNavigationPathInfo = (
       if (newInfo.label !== current.label || newInfo.icon !== current.icon) {
         current = newInfo;
         onChange(newInfo);
+      }
+    });
+  }
+
+  // /app/{addonSlug}
+  if (
+    panelUrlPath === APP_PANEL &&
+    segments[1] &&
+    isComponentLoaded(hass.config, "hassio")
+  ) {
+    const addonSlug = segments[1];
+    const collection = getIngressPanelInfoCollection(hass.connection);
+    return collection.subscribe((addonMap) => {
+      const addon = addonMap[addonSlug];
+      if (addon) {
+        onChange({
+          label: addon.title,
+          icon: addon.icon,
+          iconPath: info.iconPath,
+        });
       }
     });
   }
