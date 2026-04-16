@@ -276,16 +276,15 @@ export const expandLovelaceConfigStrategies = async (
   return newConfig;
 };
 
-interface DashboardStrategyClassWithSuggestions {
+interface DashboardStrategyClassWithSuggestions extends LovelaceDashboardStrategy {
   getCreateSuggestions?: LovelaceDashboardStrategyGetCreateSuggestions;
 }
 
 async function readDashboardCreateSuggestions(
   hass: HomeAssistant,
-  strategyClass: object
+  strategyClass: DashboardStrategyClassWithSuggestions
 ): Promise<LovelaceDashboardSuggestions | undefined> {
-  const fn = (strategyClass as DashboardStrategyClassWithSuggestions)
-    .getCreateSuggestions;
+  const fn = strategyClass.getCreateSuggestions;
   if (typeof fn !== "function") {
     return undefined;
   }
