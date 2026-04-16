@@ -559,7 +559,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     dayHeader?: string
   ) {
     if (!this._showValue(item.templow) && !this._showValue(item.temperature)) {
-      return "";
+      return nothing;
     }
 
     return html`
@@ -602,7 +602,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 )}
               </div>
             `
-          : ""}
+          : nothing}
         <div class="temp">
           ${this._showValue(item.temperature)
             ? html`${formatNumber(item.temperature, this.hass!.locale, {
@@ -616,7 +616,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 maximumFractionDigits: temperatureFractionDigits,
               })}°`
             : hourly
-              ? ""
+              ? nothing
               : "—"}
         </div>
       </div>
