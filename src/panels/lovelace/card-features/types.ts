@@ -34,8 +34,8 @@ export interface CoverTiltFavoriteCardFeatureConfig {
   type: "cover-tilt-favorite";
 }
 
-export interface InputSelectCardFeatureConfig {
-  type: "dropdown";
+export interface SelectDropdownCardFeatureConfig {
+  type: "select-dropdown";
 }
 
 export interface LightBrightnessCardFeatureConfig {
@@ -301,7 +301,6 @@ export type LovelaceCardFeatureConfig =
   | TrendGraphCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
-  | InputSelectCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
@@ -314,6 +313,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
+  | SelectDropdownCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig

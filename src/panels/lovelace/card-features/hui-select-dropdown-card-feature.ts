@@ -8,11 +8,11 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  InputSelectCardFeatureConfig,
+  SelectDropdownCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const supportsInputSelectCardFeature = (
+export const supportSelectDropdownCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -25,7 +25,7 @@ export const supportsInputSelectCardFeature = (
 };
 
 @customElement("hui-input-select-card-feature")
-class HuiInputSelectCardFeature
+class HuiSelectDropdownCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -33,7 +33,7 @@ class HuiInputSelectCardFeature
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: InputSelectCardFeatureConfig;
+  @state() private _config?: SelectDropdownCardFeatureConfig;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -42,13 +42,13 @@ class HuiInputSelectCardFeature
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
-  static getStubConfig(): InputSelectCardFeatureConfig {
+  static getStubConfig(): SelectDropdownCardFeatureConfig {
     return {
-      type: "dropdown",
+      type: "select-dropdown",
     };
   }
 
-  public setConfig(config: InputSelectCardFeatureConfig): void {
+  public setConfig(config: SelectDropdownCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -61,7 +61,7 @@ class HuiInputSelectCardFeature
       !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsInputSelectCardFeature(this.hass, this.context)
+      !supportSelectDropdownCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
@@ -83,7 +83,8 @@ class HuiInputSelectCardFeature
 
   private _valueChanged(ev: CustomEvent) {
     const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+
+    if (!value) return;
 
     if (!this.hass || !this._stateObj) return;
 
@@ -98,6 +99,6 @@ class HuiInputSelectCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-input-select-card-feature": HuiInputSelectCardFeature;
+    "hui-select-dropdown-card-feature": HuiSelectDropdownCardFeature;
   }
 }
