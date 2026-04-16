@@ -17,18 +17,20 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-svg-icon";
-import "../../../components/entity/ha-battery-icon";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-icon";
+import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity/entity_registry";
+import { forwardHaptic } from "../../../data/haptics";
 import type { VacuumEntity } from "../../../data/vacuum";
 import {
   VacuumEntityFeature,
@@ -37,14 +39,12 @@ import {
   canStop,
   isCleaning,
 } from "../../../data/vacuum";
-import { forwardHaptic } from "../../../data/haptics";
 import "../../../state-control/vacuum/ha-state-control-vacuum-status";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 import { showVacuumCleanAreasView } from "../components/vacuum/show-view-vacuum-clean-areas";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("more-info-vacuum")
 class MoreInfoVacuum extends LitElement {
@@ -110,7 +110,11 @@ class MoreInfoVacuum extends LitElement {
         <span class="battery" slot="after-time">
           ${batteryDomain === "binary_sensor"
             ? nothing
-            : html`<span>${Number(battery.state).toFixed()}${blankBeforePercent(this.hass.locale)}%</span>`}
+            : html`<span
+                >${Number(battery.state).toFixed()}${blankBeforePercent(
+                  this.hass.locale
+                )}%</span
+              >`}
           <ha-battery-icon
             .hass=${this.hass}
             .batteryStateObj=${battery}
@@ -127,9 +131,11 @@ class MoreInfoVacuum extends LitElement {
     ) {
       return html`
         <span class="battery" slot="after-time">
-          <span>${Math.round(
-            this.stateObj.attributes.battery_level
-          )}${blankBeforePercent(this.hass.locale)}%</span>
+          <span
+            >${Math.round(
+              this.stateObj.attributes.battery_level
+            )}${blankBeforePercent(this.hass.locale)}%</span
+          >
           <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
         </span>
       `;
@@ -475,6 +481,7 @@ class MoreInfoVacuum extends LitElement {
 
         .battery ha-battery-icon,
         .battery ha-icon {
+          color: var(--secondary-text-color);
           --mdc-icon-size: 18px;
         }
 
