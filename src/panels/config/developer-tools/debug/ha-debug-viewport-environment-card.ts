@@ -74,16 +74,17 @@ const MEDIA_FEATURE_QUERIES: Record<string, string> = {
   prefersReducedData: "(prefers-reduced-data: reduce)",
 };
 
-function readCssEnv(name: string): string {
+function readAllCssEnv(names: readonly string[]): Record<string, string> {
   const probe = document.createElement("div");
-  probe.style.cssText =
-    "position:fixed;left:-10000px;top:0;visibility:hidden;padding-top:env(" +
-    name +
-    ", 0px);";
+  probe.style.cssText = "position:fixed;left:-10000px;top:0;visibility:hidden;";
   document.body.appendChild(probe);
-  const value = getComputedStyle(probe).paddingTop;
+  const result: Record<string, string> = {};
+  for (const name of names) {
+    probe.style.paddingTop = `env(${name}, 0px)`;
+    result[name] = getComputedStyle(probe).paddingTop;
+  }
   document.body.removeChild(probe);
-  return value;
+  return result;
 }
 
 function collectMediaFeatureMatches(): Record<string, boolean> {
