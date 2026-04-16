@@ -492,6 +492,9 @@
     },
     "components": {
       "selectors": {
+        "serial": {
+          "enter_manually": "Enter manually"
+        },
         "media": {
           "pick_media_player": "Select media player",
           "browse_not_supported": "Media player does not support browsing media.",
@@ -1665,7 +1668,17 @@
           "clean_spot": "Clean spot",
           "locate": "Locate",
           "return_home": "Return home",
-          "start_pause": "Start/pause"
+          "start_pause": "Start/pause",
+          "clean_areas": "Clean areas",
+          "cleaning": "Cleaning",
+          "by_area": "By area",
+          "start_cleaning_areas": "Start cleaning",
+          "no_areas_header": "No areas mapped",
+          "no_areas_text": "Map your vacuum's segments to areas in your home to start cleaning by area.",
+          "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
+          "configure_area_mapping": "Configure area mapping",
+          "configure": "Configure",
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
         },
         "person": {
           "create_zone": "Create zone from current location"
@@ -2471,7 +2484,17 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page."
+          "summaries_description": "Choose which summaries to show on your overview page.",
+          "custom_shortcuts": "Custom shortcuts",
+          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "add_custom_shortcut": "Add shortcut",
+          "edit_shortcut": "Edit shortcut",
+          "shortcut": {
+            "path": "Navigation path",
+            "label": "Label",
+            "icon": "Icon",
+            "color": "Color"
+          }
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -3690,6 +3713,10 @@
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
                 "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+              },
+              "viewport_environment": {
+                "title": "Device and browser environment",
+                "description": "Snapshot of CSS environment values, media features, and viewport-related values."
               }
             },
             "events": {
@@ -9253,9 +9280,9 @@
               "chart_type": "Chart type",
               "chart_type_labels": {
                 "line": "Line",
-                "line-stack": "Stacked Line",
+                "line-stack": "Stacked line",
                 "bar": "Bar",
-                "bar-stack": "Stacked Bar"
+                "bar-stack": "Stacked bar"
               },
               "periods": {
                 "auto": "Auto",
@@ -10001,6 +10028,10 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "hourly-forecast": {
+                "label": "Hourly forecast",
+                "no_forecast": "No forecast data available"
               }
             }
           },

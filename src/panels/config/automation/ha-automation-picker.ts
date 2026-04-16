@@ -46,6 +46,7 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
+import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type {
   HaDropdown,
@@ -1334,7 +1335,6 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon

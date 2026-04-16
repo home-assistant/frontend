@@ -256,29 +256,27 @@ class HaConfigSectionGeneral extends LitElement {
             </ha-formfield>
             ${this._unitSystem !== this._configuredUnitSystem()
               ? html`
-                  <ha-formfield
-                    .label=${this.hass.localize(
+                  <ha-checkbox
+                    .checked=${this._updateUnits}
+                    .disabled=${this._submittingRegional}
+                    @change=${this._updateUnitsChanged}
+                  >
+                    ${this.hass.localize(
                       "ui.panel.config.core.section.core.core_config.update_units_label"
                     )}
-                  >
-                    <ha-checkbox
-                      .checked=${this._updateUnits}
-                      .disabled=${this._submittingRegional}
-                      @change=${this._updateUnitsChanged}
-                    ></ha-checkbox>
-                  </ha-formfield>
-                  <div class="secondary">
-                    ${this.hass.localize(
-                      "ui.panel.config.core.section.core.core_config.update_units_text_1"
-                    )}
-                    ${this.hass.localize(
-                      "ui.panel.config.core.section.core.core_config.update_units_text_2"
-                    )}
-                    <br /><br />
-                    ${this.hass.localize(
-                      "ui.panel.config.core.section.core.core_config.update_units_text_3"
-                    )}
-                  </div>
+                    <div slot="hint">
+                      ${this.hass.localize(
+                        "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                      )}
+                      ${this.hass.localize(
+                        "ui.panel.config.core.section.core.core_config.update_units_text_2"
+                      )}
+                      <br /><br />
+                      ${this.hass.localize(
+                        "ui.panel.config.core.section.core.core_config.update_units_text_3"
+                      )}
+                    </div>
+                  </ha-checkbox>
                 `
               : ""}
           </div>
@@ -501,6 +499,11 @@ class HaConfigSectionGeneral extends LitElement {
         display: block;
         border-radius: var(--ha-card-border-radius, 8px);
         overflow: hidden;
+      }
+      ha-checkbox {
+        display: flex;
+        margin-top: var(--ha-space-2);
+        margin-bottom: var(--ha-space-3);
       }
     `,
   ];

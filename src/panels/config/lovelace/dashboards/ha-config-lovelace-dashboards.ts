@@ -39,6 +39,7 @@ import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardSuggestions,
 } from "../../../../data/lovelace/dashboard";
 import {
   createDashboard,
@@ -61,7 +62,8 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
-import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
+import { loadDashboardStrategyWithCreateSuggestions } from "../../../lovelace/strategies/get-strategy";
+import type { NewDashboardSelection } from "../../dashboard/show-dialog-new-dashboard";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
@@ -565,26 +567,39 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private async _addDashboard() {
     showNewDashboardDialog(this, {
-      selectConfig: async (config) => {
+      selectConfig: async ({ config }: NewDashboardSelection) => {
+        let fieldSuggestions: LovelaceDashboardSuggestions | undefined;
+
         if (config && isStrategyDashboard(config)) {
-          const strategyType = config.strategy.type;
-          const strategyClass = await getLovelaceStrategy(
-            "dashboard",
-            strategyType
-          );
+          const { strategyClass, fieldSuggestions: suggested } =
+            await loadDashboardStrategyWithCreateSuggestions(
+              this.hass,
+              config.strategy.type
+            );
+          fieldSuggestions = suggested;
 
           if (strategyClass.configRequired) {
             showDashboardConfigureStrategyDialog(this, {
               config: config,
               saveConfig: async (updatedConfig) => {
-                this._openDetailDialog(undefined, undefined, updatedConfig);
+                const { fieldSuggestions: afterConfigure } =
+                  await loadDashboardStrategyWithCreateSuggestions(
+                    this.hass,
+                    updatedConfig.strategy.type
+                  );
+                this._openDetailDialog(
+                  undefined,
+                  undefined,
+                  updatedConfig,
+                  afterConfigure
+                );
               },
             });
             return;
           }
         }
 
-        this._openDetailDialog(undefined, undefined, config);
+        this._openDetailDialog(undefined, undefined, config, fieldSuggestions);
       },
     });
   }
@@ -592,13 +607,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _openDetailDialog(
     dashboard?: LovelaceDashboard,
     urlPath?: string,
-    defaultConfig?: LovelaceRawConfig
+    defaultConfig?: LovelaceRawConfig,
+    fieldSuggestions?: LovelaceDashboardSuggestions
   ): Promise<void> {
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
       isDefault: dashboard?.url_path === defaultPanel,
+      suggestions: fieldSuggestions,
+      takenUrlPaths: dashboard
+        ? undefined
+        : this._collectTakenDashboardUrlPaths(),
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(
@@ -630,6 +650,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
         return this._deleteDashboard(dashboard);
       },
     });
+  }
+
+  private _collectTakenDashboardUrlPaths(): ReadonlySet<string> {
+    const taken = new Set<string>();
+    for (const d of this._dashboards ?? []) {
+      taken.add(d.url_path);
+    }
+    for (const path of Object.keys(this.hass.panels)) {
+      taken.add(path);
+    }
+    taken.add("lovelace");
+    return taken;
   }
 
   private async _deleteDashboard(

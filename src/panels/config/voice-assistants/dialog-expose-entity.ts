@@ -105,6 +105,7 @@ class DialogExposeEntity extends LitElement {
             scroller
             class="ha-scrollbar"
             @click=${this._itemClicked}
+            @keydown=${this._handleItemKeydown}
             .items=${entities}
             .renderItem=${this._renderItem}
           >
@@ -144,6 +145,13 @@ class DialogExposeEntity extends LitElement {
       this._selected = this._selected.filter((item) => item !== entityId);
     }
   };
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._itemClicked(ev);
+    }
+  }
 
   private _itemClicked(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -226,6 +234,7 @@ class DialogExposeEntity extends LitElement {
 
     return html`
       <ha-check-list-item
+        tabindex="0"
         graphic="icon"
         ?twoLine=${context}
         ?threeLine=${showEntityId}

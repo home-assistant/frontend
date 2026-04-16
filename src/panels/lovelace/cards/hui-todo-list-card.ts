@@ -26,14 +26,13 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { calcDate } from "../../../common/datetime/calc_date";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { calcDate } from "../../../common/datetime/calc_date";
-import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -637,6 +636,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               .itemId=${item.uid}
               @change=${this._completeItem}
               @click=${this._itemTap}
+              separate-checkbox-click
               @request-selected=${this._requestSelected}
               @keydown=${this._handleKeydown}
             >
@@ -954,11 +954,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     .header {
-      padding-left: 30px;
-      padding-right: 16px;
-      padding-inline-start: 30px;
-      padding-inline-end: 16px;
-      margin-top: 8px;
+      padding-left: var(--ha-space-4);
+      padding-right: var(--ha-space-4);
+      padding-inline-start: var(--ha-space-4);
+      padding-inline-end: var(--ha-space-4);
+      margin-top: var(--ha-space-2);
       justify-content: space-between;
       direction: var(--direction);
     }
@@ -970,23 +970,18 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     .empty {
-      padding: 16px 32px;
+      padding: var(--ha-space-4) var(--ha-space-8);
       display: inline-block;
     }
 
     .item {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
 
     ha-check-list-item {
-      --mdc-list-item-meta-size: 56px;
-      min-height: 56px;
+      min-height: 40px;
       height: auto;
-    }
-
-    ha-check-list-item.multiline {
-      align-items: flex-start;
-      --check-list-item-graphic-margin-top: 8px;
+      --mdc-list-side-padding: var(--ha-space-5);
     }
 
     .row {
@@ -997,8 +992,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     .multiline .column {
       display: flex;
       flex-direction: column;
-      margin-top: 18px;
-      margin-bottom: 12px;
+      margin-top: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
     }
 
     .completed .summary {

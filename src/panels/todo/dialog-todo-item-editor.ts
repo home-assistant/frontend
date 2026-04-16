@@ -447,7 +447,8 @@ class DialogTodoItemEditor extends LitElement {
           width: 100%;
         }
         ha-checkbox {
-          margin-top: 4px;
+          margin-bottom: 28px;
+          justify-content: center;
         }
         ha-textarea {
           margin-bottom: 16px;

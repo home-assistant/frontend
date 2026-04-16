@@ -15,10 +15,12 @@ import type {
   LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
+import type { LovelaceDashboardSuggestions } from "../../../data/lovelace/dashboard";
 import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
+  LovelaceDashboardStrategyGetCreateSuggestions,
   LovelaceSectionStrategy,
   LovelaceStrategy,
   LovelaceViewStrategy,
@@ -273,3 +275,37 @@ export const expandLovelaceConfigStrategies = async (
 
   return newConfig;
 };
+
+interface DashboardStrategyClassWithSuggestions extends LovelaceDashboardStrategy {
+  getCreateSuggestions?: LovelaceDashboardStrategyGetCreateSuggestions;
+}
+
+async function readDashboardCreateSuggestions(
+  hass: HomeAssistant,
+  strategyClass: DashboardStrategyClassWithSuggestions
+): Promise<LovelaceDashboardSuggestions | undefined> {
+  const fn = strategyClass.getCreateSuggestions;
+  if (typeof fn !== "function") {
+    return undefined;
+  }
+  return fn.call(strategyClass, hass);
+}
+
+/** Loads a dashboard strategy and any optional create-dialog field suggestions. */
+export async function loadDashboardStrategyWithCreateSuggestions(
+  hass: HomeAssistant,
+  strategyType: string
+): Promise<{
+  strategyClass: LovelaceDashboardStrategy;
+  fieldSuggestions: LovelaceDashboardSuggestions | undefined;
+}> {
+  const strategyClass = (await getLovelaceStrategy(
+    "dashboard",
+    strategyType
+  )) as LovelaceDashboardStrategy;
+  const fieldSuggestions = await readDashboardCreateSuggestions(
+    hass,
+    strategyClass
+  );
+  return { strategyClass, fieldSuggestions };
+}
