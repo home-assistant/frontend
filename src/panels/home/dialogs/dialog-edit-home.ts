@@ -437,6 +437,7 @@ export class DialogEditHome
 
       ha-expansion-panel {
         display: block;
+        margin-top: var(--ha-space-4);
         --expansion-panel-content-padding: 0;
         border-radius: var(--ha-border-radius-md);
         --ha-card-border-radius: var(--ha-border-radius-md);
