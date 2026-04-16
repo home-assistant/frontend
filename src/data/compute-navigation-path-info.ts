@@ -1,6 +1,11 @@
-import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
+import { mdiDevices, mdiLink, mdiPuzzle, mdiTextureBox } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import {
+  getIngressPanelInfoCollection,
+  type IngressPanelInfoMap,
+} from "./hassio/ingress";
 import { getLovelaceCollection } from "./lovelace";
 import type { LovelaceRawConfig } from "./lovelace/config/types";
 import { computeViewIcon, computeViewTitle } from "./lovelace/config/view";
@@ -32,7 +37,8 @@ const AREA_VIEW_PREFIX = "areas-";
 export const computeNavigationPathInfo = (
   hass: HomeAssistant,
   path: string,
-  lovelaceConfig?: LovelaceRawConfig
+  lovelaceConfig?: LovelaceRawConfig,
+  ingressPanels?: IngressPanelInfoMap
 ): NavigationPathInfo => {
   const segments = path.replace(/^\//, "").split(/[/?]/);
   const panelUrlPath = segments[0];
@@ -56,6 +62,11 @@ export const computeNavigationPathInfo = (
     segments[3]
   ) {
     return computeDeviceNavigationPathInfo(hass, segments[3]);
+  }
+
+  // /app/<slug> (ingress addon panel)
+  if (panelUrlPath === "app" && subPath) {
+    return computeIngressNavigationPathInfo(subPath, ingressPanels);
   }
 
   const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
@@ -117,6 +128,18 @@ const computeDeviceNavigationPathInfo = (
   };
 };
 
+const computeIngressNavigationPathInfo = (
+  slug: string,
+  ingressPanels?: IngressPanelInfoMap
+): NavigationPathInfo => {
+  const panel = ingressPanels?.[slug];
+  return {
+    label: panel?.title || slug,
+    icon: panel?.icon || undefined,
+    iconPath: mdiPuzzle,
+  };
+};
+
 /**
  * Subscribe to navigation path info updates.
  * Resolves synchronously first, then subscribes to lovelace config
@@ -127,13 +150,47 @@ export const subscribeNavigationPathInfo = (
   path: string,
   onChange: (info: NavigationPathInfo) => void
 ): UnsubscribeFunc | undefined => {
+  const segments = path.replace(/^\//, "").split(/[/?]/);
+  const panelUrlPath = segments[0];
+
+  // Subscribe to ingress panels for /app/<slug> paths
+  if (
+    panelUrlPath === "app" &&
+    segments[1] &&
+    isComponentLoaded(hass.config, "hassio")
+  ) {
+    try {
+      const collection = getIngressPanelInfoCollection(hass.connection);
+      // Use cached state for immediate resolution if available
+      const info = computeNavigationPathInfo(
+        hass,
+        path,
+        undefined,
+        collection.state
+      );
+      onChange(info);
+      let current = info;
+      return collection.subscribe((panels) => {
+        const newInfo = computeNavigationPathInfo(
+          hass,
+          path,
+          undefined,
+          panels
+        );
+        if (newInfo.label !== current.label || newInfo.icon !== current.icon) {
+          current = newInfo;
+          onChange(newInfo);
+        }
+      });
+    } catch (_err) {
+      // Supervisor may not be available
+    }
+  }
+
   const info = computeNavigationPathInfo(hass, path);
   onChange(info);
 
-  const segments = path.replace(/^\//, "").split(/[/?]/);
-  const panelUrlPath = segments[0];
   const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
-
   if (segments[1] && panel?.component_name === "lovelace") {
     let current = info;
     const collection = getLovelaceCollection(hass.connection, panelUrlPath);

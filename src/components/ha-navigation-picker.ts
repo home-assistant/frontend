@@ -1,5 +1,4 @@
 import Fuse from "fuse.js";
-import { mdiPuzzle } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -354,16 +353,21 @@ export class HaNavigationPicker extends LitElement {
         const ingressPanels = await subscribeOneCollection(
           getIngressPanelInfoCollection(this.hass!.connection)
         );
-        for (const [slug, panel] of Object.entries(ingressPanels)) {
+        for (const slug of Object.keys(ingressPanels)) {
           const path = `/app/${slug}`;
-          const resolved = computeNavigationPathInfo(this.hass!, path);
+          const resolved = computeNavigationPathInfo(
+            this.hass!,
+            path,
+            undefined,
+            ingressPanels
+          );
           apps.push({
             id: path,
-            primary: panel.title,
+            primary: resolved.label,
             secondary: path,
-            icon: panel.icon || resolved.icon,
-            icon_path: resolved.iconPath || mdiPuzzle,
-            sorting_label: createSortingLabel(panel.title, path),
+            icon: resolved.icon,
+            icon_path: resolved.iconPath,
+            sorting_label: createSortingLabel(resolved.label, path),
             group: "apps",
           });
         }
