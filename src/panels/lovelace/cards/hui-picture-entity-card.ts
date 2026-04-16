@@ -149,7 +149,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     // Check if we should use entity_picture from the entity
     if (this._config.show_entity_picture) {
       image =
-        stateObj.attributes.entity_picture_local ||
+        (stateObj.attributes as any).entity_picture_local ||
         stateObj.attributes.entity_picture;
     } else {
       // Use configured image
