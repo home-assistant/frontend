@@ -15,12 +15,12 @@ import type {
   LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
-import type { LovelaceDashboardFieldSuggestions } from "../../../data/lovelace/dashboard";
+import type { LovelaceDashboardSuggestions } from "../../../data/lovelace/dashboard";
 import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
-  LovelaceDashboardStrategyGetCreateFieldSuggestions,
+  LovelaceDashboardStrategyGetCreateSuggestions,
   LovelaceSectionStrategy,
   LovelaceStrategy,
   LovelaceViewStrategy,
@@ -277,15 +277,15 @@ export const expandLovelaceConfigStrategies = async (
 };
 
 interface DashboardStrategyClassWithSuggestions {
-  getDashboardCreateFieldSuggestions?: LovelaceDashboardStrategyGetCreateFieldSuggestions;
+  getCreateSuggestions?: LovelaceDashboardStrategyGetCreateSuggestions;
 }
 
-async function readDashboardCreateFieldSuggestions(
+async function readDashboardCreateSuggestions(
   hass: HomeAssistant,
   strategyClass: object
-): Promise<LovelaceDashboardFieldSuggestions | undefined> {
+): Promise<LovelaceDashboardSuggestions | undefined> {
   const fn = (strategyClass as DashboardStrategyClassWithSuggestions)
-    .getDashboardCreateFieldSuggestions;
+    .getCreateSuggestions;
   if (typeof fn !== "function") {
     return undefined;
   }
@@ -298,13 +298,13 @@ export async function loadDashboardStrategyWithCreateSuggestions(
   strategyType: string
 ): Promise<{
   strategyClass: LovelaceDashboardStrategy;
-  fieldSuggestions: LovelaceDashboardFieldSuggestions | undefined;
+  fieldSuggestions: LovelaceDashboardSuggestions | undefined;
 }> {
   const strategyClass = (await getLovelaceStrategy(
     "dashboard",
     strategyType
   )) as LovelaceDashboardStrategy;
-  const fieldSuggestions = await readDashboardCreateFieldSuggestions(
+  const fieldSuggestions = await readDashboardCreateSuggestions(
     hass,
     strategyClass
   );

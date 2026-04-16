@@ -34,8 +34,8 @@ export interface LovelaceDashboardCreateParams extends LovelaceDashboardMutableP
   mode: "storage";
 }
 
-/** Optional suggested values for dashboard create form fields (for example from a strategy). */
-export interface LovelaceDashboardFieldSuggestions {
+/** Optional suggested values for dashboard creation (for example from a strategy). */
+export interface LovelaceDashboardSuggestions {
   title?: string;
   icon?: string;
 }

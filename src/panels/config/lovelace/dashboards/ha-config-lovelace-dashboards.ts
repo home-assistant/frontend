@@ -39,7 +39,7 @@ import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
-  LovelaceDashboardFieldSuggestions,
+  LovelaceDashboardSuggestions,
 } from "../../../../data/lovelace/dashboard";
 import {
   createDashboard,
@@ -568,7 +568,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _addDashboard() {
     showNewDashboardDialog(this, {
       selectConfig: async ({ config }: NewDashboardSelection) => {
-        let fieldSuggestions: LovelaceDashboardFieldSuggestions | undefined;
+        let fieldSuggestions: LovelaceDashboardSuggestions | undefined;
 
         if (config && isStrategyDashboard(config)) {
           const { strategyClass, fieldSuggestions: suggested } =
@@ -608,7 +608,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     dashboard?: LovelaceDashboard,
     urlPath?: string,
     defaultConfig?: LovelaceRawConfig,
-    fieldSuggestions?: LovelaceDashboardFieldSuggestions
+    fieldSuggestions?: LovelaceDashboardSuggestions
   ): Promise<void> {
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {

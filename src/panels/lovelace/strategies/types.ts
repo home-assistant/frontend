@@ -1,4 +1,4 @@
-import type { LovelaceDashboardFieldSuggestions } from "../../../data/lovelace/dashboard";
+import type { LovelaceDashboardSuggestions } from "../../../data/lovelace/dashboard";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -16,14 +16,12 @@ export interface LovelaceStrategy<T = any> {
 export interface LovelaceDashboardStrategy extends LovelaceStrategy<LovelaceConfig> {}
 
 /**
- * Optional static `getDashboardCreateFieldSuggestions` on dashboard strategy classes.
+ * Optional static `getCreateSuggestions` on dashboard strategy classes.
  * Used when opening the dashboard create dialog; see `loadDashboardStrategyWithCreateSuggestions`.
  */
-export type LovelaceDashboardStrategyGetCreateFieldSuggestions = (
+export type LovelaceDashboardStrategyGetCreateSuggestions = (
   hass: HomeAssistant
-) =>
-  | LovelaceDashboardFieldSuggestions
-  | Promise<LovelaceDashboardFieldSuggestions>;
+) => LovelaceDashboardSuggestions | Promise<LovelaceDashboardSuggestions>;
 
 export interface LovelaceViewStrategy extends LovelaceStrategy<LovelaceViewConfig> {}
 
