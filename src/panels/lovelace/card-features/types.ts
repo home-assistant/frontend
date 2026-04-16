@@ -241,6 +241,11 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
+export interface HourlyForecastCardFeatureConfig {
+  type: "hourly-forecast";
+  hours_to_show?: number;
+}
+
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -295,6 +300,7 @@ export type LovelaceCardFeatureConfig =
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
+  | HourlyForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
