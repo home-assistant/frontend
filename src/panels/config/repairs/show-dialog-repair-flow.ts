@@ -8,6 +8,7 @@ import {
   fetchRepairsFlow,
   handleRepairsFlowStep,
 } from "../../../data/repairs";
+import type { DataEntryFlowDialogParams } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,
@@ -36,14 +37,14 @@ export const loadRepairFlowDialog = loadDataEntryFlowDialog;
 export const showRepairsFlowDialog = (
   element: HTMLElement,
   issue: RepairsIssue,
-  dialogClosedCallback?: (params: { flowFinished: boolean }) => void
+  dialogParams?: Omit<DataEntryFlowDialogParams, "flowConfig">
 ): void =>
   showFlowDialog(
     element,
     {
       startFlowHandler: issue.domain,
       domain: issue.domain,
-      dialogClosedCallback,
+      ...dialogParams,
     },
     {
       flowType: "repair_flow",

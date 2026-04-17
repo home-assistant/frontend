@@ -1,6 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { ConfigEntry } from "./config_entries";
+import type { RepairsIssue } from "./repairs";
 
 export type FlowType =
   | "config_flow"
@@ -67,6 +68,7 @@ export interface DataEntryFlowStepCreateEntry {
   handler: string;
   title: string;
   result?: ConfigEntry;
+  issue?: RepairsIssue;
   description: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
@@ -79,6 +81,8 @@ export interface DataEntryFlowStepAbort {
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
+  result?: ConfigEntry;
+  issue?: RepairsIssue;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 

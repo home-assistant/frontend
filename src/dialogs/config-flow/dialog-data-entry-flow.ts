@@ -25,6 +25,7 @@ import type {
 } from "./show-dialog-data-entry-flow";
 import { showOptionsFlowDialog } from "./show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
+import { showRepairsFlowDialog } from "../../panels/config/repairs/show-dialog-repair-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";
@@ -176,6 +177,7 @@ class DataEntryFlowDialog extends LitElement {
         flowFinished,
         entryId:
           "result" in this._step ? this._step.result?.entry_id : undefined,
+        issueId: "issue" in this._step ? this._step.issue?.issue_id : undefined,
       });
     }
 
@@ -522,6 +524,12 @@ class DataEntryFlowDialog extends LitElement {
             dialogClosedCallback: this._params!.dialogClosedCallback,
           });
         }
+      } else if (_step.next_flow[0] === "repair_flow") {
+        showRepairsFlowDialog(this, _step.issue!, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else {
         this.closeDialog();
         showAlertDialog(this, {
