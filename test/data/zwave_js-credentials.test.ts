@@ -4,8 +4,11 @@ import {
   getZwaveUsers,
   setZwaveUser,
   clearZwaveUser,
+  clearZwaveAllUsers,
   setZwaveCredential,
   clearZwaveCredential,
+  clearZwaveAllCredentials,
+  getZwaveCredentialStatus,
 } from "../../src/data/zwave_js-credentials";
 import type { HomeAssistant } from "../../src/types";
 
@@ -16,9 +19,7 @@ const mockHass = (response?: unknown) =>
     callService: vi
       .fn()
       .mockResolvedValue(
-        response !== undefined
-          ? { response: { [DEVICE_ID]: response } }
-          : { response: undefined }
+        response !== undefined ? { response } : { response: undefined }
       ),
   }) as unknown as HomeAssistant;
 
@@ -59,7 +60,7 @@ describe("zwave_js-credentials", () => {
         "get_credential_capabilities",
         {},
         { device_id: DEVICE_ID },
-        true,
+        false,
         true
       );
       expect(result).toEqual(capabilities);
@@ -105,7 +106,7 @@ describe("zwave_js-credentials", () => {
         "get_users",
         {},
         { device_id: DEVICE_ID },
-        true,
+        false,
         true
       );
       expect(result).toEqual(usersResponse);
@@ -126,11 +127,18 @@ describe("zwave_js-credentials", () => {
   });
 
   describe("setZwaveUser", () => {
-    it("calls the correct service with params and device_id target", async () => {
-      const hass = mockHass();
+    const setUserResponse = (inner: unknown) =>
+      ({
+        callService: vi
+          .fn()
+          .mockResolvedValue({ response: { [DEVICE_ID]: inner } }),
+      }) as unknown as HomeAssistant;
 
-      await setZwaveUser(hass, DEVICE_ID, {
-        user_index: 1,
+    it("unwraps the device_id-keyed response and returns user_index", async () => {
+      const hass = setUserResponse({ user_index: 5 });
+
+      const result = await setZwaveUser(hass, DEVICE_ID, {
+        user_index: 5,
         user_name: "Bob",
         user_type: "general",
       });
@@ -138,22 +146,30 @@ describe("zwave_js-credentials", () => {
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "set_user",
-        { user_index: 1, user_name: "Bob", user_type: "general" },
-        { device_id: DEVICE_ID }
+        { user_index: 5, user_name: "Bob", user_type: "general" },
+        { device_id: DEVICE_ID },
+        false,
+        true
       );
+      expect(result.user_index).toBe(5);
     });
 
-    it("can be called with partial params", async () => {
-      const hass = mockHass();
+    it("returns the allocated user_index when auto-finding", async () => {
+      const hass = setUserResponse({ user_index: 1 });
 
-      await setZwaveUser(hass, DEVICE_ID, { user_name: "Carol" });
+      const result = await setZwaveUser(hass, DEVICE_ID, {
+        user_name: "Carol",
+      });
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "set_user",
         { user_name: "Carol" },
-        { device_id: DEVICE_ID }
+        { device_id: DEVICE_ID },
+        false,
+        true
       );
+      expect(result.user_index).toBe(1);
     });
   });
 
@@ -167,42 +183,89 @@ describe("zwave_js-credentials", () => {
         "zwave_js",
         "clear_user",
         { user_index: 2 },
-        { device_id: DEVICE_ID }
+        { device_id: DEVICE_ID },
+        false
+      );
+    });
+  });
+
+  describe("clearZwaveAllUsers", () => {
+    it("calls clear_all_users with device_id target and no params", async () => {
+      const hass = mockHass();
+
+      await clearZwaveAllUsers(hass, DEVICE_ID);
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "clear_all_users",
+        {},
+        { device_id: DEVICE_ID },
+        false
       );
     });
   });
 
   describe("setZwaveCredential", () => {
-    it("calls the correct service and returns the response", async () => {
+    const setCredResponse = (inner: unknown) =>
+      ({
+        callService: vi
+          .fn()
+          .mockResolvedValue({ response: { [DEVICE_ID]: inner } }),
+      }) as unknown as HomeAssistant;
+
+    it("unwraps the device_id-keyed response", async () => {
       const credentialResult = {
         credential_slot: 1,
         user_index: 3,
       };
-      const hass = mockHass(credentialResult);
+      const hass = setCredResponse(credentialResult);
 
       const result = await setZwaveCredential(hass, DEVICE_ID, {
+        user_index: 3,
         credential_type: "pin_code",
         credential_data: "1234",
-        user_type: "general",
-        active: true,
       });
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "set_credential",
         {
+          user_index: 3,
           credential_type: "pin_code",
           credential_data: "1234",
-          user_type: "general",
-          active: true,
         },
         { device_id: DEVICE_ID },
-        true,
+        false,
         true
       );
       expect(result).toEqual(credentialResult);
       expect(result.credential_slot).toBe(1);
       expect(result.user_index).toBe(3);
+    });
+
+    it("forwards explicit credential_slot when provided", async () => {
+      const hass = setCredResponse({ credential_slot: 5, user_index: 3 });
+
+      await setZwaveCredential(hass, DEVICE_ID, {
+        user_index: 3,
+        credential_type: "pin_code",
+        credential_data: "1234",
+        credential_slot: 5,
+      });
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "set_credential",
+        {
+          user_index: 3,
+          credential_type: "pin_code",
+          credential_data: "1234",
+          credential_slot: 5,
+        },
+        { device_id: DEVICE_ID },
+        false,
+        true
+      );
     });
 
     it("propagates errors from callService", async () => {
@@ -212,6 +275,7 @@ describe("zwave_js-credentials", () => {
 
       await expect(
         setZwaveCredential(hass, DEVICE_ID, {
+          user_index: 1,
           credential_type: "pin_code",
           credential_data: "1234",
         })
@@ -224,17 +288,62 @@ describe("zwave_js-credentials", () => {
       const hass = mockHass();
 
       await clearZwaveCredential(hass, DEVICE_ID, {
+        user_index: 2,
         credential_type: "pin_code",
         credential_slot: 1,
-        user_index: 2,
       });
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "clear_credential",
-        { credential_type: "pin_code", credential_slot: 1, user_index: 2 },
-        { device_id: DEVICE_ID }
+        { user_index: 2, credential_type: "pin_code", credential_slot: 1 },
+        { device_id: DEVICE_ID },
+        false
       );
+    });
+  });
+
+  describe("clearZwaveAllCredentials", () => {
+    it("calls clear_all_credentials with user_index and device_id target", async () => {
+      const hass = mockHass();
+
+      await clearZwaveAllCredentials(hass, DEVICE_ID, 3);
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "clear_all_credentials",
+        { user_index: 3 },
+        { device_id: DEVICE_ID },
+        false
+      );
+    });
+  });
+
+  describe("getZwaveCredentialStatus", () => {
+    it("calls get_credential_status and returns the response", async () => {
+      const statusResponse = {
+        credential_exists: true,
+        user_index: 1,
+        credential_type: "pin_code",
+        credential_slot: 1,
+      };
+      const hass = mockHass(statusResponse);
+
+      const result = await getZwaveCredentialStatus(hass, DEVICE_ID, {
+        user_index: 1,
+        credential_type: "pin_code",
+        credential_slot: 1,
+      });
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "get_credential_status",
+        { user_index: 1, credential_type: "pin_code", credential_slot: 1 },
+        { device_id: DEVICE_ID },
+        false,
+        true
+      );
+      expect(result).toEqual(statusResponse);
     });
   });
 });

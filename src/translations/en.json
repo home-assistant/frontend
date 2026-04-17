@@ -7801,14 +7801,21 @@
               "add": "Add user",
               "edit": "Edit user",
               "delete": "Delete user",
+              "clear_all": "Clear all users",
+              "clear_all_credentials": "Clear all credentials",
               "name": "Name",
               "type": "Type",
               "no_users": "No users configured",
               "unnamed_user": "User {index}",
               "credentials": "Credentials",
+              "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
               "user_type": {
                 "general": "Full access",
                 "programming": "Programming",
+                "non_access": "No access",
+                "duress": "Duress",
+                "disposable": "Disposable",
+                "expiring": "Expiring",
                 "remote_only": "Remote only"
               },
               "user_types": {
@@ -7819,6 +7826,22 @@
                 "programming": {
                   "label": "Programming",
                   "description": "Used for device programming"
+                },
+                "non_access": {
+                  "label": "No access",
+                  "description": "Identity verified but access denied (e.g. tracking only)"
+                },
+                "duress": {
+                  "label": "Duress",
+                  "description": "Silently triggers an alarm when used"
+                },
+                "disposable": {
+                  "label": "Disposable",
+                  "description": "Single-use access, deleted after first use"
+                },
+                "expiring": {
+                  "label": "Expiring",
+                  "description": "Access valid for a limited time"
                 },
                 "remote_only": {
                   "label": "Remote only",
@@ -7842,7 +7865,18 @@
               "type": "Credential type",
               "pin_code": "PIN code",
               "password": "Password",
-              "placeholder": "{min}-{max} characters"
+              "placeholder": "{min}-{max} characters",
+              "add": "Add credential",
+              "add_title": "Add credential for {user}",
+              "edit_title": "Edit credential for {user}"
+            },
+            "credentials": {
+              "title": "Credentials",
+              "slot": "Slot {slot}",
+              "add": "Add credential",
+              "edit": "Edit credential",
+              "delete": "Delete credential",
+              "none": "No credentials for this user."
             },
             "errors": {
               "load_failed": "Failed to load credential information",
@@ -7854,7 +7888,10 @@
               "credential_length": "Credential must be {min}-{max} characters.",
               "pin_digits_only": "PIN code must contain only numbers."
             },
-            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted."
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_clear_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",
+            "confirm_clear_all_credentials": "Are you sure you want to delete all credentials for user {name}? This cannot be undone.",
+            "confirm_delete_credential": "Are you sure you want to delete this credential ({type}, slot {slot})? This cannot be undone."
           }
         },
         "matter": {

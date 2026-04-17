@@ -1,22 +1,38 @@
+import { mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/input/ha-input";
-import "../../../../../components/ha-dialog";
-import { ENTERABLE_CREDENTIAL_TYPES } from "../../../../../data/lock-common";
 import {
+  ENTERABLE_CREDENTIAL_TYPES,
+  getCredentialTypeIcon,
+} from "../../../../../data/lock-common";
+import {
+  clearZwaveCredential,
+  getZwaveUsers,
   setZwaveCredential,
   setZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
+import type { ZwaveCredentialRef } from "../../../../../data/zwave_js-credentials";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { showZwaveCredentialEditDialog } from "./show-dialog-zwave_js-credential-edit";
 import type { ZwaveCredentialUserEditDialogParams } from "./show-dialog-zwave_js-credential-user-edit";
 
 @customElement("dialog-zwave_js-credential-user-edit")
@@ -37,6 +53,10 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   @state() private _error = "";
 
+  @state() private _dataTouched = false;
+
+  @state() private _credentials: ZwaveCredentialRef[] = [];
+
   @state() private _open = false;
 
   public async showDialog(
@@ -45,18 +65,20 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._params = params;
     this._error = "";
     this._credentialData = "";
+    this._dataTouched = false;
     this._open = true;
 
     if (params.user) {
       this._userName = params.user.user_name || "";
       this._userType = params.user.user_type;
+      this._credentials = params.user.credentials || [];
     } else {
       this._userName = "";
       this._userType =
         params.capabilities.supported_user_types?.[0] || "general";
+      this._credentials = [];
     }
 
-    // Default to first available enterable credential type
     this._credentialType = this._enterableTypes[0] || "";
   }
 
@@ -73,6 +95,24 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     return this._params?.capabilities.supported_credential_types[
       this._credentialType
     ];
+  }
+
+  private get _supportsUserNames(): boolean {
+    return (this._params?.capabilities.max_user_name_length ?? 0) > 0;
+  }
+
+  private get _userLabel(): string {
+    const user = this._params?.user;
+    if (!user) {
+      return "";
+    }
+    return (
+      user.user_name ||
+      this.hass.localize(
+        "ui.panel.config.zwave_js.credentials.users.unnamed_user",
+        { index: user.user_index }
+      )
+    );
   }
 
   protected render() {
@@ -102,17 +142,27 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
-
-          <ha-input
-            .label=${this.hass.localize(
-              "ui.panel.config.zwave_js.credentials.users.name"
-            )}
-            .value=${this._userName}
-            @input=${this._handleNameChange}
-            maxlength=${maxNameLength}
-            autofocus
-          ></ha-input>
-
+          ${!isNew && !this._supportsUserNames
+            ? html`<p class="user-id-info">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.users.unnamed_user",
+                  { index: this._params.user!.user_index }
+                )}
+              </p>`
+            : nothing}
+          ${this._supportsUserNames
+            ? html`
+                <ha-input
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.users.name"
+                  )}
+                  .value=${this._userName}
+                  @input=${this._handleNameChange}
+                  maxlength=${maxNameLength}
+                  autofocus
+                ></ha-input>
+              `
+            : nothing}
           ${isNew && hasEnterableType
             ? html`
                 ${multipleEnterableTypes
@@ -138,9 +188,12 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   )}
                   .value=${this._credentialData}
                   @input=${this._handleCredentialDataChange}
+                  @beforeinput=${this._handleCredentialBeforeInput}
+                  @blur=${this._handleCredentialBlur}
                   type="password"
+                  password-toggle
                   inputmode=${isPin ? "numeric" : "text"}
-                  pattern=${isPin ? "[0-9]*" : ""}
+                  pattern=${isPin ? "[0-9]+" : ".+"}
                   placeholder=${this.hass.localize(
                     "ui.panel.config.zwave_js.credentials.credential_data.placeholder",
                     { min: minLength, max: maxLength }
@@ -148,6 +201,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   minlength=${minLength}
                   maxlength=${maxLength}
                   required
+                  auto-validate
+                  ?invalid=${this._dataTouched && !!this._credentialError}
+                  validation-message=${this._credentialError || ""}
                 ></ha-input>
               `
             : nothing}
@@ -158,7 +214,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                 )}
               </ha-alert>`
             : nothing}
-
+          ${!isNew ? this._renderCredentialsList(hasEnterableType) : nothing}
           <div class="user-type-section">
             <label>
               ${this.hass.localize(
@@ -185,7 +241,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving || (isNew && !hasEnterableType)}
+            .disabled=${this._saving ||
+            (isNew && !hasEnterableType) ||
+            !this._canSave}
           >
             ${this._saving
               ? html`<ha-spinner size="small"></ha-spinner>`
@@ -200,6 +258,85 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     `;
   }
 
+  private _renderCredentialsList(hasEnterableType: boolean) {
+    return html`
+      <div class="credentials-section">
+        <label>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.credentials.credentials.title"
+          )}
+        </label>
+        ${this._credentials.length
+          ? html`
+              <ha-md-list>
+                ${this._credentials.map(
+                  (credential) => html`
+                    <ha-md-list-item>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${getCredentialTypeIcon(credential.type)}
+                      ></ha-svg-icon>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          `ui.panel.config.zwave_js.credentials.credential_types.${credential.type}` as any
+                        ) || credential.type}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.credentials.slot",
+                          { slot: credential.slot }
+                        )}
+                      </span>
+                      <ha-icon-button
+                        slot="end"
+                        .path=${mdiPencil}
+                        .credential=${credential}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.credentials.edit"
+                        )}
+                        .disabled=${this._saving}
+                        @click=${this._handleEditCredential}
+                      ></ha-icon-button>
+                      <ha-icon-button
+                        slot="end"
+                        .path=${mdiDelete}
+                        .credential=${credential}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.credentials.delete"
+                        )}
+                        .disabled=${this._saving}
+                        @click=${this._handleDeleteCredential}
+                      ></ha-icon-button>
+                    </ha-md-list-item>
+                  `
+                )}
+              </ha-md-list>
+            `
+          : html`
+              <p class="empty">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.credentials.none"
+                )}
+              </p>
+            `}
+        ${hasEnterableType
+          ? html`
+              <ha-button
+                appearance="plain"
+                @click=${this._handleAddCredential}
+                .disabled=${this._saving}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.credentials.add"
+                )}
+              </ha-button>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
   private _handleNameChange(ev: InputEvent): void {
     this._userName = (ev.target as HTMLInputElement).value;
   }
@@ -207,15 +344,79 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   private _handleCredentialDataChange(ev: InputEvent): void {
     let value = (ev.target as HTMLInputElement).value;
     if (this._credentialType === "pin_code") {
-      value = value.replace(/\D/g, "");
-      (ev.target as HTMLInputElement).value = value;
+      const stripped = value.replace(/\D/g, "");
+      if (stripped !== value) {
+        (ev.target as HTMLInputElement).value = stripped;
+        value = stripped;
+      }
     }
     this._credentialData = value;
+    this._dataTouched = false;
+  }
+
+  private _handleCredentialBeforeInput(ev: InputEvent): void {
+    if (this._credentialType !== "pin_code") {
+      return;
+    }
+    const data = ev.data;
+    if (data && /\D/.test(data)) {
+      ev.preventDefault();
+    }
+  }
+
+  private _handleCredentialBlur(): void {
+    this._dataTouched = true;
+  }
+
+  private get _canSave(): boolean {
+    if (!this._params) {
+      return false;
+    }
+    if (this._supportsUserNames && !this._userName.trim()) {
+      return false;
+    }
+    const isNew = !this._params.user;
+    if (isNew && this._credentialError) {
+      return false;
+    }
+    return true;
+  }
+
+  private get _credentialError(): string {
+    if (!this._params) {
+      return "";
+    }
+    if (!this._credentialData) {
+      return this.hass.localize(
+        "ui.panel.config.zwave_js.credentials.errors.credential_required"
+      );
+    }
+    const minLength = this._selectedTypeCapability?.min_length ?? 4;
+    const maxLength = this._selectedTypeCapability?.max_length ?? 10;
+    if (
+      this._credentialData.length < minLength ||
+      this._credentialData.length > maxLength
+    ) {
+      return this.hass.localize(
+        "ui.panel.config.zwave_js.credentials.errors.credential_length",
+        { min: minLength, max: maxLength }
+      );
+    }
+    if (
+      this._credentialType === "pin_code" &&
+      !/^\d+$/.test(this._credentialData)
+    ) {
+      return this.hass.localize(
+        "ui.panel.config.zwave_js.credentials.errors.pin_digits_only"
+      );
+    }
+    return "";
   }
 
   private _handleCredentialTypeChanged(ev: CustomEvent): void {
     this._credentialType = ev.detail.value as string;
     this._credentialData = "";
+    this._dataTouched = false;
   }
 
   private get _credentialTypeOptions(): SelectBoxOption[] {
@@ -245,6 +446,40 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._userType = ev.detail.value as string;
   }
 
+  private _handleAddCredential(): void {
+    if (!this._params?.user) {
+      return;
+    }
+    showZwaveCredentialEditDialog(this, {
+      device_id: this._params.device_id,
+      capabilities: this._params.capabilities,
+      user_index: this._params.user.user_index,
+      user_label: this._userLabel,
+      onSaved: () => this._onCredentialSaved(),
+    });
+  }
+
+  private _handleEditCredential(ev: Event): void {
+    if (!this._params?.user) {
+      return;
+    }
+    const credential = (ev.currentTarget as any)
+      .credential as ZwaveCredentialRef;
+    showZwaveCredentialEditDialog(this, {
+      device_id: this._params.device_id,
+      capabilities: this._params.capabilities,
+      user_index: this._params.user.user_index,
+      user_label: this._userLabel,
+      credential,
+      onSaved: () => this._onCredentialSaved(),
+    });
+  }
+
+  private async _onCredentialSaved(): Promise<void> {
+    await this._refreshCredentials();
+    this._params?.onSaved();
+  }
+
   private async _save(): Promise<void> {
     if (!this._params) {
       return;
@@ -252,10 +487,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     this._error = "";
     const isNew = !this._params.user;
-    const minLength = this._selectedTypeCapability?.min_length ?? 4;
-    const maxLength = this._selectedTypeCapability?.max_length ?? 10;
 
-    if (!this._userName.trim()) {
+    if (this._supportsUserNames && !this._userName.trim()) {
       this._error = this.hass.localize(
         "ui.panel.config.zwave_js.credentials.errors.name_required"
       );
@@ -263,31 +496,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
 
     if (isNew) {
-      if (!this._credentialData) {
-        this._error = this.hass.localize(
-          "ui.panel.config.zwave_js.credentials.errors.credential_required"
-        );
-        return;
-      }
-
-      if (
-        this._credentialData.length < minLength ||
-        this._credentialData.length > maxLength
-      ) {
-        this._error = this.hass.localize(
-          "ui.panel.config.zwave_js.credentials.errors.credential_length",
-          { min: minLength, max: maxLength }
-        );
-        return;
-      }
-
-      if (
-        this._credentialType === "pin_code" &&
-        !/^\d+$/.test(this._credentialData)
-      ) {
-        this._error = this.hass.localize(
-          "ui.panel.config.zwave_js.credentials.errors.pin_digits_only"
-        );
+      this._dataTouched = true;
+      if (this._credentialError) {
         return;
       }
     }
@@ -296,26 +506,29 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     try {
       if (isNew) {
-        const result = await setZwaveCredential(
+        const { user_index } = await setZwaveUser(
           this.hass,
           this._params.device_id,
           {
-            credential_type: this._credentialType,
-            credential_data: this._credentialData,
+            user_name: this._supportsUserNames
+              ? this._userName.trim()
+              : undefined,
             user_type: this._userType,
             active: true,
           }
         );
-        if (result.user_index !== null && this._userName.trim()) {
-          await setZwaveUser(this.hass, this._params.device_id, {
-            user_index: result.user_index,
-            user_name: this._userName.trim(),
-          });
-        }
+
+        await setZwaveCredential(this.hass, this._params.device_id, {
+          user_index,
+          credential_type: this._credentialType,
+          credential_data: this._credentialData,
+        });
       } else {
         await setZwaveUser(this.hass, this._params.device_id, {
           user_index: this._params.user!.user_index,
-          user_name: this._userName.trim(),
+          user_name: this._supportsUserNames
+            ? this._userName.trim()
+            : undefined,
           user_type: this._userType,
         });
       }
@@ -333,6 +546,60 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
   }
 
+  private async _handleDeleteCredential(ev: Event): Promise<void> {
+    if (!this._params?.user) {
+      return;
+    }
+    const credential = (ev.currentTarget as any)
+      .credential as ZwaveCredentialRef;
+    const typeLabel =
+      this.hass.localize(
+        `ui.panel.config.zwave_js.credentials.credential_types.${credential.type}` as any
+      ) || credential.type;
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.zwave_js.credentials.confirm_delete_credential",
+        { type: typeLabel, slot: credential.slot }
+      ),
+      destructive: true,
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    this._saving = true;
+    try {
+      await clearZwaveCredential(this.hass, this._params.device_id, {
+        user_index: this._params.user.user_index,
+        credential_type: credential.type,
+        credential_slot: credential.slot,
+      });
+      await this._refreshCredentials();
+      this._params.onSaved();
+    } catch (err: unknown) {
+      showAlertDialog(this, {
+        text:
+          (err as Error).message ||
+          this.hass.localize(
+            "ui.panel.config.zwave_js.credentials.errors.save_failed"
+          ),
+      });
+    } finally {
+      this._saving = false;
+    }
+  }
+
+  private async _refreshCredentials(): Promise<void> {
+    if (!this._params?.user) {
+      return;
+    }
+    const response = await getZwaveUsers(this.hass, this._params.device_id);
+    const updated = response.users.find(
+      (u) => u.user_index === this._params!.user!.user_index
+    );
+    this._credentials = updated?.credentials || [];
+  }
+
   public closeDialog(): void {
     this._open = false;
   }
@@ -345,6 +612,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._credentialData = "";
     this._saving = false;
     this._error = "";
+    this._dataTouched = false;
+    this._credentials = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -357,20 +626,27 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           flex-direction: column;
           gap: var(--ha-space-4);
         }
-
         .user-type-section,
-        .credential-type-section {
+        .credential-type-section,
+        .credentials-section {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-2);
         }
-
         .user-type-section > label,
-        .credential-type-section > label {
+        .credential-type-section > label,
+        .credentials-section > label {
           font-weight: 500;
           color: var(--primary-text-color);
         }
-
+        .credentials-section .empty {
+          color: var(--secondary-text-color);
+          margin: 0;
+        }
+        .user-id-info {
+          margin: 0;
+          color: var(--secondary-text-color);
+        }
         ha-alert {
           display: block;
         }
