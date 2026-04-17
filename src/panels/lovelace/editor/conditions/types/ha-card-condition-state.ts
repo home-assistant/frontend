@@ -27,6 +27,11 @@ interface StateConditionData {
   state?: string | string[];
 }
 
+export interface PresetState {
+  value: string;
+  label: string;
+}
+
 @customElement("ha-card-condition-state")
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -34,6 +39,10 @@ export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public condition!: StateCondition;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
@@ -55,9 +64,9 @@ export class HaCardConditionState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (noEntity: boolean, localize: LocalizeFunc, presetStates: PresetState[]) =>
       [
-        { name: "entity", selector: { entity: {} } },
+        ...(noEntity ? [] : [{ name: "entity", selector: { entity: {} } }]),
         {
           name: "",
           type: "grid",
@@ -86,13 +95,25 @@ export class HaCardConditionState extends LitElement {
               },
             },
             {
-              name: "state",
-              selector: {
-                state: {},
-              },
-              context: {
-                filter_entity: "entity",
-              },
+              ...(noEntity
+                ? {
+                    name: "state",
+                    selector: {
+                      state: {
+                        extra_options: presetStates,
+                        no_entity: true,
+                      },
+                    },
+                  }
+                : {
+                    name: "state",
+                    selector: {
+                      state: {},
+                    },
+                    context: {
+                      filter_entity: "entity",
+                    },
+                  }),
             },
           ],
         },
@@ -113,7 +134,11 @@ export class HaCardConditionState extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(
+          this.noEntity,
+          this.hass.localize,
+          this.presetStates
+        )}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}

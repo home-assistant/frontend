@@ -679,13 +679,16 @@ export class HaServiceControl extends LitElement {
             : html`<ha-checkbox
                 .key=${dataField.key}
                 .checked=${this._checkedKeys.has(dataField.key) ||
-                (this._value?.data &&
+                (!!this._value?.data &&
                   this._value.data[dataField.key] !== undefined)}
                 .disabled=${this.disabled}
                 @change=${this._checkboxChanged}
                 slot="prefix"
               ></ha-checkbox>`}
-          <span slot="heading"
+          <span
+            slot="heading"
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
             >${this.hass.localize(
               `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
               descriptionPlaceholders
@@ -693,7 +696,10 @@ export class HaServiceControl extends LitElement {
             dataField.name ||
             dataField.key}</span
           >
-          <span slot="description"
+          <span
+            slot="description"
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
             ><ha-markdown
               breaks
               allow-svg
@@ -737,6 +743,13 @@ export class HaServiceControl extends LitElement {
       `component.${computeDomain(this._value.action)}.selector.${key}`
     );
   };
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
 
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
@@ -995,10 +1008,8 @@ export class HaServiceControl extends LitElement {
     .checkbox-spacer {
       width: 32px;
     }
-    ha-checkbox {
-      margin-left: -16px;
-      margin-inline-start: -16px;
-      margin-inline-end: initial;
+    .clickable {
+      cursor: pointer;
     }
     .help-icon {
       color: var(--secondary-text-color);

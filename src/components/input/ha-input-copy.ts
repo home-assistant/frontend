@@ -3,7 +3,7 @@ import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
-import { localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context";
 import { showToast } from "../../util/toast";
 import "../ha-button";
 import "../ha-icon-button";
@@ -59,8 +59,8 @@ export class HaInputCopy extends LitElement {
     false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _showMasked = true;
 
@@ -90,7 +90,7 @@ export class HaInputCopy extends LitElement {
               ? html`<ha-icon-button
                   slot="end"
                   class="toggle-unmasked"
-                  .label=${this.localize(
+                  .label=${this._i18n.localize(
                     `ui.common.${this._showMasked ? "show" : "hide"}`
                   )}
                   @click=${this._toggleMasked}
@@ -101,7 +101,7 @@ export class HaInputCopy extends LitElement {
         </div>
         <ha-button @click=${this._copy} appearance="plain" size="small">
           <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-          ${this.label || this.localize("ui.common.copy")}
+          ${this.label || this._i18n.localize("ui.common.copy")}
         </ha-button>
       </div>
     `;
@@ -119,7 +119,7 @@ export class HaInputCopy extends LitElement {
   private async _copy(): Promise<void> {
     await copyToClipboard(this.value);
     showToast(this, {
-      message: this.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 

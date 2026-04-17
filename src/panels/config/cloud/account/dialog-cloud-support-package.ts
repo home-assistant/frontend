@@ -8,7 +8,6 @@ import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-textarea";
 import { fetchSupportPackage } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";

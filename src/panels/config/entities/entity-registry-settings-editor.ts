@@ -1632,6 +1632,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           overflow: hidden;
           --mdc-list-side-padding: 13px;
         }
+        .entityId {
+          direction: ltr;
+        }
       `,
     ];
   }

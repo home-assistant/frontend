@@ -84,6 +84,7 @@ export class HaFilterDevices extends LitElement {
                   .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
+                  @keydown=${this._handleItemKeydown}
                 >
                 </lit-virtualizer>
               </ha-list>`
@@ -98,6 +99,7 @@ export class HaFilterDevices extends LitElement {
     !device
       ? nothing
       : html`<ha-check-list-item
+          tabindex="0"
           .value=${device.id}
           .selected=${this.value?.includes(device.id) ?? false}
         >
@@ -107,6 +109,13 @@ export class HaFilterDevices extends LitElement {
             this.hass.states
           )}
         </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");

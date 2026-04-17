@@ -108,13 +108,16 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (
-      oldValue?.trigger !== this.trigger?.trigger &&
       this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.trigger;
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.trigger);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -142,7 +145,7 @@ export class HaPlatformTrigger extends LitElement {
         }
       });
 
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.trigger,
@@ -286,13 +289,21 @@ export class HaPlatformTrigger extends LitElement {
             @change=${this._checkboxChanged}
             slot="prefix"
           ></ha-checkbox>`}
-      <span slot="heading"
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
         >${this.hass.localize(
           `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-        ) || triggerName}</span
+        ) || fieldName}</span
       >
       ${description
-        ? html`<span slot="description">${description}</span>`
+        ? html`<span
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            slot="description"
+            >${description}</span
+          >`
         : nothing}
       <ha-selector
         .disabled=${this.disabled ||
@@ -377,6 +388,13 @@ export class HaPlatformTrigger extends LitElement {
         target: ev.detail.value,
       },
     });
+  }
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
   }
 
   private _checkboxChanged(ev) {
@@ -531,11 +549,6 @@ export class HaPlatformTrigger extends LitElement {
     .checkbox-spacer {
       width: 32px;
     }
-    ha-checkbox {
-      margin-left: calc(var(--ha-space-4) * -1);
-      margin-inline-start: calc(var(--ha-space-4) * -1);
-      margin-inline-end: initial;
-    }
     .help-icon {
       color: var(--secondary-text-color);
     }
@@ -549,6 +562,9 @@ export class HaPlatformTrigger extends LitElement {
     }
     .description p {
       direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
     }
   `;
 }

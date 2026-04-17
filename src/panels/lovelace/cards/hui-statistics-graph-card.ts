@@ -358,7 +358,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
               ? getSuggestedMax(
                   this._period!,
                   this._energyEnd,
-                  (this._config.chart_type ?? "line") === "line"
+                  (this._config.chart_type ?? "line").startsWith("line")
                 )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}

@@ -42,6 +42,7 @@ import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-co
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsHourlyForecastCardFeature } from "../../card-features/hui-hourly-forecast-card-feature";
 import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -105,6 +106,7 @@ const UI_FEATURE_TYPES = [
   "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
+  "hourly-forecast",
   "humidifier-modes",
   "humidifier-toggle",
   "lawn-mower-commands",
@@ -148,8 +150,11 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "cover-position-favorite",
   "cover-tilt-favorite",
   "fan-preset-modes",
+  "hourly-forecast",
   "humidifier-modes",
   "lawn-mower-commands",
+  "media-player-playback",
+  "light-color-favorites",
   "media-player-volume-buttons",
   "numeric-input",
   "select-options",
@@ -186,6 +191,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "fan-oscillate": supportsFanOscilatteCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
+  "hourly-forecast": supportsHourlyForecastCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,

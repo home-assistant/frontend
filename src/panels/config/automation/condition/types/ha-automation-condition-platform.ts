@@ -73,13 +73,16 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      oldValue?.condition !== this.condition?.condition &&
       this.condition &&
+      oldValue?.condition !== this.condition.condition &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.condition;
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.condition);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -106,7 +109,7 @@ export class HaPlatformCondition extends LitElement {
           updatedOptions[key] = field.default;
         }
       });
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.condition,
@@ -245,19 +248,27 @@ export class HaPlatformCondition extends LitElement {
         : html`<ha-checkbox
             .key=${fieldName}
             .checked=${this._checkedKeys.has(fieldName) ||
-            (this.condition?.options &&
+            (!!this.condition?.options &&
               this.condition.options[fieldName] !== undefined)}
             .disabled=${this.disabled}
             @change=${this._checkboxChanged}
             slot="prefix"
           ></ha-checkbox>`}
-      <span slot="heading"
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
         >${this.hass.localize(
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || conditionName}</span
+        ) || fieldName}</span
       >
       ${description
-        ? html`<span slot="description">${description}</span>`
+        ? html`<span
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            slot="description"
+            >${description}</span
+          >`
         : nothing}
       <ha-selector
         .disabled=${this.disabled ||
@@ -342,6 +353,13 @@ export class HaPlatformCondition extends LitElement {
         target: ev.detail.value,
       },
     });
+  }
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
   }
 
   private _checkboxChanged(ev) {
@@ -496,11 +514,6 @@ export class HaPlatformCondition extends LitElement {
     .checkbox-spacer {
       width: 32px;
     }
-    ha-checkbox {
-      margin-left: calc(var(--ha-space-4) * -1);
-      margin-inline-start: calc(var(--ha-space-4) * -1);
-      margin-inline-end: initial;
-    }
     .help-icon {
       color: var(--secondary-text-color);
     }
@@ -514,6 +527,9 @@ export class HaPlatformCondition extends LitElement {
     }
     .description p {
       direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
     }
   `;
 }

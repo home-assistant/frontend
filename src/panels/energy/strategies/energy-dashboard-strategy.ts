@@ -74,11 +74,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     _config: EnergyDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const [prefs, localize] = await Promise.all([
-      fetchEnergyPrefs(hass),
-      hass.loadFragmentTranslation("energy"),
-    ]);
-    const localizeFunc = localize ?? hass.localize;
+    const prefs = await fetchEnergyPrefs(hass);
 
     if (
       !prefs ||
@@ -142,7 +138,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
         ...view,
         title:
           view.title ||
-          localizeFunc(`ui.panel.energy.title.${view.path}` as LocalizeKeys),
+          hass.localize(`ui.panel.energy.title.${view.path}` as LocalizeKeys),
       })),
     };
   }

@@ -8,6 +8,7 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { popoverSupported } from "../common/feature-detect/support-popover";
 import { nextRender } from "../common/util/render-status";
@@ -27,6 +28,9 @@ export class HaToast extends LitElement {
   @property({ attribute: "label-text" }) public labelText = "";
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
+
+  @property({ type: Number, attribute: "bottom-offset" }) public bottomOffset =
+    0;
 
   @query(".toast")
   private _toast?: HTMLDivElement;
@@ -186,6 +190,9 @@ export class HaToast extends LitElement {
           active: this._active,
           visible: this._visible,
         })}
+        style=${styleMap({
+          "--ha-toast-bottom-offset": `${this.bottomOffset}px`,
+        })}
         role="status"
         aria-live="polite"
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
@@ -205,7 +212,8 @@ export class HaToast extends LitElement {
       inset-block-start: auto;
       inset-inline-end: auto;
       inset-block-end: calc(
-        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
+        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4) +
+          var(--ha-toast-bottom-offset, 0px)
       );
       inset-inline-start: 50%;
       margin: 0;
@@ -232,13 +240,13 @@ export class HaToast extends LitElement {
         transform var(--ha-animation-duration-fast, 150ms) ease;
     }
 
-    .toast:not(.active) {
-      display: none;
-    }
-
     .toast.visible {
       opacity: 1;
       transform: translate(-50%, 0);
+    }
+
+    .toast:not(.active) {
+      display: none;
     }
 
     .message {

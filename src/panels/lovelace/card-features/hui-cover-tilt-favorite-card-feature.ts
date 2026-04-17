@@ -6,7 +6,6 @@ import {
   normalizeCoverFavoritePositions,
 } from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeatureEditor } from "../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -16,6 +15,7 @@ import type {
   CoverTiltFavoriteCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const coverTiltFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefinition<CoverEntity> =
   {
@@ -59,12 +59,7 @@ class HuiCoverTiltFavoriteCardFeature extends HuiNumericFavoriteCardFeatureBase<
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-cover-tilt-favorite-card-feature-editor");
-    return document.createElement(
-      "hui-cover-tilt-favorite-card-feature-editor"
-    );
-  }
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 }
 
 declare global {

@@ -16,6 +16,7 @@
     "security": "Security",
     "climate": "Climate",
     "home": "Overview",
+    "maintenance": "Maintenance",
     "notfound": "Page not found"
   },
   "state": {
@@ -217,6 +218,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
+        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
       },
@@ -489,6 +492,9 @@
     },
     "components": {
       "selectors": {
+        "serial": {
+          "enter_manually": "Enter manually"
+        },
         "media": {
           "pick_media_player": "Select media player",
           "browse_not_supported": "Media player does not support browsing media.",
@@ -1060,6 +1066,7 @@
           "this_month": "This month",
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
+          "now-365d": "Last 365 days",
           "this_year": "This year",
           "now-12m": "Last 12 months"
         }
@@ -1428,7 +1435,16 @@
         "related": "Related",
         "views": "Views",
         "area_settings": "{area} - Settings",
-        "other_routes": "Other routes"
+        "other_routes": "Other routes",
+        "route": {
+          "automations": "[%key:ui::panel::config::automation::caption%]",
+          "scenes": "[%key:ui::panel::config::scene::caption%]",
+          "scripts": "[%key:ui::panel::config::script::caption%]",
+          "developer_tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+          "integrations": "[%key:ui::panel::config::integrations::caption%]",
+          "devices": "[%key:ui::panel::config::devices::caption%]",
+          "entities": "[%key:ui::panel::config::entities::caption%]"
+        }
       }
     },
     "dialogs": {
@@ -1440,7 +1456,7 @@
       },
       "safe_mode": {
         "title": "Safe mode",
-        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+        "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
         "commands_title": "Commands",
@@ -1660,7 +1676,17 @@
           "clean_spot": "Clean spot",
           "locate": "Locate",
           "return_home": "Return home",
-          "start_pause": "Start/pause"
+          "start_pause": "Start/pause",
+          "clean_areas": "Clean areas",
+          "cleaning": "Cleaning",
+          "by_area": "By area",
+          "start_cleaning_areas": "Start cleaning",
+          "no_areas_header": "No areas mapped",
+          "no_areas_text": "Map your vacuum's segments to areas in your home to start cleaning by area.",
+          "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
+          "configure_area_mapping": "Configure area mapping",
+          "configure": "Configure",
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
         },
         "person": {
           "create_zone": "Create zone from current location"
@@ -2007,9 +2033,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and community frontend modules.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
@@ -2463,8 +2489,20 @@
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
+          "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page."
+          "summaries_description": "Choose which summaries to show on your overview page.",
+          "custom_shortcuts": "Custom shortcuts",
+          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "add_custom_shortcut": "Add shortcut",
+          "edit_shortcut": "Edit shortcut",
+          "shortcut": {
+            "path": "Navigation path",
+            "label": "Label",
+            "icon": "Icon",
+            "color": "Color"
+          }
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -2699,6 +2737,15 @@
           "caption": "Apps",
           "description": "Install and manage apps",
           "error_loading": "Error loading apps",
+          "info": {
+            "what_is_an_app": "What is an app?",
+            "what_is_an_app_description": "Apps allow you to extend the functionality around Home Assistant by installing additional applications. They run alongside Home Assistant and provide extra features like network monitoring, code editors, database management, and more.",
+            "why_not_available": "Why you see this page instead of an app store",
+            "why_not_available_description": "Apps are only available if you've used the Home Assistant Operating System installation method. If you installed Home Assistant using any other method then you cannot use apps. Often you can achieve the same result manually, refer to the documentation by the vendor of the application you'd like to install.",
+            "installation_hint": "Apps require the Home Assistant Operating System. Learn more about installation methods in the documentation.",
+            "learn_more": "Learn more",
+            "dismiss": "Don't show again"
+          },
           "state": {
             "update_available": "Update available",
             "installed": "Installed",
@@ -2717,7 +2764,7 @@
             "title": "App store",
             "check_updates": "Check for updates",
             "repositories": "Repositories",
-            "registries": "Registries",
+            "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
           },
           "repositories": {
@@ -3371,6 +3418,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -3673,6 +3721,10 @@
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
                 "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+              },
+              "viewport_environment": {
+                "title": "Device and browser environment",
+                "description": "Snapshot of CSS environment values, media features, and viewport-related values."
               }
             },
             "events": {
@@ -4396,7 +4448,8 @@
               },
               "search_dashboards": "Search dashboards",
               "heading": {
-                "default": "Dashboards"
+                "default": "Dashboards",
+                "custom": "Community dashboards"
               }
             },
             "picker": {
@@ -5356,13 +5409,16 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
                   "before": "Before",
                   "after": "After",
+                  "between": "Between",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
+                    "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -5393,7 +5449,7 @@
                   },
                   "description": {
                     "picker": "Tests if the current time is before or after a specified time.",
-                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}}\n after_before_or {time is after {time_after} or before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
@@ -7809,7 +7865,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
-            "manage_lock": "Manage lock",
+            "manage_lock": "Manage access",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7852,8 +7908,8 @@
             "copy_code": "Copy code"
           },
           "lock": {
-            "manage": "Manage lock",
-            "dialog_title": "Manage lock",
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
             "users": {
               "title": "Users",
               "add": "Add user",
@@ -7937,6 +7993,10 @@
               "load_failed": "Failed to load lock information",
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
+              "no_user_management": "This lock does not support user management. Users and credentials cannot be managed here.",
+              "pin_not_supported": "This lock does not support PIN codes. You can still view and manage existing users.",
+              "no_credential_types_supported": "This lock does not support any credential types that can be managed here. You can still view existing users.",
+              "learn_more": "Learn more about lock management",
               "user_not_found": "User not found",
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",
@@ -8254,6 +8314,7 @@
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
+              "maintenance": "Maintenance",
               "energy": "Today's energy",
               "persons": "Presence"
             },
@@ -8289,6 +8350,10 @@
             "other_devices": "Other devices"
           },
           "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "maintenance": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },
@@ -8830,7 +8895,9 @@
               "background_enabled_helper": "Display a colored background behind the section",
               "background_color": "Color",
               "background_color_default": "Default",
-              "background_opacity": "Opacity"
+              "background_opacity": "Opacity",
+              "theme": "Theme",
+              "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -9223,7 +9290,9 @@
               "chart_type": "Chart type",
               "chart_type_labels": {
                 "line": "Line",
-                "bar": "Bar"
+                "line-stack": "Stacked line",
+                "bar": "Bar",
+                "bar-stack": "Stacked bar"
               },
               "periods": {
                 "auto": "Auto",
@@ -9384,6 +9453,15 @@
               },
               "default_heading": "Kitchen"
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A card that triggers navigating to a page, opening a URL, or performing an action.",
+              "label": "Label",
+              "card_description": "Description",
+              "text": "Text",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "additional_interactions": "Additional interactions"
+            },
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
@@ -9410,6 +9488,8 @@
                 "state": "State",
                 "attribute": "Attribute"
               },
+              "conditions": "Entity visibility conditions",
+              "conditions_helper": "Each selected entity will be shown when all conditions below are met. If no conditions are set, entities are always shown.",
               "description": "This card allows you to display entities on a map."
             },
             "markdown": {
@@ -9658,6 +9738,10 @@
                 "state": "State"
               }
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A badge that triggers navigating to a page, opening a URL, or performing an action."
+            },
             "generic": {
               "manual": "Manual",
               "manual_description": "Need to add a community badge or just want to manually write the YAML?",
@@ -9740,7 +9824,8 @@
                 "label": "Light brightness"
               },
               "light-color-favorites": {
-                "label": "Light color favorites"
+                "label": "Light color favorites",
+                "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
               },
               "light-color-temp": {
                 "label": "Light color temperature"
@@ -9752,7 +9837,8 @@
                 "label": "Lock open door"
               },
               "media-player-playback": {
-                "label": "Media player playback controls"
+                "label": "Media player playback controls",
+                "controls": "Controls"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode"
@@ -9952,6 +10038,10 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "hourly-forecast": {
+                "label": "Hourly forecast",
+                "no_forecast": "No forecast data available"
               }
             }
           },
@@ -10002,7 +10092,7 @@
           },
           "badge_picker": {
             "no_description": "No description available.",
-            "custom_badge": "Custom",
+            "custom_badge": "Community",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
@@ -10701,7 +10791,7 @@
         "external_panel": {
           "question_trust": "Do you trust the external panel {name} at {link}?",
           "complete_access": "It will have access to all data in Home Assistant.",
-          "hide_message": "Check docs for the panel_custom component to hide this message"
+          "hide_message": "Check docs for the 'Custom panel' integration to hide this message"
         }
       },
       "energy": {

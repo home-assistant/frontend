@@ -46,6 +46,18 @@ export class HaGauge extends LitElement {
 
   @state() private _segment_label?: string = "";
 
+  private _sortedLevels?: LevelDefinition[];
+
+  private _rescaleOnConnect = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._rescaleOnConnect) {
+      this._rescaleSvg();
+      this._rescaleOnConnect = false;
+    }
+  }
+
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     afterNextRender(() => {
@@ -56,6 +68,26 @@ export class HaGauge extends LitElement {
       this._segment_label = this._getSegmentLabel();
       this._rescaleSvg();
     });
+  }
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("levels") || changedProperties.has("min")) {
+      if (this.levels) {
+        this._sortedLevels = [...this.levels].sort((a, b) => a.level - b.level);
+
+        if (
+          this._sortedLevels.length > 0 &&
+          this._sortedLevels[0].level !== this.min
+        ) {
+          this._sortedLevels.unshift({
+            level: this.min,
+            stroke: "var(--info-color)",
+          });
+        }
+      } else {
+        this._sortedLevels = undefined;
+      }
+    }
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -90,88 +122,63 @@ export class HaGauge extends LitElement {
         />
 
 
-        ${
-          this.levels
-            ? (() => {
-                const sortedLevels = [...this.levels].sort(
-                  (a, b) => a.level - b.level
-                );
+        ${this._sortedLevels?.map((level, i, arr) => {
+          const startLevel = level.level;
+          const endLevel = i + 1 < arr.length ? arr[i + 1].level : this.max;
 
-                if (
-                  sortedLevels.length > 0 &&
-                  sortedLevels[0].level !== this.min
-                ) {
-                  sortedLevels.unshift({
-                    level: this.min,
-                    stroke: "var(--info-color)",
-                  });
-                }
+          const startAngle = getAngle(startLevel, this.min, this.max);
+          const endAngle = getAngle(endLevel, this.min, this.max);
+          const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
-                return sortedLevels.map((level, i, arr) => {
-                  const startLevel = level.level;
-                  const endLevel =
-                    i + 1 < arr.length ? arr[i + 1].level : this.max;
+          const x1 = -arcRadius * Math.cos((startAngle * Math.PI) / 180);
+          const y1 = -arcRadius * Math.sin((startAngle * Math.PI) / 180);
+          const x2 = -arcRadius * Math.cos((endAngle * Math.PI) / 180);
+          const y2 = -arcRadius * Math.sin((endAngle * Math.PI) / 180);
 
-                  const startAngle = getAngle(startLevel, this.min, this.max);
-                  const endAngle = getAngle(endLevel, this.min, this.max);
-                  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+          const isFirst = i === 0;
+          const isLast = i === arr.length - 1;
 
-                  const x1 =
-                    -arcRadius * Math.cos((startAngle * Math.PI) / 180);
-                  const y1 =
-                    -arcRadius * Math.sin((startAngle * Math.PI) / 180);
-                  const x2 = -arcRadius * Math.cos((endAngle * Math.PI) / 180);
-                  const y2 = -arcRadius * Math.sin((endAngle * Math.PI) / 180);
+          if (isFirst) {
+            return svg`
+              <path
+                class="level"
+                stroke="${level.stroke}"
+                style="stroke-linecap: butt"
+                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
+              />
+            `;
+          }
 
-                  const isFirst = i === 0;
-                  const isLast = i === arr.length - 1;
+          if (isLast) {
+            const offsetAngle = 0.5;
+            const midAngle = endAngle - offsetAngle;
+            const xm = -arcRadius * Math.cos((midAngle * Math.PI) / 180);
+            const ym = -arcRadius * Math.sin((midAngle * Math.PI) / 180);
 
-                  if (isFirst) {
-                    return svg`
-                      <path
-                        class="level"
-                        stroke="${level.stroke}"
-                        style="stroke-linecap: butt"
-                        d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
-                      />
-                    `;
-                  }
+            return svg`
+                <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
+                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${xm} ${ym}" />
+                <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
+                      d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 ${x2} ${y2}" />
+            `;
+          }
 
-                  if (isLast) {
-                    const offsetAngle = 0.5;
-                    const midAngle = endAngle - offsetAngle;
-                    const xm =
-                      -arcRadius * Math.cos((midAngle * Math.PI) / 180);
-                    const ym =
-                      -arcRadius * Math.sin((midAngle * Math.PI) / 180);
-
-                    return svg`
-                        <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
-                              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${xm} ${ym}" />
-                        <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
-                              d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 ${x2} ${y2}" />
-                    `;
-                  }
-
-                  return svg`
-                    <path
-                      class="level"
-                      stroke="${level.stroke}"
-                      style="stroke-linecap: butt"
-                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
-                    ></path>
-                  `;
-                });
-              })()
-            : ""
-        }
+          return svg`
+            <path
+              class="level"
+              stroke="${level.stroke}"
+              style="stroke-linecap: butt"
+              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
+            ></path>
+          `;
+        })}
 
         ${
           this.needle
             ? svg`
                 <path
                 class="needle"
-                d="M -36,-2 L -44,-1 A 1,1,0,0,0,-44,1 L -36,2 A 2,2,0,0,0,-36,-2 Z"
+                d="M -34,-3 L -48,-1 A 1,1,0,0,0,-48,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
 
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
               />
@@ -215,6 +222,13 @@ export class HaGauge extends LitElement {
     // Set the viewbox of the SVG containing the value to perfectly
     // fit the text
     // That way it will auto-scale correctly
+
+    if (!this.isConnected) {
+      // Retry this later if we're disconnected, otherwise we get a 0 bbox and missing label
+      this._rescaleOnConnect = true;
+      return;
+    }
+
     const svgRoot = this.shadowRoot!.querySelector(".text")!;
     const box = svgRoot.querySelector("text")!.getBBox()!;
     svgRoot.setAttribute(
@@ -224,11 +238,10 @@ export class HaGauge extends LitElement {
   }
 
   private _getSegmentLabel() {
-    if (this.levels) {
-      [...this.levels].sort((a, b) => a.level - b.level);
-      for (let i = this.levels.length - 1; i >= 0; i--) {
-        if (this.value >= this.levels[i].level) {
-          return this.levels[i].label;
+    if (this._sortedLevels) {
+      for (let i = this._sortedLevels.length - 1; i >= 0; i--) {
+        if (this.value >= this._sortedLevels[i].level) {
+          return this._sortedLevels[i].label;
         }
       }
     }
@@ -243,19 +256,19 @@ export class HaGauge extends LitElement {
     .levels-base {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 6;
+      stroke-width: 12;
       stroke-linecap: butt;
     }
 
     .level {
       fill: none;
-      stroke-width: 6;
+      stroke-width: 12;
       stroke-linecap: butt;
     }
 
     .value {
       fill: none;
-      stroke-width: 6;
+      stroke-width: 12;
       stroke: var(--gauge-color);
       stroke-linecap: butt;
       transition: stroke-dashoffset 1s ease 0s;

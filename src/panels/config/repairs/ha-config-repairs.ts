@@ -32,9 +32,6 @@ class HaConfigRepairs extends LitElement {
   @property({ attribute: false })
   public repairsIssues?: RepairsIssue[];
 
-  @property({ type: Number })
-  public total?: number;
-
   protected render() {
     if (!this.repairsIssues?.length) {
       return nothing;
@@ -43,11 +40,6 @@ class HaConfigRepairs extends LitElement {
     const issues = this.repairsIssues;
 
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("ui.panel.config.repairs.title", {
-          count: this.total || this.repairsIssues.length,
-        })}
-      </div>
       <ha-md-list>
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
@@ -190,11 +182,6 @@ class HaConfigRepairs extends LitElement {
   static styles = css`
     :host {
       --mdc-list-vertical-padding: 0;
-    }
-    .title {
-      font-size: var(--ha-font-size-l);
-      padding: 16px;
-      padding-bottom: 0;
     }
     .ignored {
       opacity: var(--light-secondary-opacity);

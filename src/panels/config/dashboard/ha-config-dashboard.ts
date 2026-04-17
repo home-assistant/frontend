@@ -11,7 +11,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -36,6 +35,7 @@ import {
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -111,12 +111,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       >`,
     };
 
-    tips.push(
-      {
+    if (hass.user?.is_admin) {
+      tips.push({
         content: hass.localize("ui.tips.key_c_tip", localizeParam),
         weight: 1,
         narrow: false,
-      },
+      });
+    }
+    tips.push(
       {
         content: hass.localize("ui.tips.key_m_tip", localizeParam),
         weight: 1,
@@ -169,25 +171,37 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   };
 
   private _pages = memoizeOne(
-    (cloudStatus, isCloudLoaded, hasExternalSettings) => [
-      isCloudLoaded
-        ? [
-            {
-              component: "cloud",
-              path: "/config/cloud",
-              name: "Home Assistant Cloud",
-              info: cloudStatus,
-              iconPath: mdiCloudLock,
-              iconColor: "#3B808E",
-              translationKey: "cloud",
-            },
-            ...configSections.dashboard,
-          ]
-        : configSections.dashboard,
-      hasExternalSettings ? configSections.dashboard_external_settings : [],
-      configSections.dashboard_2,
-      configSections.dashboard_3,
-    ]
+    (
+      cloudStatus,
+      isCloudLoaded,
+      hasExternalSettings,
+      isAppsInfoDismissed,
+      isHassioLoaded
+    ) => {
+      const filterApps = (pages: PageNavigation[]) =>
+        isAppsInfoDismissed && !isHassioLoaded
+          ? pages.filter((page) => page.path !== "/config/apps")
+          : pages;
+      return [
+        isCloudLoaded
+          ? filterApps([
+              {
+                component: "cloud",
+                path: "/config/cloud",
+                name: "Home Assistant Cloud",
+                info: cloudStatus,
+                iconPath: mdiCloudLock,
+                iconColor: "#3B808E",
+                translationKey: "cloud",
+              },
+              ...configSections.dashboard,
+            ])
+          : filterApps(configSections.dashboard),
+        hasExternalSettings ? configSections.dashboard_external_settings : [],
+        configSections.dashboard_2,
+        configSections.dashboard_3,
+      ];
+    }
   );
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -278,67 +292,67 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           full-width
         >
           ${repairsIssues.length || canInstallUpdates.length
-            ? html`<ha-card outlined>
+            ? html`<div class="dashboard-alerts">
                 ${repairsIssues.length
                   ? html`
-                      <ha-config-repairs
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalRepairIssues}
-                        .repairsIssues=${repairsIssues}
-                      ></ha-config-repairs>
-                      ${totalRepairIssues > repairsIssues.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/repairs"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.repairs.more_repairs",
-                                {
-                                  count:
-                                    totalRepairIssues - repairsIssues.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <ha-card outlined class="dashboard-alert-card">
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/repairs?historyBack=1">
+                            ${this.hass.localize(
+                              "ui.panel.config.repairs.title",
+                              {
+                                count: totalRepairIssues,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
+                        <ha-config-repairs
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .repairsIssues=${repairsIssues}
+                        ></ha-config-repairs>
+                      </ha-card>
                     `
-                  : ""}
-                ${repairsIssues.length && canInstallUpdates.length
-                  ? html`<hr />`
                   : ""}
                 ${canInstallUpdates.length
                   ? html`
-                      <ha-config-updates
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalUpdates}
-                        .updateEntities=${canInstallUpdates}
-                        .isInstallable=${true}
-                      ></ha-config-updates>
-                      ${totalUpdates > canInstallUpdates.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/updates"
-                              label=${this.hass.localize(
-                                "ui.panel.config.updates.more_updates",
-                                {
-                                  count:
-                                    totalUpdates - canInstallUpdates.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <ha-card outlined class="dashboard-alert-card">
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/updates?historyBack=1">
+                            ${this.hass.localize(
+                              "ui.panel.config.updates.title",
+                              {
+                                count: totalUpdates,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
+                        <ha-config-updates
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .updateEntities=${canInstallUpdates}
+                        ></ha-config-updates>
+                      </ha-card>
                     `
                   : ""}
-              </ha-card>`
+              </div>`
             : ""}
           ${this._pages(
             this.cloudStatus,
             isComponentLoaded(this.hass.config, "cloud"),
-            this.hass.auth.external?.config.hasSettingsScreen
+            this.hass.auth.external?.config.hasSettingsScreen,
+            this.hass.userData?.apps_info_dismissed,
+            isComponentLoaded(this.hass.config, "hassio")
           ).map((categoryPages) =>
             categoryPages.length === 0
               ? nothing
@@ -410,10 +424,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: 24px;
-        }
-
         ha-config-section {
           margin: auto;
           margin-top: -32px;
@@ -422,20 +432,34 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         ha-card {
           overflow: hidden;
+          margin-bottom: 0;
         }
         ha-card a {
           text-decoration: none;
           color: var(--primary-text-color);
         }
 
-        ha-assist-chip {
-          margin: 8px 16px 16px 16px;
+        .dashboard-alerts {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
         }
 
-        .title {
+        .dashboard-alert-title {
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
           font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
+        }
+
+        .dashboard-alert-title a {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+
+        .dashboard-alert-title ha-icon-next {
+          color: var(--secondary-text-color);
+          width: 20px;
+          height: 20px;
         }
 
         @media all and (max-width: 600px) {
@@ -459,16 +483,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         .keep-together {
           display: inline-block;
-        }
-
-        hr {
-          height: 1px;
-          background-color: var(
-            --ha-card-border-color,
-            var(--divider-color, #e0e0e0)
-          );
-          border: none;
-          margin-top: 0;
         }
       `,
     ];

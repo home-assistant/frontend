@@ -7,6 +7,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
@@ -15,7 +16,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
+import type {
+  ForecastAttribute,
+  ForecastEvent,
+  WeatherEntity,
+} from "../../../data/weather";
 import {
   WEATHER_TEMPERATURE_ATTRIBUTES,
   getForecast,
@@ -74,6 +79,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _subscribed?: Promise<() => void>;
 
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".forecast",
+    enabled: false,
+  });
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => {
       const result = {
@@ -82,7 +92,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       };
 
       const width = entries[0]?.contentRect.width;
-      if (width < 245) {
+      if (width < 180) {
         result.width = "very-very-narrow";
       } else if (width < 300) {
         result.width = "very-narrow";
@@ -209,6 +219,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+
+    const stateObj = this.hass.states[this._config.entity] as
+      | WeatherEntity
+      | undefined;
+
+    this._dragScrollController.enabled = Boolean(
+      stateObj &&
+      stateObj.state !== UNAVAILABLE &&
+      this._config.show_forecast !== false &&
+      getForecast(
+        stateObj.attributes,
+        this._forecastEvent,
+        this._config.forecast_type
+      )?.forecast?.length
+    );
   }
 
   protected render() {
@@ -242,14 +267,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config?.forecast_type
     );
 
-    let itemsToShow = this._config?.forecast_slots ?? 5;
-    if (this._sizeController.value?.width === "very-very-narrow") {
-      itemsToShow = Math.min(3, itemsToShow);
-    } else if (this._sizeController.value?.width === "very-narrow") {
-      itemsToShow = Math.min(5, itemsToShow);
-    } else if (this._sizeController.value?.width === "narrow") {
-      itemsToShow = Math.min(7, itemsToShow);
-    }
+    const itemsToShow = this._config?.forecast_slots ?? 5;
 
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
@@ -259,6 +277,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const hourly = forecastData?.type === "hourly";
     const dayNight = forecastData?.type === "twice_daily";
+    const compactForecast = this._sizeController.value?.height === "short";
+    const showInlineDayLabel = compactForecast && (hourly || dayNight);
+    const showDayHeader = !compactForecast && (hourly || dayNight);
+    const todayKey = this._dayKeyFromDate(new Date());
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this.hass.formatEntityName(stateObj, this._config.name);
@@ -394,90 +416,69 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           : ""}
         ${forecast
           ? html`
-              <div class="forecast">
-                ${forecast.map((item) =>
-                  this._showValue(item.templow) ||
-                  this._showValue(item.temperature)
-                    ? html`
-                        <div>
-                          <div>
-                            ${dayNight
-                              ? html`
-                                  ${formatDateWeekdayShort(
-                                    new Date(item.datetime),
-                                    this.hass!.locale,
-                                    this.hass!.config
-                                  )}
-                                  <div class="daynight">
-                                    ${item.is_daytime !== false
-                                      ? this.hass!.localize(
-                                          "ui.card.weather.day"
-                                        )
-                                      : this.hass!.localize(
-                                          "ui.card.weather.night"
-                                        )}<br />
-                                  </div>
-                                `
-                              : hourly
-                                ? html`
-                                    ${formatTime(
-                                      new Date(item.datetime),
-                                      this.hass!.locale,
-                                      this.hass!.config
-                                    )}
-                                  `
-                                : html`
-                                    ${formatDateWeekdayShort(
-                                      new Date(item.datetime),
-                                      this.hass!.locale,
-                                      this.hass!.config
-                                    )}
-                                  `}
-                          </div>
-                          ${this._showValue(item.condition)
-                            ? html`
-                                <div class="forecast-image-icon">
-                                  ${getWeatherStateIcon(
-                                    item.condition!,
-                                    this,
-                                    !(
-                                      item.is_daytime ||
-                                      item.is_daytime === undefined
-                                    )
-                                  )}
-                                </div>
-                              `
-                            : ""}
-                          <div class="temp">
-                            ${this._showValue(item.temperature)
-                              ? html`${formatNumber(
-                                  item.temperature,
-                                  this.hass!.locale,
-                                  {
-                                    maximumFractionDigits:
-                                      temperatureFractionDigits,
-                                  }
-                                )}°`
-                              : "—"}
-                          </div>
-                          <div class="templow">
-                            ${this._showValue(item.templow)
-                              ? html`${formatNumber(
-                                  item.templow!,
-                                  this.hass!.locale,
-                                  {
-                                    maximumFractionDigits:
-                                      temperatureFractionDigits,
-                                  }
-                                )}°`
-                              : hourly
-                                ? ""
-                                : "—"}
+              <div
+                class=${classMap({
+                  forecast: true,
+                  compact: compactForecast,
+                  dragging: this._dragScrollController.scrolling,
+                })}
+              >
+                ${showDayHeader
+                  ? this._groupForecastByDay(forecast).map((dayForecast) => {
+                      const firstItem = dayForecast[0];
+                      const dayHeader = firstItem
+                        ? formatDateWeekdayShort(
+                            new Date(firstItem.datetime),
+                            this.hass!.locale,
+                            this.hass!.config
+                          )
+                        : undefined;
+                      const firstRenderableIndex = dayForecast.findIndex(
+                        (item) =>
+                          this._showValue(item.templow) ||
+                          this._showValue(item.temperature)
+                      );
+
+                      return html`
+                        <div class="forecast-day">
+                          <div class="forecast-day-content">
+                            ${dayForecast.map((item, index) =>
+                              this._renderForecastItem(
+                                item,
+                                hourly,
+                                dayNight,
+                                showDayHeader,
+                                temperatureFractionDigits,
+                                index === firstRenderableIndex
+                                  ? dayHeader
+                                  : undefined
+                              )
+                            )}
                           </div>
                         </div>
+                      `;
+                    })
+                  : forecast.map(
+                      (item, index) => html`
+                        ${showInlineDayLabel
+                          ? this._renderInlineDayGroupLabel(
+                              item,
+                              index,
+                              forecast,
+                              dayNight,
+                              hourly,
+                              todayKey
+                            )
+                          : nothing}
+                        ${this._renderForecastItem(
+                          item,
+                          hourly,
+                          dayNight,
+                          showDayHeader,
+                          temperatureFractionDigits
+                        )}
                       `
-                    : ""
-                )}
+                    )}
               </div>
             `
           : ""}
@@ -486,7 +487,156 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
+    if (this._isForecastInteraction(ev)) {
+      return;
+    }
+
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _isForecastInteraction(ev: Event): boolean {
+    return ev
+      .composedPath()
+      .some(
+        (node) =>
+          node instanceof HTMLElement && node.classList.contains("forecast")
+      );
+  }
+
+  private _groupForecastByDay(forecast: ForecastAttribute[]) {
+    const grouped = new Map<string, ForecastAttribute[]>();
+
+    forecast.forEach((item) => {
+      const date = new Date(item.datetime);
+      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+      if (!grouped.has(dateKey)) {
+        grouped.set(dateKey, []);
+      }
+
+      grouped.get(dateKey)!.push(item);
+    });
+
+    return Array.from(grouped.values());
+  }
+
+  private _renderInlineDayGroupLabel(
+    item: ForecastAttribute,
+    index: number,
+    forecast: ForecastAttribute[],
+    dayNight: boolean,
+    hourly: boolean,
+    todayKey: string
+  ) {
+    if (!dayNight && !hourly) {
+      return nothing;
+    }
+
+    const previousItem = forecast[index - 1];
+    const itemDayKey = this._dayKeyForForecast(item);
+    const dayChanged =
+      !previousItem || itemDayKey !== this._dayKeyForForecast(previousItem);
+
+    if (!dayChanged || itemDayKey === todayKey) {
+      return nothing;
+    }
+
+    return html`
+      <div class="forecast-item label-only">
+        <div class="forecast-item-label">
+          ${this._dayLabelForForecast(item)}
+        </div>
+      </div>
+    `;
+  }
+
+  private _renderForecastItem(
+    item: ForecastAttribute,
+    hourly: boolean,
+    dayNight: boolean,
+    showDayHeader: boolean,
+    temperatureFractionDigits: number | undefined,
+    dayHeader?: string
+  ) {
+    if (!this._showValue(item.templow) && !this._showValue(item.temperature)) {
+      return nothing;
+    }
+
+    return html`
+      <div class="forecast-item">
+        ${showDayHeader
+          ? html`
+              <div class="forecast-day-header-slot">
+                ${dayHeader
+                  ? html`<div class="forecast-day-header">${dayHeader}</div>`
+                  : nothing}
+              </div>
+            `
+          : nothing}
+        <div class="forecast-item-label ${showDayHeader ? "" : "no-header"}">
+          ${dayNight
+            ? html`<div class="daynight">
+                ${item.is_daytime !== false
+                  ? this.hass!.localize("ui.card.weather.day")
+                  : this.hass!.localize("ui.card.weather.night")}
+              </div>`
+            : hourly
+              ? formatTime(
+                  new Date(item.datetime),
+                  this.hass!.locale,
+                  this.hass!.config
+                )
+              : formatDateWeekdayShort(
+                  new Date(item.datetime),
+                  this.hass!.locale,
+                  this.hass!.config
+                )}
+        </div>
+        ${this._showValue(item.condition)
+          ? html`
+              <div class="forecast-image-icon">
+                ${getWeatherStateIcon(
+                  item.condition!,
+                  this,
+                  !(item.is_daytime || item.is_daytime === undefined)
+                )}
+              </div>
+            `
+          : nothing}
+        <div class="temp">
+          ${this._showValue(item.temperature)
+            ? html`${formatNumber(item.temperature, this.hass!.locale, {
+                maximumFractionDigits: temperatureFractionDigits,
+              })}°`
+            : "—"}
+        </div>
+        <div class="templow">
+          ${this._showValue(item.templow)
+            ? html`${formatNumber(item.templow!, this.hass!.locale, {
+                maximumFractionDigits: temperatureFractionDigits,
+              })}°`
+            : hourly
+              ? nothing
+              : "—"}
+        </div>
+      </div>
+    `;
+  }
+
+  private _dayLabelForForecast(item: ForecastAttribute) {
+    return formatDateWeekdayShort(
+      new Date(item.datetime),
+      this.hass!.locale,
+      this.hass!.config
+    );
+  }
+
+  private _dayKeyForForecast(item: ForecastAttribute) {
+    return this._dayKeyFromDate(new Date(item.datetime));
+  }
+
+  private _dayKeyFromDate(date: Date) {
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
   }
 
   private _showValue(item?: any): boolean {
@@ -494,13 +644,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
+    const showCurrent = this._config?.show_current !== false;
+    const showForecast = this._config?.show_forecast !== false;
+
     let rows = 1;
     let min_rows = 1;
-    if (this._config?.show_current !== false) {
+    if (showCurrent) {
       rows += 1;
       min_rows += 1;
     }
-    if (this._config?.show_forecast !== false) {
+    if (showForecast) {
       rows += 1;
       min_rows += 1;
       if (this._config?.forecast_type === "daily") {
@@ -511,7 +664,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       rows: rows,
-      min_columns: 6,
+      min_columns: showCurrent && showForecast ? 5 : 4,
       min_rows: min_rows,
     };
   }
@@ -625,10 +778,95 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           display: flex;
           justify-content: space-around;
           padding: 0 16px;
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: none;
+          mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            black 16px,
+            black calc(100% - 16px),
+            transparent 100%
+          );
+          user-select: none;
+          cursor: grab;
+        }
+
+        .forecast.dragging {
+          cursor: grabbing;
+        }
+
+        .forecast.dragging * {
+          pointer-events: none;
+        }
+
+        .forecast.compact {
+          --forecast-icon-size: 32px;
+        }
+
+        .forecast::-webkit-scrollbar {
+          display: none;
         }
 
         .forecast > div {
           text-align: center;
+          min-width: 48px;
+          flex: 0 0 auto;
+        }
+
+        .forecast-day {
+          display: flex;
+          flex-direction: column;
+          flex: 0 0 auto;
+        }
+
+        .forecast-day-header-slot {
+          min-height: calc(var(--ha-font-size-s) + var(--ha-space-1));
+        }
+
+        .forecast-day-header {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-bold);
+          line-height: 1;
+          white-space: nowrap;
+          padding-bottom: var(--ha-space-1);
+        }
+
+        .forecast-day-content {
+          display: flex;
+        }
+
+        .forecast-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          min-width: 48px;
+          padding: 0 8px;
+          flex: 0 0 auto;
+          gap: var(--ha-space-1);
+        }
+
+        .forecast-item.label-only {
+          justify-content: flex-start;
+        }
+
+        .forecast-item.label-only .forecast-item-label {
+          font-weight: var(--ha-font-weight-bold);
+        }
+
+        .forecast-item-label,
+        .forecast .temp {
+          line-height: 1;
+          white-space: nowrap;
+        }
+
+        .forecast-item-label {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
         }
 
         .forecast .icon,
@@ -648,9 +886,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .forecast-image-icon > * {
-          width: 40px;
-          height: 40px;
-          --mdc-icon-size: 40px;
+          width: var(--forecast-icon-size, 40px);
+          height: var(--forecast-icon-size, 40px);
+          --mdc-icon-size: var(--forecast-icon-size, 40px);
         }
 
         .forecast-icon {

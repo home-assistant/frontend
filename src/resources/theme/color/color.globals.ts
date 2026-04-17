@@ -211,8 +211,8 @@ export const colorStyles = css`
     --state-device_tracker-home-color: var(--green-color);
     --state-fan-active-color: var(--cyan-color);
     --state-humidifier-on-color: var(--blue-color);
+    --state-lawn_mower-active-color: var(--teal-color);
     --state-lawn_mower-error-color: var(--red-color);
-    --state-lawn_mower-mowing-color: var(--teal-color);
     --state-light-active-color: var(--amber-color);
     --state-lock-jammed-color: var(--red-color);
     --state-lock-locked-color: var(--green-color);
@@ -231,6 +231,7 @@ export const colorStyles = css`
     --state-switch-active-color: var(--amber-color);
     --state-update-active-color: var(--orange-color);
     --state-vacuum-active-color: var(--teal-color);
+    --state-vacuum-error-color: var(--red-color);
     --state-valve-active-color: var(--blue-color);
     --state-sensor-battery-high-color: var(--green-color);
     --state-sensor-battery-low-color: var(--red-color);

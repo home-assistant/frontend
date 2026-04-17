@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement, render, html } from "lit";
 import { customElement, property } from "lit/decorators";
-// eslint-disable-next-line import/extensions
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";

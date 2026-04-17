@@ -1,5 +1,4 @@
 import { consume, provide, type ContextType } from "@lit/context";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiAlert,
   mdiCheckCircle,
@@ -19,9 +18,10 @@ import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-spinner";
+import "../../../../../../components/progress/ha-progress-bar";
 import {
   connectionContext,
-  localizeContext,
+  internationalizationContext,
 } from "../../../../../../data/context";
 import type {
   ZWaveJSNetwork,
@@ -46,8 +46,8 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
   LitElement
 ) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private _localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
   @consume({ context: connectionContext, subscribe: true })
@@ -81,7 +81,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
     return html`
       <ha-dialog
         open
-        header-title=${this._localize(
+        header-title=${this._i18n.localize(
           "ui.panel.config.zwave_js.rebuild_network_routes.title"
         )}
       >
@@ -100,7 +100,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                   ></ha-svg-icon>
                   <div class="status">
                     <p>
-                      ${this._localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.zwave_js.rebuild_network_routes.introduction"
                       )}
                     </p>
@@ -108,7 +108,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                 </div>
                 <p>
                   <em>
-                    ${this._localize(
+                    ${this._i18n.localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.traffic_warning"
                     )}
                   </em>
@@ -119,27 +119,25 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                   <div class="status">
                     <p>
                       <b>
-                        ${this._localize(
+                        ${this._i18n.localize(
                           "ui.panel.config.zwave_js.rebuild_network_routes.in_progress"
                         )}
                       </b>
                     </p>
                     <p>
-                      ${this._localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.zwave_js.rebuild_network_routes.run_in_background"
                       )}
                     </p>
                   </div>
-                  <mwc-linear-progress
+                  <ha-progress-bar
+                    loading
                     .indeterminate=${!this._progress}
-                    .progress=${this._progress
-                      ? this._progressPercent(this._progress)
-                      : undefined}
-                    .buffer=${this._progress
+                    .value=${this._progress
                       ? this._progressPercent(this._progress)
                       : undefined}
                   >
-                  </mwc-linear-progress>
+                  </ha-progress-bar>
                   ${this._progress
                     ? html` <div class="progress-detail">
                         <ha-button
@@ -148,7 +146,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                           appearance="outlined"
                           variant="warning"
                           size="small"
-                          .title=${this._localize(
+                          .title=${this._i18n.localize(
                             "ui.panel.config.zwave_js.rebuild_network_routes.progress.in_progress",
                             { count: this._progress.pending.length }
                           )}
@@ -165,7 +163,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                           appearance="outlined"
                           variant="success"
                           size="small"
-                          .title=${this._localize(
+                          .title=${this._i18n.localize(
                             "ui.panel.config.zwave_js.rebuild_network_routes.progress.completed",
                             { count: this._progress.done.length }
                           )}
@@ -184,7 +182,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                               appearance="outlined"
                               variant="danger"
                               size="small"
-                              .title=${this._localize(
+                              .title=${this._i18n.localize(
                                 "ui.panel.config.zwave_js.rebuild_network_routes.progress.failed",
                                 { count: this._progress.failed.length }
                               )}
@@ -203,7 +201,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                               appearance="outlined"
                               variant="neutral"
                               size="small"
-                              .title=${this._localize(
+                              .title=${this._i18n.localize(
                                 "ui.panel.config.zwave_js.rebuild_network_routes.progress.skipped",
                                 { count: this._progress.skipped.length }
                               )}
@@ -227,7 +225,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                       ></ha-svg-icon>
                       <div class="status">
                         <p>
-                          ${this._localize(
+                          ${this._i18n.localize(
                             "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_failed"
                           )}
                         </p>
@@ -243,7 +241,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                         ></ha-svg-icon>
                         <div class="status">
                           <p>
-                            ${this._localize(
+                            ${this._i18n.localize(
                               "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_complete"
                             )}
                           </p>
@@ -259,7 +257,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                           ></ha-svg-icon>
                           <div class="status">
                             <p>
-                              ${this._localize(
+                              ${this._i18n.localize(
                                 "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_cancelled"
                               )}
                             </p>
@@ -274,7 +272,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                   slot="primaryAction"
                   @click=${this._startRebuildingRoutes}
                 >
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.config.zwave_js.rebuild_network_routes.start_rebuilding_routes"
                   )}
                 </ha-button>
@@ -287,17 +285,17 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                     @click=${this._stopRebuildingRoutes}
                     variant="danger"
                   >
-                    ${this._localize(
+                    ${this._i18n.localize(
                       "ui.panel.config.zwave_js.rebuild_network_routes.stop_rebuilding_routes"
                     )}
                   </ha-button>
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this._localize("ui.common.close")}
+                    ${this._i18n.localize("ui.common.close")}
                   </ha-button>
                 `
               : html`
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this._localize("ui.common.close")}
+                    ${this._i18n.localize("ui.common.close")}
                   </ha-button>
                 `}
         </ha-dialog-footer>
@@ -307,7 +305,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
 
   private async _fetchData(): Promise<void> {
     const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
-      this._connection,
+      this._connection.connection,
       {
         entry_id: this.params!.entry_id,
       }
@@ -321,21 +319,27 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
   }
 
   private _startRebuildingRoutes(): void {
-    rebuildZwaveNetworkRoutes(this._connection, this.params!.entry_id);
+    rebuildZwaveNetworkRoutes(
+      this._connection.connection,
+      this.params!.entry_id
+    );
     this._status = "started";
     this._startSubscribingToProgress();
   }
 
   private async _startSubscribingToProgress() {
     this._subscribed = subscribeRebuildZwaveNetworkRoutesProgress(
-      this._connection,
+      this._connection.connection,
       this.params!.entry_id,
       this._handleMessage
     );
   }
 
   private _stopRebuildingRoutes(): void {
-    stopRebuildingZwaveNetworkRoutes(this._connection, this.params!.entry_id);
+    stopRebuildingZwaveNetworkRoutes(
+      this._connection.connection,
+      this.params!.entry_id
+    );
     this._unsubscribe();
     this._status = "cancelled";
   }
@@ -367,7 +371,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
       const done =
         progress.done.length + progress.skipped.length + progress.failed.length;
       const total = done + progress.pending.length;
-      return parseFloat((total > 0 ? done / total : 0).toFixed(2));
+      return total > 0 ? (done / total) * 100 : 0;
     }
   );
 
@@ -424,7 +428,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
           margin-inline-start: initial;
         }
 
-        mwc-linear-progress {
+        ha-progress-bar {
           margin-top: var(--ha-space-8);
         }
 

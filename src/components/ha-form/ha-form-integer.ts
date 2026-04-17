@@ -100,7 +100,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         inputMode="numeric"
         .label=${this.label}
         .hint=${this.helper}
-        .value=${this.data !== undefined ? this.data.toString() : ""}
+        .value=${this.data?.toString() ?? ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
@@ -199,9 +199,14 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
     .flex {
       display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
     }
     ha-slider {
       flex: 1;
+    }
+    ha-input-helper-text {
+      margin-top: var(--ha-space-1);
     }
   `;
 }

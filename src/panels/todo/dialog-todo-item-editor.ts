@@ -180,10 +180,10 @@ class DialogTodoItemEditor extends LitElement {
                 .label=${this.hass.localize(
                   "ui.components.todo.item.description"
                 )}
-                .helper=${supportsMarkdownHelper(this.hass.localize)}
+                .hint=${supportsMarkdownHelper(this.hass.localize)}
                 .value=${this._description}
                 @input=${this._handleDescriptionChanged}
-                autogrow
+                resize="auto"
                 .disabled=${!canUpdate}
               ></ha-textarea>`
             : nothing}
@@ -447,7 +447,8 @@ class DialogTodoItemEditor extends LitElement {
           width: 100%;
         }
         ha-checkbox {
-          margin-top: 4px;
+          margin-bottom: 28px;
+          justify-content: center;
         }
         ha-textarea {
           margin-bottom: 16px;
