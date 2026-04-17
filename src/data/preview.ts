@@ -7,6 +7,7 @@ export interface GenericPreview {
   state: string;
   attributes: Record<string, any>;
   error?: string;
+  domain?: string;
 }
 
 export const subscribePreviewGeneric = (
