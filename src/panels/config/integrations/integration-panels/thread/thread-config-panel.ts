@@ -719,9 +719,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         "ui.panel.config.thread.pending_channel_change_label"
       )}:
       <b>${otbr.channel}</b> → <b>${pending.pending_channel}</b>
-      — ${this.hass.localize(
-        "ui.panel.config.thread.pending_channel_change_migration_in"
-      )} ${formattedTime}
+      <span aria-hidden="true">
+        —
+        ${this.hass.localize(
+          "ui.panel.config.thread.pending_channel_change_cutover_in"
+        )}
+        ${formattedTime}
+      </span>
       <ha-button
         slot="action"
         .extendedAddress=${extAddr}
@@ -736,6 +740,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   private async _refreshPendingDatasets() {
     if (!this._otbrInfo) {
+      this._pendingDatasets = {};
+      this._clearTimers();
       return;
     }
     const newPending: Record<string, OTBRPendingDataset> = {};
@@ -772,20 +778,24 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   private _tickCountdown() {
     const updated: Record<string, OTBRPendingDataset> = {};
     let changed = false;
+    let needsRefresh = false;
 
     for (const [extAddr, pending] of Object.entries(this._pendingDatasets)) {
       const newDelay = pending.pending_dataset_delay - 1;
       if (newDelay <= 0) {
         changed = true;
+        needsRefresh = true;
         this._completedMigrations = {
           ...this._completedMigrations,
           [extAddr]: true,
         };
         setTimeout(() => {
+          if (!this.isConnected) {
+            return;
+          }
           const { [extAddr]: _, ...rest } = this._completedMigrations;
           this._completedMigrations = rest;
         }, 5000);
-        this._refresh();
       } else {
         updated[extAddr] = { ...pending, pending_dataset_delay: newDelay };
         if (newDelay !== pending.pending_dataset_delay) {
@@ -799,6 +809,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       this._updateTimers();
     } else {
       this._pendingDatasets = updated;
+    }
+
+    if (needsRefresh) {
+      this._refresh();
     }
   }
 
@@ -819,7 +833,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       await OTBRDeletePendingDataset(this.hass, extAddr);
     } catch (err: any) {
       showAlertDialog(this, {
-        title: "Error",
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
         text: err.message || err,
       });
       return;

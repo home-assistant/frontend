@@ -7027,7 +7027,7 @@
           "change_channel_multiprotocol_enabled_title": "The Thread adapter has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "pending_channel_change_label": "Pending channel change",
-          "pending_channel_change_migration_in": "migration in",
+          "pending_channel_change_cutover_in": "cutover in",
           "pending_channel_change_cancel": "Cancel",
           "pending_channel_change_complete": "Channel change complete",
           "pending_channel_change_minutes": "{minutes} min {seconds} sec",
