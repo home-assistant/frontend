@@ -165,7 +165,6 @@ export interface DataEntryFlowDialogParams {
   dialogClosedCallback?: (params: {
     flowFinished: boolean;
     entryId?: string;
-    issueId?: string;
   }) => void;
   flowConfig: FlowConfig;
   showAdvanced?: boolean;

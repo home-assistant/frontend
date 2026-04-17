@@ -177,7 +177,6 @@ class DataEntryFlowDialog extends LitElement {
         flowFinished,
         entryId:
           "result" in this._step ? this._step.result?.entry_id : undefined,
-        issueId: "issue" in this._step ? this._step.issue?.issue_id : undefined,
       });
     }
 
