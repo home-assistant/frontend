@@ -48,6 +48,16 @@ export class HaGauge extends LitElement {
 
   private _sortedLevels?: LevelDefinition[];
 
+  private _rescaleOnConnect = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._rescaleOnConnect) {
+      this._rescaleSvg();
+      this._rescaleOnConnect = false;
+    }
+  }
+
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     afterNextRender(() => {
@@ -212,6 +222,13 @@ export class HaGauge extends LitElement {
     // Set the viewbox of the SVG containing the value to perfectly
     // fit the text
     // That way it will auto-scale correctly
+
+    if (!this.isConnected) {
+      // Retry this later if we're disconnected, otherwise we get a 0 bbox and missing label
+      this._rescaleOnConnect = true;
+      return;
+    }
+
     const svgRoot = this.shadowRoot!.querySelector(".text")!;
     const box = svgRoot.querySelector("text")!.getBBox()!;
     svgRoot.setAttribute(
