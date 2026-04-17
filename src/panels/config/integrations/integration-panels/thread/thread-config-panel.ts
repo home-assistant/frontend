@@ -688,7 +688,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const extAddr = otbr.extended_address;
 
     if (this._completedMigrations[extAddr]) {
-      return html`<ha-alert alert-type="success">
+      return html`<ha-alert class="pending-alert" alert-type="success">
         ${this.hass.localize(
           "ui.panel.config.thread.pending_channel_change_complete"
         )}
@@ -714,11 +714,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             { seconds }
           );
 
-    return html`<ha-alert alert-type="info">
+    return html`<ha-alert class="pending-alert" alert-type="info">
       ${this.hass.localize(
-        "ui.panel.config.thread.pending_channel_change",
-        { channel: pending.pending_channel, time: formattedTime }
-      )}
+        "ui.panel.config.thread.pending_channel_change_label"
+      )}:
+      <b>${otbr.channel}</b> → <b>${pending.pending_channel}</b>
+      — ${this.hass.localize(
+        "ui.panel.config.thread.pending_channel_change_migration_in"
+      )} ${formattedTime}
       <ha-button
         slot="action"
         .extendedAddress=${extAddr}
@@ -928,6 +931,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       .card-header {
         display: flex;
         justify-content: space-between;
+      }
+
+      .pending-alert {
+        margin: var(--ha-space-2) var(--ha-space-4);
       }
 
       .send-to-phone-description {
