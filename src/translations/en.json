@@ -1436,7 +1436,16 @@
         "views": "Views",
         "area_settings": "{area} - Settings",
         "apps": "[%key:panel::apps%]",
-        "other_routes": "Other routes"
+        "other_routes": "Other routes",
+        "route": {
+          "automations": "[%key:ui::panel::config::automation::caption%]",
+          "scenes": "[%key:ui::panel::config::scene::caption%]",
+          "scripts": "[%key:ui::panel::config::script::caption%]",
+          "developer_tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+          "integrations": "[%key:ui::panel::config::integrations::caption%]",
+          "devices": "[%key:ui::panel::config::devices::caption%]",
+          "entities": "[%key:ui::panel::config::entities::caption%]"
+        }
       }
     },
     "dialogs": {
@@ -8887,7 +8896,9 @@
               "background_enabled_helper": "Display a colored background behind the section",
               "background_color": "Color",
               "background_color_default": "Default",
-              "background_opacity": "Opacity"
+              "background_opacity": "Opacity",
+              "theme": "Theme",
+              "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
