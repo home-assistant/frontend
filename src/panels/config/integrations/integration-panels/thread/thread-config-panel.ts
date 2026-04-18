@@ -82,10 +82,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _pendingChanges: Record<string, PendingChannelChange> = {};
 
-  @state() private _completedMigrations: Record<string, boolean> = {};
-
-  private _syncInterval?: ReturnType<typeof setInterval>;
-
   private _completionTimeouts: Record<string, ReturnType<typeof setTimeout>> =
     {};
 
@@ -434,11 +430,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   public override disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearSync();
-    for (const timeout of Object.values(this._completionTimeouts)) {
-      clearTimeout(timeout);
-    }
-    this._completionTimeouts = {};
+    this._clearCompletionTimeouts();
   }
 
   hassSubscribe() {
@@ -694,14 +686,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
     const extAddr = otbr.extended_address;
 
-    if (this._completedMigrations[extAddr]) {
-      return html`<ha-alert class="pending-alert" alert-type="success">
-        ${this.hass.localize(
-          "ui.panel.config.thread.pending_channel_change_complete"
-        )}
-      </ha-alert>`;
-    }
-
     const pending = this._pendingChanges[extAddr];
     if (!pending) {
       return nothing;
@@ -734,9 +718,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   private async _refreshPendingDatasets() {
     if (!this._otbrInfo) {
       this._pendingChanges = {};
-      this._clearSync();
       return;
     }
+    this._clearCompletionTimeouts();
     const newPending: Record<string, PendingChannelChange> = {};
     const now = Date.now();
     const promises = Object.keys(this._otbrInfo).map(async (extAddr) => {
@@ -754,68 +738,25 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
     await Promise.all(promises);
     this._pendingChanges = newPending;
-    this._scheduleCompletionChecks();
-    this._startSync();
+
+    for (const [extAddr, pending] of Object.entries(this._pendingChanges)) {
+      const remaining = pending.end_time.getTime() - Date.now();
+      this._completionTimeouts[extAddr] = setTimeout(
+        () => {
+          if (this.isConnected) {
+            this._refresh();
+          }
+        },
+        Math.max(0, remaining)
+      );
+    }
   }
 
-  private _scheduleCompletionChecks() {
-    // Clear existing completion timeouts
+  private _clearCompletionTimeouts() {
     for (const timeout of Object.values(this._completionTimeouts)) {
       clearTimeout(timeout);
     }
     this._completionTimeouts = {};
-
-    const now = Date.now();
-    for (const [extAddr, pending] of Object.entries(this._pendingChanges)) {
-      const remaining = pending.end_time.getTime() - now;
-      if (remaining <= 0) {
-        this._handleCompletion(extAddr);
-      } else {
-        this._completionTimeouts[extAddr] = setTimeout(() => {
-          this._handleCompletion(extAddr);
-        }, remaining);
-      }
-    }
-  }
-
-  private _handleCompletion(extAddr: string) {
-    if (!this.isConnected) {
-      return;
-    }
-    const { [extAddr]: _, ...rest } = this._pendingChanges;
-    this._pendingChanges = rest;
-    this._completedMigrations = {
-      ...this._completedMigrations,
-      [extAddr]: true,
-    };
-    setTimeout(() => {
-      if (!this.isConnected) {
-        return;
-      }
-      const { [extAddr]: __, ...remaining } = this._completedMigrations;
-      this._completedMigrations = remaining;
-    }, 5000);
-    this._refresh();
-  }
-
-  private _startSync() {
-    if (Object.keys(this._pendingChanges).length > 0 && !this._syncInterval) {
-      this._syncInterval = setInterval(() => {
-        this._refreshPendingDatasets();
-      }, 30_000);
-    } else if (
-      Object.keys(this._pendingChanges).length === 0 &&
-      this._syncInterval
-    ) {
-      this._clearSync();
-    }
-  }
-
-  private _clearSync() {
-    if (this._syncInterval) {
-      clearInterval(this._syncInterval);
-      this._syncInterval = undefined;
-    }
   }
 
   private async _cancelChannelChange(ev: Event) {
@@ -835,7 +776,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
     const { [extAddr]: _, ...rest } = this._pendingChanges;
     this._pendingChanges = rest;
-    this._startSync();
   }
 
   private async _changeChannel(otbr: OTBRInfo) {
