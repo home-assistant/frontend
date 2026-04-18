@@ -52,7 +52,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
-import "../../../../../panels/lovelace/components/hui-timestamp-display";
+import "../../../../lovelace/components/hui-timestamp-display";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 
 interface PendingChannelChange {
