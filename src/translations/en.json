@@ -10164,6 +10164,7 @@
               "group_by_area": "Group by area",
               "max_devices": "Maximum devices per parent",
               "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. The limit applies per upstream device, not per floor or area. Defaults to 20.",
+              "show_values": "Show values",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
