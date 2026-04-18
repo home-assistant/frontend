@@ -20,11 +20,7 @@ import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdow
 import "../../../../../components/ha-dropdown-item";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
-import type {
-  OTBRInfo,
-  OTBRInfoDict,
-  OTBRPendingDataset,
-} from "../../../../../data/otbr";
+import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateNetwork,
   OTBRDeletePendingDataset,
@@ -56,7 +52,13 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
+import "../../../../../panels/lovelace/components/hui-timestamp-display";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+
+interface PendingChannelChange {
+  pending_channel: number;
+  end_time: Date;
+}
 
 export interface ThreadNetwork {
   name: string;
@@ -78,13 +80,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _otbrInfo?: OTBRInfoDict;
 
-  @state() private _pendingDatasets: Record<string, OTBRPendingDataset> = {};
+  @state() private _pendingChanges: Record<string, PendingChannelChange> = {};
 
   @state() private _completedMigrations: Record<string, boolean> = {};
 
-  private _countdownInterval?: ReturnType<typeof setInterval>;
-
   private _syncInterval?: ReturnType<typeof setInterval>;
+
+  private _completionTimeouts: Record<string, ReturnType<typeof setTimeout>> =
+    {};
 
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
@@ -431,7 +434,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   public override disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearTimers();
+    this._clearSync();
+    for (const timeout of Object.values(this._completionTimeouts)) {
+      clearTimeout(timeout);
+    }
+    this._completionTimeouts = {};
   }
 
   hassSubscribe() {
@@ -695,37 +702,23 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       </ha-alert>`;
     }
 
-    const pending = this._pendingDatasets[extAddr];
+    const pending = this._pendingChanges[extAddr];
     if (!pending) {
       return nothing;
     }
-
-    const totalSeconds = Math.max(0, Math.floor(pending.pending_dataset_delay));
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const formattedTime =
-      minutes > 0
-        ? this.hass.localize(
-            "ui.panel.config.thread.pending_channel_change_minutes",
-            { minutes, seconds }
-          )
-        : this.hass.localize(
-            "ui.panel.config.thread.pending_channel_change_seconds",
-            { seconds }
-          );
 
     return html`<ha-alert class="pending-alert" alert-type="info">
       ${this.hass.localize(
         "ui.panel.config.thread.pending_channel_change_label"
       )}:
       <b>${otbr.channel}</b> → <b>${pending.pending_channel}</b>
-      <span aria-hidden="true">
-        —
-        ${this.hass.localize(
-          "ui.panel.config.thread.pending_channel_change_cutover_in"
-        )}
-        ${formattedTime}
-      </span>
+      —
+      <hui-timestamp-display
+        .hass=${this.hass}
+        .ts=${pending.end_time}
+        format="relative"
+        capitalize
+      ></hui-timestamp-display>
       <ha-button
         slot="action"
         .extendedAddress=${extAddr}
@@ -740,87 +733,85 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   private async _refreshPendingDatasets() {
     if (!this._otbrInfo) {
-      this._pendingDatasets = {};
-      this._clearTimers();
+      this._pendingChanges = {};
+      this._clearSync();
       return;
     }
-    const newPending: Record<string, OTBRPendingDataset> = {};
+    const newPending: Record<string, PendingChannelChange> = {};
+    const now = Date.now();
     const promises = Object.keys(this._otbrInfo).map(async (extAddr) => {
       try {
         const result = await OTBRGetPendingDataset(this.hass, extAddr);
         if (result) {
-          newPending[extAddr] = result;
+          newPending[extAddr] = {
+            pending_channel: result.pending_channel,
+            end_time: new Date(now + result.pending_dataset_delay * 1000),
+          };
         }
       } catch (_err) {
         // Ignore errors fetching pending dataset
       }
     });
     await Promise.all(promises);
-    this._pendingDatasets = newPending;
-    this._updateTimers();
+    this._pendingChanges = newPending;
+    this._scheduleCompletionChecks();
+    this._startSync();
   }
 
-  private _updateTimers() {
-    const hasPending = Object.keys(this._pendingDatasets).length > 0;
+  private _scheduleCompletionChecks() {
+    // Clear existing completion timeouts
+    for (const timeout of Object.values(this._completionTimeouts)) {
+      clearTimeout(timeout);
+    }
+    this._completionTimeouts = {};
 
-    if (hasPending && !this._countdownInterval) {
-      this._countdownInterval = setInterval(() => {
-        this._tickCountdown();
-      }, 1000);
+    const now = Date.now();
+    for (const [extAddr, pending] of Object.entries(this._pendingChanges)) {
+      const remaining = pending.end_time.getTime() - now;
+      if (remaining <= 0) {
+        this._handleCompletion(extAddr);
+      } else {
+        this._completionTimeouts[extAddr] = setTimeout(() => {
+          this._handleCompletion(extAddr);
+        }, remaining);
+      }
+    }
+  }
+
+  private _handleCompletion(extAddr: string) {
+    if (!this.isConnected) {
+      return;
+    }
+    const { [extAddr]: _, ...rest } = this._pendingChanges;
+    this._pendingChanges = rest;
+    this._completedMigrations = {
+      ...this._completedMigrations,
+      [extAddr]: true,
+    };
+    setTimeout(() => {
+      if (!this.isConnected) {
+        return;
+      }
+      const { [extAddr]: __, ...remaining } = this._completedMigrations;
+      this._completedMigrations = remaining;
+    }, 5000);
+    this._refresh();
+  }
+
+  private _startSync() {
+    if (Object.keys(this._pendingChanges).length > 0 && !this._syncInterval) {
       this._syncInterval = setInterval(() => {
         this._refreshPendingDatasets();
       }, 30_000);
-    } else if (!hasPending && this._countdownInterval) {
-      this._clearTimers();
+    } else if (
+      Object.keys(this._pendingChanges).length === 0 &&
+      this._syncInterval
+    ) {
+      this._clearSync();
     }
   }
 
-  private _tickCountdown() {
-    const updated: Record<string, OTBRPendingDataset> = {};
-    let changed = false;
-    let needsRefresh = false;
-
-    for (const [extAddr, pending] of Object.entries(this._pendingDatasets)) {
-      const newDelay = pending.pending_dataset_delay - 1;
-      if (newDelay <= 0) {
-        changed = true;
-        needsRefresh = true;
-        this._completedMigrations = {
-          ...this._completedMigrations,
-          [extAddr]: true,
-        };
-        setTimeout(() => {
-          if (!this.isConnected) {
-            return;
-          }
-          const { [extAddr]: _, ...rest } = this._completedMigrations;
-          this._completedMigrations = rest;
-        }, 5000);
-      } else {
-        updated[extAddr] = { ...pending, pending_dataset_delay: newDelay };
-        if (newDelay !== pending.pending_dataset_delay) {
-          changed = true;
-        }
-      }
-    }
-
-    if (changed) {
-      this._pendingDatasets = updated;
-      this._updateTimers();
-    } else {
-      this._pendingDatasets = updated;
-    }
-
-    if (needsRefresh) {
-      this._refresh();
-    }
-  }
-
-  private _clearTimers() {
-    if (this._countdownInterval) {
-      clearInterval(this._countdownInterval);
-      this._countdownInterval = undefined;
-    }
+  private _clearSync() {
     if (this._syncInterval) {
       clearInterval(this._syncInterval);
       this._syncInterval = undefined;
@@ -838,9 +829,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const { [extAddr]: _, ...rest } = this._pendingDatasets;
-    this._pendingDatasets = rest;
-    this._updateTimers();
+    if (this._completionTimeouts[extAddr]) {
+      clearTimeout(this._completionTimeouts[extAddr]);
+      delete this._completionTimeouts[extAddr];
+    }
+    const { [extAddr]: _, ...rest } = this._pendingChanges;
+    this._pendingChanges = rest;
+    this._startSync();
   }
 
   private async _changeChannel(otbr: OTBRInfo) {
