@@ -222,7 +222,7 @@
     "@material/mwc-list@^0.27.0": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "glob@^10.2.2": "^10.5.0"
   },
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.14.0",
   "volta": {
     "node": "24.15.0"
   }
