@@ -34,6 +34,7 @@ import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   computeStatMidpoint,
+  computeUntrackedConsumption,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
@@ -412,11 +413,17 @@ export class HuiEnergyDevicesDetailGraphCard
       (period === "hour" || period === "5minute") && sortedTimes.length >= 2
         ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
         : 0;
+    const untrackedValues = computeUntrackedConsumption(
+      consumptionData.used_total,
+      totalDeviceConsumption
+    );
     sortedTimes.forEach((time) => {
       const ts = Number(time);
-      const value =
-        consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint: EnergyDataPoint = [ts + periodOffset, value, ts];
+      const dataPoint: EnergyDataPoint = [
+        ts + periodOffset,
+        untrackedValues[ts],
+        ts,
+      ];
       if (compare) {
         dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
       }

@@ -2,6 +2,7 @@ import { assert, describe, it } from "vitest";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 
 import {
+  computeUntrackedConsumption,
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   getCompareTransform,
@@ -531,5 +532,68 @@ describe("getCompareTransform", () => {
     // Should shift by 3 months
     assert.equal(result.getMonth(), 5); // June
     assert.equal(result.getDate(), 20);
+  });
+});
+
+describe("computeUntrackedConsumption", () => {
+  it("returns positive untracked when grid exceeds devices", () => {
+    const usedTotal = { 1000: 5, 2000: 3 };
+    const deviceTotal = { 1000: 2, 2000: 1 };
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(result, { 1000: 3, 2000: 2 });
+  });
+
+  it("clamps negative untracked to zero", () => {
+    // Device sensors report more than the integer grid meter
+    const usedTotal = { 1000: 0, 2000: 1 };
+    const deviceTotal = { 1000: 0.3, 2000: 1.7 };
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result[1000], 0);
+    assert.equal(result[2000], 0);
+  });
+
+  it("returns zero when grid equals devices", () => {
+    const usedTotal = { 1000: 2.5 };
+    const deviceTotal = { 1000: 2.5 };
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result[1000], 0);
+  });
+
+  it("returns full grid value when no device data exists for timestamp", () => {
+    const usedTotal = { 1000: 4 };
+    const deviceTotal = {};
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result[1000], 4);
+  });
+
+  it("ignores device timestamps not present in usedTotal", () => {
+    const usedTotal = { 1000: 2 };
+    const deviceTotal = { 1000: 1, 9999: 5 };
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(result, { 1000: 1 });
+  });
+
+  it("handles mixed positive and negative across timestamps", () => {
+    const usedTotal = { 1000: 0, 2000: 3, 3000: 1 };
+    const deviceTotal = { 1000: 0.5, 2000: 1, 3000: 2 };
+    const result = computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result[1000], 0); // clamped
+    assert.equal(result[2000], 2); // positive
+    assert.equal(result[3000], 0); // clamped
+  });
+
+  it("returns empty object for empty inputs", () => {
+    const result = computeUntrackedConsumption({}, {});
+    assert.deepEqual(result, {});
+  });
+
+  it("does not mutate input objects", () => {
+    const usedTotal = { 1000: 5 };
+    const deviceTotal = { 1000: 2 };
+    const usedCopy = { ...usedTotal };
+    const deviceCopy = { ...deviceTotal };
+    computeUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(usedTotal, usedCopy);
+    assert.deepEqual(deviceTotal, deviceCopy);
   });
 });

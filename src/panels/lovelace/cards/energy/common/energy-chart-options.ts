@@ -347,6 +347,26 @@ export function computeStatMidpoint(
   return (start + end) / 2;
 }
 
+/**
+ * Compute untracked energy consumption per timestamp.
+ *
+ * For each timestamp in `usedTotal`, subtracts the sum of tracked device
+ * consumption and clamps the result to zero. Negative untracked values are
+ * physically impossible — they arise from meter resolution mismatches
+ * (e.g., integer grid meter vs fractional device sensors).
+ */
+export function computeUntrackedConsumption(
+  usedTotal: Record<number, number>,
+  totalDeviceConsumption: Record<number, number>
+): Record<number, number> {
+  const result: Record<number, number> = {};
+  for (const time of Object.keys(usedTotal)) {
+    const ts = Number(time);
+    result[ts] = Math.max(0, usedTotal[ts] - (totalDeviceConsumption[ts] || 0));
+  }
+  return result;
+}
+
 export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;
