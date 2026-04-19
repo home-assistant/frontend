@@ -334,6 +334,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           },
         } satisfies HomeSummaryCard),
       hasMaintenance &&
+        !hiddenSummaries.has("maintenance") &&
         ({
           type: "home-summary",
           summary: "maintenance",
