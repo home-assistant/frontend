@@ -77,12 +77,9 @@ class HuiDailyForecastCardFeature
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state()
-  @consume<any>({ context: statesContext, subscribe: true })
-  @transform({
-    transformer: function (
-      this: HuiDailyForecastCardFeature,
-      states: HassEntities
-    ) {
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntity | undefined>({
+    transformer: function (this: HuiDailyForecastCardFeature, states) {
       return this.context?.entity_id
         ? states?.[this.context.entity_id]
         : undefined;
