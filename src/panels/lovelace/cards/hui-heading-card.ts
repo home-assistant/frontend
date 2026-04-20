@@ -126,9 +126,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   private _measureBadgesOverflow() {
     const badges = this._badges;
-    const overflowing = Boolean(
-      badges && badges.scrollWidth > badges.clientWidth + 1
-    );
+    if (!badges) {
+      this._badgesOverflowing = false;
+      return;
+    }
+
+    // `.overflowing` pseudo-elements inflate `scrollWidth`, subtract to keep the check symmetric.
+    const padding = this._badgesOverflowing
+      ? parseFloat(getComputedStyle(badges).getPropertyValue("--ha-space-4")) ||
+        0
+      : 0;
+    const overflowing = badges.scrollWidth - padding > badges.clientWidth + 1;
 
     if (overflowing !== this._badgesOverflowing) {
       this._badgesOverflowing = overflowing;
@@ -230,16 +238,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transform: translateX(calc(4px * var(--scale-direction)));
     }
     .container .content {
-      flex: 1 1 0;
-      min-width: var(--ha-heading-card-title-min-width, 150px);
+      flex: 0 1 max-content;
+      min-width: 0;
     }
-    @media (max-width: 600px) {
-      .container .content {
-        min-width: var(--ha-heading-card-title-min-width-mobile, 120px);
-      }
-    }
-    .container .content:not(:has(p)) {
-      min-width: fit-content;
+    .container .content:not(:only-child) {
+      flex: 1 0 var(--ha-heading-card-title-min-width, 150px);
+      max-width: max-content;
+      min-width: 0;
     }
     .content {
       display: flex;
