@@ -17,11 +17,11 @@ export class HaTooltip extends Tooltip {
       css`
         :host {
           --wa-tooltip-background-color: var(
-            --ha-color-surface-default,
-            var(--secondary-background-color)
+            --ha-tooltip-background-color,
+            var(--card-background-color)
           );
           --wa-tooltip-content-color: var(
-            --ha-color-text-primary,
+            --ha-tooltip-text-color,
             var(--primary-text-color)
           );
           --wa-tooltip-font-family: var(
