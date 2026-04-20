@@ -282,6 +282,7 @@ class HuiDailyForecastCardFeature
           y2=${yFor(currentTemp)}
           stroke="var(--feature-color)"
           stroke-width="1"
+          stroke-opacity="0.5"
           vector-effect="non-scaling-stroke"
         ></line>`
       : nothing;
