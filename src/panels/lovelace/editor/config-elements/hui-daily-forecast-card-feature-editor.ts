@@ -9,7 +9,10 @@ import type {
 } from "../../../../components/ha-form/types";
 import { getSupportedForecastTypes } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
-import { DEFAULT_DAYS_TO_SHOW } from "../../card-features/hui-daily-forecast-card-feature";
+import {
+  DEFAULT_DAYS_TO_SHOW,
+  resolveDailyForecastType,
+} from "../../card-features/hui-daily-forecast-card-feature";
 import type {
   DailyForecastCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -84,13 +87,14 @@ export class HuiDailyForecastCardFeatureEditor
     const supportsDaily = supportedTypes.includes("daily");
     const supportsTwiceDaily = supportedTypes.includes("twice_daily");
 
-    const resolvedType = this._config.forecast_type
-      ? this._config.forecast_type
-      : supportsDaily
-        ? "daily"
-        : supportsTwiceDaily
-          ? "twice_daily"
-          : "daily";
+    const resolvedType =
+      (this.context?.entity_id &&
+        resolveDailyForecastType(
+          this.hass,
+          this.context.entity_id,
+          this._config.forecast_type
+        )) ||
+      "daily";
 
     const data: DailyForecastCardFeatureConfig = {
       ...this._config,

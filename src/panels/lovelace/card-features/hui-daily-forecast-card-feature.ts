@@ -19,7 +19,7 @@ export const DEFAULT_DAYS_TO_SHOW = 7;
 
 const MAX_BAR_WIDTH = 12;
 
-type DailyForecastType = "daily" | "twice_daily";
+export type DailyForecastType = "daily" | "twice_daily";
 
 export const supportsDailyForecastCardFeature = (
   hass: HomeAssistant,
@@ -37,7 +37,7 @@ export const supportsDailyForecastCardFeature = (
   );
 };
 
-const resolveForecastType = (
+export const resolveDailyForecastType = (
   hass: HomeAssistant,
   entityId: string,
   configured?: DailyForecastType
@@ -64,10 +64,21 @@ class HuiDailyForecastCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false, hasChanged: () => false })
-  public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size > 1 || !changedProps.has("hass")) {
+      return true;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const entityId = this.context?.entity_id;
+    if (!oldHass || !entityId) {
+      return true;
+    }
+    return oldHass.states[entityId] !== this.hass?.states[entityId];
+  }
 
   @state() private _config?: DailyForecastCardFeatureConfig;
 
@@ -131,7 +142,7 @@ class HuiDailyForecastCardFeature
 
   private _resolvedForecastType(): DailyForecastType | undefined {
     if (!this.hass || !this.context?.entity_id) return undefined;
-    return resolveForecastType(
+    return resolveDailyForecastType(
       this.hass,
       this.context.entity_id,
       this._config?.forecast_type
