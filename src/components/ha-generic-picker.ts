@@ -308,6 +308,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _dialogOpened = () => {
     this._opened = true;
+    fireEvent(this, "picker-opened");
     requestAnimationFrame(() => {
       // Set initial field value if needed
       if (this._initialFieldValue) {
@@ -481,5 +482,6 @@ declare global {
 
   interface HASSDomEvents {
     "picker-closed": undefined;
+    "picker-opened": undefined;
   }
 }

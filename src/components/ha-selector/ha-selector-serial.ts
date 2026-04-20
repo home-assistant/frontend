@@ -42,12 +42,9 @@ export class HaSerialSelector extends LitElement {
 
   private _refreshTimeout?: number;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._maybeStartRefresh();
-    }
-  }
+  private _pickerOpen = false;
+
+  private _loadInFlight = false;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -55,17 +52,17 @@ export class HaSerialSelector extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this._maybeStartRefresh();
-  }
-
-  private _maybeStartRefresh(): void {
-    if (
-      this.hass &&
-      this.hass.user?.is_admin &&
-      isComponentLoaded(this.hass.config, "usb")
-    ) {
+    if (this._canLoadPorts()) {
       this._loadSerialPorts();
     }
+  }
+
+  private _canLoadPorts(): boolean {
+    return Boolean(
+      this.hass &&
+        this.hass.user?.is_admin &&
+        isComponentLoaded(this.hass.config, "usb")
+    );
   }
 
   private _stopRefresh(): void {
@@ -76,20 +73,42 @@ export class HaSerialSelector extends LitElement {
   }
 
   private async _loadSerialPorts(): Promise<void> {
+    if (this._loadInFlight) {
+      return;
+    }
+    this._loadInFlight = true;
     try {
       this._serialPorts = await listSerialPorts(this.hass);
     } catch (err: unknown) {
       // eslint-disable-next-line no-console
       console.error(err);
       this._serialPorts = undefined;
+    } finally {
+      this._loadInFlight = false;
     }
-    if (this.isConnected) {
+    if (this._pickerOpen && this.isConnected) {
       this._refreshTimeout = window.setTimeout(
         () => this._loadSerialPorts(),
         SERIAL_PORTS_REFRESH_INTERVAL
       );
     }
   }
+
+  private _handlePickerOpened = () => {
+    this._pickerOpen = true;
+    if (
+      this._refreshTimeout === undefined &&
+      !this._loadInFlight &&
+      this._canLoadPorts()
+    ) {
+      this._loadSerialPorts();
+    }
+  };
+
+  private _handlePickerClosed = () => {
+    this._pickerOpen = false;
+    this._stopRefresh();
+  };
 
   private _humanReadablePort(port: SerialPort): string {
     const parts: string[] = [port.device];
@@ -173,6 +192,8 @@ export class HaSerialSelector extends LitElement {
         .required=${this.required}
         .getItems=${this._getPickerItems}
         @value-changed=${this._handlePickerChange}
+        @picker-opened=${this._handlePickerOpened}
+        @picker-closed=${this._handlePickerClosed}
       ></ha-generic-picker>
     `;
   }
