@@ -210,6 +210,8 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     ) {
       addLayoutElement = true;
       this._createLayoutElement(this._config);
+    } else {
+      this._layoutElement.setConfig(sectionConfig);
     }
 
     this._createCards(sectionConfig);
