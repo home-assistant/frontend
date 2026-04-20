@@ -454,8 +454,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     if (!this.hass.user?.is_admin) {
       return nothing;
     }
-    const isSelected =
-      selectedPanel === "config" || this.route.path?.startsWith("/hassio/");
+    const isSelected = selectedPanel === "config";
     return html`
       <ha-md-list-item
         class="configuration ${classMap({ selected: isSelected })}"
