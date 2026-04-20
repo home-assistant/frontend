@@ -321,6 +321,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                     : undefined
                 )
           );
+
       return html`<ha-section-title
           >${this._i18n.localize(
             "ui.panel.config.automation.editor.home"
@@ -868,7 +869,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     this._floorAreas.forEach((floor) => {
       this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
-        open: false,
+        // auto expand if only one floor is present
+        open: this._floorAreas.length === 1,
         areas: {},
       };
 
