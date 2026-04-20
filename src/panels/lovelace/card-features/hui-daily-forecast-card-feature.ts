@@ -1,11 +1,18 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
+import type {
+  HassEntities,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-spinner";
+import { statesContext } from "../../../data/context";
 import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
 import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
@@ -64,21 +71,24 @@ class HuiDailyForecastCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size > 1 || !changedProps.has("hass")) {
-      return true;
-    }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const entityId = this.context?.entity_id;
-    if (!oldHass || !entityId) {
-      return true;
-    }
-    return oldHass.states[entityId] !== this.hass?.states[entityId];
-  }
+  @state()
+  @consume<any>({ context: statesContext, subscribe: true })
+  @transform({
+    transformer: function (
+      this: HuiDailyForecastCardFeature,
+      states: HassEntities
+    ) {
+      return this.context?.entity_id
+        ? states?.[this.context.entity_id]
+        : undefined;
+    },
+    watch: ["context"],
+  })
+  private _stateObj?: HassEntity;
 
   @state() private _config?: DailyForecastCardFeatureConfig;
 
@@ -208,8 +218,7 @@ class HuiDailyForecastCardFeature
     const slotWidth = width / entries.length;
     const barWidth = Math.max(1, Math.min(MAX_BAR_WIDTH, slotWidth - minGap));
 
-    const stateObj = this.hass!.states[this.context!.entity_id!];
-    const currentTemp = Number(stateObj?.attributes?.temperature);
+    const currentTemp = Number(this._stateObj?.attributes?.temperature);
     const hasCurrentTemp = currentTemp != null && !Number.isNaN(currentTemp);
 
     let tempMin = Infinity;
