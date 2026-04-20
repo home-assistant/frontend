@@ -14,6 +14,8 @@ import "../input/ha-input";
 
 const MANUAL_ENTRY_ID = "__manual_entry__";
 
+const SERIAL_PORTS_REFRESH_INTERVAL = 5000;
+
 @customElement("ha-selector-serial")
 export class HaSerialSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -38,13 +40,38 @@ export class HaSerialSelector extends LitElement {
 
   @query("ha-input") private _input?: HTMLElement;
 
+  private _refreshTimeout?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._maybeStartRefresh();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopRefresh();
+  }
+
   protected firstUpdated(): void {
+    this._maybeStartRefresh();
+  }
+
+  private _maybeStartRefresh(): void {
     if (
       this.hass &&
       this.hass.user?.is_admin &&
       isComponentLoaded(this.hass.config, "usb")
     ) {
       this._loadSerialPorts();
+    }
+  }
+
+  private _stopRefresh(): void {
+    if (this._refreshTimeout !== undefined) {
+      clearTimeout(this._refreshTimeout);
+      this._refreshTimeout = undefined;
     }
   }
 
@@ -55,6 +82,12 @@ export class HaSerialSelector extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._serialPorts = undefined;
+    }
+    if (this.isConnected) {
+      this._refreshTimeout = window.setTimeout(
+        () => this._loadSerialPorts(),
+        SERIAL_PORTS_REFRESH_INTERVAL
+      );
     }
   }
 
