@@ -15,10 +15,8 @@ import type {
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../types";
 import type { ValveEntity } from "../../../../data/valve";
-import {
-  DEFAULT_VALVE_FAVORITE_POSITIONS,
-  normalizeValveFavoritePositions,
-} from "../../../../data/valve";
+import { DEFAULT_VALVE_FAVORITE_POSITIONS } from "../../../../data/valve";
+import { normalizeFavoritePositions } from "../../../../data/favorite_positions";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -55,7 +53,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       this.entry &&
       this.stateObj
     ) {
-      this._favoritePositions = normalizeValveFavoritePositions(
+      this._favoritePositions = normalizeFavoritePositions(
         this.entry.options?.valve?.favorite_positions ??
           DEFAULT_VALVE_FAVORITE_POSITIONS
       );
@@ -105,7 +103,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
   }
 
   private async _setFavorites(favorites: number[]): Promise<void> {
-    const normalized = normalizeValveFavoritePositions(favorites);
+    const normalized = normalizeFavoritePositions(favorites);
     this._favoritePositions = normalized;
     await this._save(normalized);
   }

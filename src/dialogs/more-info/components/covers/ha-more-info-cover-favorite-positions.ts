@@ -11,8 +11,8 @@ import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsPosition,
   coverSupportsTiltPosition,
-  normalizeCoverFavoritePositions,
 } from "../../../../data/cover";
+import { normalizeFavoritePositions } from "../../../../data/favorite_positions";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity/entity_attributes";
 import type {
@@ -67,13 +67,13 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       const options = this.entry.options?.cover;
 
       this._favoritePositions = coverSupportsPosition(this.stateObj)
-        ? normalizeCoverFavoritePositions(
+        ? normalizeFavoritePositions(
             options?.favorite_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
           )
         : [];
 
       this._favoriteTiltPositions = coverSupportsTiltPosition(this.stateObj)
-        ? normalizeCoverFavoritePositions(
+        ? normalizeFavoritePositions(
             options?.favorite_tilt_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
           )
         : [];
@@ -142,7 +142,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     kind: FavoriteKind,
     favorites: number[]
   ): Promise<void> {
-    const normalized = normalizeCoverFavoritePositions(favorites);
+    const normalized = normalizeFavoritePositions(favorites);
 
     if (kind === "position") {
       this._favoritePositions = normalized;
