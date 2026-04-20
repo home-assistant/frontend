@@ -1,4 +1,4 @@
-import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
+import type { DurationFormat as FormatJSDurationFormat } from "@formatjs/intl-durationformat";
 import type {
   Auth,
   Connection,
@@ -77,7 +77,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Intl {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const DurationFormat: DurationFormatConstructor;
+    const DurationFormat: typeof FormatJSDurationFormat;
   }
 }
 
