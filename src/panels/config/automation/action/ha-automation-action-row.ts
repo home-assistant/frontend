@@ -248,10 +248,14 @@ export default class HaAutomationActionRow extends LitElement {
       "target" in
         (this.hass.services?.[computeDomain(action)]?.[
           computeObjectId(action)
-        ] || {});
+        ] || {}) &&
+      // special case for reload config entry as it has an optional target but mainly uses entry_id
+      ((this.action as ServiceAction).action !==
+        "homeassistant.reload_config_entry" ||
+        !(this.action as ServiceAction).data?.entry_id);
 
     const target = actionHasTarget
-      ? (this.action as ServiceAction).target
+      ? this._extractTargets(this.action as ServiceAction)
       : type === "device_id" && (this.action as DeviceAction).device_id
         ? { device_id: (this.action as DeviceAction).device_id }
         : undefined;
@@ -589,6 +593,18 @@ export default class HaAutomationActionRow extends LitElement {
           ></ha-automation-action-editor>`
         : nothing}
     `;
+  }
+
+  private _extractTargets(action: ServiceAction): HassServiceTarget {
+    if (action.target) {
+      return action.target;
+    }
+
+    // legacy support for entity_id
+    if (action.entity_id) {
+      return { entity_id: action.entity_id };
+    }
+    return {};
   }
 
   private _renderTargets = memoizeOne(
