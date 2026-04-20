@@ -189,7 +189,10 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
-  "daily-forecast": supportsDailyForecastCardFeature,
+  "daily-forecast": (hass, context) =>
+    supportsDailyForecastCardFeature(
+      context.entity_id ? hass.states[context.entity_id] : undefined
+    ),
   "date-set": supportsDateSetCardFeature,
   "fan-direction": supportsFanDirectionCardFeature,
   "fan-oscillate": supportsFanOscilatteCardFeature,

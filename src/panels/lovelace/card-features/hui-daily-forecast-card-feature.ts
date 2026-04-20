@@ -36,12 +36,8 @@ const MAX_BAR_WIDTH = 12;
 export type DailyForecastType = "daily" | "twice_daily";
 
 export const supportsDailyForecastCardFeature = (
-  hass: HomeAssistant,
-  context: LovelaceCardFeatureContext
+  stateObj: HassEntity | undefined
 ) => {
-  const stateObj = context.entity_id
-    ? hass.states[context.entity_id]
-    : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
@@ -52,11 +48,9 @@ export const supportsDailyForecastCardFeature = (
 };
 
 export const resolveDailyForecastType = (
-  hass: HomeAssistant,
-  entityId: string,
+  stateObj: HassEntity | undefined,
   configured?: DailyForecastType
 ): DailyForecastType | undefined => {
-  const stateObj = hass.states[entityId];
   if (!stateObj) return undefined;
   const supportsDaily = supportsFeature(
     stateObj,
@@ -165,10 +159,8 @@ class HuiDailyForecastCardFeature
   }
 
   private _resolvedForecastType(): DailyForecastType | undefined {
-    if (!this.hass || !this.context?.entity_id) return undefined;
     return resolveDailyForecastType(
-      this.hass,
-      this.context.entity_id,
+      this._stateObj,
       this._config?.forecast_type
     );
   }
@@ -178,7 +170,7 @@ class HuiDailyForecastCardFeature
       !this._config ||
       !this.hass ||
       !this.context ||
-      !supportsDailyForecastCardFeature(this.hass, this.context)
+      !supportsDailyForecastCardFeature(this._stateObj)
     ) {
       return nothing;
     }

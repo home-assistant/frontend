@@ -88,13 +88,7 @@ export class HuiDailyForecastCardFeatureEditor
     const supportsTwiceDaily = supportedTypes.includes("twice_daily");
 
     const resolvedType =
-      (this.context?.entity_id &&
-        resolveDailyForecastType(
-          this.hass,
-          this.context.entity_id,
-          this._config.forecast_type
-        )) ||
-      "daily";
+      resolveDailyForecastType(stateObj, this._config.forecast_type) || "daily";
 
     const data: DailyForecastCardFeatureConfig = {
       ...this._config,
