@@ -1,4 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -17,6 +18,8 @@ export interface LovelaceDashboardDetailsDialogParams {
    * auto-generated paths avoid collisions by appending -2, -3, and so on.
    */
   takenUrlPaths?: ReadonlySet<string>;
+  lovelaceConfig?: LovelaceConfig;
+  saveConfig?: (config: LovelaceConfig) => Promise<void>;
   createDashboard?: (values: LovelaceDashboardCreateParams) => Promise<unknown>;
   updateDashboard: (
     updates: Partial<LovelaceDashboardMutableParams>

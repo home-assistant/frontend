@@ -31,6 +31,10 @@ export interface LovelaceViewBackgroundConfig {
   attachment?: "scroll" | "fixed";
 }
 
+export type LovelaceDashboardBackgroundConfig =
+  | string
+  | LovelaceViewBackgroundConfig;
+
 export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
   layout?: "start" | "center" | "responsive";
@@ -60,7 +64,7 @@ export interface LovelaceBaseViewConfig {
   show_icon_and_title?: boolean;
   theme?: string;
   panel?: boolean;
-  background?: string | LovelaceViewBackgroundConfig;
+  background?: LovelaceDashboardBackgroundConfig;
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;
