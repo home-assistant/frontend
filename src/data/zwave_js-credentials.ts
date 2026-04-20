@@ -16,9 +16,10 @@ export interface ZwaveCredentialCapabilities {
   supported_credential_types: Record<string, ZwaveCredentialTypeCapability>;
 }
 
-export interface ZwaveCredentialRef {
+export interface ZwaveCredential {
   type: string;
   slot: number;
+  data: string | null;
 }
 
 export interface ZwaveUser {
@@ -27,7 +28,7 @@ export interface ZwaveUser {
   active: boolean;
   user_type: string;
   credential_rule: string | null;
-  credentials: ZwaveCredentialRef[];
+  credentials: ZwaveCredential[];
 }
 
 export interface ZwaveUsersResponse {

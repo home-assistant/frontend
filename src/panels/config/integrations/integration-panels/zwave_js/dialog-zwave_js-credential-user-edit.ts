@@ -25,7 +25,7 @@ import {
   setZwaveCredential,
   setZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
-import type { ZwaveCredentialRef } from "../../../../../data/zwave_js-credentials";
+import type { ZwaveCredential } from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -55,9 +55,13 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   @state() private _dataTouched = false;
 
-  @state() private _credentials: ZwaveCredentialRef[] = [];
+  @state() private _credentials: ZwaveCredential[] = [];
 
   @state() private _open = false;
+
+  private _initialUserName = "";
+
+  private _initialUserType = "";
 
   public async showDialog(
     params: ZwaveCredentialUserEditDialogParams
@@ -79,7 +83,16 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       this._credentials = [];
     }
 
+    this._initialUserName = this._userName;
+    this._initialUserType = this._userType;
     this._credentialType = this._enterableTypes[0] || "";
+  }
+
+  private get _isDirty(): boolean {
+    return (
+      this._userName !== this._initialUserName ||
+      this._userType !== this._initialUserType
+    );
   }
 
   private get _enterableTypes(): string[] {
@@ -231,28 +244,40 @@ class DialogZwaveCredentialUserEdit extends LitElement {
         </div>
 
         <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            slot="primaryAction"
-            @click=${this._save}
-            .disabled=${this._saving ||
-            (isNew && !hasEnterableType) ||
-            !this._canSave}
-          >
-            ${this._saving
-              ? html`<ha-spinner size="small"></ha-spinner>`
-              : isNew
-                ? this.hass.localize(
-                    "ui.panel.config.zwave_js.credentials.users.add"
-                  )
-                : this.hass.localize("ui.common.save")}
-          </ha-button>
+          ${isNew || this._isDirty
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._save}
+                  .disabled=${this._saving ||
+                  (isNew && !hasEnterableType) ||
+                  !this._canSave}
+                >
+                  ${this._saving
+                    ? html`<ha-spinner size="small"></ha-spinner>`
+                    : isNew
+                      ? this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.users.add"
+                        )
+                      : this.hass.localize("ui.common.save")}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="primaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
+              `}
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -351,7 +376,6 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       }
     }
     this._credentialData = value;
-    this._dataTouched = false;
   }
 
   private _handleCredentialBeforeInput(ev: InputEvent): void {
@@ -464,7 +488,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       return;
     }
     const credential = (ev.currentTarget as any)
-      .credential as ZwaveCredentialRef;
+      .credential as ZwaveCredential;
     showZwaveCredentialEditDialog(this, {
       device_id: this._params.device_id,
       capabilities: this._params.capabilities,
@@ -551,7 +575,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       return;
     }
     const credential = (ev.currentTarget as any)
-      .credential as ZwaveCredentialRef;
+      .credential as ZwaveCredential;
     const typeLabel =
       this.hass.localize(
         `ui.panel.config.zwave_js.credentials.credential_types.${credential.type}` as any

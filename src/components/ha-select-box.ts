@@ -137,7 +137,6 @@ export class HaSelectBox extends LitElement {
       position: relative;
       display: flex;
       flex-direction: row;
-      align-items: center;
       gap: var(--ha-space-2);
       min-width: 0;
       width: 100%;

@@ -82,6 +82,7 @@ class DialogZwaveCredentialManage extends LitElement {
         this._users = usersResponse.users;
       }
     } catch (err: unknown) {
+      this.closeDialog();
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.credentials.errors.load_failed"
@@ -97,6 +98,12 @@ class DialogZwaveCredentialManage extends LitElement {
     if (!this._deviceId) {
       return nothing;
     }
+
+    const activeUsers = this._users.filter((u) => u.active);
+    const showFooter =
+      !this._loading &&
+      this._capabilities?.supports_user_management &&
+      (activeUsers.length > 0 || this._supportsEnterableCredential);
 
     return html`
       <ha-dialog
@@ -119,7 +126,35 @@ class DialogZwaveCredentialManage extends LitElement {
                   )}
                 </ha-alert>
               </div>`
-            : html`<div class="content">${this._renderUsers()}</div>`}
+            : html`<div class="content">${this._renderUsers(activeUsers)}</div>`}
+        ${showFooter
+          ? html`<ha-dialog-footer slot="footer">
+              ${activeUsers.length > 0
+                ? html`<ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    variant="danger"
+                    @click=${this._clearAllUsers}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiAccountRemove}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.credentials.users.clear_all"
+                    )}
+                  </ha-button>`
+                : nothing}
+              ${this._supportsEnterableCredential
+                ? html`<ha-button slot="primaryAction" @click=${this._addUser}>
+                    <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.credentials.users.add"
+                    )}
+                  </ha-button>`
+                : nothing}
+            </ha-dialog-footer>`
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -133,9 +168,7 @@ class DialogZwaveCredentialManage extends LitElement {
     );
   }
 
-  private _renderUsers() {
-    const activeUsers = this._users.filter((u) => u.active);
-
+  private _renderUsers(activeUsers: ZwaveUser[]) {
     const hasNoCredentialTypes =
       !this._capabilities?.supported_credential_types ||
       Object.keys(this._capabilities.supported_credential_types).length === 0;
@@ -217,31 +250,6 @@ class DialogZwaveCredentialManage extends LitElement {
                 )}
               </ha-md-list>
             `}
-        <div class="actions">
-          ${activeUsers.length > 0
-            ? html`<ha-button
-                appearance="plain"
-                variant="danger"
-                @click=${this._clearAllUsers}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiAccountRemove}
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.clear_all"
-                )}
-              </ha-button>`
-            : nothing}
-          ${this._supportsEnterableCredential
-            ? html`<ha-button @click=${this._addUser}>
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.add"
-                )}
-              </ha-button>`
-            : nothing}
-        </div>
       </div>
     `;
   }
@@ -437,18 +445,10 @@ class DialogZwaveCredentialManage extends LitElement {
         .content > ha-alert {
           margin: var(--ha-space-4);
         }
-        .users-content {
-          padding: var(--ha-space-4) 0 0;
-        }
         .empty {
           text-align: center;
           color: var(--secondary-text-color);
           padding: var(--ha-space-6);
-        }
-        .actions {
-          padding: var(--ha-space-2) var(--ha-space-6);
-          display: flex;
-          justify-content: flex-end;
         }
         .icon-background {
           border-radius: var(--ha-border-radius-circle);

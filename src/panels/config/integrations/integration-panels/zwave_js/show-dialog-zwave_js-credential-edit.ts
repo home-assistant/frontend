@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type {
   ZwaveCredentialCapabilities,
-  ZwaveCredentialRef,
+  ZwaveCredential,
 } from "../../../../../data/zwave_js-credentials";
 
 export interface ZwaveCredentialEditDialogParams {
@@ -9,7 +9,7 @@ export interface ZwaveCredentialEditDialogParams {
   capabilities: ZwaveCredentialCapabilities;
   user_index: number;
   user_label: string;
-  credential?: ZwaveCredentialRef;
+  credential?: ZwaveCredential;
   onSaved: () => void;
 }
 

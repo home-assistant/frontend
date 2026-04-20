@@ -40,6 +40,7 @@ describe("lock-common", () => {
         "hand_biometric",
         "ble",
         "nfc",
+        "desfire",
       ];
       for (const type of knownTypes) {
         const icon = getCredentialTypeIcon(type);

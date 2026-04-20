@@ -38,6 +38,7 @@ export const getCredentialTypeIcon = (type: string): string => {
     case "password":
       return mdiFormTextboxPassword;
     case "rfid_code":
+    case "desfire":
       return mdiCreditCardChip;
     case "finger_biometric":
     case "finger_vein":

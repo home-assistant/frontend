@@ -11,7 +11,10 @@ import type { SelectBoxOption } from "../../../../../components/ha-select-box";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input";
 import { ENTERABLE_CREDENTIAL_TYPES } from "../../../../../data/lock-common";
-import { setZwaveCredential } from "../../../../../data/zwave_js-credentials";
+import {
+  clearZwaveCredential,
+  setZwaveCredential,
+} from "../../../../../data/zwave_js-credentials";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZwaveCredentialEditDialogParams } from "./show-dialog-zwave_js-credential-edit";
@@ -34,20 +37,39 @@ class DialogZwaveCredentialEdit extends LitElement {
 
   @state() private _open = false;
 
+  private _initialType = "";
+
+  private _initialData = "";
+
   public async showDialog(
     params: ZwaveCredentialEditDialogParams
   ): Promise<void> {
     this._params = params;
     this._error = "";
-    this._credentialData = "";
     this._dataTouched = false;
     this._open = true;
 
     if (params.credential) {
       this._credentialType = params.credential.type;
+      this._credentialData =
+        (ENTERABLE_CREDENTIAL_TYPES as readonly string[]).includes(
+          params.credential.type
+        ) && params.credential.data
+          ? params.credential.data
+          : "";
     } else {
       this._credentialType = this._enterableTypes[0] || "";
+      this._credentialData = "";
     }
+    this._initialType = this._credentialType;
+    this._initialData = this._credentialData;
+  }
+
+  private get _isDirty(): boolean {
+    return (
+      this._credentialType !== this._initialType ||
+      this._credentialData !== this._initialData
+    );
   }
 
   private get _enterableTypes(): string[] {
@@ -71,6 +93,8 @@ class DialogZwaveCredentialEdit extends LitElement {
     }
     const isEdit = !!this._params.credential;
     const multipleEnterableTypes = this._enterableTypes.length > 1;
+    const typeChanged =
+      isEdit && this._credentialType !== this._params.credential!.type;
     const minLength = this._selectedTypeCapability?.min_length ?? 4;
     const maxLength = this._selectedTypeCapability?.max_length ?? 10;
     const isPin = this._credentialType === "pin_code";
@@ -95,30 +119,31 @@ class DialogZwaveCredentialEdit extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
-          ${isEdit
+          ${multipleEnterableTypes
+            ? html`
+                <div class="credential-type-section">
+                  <label>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.credentials.credential_data.type"
+                    )}
+                  </label>
+                  <ha-select-box
+                    .options=${this._credentialTypeOptions}
+                    .value=${this._credentialType}
+                    .maxColumns=${2}
+                    @value-changed=${this._handleCredentialTypeChanged}
+                  ></ha-select-box>
+                </div>
+              `
+            : nothing}
+          ${isEdit && !typeChanged
             ? html`<p class="slot-info">
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.credentials.credentials.slot",
                   { slot: this._params.credential!.slot }
                 )}
               </p>`
-            : multipleEnterableTypes
-              ? html`
-                  <div class="credential-type-section">
-                    <label>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.credentials.credential_data.type"
-                      )}
-                    </label>
-                    <ha-select-box
-                      .options=${this._credentialTypeOptions}
-                      .value=${this._credentialType}
-                      .maxColumns=${2}
-                      @value-changed=${this._handleCredentialTypeChanged}
-                    ></ha-select-box>
-                  </div>
-                `
-              : nothing}
+            : nothing}
           <ha-input
             .label=${this.hass.localize(
               `ui.panel.config.zwave_js.credentials.credential_data.${this._credentialType}` as any
@@ -155,7 +180,9 @@ class DialogZwaveCredentialEdit extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving || !!this._credentialError}
+            .disabled=${this._saving ||
+            !!this._credentialError ||
+            !this._isDirty}
           >
             ${this._saving
               ? html`<ha-spinner size="small"></ha-spinner>`
@@ -195,7 +222,6 @@ class DialogZwaveCredentialEdit extends LitElement {
       }
     }
     this._credentialData = value;
-    this._dataTouched = false;
   }
 
   private _handleCredentialBeforeInput(ev: InputEvent): void {
@@ -254,11 +280,21 @@ class DialogZwaveCredentialEdit extends LitElement {
     this._saving = true;
     this._error = "";
     try {
+      const existing = this._params.credential;
+      const typeChanged =
+        !!existing && existing.type !== this._credentialType;
+      if (typeChanged) {
+        await clearZwaveCredential(this.hass, this._params.device_id, {
+          user_index: this._params.user_index,
+          credential_type: existing!.type,
+          credential_slot: existing!.slot,
+        });
+      }
       await setZwaveCredential(this.hass, this._params.device_id, {
         user_index: this._params.user_index,
         credential_type: this._credentialType,
         credential_data: this._credentialData,
-        credential_slot: this._params.credential?.slot,
+        credential_slot: typeChanged ? undefined : existing?.slot,
       });
       this._params.onSaved();
       this.closeDialog();

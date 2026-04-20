@@ -7857,9 +7857,11 @@
               "face_biometric": "Face",
               "eye_biometric": "Eye",
               "hand_biometric": "Hand",
+              "unspecified_biometric": "Biometric",
               "ble": "BLE",
               "nfc": "NFC",
-              "uwb": "UWB"
+              "uwb": "UWB",
+              "desfire": "DESFire"
             },
             "credential_data": {
               "type": "Credential type",
