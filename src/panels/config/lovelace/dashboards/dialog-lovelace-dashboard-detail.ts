@@ -96,35 +96,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     const showBackgroundTab =
       Boolean(this._params.lovelaceConfig) && Boolean(this._params.saveConfig);
 
-    let content: string | TemplateResult<1> | typeof nothing = nothing;
-
-    if (this._params.dashboard?.mode === "yaml") {
-      content = this.hass.localize(
-        "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-      );
-    } else if (this._currTab === "tab-background" && showBackgroundTab) {
-      content = html`
-        <hui-view-background-editor
-          .hass=${this.hass}
-          .config=${this._backgroundConfig}
-          @background-config-changed=${this._backgroundConfigChanged}
-        ></hui-view-background-editor>
-      `;
-    } else {
-      content = html`
-        <ha-form
-          autofocus
-          .schema=${this._schema(this._params, this._data?.require_admin)}
-          .data=${this._data}
-          .hass=${this.hass}
-          .error=${this._error}
-          .computeLabel=${this._computeLabel}
-          .computeHelper=${this._computeHelper}
-          @value-changed=${this._valueChanged}
-        ></ha-form>
-      `;
-    }
-
     const cancelButton = html`
       <ha-button
         appearance="plain"
@@ -183,7 +154,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
               </ha-dialog-header>
             `
           : nothing}
-        <div>${content}</div>
+        <div>${this._renderContent(showBackgroundTab)}</div>
         <ha-dialog-footer slot="footer">
           ${this._params.urlPath
             ? html`
@@ -224,6 +195,39 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
+    `;
+  }
+
+  private _renderContent(
+    showBackgroundTab: boolean
+  ): string | TemplateResult<1> | typeof nothing {
+    if (this._params?.dashboard?.mode === "yaml") {
+      return this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
+      );
+    }
+
+    if (this._currTab === "tab-background" && showBackgroundTab) {
+      return html`
+        <hui-view-background-editor
+          .hass=${this.hass}
+          .config=${this._backgroundConfig}
+          @background-config-changed=${this._backgroundConfigChanged}
+        ></hui-view-background-editor>
+      `;
+    }
+
+    return html`
+      <ha-form
+        autofocus
+        .schema=${this._schema(this._params!, this._data?.require_admin)}
+        .data=${this._data}
+        .hass=${this.hass}
+        .error=${this._error}
+        .computeLabel=${this._computeLabel}
+        .computeHelper=${this._computeHelper}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
