@@ -1,5 +1,6 @@
 import { consume } from "@lit/context";
 import type {
+  Connection,
   HassEntities,
   HassEntity,
   UnsubscribeFunc,
@@ -14,13 +15,14 @@ import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-spinner";
 import {
+  connectionContext,
   internationalizationContext,
   statesContext,
 } from "../../../data/context";
 import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
 import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
 import type {
-  HomeAssistant,
+  HomeAssistantConnection,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -72,8 +74,6 @@ class HuiDailyForecastCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  public hass!: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state()
@@ -97,6 +97,13 @@ class HuiDailyForecastCardFeature
     transformer: ({ localize }) => localize,
   })
   private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection!: Connection;
 
   @state() private _config?: DailyForecastCardFeatureConfig;
 
@@ -168,7 +175,6 @@ class HuiDailyForecastCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !supportsDailyForecastCardFeature(this._stateObj)
     ) {
@@ -304,7 +310,7 @@ class HuiDailyForecastCardFeature
     if (
       !this.context?.entity_id ||
       !this._config ||
-      !this.hass ||
+      !this._connection ||
       this._subscribed
     ) {
       return;
@@ -321,7 +327,7 @@ class HuiDailyForecastCardFeature
     this._subscribedType = forecastType;
 
     this._subscribed = subscribeForecast(
-      this.hass,
+      this._connection,
       entityId,
       forecastType,
       (forecastEvent: ForecastEvent) => {

@@ -50,7 +50,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const forecastType = getDefaultForecastType(stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
-        this.hass!,
+        this.hass!.connection,
         stateObj.entity_id,
         forecastType,
         (event) => {
