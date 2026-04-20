@@ -277,7 +277,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
 
-    if (!deviceClasses) {
+    if (!deviceClasses || this._hideDeviceClassOverride(domain)) {
+      this._deviceClassOptions = undefined;
       return;
     }
 
@@ -289,6 +290,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._deviceClassOptions[1].push(...deviceClass);
       }
     }
+  }
+
+  private _hideDeviceClassOverride(domain: string): boolean {
+    // Template binary sensor device_class should be edited via template options,
+    // not the entity registry override UI used by other binary sensors.
+    return (
+      domain === "binary_sensor" &&
+      this.entry.platform === "template" &&
+      !!this.entry.config_entry_id
+    );
   }
 
   private _precisionLabel(precision?: number, stateValue?: string) {
@@ -525,7 +536,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   `
                 : nothing} `
           : nothing}
-      ${this._deviceClassOptions
+      ${this._deviceClassOptions && !this._hideDeviceClassOverride(domain)
         ? html`
             <ha-select
               .label=${this.hass.localize(
