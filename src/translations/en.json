@@ -1435,6 +1435,7 @@
         "related": "Related",
         "views": "Views",
         "area_settings": "{area} - Settings",
+        "apps": "[%key:panel::apps%]",
         "other_routes": "Other routes",
         "route": {
           "automations": "[%key:ui::panel::config::automation::caption%]",
