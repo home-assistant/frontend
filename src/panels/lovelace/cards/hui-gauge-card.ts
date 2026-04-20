@@ -277,11 +277,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
-    :host {
-      position: relative;
-      display: block;
-      height: 100%;
-    }
     ha-card {
       height: 100%;
       overflow: hidden;
