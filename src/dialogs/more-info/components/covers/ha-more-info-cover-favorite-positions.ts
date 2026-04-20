@@ -103,7 +103,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
         ? this.stateObj.attributes.current_position
         : this.stateObj.attributes.current_tilt_position;
 
-    return current == null ? undefined : Math.round(current);
+    return current == null ? undefined : current;
   }
 
   private async _save(options: CoverEntityOptions): Promise<void> {
@@ -213,7 +213,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return undefined;
     }
 
-    return Math.max(0, Math.min(100, Math.round(number)));
+    return Math.max(0, Math.min(100, number));
   }
 
   private async _addFavorite(kind: FavoriteKind): Promise<void> {

@@ -36,7 +36,7 @@ export const normalizeValveFavoritePositions = (
       continue;
     }
 
-    const clamped = Math.max(0, Math.min(100, Math.round(value)));
+    const clamped = Math.max(0, Math.min(100, value));
 
     if (unique.has(clamped)) {
       continue;

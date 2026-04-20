@@ -75,7 +75,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
   private _currentValue(): number | undefined {
     const current = this.stateObj.attributes.current_position;
 
-    return current == null ? undefined : Math.round(current);
+    return current == null ? undefined : current;
   }
 
   private async _save(favorite_positions: number[]): Promise<void> {
@@ -155,7 +155,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       return undefined;
     }
 
-    return Math.max(0, Math.min(100, Math.round(number)));
+    return Math.max(0, Math.min(100, number));
   }
 
   private async _addFavorite(): Promise<void> {
