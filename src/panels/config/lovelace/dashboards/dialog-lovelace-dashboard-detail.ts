@@ -421,14 +421,23 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-dialog.has-background-tab {
-          --dialog-content-padding: 0 24px 24px;
+        ha-dialog {
+          --dialog-content-padding: var(--ha-space-6);
         }
 
         h2 {
           margin: 0;
           font-size: inherit;
           font-weight: inherit;
+        }
+
+        ha-tab-group-tab {
+          flex: 1;
+        }
+
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];
