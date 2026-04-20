@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceDashboardBackgroundConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 
@@ -14,17 +14,17 @@ import {
   resolveMediaSource,
 } from "../../../../data/media_source";
 
+export interface BackgroundConfigTarget {
+  background?: LovelaceDashboardBackgroundConfig;
+}
+
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config!: LovelaceViewConfig;
+  @property({ attribute: false }) public config!: BackgroundConfigTarget;
 
   @state({ attribute: false }) private _resolvedImage?: string;
-
-  set config(config: LovelaceViewConfig) {
-    this._config = config;
-  }
 
   private _localizeValueCallback = (key: string) =>
     this.hass.localize(key as any);
@@ -125,12 +125,12 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (
-      this._config &&
+      this.config &&
       this.hass &&
-      (changedProps.has("_config") ||
+      (changedProps.has("config") ||
         (changedProps.has("hass") && !changedProps.get("hass")))
     ) {
-      const background = this._backgroundData(this._config);
+      const background = this._backgroundData(this.config);
       this.style.setProperty(
         "--picture-opacity",
         `${(background.opacity ?? 100) / 100}`
@@ -156,7 +156,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    const background = this._backgroundData(this._config);
+    const background = this._backgroundData(this.config);
 
     return html`
       ${this._resolvedImage
@@ -181,7 +181,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   }
 
   private _backgroundData = memoizeOne(
-    (backgroundConfig?: LovelaceViewConfig) => {
+    (backgroundConfig?: BackgroundConfigTarget) => {
       let background = backgroundConfig?.background;
       if (typeof background === "string") {
         const backgroundUrl = background.match(
@@ -220,10 +220,10 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     const config = {
-      ...this._config,
+      ...this.config,
       background: ev.detail.value,
     };
-    fireEvent(this, "view-config-changed", { config });
+    fireEvent(this, "background-config-changed", { config });
   }
 
   private _computeLabelCallback = (
@@ -289,5 +289,11 @@ export class HuiViewBackgroundEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-view-background-editor": HuiViewBackgroundEditor;
+  }
+
+  interface HASSDomEvents {
+    "background-config-changed": {
+      config: BackgroundConfigTarget;
+    };
   }
 }

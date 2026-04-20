@@ -1,6 +1,7 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
@@ -8,16 +9,25 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../../../lovelace/editor/view-editor/hui-view-background-editor";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 import { pickAvailableDashboardUrlPath } from "./pick-available-dashboard-url-path";
+
+const TABS = ["tab-settings", "tab-background"] as const;
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -35,10 +45,16 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _currTab: (typeof TABS)[number] = TABS[0];
+
+  @state() private _backgroundConfig?: LovelaceConfig;
+
   public showDialog(params: LovelaceDashboardDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
     this._urlPathChanged = false;
+    this._currTab = TABS[0];
+    this._backgroundConfig = params.lovelaceConfig;
     this._open = true;
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
@@ -64,6 +80,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
+    this._backgroundConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -73,6 +90,37 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
+    const showBackgroundTab =
+      Boolean(this._params.lovelaceConfig) && Boolean(this._params.saveConfig);
+
+    let content: string | TemplateResult<1> | typeof nothing = nothing;
+
+    if (this._params.dashboard?.mode === "yaml") {
+      content = this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
+      );
+    } else if (this._currTab === "tab-background" && showBackgroundTab) {
+      content = html`
+        <hui-view-background-editor
+          .hass=${this.hass}
+          .config=${this._backgroundConfig}
+          @background-config-changed=${this._backgroundConfigChanged}
+        ></hui-view-background-editor>
+      `;
+    } else {
+      content = html`
+        <ha-form
+          autofocus
+          .schema=${this._schema(this._params, this._data?.require_admin)}
+          .data=${this._data}
+          .hass=${this.hass}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          .computeHelper=${this._computeHelper}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+      `;
+    }
 
     const cancelButton = html`
       <ha-button
@@ -88,6 +136,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        width=${showBackgroundTab ? "large" : "medium"}
         header-title=${this._params.urlPath
           ? this._data.title ||
             this.hass.localize(
@@ -98,28 +147,28 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
+        class=${classMap({
+          "has-background-tab": showBackgroundTab,
+        })}
       >
-        <div>
-          ${this._params.dashboard?.mode === "yaml"
-            ? this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-              )
-            : html`
-                <ha-form
-                  autofocus
-                  .schema=${this._schema(
-                    this._params,
-                    this._data?.require_admin
-                  )}
-                  .data=${this._data}
-                  .hass=${this.hass}
-                  .error=${this._error}
-                  .computeLabel=${this._computeLabel}
-                  .computeHelper=${this._computeHelper}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `}
-        </div>
+        ${showBackgroundTab
+          ? html`<ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+              ${TABS.map(
+                (tab) => html`
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .panel=${tab}
+                    .active=${this._currTab === tab}
+                  >
+                    ${this.hass.localize(
+                      `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
+                    )}
+                  </ha-tab-group-tab>
+                `
+              )}
+            </ha-tab-group>`
+          : nothing}
+        <div>${content}</div>
         <ha-dialog-footer slot="footer">
           ${this._params.urlPath
             ? html`
@@ -254,6 +303,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
   }
 
+  private _backgroundConfigChanged(
+    ev: CustomEvent<{ config: LovelaceConfig }>
+  ) {
+    this._backgroundConfig = ev.detail.config;
+  }
+
   private _fillUrlPath(title: string) {
     if (this._urlPathChanged || !title) {
       return;
@@ -280,6 +335,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
     this._submitting = true;
     try {
+      if (
+        this._backgroundConfig &&
+        this._params?.saveConfig &&
+        this._params.lovelaceConfig &&
+        this._backgroundConfig.background !==
+          this._params.lovelaceConfig.background
+      ) {
+        await this._params.saveConfig(this._backgroundConfig);
+      }
       if (this._params!.dashboard) {
         const values: Partial<LovelaceDashboardMutableParams> = {
           require_admin: this._data!.require_admin,
@@ -314,6 +378,18 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
   }
 
+  private _handleTabChanged(
+    ev: CustomEvent<{
+      name: (typeof TABS)[number];
+    }>
+  ): void {
+    const newTab = ev.detail.name;
+    if (newTab === this._currTab) {
+      return;
+    }
+    this._currTab = newTab;
+  }
+
   private async _deleteDashboard() {
     this._submitting = true;
     try {
@@ -326,7 +402,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      haStyleDialogFixedTop,
+      css`
+        ha-dialog.has-background-tab {
+          --dialog-content-padding: 0 24px 24px;
+        }
+      `,
+    ];
   }
 }
 
