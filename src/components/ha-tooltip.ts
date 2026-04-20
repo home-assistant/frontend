@@ -18,7 +18,7 @@ export class HaTooltip extends Tooltip {
         :host {
           --wa-tooltip-background-color: var(
             --ha-tooltip-background-color,
-            var(--card-background-color)
+            var(--ha-color-surface-default)
           );
           --wa-tooltip-content-color: var(
             --ha-tooltip-text-color,
