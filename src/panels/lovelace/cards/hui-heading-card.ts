@@ -132,10 +132,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
     // `.overflowing` pseudo-elements inflate `scrollWidth`, subtract to keep the check symmetric.
     const padding = this._badgesOverflowing
-      ? parseFloat(getComputedStyle(this._badges).getPropertyValue("--ha-space-4")) ||
-        0
+      ? parseFloat(
+          getComputedStyle(this._badges).getPropertyValue("--ha-space-4")
+        ) || 0
       : 0;
-    const overflowing = this._badges.scrollWidth - padding > this._badges!.clientWidth + 1;
+    const overflowing =
+      this._badges.scrollWidth - padding > this._badges!.clientWidth + 1;
 
     if (overflowing !== this._badgesOverflowing) {
       this._badgesOverflowing = overflowing;
