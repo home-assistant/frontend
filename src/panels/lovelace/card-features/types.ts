@@ -16,6 +16,7 @@ export interface CoverOpenCloseCardFeatureConfig {
 
 export interface CoverPositionCardFeatureConfig {
   type: "cover-position";
+  inverted?: boolean;
 }
 
 export interface CoverTiltCardFeatureConfig {
@@ -24,6 +25,7 @@ export interface CoverTiltCardFeatureConfig {
 
 export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
+  inverted?: boolean;
 }
 
 export interface CoverPositionFavoriteCardFeatureConfig {
@@ -215,6 +217,7 @@ export interface ValveOpenCloseCardFeatureConfig {
 
 export interface ValvePositionCardFeatureConfig {
   type: "valve-position";
+  inverted?: boolean;
 }
 
 export interface ValvePositionFavoriteCardFeatureConfig {

@@ -94,6 +94,10 @@ class HuiCoverTiltPositionCardFeature
       "--state-cover-inactive-color": openColor,
     };
 
+    // inverted defaults to true to preserve existing behavior (left = fully open)
+    // set inverted: false for horizontal sliding covers where open direction is right
+    const inverted = this._config.inverted !== false;
+
     return html`
       <ha-control-slider
         style=${styleMap(style)}
@@ -101,7 +105,7 @@ class HuiCoverTiltPositionCardFeature
         min="0"
         max="100"
         mode="cursor"
-        inverted
+        ?inverted=${inverted}
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
           this.hass.localize,

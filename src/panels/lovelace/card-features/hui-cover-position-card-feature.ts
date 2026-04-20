@@ -92,6 +92,11 @@ class HuiCoverPositionCardFeature
       "--state-cover-inactive-color": openColor,
     };
 
+    // inverted defaults to true to preserve existing behavior (left = fully open)
+    // set inverted: false for horizontal sliding covers such as curtains and gates
+    // where the open direction is to the right
+    const inverted = this._config.inverted !== false;
+
     return html`
       <ha-control-slider
         style=${styleMap(style)}
@@ -99,7 +104,7 @@ class HuiCoverPositionCardFeature
         min="0"
         max="100"
         step="1"
-        inverted
+        ?inverted=${inverted}
         show-handle
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
