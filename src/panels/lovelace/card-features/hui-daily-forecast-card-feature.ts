@@ -11,11 +11,18 @@ import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { slugify } from "../../../common/string/slugify";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-spinner";
-import { statesContext } from "../../../data/context";
+import {
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
 import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
 import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   DailyForecastCardFeatureConfig,
@@ -89,6 +96,13 @@ class HuiDailyForecastCardFeature
     watch: ["context"],
   })
   private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, LocalizeFunc>({
+    transformer: ({ localize }) => localize,
+  })
+  private _localize!: LocalizeFunc;
 
   @state() private _config?: DailyForecastCardFeatureConfig;
 
@@ -199,7 +213,7 @@ class HuiDailyForecastCardFeature
       return html`
         <div class="container">
           <div class="info">
-            ${this.hass.localize(
+            ${this._localize(
               "ui.panel.lovelace.editor.features.types.daily-forecast.no_forecast"
             )}
           </div>
