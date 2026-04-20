@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +10,8 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -137,14 +140,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         width=${showBackgroundTab ? "large" : "medium"}
-        header-title=${this._params.urlPath
-          ? this._data.title ||
-            this.hass.localize(
-              "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
-            )
-          : this.hass.localize(
-              "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-            )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -152,21 +147,41 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         })}
       >
         ${showBackgroundTab
-          ? html`<ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-              ${TABS.map(
-                (tab) => html`
-                  <ha-tab-group-tab
-                    slot="nav"
-                    .panel=${tab}
-                    .active=${this._currTab === tab}
-                  >
-                    ${this.hass.localize(
-                      `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
-                    )}
-                  </ha-tab-group-tab>
-                `
-              )}
-            </ha-tab-group>`
+          ? html`
+              <ha-dialog-header show-border slot="header">
+                <ha-icon-button
+                  slot="navigationIcon"
+                  @click=${this.closeDialog}
+                  .label=${this.hass.localize("ui.common.close")}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+                <h2 slot="title">
+                  ${this._params.urlPath
+                    ? this._data.title ||
+                      this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
+                      )}
+                </h2>
+                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                  ${TABS.map(
+                    (tab) => html`
+                      <ha-tab-group-tab
+                        slot="nav"
+                        .panel=${tab}
+                        .active=${this._currTab === tab}
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
+                        )}
+                      </ha-tab-group-tab>
+                    `
+                  )}
+                </ha-tab-group>
+              </ha-dialog-header>
+            `
           : nothing}
         <div>${content}</div>
         <ha-dialog-footer slot="footer">
@@ -408,6 +423,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       css`
         ha-dialog.has-background-tab {
           --dialog-content-padding: 0 24px 24px;
+        }
+
+        h2 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
         }
       `,
     ];
