@@ -233,6 +233,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex: 1 1 0;
       min-width: var(--ha-heading-card-title-min-width, 150px);
     }
+    @media (max-width: 600px) {
+      .container .content {
+        min-width: var(--ha-heading-card-title-min-width-mobile, 120px);
+      }
+    }
     .container .content:not(:has(p)) {
       min-width: fit-content;
     }
