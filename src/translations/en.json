@@ -10043,6 +10043,15 @@
               "hourly-forecast": {
                 "label": "Hourly forecast",
                 "no_forecast": "No forecast data available"
+              },
+              "daily-forecast": {
+                "label": "Daily forecast",
+                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "forecast_type": "Forecast type",
+                "forecast_type_options": {
+                  "daily": "Daily",
+                  "twice_daily": "Twice daily"
+                }
               }
             }
           },
