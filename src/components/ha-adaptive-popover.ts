@@ -117,7 +117,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           <slot name="headerNavigationIcon" slot="navigationIcon">
             <ha-icon-button
               data-dialog="close"
-              .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+              .label=${this._i18n?.localize?.("ui.common.close") ?? "Close"}
               .path=${mdiClose}
             ></ha-icon-button>
           </slot>

@@ -1,7 +1,9 @@
 import { mdiClose } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../common/dom/media_query";
+import { internationalizationContext } from "../data/context";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
@@ -116,6 +118,10 @@ export class HaAdaptiveDialog extends LitElement {
 
   @state() private _mode: DialogSheetMode = "dialog";
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n?: ContextType<typeof internationalizationContext>;
+
   private _unsubMediaQuery?: () => void;
 
   private _modeSet = false;
@@ -161,7 +167,7 @@ export class HaAdaptiveDialog extends LitElement {
                     <slot name="headerNavigationIcon" slot="navigationIcon">
                       <ha-icon-button
                         data-dialog="close"
-                        .label=${this.hass?.localize("ui.common.close") ??
+                        .label=${this._i18n?.localize?.("ui.common.close") ??
                         "Close"}
                         .path=${mdiClose}
                       ></ha-icon-button>
@@ -212,7 +218,7 @@ export class HaAdaptiveDialog extends LitElement {
         <slot name="headerNavigationIcon" slot="headerNavigationIcon">
           <ha-icon-button
             data-dialog="close"
-            .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+            .label=${this._i18n?.localize?.("ui.common.close") ?? "Close"}
             .path=${mdiClose}
           ></ha-icon-button>
         </slot>
