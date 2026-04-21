@@ -19,6 +19,8 @@ export const DialogMixin = <
 
     public dialogAnchor?: Element;
 
+    private _dialogClosedFired = false;
+
     private _closePromise?: Promise<boolean>;
 
     private _closeResolve?: (value: boolean) => void;
@@ -46,16 +48,21 @@ export const DialogMixin = <
       this._closeResolve?.(true);
       this._closePromise = undefined;
       this._closeResolve = undefined;
+      this._dialogClosedFired = true;
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this.remove();
     };
 
     connectedCallback() {
       super.connectedCallback();
+      this._dialogClosedFired = false;
       this.addEventListener("closed", this._removeDialog, { once: true });
     }
 
     disconnectedCallback() {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
+      if (!this._dialogClosedFired) {
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
+      }
       this.removeEventListener("closed", this._removeDialog);
       super.disconnectedCallback();
     }
