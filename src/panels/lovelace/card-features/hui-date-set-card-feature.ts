@@ -6,7 +6,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-slider";
-import type { DatePickerDialogParams } from "../../../components/ha-date-input";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -53,18 +52,17 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
   private _pressButton() {
     if (!this.hass || !this._stateObj) return;
 
-    const dialogParams: DatePickerDialogParams = {
-      min: "1970-01-01",
-      value: this._stateObj.state,
-      onChange: (value) => this._dateChanged(value),
-      locale: this.hass.locale.language,
-      firstWeekday: firstWeekdayIndex(this.hass.locale),
-    };
-
     fireEvent(this, "show-dialog", {
       dialogTag: "ha-dialog-date-picker",
       dialogImport: loadDatePickerDialog,
-      dialogParams,
+      dialogAnchor: this,
+      dialogParams: {
+        min: "1970-01-01",
+        value: this._stateObj.state,
+        onChange: (value) => this._dateChanged(value),
+        locale: this.hass.locale.language,
+        firstWeekday: firstWeekdayIndex(this.hass.locale),
+      },
     });
   }
 

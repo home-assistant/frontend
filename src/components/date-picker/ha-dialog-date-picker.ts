@@ -17,7 +17,7 @@ import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";
 import type { DatePickerDialogParams } from "../ha-date-input";
-import "../ha-dialog";
+import "../ha-adaptive-dialog";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
@@ -101,24 +101,31 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     if (!this.params) {
       return nothing;
     }
-    return html`<ha-dialog
+
+    return html`<ha-adaptive-dialog 
+      .desktopMode=${this.dialogAnchor ? "popover" : "dialog"}
+      .dialogAnchor=${this.dialogAnchor} 
       open
       width="small"
-      .headerTitle=${this._value?.title ||
-      this._i18n.localize("ui.dialogs.date-picker.title")}
+      .headerTitle=${
+        this._value?.title ||
+        this._i18n.localize("ui.dialogs.date-picker.title")
+      }
       .headerSubtitle=${this._value?.year}
       header-subtitle-position="above"
     >
-      ${this.params.canClear
-        ? html`
-            <ha-icon-button
-              .path=${mdiBackspace}
-              .label=${this._i18n.localize("ui.dialogs.date-picker.clear")}
-              slot="headerActionItems"
-              @click=${this._clear}
-            ></ha-icon-button>
-          `
-        : nothing}
+      ${
+        this.params.canClear
+          ? html`
+              <ha-icon-button
+                .path=${mdiBackspace}
+                .label=${this._i18n.localize("ui.dialogs.date-picker.clear")}
+                slot="headerActionItems"
+                @click=${this._clear}
+              ></ha-icon-button>
+            `
+          : nothing
+      }
       <wa-divider></wa-divider>
       <calendar-date
         .value=${this._value?.dateString}
@@ -232,7 +239,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   static styles = [
     datePickerStyles,
     css`
-      ha-dialog {
+      ha-adaptive-dialog {
         --dialog-content-padding: 0;
       }
     `,
