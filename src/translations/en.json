@@ -498,7 +498,7 @@
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Unnamed"
+            "unnamed": "Other"
           }
         },
         "media": {
