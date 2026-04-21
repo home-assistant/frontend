@@ -215,7 +215,6 @@ export class HaAdaptiveDialog extends LitElement {
         <wa-popover
           .open=${this._popoverOpen}
           .anchor=${this.dialogAnchor ?? null}
-          placement="bottom-start"
           auto-size="vertical"
           auto-size-padding="16"
           without-arrow
