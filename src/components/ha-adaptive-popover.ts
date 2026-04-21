@@ -1,13 +1,10 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import { mdiClose } from "@mdi/js";
 import { css, html, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
-import "./ha-dialog-header";
-import "./ha-icon-button";
 import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
 
 /**
@@ -100,38 +97,15 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         @wa-after-hide=${this._handlePopoverAfterHide}
       >
         <div class="popover-surface" @click=${this._handlePopoverClick}>
-          ${this.withoutHeader ? "" : this._renderPopoverHeader()}
+          ${this.withoutHeader
+            ? ""
+            : html`<slot name="header">${this._renderHeaderContent()}</slot>`}
           <div class="content-wrapper">
             <div class="body"><slot></slot></div>
           </div>
           <slot name="footer"></slot>
         </div>
       </wa-popover>
-    `;
-  }
-
-  private _renderPopoverHeader() {
-    return html`
-      <slot name="header">
-        <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
-          <slot name="headerNavigationIcon" slot="navigationIcon">
-            <ha-icon-button
-              data-dialog="close"
-              .label=${this._i18n?.localize?.("ui.common.close") ?? "Close"}
-              .path=${mdiClose}
-            ></ha-icon-button>
-          </slot>
-          ${this.headerTitle !== undefined
-            ? html`<span slot="title" class="title" id="ha-dialog-title">
-                ${this.headerTitle}
-              </span>`
-            : html`<slot name="headerTitle" slot="title"></slot>`}
-          ${this.headerSubtitle !== undefined
-            ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-            : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
-          <slot name="headerActionItems" slot="actionItems"></slot>
-        </ha-dialog-header>
-      </slot>
     `;
   }
 

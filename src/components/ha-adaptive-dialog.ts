@@ -160,38 +160,9 @@ export class HaAdaptiveDialog extends LitElement {
         >
           ${!this.withoutHeader
             ? html`
-                <slot name="header" slot="header">
-                  <ha-dialog-header
-                    .subtitlePosition=${this.headerSubtitlePosition}
-                  >
-                    <slot name="headerNavigationIcon" slot="navigationIcon">
-                      <ha-icon-button
-                        data-dialog="close"
-                        .label=${this._i18n?.localize?.("ui.common.close") ??
-                        "Close"}
-                        .path=${mdiClose}
-                      ></ha-icon-button>
-                    </slot>
-                    ${this.headerTitle !== undefined
-                      ? html`<span
-                          slot="title"
-                          class="title"
-                          id="ha-dialog-title"
-                        >
-                          ${this.headerTitle}
-                        </span>`
-                      : html`<slot name="headerTitle" slot="title"></slot>`}
-                    ${this.headerSubtitle !== undefined
-                      ? html`<span slot="subtitle"
-                          >${this.headerSubtitle}</span
-                        >`
-                      : html`<slot
-                          name="headerSubtitle"
-                          slot="subtitle"
-                        ></slot>`}
-                    <slot name="headerActionItems" slot="actionItems"></slot>
-                  </ha-dialog-header>
-                </slot>
+                <slot name="header" slot="header"
+                  >${this._renderHeaderContent()}</slot
+                >
               `
             : nothing}
           <slot></slot>
@@ -228,6 +199,29 @@ export class HaAdaptiveDialog extends LitElement {
         <slot></slot>
         <slot name="footer" slot="footer"></slot>
       </ha-dialog>
+    `;
+  }
+
+  protected _renderHeaderContent() {
+    return html`
+      <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
+        <slot name="headerNavigationIcon" slot="navigationIcon">
+          <ha-icon-button
+            data-dialog="close"
+            .label=${this._i18n?.localize?.("ui.common.close") ?? "Close"}
+            .path=${mdiClose}
+          ></ha-icon-button>
+        </slot>
+        ${this.headerTitle !== undefined
+          ? html`<span slot="title" class="title" id="ha-dialog-title">
+              ${this.headerTitle}
+            </span>`
+          : html`<slot name="headerTitle" slot="title"></slot>`}
+        ${this.headerSubtitle !== undefined
+          ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+          : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+        <slot name="headerActionItems" slot="actionItems"></slot>
+      </ha-dialog-header>
     `;
   }
 
