@@ -218,6 +218,7 @@ export class HaAdaptiveDialog extends LitElement {
           placement="bottom-start"
           auto-size="vertical"
           auto-size-padding="16"
+          without-arrow
           trap-focus
           .ariaLabelledby=${this.ariaLabelledBy ||
           (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)}
