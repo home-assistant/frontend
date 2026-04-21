@@ -29,7 +29,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
 
   private _allowPopoverHide = false;
 
-  private _openPopoverRaf?: number;
+  private _openPopoverAnimationFrame?: number;
 
   connectedCallback() {
     super.connectedCallback();
@@ -140,12 +140,12 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   }
 
   private _schedulePopoverOpen() {
-    if (this._openPopoverRaf !== undefined) {
+    if (this._openPopoverAnimationFrame !== undefined) {
       return;
     }
 
-    this._openPopoverRaf = requestAnimationFrame(() => {
-      this._openPopoverRaf = undefined;
+    this._openPopoverAnimationFrame = requestAnimationFrame(() => {
+      this._openPopoverAnimationFrame = undefined;
 
       if (this.open && this._shouldRenderPopover()) {
         this._popoverOpen = true;
@@ -154,12 +154,12 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   }
 
   private _cancelPopoverOpen() {
-    if (this._openPopoverRaf === undefined) {
+    if (this._openPopoverAnimationFrame === undefined) {
       return;
     }
 
-    cancelAnimationFrame(this._openPopoverRaf);
-    this._openPopoverRaf = undefined;
+    cancelAnimationFrame(this._openPopoverAnimationFrame);
+    this._openPopoverAnimationFrame = undefined;
   }
 
   private _handlePopoverClick(ev: Event) {
