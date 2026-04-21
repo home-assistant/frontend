@@ -13,7 +13,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -23,6 +23,7 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 const THREAD_ICON =
   "m 17.126982,8.0730792 c 0,-0.7297242 -0.593746,-1.32357 -1.323637,-1.32357 -0.729454,0 -1.323199,0.5938458 -1.323199,1.32357 v 1.3234242 l 1.323199,1.458e-4 c 0.729891,0 1.323637,-0.5937006 1.323637,-1.32357 z M 11.999709,0 C 5.3829818,0 0,5.3838955 0,12.001455 0,18.574352 5.3105455,23.927406 11.865164,24 V 12.012075 l -3.9275642,-2.91e-4 c -1.1669814,0 -2.1169453,0.949979 -2.1169453,2.118323 0,1.16718 0.9499639,2.116868 2.1169453,2.116868 v 2.615717 c -2.6093089,0 -4.732218,-2.12327 -4.732218,-4.732585 0,-2.61048 2.1229091,-4.7343308 4.732218,-4.7343308 l 3.9275642,5.82e-4 v -1.323279 c 0,-2.172296 1.766691,-3.9395777 3.938181,-3.9395777 2.171928,0 3.9392,1.7672817 3.9392,3.9395777 0,2.1721498 -1.767272,3.9395768 -3.9392,3.9395768 l -1.323199,-1.45e-4 V 23.744102 C 19.911127,22.597726 24,17.768833 24,12.001455 24,5.3838955 18.616727,0 11.999709,0 Z";
@@ -90,16 +91,10 @@ export class MatterConfigDashboard extends LitElement {
           ${this._renderNavigationCard()}
         </div>
 
-        <a href="/config/matter/add" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.matter.panel.add_device"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button slot="fab" href="/config/matter/add" size="large">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.matter.panel.add_device")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -124,6 +119,20 @@ export class MatterConfigDashboard extends LitElement {
                 })}
               </small>
             </div>
+            <img
+              class="logo"
+              alt="Matter"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "matter",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
           </div>
         </div>
       </ha-card>
@@ -189,7 +198,7 @@ export class MatterConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            ${isComponentLoaded(this.hass, "thread")
+            ${isComponentLoaded(this.hass.config, "thread")
               ? html`<ha-md-list-item type="link" href="/config/thread">
                   <ha-svg-icon slot="start" .path=${THREAD_ICON}></ha-svg-icon>
                   <div slot="headline">
@@ -258,6 +267,13 @@ export class MatterConfigDashboard extends LitElement {
           display: flex;
           align-items: center;
           column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
         }
 
         .network-status div.heading .icon {

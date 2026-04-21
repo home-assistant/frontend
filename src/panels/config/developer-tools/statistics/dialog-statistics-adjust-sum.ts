@@ -449,10 +449,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       }
     };
 
-    // If an hour has no five minute data, add the hour value
+    // If an hour has incomplete five minute data, add the hour value
     // Otherwise, add the 5 minute values and ignore the hour value
     combinedStatsData.forEach((c) => {
-      if (c.fiveMin.length === 0 && c.hour) {
+      if (c.fiveMin.length !== 12 && c.hour) {
         addOutlier(c.hour);
       } else {
         c.fiveMin.forEach((s) => {

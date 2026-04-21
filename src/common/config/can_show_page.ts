@@ -14,7 +14,7 @@ export const isLoadedIntegration = (
 ) =>
   !page.component ||
   ensureArray(page.component).some((integration) =>
-    isComponentLoaded(hass, integration)
+    isComponentLoaded(hass.config, integration)
   );
 
 export const isNotLoadedIntegration = (
@@ -23,7 +23,7 @@ export const isNotLoadedIntegration = (
 ) =>
   !page.not_component ||
   !ensureArray(page.not_component).some((integration) =>
-    isComponentLoaded(hass, integration)
+    isComponentLoaded(hass.config, integration)
   );
 
 export const isCore = (page: PageNavigation) => page.core;

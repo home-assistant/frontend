@@ -35,6 +35,7 @@ const cardConfigStruct = assign(
     hide_section_headers: optional(boolean()),
     display_order: optional(string()),
     item_tap_action: optional(string()),
+    due_date_period: optional(object()),
   })
 );
 
@@ -71,6 +72,24 @@ export class HuiTodoListEditor
                   `ui.panel.lovelace.editor.card.todo-list.sort_modes.${sort === TodoSortMode.NONE && supportsManualSort ? "manual" : sort}`
                 ),
               })),
+            },
+          },
+        },
+        {
+          name: "due_date_period",
+          selector: {
+            period: {
+              options: [
+                "today",
+                "tomorrow",
+                "this_week",
+                "next_week",
+                "this_month",
+                "next_month",
+                "next_7d",
+                "next_30d",
+                "none",
+              ],
             },
           },
         },
@@ -118,7 +137,7 @@ export class HuiTodoListEditor
 
     return html`
         ${
-          !isComponentLoaded(this.hass, "todo")
+          !isComponentLoaded(this.hass.config, "todo")
             ? html`
                 <ha-alert alert-type="error">
                   ${this.hass.localize(
@@ -170,6 +189,7 @@ export class HuiTodoListEditor
       case "hide_section_headers":
       case "display_order":
       case "item_tap_action":
+      case "due_date_period":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
         );
@@ -185,6 +205,7 @@ export class HuiTodoListEditor
   ) => {
     switch (schema.name) {
       case "hide_section_headers":
+      case "due_date_period":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}_helper`
         );

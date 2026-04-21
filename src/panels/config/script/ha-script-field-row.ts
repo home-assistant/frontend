@@ -23,7 +23,7 @@ import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showToast } from "../../../util/toast";
+import { showEditorToast } from "../automation/editor-toast";
 import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
@@ -132,7 +132,7 @@ export default class HaScriptFieldRow extends LitElement {
             </ha-dropdown-item>
           </ha-dropdown>
 
-          <h3 slot="header">${this.key}</h3>
+          <h3 slot="header">${this.field.name ?? this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
         </ha-automation-row>
@@ -385,7 +385,7 @@ export default class HaScriptFieldRow extends LitElement {
       fireEvent(this, "close-sidebar");
     }
 
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.successfully_deleted"),
       duration: 4000,
       action: {

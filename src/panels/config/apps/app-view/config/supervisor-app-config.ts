@@ -115,26 +115,51 @@ class SupervisorAppConfig extends LitElement {
 
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
-    (schema: readonly HaFormSchema[]): HaFormSchema[] =>
-      this._convertSchemaElements(schema)
+    (
+      schema: readonly HaFormSchema[],
+      language: string,
+      translations: HassioAddonDetails["translations"]
+    ): HaFormSchema[] =>
+      this._convertSchemaElements(schema, language, translations)
   );
 
   private _convertSchemaElements(
-    schema: readonly HaFormSchema[]
+    schema: readonly HaFormSchema[],
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[] = []
   ): HaFormSchema[] {
-    return schema.map((entry) => this._convertSchemaElement(entry));
+    return schema.map((entry) =>
+      this._convertSchemaElement(entry, language, translations, path)
+    );
   }
 
-  private _convertSchemaElement(entry: any): HaFormSchema {
+  private _convertSchemaElement(
+    entry: any,
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[]
+  ): HaFormSchema {
     if (entry.type === "schema" && !entry.multiple) {
       return {
         name: entry.name,
         type: "expandable",
         required: entry.required,
-        schema: this._convertSchemaElements(entry.schema),
+        schema: this._convertSchemaElements(
+          entry.schema,
+          language,
+          translations,
+          [...path, entry.name]
+        ),
       };
     }
-    const selector = this._convertSchemaElementToSelector(entry, false);
+    const selector = this._convertSchemaElementToSelector(
+      entry,
+      false,
+      language,
+      translations,
+      path
+    );
     if (selector) {
       return {
         name: entry.name,
@@ -147,10 +172,13 @@ class SupervisorAppConfig extends LitElement {
 
   private _convertSchemaElementToSelector(
     entry: any,
-    force: boolean
+    force: boolean,
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[]
   ): Selector | null {
     if (entry.type === "select") {
-      return { select: { options: entry.options } };
+      return { select: { options: entry.options, multiple: entry.multiple } };
     }
     if (entry.type === "string") {
       return entry.multiple
@@ -170,10 +198,25 @@ class SupervisorAppConfig extends LitElement {
     }
     if (entry.type === "schema") {
       const fields: NonNullable<ObjectSelector["object"]>["fields"] = {};
-      for (const child_entry of entry.schema) {
-        fields[child_entry.name] = {
-          required: child_entry.required,
-          selector: this._convertSchemaElementToSelector(child_entry, true)!,
+      const childPath = [...path, entry.name];
+      for (const childEntry of entry.schema) {
+        const translation =
+          this._getTranslationEntry(language, childEntry, {
+            path: childPath,
+          }) ||
+          this._getTranslationEntry("en", childEntry, { path: childPath });
+
+        fields[childEntry.name] = {
+          required: childEntry.required,
+          label: translation?.name,
+          description: translation?.description,
+          selector: this._convertSchemaElementToSelector(
+            childEntry,
+            true,
+            language,
+            translations,
+            childPath
+          )!,
         };
       }
       return {
@@ -267,7 +310,9 @@ class SupervisorAppConfig extends LitElement {
                     : this._filteredSchema(
                         this.addon.options,
                         this.addon.schema!
-                      )
+                      ),
+                  this.hass.language,
+                  this.addon.translations
                 )}
               ></ha-form>`
             : html`<ha-yaml-editor

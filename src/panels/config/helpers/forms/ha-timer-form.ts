@@ -6,9 +6,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { ForDict } from "../../../../data/automation";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
@@ -66,21 +65,21 @@ class HaTimerForm extends LitElement {
 
     return html`
       <div class="form">
-        <ha-textfield
+        <ha-input
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          autoValidate
+          auto-validate
           required
           .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
-        ></ha-textfield>
+        ></ha-input>
         <ha-icon-picker
           .hass=${this.hass}
           .value=${this._icon}
@@ -97,19 +96,14 @@ class HaTimerForm extends LitElement {
           @value-changed=${this._valueChanged}
           .disabled=${this.disabled}
         ></ha-duration-input>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.timer.restore"
-          )}
+        <ha-checkbox
+          .configValue=${"restore"}
+          .checked=${this._restore}
+          @change=${this._toggleRestore}
+          .disabled=${this.disabled}
         >
-          <ha-checkbox
-            .configValue=${"restore"}
-            .checked=${this._restore}
-            @change=${this._toggleRestore}
-            .disabled=${this.disabled}
-          >
-          </ha-checkbox>
-        </ha-formfield>
+          ${this.hass.localize("ui.dialogs.helper_settings.timer.restore")}
+        </ha-checkbox>
       </div>
     `;
   }
@@ -168,10 +162,13 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield,
         ha-duration-input {
           display: block;
           margin: 8px 0;
+        }
+        ha-checkbox {
+          min-height: 40px;
+          justify-content: center;
         }
       `,
     ];

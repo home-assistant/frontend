@@ -13,8 +13,8 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import "../../components/date-picker/ha-date-range-picker";
 import "../../components/entity/ha-entity-picker";
-import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -95,7 +95,6 @@ export class HaPanelLogbook extends LitElement {
         <div class="content">
           <div class="filters">
             <ha-date-range-picker
-              .hass=${this.hass}
               .startDate=${this._time.range[0]}
               .endDate=${this._time.range[1]}
               @value-changed=${this._dateRangeChanged}
@@ -369,6 +368,8 @@ export class HaPanelLogbook extends LitElement {
 
         ha-target-picker {
           flex: 1;
+          max-width: 100%;
+          min-width: 0;
         }
 
         :host([narrow]) ha-entity-picker {

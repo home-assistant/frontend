@@ -15,7 +15,8 @@ import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
 import "./ha-list";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -52,15 +53,15 @@ export class HaFilterIntegrations extends LitElement {
             : nothing}
         </div>
         ${this._manifests && this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 class="ha-scrollbar"
-                @click=${this._handleItemClick}
+                @selected=${this._itemSelected}
                 multi
               >
                 ${repeat(
@@ -81,7 +82,6 @@ export class HaFilterIntegrations extends LitElement {
                     >
                       <ha-domain-icon
                         slot="graphic"
-                        .hass=${this.hass}
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
@@ -147,18 +147,25 @@ export class HaFilterIntegrations extends LitElement {
         )
   );
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
-      return;
+  private _itemSelected(
+    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
+  ) {
+    const integrations = this._integrations(
+      this.hass.localize,
+      this._manifests!,
+      this._filter,
+      this.value
+    );
+
+    if (ev.detail.diff.added.length) {
+      this.value = [
+        ...(this.value || []),
+        integrations[ev.detail.diff.added[0]].domain,
+      ];
+    } else if (ev.detail.diff.removed.length) {
+      const removedDomain = integrations[ev.detail.diff.removed[0]].domain;
+      this.value = this.value?.filter((val) => val !== removedDomain);
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-    listItem.selected = this.value?.includes(value);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
@@ -175,8 +182,9 @@ export class HaFilterIntegrations extends LitElement {
     });
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   static get styles(): CSSResultGroup {
@@ -221,7 +229,7 @@ export class HaFilterIntegrations extends LitElement {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

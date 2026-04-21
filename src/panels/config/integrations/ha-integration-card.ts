@@ -292,7 +292,6 @@ export class HaIntegrationCard extends LitElement {
           height: 100%;
           overflow: hidden;
           --state-color: var(--divider-color, #e0e0e0);
-          --ha-card-border-color: var(--state-color);
           --state-message-color: var(--state-color);
         }
         .ripple-anchor {
@@ -318,19 +317,23 @@ export class HaIntegrationCard extends LitElement {
         }
         .debug-logging {
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--primary-text-color);
         }
         .state-error {
           --state-color: var(--error-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--text-primary-color);
         }
         .state-failed-unload {
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--primary-text-color);
         }
         .state-not-loaded {
           opacity: 0.8;
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --state-message-color: var(--primary-text-color);
         }
         .state-setup {
@@ -339,6 +342,7 @@ export class HaIntegrationCard extends LitElement {
         }
         :host(.highlight) ha-card {
           --state-color: var(--primary-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--text-primary-color);
         }
         .content {

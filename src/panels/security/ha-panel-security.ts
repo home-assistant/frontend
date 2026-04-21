@@ -99,41 +99,36 @@ class PanelSecurity extends LitElement {
     return html`
       <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          ${
-            this._searchParms.has("historyBack")
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._back}
-                    slot="navigationIcon"
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    slot="navigationIcon"
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-          }
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           <div class="main-title">${this.hass.localize("panel.security")}</div>
         </div>
       </div>
-      ${
-        this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing
-      }
-      </hui-view-container>
+      ${this._lovelace
+        ? html`
+            <hui-view-container .hass=${this.hass}>
+              <hui-view-background .hass=${this.hass}> </hui-view-background>
+              <hui-view
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .lovelace=${this._lovelace}
+                .index=${this._viewIndex}
+              ></hui-view
+            ></hui-view-container>
+          `
+        : nothing}
     `;
   }
 

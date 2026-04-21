@@ -88,6 +88,7 @@ export class HaFilterFloorAreas extends LitElement {
                       ) || false}
                       graphic="icon"
                       @request-selected=${this._handleItemClick}
+                      @keydown=${this._handleItemKeydown}
                     >
                       <ha-floor-icon
                         slot="graphic"
@@ -125,6 +126,7 @@ export class HaFilterFloorAreas extends LitElement {
         .type=${"areas"}
         graphic="icon"
         @request-selected=${this._handleItemClick}
+        @keydown=${this._handleItemKeydown}
         class=${classMap({
           rtl: computeRTL(this.hass),
           floor: hasFloor,
@@ -147,6 +149,13 @@ export class HaFilterFloorAreas extends LitElement {
         ${area.name}
       </ha-check-list-item>
     `;
+  }
+
+  private _handleItemKeydown(ev) {
+    if (ev.key === " " || ev.key === "Enter") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
   }
 
   private _handleItemClick(ev) {

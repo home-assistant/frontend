@@ -1,3 +1,4 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
@@ -5,18 +6,16 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
-import { classMap } from "lit/directives/class-map";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import "../../../../components/ha-checkbox";
 import "../../../../components/ha-svg-icon";
+import { haStyle } from "../../../../resources/styles";
+import { loadVirtualizer } from "../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { haStyle } from "../../../../resources/styles";
 
 @customElement("developer-tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
@@ -218,7 +217,7 @@ class HaPanelDevStateRenderer extends LitElement {
   private _copyEntity = async (ev) => {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
-    await copyToClipboard(entity.entity_id);
+    await copyToClipboard(entity.entity_id, document.body);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });

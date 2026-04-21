@@ -16,7 +16,10 @@ import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  shouldShowFavoriteOptions,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LightEntity } from "../../../data/light";
 import {
@@ -54,6 +57,14 @@ class MoreInfoLight extends LitElement {
   @state() private _effect?: string;
 
   @state() private _mainControl: MainControl = "brightness";
+
+  private _renderEffectIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="effect"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
@@ -102,10 +113,14 @@ class MoreInfoLight extends LitElement {
       LightEntityFeature.EFFECT
     );
 
-    const hasFavoriteColors =
+    const showFavoriteColors = Boolean(
       this.entry &&
-      (this.entry.options?.light?.favorite_colors == null ||
-        this.entry.options.light.favorite_colors.length > 0);
+      (this.editMode ||
+        (lightSupportsFavoriteColors(this.stateObj) &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.light?.favorite_colors
+          )))
+    );
 
     return html`
       <ha-more-info-state-header
@@ -231,9 +246,7 @@ class MoreInfoLight extends LitElement {
                     `
                   : nothing}
               </ha-icon-button-group>
-              ${this.entry &&
-              lightSupportsFavoriteColors(this.stateObj) &&
-              (this.editMode || hasFavoriteColors)
+              ${showFavoriteColors
                 ? html`
                     <ha-more-info-light-favorite-colors
                       .hass=${this.hass}
@@ -271,15 +284,9 @@ class MoreInfoLight extends LitElement {
                             effect
                           )
                         : effect,
-                      attributeIcon: this.stateObj
-                        ? {
-                            stateObj: this.stateObj,
-                            attribute: "effect",
-                            attributeValue: effect,
-                          }
-                        : undefined,
                     })
                   )}
+                  .renderIcon=${this._renderEffectIcon}
                 >
                   <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
                 </ha-control-select-menu>

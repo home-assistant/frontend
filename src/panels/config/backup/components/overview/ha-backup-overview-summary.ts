@@ -58,7 +58,7 @@ class HaBackupOverviewBackups extends LitElement {
 
   private _renderSummaryCard(
     heading: string,
-    status: "error" | "info" | "warning" | "loading" | "success",
+    status: "error" | "info" | "warning" | "loading" | "success" | "none",
     headline: string | null,
     description?: string | null,
     lastCompletedDate?: Date
@@ -103,7 +103,7 @@ class HaBackupOverviewBackups extends LitElement {
     if (this.fetching) {
       return this._renderSummaryCard(
         this.hass.localize("ui.panel.config.backup.overview.summary.loading"),
-        "loading",
+        "none",
         null,
         null
       );

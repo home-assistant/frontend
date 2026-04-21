@@ -10,6 +10,7 @@ import {
   mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
@@ -31,6 +32,8 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -75,7 +78,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showToast } from "../../../../util/toast";
+import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
@@ -175,7 +178,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _uiModeAvailable = true;
 
@@ -184,6 +187,8 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
+
+  @state() private _isNew = false;
 
   @state() private _warnings?: string[];
 
@@ -237,12 +242,20 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const target =
-      type === "service" && "target" in this.action
-        ? (this.action as ServiceAction).target
-        : type === "device_id" && (this.action as DeviceAction).device_id
-          ? { device_id: (this.action as DeviceAction).device_id }
-          : undefined;
+    const action = type === "service" && (this.action as ServiceAction).action;
+
+    const actionHasTarget =
+      action &&
+      "target" in
+        (this.hass.services?.[computeDomain(action)]?.[
+          computeObjectId(action)
+        ] || {});
+
+    const target = actionHasTarget
+      ? (this.action as ServiceAction).target
+      : type === "device_id" && (this.action as DeviceAction).device_id
+        ? { device_id: (this.action as DeviceAction).device_id }
+        : undefined;
 
     return html`
       ${type === "service" && "action" in this.action && this.action.action
@@ -265,7 +278,9 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${target ? this._renderTargets(target) : nothing}
+        ${target !== undefined || (actionHasTarget && !this._isNew)
+          ? this._renderTargets(target, actionHasTarget && !this._isNew)
+          : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
@@ -371,6 +386,31 @@ export default class HaAutomationActionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
+        ${this._pasteAvailable()
+          ? html`
+              <ha-dropdown-item value="paste">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste"
+                  ),
+                  html`<span class="shortcut">
+                    <span
+                      >${isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )}</span
+                    >
+                    <span>+</span>
+                    <span>V</span>
+                  </span>`
+                )}
+              </ha-dropdown-item>
+            `
+          : nothing}
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
@@ -545,7 +585,10 @@ export default class HaAutomationActionRow extends LitElement {
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
-              <ha-expansion-panel left-chevron>
+              <ha-expansion-panel
+                left-chevron
+                @expanded-changed=${this._expansionPanelChanged}
+              >
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
@@ -575,10 +618,11 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget) =>
+    (target?: HassServiceTarget, targetRequired = false) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
+        .targetRequired=${targetRequired}
       ></ha-automation-row-targets>`
   );
 
@@ -670,7 +714,7 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
 
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.run_action_success"
       ),
@@ -683,7 +727,7 @@ export default class HaAutomationActionRow extends LitElement {
       fireEvent(this, "close-sidebar");
     }
 
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.successfully_deleted"),
       duration: 4000,
       action: {
@@ -751,7 +795,10 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _copyAction = () => {
     this._setClipboard();
-    showToast(this, {
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(); // refresh sidebar
+    }
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.copied_to_clipboard"
       ),
@@ -765,13 +812,22 @@ export default class HaAutomationActionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.cut_to_clipboard"
       ),
       duration: 2000,
     });
   };
+
+  private _pasteAction = () => {
+    const action = this._clipboard?.action;
+    if (!action) return;
+
+    fireEvent(this, "paste", { item: action });
+  };
+
+  private _pasteAvailable = () => !!this._clipboard?.action;
 
   private _moveUp = () => {
     fireEvent(this, "move-up");
@@ -802,6 +858,12 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
+  private _expansionPanelChanged(ev: CustomEvent) {
+    if (!ev.detail.expanded) {
+      this._isNew = false;
+    }
+  }
+
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -810,6 +872,10 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     this.openSidebar();
+  }
+
+  public markAsNew(): void {
+    this._isNew = true;
   }
 
   public openSidebar(action?: Action): void {
@@ -822,6 +888,7 @@ export default class HaAutomationActionRow extends LitElement {
       },
       close: (focus?: boolean) => {
         this._selected = false;
+        this._isNew = false;
         fireEvent(this, "close-sidebar");
         if (focus) {
           this.focus();
@@ -839,6 +906,8 @@ export default class HaAutomationActionRow extends LitElement {
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
+      paste: this._pasteAction,
+      pasteAvailable: this._pasteAvailable,
       duplicate: this._duplicateAction,
       insertAfter: this._insertAfter,
       run: this._runAction,
@@ -931,6 +1000,9 @@ export default class HaAutomationActionRow extends LitElement {
         break;
       case "cut":
         this._cutAction();
+        break;
+      case "paste":
+        this._pasteAction();
         break;
       case "move_up":
         this._moveUp();

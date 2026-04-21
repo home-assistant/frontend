@@ -1,23 +1,30 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("sensor", "brightness", "12", {}),
-  getEntity("sensor", "brightness_medium", "53", {}),
-  getEntity("sensor", "brightness_high", "87", {}),
-  getEntity("plant", "bonsai", "ok", {}),
-  getEntity("sensor", "not_working", "unavailable", {}),
-  getEntity("sensor", "outside_humidity", "54", {
-    unit_of_measurement: "%",
-  }),
-  getEntity("sensor", "outside_temperature", "15.6", {
-    unit_of_measurement: "°C",
-  }),
+  { entity_id: "sensor.brightness", state: "12", attributes: {} },
+  { entity_id: "sensor.brightness_medium", state: "53", attributes: {} },
+  { entity_id: "sensor.brightness_high", state: "87", attributes: {} },
+  { entity_id: "plant.bonsai", state: "ok", attributes: {} },
+  { entity_id: "sensor.not_working", state: "unavailable", attributes: {} },
+  {
+    entity_id: "sensor.outside_humidity",
+    state: "54",
+    attributes: {
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "sensor.outside_temperature",
+    state: "15.6",
+    attributes: {
+      unit_of_measurement: "°C",
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -45,6 +52,19 @@ const CONFIGS = [
   entity: sensor.outside_humidity
   name: Outside Humidity
   needle: true
+    `,
+  },
+  {
+    heading: "Rendering needle and severity levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  name: Brightness High
+  needle: true
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
     `,
   },
   {
@@ -113,6 +133,53 @@ const CONFIGS = [
 - type: gauge
   entity: sensor.not_working
     `,
+  },
+  {
+    heading: "Lower minimum",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  needle: true
+  severity:
+    green: 0
+    yellow: 0.45
+    red: 0.9
+  min: -0.05
+  name: " "
+  max: 1.9
+  unit: GBP/h`,
+  },
+  {
+    heading: "A lot of segments",
+    config: `
+- type: gauge
+  needle: true
+  name: Percent gauge
+  entity: sensor.brightness_high
+  unit: "%"
+  min: 0
+  max: 100
+  segments:
+    - from: 0
+      color: "#db4437"
+    - from: 10
+      color: "#cc4d39"
+    - from: 20
+      color: "#bd563a"
+    - from: 30
+      color: "#ad603c"
+    - from: 40
+      color: "#9e693d"
+    - from: 50
+      color: "#8f723f"
+    - from: 60
+      color: "#807b41"
+    - from: 70
+      color: "#718442"
+    - from: 80
+      color: "#618e44"
+    - from: 90
+      color: "#43a047"`,
   },
 ];
 

@@ -102,6 +102,14 @@ export const getMyRedirects = (): Redirects => ({
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  config_matter: {
+    component: "matter",
+    redirect: "/config/matter/dashboard",
+  },
+  config_thread: {
+    component: "thread",
+    redirect: "/config/thread",
+  },
   add_zigbee_device: {
     component: "zha",
     redirect: "/config/zha/add",
@@ -288,6 +296,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "history",
     redirect: "/history",
   },
+  overview: {
+    redirect: "/home/overview",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
@@ -325,12 +336,15 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/info",
   },
   supervisor_store: {
+    component: "hassio",
     redirect: "/config/apps/available",
   },
   supervisor_addons: {
+    component: "hassio",
     redirect: "/config/apps",
   },
   supervisor_app: {
+    component: "hassio",
     redirect: "/config/app",
     params: {
       app: "string",
@@ -340,6 +354,7 @@ export const getMyRedirects = (): Redirects => ({
     },
   },
   supervisor_addon: {
+    component: "hassio",
     redirect: "/config/app",
     params: {
       addon: "string",
@@ -349,6 +364,7 @@ export const getMyRedirects = (): Redirects => ({
     },
   },
   supervisor_add_addon_repository: {
+    component: "hassio",
     redirect: "/config/apps/available",
     params: {
       repository_url: "url",
@@ -399,20 +415,8 @@ class HaPanelMy extends LitElement {
       1,
       this.route.path.endsWith("/") ? this.route.path.length - 1 : undefined
     );
-    const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
     this._redirect = getRedirect(path);
-
-    if (path.startsWith("supervisor") && this._redirect === undefined) {
-      if (!hasSupervisor) {
-        this._error = "no_supervisor";
-        return;
-      }
-      navigate(`/hassio/_my_redirect/${path}${window.location.search}`, {
-        replace: true,
-      });
-      return;
-    }
 
     if (!this._redirect) {
       this._error = "not_supported";
@@ -430,10 +434,13 @@ class HaPanelMy extends LitElement {
 
     if (
       this._redirect.component &&
-      !isComponentLoaded(this.hass, this._redirect.component)
+      !isComponentLoaded(this.hass.config, this._redirect.component)
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
-      this._error = "no_component";
+      this._error =
+        this._redirect.component === "hassio"
+          ? "no_supervisor"
+          : "no_component";
       const component = this._redirect.component;
       if ((PROTOCOL_INTEGRATIONS as readonly string[]).includes(component)) {
         const params = extractSearchParamsObject();

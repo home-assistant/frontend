@@ -85,7 +85,7 @@ class DialogSystemInformation extends LitElement {
   }
 
   private _subscribe(): void {
-    if (isComponentLoaded(this.hass, "system_health")) {
+    if (isComponentLoaded(this.hass.config, "system_health")) {
       this._systemHealthSubscription = subscribeSystemHealthInfo(
         this.hass,
         (info) => {
@@ -98,7 +98,7 @@ class DialogSystemInformation extends LitElement {
       );
     }
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._hassIOSubscription = subscribePollingCollection(
         this.hass,
         async () => {

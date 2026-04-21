@@ -21,14 +21,13 @@ import { customElement, property, state } from "lit/decorators";
 import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/progress/ha-progress-ring";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -56,6 +55,7 @@ import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
@@ -166,20 +166,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               `
             : nothing}
         </div>
-        <ha-fab
+        <ha-button
           slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.zwave_js.common.add_node"
-          )}
-          extended
+          size="large"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
             this._network?.controller.inclusion_state !==
               InclusionState.SmartStart)}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.zwave_js.common.add_node")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -242,6 +240,20 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   : nothing}
               </small>
             </div>
+            <img
+              class="logo"
+              alt="Z-Wave"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "zwave_js",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
           </div>
         </div>
       </ha-card>
@@ -621,7 +633,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
 
     const [network, provisioningEntries] = await Promise.all([
-      fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
+      fetchZwaveNetworkStatus(this.hass!.connection, {
+        entry_id: this.configEntryId,
+      }),
       fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
     ]);
 
@@ -791,7 +805,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           url,
           `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
         );
-        URL.revokeObjectURL(url);
       } catch (err: any) {
         showAlertDialog(this, {
           title: this.hass.localize(
@@ -899,6 +912,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           display: flex;
           align-items: center;
           column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
         }
 
         .network-status div.heading .icon {

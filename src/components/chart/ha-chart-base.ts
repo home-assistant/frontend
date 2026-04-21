@@ -18,15 +18,16 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
-import { themesContext } from "../../data/context";
+import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -44,6 +45,7 @@ export type CustomLegendOption = ECOption["legend"] & {
     id?: string;
     secondaryIds?: string[]; // Other dataset IDs that should be controlled by this legend item.
     name: string;
+    value?: string; // Current value to display next to the name in the legend.
     itemStyle?: Record<string, any>;
   }[];
 };
@@ -73,8 +75,11 @@ export class HaChartBase extends LitElement {
   public extraComponents?: any[];
 
   @state()
-  @consume({ context: themesContext, subscribe: true })
-  _themes!: Themes;
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   @state() private _isZoomed = false;
 
@@ -89,6 +94,10 @@ export class HaChartBase extends LitElement {
   private _isTouchDevice = "ontouchstart" in window;
 
   private _lastTapTime?: number;
+
+  private _longPressTimer?: ReturnType<typeof setTimeout>;
+
+  private _longPressTriggered = false;
 
   private _shouldResizeChart = false;
 
@@ -127,6 +136,7 @@ export class HaChartBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._legendPointerCancel();
     this._pendingSetup = false;
     while (this._listeners.length) {
       this._listeners.pop()!();
@@ -168,6 +178,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           // drag to zoom
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
@@ -186,6 +197,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
             key: "dataZoomSelect",
@@ -261,6 +273,9 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
+      if (chartOptions.series) {
+        this._updateSankeyRoam();
+      }
     }
   }
 
@@ -279,39 +294,53 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <div class="chart-controls ${classMap({ small: this.smallControls })}">
-          ${this._isZoomed && !this.hideResetButton
-            ? html`<ha-icon-button
-                class="zoom-reset"
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-              ></ha-icon-button>`
-            : nothing}
-          <slot name="button"></slot>
+        <div class="top-controls ${classMap({ small: this.smallControls })}">
+          <slot name="search"></slot>
+          <div
+            class="chart-controls ${classMap({ small: this.smallControls })}"
+          >
+            ${this._isZoomed && !this.hideResetButton
+              ? html`<ha-icon-button
+                  class="zoom-reset"
+                  .path=${mdiRestart}
+                  @click=${this._handleZoomReset}
+                  title=${this.hass.localize(
+                    "ui.components.history_charts.zoom_reset"
+                  )}
+                ></ha-icon-button>`
+              : nothing}
+            <slot name="button"></slot>
+          </div>
         </div>
       </div>
     `;
   }
 
-  private _renderLegend() {
+  private _getLegendItems() {
     if (!this.options?.legend || !this.data) {
-      return nothing;
+      return undefined;
     }
     const legend = ensureArray(this.options.legend).find(
       (l) => l.show && l.type === "custom"
     ) as CustomLegendOption | undefined;
     if (!legend) {
-      return nothing;
+      return undefined;
     }
     const datasets = ensureArray(this.data);
-    const items =
+    return (
       legend.data ||
       datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
+        .map((d) => ({ id: d.id, name: d.name }))
+    );
+  }
+
+  private _renderLegend() {
+    const items = this._getLegendItems();
+    if (!items) {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data!);
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -333,12 +362,14 @@ export class HaChartBase extends LitElement {
           let itemStyle: Record<string, any> = {};
           let name = "";
           let id = "";
+          let value = "";
           if (typeof item === "string") {
             name = item;
             id = item;
           } else {
             name = item.name ?? "";
             id = item.id ?? name;
+            value = item.value ?? "";
             itemStyle = item.itemStyle ?? {};
           }
           const dataset =
@@ -354,6 +385,11 @@ export class HaChartBase extends LitElement {
           return html`<li
             .id=${id}
             @click=${this._legendClick}
+            @pointerdown=${this._legendPointerDown}
+            @pointerup=${this._legendPointerCancel}
+            @pointerleave=${this._legendPointerCancel}
+            @pointercancel=${this._legendPointerCancel}
+            @contextmenu=${this._legendContextMenu}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
             .title=${name}
           >
@@ -365,6 +401,7 @@ export class HaChartBase extends LitElement {
               })}
             ></div>
             <div class="label">${name}</div>
+            ${value ? html`<div class="value">${value}</div>` : nothing}
           </li>`;
         })}
         ${items.length > overflowLimit
@@ -422,6 +459,22 @@ export class HaChartBase extends LitElement {
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
+      });
+      this.chart.on("sankeyroam", () => {
+        const option = this.chart!.getOption();
+        const series = option.series as any[];
+        const sankeySeries = series?.find((s: any) => s.type === "sankey");
+        const zoomed = sankeySeries.zoom !== 1;
+        this._isZoomed = zoomed;
+        if (!zoomed) {
+          // Reset center when fully zoomed out
+          this.chart!.setOption({
+            series: [{ id: sankeySeries.id, center: null }],
+          });
+        }
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
+        // Clear cached emphasis states so labels don't revert to pre-zoom sizes
+        this.chart!.dispatchAction({ type: "downplay" });
       });
 
       if (!this.options?.dataZoom) {
@@ -521,6 +574,7 @@ export class HaChartBase extends LitElement {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._updateSankeyRoam();
     } finally {
       this._loading = false;
     }
@@ -578,12 +632,29 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "none",
+      filterMode: this._getDataZoomFilterMode() as any,
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
+  }
+
+  // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
+  // It rescales the Y-axis to the visible data while keeping one point
+  // just outside each boundary to avoid line gaps at the zoom edges.
+  // Use "filter" for bar charts since boundaryFilter causes rendering issues.
+  // Use "weakFilter" for other types (e.g. custom/timeline) so bars
+  // spanning the visible range boundary are kept.
+  private _getDataZoomFilterMode(): string {
+    const series = ensureArray(this.data);
+    if (series.every((s) => s.type === "line")) {
+      return "boundaryFilter";
+    }
+    if (series.some((s) => s.type === "bar")) {
+      return "filter";
+    }
+    return "weakFilter";
   }
 
   private _createOptions(): ECOption {
@@ -620,7 +691,7 @@ export class HaChartBase extends LitElement {
             hideOverlap: true,
             ...axis.axisLabel,
           },
-          minInterval,
+          minInterval: axis.minInterval ?? minInterval,
         } as XAXisOption;
       });
     }
@@ -877,10 +948,20 @@ export class HaChartBase extends LitElement {
           };
         }
         if (s.sampling === "minmax") {
-          const minX =
-            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
-          const maxX =
-            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
+          const minX = xAxis?.min
+            ? xAxis.min instanceof Date
+              ? xAxis.min.getTime()
+              : typeof xAxis.min === "number"
+                ? xAxis.min
+                : undefined
+            : undefined;
+          const maxX = xAxis?.max
+            ? xAxis.max instanceof Date
+              ? xAxis.max.getTime()
+              : typeof xAxis.max === "number"
+                ? xAxis.max
+                : undefined
+            : undefined;
           return {
             ...s,
             sampling: undefined,
@@ -933,6 +1014,26 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+    // Handle sankey chart double-click zoom
+    const option = this.chart.getOption();
+    const allSeries = option.series as any[];
+    const sankeySeries = allSeries?.filter((s: any) => s.type === "sankey");
+    if (sankeySeries?.length) {
+      if (this._isZoomed) {
+        this._handleZoomReset();
+      } else {
+        this.chart.setOption({
+          series: sankeySeries.map((s: any) => ({
+            id: s.id,
+            zoom: 2,
+          })),
+        });
+        this._isZoomed = true;
+      }
+      if (sankeySeries.length === allSeries?.length) {
+        return;
+      }
+    }
     const range = this._isZoomed
       ? [0, 100]
       : [
@@ -957,6 +1058,37 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // Reset sankey roam zoom
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          zoom: 1,
+          center: null,
+        })),
+      });
+      this._isZoomed = false;
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+  }
+
+  private _updateSankeyRoam() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+        })),
+      });
+    }
   }
 
   private _handleDataZoomEvent(e: any) {
@@ -1000,11 +1132,52 @@ export class HaChartBase extends LitElement {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _legendClick(ev: any) {
+  // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
+  private _legendPointerDown(ev: PointerEvent) {
+    // Mouse uses Ctrl/Cmd+click instead
+    if (ev.pointerType === "mouse") {
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement)?.id;
+    if (!id) {
+      return;
+    }
+    this._longPressTriggered = false;
+    this._longPressTimer = setTimeout(() => {
+      this._longPressTriggered = true;
+      this._longPressTimer = undefined;
+      this._soloLegend(id);
+    }, 500);
+  }
+
+  private _legendPointerCancel() {
+    if (this._longPressTimer) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = undefined;
+    }
+  }
+
+  private _legendContextMenu(ev: Event) {
+    if (this._longPressTimer || this._longPressTriggered) {
+      ev.preventDefault();
+    }
+  }
+
+  private _legendClick(ev: MouseEvent) {
     if (!this.chart) {
       return;
     }
-    const id = ev.currentTarget?.id;
+    if (this._longPressTriggered) {
+      this._longPressTriggered = false;
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement)?.id;
+    // Cmd+click on Mac (Ctrl+click is right-click there), Ctrl+click elsewhere
+    const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
+    if (soloModifier) {
+      this._soloLegend(id);
+      return;
+    }
     if (this._hiddenDatasets.has(id)) {
       this._getAllIdsFromLegend(this.options, id).forEach((i) =>
         this._hiddenDatasets.delete(i)
@@ -1017,6 +1190,60 @@ export class HaChartBase extends LitElement {
       fireEvent(this, "dataset-hidden", { id });
     }
     this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _soloLegend(id: string) {
+    const allIds = this._getAllLegendIds();
+    const clickedIds = this._getAllIdsFromLegend(this.options, id);
+    const otherIds = allIds.filter((i) => !clickedIds.includes(i));
+
+    const clickedIsOnlyVisible =
+      clickedIds.every((i) => !this._hiddenDatasets.has(i)) &&
+      otherIds.every((i) => this._hiddenDatasets.has(i));
+
+    if (clickedIsOnlyVisible) {
+      // Already solo'd on this item — restore all series to visible
+      for (const hiddenId of [...this._hiddenDatasets]) {
+        this._hiddenDatasets.delete(hiddenId);
+        fireEvent(this, "dataset-unhidden", { id: hiddenId });
+      }
+    } else {
+      // Solo: hide every other series, unhide clicked if it was hidden
+      for (const otherId of otherIds) {
+        if (!this._hiddenDatasets.has(otherId)) {
+          this._hiddenDatasets.add(otherId);
+          fireEvent(this, "dataset-hidden", { id: otherId });
+        }
+      }
+      for (const clickedId of clickedIds) {
+        if (this._hiddenDatasets.has(clickedId)) {
+          this._hiddenDatasets.delete(clickedId);
+          fireEvent(this, "dataset-unhidden", { id: clickedId });
+        }
+      }
+    }
+    this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _getAllLegendIds(): string[] {
+    const items = this._getLegendItems();
+    if (!items) {
+      return [];
+    }
+    const allIds = new Set<string>();
+    for (const item of items) {
+      const primaryId =
+        typeof item === "string"
+          ? item
+          : ((item.id as string) ?? (item.name as string) ?? "");
+      for (const expandedId of this._getAllIdsFromLegend(
+        this.options,
+        primaryId
+      )) {
+        allIds.add(expandedId);
+      }
+    }
+    return [...allIds];
   }
 
   private _toggleExpandedLegend() {
@@ -1099,16 +1326,35 @@ export class HaChartBase extends LitElement {
       height: 100%;
       width: 100%;
     }
-    .chart-controls {
+    .top-controls {
       position: absolute;
-      top: 16px;
-      right: 4px;
+      top: var(--ha-space-4);
+      inset-inline-start: var(--ha-space-4);
+      inset-inline-end: var(--ha-space-1);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ha-space-2);
+      z-index: 1;
+      pointer-events: none;
+    }
+    ::slotted([slot="search"]) {
+      flex: 1 1 250px;
+      min-width: 0;
+      max-width: 250px;
+      pointer-events: auto;
+    }
+    .chart-controls {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-1);
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      pointer-events: auto;
+    }
+    .top-controls.small {
+      top: 0;
     }
     .chart-controls.small {
-      top: 0;
       flex-direction: row;
     }
     .chart-controls ha-icon-button,
@@ -1156,6 +1402,9 @@ export class HaChartBase extends LitElement {
     .chart-legend.multiple-items li {
       max-width: 220px;
     }
+    .chart-legend.multiple-items li:has(.value) {
+      max-width: 300px;
+    }
     .chart-legend .hidden {
       color: var(--secondary-text-color);
     }
@@ -1163,6 +1412,12 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+    }
+    .chart-legend .value {
+      color: var(--secondary-text-color);
+      margin-inline-start: var(--ha-space-1);
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .chart-legend .bullet {
       border-width: 1px;
@@ -1204,5 +1459,6 @@ declare global {
       start: number;
       end: number;
     };
+    "chart-sankeyroam": { zoom: number };
   }
 }

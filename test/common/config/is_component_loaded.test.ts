@@ -7,7 +7,7 @@ describe("isComponentLoaded", () => {
     const hass = {
       config: { components: ["test_component"] },
     } as unknown as HomeAssistant;
-    expect(isComponentLoaded(hass, "test_component")).toBe(true);
-    expect(isComponentLoaded(hass, "other_component")).toBe(false);
+    expect(isComponentLoaded(hass.config, "test_component")).toBe(true);
+    expect(isComponentLoaded(hass.config, "other_component")).toBe(false);
   });
 });

@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -19,6 +20,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -32,6 +34,7 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
+import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -43,7 +46,6 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -59,7 +61,9 @@ export class HaScriptTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -103,7 +107,12 @@ export class HaScriptTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
         ${!this.narrow && this.scriptId
           ? html`
               <ha-button
@@ -341,7 +350,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = this.entityRegistry.find(
+    this._entityId = this._entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -358,7 +367,7 @@ export class HaScriptTrace extends LitElement {
       if (this.scriptId) {
         this._loadTraces();
 
-        this._entityId = this.entityRegistry.find(
+        this._entityId = this._entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         )?.entity_id;
       }
@@ -444,7 +453,7 @@ export class HaScriptTrace extends LitElement {
       this.scriptId,
       this._runId!
     );
-    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -470,7 +479,6 @@ export class HaScriptTrace extends LitElement {
       url,
       `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
     );
-    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {
@@ -565,14 +573,18 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          min-height: calc(100% - var(--header-height));
+          flex: 1;
+          min-height: 0;
           display: flex;
+          overflow: hidden;
           background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
+          flex: none;
           height: auto;
           flex-direction: column;
+          overflow: visible;
         }
 
         .container {
@@ -581,15 +593,33 @@ export class HaScriptTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
-          overflow-x: auto;
           max-width: 50%;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        hat-script-graph {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
+          overflow: visible;
+          height: auto;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
         }
         .info {
           flex: 1;
+          overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        :host([narrow]) .info {
+          overflow: visible;
         }
         .trace-link {
           text-decoration: none;

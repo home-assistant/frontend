@@ -41,7 +41,7 @@ export class AITaskPref extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    if (!this.hass || !isComponentLoaded(this.hass, "ai_task")) {
+    if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
     }
     fetchAITaskPreferences(this.hass).then((prefs) => {
@@ -55,11 +55,14 @@ export class AITaskPref extends LitElement {
         <h1 class="card-header">
           <img
             alt=""
-            src=${brandsUrl({
-              domain: "ai_task",
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
+            src=${brandsUrl(
+              {
+                domain: "ai_task",
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.ai_task.header")}
@@ -97,7 +100,7 @@ export class AITaskPref extends LitElement {
               data-name="gen_data_entity_id"
               .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass, "ai_task")}
+              isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_data_entity_id ||
               this._prefs?.gen_data_entity_id}
               .entityFilter=${filterGenData}
@@ -117,7 +120,7 @@ export class AITaskPref extends LitElement {
               data-name="gen_image_entity_id"
               .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass, "ai_task")}
+              isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_image_entity_id ||
               this._prefs?.gen_image_entity_id}
               .entityFilter=${filterGenImage}

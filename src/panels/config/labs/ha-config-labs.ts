@@ -208,11 +208,14 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
           <div class="card-header">
             <img
               alt=""
-              src=${brandsUrl({
-                domain: preview_feature.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: preview_feature.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
@@ -423,7 +426,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         0% {
           box-shadow:
             0 0 0 var(--ha-border-width-md) var(--primary-color),
-            0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+            0 0 12px rgba(var(--rgb-primary-color), 0.4);
         }
         100% {
           box-shadow:

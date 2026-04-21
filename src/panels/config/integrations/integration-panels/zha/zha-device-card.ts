@@ -9,7 +9,8 @@ import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import { updateDeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import {
@@ -98,14 +99,13 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 : ""
             )}
           </div>
-          <ha-textfield
-            type="string"
+          <ha-input
             @change=${this._rename}
             .value=${this.device.user_given_name || this.device.name}
             .label=${this.hass.localize(
               "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}
-          ></ha-textfield>
+          ></ha-input>
           <ha-area-picker
             .hass=${this.hass}
             .device=${this.device.device_reg_id}
@@ -116,14 +116,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private async _rename(event): Promise<void> {
+  private async _rename(event: InputEvent): Promise<void> {
     if (!this.hass || !this.device) {
       return;
     }
     const device = this.device;
 
     const oldDeviceName = device.user_given_name || device.name;
-    const newDeviceName = event.target.value;
+    const newDeviceName = (event.target as HaInput).value;
     this.device.user_given_name = newDeviceName;
     await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
       name_by_user: newDeviceName,
@@ -234,7 +234,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         ha-card {
           border: none;
         }
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
       `,

@@ -54,11 +54,14 @@ import {
 } from "../../resources/fuseMultiTerm";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
+import {
+  effectiveQuickBarMode,
+  type QuickBarParams,
+  type QuickBarSection,
+} from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
 
@@ -101,7 +104,7 @@ export class QuickBar extends LitElement {
       this._translationsLoaded = true;
     }
     this._initialize();
-    this._selectedSection = params.mode;
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
 
     this._relatedResult = params.contextItem ? params.related : undefined;
@@ -130,7 +133,10 @@ export class QuickBar extends LitElement {
       console.error("Error fetching config entries for quick bar", err);
     }
 
-    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = hassioAddonsInfo.addons;
@@ -146,15 +152,16 @@ export class QuickBar extends LitElement {
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
-        this.hass.auth.external!.fireMessage({
-          type: "focus_element",
-          payload: {
-            element_id: "combo-box",
-          },
-        });
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this.hass && isIosApp(this.hass.auth.external)) {
+      //   this.hass.auth.external!.fireMessage({
+      //     type: "focus_element",
+      //     payload: {
+      //       element_id: "combo-box",
+      //     },
+      //   });
+      //   return;
+      // }
       this._comboBox?.focus();
     });
   };
@@ -226,7 +233,6 @@ export class QuickBar extends LitElement {
     return html`
       <ha-adaptive-dialog
         without-header
-        allow-mode-change
         flexcontent
         .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
@@ -288,7 +294,7 @@ export class QuickBar extends LitElement {
       <ha-combo-box-item
         tabindex="-1"
         type="button"
-        style="--mdc-icon-size: 32px;"
+        style="--mdc-icon-size: 24px;"
       >
         ${"stateObj" in item && item.stateObj
           ? html`
@@ -302,7 +308,7 @@ export class QuickBar extends LitElement {
             ? html`
                 <ha-domain-icon
                   slot="start"
-                  .hass=${this.hass}
+                  style="margin: var(--ha-space-1);"
                   .domain=${item.domain}
                   brand-fallback
                 ></ha-domain-icon>
@@ -319,7 +325,11 @@ export class QuickBar extends LitElement {
                   />
                 `
               : item.icon
-                ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+                ? html`<ha-icon
+                    style="margin: var(--ha-space-1);"
+                    slot="start"
+                    .icon=${item.icon}
+                  ></ha-icon>`
                 : "iconColor" in item && item.iconColor
                   ? html`
                       <div
@@ -333,7 +343,11 @@ export class QuickBar extends LitElement {
                       </div>
                     `
                   : html`
-                      <ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>
+                      <ha-svg-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .path=${iconPath}
+                      ></ha-svg-icon>
                     `}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
@@ -645,8 +659,10 @@ export class QuickBar extends LitElement {
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     entity: memoizeOne((states: PickerComboBoxItem[]) =>
@@ -846,6 +862,7 @@ export class QuickBar extends LitElement {
           );
           --dialog-content-padding: 0;
           --safe-area-inset-bottom: 0px;
+          --ha-dialog-show-duration: var(--ha-animation-duration-instant);
         }
 
         ha-tip {

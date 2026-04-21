@@ -3,6 +3,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiFlask,
   mdiPlayCircleOutline,
@@ -221,6 +222,37 @@ export default class HaAutomationSidebarCondition extends LitElement {
             : nothing}
         </div>
       </ha-dropdown-item>
+      ${this.config.pasteAvailable()
+        ? html`
+            <ha-dropdown-item
+              slot="menu-items"
+              value="paste"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.paste"
+                )}
+                ${!this.narrow
+                  ? html`<span class="shortcut">
+                      <span
+                        >${isMac
+                          ? html`<ha-svg-icon
+                              .path=${mdiAppleKeyboardCommand}
+                            ></ha-svg-icon>`
+                          : this.hass.localize(
+                              "ui.panel.config.automation.editor.ctrl"
+                            )}</span
+                      >
+                      <span>+</span>
+                      <span>V</span>
+                    </span>`
+                  : nothing}
+              </div>
+            </ha-dropdown-item>
+          `
+        : nothing}
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -435,6 +467,9 @@ export default class HaAutomationSidebarCondition extends LitElement {
         break;
       case "cut":
         this.config.cut();
+        break;
+      case "paste":
+        this.config.paste();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();

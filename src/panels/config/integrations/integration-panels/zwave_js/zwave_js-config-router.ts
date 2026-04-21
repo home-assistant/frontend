@@ -53,10 +53,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         tag: "zwave_js-node-config",
         load: () => import("./zwave_js-node-config"),
       },
-      node_installer: {
-        tag: "zwave_js-node-installer",
-        load: () => import("./zwave_js-node-installer"),
-      },
       statistics: {
         tag: "zwave_js-controller-statistics",
         load: () => import("./zwave_js-controller-statistics"),

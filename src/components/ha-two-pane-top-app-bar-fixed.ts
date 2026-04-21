@@ -5,6 +5,7 @@ import {
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
 import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
+// eslint-disable-next-line import-x/no-named-as-default
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";
 import { property, query, customElement } from "lit/decorators";
@@ -298,7 +299,7 @@ export class TopAppBarBaseBase extends BaseElement {
       }
       @media (prefers-reduced-motion: reduce) {
         .mdc-top-app-bar {
-          transition: none;
+          transition: 1ms;
         }
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {

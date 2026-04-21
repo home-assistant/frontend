@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
@@ -17,7 +18,7 @@ import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
-export class HuiNotificationDrawer extends LitElement {
+export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _notifications: PersistentNotification[] = [];
@@ -162,6 +163,12 @@ export class HuiNotificationDrawer extends LitElement {
   private _dismissAll() {
     this.hass.callService("persistent_notification", "dismiss_all");
     this.closeDialog();
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    return {
+      Escape: () => this.closeDialog(),
+    };
   }
 
   static styles = css`

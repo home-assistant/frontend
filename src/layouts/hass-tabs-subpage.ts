@@ -1,6 +1,12 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
@@ -28,6 +34,8 @@ export interface PageNavigation {
   not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
+  /** Hide from non-admin users in filtered navigation and quick bar. */
+  adminOnly?: boolean;
   iconPath?: string;
   iconSecondaryPath?: string;
   iconViewBox?: string;
@@ -37,7 +45,7 @@ export interface PageNavigation {
 }
 
 @customElement("hass-tabs-subpage")
-class HassTabsSubpage extends LitElement {
+export class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
@@ -65,7 +73,17 @@ class HassTabsSubpage extends LitElement {
    */
   @property({ type: Boolean, attribute: "has-fab" }) public hasFab = false;
 
+  /**
+   * Whether tabs are shown (2 or more tabs visible).
+   * When both, show-tabs and narrow are true, tabs are shown as bottom bar.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean, attribute: "show-tabs", reflect: true })
+  public showTabs = false;
+
   @state() private _activeTab?: PageNavigation;
+
+  @query(".content") private _content?: HTMLDivElement;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -83,6 +101,7 @@ class HassTabsSubpage extends LitElement {
       const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
       if (shownTabs.length < 2) {
+        this.showTabs = false;
         if (shownTabs.length === 1) {
           const page = shownTabs[0];
           return [
@@ -92,6 +111,7 @@ class HassTabsSubpage extends LitElement {
         return [""];
       }
 
+      this.showTabs = true;
       return shownTabs.map(
         (page) => html`
           <a href=${page.path} @click=${this._tabClicked}>
@@ -135,7 +155,6 @@ class HassTabsSubpage extends LitElement {
       this.narrow,
       this.localizeFunc || this.hass.localize
     );
-    const showTabs = tabs.length > 1;
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
@@ -160,12 +179,12 @@ class HassTabsSubpage extends LitElement {
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}
-            ${this.narrow || !showTabs
+            ${this.narrow || !this.showTabs
               ? html`<div class="main-title">
-                  <slot name="header">${!showTabs ? tabs[0] : ""}</slot>
+                  <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
                 </div>`
               : ""}
-            ${showTabs && !this.narrow
+            ${this.showTabs && !this.narrow
               ? html`<div id="tabbar">${tabs}</div>`
               : ""}
             <div id="toolbar-icon">
@@ -173,13 +192,11 @@ class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${showTabs && this.narrow
+        ${this.showTabs && this.narrow
           ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>
-      <div
-        class=${classMap({ container: true, tabs: showTabs && this.narrow })}
-      >
+      <div class="container">
         ${this.pane
           ? html`<div class="pane">
               <div class="shadow-container"></div>
@@ -188,15 +205,12 @@ class HassTabsSubpage extends LitElement {
               </div>
             </div>`
           : nothing}
-        <div
-          class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
-          @scroll=${this._saveScrollPos}
-        >
+        <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
       </div>
-      <div id="fab" class=${classMap({ tabs: showTabs })}>
+      <div id="fab">
         <slot name="fab"></slot>
       </div>
     `;
@@ -205,6 +219,15 @@ class HassTabsSubpage extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  public focusContentScroller() {
+    if (!this._content) {
+      return;
+    }
+
+    this._content.style.outline = "none";
+    this._content.focus({ preventScroll: true });
   }
 
   private _backTapped(): void {
@@ -373,7 +396,7 @@ class HassTabsSubpage extends LitElement {
           margin-left: var(--safe-area-inset-left);
           margin-inline-start: var(--safe-area-inset-left);
         }
-        :host([narrow]) .content.tabs {
+        :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */
           margin-bottom: calc(
             var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
@@ -384,7 +407,7 @@ class HassTabsSubpage extends LitElement {
           height: calc(64px + var(--safe-area-inset-bottom, 0px));
         }
 
-        :host([narrow]) .content.tabs .fab-bottom-space {
+        :host([narrow][show-tabs]) .content .fab-bottom-space {
           height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
 
@@ -399,8 +422,9 @@ class HassTabsSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
-        :host([narrow]) #fab.tabs {
+        :host([narrow][show-tabs]) #fab {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
         }
         #fab[is-wide] {

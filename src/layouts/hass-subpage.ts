@@ -23,6 +23,8 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ type: Boolean }) public scrollable = true;
+
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
@@ -57,7 +59,14 @@ class HassSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+      <div
+        class=${classMap({
+          content: true,
+          "ha-scrollbar": this.scrollable,
+          "not-scrollable": !this.scrollable,
+        })}
+        @scroll=${this._saveScrollPos}
+      >
         <slot></slot>
       </div>
       <div id="fab">
@@ -163,6 +172,12 @@ class HassSubpage extends LitElement {
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
+        .content.not-scrollable {
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
         :host([narrow]) .content {
           width: calc(
             100% - var(--safe-area-inset-left, 0px) - var(
@@ -184,6 +199,7 @@ class HassSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow]) #fab.tabs {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

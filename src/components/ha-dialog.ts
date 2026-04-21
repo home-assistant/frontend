@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -10,11 +11,12 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { withViewTransition } from "../common/util/view-transition";
+import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -52,7 +54,12 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --ha-dialog-show-duration - Show animation duration.
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
+ * @cssprop --ha-dialog-surface-backdrop-filter - Dialog backdrop filter.
+ * @cssprop --dialog-box-shadow - Dialog box shadow.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
+ * @cssprop --ha-dialog-scrim-backdrop-filter - Dialog scrim backdrop filter.
+ * @cssprop --dialog-backdrop-filter - Dialog scrim backdrop filter (legacy).
+ * @cssprop --mdc-dialog-scrim-color - Dialog scrim color (legacy).
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -77,8 +84,6 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  */
 @customElement("ha-dialog")
 export class HaDialog extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
@@ -118,9 +123,26 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @query(".body") public bodyContainer!: HTMLDivElement;
 
   @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  // disabled till iOS app fix the "focus_element" implementation
+  // @state()
+  // @consume({ context: configContext, subscribe: true })
+  // private _hassConfig?: ContextType<typeof configContext>;
+
+  @state()
   private _bodyScrolled = false;
 
   private _escapePressed = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+  }
 
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
@@ -162,7 +184,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                 <slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
-                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .label=${this._i18n?.localize("ui.common.close") ?? "Close"}
                     .path=${mdiClose}
                   ></ha-icon-button>
                 </slot>
@@ -189,46 +211,74 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     this._open = true;
     fireEvent(this, "opened");
 
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
-        const element = this.querySelector("[autofocus]");
-        if (element !== null) {
-          if (!element.id) {
-            element.id = "ha-dialog-autofocus";
-          }
-          this.hass?.auth.external?.fireMessage({
-            type: "focus_element",
-            payload: {
-              element_id: element.id,
-            },
-          });
-        }
-        return;
-      }
+      // disabled till iOS app fix the "focus_element" implementation
+      // if (this._hassConfig?.auth.external && isIosApp(this._hassConfig.auth.external)) {
+      //   const element = this.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-dialog-autofocus";
+      //     }
+      //     this._hassConfig.auth.external.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     fireEvent(this, "after-show");
   };
 
   private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
+      this._setFullscreen(false);
       fireEvent(this, "closed");
     }
   };
 
   public disconnectedCallback(): void {
+    this.removeEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+    this._setFullscreen(false);
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  private _handleFullscreenChanged(ev: HASSDomEvent<boolean>): void {
+    if (!this._open) {
+      this._setFullscreen(ev.detail);
+      return;
+    }
+
+    withViewTransition(() => {
+      this._setFullscreen(ev.detail);
+    });
+  }
+
+  private _setFullscreen(fullscreen: boolean): void {
+    this.toggleAttribute("fullscreen", fullscreen);
   }
 
   @eventOptions({ passive: true })
@@ -271,10 +321,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --spacing: var(--dialog-content-padding, var(--ha-space-6));
           --show-duration: var(--ha-dialog-show-duration, 200ms);
           --hide-duration: var(--ha-dialog-hide-duration, 200ms);
-          --ha-dialog-surface-background: var(
-            --card-background-color,
-            var(--ha-color-surface-default)
-          );
           --wa-color-surface-raised: var(
             --ha-dialog-surface-background,
             var(--card-background-color, var(--ha-color-surface-default))
@@ -300,11 +346,34 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
         }
 
-        :host([width="full"]) wa-dialog {
+        :host([width="full"]) wa-dialog,
+        :host([fullscreen]) wa-dialog {
           --width: var(--full-width);
         }
 
+        :host([fullscreen]) wa-dialog::part(dialog) {
+          min-height: var(--safe-height);
+          max-height: var(--safe-height);
+          margin-top: 0;
+          transform: none;
+        }
+
+        :host([fullscreen]) .content-wrapper {
+          overflow: hidden;
+        }
+
+        :host([fullscreen]) .body {
+          overflow: hidden;
+          padding: 0;
+        }
+
         wa-dialog::part(dialog) {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-surface-backdrop-filter,
+            none
+          );
+          backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+          box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
@@ -332,6 +401,18 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+        }
+
+        wa-dialog::part(dialog)::backdrop {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          background-color: var(--mdc-dialog-scrim-color, none);
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -446,6 +527,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "dialog-set-fullscreen": boolean;
     opened: undefined;
     "after-show": undefined;
     closed: undefined;

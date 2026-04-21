@@ -9,7 +9,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import type { HassioAddonDetails } from "../../../data/hassio/addon";
 import { fetchHassioAddonInfo } from "../../../data/hassio/addon";
@@ -234,7 +234,7 @@ class HaConfigAppDashboard extends LitElement {
 
     if (path === "uninstall") {
       // Navigate back to installed apps after uninstall
-      window.history.back();
+      goBack(this._fromStore ? "/config/apps/available" : "/config/apps");
     } else {
       // Reload app info
       await this._loadAddon();

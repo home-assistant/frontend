@@ -10,13 +10,10 @@
  *
  * @see https://github.com/home-assistant/frontend/issues/28732
  */
-// eslint-disable-next-line import/extensions
 import { directive, Directive } from "lit-html/directive.js";
-// eslint-disable-next-line import/extensions
 import { setCommittedValue } from "lit-html/directive-helpers.js";
 // eslint-disable-next-line lit/no-legacy-imports
 import { nothing } from "lit-html";
-// eslint-disable-next-line import/extensions
 import type { Part } from "lit-html/directive.js";
 
 class KeyedES5 extends Directive {

@@ -85,7 +85,7 @@ export class CloudDiscover extends LitElement {
             </ha-button>
           </div>
         </div>
-        ${isComponentLoaded(this.hass, "cloud")
+        ${isComponentLoaded(this.hass.config, "cloud")
           ? html`
               <div class="card-actions">
                 <ha-button appearance="plain" href="/config/cloud/login">

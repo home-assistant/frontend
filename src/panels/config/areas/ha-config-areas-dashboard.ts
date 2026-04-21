@@ -1,4 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import "@home-assistant/webawesome/dist/components/popover/popover";
+import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -15,7 +17,7 @@ import {
   type PropertyValues,
   type TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import {
@@ -24,9 +26,10 @@ import {
   type AreasFloorHierarchy,
 } from "../../../common/areas/areas-floor-hierarchy";
 import { formatListWithAnds } from "../../../common/string/format-list";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
@@ -58,7 +61,6 @@ import {
 } from "./show-dialog-area-registry-detail";
 import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -84,9 +86,11 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  private _searchParms = new URLSearchParams(window.location.search);
-
   @state() private _hierarchy?: AreasFloorHierarchy;
+
+  @query("wa-popover") private _popover?: WaPopover;
+
+  private _searchParms = new URLSearchParams(window.location.search);
 
   private _blockHierarchyUpdate = false;
 
@@ -318,27 +322,26 @@ export class HaConfigAreasDashboard extends LitElement {
               `
             : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class="floor"
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.picker.create_floor"
-          )}
-          extended
-          @click=${this._createFloor}
+        <ha-button id="fab" slot="fab" size="large">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.common.add")}
+        </ha-button>
+        <wa-popover
+          trap-focus
+          placement="top-start"
+          distance="8"
+          without-arrow
+          for="fab"
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.picker.create_area"
-          )}
-          extended
-          @click=${this._createArea}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+          <ha-button appearance="filled" @click=${this._createFloor}>
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.areas.picker.create_floor")}
+          </ha-button>
+          <ha-button appearance="filled" @click=${this._createArea}>
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.areas.picker.create_area")}
+          </ha-button>
+        </wa-popover>
       </hass-tabs-subpage>
     `;
   }
@@ -559,6 +562,7 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   private _createFloor() {
+    this._popover?.hide();
     this._openFloorDialog();
   }
 
@@ -584,6 +588,7 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   private _createArea() {
+    this._popover?.hide();
     this._openAreaDialog();
   }
 
@@ -724,6 +729,14 @@ export class HaConfigAreasDashboard extends LitElement {
       justify-content: space-between;
       align-items: center;
       overflow-wrap: anywhere;
+    }
+
+    wa-popover::part(body) {
+      gap: var(--ha-space-2);
+      background-color: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      padding: 0;
     }
   `;
 }

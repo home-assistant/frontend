@@ -578,18 +578,13 @@ class MoreInfoMediaPlayer extends LitElement {
     .volume {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: var(--ha-space-3);
-      margin-left: var(--ha-space-2);
+      padding-inline: var(--ha-space-2);
     }
 
     .volume-slider-container {
       width: 100%;
-    }
-
-    @media (pointer: coarse) {
-      .volume-slider {
-        pointer-events: none;
-      }
     }
 
     .volume ha-svg-icon {

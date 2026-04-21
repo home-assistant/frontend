@@ -20,6 +20,7 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -46,7 +47,6 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -101,7 +101,12 @@ export class HaAutomationTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
         ${!this.narrow && stateObj?.attributes.id
           ? html`
               <ha-button
@@ -433,7 +438,7 @@ export class HaAutomationTrace extends LitElement {
       this.automationId,
       this._runId!
     );
-    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -459,7 +464,6 @@ export class HaAutomationTrace extends LitElement {
       url,
       `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
     );
-    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {
@@ -558,15 +562,19 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .main {
-          min-height: calc(100% - var(--header-height));
+          flex: 1;
+          min-height: 0;
           display: flex;
+          overflow: hidden;
           background-color: var(--card-background-color);
           direction: ltr;
         }
 
         :host([narrow]) .main {
+          flex: none;
           height: auto;
           flex-direction: column;
+          overflow: visible;
         }
 
         .container {
@@ -575,18 +583,33 @@ export class HaAutomationTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
-          overflow-x: auto;
           max-width: 50%;
-          padding-bottom: 16px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        hat-script-graph {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
-          justify-content: center;
-          display: flex;
+          overflow: visible;
+          height: auto;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
         }
         .info {
           flex: 1;
+          overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        :host([narrow]) .info {
+          overflow: visible;
         }
         .trace-link {
           text-decoration: none;

@@ -22,6 +22,8 @@ import type {
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
 
+export type ThresholdMode = "crossed" | "changed" | "is";
+
 export type Selector =
   | ActionSelector
   | AddonSelector
@@ -56,7 +58,9 @@ export type Selector =
   | MediaSelector
   | NavigationSelector
   | NumberSelector
+  | NumericThresholdSelector
   | ObjectSelector
+  | PeriodSelector
   | AssistPipelineSelector
   | QRCodeSelector
   | SelectSelector
@@ -73,6 +77,7 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
+  | SerialSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
@@ -100,6 +105,7 @@ export interface AreaSelector {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
+    reorder?: boolean;
   } | null;
 }
 
@@ -240,6 +246,7 @@ interface EntitySelectorFilter {
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
+  unit_of_measurement?: string | readonly string[];
 }
 
 export interface EntitySelector {
@@ -361,6 +368,15 @@ export interface NumberSelector {
   } | null;
 }
 
+export interface NumericThresholdSelector {
+  numeric_threshold: {
+    mode?: ThresholdMode;
+    unit_of_measurement?: readonly string[];
+    number?: NumberSelector["number"];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+  } | null;
+}
+
 interface ObjectSelectorField {
   selector: Selector;
   label?: string;
@@ -375,6 +391,27 @@ export interface ObjectSelector {
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
+  } | null;
+}
+
+export type PeriodKey =
+  | "today"
+  | "yesterday"
+  | "tomorrow"
+  | "this_week"
+  | "last_week"
+  | "next_week"
+  | "this_month"
+  | "last_month"
+  | "next_month"
+  | "this_year"
+  | "last_year"
+  | "next_7d"
+  | "next_30d"
+  | "none";
+export interface PeriodSelector {
+  period: {
+    options: readonly PeriodKey[];
   } | null;
 }
 
@@ -415,6 +452,10 @@ export interface SelectorSelector {
   selector: {} | null;
 }
 
+export interface SerialSelector {
+  serial: {} | null;
+}
+
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
@@ -422,6 +463,7 @@ export interface StateSelector {
     attribute?: string;
     hide_states?: string[];
     multiple?: boolean;
+    no_entity?: boolean;
   } | null;
 }
 
@@ -457,6 +499,7 @@ export interface StringSelector {
       | "color";
     prefix?: string;
     suffix?: string;
+    placeholder?: string;
     autocomplete?: string;
     multiple?: true;
   } | null;
@@ -505,11 +548,19 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiColorExtraOption {
+  value: string;
+  label: string;
+  icon?: string;
+  display_color?: string;
+}
+
 export interface UiColorSelector {
   ui_color: {
     default_color?: string;
     include_none?: boolean;
     include_state?: boolean;
+    extra_options?: UiColorExtraOption[];
   } | null;
 }
 
@@ -810,6 +861,7 @@ export const filterSelectorEntities = (
     domain: filterDomain,
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
+    unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -840,6 +892,18 @@ export const filterSelectorEntities = (
       !ensureArray(filterSupportedFeature).some((feature) =>
         supportsFeature(entity, feature)
       )
+    ) {
+      return false;
+    }
+  }
+
+  if (filterUnitOfMeasurement) {
+    const entityUnitOfMeasurement = entity.attributes.unit_of_measurement;
+    if (
+      !entityUnitOfMeasurement ||
+      (Array.isArray(filterUnitOfMeasurement)
+        ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
+        : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
       return false;
     }

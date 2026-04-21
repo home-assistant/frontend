@@ -10,11 +10,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -30,6 +30,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./components/supervisor-apps-card-content";
+import { supervisorAppsStyle } from "./resources/supervisor-apps-style";
 
 @customElement("ha-config-apps-installed")
 export class HaConfigAppsInstalled extends LitElement {
@@ -87,16 +88,12 @@ export class HaConfigAppsInstalled extends LitElement {
           )}
         ></ha-icon-button>
         <div class="search">
-          <search-input
-            .hass=${this.hass}
-            suffix
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.search"
-            )}
+          <ha-input-search
+            appearance="outlined"
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
           >
-          </search-input>
+          </ha-input-search>
         </div>
         <div class="content">
           <div class="card-group">
@@ -123,6 +120,7 @@ export class HaConfigAppsInstalled extends LitElement {
                         <supervisor-apps-card-content
                           .hass=${this.hass}
                           .title=${addon.name}
+                          .stage=${addon.stage}
                           .description=${addon.description}
                           available
                           .showTopbar=${addon.update_available}
@@ -159,16 +157,10 @@ export class HaConfigAppsInstalled extends LitElement {
           </div>
         </div>
 
-        <a href="/config/apps/available">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.add_app"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiStorePlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button size="large" href="/config/apps/available">
+          <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -191,8 +183,8 @@ export class HaConfigAppsInstalled extends LitElement {
     }
   );
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HTMLInputElement).value;
   }
 
   private async _loadData(): Promise<void> {
@@ -225,66 +217,66 @@ export class HaConfigAppsInstalled extends LitElement {
     navigate("/config/apps/available");
   }
 
-  static styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      height: 100%;
-      background-color: var(--primary-background-color);
-    }
+  static styles: CSSResultGroup = [
+    supervisorAppsStyle,
+    css`
+      :host {
+        display: block;
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
 
-    ha-card {
-      cursor: pointer;
-      overflow: hidden;
-      direction: ltr;
-    }
+      ha-card {
+        cursor: pointer;
+        overflow: hidden;
+        direction: ltr;
+      }
 
-    .search {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
+      .search {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
 
-    search-input {
-      display: block;
-      --mdc-text-field-fill-color: var(--sidebar-background-color);
-      --mdc-text-field-idle-line-color: var(--divider-color);
-    }
+      ha-input-search {
+        padding: var(--ha-space-3) var(--ha-space-2);
+        background: var(--sidebar-background-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
 
-    .content {
-      padding: var(--ha-space-4);
-      margin-bottom: var(--ha-space-18);
-    }
+      .content {
+        padding: var(--ha-space-4);
+        margin-bottom: var(--ha-space-18);
+      }
 
-    .card-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      grid-gap: var(--ha-space-2);
-    }
+      .card-content {
+        padding: var(--ha-space-4);
+      }
 
-    .card-content {
-      padding: var(--ha-space-4);
-    }
+      button.link {
+        color: var(--primary-color);
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        text-decoration: underline;
+        cursor: pointer;
+      }
 
-    button.link {
-      color: var(--primary-color);
-      background: none;
-      border: none;
-      padding: 0;
-      font: inherit;
-      text-align: left;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    ha-fab {
-      position: fixed;
-      right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
-      inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      inset-inline-start: initial;
-      z-index: 1;
-    }
-  `;
+      ha-button[size="large"] {
+        position: fixed;
+        right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
+        bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
+        inset-inline-end: calc(
+          var(--ha-space-4) + var(--safe-area-inset-right)
+        );
+        inset-inline-start: initial;
+        z-index: 1;
+        --ha-button-box-shadow: var(--ha-box-shadow-l);
+      }
+    `,
+  ];
 }
 
 declare global {

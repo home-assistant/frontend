@@ -1,3 +1,4 @@
+import { titleCase } from "../../../common/string/title-case";
 import type { Condition } from "../../../panels/lovelace/common/validate-condition";
 import type { MediaSelectorValue } from "../../selector";
 import type { LovelaceBadgeConfig } from "./badge";
@@ -37,9 +38,11 @@ export interface LovelaceViewHeaderConfig {
   badges_wrap?: "wrap" | "scroll";
 }
 
+export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;
+
 export interface LovelaceViewFooterConfig {
   card?: LovelaceCardConfig;
-  column_span?: number;
+  max_width?: number;
 }
 
 export interface LovelaceViewSidebarConfig {
@@ -91,3 +94,11 @@ export function isStrategyView(
 ): view is LovelaceStrategyViewConfig {
   return "strategy" in view;
 }
+
+export const computeViewTitle = (
+  view: LovelaceBaseViewConfig,
+  index: number
+): string => view.title ?? (view.path ? titleCase(view.path) : String(index));
+
+export const computeViewIcon = (view: LovelaceBaseViewConfig): string =>
+  view.icon ?? "mdi:view-compact";

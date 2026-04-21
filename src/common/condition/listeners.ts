@@ -1,6 +1,9 @@
 import { listenMediaQuery } from "../dom/media_query";
 import type { HomeAssistant } from "../../types";
-import type { Condition } from "../../panels/lovelace/common/validate-condition";
+import type {
+  Condition,
+  ConditionContext,
+} from "../../panels/lovelace/common/validate-condition";
 import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
 import { extractMediaQueries, extractTimeConditions } from "./extract";
 import { calculateNextTimeUpdate } from "./time-calculator";
@@ -19,7 +22,8 @@ export function setupMediaQueryListeners(
   conditions: Condition[],
   hass: HomeAssistant,
   addListener: (unsub: () => void) => void,
-  onUpdate: (conditionsMet: boolean) => void
+  onUpdate: (conditionsMet: boolean) => void,
+  getContext?: () => ConditionContext
 ): void {
   const mediaQueries = extractMediaQueries(conditions);
 
@@ -36,7 +40,8 @@ export function setupMediaQueryListeners(
       if (hasOnlyMediaQuery) {
         onUpdate(matches);
       } else {
-        const conditionsMet = checkConditionsMet(conditions, hass);
+        const context = getContext?.() ?? {};
+        const conditionsMet = checkConditionsMet(conditions, hass, context);
         onUpdate(conditionsMet);
       }
     });
@@ -51,7 +56,8 @@ export function setupTimeListeners(
   conditions: Condition[],
   hass: HomeAssistant,
   addListener: (unsub: () => void) => void,
-  onUpdate: (conditionsMet: boolean) => void
+  onUpdate: (conditionsMet: boolean) => void,
+  getContext?: () => ConditionContext
 ): void {
   const timeConditions = extractTimeConditions(conditions);
 
@@ -70,7 +76,8 @@ export function setupTimeListeners(
 
       timeoutId = setTimeout(() => {
         if (delay <= MAX_TIMEOUT_DELAY) {
-          const conditionsMet = checkConditionsMet(conditions, hass);
+          const context = getContext?.() ?? {};
+          const conditionsMet = checkConditionsMet(conditions, hass, context);
           onUpdate(conditionsMet);
         }
         scheduleUpdate();
@@ -86,4 +93,18 @@ export function setupTimeListeners(
 
     scheduleUpdate();
   });
+}
+
+/**
+ * Sets up all condition listeners (media query, time) for conditional visibility.
+ */
+export function setupConditionListeners(
+  conditions: Condition[],
+  hass: HomeAssistant,
+  addListener: (unsub: () => void) => void,
+  onUpdate: (conditionsMet: boolean) => void,
+  getContext?: () => ConditionContext
+): void {
+  setupMediaQueryListeners(conditions, hass, addListener, onUpdate, getContext);
+  setupTimeListeners(conditions, hass, addListener, onUpdate, getContext);
 }

@@ -19,8 +19,10 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import {
+  ensureBadgeConfig,
+  type LovelaceBadgeConfig,
+} from "../../../data/lovelace/config/badge";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
@@ -58,7 +60,7 @@ export class HuiBadgeEditMode extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: LovelaceCardConfig;
+  protected _clipboard?: string | Partial<LovelaceBadgeConfig>;
 
   private get _badges() {
     const containerPath = getLovelaceContainerPath(this.path!);
@@ -220,7 +222,7 @@ export class HuiBadgeEditMode extends LitElement {
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      path: containerPath as [number],
       badgeConfig,
     });
   }

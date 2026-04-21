@@ -54,10 +54,19 @@ export interface HaMapPaths {
   fullDatetime?: boolean;
 }
 
+export const MAP_CARD_MARKER_LABEL_MODES = [
+  "name",
+  "state",
+  "attribute",
+  "icon",
+] as const;
+export type MapCardMarkerLabelMode =
+  (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
+
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state" | "attribute" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   name?: string;
@@ -245,7 +254,11 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
-      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
+        latitude: this.hass?.config.latitude ?? 52.3731339,
+        longitude: this.hass?.config.longitude ?? 4.8903147,
+        zoom: this.zoom,
+      });
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {

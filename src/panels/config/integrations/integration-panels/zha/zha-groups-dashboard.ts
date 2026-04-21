@@ -10,12 +10,12 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
 import type { ZHAGroup } from "../../../../../data/zha";
 import { fetchGroups } from "../../../../../data/zha";
-import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
@@ -119,16 +119,10 @@ export class ZHAGroupsDashboard extends LitElement {
         clickable
         has-fab
       >
-        <a href="/config/zha/group-add" slot="fab">
-          <ha-fab
-            .label=${this.hass!.localize(
-              "ui.panel.config.zha.groups.add_group"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button href="/config/zha/group-add" slot="fab" size="large">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

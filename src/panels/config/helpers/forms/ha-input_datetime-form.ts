@@ -6,7 +6,7 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -62,21 +62,21 @@ class HaInputDateTimeForm extends LitElement {
 
     return html`
       <div class="form">
-        <ha-textfield
+        <ha-input
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          autoValidate
+          auto-validate
           required
           .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
-        ></ha-textfield>
+        ></ha-input>
         <ha-icon-picker
           .hass=${this.hass}
           .value=${this._icon}
@@ -174,11 +174,10 @@ class HaInputDateTimeForm extends LitElement {
           color: var(--primary-text-color);
         }
         .row {
-          padding: 16px 0;
+          padding: var(--ha-space-4) 0;
         }
-        ha-textfield {
-          display: block;
-          margin: 8px 0;
+        ha-input {
+          margin: var(--ha-space-2) 0;
         }
       `,
     ];

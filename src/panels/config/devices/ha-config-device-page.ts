@@ -34,6 +34,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -94,7 +95,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -147,7 +147,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _logbookTime = { recent: 86400 };
 
@@ -176,13 +176,14 @@ export class HaConfigDevicePage extends LitElement {
   private _entities = memoizeOne(
     (
       deviceId: string,
-      entities: EntityRegistryEntry[]
+      entities: EntityRegistryEntry[],
+      devices: HomeAssistant["devices"]
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          stateName: this._computeEntityName(entity, devices),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
@@ -334,13 +335,21 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(device, this.hass);
+    const deviceName = computeDeviceNameDisplay(
+      device,
+      this.hass.localize,
+      this.hass.states
+    );
     const integrations = this._integrations(
       device,
       this.entries,
       this.manifests
     );
-    const entities = this._entities(this.deviceId, this._entityReg);
+    const entities = this._entities(
+      this.deviceId,
+      this._entityReg,
+      this.hass.devices
+    );
     const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
@@ -364,11 +373,14 @@ export class HaConfigDevicePage extends LitElement {
             <img
               slot="graphic"
               alt=${domainToName(this.hass.localize, integration.domain)}
-              src=${brandsUrl({
-                domain: integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: integration.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
@@ -436,7 +448,7 @@ export class HaConfigDevicePage extends LitElement {
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
 
-    const automationCard = isComponentLoaded(this.hass, "automation")
+    const automationCard = isComponentLoaded(this.hass.config, "automation")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -514,7 +526,7 @@ export class HaConfigDevicePage extends LitElement {
       : "";
 
     const sceneCard =
-      isComponentLoaded(this.hass, "scene") && entities.length
+      isComponentLoaded(this.hass.config, "scene") && entities.length
         ? html`
             <ha-card outlined>
               <h1 class="card-header">
@@ -610,7 +622,7 @@ export class HaConfigDevicePage extends LitElement {
           `
         : "";
 
-    const scriptCard = isComponentLoaded(this.hass, "script")
+    const scriptCard = isComponentLoaded(this.hass.config, "script")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -763,11 +775,14 @@ export class HaConfigDevicePage extends LitElement {
                       this.hass.localize,
                       integrations[0].domain
                     )}
-                    src=${brandsUrl({
-                      domain: integrations[0].domain,
-                      type: "logo",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: integrations[0].domain,
+                        type: "logo",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
@@ -927,7 +942,7 @@ export class HaConfigDevicePage extends LitElement {
         </div>
         <div class="column">
           ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
-          ${isComponentLoaded(this.hass, "logbook")
+          ${isComponentLoaded(this.hass.config, "logbook")
             ? html`
                 <ha-card outlined>
                   <h1 class="card-header">
@@ -962,7 +977,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private async _getDiagnosticButtons(): Promise<void> {
     const deviceId = this.deviceId;
-    if (!isComponentLoaded(this.hass, "diagnostics")) {
+    if (!isComponentLoaded(this.hass.config, "diagnostics")) {
       return;
     }
 
@@ -1138,7 +1153,11 @@ export class HaConfigDevicePage extends LitElement {
       });
     }
 
-    const entities = this._entities(this.deviceId, this._entityReg);
+    const entities = this._entities(
+      this.deviceId,
+      this._entityReg,
+      this.hass.devices
+    );
 
     const assistSatellite = entities.find(
       (ent) => computeDomain(ent.entity_id) === "assist_satellite"
@@ -1265,11 +1284,14 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private _computeEntityName(entity: EntityRegistryEntry) {
-    const device = this.hass.devices[this.deviceId];
+  private _computeEntityName(
+    entity: EntityRegistryEntry,
+    devices: HomeAssistant["devices"]
+  ) {
+    const device = devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, this.hass.devices) ||
-      computeDeviceNameDisplay(device, this.hass)
+      computeEntityEntryName(entity, devices) ||
+      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
     );
   }
 
@@ -1287,9 +1309,11 @@ export class HaConfigDevicePage extends LitElement {
 
   private _createScene() {
     const entities: SceneEntities = {};
-    this._entities(this.deviceId, this._entityReg).forEach((entity) => {
-      entities[entity.entity_id] = "";
-    });
+    this._entities(this.deviceId, this._entityReg, this.hass.devices).forEach(
+      (entity) => {
+        entities[entity.entity_id] = "";
+      }
+    );
     showSceneEditor({
       entities,
     });
@@ -1354,9 +1378,11 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _resetEntityIds = () => {
-    const entities = this._entities(this.deviceId, this._entityReg).map(
-      (e) => e.entity_id
-    );
+    const entities = this._entities(
+      this.deviceId,
+      this._entityReg,
+      this.hass.devices
+    ).map((e) => e.entity_id);
     regenerateEntityIds(this, this.hass, entities);
   };
 
@@ -1448,7 +1474,11 @@ export class HaConfigDevicePage extends LitElement {
         ) {
           return;
         }
-        const entities = this._entities(this.deviceId, this._entityReg);
+        const entities = this._entities(
+          this.deviceId,
+          this._entityReg,
+          this.hass.devices
+        );
 
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;

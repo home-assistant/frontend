@@ -289,7 +289,6 @@ class HuiAreaControlsCardFeature
             >
               ${normalized.type === "domain"
                 ? html`<ha-domain-icon
-                    .hass=${this.hass}
                     .domain=${domain}
                     .deviceClass=${deviceClass}
                     .state=${entityState}

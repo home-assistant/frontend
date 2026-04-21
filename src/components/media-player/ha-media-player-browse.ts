@@ -49,7 +49,6 @@ import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button";
 import "../ha-card";
-import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
@@ -446,24 +445,20 @@ export class HaMediaPlayerBrowse extends LitElement {
                                       currentItem.media_content_id
                                     ))
                                     ? html`
-                                        <ha-fab
-                                          mini
+                                        <ha-button
+                                          class="fab"
                                           .item=${currentItem}
                                           @click=${this._actionClicked}
+                                          .title=${this.hass.localize(
+                                            `ui.components.media-browser.${this.action}`
+                                          )}
                                         >
                                           <ha-svg-icon
-                                            slot="icon"
-                                            .label=${this.hass.localize(
-                                              `ui.components.media-browser.${this.action}-media`
-                                            )}
                                             .path=${this.action === "play"
                                               ? mdiPlay
                                               : mdiPlus}
                                           ></ha-svg-icon>
-                                          ${this.hass.localize(
-                                            `ui.components.media-browser.${this.action}`
-                                          )}
-                                        </ha-fab>
+                                        </ha-button>
                                       `
                                     : ""}
                                 </div>
@@ -768,11 +763,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (isBrandUrl(thumbnailUrl)) {
       // The backend is not aware of the theme used by the users,
       // so we rewrite the URL to show a proper icon
-      return brandsUrl({
-        domain: extractDomainFromBrandUrl(thumbnailUrl),
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      return brandsUrl(
+        {
+          domain: extractDomainFromBrandUrl(thumbnailUrl),
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
     }
 
     if (thumbnailUrl.startsWith("/")) {
@@ -1360,11 +1358,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             height 0.4s,
             padding-bottom 0.4s;
         }
-        ha-fab {
+        .fab {
           position: absolute;
-          --mdc-theme-secondary: var(--primary-color);
-          bottom: -20px;
-          right: 20px;
+          bottom: calc(var(--ha-space-5) * -1);
+          right: var(--ha-space-5);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow]) .header-info ha-button {
           margin-top: 16px;
@@ -1426,11 +1424,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-bottom: initial;
           margin-bottom: 0;
         }
-        :host([scrolled]) ha-fab {
-          bottom: 0px;
-          right: -24px;
-          --mdc-fab-box-shadow: none;
-          --mdc-theme-secondary: rgba(var(--rgb-primary-color), 0.5);
+        :host([scrolled]) .fab {
+          bottom: 0;
+          right: calc(var(--ha-space-6) * -1);
+          --ha-button-box-shadow: none;
         }
 
         lit-virtualizer {

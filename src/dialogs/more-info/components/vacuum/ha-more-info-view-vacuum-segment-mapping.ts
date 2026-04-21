@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-vacuum-segment-area-mapper";
@@ -77,6 +78,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         options: options,
       });
       this._dirty = false;
+      fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message;
     } finally {
@@ -117,13 +119,11 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
-      height: 100%;
     }
 
     .content {
       display: flex;
       flex-direction: column;
-      height: 100%;
     }
 
     ha-spinner {
@@ -142,6 +142,13 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
       justify-content: flex-end;
       padding: var(--ha-space-4);
       border-top: 1px solid var(--divider-color);
+      background: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
   `;
 }

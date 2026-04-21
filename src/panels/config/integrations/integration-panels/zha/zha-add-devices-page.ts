@@ -161,7 +161,7 @@ class ZHAAddDevicesPage extends LitElement {
           ? html`<ha-textarea
               readonly
               class="log"
-              autogrow
+              resize="auto"
               .value=${this._formattedEvents}
             >
             </ha-textarea>`

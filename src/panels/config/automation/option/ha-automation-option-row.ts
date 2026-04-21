@@ -21,6 +21,7 @@ import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -36,7 +37,7 @@ import type { Action, Option } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showToast } from "../../../../util/toast";
+import { showEditorToast } from "../editor-toast";
 import "../action/ha-automation-action";
 import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
@@ -47,7 +48,6 @@ import {
   overflowStyles,
   rowStyles,
 } from "../styles";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -81,7 +81,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @query("ha-automation-condition")
   private _conditionElement?: HaAutomationCondition;
@@ -385,7 +385,7 @@ export default class HaAutomationOptionRow extends LitElement {
         fireEvent(this, "close-sidebar");
       }
 
-      showToast(this, {
+      showEditorToast(this, {
         message: this.hass.localize("ui.common.successfully_deleted"),
         duration: 4000,
         action: {

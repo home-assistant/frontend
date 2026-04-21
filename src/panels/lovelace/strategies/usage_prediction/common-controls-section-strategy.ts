@@ -46,7 +46,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       } satisfies HeadingCardConfig);
     }
 
-    if (!isComponentLoaded(hass, "usage_prediction")) {
+    if (!isComponentLoaded(hass.config, "usage_prediction")) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(
@@ -58,9 +58,17 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     }
 
     const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities.filter(
-      (entity) => entity in hass.states
-    );
+    let predictedEntities = predictedCommonControl.entities.filter((entity) => {
+      if (!(entity in hass.states)) {
+        return false;
+      }
+      const entityEntry = hass.entities[entity];
+      // Filter out hidden entities (respects user/integration/device hidden_by)
+      if (entityEntry?.hidden) {
+        return false;
+      }
+      return true;
+    });
 
     if (config.exclude_entities?.length) {
       predictedEntities = predictedEntities.filter(

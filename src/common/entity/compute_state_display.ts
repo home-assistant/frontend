@@ -133,33 +133,36 @@ const computeStateToPartsFromEntityAttributes = (
           ),
         });
       } catch (_err) {
-        // fallback to default
+        // fallback to default numeric formatting below
       }
 
-      const TYPE_MAP: Record<string, ValuePart["type"]> = {
-        integer: "value",
-        group: "value",
-        decimal: "value",
-        fraction: "value",
-        literal: "literal",
-        currency: "unit",
-      };
+      if (parts.length) {
+        const TYPE_MAP: Record<string, ValuePart["type"]> = {
+          integer: "value",
+          group: "value",
+          decimal: "value",
+          fraction: "value",
+          minusSign: "value",
+          plusSign: "value",
+          literal: "literal",
+          currency: "unit",
+        };
 
-      const valueParts: ValuePart[] = [];
+        const valueParts: ValuePart[] = [];
 
-      for (const part of parts) {
-        const type = TYPE_MAP[part.type];
-        if (!type) continue;
-        const last = valueParts[valueParts.length - 1];
-        // Merge consecutive numeric parts (e.g. "1" + "," + "234" + "." + "56" → "1,234.56")
-        if (type === "value" && last?.type === "value") {
-          last.value += part.value;
-        } else {
-          valueParts.push({ type, value: part.value });
+        for (const part of parts) {
+          const type = TYPE_MAP[part.type];
+          if (!type) continue;
+          const last = valueParts[valueParts.length - 1];
+          // Merge consecutive value parts (e.g. "-" + "12" + "." + "00" → "-12.00")
+          if (type === "value" && last?.type === "value") {
+            last.value += part.value;
+          } else {
+            valueParts.push({ type, value: part.value });
+          }
         }
+        return valueParts;
       }
-
-      return valueParts;
     }
 
     // default processing of numeric values
@@ -252,6 +255,7 @@ const computeStateToPartsFromEntityAttributes = (
       "conversation",
       "event",
       "image",
+      "infrared",
       "input_button",
       "notify",
       "scene",

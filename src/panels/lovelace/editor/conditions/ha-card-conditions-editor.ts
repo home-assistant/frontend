@@ -7,6 +7,7 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -16,18 +17,23 @@ import type {
   LegacyCondition,
 } from "../../common/validate-condition";
 import "./ha-card-condition-editor";
-import type { HaCardConditionEditor } from "./ha-card-condition-editor";
+import {
+  type HaCardConditionEditor,
+  getConditionClassName,
+} from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-location";
 import "./types/ha-card-condition-not";
 import "./types/ha-card-condition-numeric_state";
+import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import type { PresetState } from "./types/ha-card-condition-state";
+import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_CONDITION = [
   "location",
@@ -57,6 +63,10 @@ export class HaCardConditionsEditor extends LitElement {
     | Condition
     | LegacyCondition
   )[];
+
+  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
+
+  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   private _focusLastConditionOnChange = false;
 
@@ -101,6 +111,8 @@ export class HaCardConditionsEditor extends LitElement {
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
+              .noEntity=${this.noEntity}
+              .presetStates=${this.presetStates}
             ></ha-card-condition-editor>
           `
         )}
@@ -153,16 +165,15 @@ export class HaCardConditionsEditor extends LitElement {
     }
 
     if (condition === "paste") {
-      const newCondition = deepClone(this._clipboard);
+      const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
     } else {
-      const elClass = customElements.get(`ha-card-condition-${condition}`) as
-        | LovelaceConditionEditorConstructor
-        | undefined;
+      const elClass = customElements.get(
+        getConditionClassName(condition, this.noEntity)
+      ) as LovelaceConditionEditorConstructor | undefined;
 
-      conditions.push(
-        elClass?.defaultConfig ? { ...elClass.defaultConfig } : { condition }
-      );
+      const defaultConfig = elClass?.defaultConfig;
+      conditions.push(defaultConfig ? { ...defaultConfig } : { condition });
     }
 
     this._focusLastConditionOnChange = true;

@@ -16,7 +16,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
+import { showZWaveJSRebuildNetworkRoutesDialog } from "./dialog-zwave_js-rebuild-network-routes/show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 
 @customElement("zwave_js-options-page")
@@ -37,7 +37,7 @@ class ZWaveJSOptionsPage extends LitElement {
 
   protected async firstUpdated() {
     if (this.hass && this.configEntryId) {
-      const network = await fetchZwaveNetworkStatus(this.hass, {
+      const network = await fetchZwaveNetworkStatus(this.hass.connection, {
         entry_id: this.configEntryId,
       });
       this._network = network;

@@ -1,14 +1,19 @@
 import Fuse from "fuse.js";
-import { mdiDevices, mdiPlus, mdiTextureBox } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
+import { subscribeOneCollection } from "../common/util/subscribe-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { titleCase } from "../common/string/title-case";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
+import { getIngressPanelInfoCollection } from "../data/hassio/ingress";
 import { fetchConfig } from "../data/lovelace/config/types";
-import { getPanelIcon, getPanelTitle } from "../data/panel";
+import { SYSTEM_PANELS } from "../data/panel";
+import {
+  CONFIG_SUB_ROUTES,
+  computeNavigationPathInfo,
+} from "../data/compute-navigation-path-info";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
@@ -23,13 +28,24 @@ import {
   type PickerComboBoxItem,
 } from "./ha-picker-combo-box";
 
-type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
+type NavigationGroup =
+  | "related"
+  | "dashboards"
+  | "views"
+  | "apps"
+  | "other_routes";
 
 const RELATED_SORT_PREFIX = {
   area_view: "0_area_view",
   area: "1_area_settings",
   device: "2_device",
 } as const;
+
+const createSortingLabel = (...parts: (string | undefined)[]) =>
+  parts
+    .filter(Boolean)
+    .map((part) => (part!.startsWith("/") ? `zzz${part}` : part))
+    .join("_");
 
 interface NavigationItem extends PickerComboBoxItem {
   group: NavigationGroup;
@@ -50,6 +66,10 @@ export class HaNavigationPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: false }) public excludePaths?: string[];
+
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @state() private _loading = true;
 
   @property({ attribute: false }) public context?: ActionRelatedContext;
@@ -66,6 +86,7 @@ export class HaNavigationPicker extends LitElement {
     related: [],
     dashboards: [],
     views: [],
+    apps: [],
     other_routes: [],
   };
 
@@ -95,6 +116,14 @@ export class HaNavigationPicker extends LitElement {
         id: "views",
         label: this.hass.localize("ui.components.navigation-picker.views"),
       },
+      ...(this._navigationGroups.apps.length
+        ? [
+            {
+              id: "apps",
+              label: this.hass.localize("ui.components.navigation-picker.apps"),
+            },
+          ]
+        : []),
       {
         id: "other_routes",
         label: this.hass.localize(
@@ -119,6 +148,7 @@ export class HaNavigationPicker extends LitElement {
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
+        .addButtonLabel=${this.addButtonLabel}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -132,7 +162,6 @@ export class HaNavigationPicker extends LitElement {
         ? html`
             <ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               brand-fallback
             ></ha-domain-icon>
@@ -158,7 +187,6 @@ export class HaNavigationPicker extends LitElement {
         ? html`
             <ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               brand-fallback
             ></ha-domain-icon>
@@ -188,16 +216,27 @@ export class HaNavigationPicker extends LitElement {
     views: memoizeOne((items: NavigationItem[]) =>
       Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
     ),
+    apps: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
     other_routes: memoizeOne((items: NavigationItem[]) =>
       Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
     ),
   };
 
   private _getItems = (searchString?: string, section?: string) => {
+    const excludeSet = this.excludePaths
+      ? new Set(this.excludePaths)
+      : undefined;
+
     const getGroupItems = (group: NavigationGroup) => {
       let items = [...this._navigationGroups[group]].sort(
         this._sortBySortingLabel
       );
+
+      if (excludeSet) {
+        items = items.filter((item) => !excludeSet.has(item.id));
+      }
 
       if (searchString) {
         const fuseIndex = this._fuseIndexes[group](items);
@@ -218,6 +257,7 @@ export class HaNavigationPicker extends LitElement {
     const related = getGroupItems("related");
     const dashboards = getGroupItems("dashboards");
     const views = getGroupItems("views");
+    const apps = getGroupItems("apps");
     const otherRoutes = getGroupItems("other_routes");
 
     const addGroup = (group: NavigationGroup, groupItems: NavigationItem[]) => {
@@ -235,23 +275,8 @@ export class HaNavigationPicker extends LitElement {
     addGroup("related", related);
     addGroup("dashboards", dashboards);
     addGroup("views", views);
+    addGroup("apps", apps);
     addGroup("other_routes", otherRoutes);
-
-    if (
-      searchString &&
-      !this._navigationItems.some((navItem) => navItem.id === searchString)
-    ) {
-      items.push({
-        id: searchString,
-        primary: this.hass.localize(
-          "ui.components.navigation-picker.add_custom_path"
-        ),
-        secondary: `"${searchString}"`,
-        icon_path: mdiPlus,
-        sorting_label: searchString,
-        group: "other_routes",
-      });
-    }
 
     return items;
   };
@@ -289,26 +314,24 @@ export class HaNavigationPicker extends LitElement {
     const related = this._navigationGroups.related;
     const dashboards: NavigationItem[] = [];
     const views: NavigationItem[] = [];
+    const apps: NavigationItem[] = [];
     const otherRoutes: NavigationItem[] = [];
 
     for (const panel of panels) {
+      if (SYSTEM_PANELS.includes(panel.id)) continue;
+      // Skip app panels — they are handled by the ingress panels fetch below
+      if (panel.component_name === "app") continue;
       const path = `/${panel.url_path}`;
-      const panelTitle = getPanelTitle(this.hass, panel);
-      const primary = panelTitle || path;
+      const resolved = computeNavigationPathInfo(this.hass!, path);
       const isDashboardPanel =
         panel.component_name === "lovelace" ||
         PANEL_DASHBOARDS.includes(panel.id);
       const panelItem: NavigationItem = {
         id: path,
-        primary,
-        secondary: panelTitle ? path : undefined,
-        icon: getPanelIcon(panel) || "mdi:view-dashboard",
-        sorting_label: [
-          primary.startsWith("/") ? `zzz${primary}` : primary,
-          path,
-        ]
-          .filter(Boolean)
-          .join("_"),
+        primary: resolved.label,
+        secondary: resolved.label !== path ? path : undefined,
+        icon: resolved.icon || "mdi:view-dashboard",
+        sorting_label: createSortingLabel(resolved.label, path),
         group: isDashboardPanel ? "dashboards" : "other_routes",
       };
 
@@ -324,19 +347,61 @@ export class HaNavigationPicker extends LitElement {
 
       config.views.forEach((view, index) => {
         const viewPath = `/${panel.url_path}/${view.path ?? index}`;
-        const viewPrimary =
-          view.title ?? (view.path ? titleCase(view.path) : `${index}`);
+        const viewInfo = computeNavigationPathInfo(
+          this.hass!,
+          viewPath,
+          config
+        );
         views.push({
           id: viewPath,
           secondary: viewPath,
-          icon: view.icon ?? "mdi:view-compact",
-          primary: viewPrimary,
-          sorting_label: [
-            viewPrimary.startsWith("/") ? `zzz${viewPrimary}` : viewPrimary,
-            viewPath,
-          ].join("_"),
+          icon: viewInfo.icon || "mdi:view-compact",
+          primary: viewInfo.label,
+          sorting_label: createSortingLabel(viewInfo.label, viewPath),
           group: "views",
         });
+      });
+    }
+
+    // Fetch all ingress add-on panels
+    if (isComponentLoaded(this.hass!.config, "hassio")) {
+      try {
+        const ingressPanels = await subscribeOneCollection(
+          getIngressPanelInfoCollection(this.hass!.connection)
+        );
+        for (const slug of Object.keys(ingressPanels)) {
+          const path = `/app/${slug}`;
+          const resolved = computeNavigationPathInfo(
+            this.hass!,
+            path,
+            undefined,
+            ingressPanels
+          );
+          apps.push({
+            id: path,
+            primary: resolved.label,
+            secondary: path,
+            icon: resolved.icon,
+            icon_path: resolved.iconPath,
+            sorting_label: createSortingLabel(resolved.label, path),
+            group: "apps",
+          });
+        }
+      } catch (_err) {
+        // Supervisor may not be available, silently ignore
+      }
+    }
+
+    for (const [subPath, route] of Object.entries(CONFIG_SUB_ROUTES)) {
+      const path = `/config/${subPath}`;
+      const label = this.hass!.localize(route.translationKey) || subPath;
+      otherRoutes.push({
+        id: path,
+        primary: label,
+        secondary: path,
+        icon_path: route.iconPath,
+        sorting_label: createSortingLabel(label, path),
+        group: "other_routes",
       });
     }
 
@@ -344,6 +409,7 @@ export class HaNavigationPicker extends LitElement {
       related,
       dashboards,
       views,
+      apps,
       other_routes: otherRoutes,
     };
 
@@ -351,6 +417,7 @@ export class HaNavigationPicker extends LitElement {
       ...related,
       ...dashboards,
       ...views,
+      ...apps,
       ...otherRoutes,
     ];
 
@@ -373,6 +440,7 @@ export class HaNavigationPicker extends LitElement {
         ...relatedItems,
         ...this._navigationGroups.dashboards,
         ...this._navigationGroups.views,
+        ...this._navigationGroups.apps,
         ...this._navigationGroups.other_routes,
       ];
     };
@@ -416,28 +484,20 @@ export class HaNavigationPicker extends LitElement {
       relatedAreaIds.add(context.area_id);
     }
 
-    const createSortingLabel = (
-      prefix: string,
-      primary: string,
-      path: string
-    ) =>
-      [prefix, primary.startsWith("/") ? `zzz${primary}` : primary, path]
-        .filter(Boolean)
-        .join("_");
-
     const relatedItems: NavigationItem[] = [];
     for (const deviceId of relatedDeviceIds) {
       const device = this.hass.devices[deviceId];
-      const primary = device?.name_by_user ?? device?.name ?? deviceId;
       const path = `/config/devices/device/${deviceId}`;
+      const resolved = computeNavigationPathInfo(this.hass, path);
       relatedItems.push({
         id: path,
-        primary,
+        primary: resolved.label,
         secondary: path,
-        icon_path: mdiDevices,
+        icon: resolved.icon,
+        icon_path: resolved.iconPath,
         sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.device,
-          primary,
+          resolved.label,
           path
         ),
         group: "related",
@@ -448,20 +508,18 @@ export class HaNavigationPicker extends LitElement {
     }
 
     for (const areaId of relatedAreaIds) {
-      const area = this.hass.areas[areaId];
-      const primary = area?.name ?? areaId;
-
       // Area dashboard view
       const viewPath = `/home/${computeAreaPath(areaId)}`;
+      const resolvedArea = computeNavigationPathInfo(this.hass, viewPath);
       relatedItems.push({
         id: viewPath,
-        primary,
+        primary: resolvedArea.label,
         secondary: viewPath,
-        icon: area?.icon ?? undefined,
-        icon_path: area?.icon ? undefined : mdiTextureBox,
+        icon: resolvedArea.icon,
+        icon_path: resolvedArea.icon ? undefined : resolvedArea.iconPath,
         sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.area_view,
-          primary,
+          resolvedArea.label,
           viewPath
         ),
         group: "related",
@@ -473,14 +531,14 @@ export class HaNavigationPicker extends LitElement {
         id: path,
         primary: this.hass.localize(
           "ui.components.navigation-picker.area_settings",
-          { area: primary }
+          { area: resolvedArea.label }
         ),
         secondary: path,
-        icon: area?.icon ?? undefined,
-        icon_path: area?.icon ? undefined : mdiTextureBox,
+        icon: resolvedArea.icon,
+        icon_path: resolvedArea.icon ? undefined : resolvedArea.iconPath,
         sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.area,
-          primary,
+          resolvedArea.label,
           path
         ),
         group: "related",

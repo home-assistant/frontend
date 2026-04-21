@@ -32,11 +32,47 @@ const YAML_ONLY_THEMES_COLORS = new Set([
   "disabled",
 ]);
 
-export function computeCssColor(color: string): string {
+/**
+ * Compose a CSS variable out of a theme color
+ * @param color - Theme color (examples: `red`, `primary-text`)
+ * @returns CSS variable in `--xxx-color` format;
+ * initial color if not found in theme colors
+ */
+export function computeCssVariableName(color: string): string {
   if (THEME_COLORS.has(color) || YAML_ONLY_THEMES_COLORS.has(color)) {
-    return `var(--${color}-color)`;
+    return `--${color}-color`;
   }
   return color;
+}
+
+/**
+ * Compose a CSS variable out of a theme color & then resolve it
+ * @param color - Theme color (examples: `red`, `primary-text`)
+ * @returns Resolved CSS variable in `var(--xxx-color)` format;
+ * initial color if not found in theme colors
+ */
+export function computeCssColor(color: string): string {
+  const cssVarName = computeCssVariableName(color);
+  if (cssVarName !== color) {
+    return `var(${cssVarName})`;
+  }
+  return color;
+}
+
+/**
+ * Get a color from document's styles
+ * @param color - Named theme color (examples: `red`, `primary-text`)
+ * @returns Resolved color; initial color if not found in document's styles
+ */
+export function resolveThemeColor(color: string): string {
+  const cssColor = computeCssVariableName(color);
+  if (cssColor.startsWith("--")) {
+    const resolved = getComputedStyle(document.body)
+      .getPropertyValue(cssColor)
+      .trim();
+    return resolved || color;
+  }
+  return cssColor;
 }
 
 /**

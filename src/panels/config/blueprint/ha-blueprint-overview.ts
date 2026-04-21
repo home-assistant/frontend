@@ -26,7 +26,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
@@ -377,16 +376,12 @@ class HaBlueprintOverview extends LitElement {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="large" @click=${this._addBlueprintClicked}>
+          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
-          extended
-          @click=${this._addBlueprintClicked}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

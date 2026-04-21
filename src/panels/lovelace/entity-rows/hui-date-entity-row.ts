@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { setDateValue } from "../../../data/date";
@@ -64,6 +64,12 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
       setDateValue(this.hass!, this._config!.entity, ev.detail.value);
     }
   }
+
+  static styles = css`
+    ha-date-input {
+      max-width: 50%;
+    }
+  `;
 }
 
 declare global {

@@ -56,21 +56,29 @@ describe("computeDeviceNameDisplay", () => {
   } as any;
 
   it("returns device name if present", () => {
-    expect(computeDeviceNameDisplay({ name: "Device" } as any, hass)).toBe(
-      "Device"
-    );
+    expect(
+      computeDeviceNameDisplay(
+        { name: "Device" } as any,
+        hass.localize,
+        hass.states
+      )
+    ).toBe("Device");
   });
 
   it("returns fallback name from entities if device name not present", () => {
     const entities: any = [{ entity_id: "light.test" }];
-    expect(computeDeviceNameDisplay({} as any, hass, entities)).toBe(
-      "Test Light"
-    );
+    expect(
+      computeDeviceNameDisplay({} as any, hass.localize, hass.states, entities)
+    ).toBe("Test Light");
   });
 
   it("returns localized unnamed device if no name or entities", () => {
     expect(
-      computeDeviceNameDisplay({ entry_type: "router" } as any, hass)
+      computeDeviceNameDisplay(
+        { entry_type: "router" } as any,
+        hass.localize,
+        hass.states
+      )
     ).toBe("Unnamed (router)");
   });
 });
@@ -94,17 +102,17 @@ describe("fallbackDeviceName", () => {
       { entity_id: "sensor.temp" },
       { entity_id: "light.lamp" },
     ];
-    expect(fallbackDeviceName(hass, entities)).toBe("Temperature");
+    expect(fallbackDeviceName(hass.states, entities)).toBe("Temperature");
   });
 
   it("returns undefined if no entities have state", () => {
     expect(
-      fallbackDeviceName({ states: {} } as any, [{ entity_id: "none" } as any])
+      fallbackDeviceName({}, [{ entity_id: "none" } as any])
     ).toBeUndefined();
   });
 
   it("works with string entity ids", () => {
-    expect(fallbackDeviceName(hass, ["light.lamp"])).toBe("Lamp");
+    expect(fallbackDeviceName(hass.states, ["light.lamp"])).toBe("Lamp");
   });
 });
 

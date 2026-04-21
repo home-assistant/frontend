@@ -24,7 +24,10 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/search-input";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -105,17 +108,14 @@ class HaPanelDevState extends LitElement {
           )}
         </h1>
         ${!this.narrow
-          ? html` <ha-formfield
-              .label=${this.hass.localize(
+          ? html`<ha-checkbox
+              .checked=${this._showAttributes}
+              @change=${this._saveAttributeCheckboxState}
+            >
+              ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.attributes"
               )}
-            >
-              <ha-checkbox
-                .checked=${this._showAttributes}
-                @change=${this._saveAttributeCheckboxState}
-                reducedTouchTarget
-              ></ha-checkbox>
-            </ha-formfield>`
+            </ha-checkbox>`
           : nothing}
       </div>
       <ha-expansion-panel
@@ -160,7 +160,7 @@ class HaPanelDevState extends LitElement {
                   </div>
                 `
               : nothing}
-            <ha-textfield
+            <ha-input
               .label=${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
               )}
@@ -168,11 +168,11 @@ class HaPanelDevState extends LitElement {
               autocapitalize="none"
               autocomplete="off"
               .autocorrect=${false}
-              input-spellcheck="false"
+              .spellcheck=${false}
               .value=${this._state}
               @change=${this._stateChanged}
               class="state-input"
-            ></ha-textfield>
+            ></ha-input>
             <p>
               ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state_attributes"
@@ -235,35 +235,32 @@ class HaPanelDevState extends LitElement {
         .showAttributes=${this._showAttributes}
         @states-tool-entity-selected=${this._entitySelected}
       >
-        <search-input
+        <ha-input-search
           slot="filter-entities"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_entities"
           )}
           .value=${this._entityFilter}
-          @value-changed=${this._entityFilterChanged}
-        ></search-input>
-        <search-input
+          @input=${this._entityFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-states"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_states"
           )}
           type="search"
           .value=${this._stateFilter}
-          @value-changed=${this._stateFilterChanged}
-        ></search-input>
-        <search-input
+          @input=${this._stateFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-attributes"
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_attributes"
           )}
           type="search"
           .value=${this._attributeFilter}
-          @value-changed=${this._attributeFilterChanged}
-        ></search-input>
+          @input=${this._attributeFilterChanged}
+        ></ha-input-search>
       </developer-tools-state-renderer>
     `;
   }
@@ -315,20 +312,20 @@ class HaPanelDevState extends LitElement {
     this._expanded = true;
   }
 
-  private _stateChanged(ev) {
-    this._state = ev.target.value;
+  private _stateChanged(ev: InputEvent) {
+    this._state = (ev.target as HaInput).value ?? "";
   }
 
-  private _entityFilterChanged(ev) {
-    this._entityFilter = ev.detail.value;
+  private _entityFilterChanged(ev: InputEvent) {
+    this._entityFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _stateFilterChanged(ev) {
-    this._stateFilter = ev.detail.value;
+  private _stateFilterChanged(ev: InputEvent) {
+    this._stateFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _attributeFilterChanged(ev) {
-    this._attributeFilter = ev.detail.value;
+  private _attributeFilterChanged(ev: InputEvent) {
+    this._attributeFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _getHistoryURL(entityId, inputDate) {
@@ -510,13 +507,9 @@ class HaPanelDevState extends LitElement {
           padding: var(--ha-space-4);
         }
 
-        :host search-input {
-          display: block;
+        :host ha-input-search {
           width: 100%;
-        }
-
-        ha-textfield {
-          display: block;
+          --ha-input-padding-bottom: 0;
         }
 
         .heading {
@@ -524,10 +517,9 @@ class HaPanelDevState extends LitElement {
           justify-content: space-between;
         }
 
-        .heading ha-formfield {
+        .heading ha-checkbox {
           margin-right: var(--ha-space-2);
-          --mdc-typography-body2-font-size: var(--ha-font-size-m);
-          --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
+          justify-content: center;
         }
 
         .entity-id {

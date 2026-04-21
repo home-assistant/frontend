@@ -15,7 +15,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -119,7 +118,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${computeLovelaceEntityName(this.hass, stateObj, this._config.name)}
+            ${this.hass.formatEntityName(stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">
@@ -146,7 +145,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                     ? ""
                     : "problem"}
                 >
-                  ${stateObj.attributes[item]}
+                  ${this._formatSensorValue(stateObj, item)}
                 </div>
                 <div class="uom">
                   ${stateObj.attributes.unit_of_measurement_dict[item] || ""}
@@ -239,6 +238,20 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       color: var(--secondary-text-color);
     }
   `;
+
+  private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
+    const sensorEntityId = stateObj.attributes.sensors?.[attribute];
+    const sensorStateObj = sensorEntityId
+      ? this.hass!.states[sensorEntityId]
+      : undefined;
+    if (sensorStateObj) {
+      return this.hass!.formatEntityStateToParts(sensorStateObj)
+        .filter((part) => part.type !== "unit")
+        .map((part) => part.value)
+        .join("");
+    }
+    return stateObj.attributes[attribute] ?? "";
+  }
 
   private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(

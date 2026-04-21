@@ -4,15 +4,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
 import type { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -184,32 +184,30 @@ export class DialogEnergySolarSettings
           ? html`<div class="forecast-options">
               ${this._configEntries?.map(
                 (entry) =>
-                  html`<ha-formfield
-                    .label=${html`<div
-                      style="display: flex; align-items: center;"
-                    >
+                  html`<ha-checkbox
+                    .entry=${entry}
+                    @change=${this._forecastCheckChanged}
+                    .checked=${!!this._source?.config_entry_solar_forecast?.includes(
+                      entry.entry_id
+                    )}
+                  >
+                    <div style="display: flex; align-items: center;">
                       <img
                         alt=""
                         crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
-                        src=${brandsUrl({
-                          domain: entry.domain,
-                          type: "icon",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
+                        src=${brandsUrl(
+                          {
+                            domain: entry.domain,
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
                       />${entry.title}
-                    </div>`}
-                  >
-                    <ha-checkbox
-                      .entry=${entry}
-                      @change=${this._forecastCheckChanged}
-                      .checked=${!!this._source?.config_entry_solar_forecast?.includes(
-                        entry.entry_id
-                      )}
-                    >
-                    </ha-checkbox>
-                  </ha-formfield>`
+                    </div>
+                  </ha-checkbox>`
               )}
               <ha-button
                 appearance="filled"
@@ -341,11 +339,18 @@ export class DialogEnergySolarSettings
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          gap: var(--ha-space-2);
         }
         .forecast-options ha-button {
-          padding-left: 8px;
-          padding-inline-start: 8px;
-          padding-inline-end: initial;
+          margin-top: var(--ha-space-4);
+          width: fit-content;
+        }
+        .forecast-options ha-checkbox {
+          justify-content: center;
+          min-height: 40px;
         }
       `,
     ];

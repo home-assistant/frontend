@@ -1,74 +1,117 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("device_tracker", "demo_paulus", "work", {
-    source_type: "gps",
-    latitude: 32.877105,
-    longitude: 117.232185,
-    gps_accuracy: 91,
-    battery: 25,
-    friendly_name: "Paulus",
-  }),
-  getEntity("device_tracker", "demo_anne_therese", "school", {
-    source_type: "gps",
-    latitude: 32.877105,
-    longitude: 117.232185,
-    gps_accuracy: 91,
-    battery: 50,
-    friendly_name: "Anne Therese",
-  }),
-  getEntity("device_tracker", "demo_home_boy", "home", {
-    source_type: "gps",
-    latitude: 32.877105,
-    longitude: 117.232185,
-    gps_accuracy: 91,
-    battery: 75,
-    friendly_name: "Home Boy",
-  }),
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-  }),
-  getEntity("light", "kitchen_lights", "on", {
-    friendly_name: "Kitchen Lights",
-  }),
-  getEntity("light", "ceiling_lights", "off", {
-    friendly_name: "Ceiling Lights",
-  }),
-  getEntity("sensor", "battery_1", 20, {
-    device_class: "battery",
-    friendly_name: "Battery 1",
-    unit_of_measurement: "%",
-  }),
-  getEntity("sensor", "battery_2", 35, {
-    device_class: "battery",
-    friendly_name: "Battery 2",
-    unit_of_measurement: "%",
-  }),
-  getEntity("sensor", "battery_3", 40, {
-    device_class: "battery",
-    friendly_name: "Battery 3",
-    unit_of_measurement: "%",
-  }),
-  getEntity("sensor", "battery_4", 80, {
-    device_class: "battery",
-    friendly_name: "Battery 4",
-    unit_of_measurement: "%",
-  }),
-  getEntity("input_number", "min_battery_level", 30, {
-    mode: "slider",
-    step: 10,
-    min: 0,
-    max: 100,
-    icon: "mdi:battery-alert-variant",
-    friendly_name: "Minimum Battery Level",
-    unit_of_measurement: "%",
-  }),
+  {
+    entity_id: "device_tracker.demo_paulus",
+    state: "work",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.877105,
+      longitude: 117.232185,
+      gps_accuracy: 91,
+      battery: 25,
+      friendly_name: "Paulus",
+    },
+  },
+  {
+    entity_id: "device_tracker.demo_anne_therese",
+    state: "school",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.877105,
+      longitude: 117.232185,
+      gps_accuracy: 91,
+      battery: 50,
+      friendly_name: "Anne Therese",
+    },
+  },
+  {
+    entity_id: "device_tracker.demo_home_boy",
+    state: "home",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.877105,
+      longitude: 117.232185,
+      gps_accuracy: 91,
+      battery: 75,
+      friendly_name: "Home Boy",
+    },
+  },
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "light.kitchen_lights",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen Lights",
+    },
+  },
+  {
+    entity_id: "light.ceiling_lights",
+    state: "off",
+    attributes: {
+      friendly_name: "Ceiling Lights",
+    },
+  },
+  {
+    entity_id: "sensor.battery_1",
+    state: "20",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery 1",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "sensor.battery_2",
+    state: "35",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery 2",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "sensor.battery_3",
+    state: "40",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery 3",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "sensor.battery_4",
+    state: "80",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery 4",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "input_number.min_battery_level",
+    state: "30",
+    attributes: {
+      mode: "slider",
+      step: 10,
+      min: 0,
+      max: 100,
+      icon: "mdi:battery-alert-variant",
+      friendly_name: "Minimum Battery Level",
+      unit_of_measurement: "%",
+    },
+  },
 ];
 
 const CONFIGS = [

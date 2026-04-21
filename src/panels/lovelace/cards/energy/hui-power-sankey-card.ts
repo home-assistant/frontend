@@ -11,6 +11,7 @@ import {
   formatPowerShort,
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -60,11 +61,28 @@ class HuiPowerSankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: PowerSankeyCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): PowerSankeyCardConfig {
+    return {
+      type: "power-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -73,6 +91,9 @@ class HuiPowerSankeyCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: PowerSankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 
@@ -544,6 +565,7 @@ class HuiPowerSankeyCard
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
+                .hass=${this.hass}
                 .data=${{ nodes, links }}
                 .vertical=${vertical}
                 .valueFormatter=${this._valueFormatter}
@@ -610,18 +632,21 @@ class HuiPowerSankeyCard
       });
 
     // Collect battery power (positive = discharge, negative = charge)
+    // Sum all battery values first, then determine net direction.
+    // Momentary power should only flow in one direction across all batteries.
+    let net_battery = 0;
     prefs.energy_sources
       .filter((source) => source.type === "battery")
       .forEach((source) => {
         if (source.type === "battery" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
-          if (value > 0) {
-            from_battery += value;
-          } else if (value < 0) {
-            to_battery += Math.abs(value);
-          }
+          net_battery += this._getCurrentPower(source.stat_rate);
         }
       });
+    if (net_battery > 0) {
+      from_battery = net_battery;
+    } else if (net_battery < 0) {
+      to_battery = Math.abs(net_battery);
+    }
 
     // Calculate total consumption
     const used_total = from_grid + solar + from_battery - to_grid - to_battery;

@@ -7,12 +7,10 @@ import {
   mdiInformationOutline,
   mdiPlus,
   mdiUpload,
-  mdiWrench,
 } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import {
-  fetchZwaveIntegrationSettings,
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNetworkStatus,
@@ -60,7 +58,7 @@ export const getZwaveDeviceActions = async (
   if (provisioningEntry && !provisioningEntry.nodeId) {
     return [
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: async () => {
@@ -135,7 +133,7 @@ export const getZwaveDeviceActions = async (
           }),
       },
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: () =>
@@ -145,18 +143,6 @@ export const getZwaveDeviceActions = async (
           }),
       }
     );
-  }
-
-  const integrationSettings = await fetchZwaveIntegrationSettings(hass);
-
-  if (integrationSettings.installer_mode) {
-    actions.push({
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.installer_settings"
-      ),
-      icon: mdiWrench,
-      href: `/config/zwave_js/node_installer/${device.id}?config_entry=${entryId}`,
-    });
   }
 
   if (
@@ -203,7 +189,7 @@ export const getZwaveDeviceActions = async (
   }
 
   if (nodeStatus.is_controller_node) {
-    const networkStatus = await fetchZwaveNetworkStatus(hass, {
+    const networkStatus = await fetchZwaveNetworkStatus(hass.connection, {
       entry_id: entryId,
     });
     actions.unshift({

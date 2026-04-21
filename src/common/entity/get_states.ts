@@ -29,6 +29,7 @@ export const FIXED_DOMAIN_STATES = {
   device_tracker: ["home", "not_home"],
   fan: ["on", "off"],
   humidifier: ["on", "off"],
+  infrared: [],
   input_boolean: ["on", "off"],
   input_button: [],
   lawn_mower: ["error", "paused", "mowing", "returning", "docked"],
@@ -241,13 +242,17 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   },
 };
 
-export const getStates = (
+export const getStatesDomain = (
   hass: HomeAssistant,
-  state: HassEntity,
-  attribute: string | undefined = undefined
+  domain: string,
+  attribute?: string | undefined
 ): string[] => {
-  const domain = computeStateDomain(state);
   const result: string[] = [];
+
+  if (!attribute) {
+    // All entities can have unavailable states
+    result.push(...UNAVAILABLE_STATES);
+  }
 
   if (!attribute && domain in FIXED_DOMAIN_STATES) {
     result.push(...FIXED_DOMAIN_STATES[domain]);
@@ -259,19 +264,7 @@ export const getStates = (
     result.push(...FIXED_DOMAIN_ATTRIBUTE_STATES[domain][attribute]);
   }
 
-  // Dynamic values based on the entities
   switch (domain) {
-    case "climate":
-      if (!attribute) {
-        result.push(...state.attributes.hvac_modes);
-      } else if (attribute === "fan_mode") {
-        result.push(...state.attributes.fan_modes);
-      } else if (attribute === "preset_mode") {
-        result.push(...state.attributes.preset_modes);
-      } else if (attribute === "swing_mode") {
-        result.push(...state.attributes.swing_modes);
-      }
-      break;
     case "device_tracker":
     case "person":
       if (!attribute) {
@@ -288,6 +281,37 @@ export const getStates = (
               stringCompare(zone1, zone2, hass.locale.language)
             )
         );
+      }
+      break;
+  }
+
+  return result;
+};
+
+export const getStates = (
+  hass: HomeAssistant,
+  state: HassEntity,
+  attribute: string | undefined = undefined
+): string[] => {
+  const domain = computeStateDomain(state);
+  const result: string[] = [];
+
+  // Fixed values based on a domain
+  result.push(...getStatesDomain(hass, domain, attribute));
+
+  // Dynamic values based on the entities
+  switch (domain) {
+    case "climate":
+      if (!attribute) {
+        result.push(...state.attributes.hvac_modes);
+      } else if (attribute === "fan_mode") {
+        result.push(...state.attributes.fan_modes);
+      } else if (attribute === "preset_mode") {
+        result.push(...state.attributes.preset_modes);
+      } else if (attribute === "swing_mode") {
+        result.push(...state.attributes.swing_modes);
+      } else if (attribute === "swing_horizontal_mode") {
+        result.push(...state.attributes.swing_horizontal_modes);
       }
       break;
     case "event":
@@ -350,9 +374,5 @@ export const getStates = (
       break;
   }
 
-  if (!attribute) {
-    // All entities can have unavailable states
-    result.push(...UNAVAILABLE_STATES);
-  }
   return [...new Set(result)];
 };

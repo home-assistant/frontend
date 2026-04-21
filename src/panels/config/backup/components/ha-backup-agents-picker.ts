@@ -5,7 +5,6 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../data/backup";
 import {
@@ -53,36 +52,35 @@ class HaBackupAgentsPicker extends LitElement {
       this.disabled || this.disabledAgentIds?.includes(agent.agent_id) || false;
 
     return html`
-      <ha-formfield>
-        <span class="label ${classMap({ disabled })}" slot="label">
+      <ha-checkbox
+        .checked=${this.value.includes(agent.agent_id)}
+        .value=${agent.agent_id}
+        .disabled=${disabled}
+        @change=${this._checkboxChanged}
+      >
+        <span class="label ${classMap({ disabled })}">
           ${isLocalAgent(agent.agent_id)
-            ? html`
-                <ha-svg-icon .path=${mdiHarddisk} slot="start"> </ha-svg-icon>
-              `
+            ? html` <ha-svg-icon .path=${mdiHarddisk}> </ha-svg-icon> `
             : isNetworkMountAgent(agent.agent_id)
-              ? html` <ha-svg-icon .path=${mdiNas} slot="start"></ha-svg-icon> `
+              ? html` <ha-svg-icon .path=${mdiNas}></ha-svg-icon> `
               : html`
                   <img
-                    .src=${brandsUrl({
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    .src=${brandsUrl(
+                      {
+                        domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     alt=""
-                    slot="start"
                   />
                 `}
           ${name}
         </span>
-        <ha-checkbox
-          .checked=${this.value.includes(agent.agent_id)}
-          .value=${agent.agent_id}
-          .disabled=${disabled}
-          @change=${this._checkboxChanged}
-        ></ha-checkbox>
-      </ha-formfield>
+      </ha-checkbox>
     `;
   }
 
@@ -113,6 +111,9 @@ class HaBackupAgentsPicker extends LitElement {
     .agents {
       display: flex;
       flex-direction: column;
+      gap: var(--ha-space-2);
+      padding-inline-start: var(--ha-space-2);
+      padding-bottom: var(--ha-space-3);
     }
     .label {
       display: flex;

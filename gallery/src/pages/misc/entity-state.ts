@@ -422,7 +422,6 @@ export class DemoEntityState extends LitElement {
 
     return html`
       <ha-data-table
-        .hass=${this.hass}
         .columns=${this._columns(this.hass)}
         .data=${this._rows()}
         auto-height

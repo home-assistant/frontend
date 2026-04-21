@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
@@ -8,6 +8,7 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
+import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
@@ -16,33 +17,59 @@ import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
-import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
-import { getEntity } from "../../../../src/fake_data/entity";
+import {
+  showDialog,
+  type ShowDialogParams,
+} from "../../../../src/dialogs/make-dialog-manager";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
 
 const ENTITIES = [
-  getEntity("alarm_control_panel", "alarm", "disarmed", {
-    friendly_name: "Alarm",
-  }),
-  getEntity("media_player", "livingroom", "playing", {
-    friendly_name: "Livingroom",
-  }),
-  getEntity("media_player", "lounge", "idle", {
-    friendly_name: "Lounge",
-    supported_features: 444983,
-  }),
-  getEntity("light", "bedroom", "on", {
-    friendly_name: "Bedroom",
-  }),
-  getEntity("switch", "coffee", "off", {
-    friendly_name: "Coffee",
-  }),
-  getEntity("number", "number", 5, {
-    friendly_name: "Number",
-  }),
+  {
+    entity_id: "alarm_control_panel.alarm",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Alarm",
+    },
+  },
+  {
+    entity_id: "media_player.livingroom",
+    state: "playing",
+    attributes: {
+      friendly_name: "Livingroom",
+    },
+  },
+  {
+    entity_id: "media_player.lounge",
+    state: "idle",
+    attributes: {
+      friendly_name: "Lounge",
+      supported_features: 444983,
+    },
+  },
+  {
+    entity_id: "light.bedroom",
+    state: "on",
+    attributes: {
+      friendly_name: "Bedroom",
+    },
+  },
+  {
+    entity_id: "switch.coffee",
+    state: "off",
+    attributes: {
+      friendly_name: "Coffee",
+    },
+  },
+  {
+    entity_id: "number.number",
+    state: "5",
+    attributes: {
+      friendly_name: "Number",
+    },
+  },
 ];
 
 const DEVICES: DeviceRegistryEntry[] = [
@@ -611,14 +638,15 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     };
   };
 
-  private _dialogManager = (e) => {
-    const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
+  private _dialogManager = (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
+    const { dialogTag, dialogImport, dialogParams, addHistory, parentElement } =
+      e.detail;
     showDialog(
       this,
-      this.shadowRoot!,
       dialogTag,
       dialogParams,
       dialogImport,
+      parentElement,
       addHistory
     );
   };
@@ -664,7 +692,11 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                 ([key, value]) => html`
                   <ha-settings-row narrow slot=${slot}>
                     <span slot="heading">${value?.name || key}</span>
-                    <span slot="description">${value?.description}</span>
+                    ${value?.description
+                      ? html`<span slot="description"
+                          >${value?.description}</span
+                        >`
+                      : nothing}
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}

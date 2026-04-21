@@ -1,12 +1,12 @@
 import { mdiMinusThick, mdiPlusThick } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-base-time-input";
-import type { TimeChangedEvent } from "./ha-base-time-input";
-import "./ha-button-toggle-group";
 import type { ValueChangedEvent } from "../types";
+import "./ha-base-time-input";
+import type { HaBaseTimeInput, TimeChangedEvent } from "./ha-base-time-input";
+import "./ha-button-toggle-group";
 
 export interface HaDurationData {
   days?: number;
@@ -19,7 +19,7 @@ export interface HaDurationData {
 const FIELDS = ["milliseconds", "seconds", "minutes", "hours", "days"];
 
 @customElement("ha-duration-input")
-class HaDurationInput extends LitElement {
+export class HaDurationInput extends LitElement {
   @property({ attribute: false }) public data?: HaDurationData;
 
   @property() public label?: string;
@@ -42,7 +42,18 @@ class HaDurationInput extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @query("ha-base-time-input", true) private _input?: HaBaseTimeInput;
+
   private _toggleNegative = false;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
+  }
 
   protected render(): TemplateResult {
     return html`

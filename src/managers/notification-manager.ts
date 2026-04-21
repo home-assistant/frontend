@@ -1,11 +1,12 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/ha-toast";
-import type { HaToast } from "../components/ha-toast";
+import type { ToastClosedEventDetail } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
@@ -17,6 +18,7 @@ export interface ShowToastParams {
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
+  bottomOffset?: number;
 }
 
 export interface ToastActionParams {
@@ -32,14 +34,23 @@ class NotificationManager extends LitElement {
 
   @state() private _parameters?: ShowToastParams;
 
-  @query("ha-toast") private _toast!: HaToast | undefined;
+  @query("ha-toast")
+  private _toast!: HTMLElementTagNameMap["ha-toast"] | undefined;
+
+  private _showDialogId = 0;
 
   public async showDialog(parameters: ShowToastParams) {
+    const showId = ++this._showDialogId;
+
     if (!parameters.id || this._parameters?.id !== parameters.id) {
-      this._toast?.close();
+      await this._toast?.hide();
     }
 
-    if (!parameters || parameters.duration === 0) {
+    if (showId !== this._showDialogId) {
+      return;
+    }
+
+    if (parameters.duration === 0) {
       this._parameters = undefined;
       return;
     }
@@ -54,10 +65,15 @@ class NotificationManager extends LitElement {
     }
 
     await this.updateComplete;
+
+    if (showId !== this._showDialogId) {
+      return;
+    }
+
     this._toast?.show();
   }
 
-  private _toastClosed() {
+  private _toastClosed(_ev: HASSDomEvent<ToastClosedEventDetail>) {
     this._parameters = undefined;
   }
 
@@ -67,7 +83,6 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-toast
-        leading
         .labelText=${typeof this._parameters.message !== "string"
           ? this.hass.localize(
               this._parameters.message.translationKey,
@@ -75,7 +90,8 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
-        @MDCSnackbar:closed=${this._toastClosed}
+        .bottomOffset=${this._parameters.bottomOffset ?? 0}
+        @toast-closed=${this._toastClosed}
       >
         ${this._parameters?.action
           ? html`
@@ -99,8 +115,8 @@ class NotificationManager extends LitElement {
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.close")}
                 .path=${mdiClose}
-                dialogAction="close"
                 slot="dismiss"
+                @click=${this._dismissClicked}
               ></ha-icon-button>
             `
           : nothing}
@@ -109,10 +125,14 @@ class NotificationManager extends LitElement {
   }
 
   private _buttonClicked() {
-    this._toast?.close("action");
+    this._toast?.hide("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
+  }
+
+  private _dismissClicked() {
+    this._toast?.hide("dismiss");
   }
 }
 

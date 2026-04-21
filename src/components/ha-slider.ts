@@ -23,9 +23,18 @@ export class HaSlider extends Slider {
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
           --wa-color-surface-default: var(--card-background-color);
-          --wa-color-neutral-fill-normal: var(--disabled-color);
-          --wa-tooltip-background-color: var(--secondary-background-color);
-          --wa-tooltip-color: var(--primary-text-color);
+          --wa-color-neutral-fill-normal: var(
+            --ha-slider-track-color,
+            var(--disabled-color)
+          );
+          --wa-tooltip-background-color: var(
+            --ha-tooltip-background-color,
+            var(--secondary-background-color)
+          );
+          --wa-tooltip-content-color: var(
+            --ha-tooltip-text-color,
+            var(--primary-text-color)
+          );
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
             var(--ha-font-family-body)
@@ -42,16 +51,23 @@ export class HaSlider extends Slider {
             --ha-tooltip-line-height,
             var(--ha-line-height-condensed)
           );
-          --wa-tooltip-padding: 8px;
+          --wa-tooltip-padding: var(--ha-tooltip-padding, var(--ha-space-2));
           --wa-tooltip-border-radius: var(
             --ha-tooltip-border-radius,
             var(--ha-border-radius-sm)
           );
-          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 0px);
+          --wa-tooltip-border-width: 0px;
+          --wa-z-index-tooltip: 1000;
           min-width: 100px;
           min-inline-size: 100px;
           width: 200px;
+        }
+
+        /* Expand slider touch target to 32px */
+        #slider {
+          padding-block: 14px;
+          margin-block: -14px;
         }
 
         #thumb {

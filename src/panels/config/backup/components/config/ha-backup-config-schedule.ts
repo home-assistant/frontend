@@ -6,10 +6,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-time-input";
 import "../../../../../components/ha-tip";
@@ -161,17 +159,15 @@ class HaBackupConfigSchedule extends LitElement {
                   ${BACKUP_DAYS.map(
                     (day) => html`
                       <div>
-                        <ha-formfield
-                          .label=${this.hass.localize(`ui.panel.config.backup.overview.settings.weekdays.${day}`)}
+                        <ha-checkbox
+                          @change=${this._daysChanged}
+                          .checked=${data.days.includes(day)}
+                          .value=${day}
                         >
-                          <ha-checkbox
-                            @change=${this._daysChanged}
-                            .checked=${data.days.includes(day)}
-                            .value=${day}
-                          >
-                          </ha-checkbox>
-                        </span>
-                        </ha-formfield>
+                          ${this.hass.localize(
+                            `ui.panel.config.backup.overview.settings.weekdays.${day}`
+                          )}
+                        </ha-checkbox>
                       </div>
                     `
                   )}
@@ -439,6 +435,11 @@ class HaBackupConfigSchedule extends LitElement {
     }
     a {
       color: var(--primary-color);
+    }
+    ha-checkbox {
+      min-height: 40px;
+      justify-content: center;
+      padding-right: var(--ha-space-2);
     }
   `;
 }
