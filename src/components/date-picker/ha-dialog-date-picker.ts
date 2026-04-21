@@ -26,6 +26,15 @@ import { datePickerStyles } from "./styles";
 
 type CalendarDate = HTMLElementTagNameMap["calendar-date"];
 
+const valueToDate = (value?: string): Date => {
+  if (!value) {
+    return new Date();
+  }
+
+  const date = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  return new Date(`${date ?? value}T00:00:00`);
+};
+
 /**
  * A date picker dialog component that displays a calendar for selecting dates.
  * Uses the `cally` library for calendar rendering and supports localization,
@@ -68,9 +77,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     super.connectedCallback();
 
     if (this.params) {
-      const date = this.params.value
-        ? new Date(`${this.params.value.split("T")[0]}T00:00:00`)
-        : new Date();
+      const date = valueToDate(this.params.value);
 
       this._pickerYear = formatDateYear(
         date,
@@ -172,9 +179,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   }
 
   private _updateValue(value?: string, setFocusDay = false) {
-    const date = value
-      ? new Date(`${value.split("T")[0]}T00:00:00`)
-      : new Date();
+    const date = valueToDate(value);
     this._value = {
       year: formatDateYear(date, this._i18n.locale, this._hassConfig),
       title: formatDateShort(date, this._i18n.locale, this._hassConfig),
