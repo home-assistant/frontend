@@ -17,7 +17,7 @@ import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";
 import type { DatePickerDialogParams } from "../ha-date-input";
-import "../ha-adaptive-dialog";
+import "../ha-adaptive-popover";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
@@ -102,8 +102,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       return nothing;
     }
 
-    return html`<ha-adaptive-dialog
-      .desktopMode=${this.dialogAnchor ? "popover" : "dialog"}
+    return html`<ha-adaptive-popover
       .dialogAnchor=${this.dialogAnchor}
       open
       width="small"
@@ -162,7 +161,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           ${this._i18n.localize("ui.common.ok")}
         </ha-button>
       </ha-dialog-footer>
-    </ha-adaptive-dialog>`;
+    </ha-adaptive-popover>`;
   }
 
   private _valueChanged(ev: Event) {
@@ -235,7 +234,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   static styles = [
     datePickerStyles,
     css`
-      ha-adaptive-dialog {
+      ha-adaptive-popover {
         --dialog-content-padding: 0;
       }
     `,

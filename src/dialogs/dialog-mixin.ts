@@ -1,6 +1,7 @@
 import type { LitElement } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HaAdaptiveDialog } from "../components/ha-adaptive-dialog";
+import type { HaAdaptivePopover } from "../components/ha-adaptive-popover";
 import type { HaBottomSheet } from "../components/ha-bottom-sheet";
 import type { HaDialog } from "../components/ha-dialog";
 import type { Constructor } from "../types";
@@ -31,8 +32,13 @@ export const DialogMixin = <
       }
 
       const dialogElement = this.shadowRoot?.querySelector(
-        "ha-adaptive-dialog, ha-dialog, ha-bottom-sheet"
-      ) as HaAdaptiveDialog | HaDialog | HaBottomSheet | null;
+        "ha-adaptive-popover, ha-adaptive-dialog, ha-dialog, ha-bottom-sheet"
+      ) as
+        | HaAdaptivePopover
+        | HaAdaptiveDialog
+        | HaDialog
+        | HaBottomSheet
+        | null;
 
       if (dialogElement) {
         this._closePromise = new Promise<boolean>((resolve) => {
