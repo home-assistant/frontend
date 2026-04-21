@@ -106,7 +106,7 @@ export const handleAction = async (
         config.camera_image ||
         config.image_entity;
       if (entityId) {
-        fireEvent(node, "hass-more-info", { entityId, anchor: node });
+        fireEvent(node, "hass-more-info", { entityId });
       } else {
         showToast(node, {
           message: hass.localize(
