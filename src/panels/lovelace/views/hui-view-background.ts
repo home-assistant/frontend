@@ -213,7 +213,6 @@ export class HUIViewBackground extends LitElement {
         var(--lovelace-background, var(--primary-background-color))
       );
       opacity: var(--view-background-opacity, 1);
-      transition: background 0.3s ease;
     }
   `;
 }
