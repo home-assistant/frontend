@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
+import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog";
@@ -81,7 +82,7 @@ type DialogSheetMode = DesktopDialogMode | "bottom-sheet";
  * Example: `<ha-form autofocus .schema=${schema}></ha-form>`
  */
 @customElement("ha-adaptive-dialog")
-export class HaAdaptiveDialog extends LitElement {
+export class HaAdaptiveDialog extends ScrollLockMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
@@ -172,6 +173,7 @@ export class HaAdaptiveDialog extends LitElement {
     }
 
     if (!this.open || this._mode !== "popover") {
+      this.unlockBodyScroll();
       this._cancelPopoverOpen();
       this._popoverOpen = false;
     }
@@ -374,6 +376,7 @@ export class HaAdaptiveDialog extends LitElement {
       return;
     }
 
+    this.lockBodyScroll();
     fireEvent(this, "opened");
   }
 
@@ -400,6 +403,7 @@ export class HaAdaptiveDialog extends LitElement {
       return;
     }
 
+    this.unlockBodyScroll();
     this._allowPopoverHide = false;
     fireEvent(this, "closed");
   }
