@@ -228,7 +228,7 @@ export class HaAdaptiveDialog extends LitElement {
           @wa-after-hide=${this._handlePopoverAfterHide}
         >
           <div class="popover-surface" @click=${this._handlePopoverClick}>
-            ${this._renderHeader()}
+            ${this._renderHeader(false)}
             <div class="content-wrapper">
               <div class="body"><slot></slot></div>
             </div>
@@ -269,7 +269,7 @@ export class HaAdaptiveDialog extends LitElement {
     `;
   }
 
-  private _renderHeader(slotHeader = false) {
+  private _renderHeader(slotHeader: boolean) {
     if (this.withoutHeader) {
       return nothing;
     }
