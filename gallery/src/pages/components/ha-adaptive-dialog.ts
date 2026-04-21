@@ -8,6 +8,7 @@ import "../../../../src/components/ha-adaptive-dialog";
 import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 
@@ -643,10 +644,11 @@ export class DemoHaAdaptiveDialog extends LitElement {
     `;
   }
 
-  private _handleOpenDialog = (dialog: DialogType) => (ev?: Event) => {
-    this._dialogAnchor = ev?.currentTarget as HTMLElement | undefined;
-    this._openDialog = dialog;
-  };
+  private _handleOpenDialog =
+    (dialog: DialogType) => (ev?: HASSDomCurrentTargetEvent<HTMLElement>) => {
+      this._dialogAnchor = ev?.currentTarget;
+      this._openDialog = dialog;
+    };
 
   private _handleClosed = () => {
     this._dialogAnchor = undefined;
