@@ -1,21 +1,86 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiConnection, mdiMemory, mdiPencil, mdiUsb } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SerialSelector } from "../../data/selector";
 import { listSerialPorts, type SerialPort } from "../../data/usb";
+import { mdiEsphomeLogo } from "../../resources/esphome-logo-svg";
+import { multiTermSortedSearch } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import "../ha-svg-icon";
 import "../ha-icon-button";
+import {
+  DEFAULT_SEARCH_KEYS,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import "../input/ha-input";
 
 const MANUAL_ENTRY_ID = "__manual_entry__";
 
 const SERIAL_PORTS_REFRESH_INTERVAL = 5000;
+
+type SerialPortType = "integration" | "usb" | "embedded" | "unnamed";
+
+const SECTION_ORDER: SerialPortType[] = [
+  "integration",
+  "usb",
+  "embedded",
+  "unnamed",
+];
+
+const TYPE_ICONS: Record<SerialPortType, string> = {
+  integration: mdiConnection,
+  usb: mdiUsb,
+  embedded: mdiMemory,
+  unnamed: mdiMemory,
+};
+
+const getPortType = (port: SerialPort): SerialPortType => {
+  if (port.device.includes("://")) {
+    return "integration";
+  }
+  if (port.vid || port.pid) {
+    return "usb";
+  }
+  if (port.description || port.manufacturer) {
+    return "embedded";
+  }
+  return "unnamed";
+};
+
+const getPortIcon = (port: SerialPort, type: SerialPortType): string => {
+  if (type === "integration" && port.device.startsWith("esphome://")) {
+    return mdiEsphomeLogo;
+  }
+  return TYPE_ICONS[type];
+};
+
+const getPortPrimary = (port: SerialPort): string => {
+  if (port.description && port.manufacturer) {
+    return `${port.description} — ${port.manufacturer}`;
+  }
+  return port.description || port.manufacturer || port.device;
+};
+
+const getPortSecondary = (port: SerialPort): string | undefined => {
+  const parts: string[] = [];
+  if (port.description || port.manufacturer) {
+    parts.push(port.device);
+  }
+  if (port.vid && port.pid) {
+    parts.push(`${port.vid}:${port.pid}`);
+  }
+  if (port.serial_number) {
+    parts.push(`S/N: ${port.serial_number}`);
+  }
+  return parts.length ? parts.join(" · ") : undefined;
+};
 
 @customElement("ha-selector-serial")
 export class HaSerialSelector extends LitElement {
@@ -116,49 +181,114 @@ export class HaSerialSelector extends LitElement {
     this._stopRefresh();
   };
 
-  private _humanReadablePort(port: SerialPort): string {
-    const parts: string[] = [port.device];
-    if (port.manufacturer) {
-      parts.push(port.manufacturer);
-    }
-    if (port.description) {
-      parts.push(port.description);
-    }
-    return parts.join(" - ");
-  }
-
-  private _getPickerItems = (): (PickerComboBoxItem | string)[] | undefined =>
-    this._serialPorts
-      ? this._getItems(this._serialPorts, this.hass.localize)
-      : undefined;
-
-  private _getItems = memoizeOne(
+  private _buildGroupedItems = memoizeOne(
     (
       ports: SerialPort[],
-      localize: HomeAssistant["localize"]
-    ): (PickerComboBoxItem | string)[] => {
-      const items: (PickerComboBoxItem | string)[] = ports.map((port) => ({
-        id: port.device,
-        primary: this._humanReadablePort(port),
-        secondary: port.vid
-          ? `${port.vid}:${port.pid}${port.serial_number ? ` - S/N: ${port.serial_number}` : ""}`
-          : undefined,
-        search_labels: {
-          device: port.device,
-          manufacturer: port.manufacturer,
-          description: port.description,
-          serial_number: port.serial_number,
-        },
-        sorting_label: port.device,
-      }));
-      items.push({
-        id: MANUAL_ENTRY_ID,
-        primary: localize("ui.components.selectors.serial.enter_manually"),
-        secondary: undefined,
-      });
-      return items;
+      language: string
+    ): Record<SerialPortType, PickerComboBoxItem[]> => {
+      const grouped: Record<SerialPortType, PickerComboBoxItem[]> = {
+        integration: [],
+        usb: [],
+        embedded: [],
+        unnamed: [],
+      };
+
+      for (const port of ports) {
+        const type = getPortType(port);
+        const primary = getPortPrimary(port);
+        grouped[type].push({
+          id: port.device,
+          primary,
+          secondary: getPortSecondary(port),
+          icon_path: getPortIcon(port, type),
+          search_labels: {
+            device: port.device,
+            manufacturer: port.manufacturer,
+            description: port.description,
+            serial_number: port.serial_number,
+          },
+          sorting_label: primary,
+        });
+      }
+
+      for (const type of SECTION_ORDER) {
+        grouped[type].sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.sorting_label!,
+            b.sorting_label!,
+            language
+          )
+        );
+      }
+
+      return grouped;
     }
   );
+
+  private _getPickerItems = (
+    searchString?: string,
+    section?: string
+  ): (PickerComboBoxItem | string)[] | undefined => {
+    if (!this._serialPorts) {
+      return undefined;
+    }
+
+    const grouped = this._buildGroupedItems(
+      this._serialPorts,
+      this.hass.locale.language
+    );
+
+    const items: (PickerComboBoxItem | string)[] = [];
+    for (const type of SECTION_ORDER) {
+      if (section && section !== type) {
+        continue;
+      }
+      let groupItems = grouped[type];
+      if (searchString) {
+        groupItems = multiTermSortedSearch(
+          groupItems,
+          searchString,
+          DEFAULT_SEARCH_KEYS,
+          (item) => item.id
+        );
+      }
+      if (!groupItems.length) {
+        continue;
+      }
+      if (!section) {
+        items.push(
+          this.hass.localize(
+            `ui.components.selectors.serial.type.${type}` as const
+          )
+        );
+      }
+      items.push(...groupItems);
+    }
+
+    return items;
+  };
+
+  private _getAdditionalItems = (): PickerComboBoxItem[] => [
+    {
+      id: MANUAL_ENTRY_ID,
+      primary: this.hass.localize(
+        "ui.components.selectors.serial.enter_manually"
+      ),
+      icon_path: mdiPencil,
+    },
+  ];
+
+  private _rowRenderer = (item: PickerComboBoxItem) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.icon_path
+        ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
+        : nothing}
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+    </ha-combo-box-item>
+  `;
 
   protected render() {
     const usbLoaded = this.hass && isComponentLoaded(this.hass.config, "usb");
@@ -188,6 +318,8 @@ export class HaSerialSelector extends LitElement {
       `;
     }
 
+    const sections = this._buildSections();
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
@@ -197,11 +329,30 @@ export class HaSerialSelector extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         .getItems=${this._getPickerItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .rowRenderer=${this._rowRenderer}
+        .sections=${sections}
         @value-changed=${this._handlePickerChange}
         @picker-opened=${this._handlePickerOpened}
         @picker-closed=${this._handlePickerClosed}
       ></ha-generic-picker>
     `;
+  }
+
+  private _buildSections() {
+    if (!this._serialPorts) {
+      return undefined;
+    }
+    const grouped = this._buildGroupedItems(
+      this._serialPorts,
+      this.hass.locale.language
+    );
+    return SECTION_ORDER.filter((type) => grouped[type].length).map((type) => ({
+      id: type,
+      label: this.hass.localize(
+        `ui.components.selectors.serial.type.${type}` as const
+      ),
+    }));
   }
 
   private async _handlePickerChange(ev: ValueChangedEvent<string>) {
