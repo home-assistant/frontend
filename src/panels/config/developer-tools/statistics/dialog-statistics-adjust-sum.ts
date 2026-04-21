@@ -65,9 +65,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   private _precision = 2;
 
   private _amountSelector = memoizeOne(
-    (unit_of_measurement: string | undefined): NumberSelector => ({
+    (
+      unit_of_measurement: string | undefined,
+      precision: number
+    ): NumberSelector => ({
       number: {
-        step: 0.01,
+        step: 10 ** -precision,
         unit_of_measurement,
         mode: "box",
       },
@@ -318,7 +321,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
-        .selector=${this._amountSelector(unit || undefined)}
+        .selector=${this._amountSelector(unit || undefined, this._precision)}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
