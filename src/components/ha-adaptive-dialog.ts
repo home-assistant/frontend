@@ -358,12 +358,7 @@ export class HaAdaptiveDialog extends ScrollLockMixin(LitElement) {
       );
     });
 
-    const isHeaderNavigationClick = path.some(
-      (node) =>
-        node instanceof HTMLSlotElement && node.name === "headerNavigationIcon"
-    );
-
-    if (!shouldClose && !isHeaderNavigationClick) {
+    if (!shouldClose) {
       return;
     }
 

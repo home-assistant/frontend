@@ -49,13 +49,13 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
     return this.hass.states[this.context.entity_id!] ?? undefined;
   }
 
-  private _pressButton() {
+  private _pressButton(ev: Event) {
     if (!this.hass || !this._stateObj) return;
 
     fireEvent(this, "show-dialog", {
       dialogTag: "ha-dialog-date-picker",
       dialogImport: loadDatePickerDialog,
-      dialogAnchor: this,
+      dialogAnchor: ev.currentTarget as Element,
       dialogParams: {
         min: "1970-01-01",
         value: this._stateObj.state,
