@@ -236,8 +236,14 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
             min(95vw, var(--safe-width))
           );
           --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
-          --show-duration: var(--ha-dialog-show-duration, 200ms);
-          --hide-duration: var(--ha-dialog-hide-duration, 200ms);
+          --show-duration: var(
+            --ha-dialog-show-duration,
+            var(--ha-animation-duration-normal)
+          );
+          --hide-duration: var(
+            --ha-dialog-hide-duration,
+            var(--ha-animation-duration-normal)
+          );
           --wa-color-surface-raised: var(
             --ha-dialog-surface-background,
             var(--card-background-color, var(--ha-color-surface-default))
