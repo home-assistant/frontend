@@ -116,11 +116,29 @@ export class HaControlSwitch extends LitElement {
   }
 
   private _keydown(ev: any) {
-    if (ev.key !== "Enter" && ev.key !== " ") {
+    const supportedKeys = ["Enter", " "];
+    if (this.vertical) {
+      supportedKeys.push("ArrowUp", "ArrowDown");
+    } else {
+      supportedKeys.push("ArrowLeft", "ArrowRight");
+    }
+    if (!supportedKeys.includes(ev.key)) {
       return;
     }
     ev.preventDefault();
-    this._toggle();
+
+    if (
+      ev.key === "Enter" ||
+      ev.key === " " ||
+      (this.vertical &&
+        ((this.checked && ev.key === "ArrowDown") ||
+          (!this.checked && ev.key === "ArrowUp"))) ||
+      (!this.vertical &&
+        ((!this.checked && ev.key === "ArrowRight") ||
+          (this.checked && ev.key === "ArrowLeft")))
+    ) {
+      this._toggle();
+    }
   }
 
   protected render(): TemplateResult {
@@ -132,7 +150,7 @@ export class HaControlSwitch extends LitElement {
         aria-checked=${this.checked ? "true" : "false"}
         aria-label=${ifDefined(this.label)}
         role="switch"
-        tabindex="0"
+        tabindex=${ifDefined(this.disabled ? undefined : "0")}
         ?checked=${this.checked}
         ?disabled=${this.disabled}
       >
@@ -156,6 +174,7 @@ export class HaControlSwitch extends LitElement {
       --control-switch-on-color: var(--primary-color);
       --control-switch-off-color: var(--disabled-color);
       --control-switch-background-opacity: 0.2;
+      --control-switch-hover-background-opacity: 0.4;
       --control-switch-thickness: 40px;
       --control-switch-border-radius: var(--ha-border-radius-lg);
       --control-switch-padding: 4px;
@@ -167,10 +186,10 @@ export class HaControlSwitch extends LitElement {
       transition: box-shadow 180ms ease-in-out;
       -webkit-tap-highlight-color: transparent;
     }
-    .switch:focus-visible {
+    .switch:not([disabled]):focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-off-color);
     }
-    .switch[checked]:focus-visible {
+    .switch[checked]:not([disabled]):focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-on-color);
     }
     .switch {
@@ -198,6 +217,10 @@ export class HaControlSwitch extends LitElement {
       background-color: var(--control-switch-off-color);
       transition: background-color 180ms ease-in-out;
       opacity: var(--control-switch-background-opacity);
+    }
+    .switch:not([disabled]):focus-visible .background,
+    .switch:not([disabled]):hover .background {
+      opacity: var(--control-switch-hover-background-opacity);
     }
     .switch .button {
       width: 50%;
