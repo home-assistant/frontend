@@ -8011,10 +8011,8 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
-          "join_x": "X (formerly Twitter)",
-          "join_mastodon": "Mastodon",
-          "join_bluesky": "Bluesky",
+          "join": "Join the community on our {forums}, {social_media}, {discord}, {blog} or {newsletter}",
+          "social_media": "Social Media",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -10591,8 +10589,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "x": "[%key:ui::panel::config::tips::join_x%]",
-          "mastodon": "Mastodon",
+          "social_media": "Social Media",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -10891,7 +10888,7 @@
             "forums": "[%key:ui::panel::page-onboarding::welcome::forums%]",
             "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
             "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
-            "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "social_media": "[%key:ui::panel::page-onboarding::welcome::social_media%]",
             "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
             "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
           },

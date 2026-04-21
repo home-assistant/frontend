@@ -124,7 +124,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n!: ContextType<typeof internationalizationContext>;
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   // disabled till iOS app fix the "focus_element" implementation
   // @state()
@@ -176,7 +176,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         @wa-after-hide=${this._handleAfterHide}
       >
         ${!this.withoutHeader
-          ? html` <slot name="header">
+          ? html`<slot name="header">
               <ha-dialog-header
                 .subtitlePosition=${this.headerSubtitlePosition}
                 .showBorder=${this._bodyScrolled}
@@ -184,7 +184,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                 <slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
-                    .label=${this._i18n?.localize("ui.common.close") ?? "Close"}
+                    .label=${this._i18n?.localize?.("ui.common.close") ??
+                    "Close"}
                     .path=${mdiClose}
                   ></ha-icon-button>
                 </slot>

@@ -13,14 +13,15 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
-import "../../../components/ha-top-app-bar-fixed";
 import "../../../components/ha-tooltip";
+import "../../../components/ha-top-app-bar-fixed";
 import type { CloudStatus } from "../../../data/cloud";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
@@ -47,7 +48,6 @@ import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -60,23 +60,11 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
           rel="noreferrer"
           >${hass.localize("ui.panel.config.tips.join_forums")}</a
         >`,
-        twitter: html`<a
-          href=${documentationUrl(hass, `/twitter`)}
+        social_media: html`<a
+          href=${documentationUrl(hass, `/socials`)}
           target="_blank"
           rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_x")}</a
-        >`,
-        mastodon: html`<a
-          href=${documentationUrl(hass, `/mastodon`)}
-          target="_blank"
-          rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_mastodon")}</a
-        >`,
-        bluesky: html`<a
-          href=${documentationUrl(hass, `/bluesky`)}
-          target="_blank"
-          rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_bluesky")}</a
+          >${hass.localize("ui.panel.config.tips.social_media")}</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
