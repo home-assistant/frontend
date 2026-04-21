@@ -166,7 +166,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           ${this._i18n.localize("ui.common.ok")}
         </ha-button>
       </ha-dialog-footer>
-    </ha-dialog>`;
+    </ha-adaptive-dialog>`;
   }
 
   private _valueChanged(ev: Event) {
