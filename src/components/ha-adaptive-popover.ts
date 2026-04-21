@@ -5,7 +5,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
-import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
+import {
+  ADAPTIVE_DIALOG_MEDIA_QUERY,
+  HaAdaptiveDialog,
+} from "./ha-adaptive-dialog";
 
 /**
  * Home Assistant adaptive popover component.
@@ -31,7 +34,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   connectedCallback() {
     super.connectedCallback();
     this._unsubPopoverMediaQuery = listenMediaQuery(
-      "(max-width: 870px), (max-height: 500px)",
+      ADAPTIVE_DIALOG_MEDIA_QUERY,
       (matches) => {
         if (!this.open || this.allowModeChange) {
           this._narrow = matches;
@@ -86,10 +89,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         trap-focus
         role="dialog"
         aria-modal="true"
-        aria-labelledby=${ifDefined(
-          this.ariaLabelledBy ||
-            (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)
-        )}
+        aria-labelledby=${ifDefined(this._defaultAriaLabelledBy)}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @wa-show=${this._handlePopoverShow}
         @wa-hide=${this._handlePopoverHide}
