@@ -63,8 +63,8 @@ export class HaSerialSelector extends LitElement {
   private _canLoadPorts(): boolean {
     return Boolean(
       this.hass &&
-        this.hass.user?.is_admin &&
-        isComponentLoaded(this.hass.config, "usb")
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "usb")
     );
   }
 
