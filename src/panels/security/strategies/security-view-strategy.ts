@@ -233,7 +233,7 @@ export class SecurityViewStrategy extends ReactiveElement {
     }
 
     // Build sidebar with activity log
-    const hasLogbook = isComponentLoaded(hass, "logbook");
+    const hasLogbook = isComponentLoaded(hass.config, "logbook");
 
     // Collect person entity IDs
     const personEntities = Object.keys(hass.states).filter(
