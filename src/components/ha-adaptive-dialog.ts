@@ -212,7 +212,7 @@ export class HaAdaptiveDialog extends LitElement {
         <slot name="headerNavigationIcon" slot="headerNavigationIcon">
           <ha-icon-button
             data-dialog="close"
-            .label=${this.hass.localize("ui.common.close")}
+            .label=${this.hass?.localize("ui.common.close") ?? "Close"}
             .path=${mdiClose}
           ></ha-icon-button>
         </slot>
