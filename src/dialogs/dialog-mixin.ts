@@ -61,7 +61,6 @@ export const DialogMixin = <
 
     connectedCallback() {
       super.connectedCallback();
-      this._dialogClosedFired = false;
       this.addEventListener("closed", this._removeDialog, { once: true });
     }
 
