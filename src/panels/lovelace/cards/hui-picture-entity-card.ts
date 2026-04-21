@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,7 +7,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
-import type { CameraEntity } from "../../../data/camera";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -115,7 +115,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj: CameraEntity | ImageEntity | PersonEntity | undefined =
+    const stateObj: HassEntity | undefined =
       this.hass.states[this._config.entity];
 
     if (!stateObj) {
@@ -149,8 +149,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     // When show_entity_picture is enabled, try entity_picture first
     if (this._config.show_entity_picture) {
       image =
-        (stateObj.attributes as { entity_picture_local?: string })
-          .entity_picture_local || stateObj.attributes.entity_picture;
+        stateObj.attributes.entity_picture_local ||
+        stateObj.attributes.entity_picture;
     }
 
     // Fall back to configured image
