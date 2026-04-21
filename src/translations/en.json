@@ -492,7 +492,7 @@
     },
     "components": {
       "selectors": {
-        "serial": {
+        "serial_port": {
           "enter_manually": "Enter manually",
           "type": {
             "integration": "Integration-provided",

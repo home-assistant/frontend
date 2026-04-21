@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { SerialSelector } from "../../data/selector";
+import type { SerialPortSelector } from "../../data/selector";
 import { listSerialPorts, type SerialPort } from "../../data/usb";
 import { mdiEsphomeLogo } from "../../resources/esphome-logo-svg";
 import { multiTermSortedSearch } from "../../resources/fuseMultiTerm";
@@ -82,11 +82,11 @@ const getPortSecondary = (port: SerialPort): string | undefined => {
   return parts.length ? parts.join(" · ") : undefined;
 };
 
-@customElement("ha-selector-serial")
-export class HaSerialSelector extends LitElement {
+@customElement("ha-selector-serial_port")
+export class HaSerialPortSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public selector!: SerialSelector;
+  @property({ attribute: false }) public selector!: SerialPortSelector;
 
   @property() public value?: string;
 
@@ -258,7 +258,7 @@ export class HaSerialSelector extends LitElement {
       if (!section) {
         items.push(
           this.hass.localize(
-            `ui.components.selectors.serial.type.${type}` as const
+            `ui.components.selectors.serial_port.type.${type}` as const
           )
         );
       }
@@ -272,7 +272,7 @@ export class HaSerialSelector extends LitElement {
     {
       id: MANUAL_ENTRY_ID,
       primary: this.hass.localize(
-        "ui.components.selectors.serial.enter_manually"
+        "ui.components.selectors.serial_port.enter_manually"
       ),
       icon_path: mdiPencil,
     },
@@ -350,7 +350,7 @@ export class HaSerialSelector extends LitElement {
     return SECTION_ORDER.filter((type) => grouped[type].length).map((type) => ({
       id: type,
       label: this.hass.localize(
-        `ui.components.selectors.serial.type.${type}` as const
+        `ui.components.selectors.serial_port.type.${type}` as const
       ),
     }));
   }
@@ -403,6 +403,6 @@ export class HaSerialSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-serial": HaSerialSelector;
+    "ha-selector-serial_port": HaSerialPortSelector;
   }
 }
