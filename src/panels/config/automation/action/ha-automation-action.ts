@@ -80,6 +80,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}

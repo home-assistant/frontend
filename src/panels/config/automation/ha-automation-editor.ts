@@ -104,6 +104,9 @@ declare global {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
     "save-automation": undefined;
+    paste: {
+      item: Trigger | Condition | Action;
+    };
   }
 }
 
