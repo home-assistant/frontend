@@ -10214,7 +10214,11 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_card": "By card"
+            "by_card": "By card",
+            "empty_title": "What do you want to control?",
+            "empty_description": "Pick an entity to see suggested cards, or browse all card types.",
+            "browse_cards": "Browse all cards",
+            "more_cards": "+{count} more"
           },
           "badge_picker": {
             "no_description": "No description available.",
