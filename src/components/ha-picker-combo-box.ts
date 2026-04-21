@@ -214,6 +214,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._removeKeyboardShortcuts?.();
   }
 
+  public refreshItems() {
+    this._allItems = this._getItems();
+    if (!this._search || this.sections?.length) {
+      this._items = this._allItems;
+    }
+  }
+
   protected render() {
     const searchLabel =
       this.label ??

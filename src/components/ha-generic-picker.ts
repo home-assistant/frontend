@@ -306,6 +306,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _initialFieldValue?: string;
 
+  public refreshItems() {
+    this._comboBox?.refreshItems();
+  }
+
   private _dialogOpened = () => {
     this._opened = true;
     fireEvent(this, "picker-opened");

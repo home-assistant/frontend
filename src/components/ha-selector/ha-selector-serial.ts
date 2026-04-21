@@ -8,6 +8,7 @@ import type { SerialSelector } from "../../data/selector";
 import { listSerialPorts, type SerialPort } from "../../data/usb";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-icon-button";
 import "../input/ha-input";
@@ -39,6 +40,8 @@ export class HaSerialSelector extends LitElement {
   @state() private _manualEntry = false;
 
   @query("ha-input") private _input?: HTMLElement;
+
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   private _refreshTimeout?: number;
 
@@ -86,11 +89,14 @@ export class HaSerialSelector extends LitElement {
     } finally {
       this._loadInFlight = false;
     }
-    if (this._pickerOpen && this.isConnected) {
-      this._refreshTimeout = window.setTimeout(
-        () => this._loadSerialPorts(),
-        SERIAL_PORTS_REFRESH_INTERVAL
-      );
+    if (this._pickerOpen) {
+      this._picker?.refreshItems();
+      if (this.isConnected) {
+        this._refreshTimeout = window.setTimeout(
+          () => this._loadSerialPorts(),
+          SERIAL_PORTS_REFRESH_INTERVAL
+        );
+      }
     }
   }
 
