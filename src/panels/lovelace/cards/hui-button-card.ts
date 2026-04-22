@@ -1,5 +1,5 @@
-import { consume, type ContextType } from "@lit/context";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -7,6 +7,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import {
+  consumeEntityRegistryEntry,
+  consumeEntityState,
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -22,11 +26,7 @@ import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import {
-  entitiesContext,
-  statesContext,
-  uiContext,
-} from "../../../data/context";
+import { uiContext } from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { Themes } from "../../../data/ws-themes";
@@ -94,13 +94,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @state() private _config?: ButtonCardConfig;
 
   @state()
-  @consume<any>({ context: statesContext, subscribe: true })
-  @transform({
-    transformer: function (this: HuiButtonCard, value: HassEntities) {
-      return this._config?.entity ? value?.[this._config?.entity] : undefined;
-    },
-    watch: ["_config"],
-  })
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
   private _stateObj?: HassEntity;
 
   @state()
@@ -111,13 +105,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   private _themes!: Themes;
 
   @state()
-  @consume<any>({ context: entitiesContext, subscribe: true })
-  @transform<ContextType<typeof entitiesContext>, EntityRegistryDisplayEntry>({
-    transformer: function (this: HuiButtonCard, value) {
-      return this._config?.entity ? value?.[this._config?.entity] : undefined;
-    },
-    watch: ["_config"],
-  })
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
   _entity?: EntityRegistryDisplayEntry;
 
   public getCardSize(): number {
