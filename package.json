@@ -144,7 +144,7 @@
     "@octokit/rest": "22.0.1",
     "@rsdoctor/rspack-plugin": "1.5.9",
     "@rspack/core": "1.7.11",
-    "@rspack/dev-server": "1.2.1",
+    "@rspack/dev-server": "2.0.0",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.26",
     "@types/chromecast-caf-sender": "1.0.11",
