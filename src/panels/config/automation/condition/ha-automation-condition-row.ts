@@ -515,7 +515,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues) {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
