@@ -45,7 +45,7 @@ export class HaDeviceInfoMatterLock extends LitElement {
 
   private _eventEntityIds?: string[];
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       this._findLockEntity();

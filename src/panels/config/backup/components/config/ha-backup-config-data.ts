@@ -85,7 +85,7 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _storageInfo?: HostDisksUsage | null;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
     if (isComponentLoaded(this.hass.config, "hassio")) {
@@ -94,7 +94,7 @@ class HaBackupConfigData extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("value")) {
       if (isComponentLoaded(this.hass.config, "hassio")) {
         if (this.value?.include_addons?.length) {

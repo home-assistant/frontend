@@ -360,7 +360,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected override updated(changedProps: PropertyValues): void {
+  protected override updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     if (!this._tip && changedProps.has("hass")) {

@@ -68,7 +68,7 @@ class HaPanelApp extends LitElement {
    */
   private _iframeSubscribeUpdates = false;
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     // Send property updates to iframe when narrow or route changes
@@ -143,7 +143,7 @@ class HaPanelApp extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("route") && !changedProps.has("panel")) {

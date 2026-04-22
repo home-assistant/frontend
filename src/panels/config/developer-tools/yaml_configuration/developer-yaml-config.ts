@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../../common/config/components_with_service";
@@ -48,7 +48,7 @@ export class DeveloperYamlConfig extends LitElement {
     this._validateResult = undefined;
   }
 
-  protected updated(changedProperties) {
+  protected updated(changedProperties: PropertyValues<this>) {
     const oldHass = changedProperties.get("hass");
     if (
       changedProperties.has("hass") &&

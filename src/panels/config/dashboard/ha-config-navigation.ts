@@ -20,7 +20,7 @@ class HaConfigNavigation extends LitElement {
 
   @state() private _hasBluetoothConfigEntries = false;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     getConfigEntries(this.hass, {
       domain: "bluetooth",

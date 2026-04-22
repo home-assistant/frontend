@@ -421,7 +421,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected override firstUpdated(changedProps: PropertyValues) {
+  protected override firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._refresh();

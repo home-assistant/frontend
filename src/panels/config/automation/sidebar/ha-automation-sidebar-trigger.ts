@@ -12,6 +12,7 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
@@ -59,7 +60,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   @query(".sidebar-editor")
   public editor?: HaAutomationTriggerEditor;
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
       this._requestShowId = false;
       this._warnings = undefined;

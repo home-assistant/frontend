@@ -1,5 +1,6 @@
 import { mdiHelpCircleOutline, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -39,7 +40,7 @@ export class AITaskPref extends LitElement {
 
   private _gen_image_entity_id?: string | null;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
