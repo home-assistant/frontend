@@ -1,10 +1,5 @@
-import type {
-  PropertyValues,
-  css,
-  html,
-  LitElement,
-  type TemplateResult,
-} from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
