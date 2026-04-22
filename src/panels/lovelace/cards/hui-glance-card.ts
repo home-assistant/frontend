@@ -113,7 +113,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps): boolean {
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 

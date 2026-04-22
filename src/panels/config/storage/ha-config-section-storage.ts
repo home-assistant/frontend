@@ -62,7 +62,7 @@ class HaConfigSectionStorage extends LitElement {
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (isComponentLoaded(this.hass.config, "hassio")) {
       this._load();

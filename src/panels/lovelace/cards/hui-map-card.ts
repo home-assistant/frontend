@@ -295,7 +295,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       : hasConfigChanged(this, changedProps);
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (
       this._config?.show_all &&

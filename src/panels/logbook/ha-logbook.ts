@@ -155,7 +155,7 @@ export class HaLogbook extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }
@@ -164,7 +164,7 @@ export class HaLogbook extends LitElement {
     return !oldHass || oldHass.localize !== this.hass.localize;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     let changed = changedProps.has("time");
 
     for (const key of ["entityIds", "deviceIds", "stateFilter"]) {

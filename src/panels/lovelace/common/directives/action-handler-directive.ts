@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { noChange } from "lit";
 import { customElement } from "lit/decorators";
-import type { AttributePart, DirectiveParameters } from "lit/directive";
+import type { DirectiveParameters } from "lit/directive";
 import { directive, Directive } from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
@@ -254,7 +254,7 @@ export const actionHandlerBind = (
 
 export const actionHandler = directive(
   class extends Directive {
-    update(part: AttributePart, [options]: DirectiveParameters<this>) {
+    update(part, [options]: DirectiveParameters<this>) {
       actionHandlerBind(part.element as ActionHandlerElement, options);
       return noChange;
     }

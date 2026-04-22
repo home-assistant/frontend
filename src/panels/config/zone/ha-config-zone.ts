@@ -277,7 +277,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._canEditCore =
       Boolean(this.hass.user?.is_admin) &&
@@ -306,7 +306,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._zoomZone(id);
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {

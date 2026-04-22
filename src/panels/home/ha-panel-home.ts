@@ -73,7 +73,7 @@ class PanelHome extends LitElement {
       (entries[0]?.target as HTMLElement | undefined)?.offsetHeight ?? 0,
   });
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
