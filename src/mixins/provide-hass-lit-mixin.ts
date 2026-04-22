@@ -18,7 +18,7 @@ export const ProvideHassLitMixin = <T extends Constructor<ReactiveElement>>(
       el.hass = this.hass;
     }
 
-    protected updated(changedProps: PropertyValues<this>) {
+    protected updated(changedProps: PropertyValues) {
       super.updated(changedProps);
 
       if (changedProps.has("hass")) {

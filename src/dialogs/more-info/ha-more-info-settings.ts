@@ -60,7 +60,7 @@ export class HaMoreInfoSettings extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("entry")) {
       this._loadPlatformSettingTabs();
     }
