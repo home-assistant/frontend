@@ -1,13 +1,13 @@
 import { consume } from "@lit/context";
 import type {
   Connection,
-  HassEntities,
   HassEntity,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -17,7 +17,6 @@ import "../../../components/ha-spinner";
 import {
   connectionContext,
   internationalizationContext,
-  statesContext,
 } from "../../../data/context";
 import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
 import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
@@ -77,15 +76,7 @@ class HuiDailyForecastCardFeature
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  @transform<HassEntities, HassEntity | undefined>({
-    transformer: function (this: HuiDailyForecastCardFeature, states) {
-      return this.context?.entity_id
-        ? states?.[this.context.entity_id]
-        : undefined;
-    },
-    watch: ["context"],
-  })
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
   private _stateObj?: HassEntity;
 
   @state()
