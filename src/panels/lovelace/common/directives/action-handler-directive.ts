@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import type { AttributePart } from "lit";
 import { noChange } from "lit";
 import { customElement } from "lit/decorators";
 import type { DirectiveParameters } from "lit/directive";
@@ -254,7 +255,7 @@ export const actionHandlerBind = (
 
 export const actionHandler = directive(
   class extends Directive {
-    update(part, [options]: DirectiveParameters<this>) {
+    update(part: AttributePart, [options]: DirectiveParameters<this>) {
       actionHandlerBind(part.element as ActionHandlerElement, options);
       return noChange;
     }
