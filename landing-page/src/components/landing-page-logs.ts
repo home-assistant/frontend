@@ -117,7 +117,7 @@ class LandingPageLogs extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);

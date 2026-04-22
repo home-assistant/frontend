@@ -2,6 +2,7 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -397,7 +398,7 @@ export class DemoEntityState extends LitElement {
     ENTITIES.map(createRowData)
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     mockIcons(hass);

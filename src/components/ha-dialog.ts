@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { consume, type ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
@@ -148,9 +149,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     return this.bodyContainer;
   }
 
-  protected updated(
-    changedProperties: Map<string | number | symbol, unknown>
-  ): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     if (changedProperties.has("open")) {

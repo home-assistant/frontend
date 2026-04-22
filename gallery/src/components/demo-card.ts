@@ -1,5 +1,5 @@
 import { load } from "js-yaml";
-import type { PropertyValueMap } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -60,9 +60,7 @@ class DemoCard extends LitElement {
     this._size = await this._card?.getCardSize();
   }
 
-  protected update(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
+  protected update(_changedProperties: PropertyValues<this>): void {
     super.update(_changedProperties);
     this._updateSize();
   }

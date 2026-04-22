@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
@@ -29,7 +30,7 @@ class HcDemo extends HassElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._initializeHass();
   }
