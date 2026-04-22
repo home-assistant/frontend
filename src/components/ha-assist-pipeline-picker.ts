@@ -1,4 +1,4 @@
-import type { PropertyValueMap } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -78,9 +78,7 @@ export class HaAssistPipelinePicker extends LitElement {
     `;
   }
 
-  protected firstUpdated(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;

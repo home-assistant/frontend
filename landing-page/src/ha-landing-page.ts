@@ -115,7 +115,7 @@ class HaLandingPage extends LandingPageBaseElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     makeDialogManager(this);

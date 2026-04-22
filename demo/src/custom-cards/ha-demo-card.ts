@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
@@ -102,7 +102,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (this._hidden) {
       this.style.display = "none";
