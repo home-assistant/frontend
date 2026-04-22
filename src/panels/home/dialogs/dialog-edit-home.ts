@@ -67,6 +67,22 @@ const SUMMARY_PANEL_PATHS = [
   "/maintenance",
 ];
 
+// Colors cycled through when adding new custom shortcuts
+const SHORTCUT_COLORS = [
+  "blue",
+  "green",
+  "purple",
+  "red",
+  "orange",
+  "teal",
+  "amber",
+  "pink",
+  "indigo",
+  "cyan",
+  "deep-orange",
+  "deep-purple",
+];
+
 const WELCOME_MESSAGE_SCHEMA = [
   { name: "welcome_message", selector: { boolean: {} } },
 ] as const;
@@ -308,11 +324,14 @@ export class DialogEditHome
 
     (ev.currentTarget as any).value = "";
 
-    this._updateShortcuts((shortcuts) =>
-      shortcuts.some((item) => item.path === path)
-        ? shortcuts
-        : [...shortcuts, { path }]
-    );
+    this._updateShortcuts((shortcuts) => {
+      if (shortcuts.some((item) => item.path === path)) {
+        return shortcuts;
+      }
+      const color =
+        SHORTCUT_COLORS[shortcuts.length % SHORTCUT_COLORS.length];
+      return [...shortcuts, { path, color }];
+    });
   }
 
   private _editShortcut(ev: HASSDomEvent<{ index: number }>): void {
