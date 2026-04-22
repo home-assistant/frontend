@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
@@ -20,7 +21,7 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

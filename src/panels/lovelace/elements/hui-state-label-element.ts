@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -60,7 +61,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     };
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

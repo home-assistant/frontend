@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
@@ -21,7 +22,7 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -64,7 +65,7 @@ export class HuiStateBadgeElement
     };
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

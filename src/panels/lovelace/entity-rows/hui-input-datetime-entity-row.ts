@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
@@ -26,7 +27,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
