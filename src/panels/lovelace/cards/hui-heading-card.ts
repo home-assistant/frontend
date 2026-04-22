@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -75,7 +76,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected willUpdate(changedProperties): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!changedProperties.size) {
       return;
     }
