@@ -85,7 +85,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     return this;
   }
 
-  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     /*
@@ -130,7 +130,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
   }
 
-  protected update(changedProperties) {
+  protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
 
     // If no layout element, we're still creating one

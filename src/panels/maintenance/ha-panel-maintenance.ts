@@ -34,7 +34,7 @@ class PanelMaintenance extends LitElement {
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {

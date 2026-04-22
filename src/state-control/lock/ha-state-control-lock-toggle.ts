@@ -32,7 +32,7 @@ export class HaStateControlLockToggle extends LitElement {
 
   @state() private _isOn = false;
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._isOn =

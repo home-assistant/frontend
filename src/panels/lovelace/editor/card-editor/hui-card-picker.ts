@@ -245,7 +245,7 @@ export class HuiCardPicker extends LitElement {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {
       return true;
@@ -280,7 +280,7 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_filter")) {
       const div = this.parentElement!.shadowRoot!.getElementById("content");

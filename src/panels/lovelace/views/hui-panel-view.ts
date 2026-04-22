@@ -33,7 +33,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
