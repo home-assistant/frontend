@@ -510,7 +510,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ></ha-automation-row-targets>`
   );
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
