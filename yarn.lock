@@ -1362,15 +1362,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.41.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.35.0, @codemirror/view@npm:^6.37.0":
-  version: 6.41.0
-  resolution: "@codemirror/view@npm:6.41.0"
+"@codemirror/view@npm:6.41.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.35.0, @codemirror/view@npm:^6.37.0":
+  version: 6.41.1
+  resolution: "@codemirror/view@npm:6.41.1"
   dependencies:
     "@codemirror/state": "npm:^6.6.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/8251e981b7ee95891b0957855154a2e2eb07fed1e122e4d8a1bff6629faa4fc820285e821436b16ee087538323afaa6e942b8455d9e60485f09ad1587e1a7ced
+  checksum: 10/ab8156db1012f94ac39d603da4c397ab1de8877f941d0cf67f79cd09fffe9f39d5de8a10611a788ce9d5a88cad2633445880955fd0dc1ad67813cbf9be97774a
   languageName: node
   linkType: hard
 
@@ -8905,7 +8905,7 @@ __metadata:
     "@codemirror/language": "npm:6.12.3"
     "@codemirror/search": "npm:6.6.0"
     "@codemirror/state": "npm:6.6.0"
-    "@codemirror/view": "npm:6.41.0"
+    "@codemirror/view": "npm:6.41.1"
     "@date-fns/tz": "npm:1.4.1"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/eslintrc": "npm:3.3.5"
