@@ -8996,7 +8996,7 @@ __metadata:
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.2"
     lodash.merge: "npm:4.6.2"
-    lodash.template: "npm:4.18.0"
+    lodash.template: "npm:4.18.1"
     luxon: "npm:3.7.2"
     map-stream: "npm:0.0.7"
     marked: "npm:17.0.6"
@@ -10549,13 +10549,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.template@npm:4.18.0":
-  version: 4.18.0
-  resolution: "lodash.template@npm:4.18.0"
+"lodash.template@npm:4.18.1":
+  version: 4.18.1
+  resolution: "lodash.template@npm:4.18.1"
   dependencies:
     lodash._reinterpolate: "npm:^3.0.0"
     lodash.templatesettings: "npm:^4.0.0"
-  checksum: 10/660e7062c377b8725bc63d5d8ffd123801fdbd01df7f7b80f6a2c93cfc697e65166b82b7f1cd069becb826a768946a321b17d973472b6ef1333bd63636e3f7bf
+  checksum: 10/cdab27ff081003b58603d11f5ef680c610eb2883b53c3b16c9f455e0190139c54dc7f57a9237f16fad13b1cf42f9b1525f3a8ac4d6e90a7a12a36af47f11547e
   languageName: node
   linkType: hard
 
