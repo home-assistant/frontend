@@ -170,7 +170,7 @@ export class HaSelectorSelector extends LitElement {
 
   private _yamlMode = false;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.size === 1 && changedProps.has("hass")) {
       return false;
     }

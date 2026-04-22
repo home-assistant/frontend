@@ -53,7 +53,7 @@ class HaMarkdownElement extends ReactiveElement {
 
   private _renderPromise: ReturnType<typeof this._render> = Promise.resolve();
 
-  protected update(changedProps) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (this.content !== undefined) {
       this._renderPromise = this._render();
@@ -66,7 +66,7 @@ class HaMarkdownElement extends ReactiveElement {
     return true;
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (!this.innerHTML && this.cache) {
       const key = this._computeCacheKey();
       if (markdownCache.has(key)) {

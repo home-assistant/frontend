@@ -424,7 +424,7 @@ export class HaNavigationPicker extends LitElement {
     this._loading = false;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       this._loadRelatedItems();
     }

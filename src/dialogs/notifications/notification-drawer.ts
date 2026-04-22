@@ -69,7 +69,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {

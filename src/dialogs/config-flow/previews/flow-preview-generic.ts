@@ -1,6 +1,6 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
-import type { nothing, TemplateResult } from "lit";
+import type { nothing, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { FlowType } from "../../../data/data_entry_flow";
 import type { GenericPreview } from "../../../data/preview";
@@ -41,7 +41,7 @@ export class FlowPreviewGeneric extends LitElement {
     }
   }
 
-  willUpdate(changedProps) {
+  willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("stepData")) {
       this._debouncedSubscribePreview();
     }

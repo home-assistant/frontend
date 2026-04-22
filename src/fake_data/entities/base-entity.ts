@@ -100,10 +100,7 @@ export class MockBaseEntity {
     }
   }
 
-  public update(changes: {
-    state?: string;
-    attributes?: EntityAttributes;
-  }): void {
+  public update(changes): void {
     this.lastUpdated = now();
     if (changes.state !== undefined && changes.state !== this.state) {
       this.state = changes.state;

@@ -319,7 +319,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size > 1 || !changedProps.has("hass")) {
       return true;
     }

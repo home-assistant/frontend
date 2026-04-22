@@ -90,7 +90,7 @@ class MoreInfoMediaPlayer extends LitElement {
     this._clearProgressInterval();
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues) {
+  protected firstUpdated(_changedProperties: PropertyValues<this>) {
     if (this._positionSlider) {
       this._positionSlider.valueFormatter = (value: number) =>
         this._formatDuration(value);
@@ -682,7 +682,7 @@ class MoreInfoMediaPlayer extends LitElement {
     );
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("stateObj")) {
       this._syncProgressInterval();

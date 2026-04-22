@@ -143,7 +143,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _unsubscribeTinyKeys?: () => void;
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._setUnknownValue();
     }

@@ -30,7 +30,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       window.removeEventListener("beforeunload", this._handleUnload);
     }
 
-    protected willUpdate(changedProperties: PropertyValues): void {
+    protected willUpdate(changedProperties: PropertyValues<this>): void {
       super.willUpdate(changedProperties);
 
       if (this.isDirty) {

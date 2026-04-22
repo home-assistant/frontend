@@ -156,7 +156,7 @@ export class HaLocationsEditor extends LitElement {
     }
   );
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     // Still loading.
@@ -169,7 +169,7 @@ export class HaLocationsEditor extends LitElement {
     }
   }
 
-  public updated(changedProps: PropertyValues): void {
+  public updated(changedProps: PropertyValues<this>): void {
     // Still loading.
     if (!this.Leaflet) {
       return;

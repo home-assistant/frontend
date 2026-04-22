@@ -156,7 +156,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     </div>`;
   }
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!this.hasUpdated) {
