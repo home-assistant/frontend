@@ -143,7 +143,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _unsubscribeTinyKeys?: () => void;
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._setUnknownValue();
     }
@@ -306,8 +306,13 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _initialFieldValue?: string;
 
+  public refreshItems() {
+    this._comboBox?.refreshItems();
+  }
+
   private _dialogOpened = () => {
     this._opened = true;
+    fireEvent(this, "picker-opened");
     requestAnimationFrame(() => {
       // Set initial field value if needed
       if (this._initialFieldValue) {
@@ -481,5 +486,6 @@ declare global {
 
   interface HASSDomEvents {
     "picker-closed": undefined;
+    "picker-opened": undefined;
   }
 }

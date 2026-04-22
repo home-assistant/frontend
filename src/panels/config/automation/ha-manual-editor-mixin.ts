@@ -144,7 +144,7 @@ export const ManualEditorMixin = <TConfig>(
       `;
     }
 
-    protected firstUpdated(changedProps: PropertyValues): void {
+    protected firstUpdated(changedProps: PropertyValues<this>): void {
       super.firstUpdated(changedProps);
 
       this.style.setProperty(

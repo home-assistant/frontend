@@ -109,7 +109,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @query("ha-target-picker-item-row") public itemRow?: HaTargetPickerItemRow;
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
     }

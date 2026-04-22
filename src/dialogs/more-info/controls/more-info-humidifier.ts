@@ -31,7 +31,7 @@ class MoreInfoHumidifier extends LitElement {
       .attributeValue=${value}
     ></ha-attribute-icon>`;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._mode = this.stateObj?.attributes.mode;

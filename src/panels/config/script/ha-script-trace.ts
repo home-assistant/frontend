@@ -9,7 +9,7 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -340,7 +340,7 @@ export class HaScriptTrace extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (!this.scriptId) {
@@ -355,7 +355,7 @@ export class HaScriptTrace extends LitElement {
     )?.entity_id;
   }
 
-  public willUpdate(changedProps) {
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     // Only reset if scriptId has changed and we had one before.

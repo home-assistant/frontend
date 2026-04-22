@@ -130,7 +130,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region lifecycle
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
@@ -144,7 +144,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       changedProps.has("value") ||
       changedProps.has("narrow") ||
@@ -321,6 +321,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                     : undefined
                 )
           );
+
       return html`<ha-section-title
           >${this._i18n.localize(
             "ui.panel.config.automation.editor.home"
@@ -868,7 +869,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     this._floorAreas.forEach((floor) => {
       this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
-        open: false,
+        // auto expand if only one floor is present
+        open: this._floorAreas.length === 1,
         areas: {},
       };
 

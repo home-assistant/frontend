@@ -166,7 +166,7 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     this._updateVisibility();
   }
 
-  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this._element) {
@@ -174,7 +174,7 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     }
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     if (this._element) {

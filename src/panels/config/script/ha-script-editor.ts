@@ -104,7 +104,7 @@ export class HaScriptEditor extends SubscribeMixin(
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -495,7 +495,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this.currentEntityId = entity?.entity_id;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");

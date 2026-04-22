@@ -37,7 +37,7 @@ export class HaControlSwitch extends LitElement {
 
   private _mc?: HammerManager;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
   }

@@ -34,6 +34,7 @@ class EntityIdPickerRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          haptic
           .checked=${!!this.coreUserData &&
           !!this.coreUserData.showEntityIdPicker}
           .disabled=${this.coreUserData === undefined}

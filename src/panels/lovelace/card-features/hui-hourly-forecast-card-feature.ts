@@ -89,7 +89,7 @@ class HuiHourlyForecastCardFeature
     this._subscribeForecast();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       const oldContext = changedProps.get("context") as
         | LovelaceCardFeatureContext

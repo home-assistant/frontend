@@ -209,7 +209,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _deviceClassOptions?: string[][];
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (
       !changedProperties.has("entry") ||

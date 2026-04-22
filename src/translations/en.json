@@ -492,8 +492,14 @@
     },
     "components": {
       "selectors": {
-        "serial": {
-          "enter_manually": "Enter manually"
+        "serial_port": {
+          "enter_manually": "Enter manually",
+          "type": {
+            "integration": "Integration-provided",
+            "usb": "USB",
+            "embedded": "Built-in",
+            "unnamed": "Other"
+          }
         },
         "media": {
           "pick_media_player": "Select media player",
@@ -2526,7 +2532,7 @@
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
-        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant OS or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs the Home Assistant OS installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
         "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
@@ -8011,10 +8017,8 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
-          "join_x": "X (formerly Twitter)",
-          "join_mastodon": "Mastodon",
-          "join_bluesky": "Bluesky",
+          "join": "Join the community on our {forums}, {social_media}, {discord}, {blog} or {newsletter}",
+          "social_media": "Social Media",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -8348,7 +8352,8 @@
           },
           "security": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "activity": "Activity"
           },
           "climate": {
             "devices": "Devices",
@@ -9366,6 +9371,8 @@
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
+              "show_entity_picture": "Show entity picture",
+              "show_entity_picture_helper": "Use the entity's picture if available; falls back to the configured image",
               "camera_view": "Camera view",
               "camera_view_options": {
                 "auto": "Auto",
@@ -10600,8 +10607,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "x": "[%key:ui::panel::config::tips::join_x%]",
-          "mastodon": "Mastodon",
+          "social_media": "Social Media",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -10900,7 +10906,7 @@
             "forums": "[%key:ui::panel::page-onboarding::welcome::forums%]",
             "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
             "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
-            "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "social_media": "[%key:ui::panel::page-onboarding::welcome::social_media%]",
             "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
             "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
           },

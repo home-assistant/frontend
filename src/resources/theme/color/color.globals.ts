@@ -43,9 +43,9 @@ export const colorStyles = css`
     --info-color: #039be5;
 
     /* backgrounds */
-    --card-background-color: #ffffff;
-    --primary-background-color: #fafafa;
-    --secondary-background-color: #e5e5e5; /* behind the cards on state */
+    --card-background-color: var(--ha-color-surface-default);
+    --primary-background-color: var(--ha-color-surface-low);
+    --secondary-background-color: var(--ha-color-surface-lower);
     --clear-background-color: #ffffff;
 
     /* for label-badge */
@@ -263,15 +263,10 @@ export const colorStyles = css`
 
     --state-icon-error-color: var(--error-state-color, var(--error-color));
     --sidebar-text-color: var(--primary-text-color);
-    --sidebar-background-color: var(--card-background-color);
+    --sidebar-background-color: var(--ha-color-surface-default);
     --sidebar-selected-text-color: var(--primary-color);
     --sidebar-selected-icon-color: var(--primary-color);
     --sidebar-icon-color: rgba(var(--rgb-primary-text-color), 0.6);
-    --switch-checked-color: var(--primary-color);
-    --switch-checked-button-color: var(--switch-checked-color, var(--primary-background-color));
-    --switch-checked-track-color: var(--switch-checked-color, #000000);
-    --switch-unchecked-button-color: var(--switch-unchecked-color, var(--primary-background-color));
-    --switch-unchecked-track-color: var(--switch-unchecked-color, #000000);
     --slider-color: var(--primary-color);
     --slider-secondary-color: var(--light-primary-color);
     --slider-track-color: var(--scrollbar-thumb-color);
@@ -346,15 +341,17 @@ export const colorStyles = css`
 
 export const darkColorStyles = css`
   html {
-    --primary-background-color: #111111;
-    --card-background-color: #1c1c1c;
-    --secondary-background-color: #282828;
-    --clear-background-color: #111111;
+    --card-background-color: var(--ha-color-surface-default);
+    --primary-background-color: var(--ha-color-surface-lower);
+    --secondary-background-color: var(--ha-color-surface-low);
+    --clear-background-color: #ffffff;
+
+    --sidebar-background-color: var(--ha-color-surface-low);
+    --card-background-color: var(--ha-color-surface-low);
+
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;
     --disabled-text-color: #6f6f6f;
-    --switch-unchecked-button-color: #999999;
-    --switch-unchecked-track-color: #9b9b9b;
     --divider-color: rgba(225, 225, 225, 0.12);
     --outline-color: rgba(225, 225, 225, 0.12);
     --outline-hover-color: rgba(225, 225, 225, 0.24);

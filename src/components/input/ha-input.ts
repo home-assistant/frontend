@@ -153,7 +153,7 @@ export class HaInput extends WaInputMixin(LitElement) {
   }
 
   protected override async firstUpdated(
-    changedProperties: PropertyValues
+    changedProperties: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProperties);
 

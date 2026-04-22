@@ -76,7 +76,7 @@ export class HaExpansionPanel extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("expanded")) {
       this._showContent = this.expanded;

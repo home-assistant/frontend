@@ -42,7 +42,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
     this._stopListeningWakeWord();
   }
 
-  protected override willUpdate(changedProperties: PropertyValues) {
+  protected override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("assistConfiguration")) {

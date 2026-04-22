@@ -207,7 +207,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return nothing;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
     import("./onboarding-integrations");

@@ -81,7 +81,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
     };
 
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
@@ -150,7 +150,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this._registerShortcut();
     }
 
-    protected updated(changedProperties: PropertyValues): void {
+    protected updated(changedProperties: PropertyValues<this>): void {
       super.updated(changedProperties);
 
       if (
@@ -340,8 +340,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         if (repo && repo.source !== "local") {
           myParams.append("repository_url", repo.source);
         }
-      } else if (redirect.redirect === "/hassio/addon") {
-        myParams.append("addon", targetPath.split("/")[3]);
       }
       window.open(
         `https://my.home-assistant.io/create-link/?${myParams.toString()}`,

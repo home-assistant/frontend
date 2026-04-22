@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
@@ -90,7 +90,7 @@ export class DemoHaTextarea extends LitElement {
     `;
   }
 
-  firstUpdated(changedProps) {
+  firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     applyThemesOnElement(
       this.shadowRoot!.querySelector(".dark"),

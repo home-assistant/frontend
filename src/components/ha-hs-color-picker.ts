@@ -150,7 +150,7 @@ class HaHsColorPicker extends LitElement {
   @state()
   private _localValue?: [number, number];
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     this._setupListeners();
     this._generateColorWheel();
@@ -179,7 +179,7 @@ class HaHsColorPicker extends LitElement {
     this._destroyListeners();
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       changedProps.has("colorBrightness") ||

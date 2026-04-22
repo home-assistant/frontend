@@ -124,7 +124,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (this._physicsEnabled === undefined && this.data?.nodes?.length > 1) {
       this._physicsEnabled =
@@ -204,7 +204,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     deepEqual
   );
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("searchFilter")) {
       const filter = this.searchFilter;

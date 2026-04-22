@@ -140,7 +140,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       }))
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._loadTranslations();
     this._fetchApplicationCredentials();
