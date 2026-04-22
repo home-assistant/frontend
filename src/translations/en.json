@@ -494,7 +494,9 @@
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
+          "device_in_area": "{device} in {area}",
           "type": {
+            "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",

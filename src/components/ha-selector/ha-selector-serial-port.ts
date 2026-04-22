@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SerialPortSelector } from "../../data/selector";
 import { listSerialPorts, type SerialPort } from "../../data/usb";
@@ -25,9 +26,15 @@ const MANUAL_ENTRY_ID = "__manual_entry__";
 
 const SERIAL_PORTS_REFRESH_INTERVAL = 5000;
 
-type SerialPortType = "integration" | "usb" | "embedded" | "unnamed";
+type SerialPortType =
+  | "serial_proxy"
+  | "integration"
+  | "usb"
+  | "embedded"
+  | "unnamed";
 
 const SECTION_ORDER: SerialPortType[] = [
+  "serial_proxy",
   "integration",
   "usb",
   "embedded",
@@ -35,13 +42,19 @@ const SECTION_ORDER: SerialPortType[] = [
 ];
 
 const TYPE_ICONS: Record<SerialPortType, string> = {
+  serial_proxy: mdiEsphomeLogo,
   integration: mdiConnection,
   usb: mdiUsb,
   embedded: mdiMemory,
   unnamed: mdiMemory,
 };
 
+const ESPHOME_HASS_SCHEME = "esphome-hass://";
+
 const getPortType = (port: SerialPort): SerialPortType => {
+  if (port.device.startsWith(ESPHOME_HASS_SCHEME)) {
+    return "serial_proxy";
+  }
   if (port.device.includes("://")) {
     return "integration";
   }
@@ -52,34 +65,6 @@ const getPortType = (port: SerialPort): SerialPortType => {
     return "embedded";
   }
   return "unnamed";
-};
-
-const getPortIcon = (port: SerialPort, type: SerialPortType): string => {
-  if (type === "integration" && port.device.startsWith("esphome://")) {
-    return mdiEsphomeLogo;
-  }
-  return TYPE_ICONS[type];
-};
-
-const getPortPrimary = (port: SerialPort): string => {
-  if (port.description && port.manufacturer) {
-    return `${port.description} — ${port.manufacturer}`;
-  }
-  return port.description || port.manufacturer || port.device;
-};
-
-const getPortSecondary = (port: SerialPort): string | undefined => {
-  const parts: string[] = [];
-  if (port.description || port.manufacturer) {
-    parts.push(port.device);
-  }
-  if (port.vid && port.pid) {
-    parts.push(`${port.vid}:${port.pid}`);
-  }
-  if (port.serial_number) {
-    parts.push(`S/N: ${port.serial_number}`);
-  }
-  return parts.length ? parts.join(" · ") : undefined;
 };
 
 @customElement("ha-selector-serial_port")
@@ -184,9 +169,13 @@ export class HaSerialPortSelector extends LitElement {
   private _buildGroupedItems = memoizeOne(
     (
       ports: SerialPort[],
-      language: string
+      language: string,
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      localize: HomeAssistant["localize"]
     ): Record<SerialPortType, PickerComboBoxItem[]> => {
       const grouped: Record<SerialPortType, PickerComboBoxItem[]> = {
+        serial_proxy: [],
         integration: [],
         usb: [],
         embedded: [],
@@ -195,18 +184,63 @@ export class HaSerialPortSelector extends LitElement {
 
       for (const port of ports) {
         const type = getPortType(port);
-        const primary = getPortPrimary(port);
+        let primary: string;
+        let secondary: string | undefined;
+        const searchLabels: Record<string, string | null> = {
+          device: port.device,
+          manufacturer: port.manufacturer,
+          description: port.description,
+          serial_number: port.serial_number,
+        };
+
+        if (type === "serial_proxy") {
+          const url = new URL(port.device);
+          primary = url.searchParams.get("port_name") || port.device;
+          // yarl on the backend lowercases the URL host, but config entry IDs
+          // are uppercase ULIDs in the device registry.
+          const configEntryId = url.hostname.toUpperCase();
+          const device = Object.values(devices).find(
+            (d) => d.primary_config_entry === configEntryId
+          );
+          const deviceName = device ? computeDeviceName(device) : undefined;
+          const areaName =
+            device && device.area_id ? areas[device.area_id]?.name : undefined;
+          if (deviceName && areaName) {
+            secondary = localize(
+              "ui.components.selectors.serial_port.device_in_area",
+              { device: deviceName, area: areaName }
+            );
+          } else {
+            secondary = deviceName || areaName;
+          }
+          searchLabels.port_name = primary;
+          searchLabels.device_name = deviceName ?? null;
+          searchLabels.area_name = areaName ?? null;
+        } else {
+          primary =
+            port.description && port.manufacturer
+              ? `${port.description} — ${port.manufacturer}`
+              : port.description || port.manufacturer || port.device;
+
+          const parts: string[] = [];
+          if (port.description || port.manufacturer) {
+            parts.push(port.device);
+          }
+          if (port.vid && port.pid) {
+            parts.push(`${port.vid}:${port.pid}`);
+          }
+          if (port.serial_number) {
+            parts.push(`S/N: ${port.serial_number}`);
+          }
+          secondary = parts.length ? parts.join(" · ") : undefined;
+        }
+
         grouped[type].push({
           id: port.device,
           primary,
-          secondary: getPortSecondary(port),
-          icon_path: getPortIcon(port, type),
-          search_labels: {
-            device: port.device,
-            manufacturer: port.manufacturer,
-            description: port.description,
-            serial_number: port.serial_number,
-          },
+          secondary,
+          icon_path: TYPE_ICONS[type],
+          search_labels: searchLabels,
           sorting_label: primary,
         });
       }
@@ -235,7 +269,10 @@ export class HaSerialPortSelector extends LitElement {
 
     const grouped = this._buildGroupedItems(
       this._serialPorts,
-      this.hass.locale.language
+      this.hass.locale.language,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.localize
     );
 
     const items: (PickerComboBoxItem | string)[] = [];
@@ -345,7 +382,10 @@ export class HaSerialPortSelector extends LitElement {
     }
     const grouped = this._buildGroupedItems(
       this._serialPorts,
-      this.hass.locale.language
+      this.hass.locale.language,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.localize
     );
     return SECTION_ORDER.filter((type) => grouped[type].length).map((type) => ({
       id: type,
