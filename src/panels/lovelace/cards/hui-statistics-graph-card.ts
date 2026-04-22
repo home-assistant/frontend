@@ -199,7 +199,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     });
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
       changedProps.size > 1 ||

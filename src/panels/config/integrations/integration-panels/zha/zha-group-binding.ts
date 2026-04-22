@@ -41,7 +41,7 @@ export class ZHAGroupBindingControl extends LitElement {
   @query("zha-clusters-data-table", true)
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("device")) {
       this._bindTargetIndex = -1;
       this._selectedClusters = [];

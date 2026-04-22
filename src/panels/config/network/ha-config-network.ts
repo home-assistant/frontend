@@ -61,7 +61,7 @@ class ConfigNetwork extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (isComponentLoaded(this.hass.config, "network")) {
       this._load();

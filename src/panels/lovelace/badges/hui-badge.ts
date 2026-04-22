@@ -98,7 +98,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     this._updateVisibility();
   }
 
-  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this._element) {
@@ -106,7 +106,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     }
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     if (this._element) {

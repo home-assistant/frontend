@@ -34,7 +34,7 @@ class PanelLight extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {

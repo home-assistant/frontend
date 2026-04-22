@@ -60,7 +60,7 @@ class HuiTargetHumidityCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (
       (changedProp.has("hass") || changedProp.has("context")) &&

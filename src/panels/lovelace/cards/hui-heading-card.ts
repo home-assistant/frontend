@@ -76,7 +76,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!changedProperties.size) {
       return;
     }

@@ -138,7 +138,7 @@ class HuiHistoryChartCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       !this._subscribed &&
       !this._error &&
