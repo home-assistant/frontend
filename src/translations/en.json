@@ -492,8 +492,14 @@
     },
     "components": {
       "selectors": {
-        "serial": {
-          "enter_manually": "Enter manually"
+        "serial_port": {
+          "enter_manually": "Enter manually",
+          "type": {
+            "integration": "Integration-provided",
+            "usb": "USB",
+            "embedded": "Built-in",
+            "unnamed": "Other"
+          }
         },
         "media": {
           "pick_media_player": "Select media player",
