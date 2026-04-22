@@ -623,7 +623,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         :host {
           overflow: visible;
           height: 100%;
-          display: block;
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
           -ms-user-select: none;
           -webkit-user-select: none;
@@ -631,7 +632,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
-          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
+          padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
         .menu {
           height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
@@ -698,9 +699,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .panels-list {
           display: flex;
           flex-direction: column;
-          height: calc(
-            100vh - var(--header-height) - var(--safe-area-inset-top, 0px)
-          );
+          min-height: 0;
+          flex: 1;
         }
 
         ha-fade-in {
@@ -709,10 +709,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           justify-content: center;
           align-items: center;
-          height: calc(
-            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              152px
-          ); /* 152px = three list items w/o padding-top */
+          min-height: 0;
+          flex: 1;
         }
 
         ha-md-list {
