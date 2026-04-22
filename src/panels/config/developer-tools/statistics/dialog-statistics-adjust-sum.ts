@@ -62,10 +62,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     datetime: {},
   };
 
+  private _precision = 2;
+
   private _amountSelector = memoizeOne(
-    (unit_of_measurement: string | undefined): NumberSelector => ({
+    (
+      unit_of_measurement: string | undefined,
+      precision: number
+    ): NumberSelector => ({
       number: {
-        step: 0.01,
+        step: 10 ** -precision,
         unit_of_measurement,
         mode: "box",
       },
@@ -81,6 +86,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     now.setMinutes(now.getMinutes() - (now.getMinutes() % 5), 0);
     this._moment = formatISO9075(now);
     this._fetchStats();
+
+    const entry = this.hass.entities[params.statistic.statistic_id];
+    this._precision = Math.max(entry?.display_precision ?? 0, 2);
   }
 
   public closeDialog(): void {
@@ -192,7 +200,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       );
       const rows: TemplateResult[] = [];
       for (const stat of data) {
-        const growth = Math.round(stat.change! * 100) / 100;
+        const multiple = 10 ** this._precision;
+        const growth = Math.round(stat.change! * multiple) / multiple;
         rows.push(html`
           <ha-list-item
             twoline
@@ -248,7 +257,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   private _setChosenStatistic(ev) {
     const stat = ev.currentTarget.stat;
-    const growth = Math.round(stat.change! * 100) / 100;
+    const multiple = 10 ** this._precision;
+    const growth = Math.round(stat.change! * multiple) / multiple;
 
     this._chosenStat = stat;
     this._origAmount = growth;
@@ -311,7 +321,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
-        .selector=${this._amountSelector(unit || undefined)}
+        .selector=${this._amountSelector(unit || undefined, this._precision)}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
