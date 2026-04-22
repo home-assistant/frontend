@@ -119,7 +119,7 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
-  @state() private _mode: DialogSheetMode = "dialog";
+  @state() public mode: DialogSheetMode = "dialog";
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -135,7 +135,7 @@ export class HaAdaptiveDialog extends LitElement {
       ADAPTIVE_DIALOG_MEDIA_QUERY,
       (matches) => {
         if (!this._modeSet || this.allowModeChange) {
-          this._mode = matches ? "bottom-sheet" : "dialog";
+          this.mode = matches ? "bottom-sheet" : "dialog";
           this._modeSet = true;
         }
       }
@@ -188,7 +188,7 @@ export class HaAdaptiveDialog extends LitElement {
   }
 
   render() {
-    if (this._mode === "bottom-sheet") {
+    if (this.mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet
           .ariaLabelledBy=${this._defaultAriaLabelledBy}

@@ -3,12 +3,8 @@ import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { listenMediaQuery } from "../common/dom/media_query";
 import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
-import {
-  ADAPTIVE_DIALOG_MEDIA_QUERY,
-  HaAdaptiveDialog,
-} from "./ha-adaptive-dialog";
+import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
 
 /**
  * Home Assistant adaptive popover component.
@@ -21,47 +17,42 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   @property({ attribute: false })
   public dialogAnchor?: Element;
 
-  @state() private _narrow = false;
-
-  @state() private _popoverOpen = false;
-
-  private _unsubPopoverMediaQuery?: () => void;
-
   private _allowPopoverHide = false;
 
   private _openPopoverAnimationFrame?: number;
 
-  connectedCallback() {
-    super.connectedCallback();
-    this._unsubPopoverMediaQuery = listenMediaQuery(
-      ADAPTIVE_DIALOG_MEDIA_QUERY,
-      (matches) => {
-        if (!this.open || this.allowModeChange) {
-          this._narrow = matches;
-        }
-      }
-    );
-  }
+  @state() private _popoverOpen = false;
+
+  @state() private _shouldRenderPopover = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
-      changedProperties.has("open") &&
-      !this.open &&
-      this._shouldRenderPopover()
+      changedProperties.has("dialogAnchor") ||
+      changedProperties.has("mode")
     ) {
-      this._allowPopoverHide = true;
-      this._popoverOpen = false;
+      this._shouldRenderPopover = Boolean(
+        this.dialogAnchor && this.mode !== "bottom-sheet"
+      );
+
+      if (!this._shouldRenderPopover) {
+        this.unlockBodyScroll();
+        this._cancelPopoverOpen();
+        this._popoverOpen = false;
+      }
     }
 
-    if (!this._shouldRenderPopover()) {
-      this.unlockBodyScroll();
-      this._cancelPopoverOpen();
+    if (
+      changedProperties.has("open") &&
+      !this.open &&
+      this._shouldRenderPopover
+    ) {
+      this._allowPopoverHide = true;
       this._popoverOpen = false;
     }
   }
 
   protected updated() {
-    if (this.open && this._shouldRenderPopover() && !this._popoverOpen) {
+    if (this.open && this._shouldRenderPopover && !this._popoverOpen) {
       this._schedulePopoverOpen();
     }
   }
@@ -69,13 +60,11 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._cancelPopoverOpen();
-    this._unsubPopoverMediaQuery?.();
-    this._unsubPopoverMediaQuery = undefined;
     this._allowPopoverHide = false;
   }
 
   public override render() {
-    if (!this._shouldRenderPopover()) {
+    if (!this._shouldRenderPopover) {
       return super.render();
     }
 
@@ -109,10 +98,6 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
     `;
   }
 
-  private _shouldRenderPopover() {
-    return Boolean(this.dialogAnchor && !this._narrow);
-  }
-
   private _schedulePopoverOpen() {
     if (this._openPopoverAnimationFrame !== undefined) {
       return;
@@ -121,7 +106,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
     this._openPopoverAnimationFrame = requestAnimationFrame(() => {
       this._openPopoverAnimationFrame = undefined;
 
-      if (this.open && this._shouldRenderPopover()) {
+      if (this.open && this._shouldRenderPopover) {
         this._popoverOpen = true;
       }
     });
