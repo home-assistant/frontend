@@ -99,7 +99,7 @@ class HuiEnergyDistrubutionCard
     return 3;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
