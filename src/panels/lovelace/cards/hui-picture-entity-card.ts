@@ -86,7 +86,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
