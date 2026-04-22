@@ -568,7 +568,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     const oldAutomationId = changedProps.get("automationId");

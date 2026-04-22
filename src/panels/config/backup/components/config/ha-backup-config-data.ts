@@ -94,7 +94,7 @@ class HaBackupConfigData extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues<this>): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("value")) {
       if (isComponentLoaded(this.hass.config, "hassio")) {
         if (this.value?.include_addons?.length) {
