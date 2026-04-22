@@ -54,7 +54,7 @@ class HaConfigBackupSettings extends LitElement {
 
   @state() private _supervisorUpdateConfigError?: string;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
       this._config = this.config;

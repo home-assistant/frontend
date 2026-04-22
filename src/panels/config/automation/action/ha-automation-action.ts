@@ -130,7 +130,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (

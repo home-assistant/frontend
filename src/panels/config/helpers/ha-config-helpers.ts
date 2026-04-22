@@ -1090,7 +1090,7 @@ ${rejected
     this._selected = ev.detail.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setFiltersFromUrl();
     this._fetchEntitySources();

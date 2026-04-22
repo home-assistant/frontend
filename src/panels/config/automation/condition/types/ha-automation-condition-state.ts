@@ -93,7 +93,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { condition: "state", entity_id: "", state: [] };
   }
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
       try {
         assert(this.condition, stateConditionStruct);

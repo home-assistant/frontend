@@ -202,7 +202,7 @@ export default class HaAutomationActionRow extends LitElement {
     return this._selected;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
     if (this.root) {

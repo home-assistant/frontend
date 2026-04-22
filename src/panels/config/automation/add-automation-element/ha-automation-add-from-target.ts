@@ -130,7 +130,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region lifecycle
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
@@ -144,7 +144,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       changedProps.has("value") ||
       changedProps.has("narrow") ||
