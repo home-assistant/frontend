@@ -11,6 +11,7 @@ import {
   formatDateYear,
   formatISODateOnly,
 } from "../../common/datetime/format_date";
+import { valueToDate } from "../../common/datetime/value_to_date";
 import { transform } from "../../common/decorators/transform";
 import { configContext, internationalizationContext } from "../../data/context";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
@@ -25,15 +26,6 @@ import "../ha-icon-button-prev";
 import { datePickerStyles } from "./styles";
 
 type CalendarDate = HTMLElementTagNameMap["calendar-date"];
-
-const valueToDate = (value?: string): Date => {
-  if (!value) {
-    return new Date();
-  }
-
-  const date = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
-  return new Date(`${date ?? value}T00:00:00`);
-};
 
 /**
  * A date picker dialog component that displays a calendar for selecting dates.
