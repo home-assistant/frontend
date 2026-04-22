@@ -366,6 +366,7 @@ export class HaSerialPortSelector extends LitElement {
         .getItems=${this._getPickerItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${this._rowRenderer}
+        .valueRenderer=${this._valueRenderer}
         .sections=${sections}
         @value-changed=${this._handlePickerChange}
         @picker-opened=${this._handlePickerOpened}
@@ -373,6 +374,29 @@ export class HaSerialPortSelector extends LitElement {
       ></ha-generic-picker>
     `;
   }
+
+  private _valueRenderer = (value: string) => {
+    if (!this._serialPorts) {
+      return html`<span slot="headline">${value}</span>`;
+    }
+    const item = Object.values(
+      this._buildGroupedItems(
+        this._serialPorts,
+        this.hass.locale.language,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.localize
+      )
+    )
+      .flat()
+      .find((i) => i.id === value);
+    const primary = item?.primary || value;
+    const text =
+      value.startsWith(ESPHOME_HASS_SCHEME) && item?.secondary
+        ? `${primary} (${item.secondary})`
+        : primary;
+    return html`<span slot="headline">${text}</span>`;
+  };
 
   private _buildSections() {
     if (!this._serialPorts) {
