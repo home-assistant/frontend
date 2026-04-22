@@ -196,9 +196,7 @@ export class HaSerialPortSelector extends LitElement {
         if (type === "serial_proxy") {
           const url = new URL(port.device);
           primary = url.searchParams.get("port_name") || port.device;
-          // yarl on the backend lowercases the URL host, but config entry IDs
-          // are uppercase ULIDs in the device registry.
-          const configEntryId = url.hostname.toUpperCase();
+          const configEntryId = url.pathname.replace(/^\/+/, "");
           const device = Object.values(devices).find(
             (d) => d.primary_config_entry === configEntryId
           );
