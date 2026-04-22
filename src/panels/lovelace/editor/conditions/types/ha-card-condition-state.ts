@@ -52,7 +52,7 @@ export class HaCardConditionState extends LitElement {
     return assert(condition, stateConditionStruct);
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!changedProperties.has("condition")) {
       return;
     }

@@ -19,7 +19,7 @@ class HaTimerRemainingTime extends ReactiveElement {
     return this;
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     this.innerHTML =
       computeDisplayTimer(this.hass, this.stateObj, this.timeRemaining) ?? "-";
@@ -37,7 +37,7 @@ class HaTimerRemainingTime extends ReactiveElement {
     this._clearInterval();
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._startInterval(this.stateObj);

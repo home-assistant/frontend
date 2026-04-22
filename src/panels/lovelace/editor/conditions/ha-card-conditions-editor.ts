@@ -82,7 +82,7 @@ export class HaCardConditionsEditor extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("conditions")) {
       return;
     }

@@ -81,7 +81,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
     };
 
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
@@ -150,7 +150,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this._registerShortcut();
     }
 
-    protected updated(changedProperties: PropertyValues): void {
+    protected updated(changedProperties: PropertyValues<this>): void {
       super.updated(changedProperties);
 
       if (

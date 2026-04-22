@@ -37,7 +37,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (
       this.hass &&

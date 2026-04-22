@@ -307,7 +307,7 @@ export abstract class HuiElementEditor<
     `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (this._configElement && changedProperties.has("hass")) {

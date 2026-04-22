@@ -1,4 +1,3 @@
-import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -29,7 +28,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

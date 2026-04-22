@@ -1,4 +1,3 @@
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
@@ -52,7 +51,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     this._attachObserver();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

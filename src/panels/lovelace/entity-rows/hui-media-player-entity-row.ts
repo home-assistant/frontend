@@ -75,7 +75,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     this._attachObserver();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||

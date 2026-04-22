@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -76,7 +77,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private __loadedTranslations: Record<string, LoadedTranslationCategory> =
       {};
 
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
         this._selectLanguage((e as CustomEvent).detail, true);
@@ -99,7 +100,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadCoreTranslations(getLocalLanguage());
     }
 
-    protected updated(changedProps) {
+    protected updated(changedProps: PropertyValues<this>) {
       super.updated(changedProps);
       if (!changedProps.has("hass")) {
         return;
