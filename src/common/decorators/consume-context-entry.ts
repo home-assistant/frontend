@@ -6,28 +6,26 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_regist
 import { transform } from "./transform";
 
 interface ConsumeEntryConfig {
-  entityId: readonly string[];
+  entityIdPath: readonly string[];
 }
 
-const resolveEntityId = (host: unknown, path: readonly string[]) => {
+const resolveAtPath = (host: unknown, path: readonly string[]) => {
   let cur: any = host;
   for (const seg of path) {
     if (cur == null) return undefined;
     cur = cur[seg];
   }
-  return typeof cur === "string" ? cur : undefined;
+  return cur;
 };
 
-const composeContextEntryDecorators = <T, V>(
+const composeDecorator = <T, V>(
   context: Parameters<typeof consume>[0]["context"],
-  config: ConsumeEntryConfig,
-  pick: (value: T, id: string) => V | undefined
+  watchKey: string | undefined,
+  select: (this: unknown, value: T) => V | undefined
 ) => {
-  const watchKey = config.entityId[0];
   const transformDec = transform<T, V | undefined>({
     transformer: function (this: unknown, value) {
-      const id = resolveEntityId(this, config.entityId);
-      return id !== undefined ? pick(value, id) : undefined;
+      return select.call(this, value);
     },
     watch: watchKey ? [watchKey] : [],
   });
@@ -40,26 +38,56 @@ const composeContextEntryDecorators = <T, V>(
 
 /**
  * Consumes `statesContext` and narrows it to the `HassEntity` for the entity
- * ID found at `entityId` on the host (e.g. `["_config", "entity"]`).
+ * ID found at `entityIdPath` on the host (e.g. `["_config", "entity"]`).
  *
  * The first path segment is watched on the host — changes to it re-run the
  * lookup. Deeper segments are traversed at lookup time and short-circuit on
  * nullish values.
  */
-export const consumeStateObj = (config: ConsumeEntryConfig) =>
-  composeContextEntryDecorators<HassEntities, HassEntity>(
+export const consumeEntityState = (config: ConsumeEntryConfig) =>
+  composeDecorator<HassEntities, HassEntity>(
     statesContext,
-    config,
-    (states, id) => states?.[id]
+    config.entityIdPath[0],
+    function (states) {
+      const id = resolveAtPath(this, config.entityIdPath);
+      return typeof id === "string" ? states?.[id] : undefined;
+    }
+  );
+
+/**
+ * Like {@link consumeEntityState} but for an array of entity IDs at
+ * `entityIdPath`. Resolves to a `HassEntity[]` containing one entry per
+ * currently-available entity (missing entities and non-string IDs are
+ * filtered out; original order is preserved).
+ */
+export const consumeEntityStates = (config: ConsumeEntryConfig) =>
+  composeDecorator<HassEntities, HassEntity[]>(
+    statesContext,
+    config.entityIdPath[0],
+    function (states) {
+      const ids = resolveAtPath(this, config.entityIdPath);
+      if (!Array.isArray(ids) || !states) return undefined;
+      const result: HassEntity[] = [];
+      for (const id of ids) {
+        if (typeof id !== "string") continue;
+        const state = states[id];
+        if (state !== undefined) result.push(state);
+      }
+      return result;
+    }
   );
 
 /**
  * Consumes `entitiesContext` and narrows it to the
- * `EntityRegistryDisplayEntry` for the entity ID found at `entityId` on the
- * host. See {@link consumeStateObj} for semantics.
+ * `EntityRegistryDisplayEntry` for the entity ID found at `entityIdPath` on
+ * the host. See {@link consumeEntityState} for semantics.
  */
 export const consumeEntityRegistryEntry = (config: ConsumeEntryConfig) =>
-  composeContextEntryDecorators<
-    HomeAssistant["entities"],
-    EntityRegistryDisplayEntry
-  >(entitiesContext, config, (entities, id) => entities?.[id]);
+  composeDecorator<HomeAssistant["entities"], EntityRegistryDisplayEntry>(
+    entitiesContext,
+    config.entityIdPath[0],
+    function (entities) {
+      const id = resolveAtPath(this, config.entityIdPath);
+      return typeof id === "string" ? entities?.[id] : undefined;
+    }
+  );

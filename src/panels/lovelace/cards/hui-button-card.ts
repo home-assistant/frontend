@@ -9,7 +9,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import {
   consumeEntityRegistryEntry,
-  consumeStateObj,
+  consumeEntityState,
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -94,7 +94,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @state() private _config?: ButtonCardConfig;
 
   @state()
-  @consumeStateObj({ entityId: ["_config", "entity"] })
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
   private _stateObj?: HassEntity;
 
   @state()
@@ -105,7 +105,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   private _themes!: Themes;
 
   @state()
-  @consumeEntityRegistryEntry({ entityId: ["_config", "entity"] })
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
   _entity?: EntityRegistryDisplayEntry;
 
   public getCardSize(): number {
