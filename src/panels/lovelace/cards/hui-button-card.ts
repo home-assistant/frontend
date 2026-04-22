@@ -10,7 +10,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import {
   consumeEntityRegistryEntry,
   consumeStateObj,
-} from "../../../common/decorators/consume-state-obj";
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";

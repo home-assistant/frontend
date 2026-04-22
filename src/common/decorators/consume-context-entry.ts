@@ -27,7 +27,7 @@ const composeContextEntryDecorators = <T, V>(
   const transformDec = transform<T, V | undefined>({
     transformer: function (this: unknown, value) {
       const id = resolveEntityId(this, config.entityId);
-      return id != null ? pick(value, id) : undefined;
+      return id !== undefined ? pick(value, id) : undefined;
     },
     watch: watchKey ? [watchKey] : [],
   });
