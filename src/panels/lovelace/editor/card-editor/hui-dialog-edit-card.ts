@@ -456,16 +456,16 @@ export class HuiDialogEditCard
             flex-direction: row;
             max-height: var(--code-mirror-max-height);
           }
-          .content .element-editor {
+          .content > .element-editor {
             padding-inline-end: var(--ha-space-4);
           }
-          .content > * {
+          .content > .element-editor,
+          .content > .element-preview {
             flex-basis: 0;
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
-            height: auto !important;
-            overflow-y: auto;
+            height: auto;
           }
           .content hui-card {
             padding: 8px 10px;
