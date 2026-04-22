@@ -139,7 +139,7 @@ class StepFlowForm extends LitElement {
     this._previewErrors = ev.detail;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keydown", this._handleKeyDown);
   }

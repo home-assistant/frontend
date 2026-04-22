@@ -44,7 +44,7 @@ export class HaSelectorAttribute extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       // No need to filter value if no value

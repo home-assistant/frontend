@@ -93,7 +93,7 @@ class MoreInfoWeather extends LitElement {
     this._unsubscribeForecastEvents();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.has("stateObj")) {
       return true;
     }
@@ -129,7 +129,7 @@ class MoreInfoWeather extends LitElement {
     }
   }
 
-  protected updated(_changedProps: PropertyValues): void {
+  protected updated(_changedProps: PropertyValues<this>): void {
     super.updated(_changedProps);
 
     if (!this.stateObj) {

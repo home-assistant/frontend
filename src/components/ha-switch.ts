@@ -50,7 +50,7 @@ export class HaSwitch extends Switch {
    */
   @property({ type: Boolean }) public haptic = false;
 
-  public updated(changedProperties: PropertyValues<typeof this>) {
+  public updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has("haptic")) {
       if (this.haptic) {

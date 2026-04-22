@@ -58,7 +58,7 @@ export class HaGauge extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     afterNextRender(() => {
       this._updated = true;
@@ -70,7 +70,7 @@ export class HaGauge extends LitElement {
     });
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("levels") || changedProperties.has("min")) {
       if (this.levels) {
         this._sortedLevels = [...this.levels].sort((a, b) => a.level - b.level);

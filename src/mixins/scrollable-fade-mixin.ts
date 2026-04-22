@@ -71,7 +71,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       return ScrollableFadeClass.DEFAULT_SCROLLABLE_ELEMENT;
     }
 
-    protected firstUpdated(changedProperties: PropertyValues) {
+    protected firstUpdated(changedProperties: PropertyValues<this>) {
       super.firstUpdated?.(changedProperties);
       if (this.scrollableElement) {
         this._updateScrollableState(this.scrollableElement);
@@ -79,7 +79,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       this._attachScrollableElement();
     }
 
-    protected updated(changedProperties: PropertyValues) {
+    protected updated(changedProperties: PropertyValues<this>) {
       super.updated?.(changedProperties);
       this._attachScrollableElement();
     }
