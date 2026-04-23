@@ -174,6 +174,11 @@ export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
 }
 
+export interface StateCardFeatureConfig {
+  type: "state";
+  state_content?: string;
+}
+
 export interface ToggleCardFeatureConfig {
   type: "toggle";
 }
@@ -316,6 +321,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | StateCardFeatureConfig
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig

@@ -9970,6 +9970,9 @@
                 "options": "Options",
                 "customize_options": "Customize options"
               },
+              "state": {
+                "label": "State"
+              },
               "toggle": {
                 "label": "Toggle"
               },
