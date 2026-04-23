@@ -75,10 +75,6 @@ export class HuiRecipePicker extends LitElement {
       return nothing;
     }
 
-    if (this._entityIds.length === 0) {
-      return this._renderEmptyState();
-    }
-
     const suggestions = this._computeSuggestions(
       this._entityIds.join("|"),
       (this.prioritizedCardTypes ?? []).join("|")
@@ -86,6 +82,11 @@ export class HuiRecipePicker extends LitElement {
 
     return html`
       <div class="sidebar ha-scrollbar">
+        <h2 class="sidebar-title">
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.cardpicker.sidebar_title"
+          )}
+        </h2>
         <ha-md-list>
           ${repeat(
             this._entityIds,
@@ -103,52 +104,57 @@ export class HuiRecipePicker extends LitElement {
         </div>
       </div>
       <div class="content ha-scrollbar">
-        <div class="recipes">
-          ${repeat(
-            suggestions,
-            (s) => s.id,
-            (s) => this._renderSuggestionCard(s)
-          )}
-        </div>
+        ${this._entityIds.length === 0
+          ? html`
+              <div class="content-empty">
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.content_empty_title"
+                  )}
+                </h2>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.content_empty_description"
+                  )}
+                </p>
+                <ha-button appearance="plain" @click=${this._browseCards}>
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiViewGridPlus}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
+                  )}
+                </ha-button>
+              </div>
+            `
+          : html`
+              <div class="recipes">
+                ${repeat(
+                  suggestions,
+                  (s: CardSuggestion) => s.id,
+                  (s: CardSuggestion) => this._renderSuggestionCard(s)
+                )}
+              </div>
+              <div class="not-found">
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.not_found"
+                  )}
+                </p>
+                <ha-button appearance="plain" @click=${this._browseCards}>
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiViewGridPlus}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
+                  )}
+                </ha-button>
+              </div>
+            `}
       </div>
     `;
-  }
-
-  private _renderEmptyState(): TemplateResult {
-    return html`
-      <div class="empty-state">
-        <div class="empty-state-inner">
-          <h2>
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.cardpicker.empty_title"
-            )}
-          </h2>
-          <p>
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.cardpicker.empty_description"
-            )}
-          </p>
-          <div class="empty-state-actions">
-            <ha-entity-picker
-              .hass=${this.hass}
-              add-button
-              .excludeEntities=${this._entityIds}
-              @value-changed=${this._entityPickerValueChanged}
-            ></ha-entity-picker>
-            <ha-button appearance="plain" @click=${this._browseCards}>
-              <ha-svg-icon slot="start" .path=${mdiViewGridPlus}></ha-svg-icon>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.browse_cards"
-              )}
-            </ha-button>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  private _browseCards(): void {
-    fireEvent(this, "recipe-browse-cards", undefined);
   }
 
   private _renderEntityRow(entityId: string): TemplateResult {
@@ -186,6 +192,10 @@ export class HuiRecipePicker extends LitElement {
         ></ha-icon-button>
       </ha-md-list-item>
     `;
+  }
+
+  private _browseCards(): void {
+    fireEvent(this, "recipe-browse-cards", undefined);
   }
 
   private _entityPickerValueChanged(ev: CustomEvent<{ value: string }>): void {
@@ -258,40 +268,8 @@ export class HuiRecipePicker extends LitElement {
           flex-direction: row;
           min-height: 0;
         }
-        .empty-state {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: var(--ha-space-8) var(--ha-space-4);
-          text-align: center;
-        }
-        .empty-state-inner {
-          max-width: 480px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: var(--ha-space-3);
-        }
-        .empty-state h2 {
-          margin: 0;
-          font-size: var(--ha-font-size-xl);
-          font-weight: var(--ha-font-weight-medium);
-        }
-        .empty-state p {
-          margin: 0;
-          color: var(--ha-color-text-secondary);
-          line-height: var(--ha-line-height-expanded);
-        }
-        .empty-state-actions {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-          gap: var(--ha-space-2);
-          margin-top: var(--ha-space-4);
-        }
-        .empty-state-actions ha-entity-picker {
+
+        ha-entity-picker {
           --ha-generic-picker-min-width: 420px;
           --ha-generic-picker-max-width: 480px;
         }
@@ -302,19 +280,33 @@ export class HuiRecipePicker extends LitElement {
           border-inline-end: 1px solid var(--divider-color);
           overflow: auto;
         }
+        .sidebar-title {
+          margin: 0;
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+        }
         ha-md-list {
-          padding: var(--ha-space-2) 0;
+          padding: 0 0 var(--ha-space-2);
         }
         .entity-row {
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--ha-space-1);
+          --md-list-item-two-line-container-height: 48px;
+          --md-list-item-top-space: var(--ha-space-1);
+          --md-list-item-bottom-space: var(--ha-space-1);
+        }
+        .entity-row [slot="headline"],
+        .entity-row [slot="supporting-text"] {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .add-row {
           display: flex;
           align-items: center;
           gap: var(--ha-space-2);
           padding: var(--ha-space-2) var(--ha-space-3);
-          border-top: 1px solid var(--divider-color);
         }
         .add-row ha-entity-picker {
           flex: 1;
@@ -329,6 +321,39 @@ export class HuiRecipePicker extends LitElement {
           gap: var(--ha-space-3);
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
           padding: var(--ha-space-3);
+        }
+        .content-empty {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: var(--ha-space-3);
+          padding: var(--ha-space-8) var(--ha-space-4);
+          text-align: center;
+        }
+        .content-empty h2 {
+          margin: 0;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .content-empty p {
+          margin: 0;
+          max-width: 480px;
+          color: var(--ha-color-text-secondary);
+          line-height: var(--ha-line-height-expanded);
+        }
+        .not-found {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-6) var(--ha-space-4);
+          text-align: center;
+        }
+        .not-found p {
+          margin: 0;
+          color: var(--ha-color-text-secondary);
         }
         .card {
           height: 100%;
