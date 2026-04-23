@@ -15,8 +15,9 @@ const buildMultiEntitySuggestions = (entityIds: string[]): CardSuggestion[] => {
 
   return [
     {
-      id: "grid-of-tiles",
-      label: "Grid of tiles",
+      id: "tile-cards",
+      label: "Tile cards",
+      flattenInSection: true,
       config: {
         type: "grid",
         columns: GRID_COLUMNS,

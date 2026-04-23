@@ -7,6 +7,8 @@ export interface CardSuggestion<
   id: string;
   label: string;
   config: T;
+  /** When true, inner `cards` are inlined into a section target instead of nested in the wrapper. */
+  flattenInSection?: boolean;
 }
 
 export interface CardSuggestionProvider<
