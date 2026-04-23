@@ -90,7 +90,14 @@ export class HaTextContain extends LitElement {
     const { minSize, maxSize } = this;
     if (!content || minSize === undefined || maxSize === undefined) return;
 
-    content.style.fontSize = `${maxSize}px`;
+    const scaleRaw = getComputedStyle(this)
+      .getPropertyValue("--ha-font-size-scale")
+      .trim();
+    const fontScale = Number(scaleRaw) || 1;
+    const scaledMin = minSize * fontScale;
+    const scaledMax = maxSize * fontScale;
+
+    content.style.fontSize = `${scaledMax}px`;
 
     const containerWidth = this.clientWidth;
     const containerHeight = this.clientHeight;
@@ -106,11 +113,11 @@ export class HaTextContain extends LitElement {
     );
 
     if (scale >= 1) {
-      content.style.fontSize = `${maxSize}px`;
+      content.style.fontSize = `${scaledMax}px`;
       return;
     }
 
-    content.style.fontSize = `${Math.max(minSize, maxSize * scale)}px`;
+    content.style.fontSize = `${Math.max(scaledMin, scaledMax * scale)}px`;
   }
 
   protected render() {
