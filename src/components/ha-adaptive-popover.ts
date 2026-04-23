@@ -163,6 +163,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
 
     if (this.preventScrimClose && !this._allowPopoverHide) {
       ev.preventDefault();
+      this._pulsePopover();
     }
   }
 
@@ -187,19 +188,48 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   }
 
   private _handlePopoverPointerDown(ev: PointerEvent) {
-    if (this.preventScrimClose) {
+    const popover = this.renderRoot.querySelector("wa-popover");
+    const dialog = popover?.shadowRoot?.querySelector(
+      "dialog"
+    ) as HTMLDialogElement | null;
+    const popoverBody = popover?.shadowRoot?.querySelector(".body");
+
+    if (!dialog) {
       return;
     }
 
-    const target = ev.composedPath()[0];
+    const path = ev.composedPath();
 
-    if (!(target instanceof HTMLDialogElement)) {
+    if (!path.includes(dialog) || (popoverBody && path.includes(popoverBody))) {
+      return;
+    }
+
+    if (this.preventScrimClose) {
+      this._pulsePopover();
       return;
     }
 
     this._allowPopoverHide = true;
     this._popoverOpen = false;
     this.open = false;
+  }
+
+  private _pulsePopover() {
+    const popover = this.renderRoot.querySelector("wa-popover");
+    const popup = popover?.shadowRoot?.querySelector("wa-popup") as {
+      popup?: HTMLElement;
+    } | null;
+    const popupElement = popup?.popup;
+
+    if (!popupElement) {
+      return;
+    }
+
+    popupElement.getAnimations().forEach((animation) => animation.cancel());
+    popupElement.animate([{ scale: "1" }, { scale: "1.02" }, { scale: "1" }], {
+      duration: 250,
+      easing: "ease",
+    });
   }
 
   static override get styles() {
