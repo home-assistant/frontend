@@ -284,13 +284,13 @@ class DialogZwaveCredentialEdit extends LitElement {
       const typeChanged =
         !!existing && existing.type !== this._credentialType;
       if (typeChanged) {
-        await clearZwaveCredential(this.hass, this._params.device_id, {
+        await clearZwaveCredential(this.hass, this._params.entity_id, {
           user_index: this._params.user_index,
           credential_type: existing!.type,
           credential_slot: existing!.slot,
         });
       }
-      await setZwaveCredential(this.hass, this._params.device_id, {
+      await setZwaveCredential(this.hass, this._params.entity_id, {
         user_index: this._params.user_index,
         credential_type: this._credentialType,
         credential_data: this._credentialData,

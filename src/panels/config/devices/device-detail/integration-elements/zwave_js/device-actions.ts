@@ -19,7 +19,6 @@ import {
   fetchZwaveProvisioningEntries,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../../data/zwave_js";
-import { getZwaveCredentialCapabilities } from "../../../../../../data/zwave_js-credentials";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZwaveCredentialManageDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-credential-manage";
@@ -148,25 +147,22 @@ export const getZwaveDeviceActions = async (
     );
   }
 
-  // Check if this device supports credential management
+  // Check if this device has a lock entity and show credential management.
+  // Capability/support gating happens inside the dialog.
   if (!nodeStatus.is_controller_node) {
-    try {
-      const capabilities = await getZwaveCredentialCapabilities(
-        hass,
-        device.id
-      );
-      if (capabilities.supports_user_management) {
-        actions.push({
-          label: hass.localize("ui.panel.config.zwave_js.credentials.manage"),
-          icon: mdiAccountKey,
-          action: () =>
-            showZwaveCredentialManageDialog(el, {
-              device_id: device.id,
-            }),
-        });
-      }
-    } catch {
-      // Device does not support credential management — skip silently
+    const lockEntity = Object.values(hass.entities).find(
+      (entity) =>
+        entity.device_id === device.id && entity.entity_id.startsWith("lock.")
+    );
+    if (lockEntity) {
+      actions.push({
+        label: hass.localize("ui.panel.config.zwave_js.credentials.manage"),
+        icon: mdiAccountKey,
+        action: () =>
+          showZwaveCredentialManageDialog(el, {
+            entity_id: lockEntity.entity_id,
+          }),
+      });
     }
   }
 

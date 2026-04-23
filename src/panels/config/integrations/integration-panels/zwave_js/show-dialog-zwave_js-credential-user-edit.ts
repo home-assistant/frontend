@@ -5,7 +5,7 @@ import type {
 } from "../../../../../data/zwave_js-credentials";
 
 export interface ZwaveCredentialUserEditDialogParams {
-  device_id: string;
+  entity_id: string;
   capabilities: ZwaveCredentialCapabilities;
   user?: ZwaveUser;
   onSaved: () => void;

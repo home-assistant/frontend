@@ -47,7 +47,7 @@ import { showZwaveCredentialUserEditDialog } from "./show-dialog-zwave_js-creden
 class DialogZwaveCredentialManage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _deviceId?: string;
+  @state() private _entityId?: string;
 
   @state() private _capabilities?: ZwaveCredentialCapabilities;
 
@@ -60,25 +60,25 @@ class DialogZwaveCredentialManage extends LitElement {
   public async showDialog(
     params: ZwaveCredentialManageDialogParams
   ): Promise<void> {
-    this._deviceId = params.device_id;
+    this._entityId = params.entity_id;
     this._loading = true;
     this._open = true;
     await this._fetchData();
   }
 
   private async _fetchData(): Promise<void> {
-    if (!this._deviceId) {
+    if (!this._entityId) {
       return;
     }
 
     try {
       this._capabilities = await getZwaveCredentialCapabilities(
         this.hass,
-        this._deviceId
+        this._entityId
       );
 
       if (this._capabilities.supports_user_management) {
-        const usersResponse = await getZwaveUsers(this.hass, this._deviceId);
+        const usersResponse = await getZwaveUsers(this.hass, this._entityId);
         this._users = usersResponse.users;
       }
     } catch (err: unknown) {
@@ -95,7 +95,7 @@ class DialogZwaveCredentialManage extends LitElement {
   }
 
   protected render() {
-    if (!this._deviceId) {
+    if (!this._entityId) {
       return nothing;
     }
 
@@ -302,7 +302,7 @@ class DialogZwaveCredentialManage extends LitElement {
 
   private _addUser(): void {
     showZwaveCredentialUserEditDialog(this, {
-      device_id: this._deviceId!,
+      entity_id: this._entityId!,
       capabilities: this._capabilities!,
       onSaved: () => this._fetchData(),
     });
@@ -310,7 +310,7 @@ class DialogZwaveCredentialManage extends LitElement {
 
   private _editUser(user: ZwaveUser): void {
     showZwaveCredentialUserEditDialog(this, {
-      device_id: this._deviceId!,
+      entity_id: this._entityId!,
       capabilities: this._capabilities!,
       user,
       onSaved: () => this._fetchData(),
@@ -341,7 +341,7 @@ class DialogZwaveCredentialManage extends LitElement {
     }
 
     try {
-      await clearZwaveUser(this.hass, this._deviceId!, user.user_index);
+      await clearZwaveUser(this.hass, this._entityId!, user.user_index);
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -367,7 +367,7 @@ class DialogZwaveCredentialManage extends LitElement {
       return;
     }
     try {
-      await clearZwaveAllUsers(this.hass, this._deviceId!);
+      await clearZwaveAllUsers(this.hass, this._entityId!);
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -403,7 +403,7 @@ class DialogZwaveCredentialManage extends LitElement {
     try {
       await clearZwaveAllCredentials(
         this.hass,
-        this._deviceId!,
+        this._entityId!,
         user.user_index
       );
     } catch (err: unknown) {
@@ -422,7 +422,7 @@ class DialogZwaveCredentialManage extends LitElement {
   }
 
   private _dialogClosed(): void {
-    this._deviceId = undefined;
+    this._entityId = undefined;
     this._capabilities = undefined;
     this._users = [];
     this._loading = true;

@@ -35,6 +35,8 @@ import type { HomeAssistant } from "../../../../../types";
 import { showZwaveCredentialEditDialog } from "./show-dialog-zwave_js-credential-edit";
 import type { ZwaveCredentialUserEditDialogParams } from "./show-dialog-zwave_js-credential-user-edit";
 
+const SIMPLE_USER_TYPES: readonly string[] = ["general", "disposable"];
+
 @customElement("dialog-zwave_js-credential-user-edit")
 class DialogZwaveCredentialUserEdit extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -78,8 +80,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       this._credentials = params.user.credentials || [];
     } else {
       this._userName = "";
+      const supported = params.capabilities.supported_user_types ?? [];
       this._userType =
-        params.capabilities.supported_user_types?.[0] || "general";
+        SIMPLE_USER_TYPES.find((t) => supported.includes(t)) || "general";
       this._credentials = [];
     }
 
@@ -453,7 +456,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   }
 
   private get _userTypeOptions(): SelectBoxOption[] {
-    const types = this._params?.capabilities.supported_user_types || [];
+    const supported = this._params?.capabilities.supported_user_types || [];
+    const types = SIMPLE_USER_TYPES.filter((t) => supported.includes(t));
     return types.map((type) => ({
       value: type,
       label:
@@ -475,7 +479,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       return;
     }
     showZwaveCredentialEditDialog(this, {
-      device_id: this._params.device_id,
+      entity_id: this._params.entity_id,
       capabilities: this._params.capabilities,
       user_index: this._params.user.user_index,
       user_label: this._userLabel,
@@ -487,10 +491,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (!this._params?.user) {
       return;
     }
-    const credential = (ev.currentTarget as any)
-      .credential as ZwaveCredential;
+    const credential = (ev.currentTarget as any).credential as ZwaveCredential;
     showZwaveCredentialEditDialog(this, {
-      device_id: this._params.device_id,
+      entity_id: this._params.entity_id,
       capabilities: this._params.capabilities,
       user_index: this._params.user.user_index,
       user_label: this._userLabel,
@@ -532,7 +535,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       if (isNew) {
         const { user_index } = await setZwaveUser(
           this.hass,
-          this._params.device_id,
+          this._params.entity_id,
           {
             user_name: this._supportsUserNames
               ? this._userName.trim()
@@ -542,13 +545,13 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           }
         );
 
-        await setZwaveCredential(this.hass, this._params.device_id, {
+        await setZwaveCredential(this.hass, this._params.entity_id, {
           user_index,
           credential_type: this._credentialType,
           credential_data: this._credentialData,
         });
       } else {
-        await setZwaveUser(this.hass, this._params.device_id, {
+        await setZwaveUser(this.hass, this._params.entity_id, {
           user_index: this._params.user!.user_index,
           user_name: this._supportsUserNames
             ? this._userName.trim()
@@ -574,8 +577,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (!this._params?.user) {
       return;
     }
-    const credential = (ev.currentTarget as any)
-      .credential as ZwaveCredential;
+    const credential = (ev.currentTarget as any).credential as ZwaveCredential;
     const typeLabel =
       this.hass.localize(
         `ui.panel.config.zwave_js.credentials.credential_types.${credential.type}` as any
@@ -593,7 +595,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     this._saving = true;
     try {
-      await clearZwaveCredential(this.hass, this._params.device_id, {
+      await clearZwaveCredential(this.hass, this._params.entity_id, {
         user_index: this._params.user.user_index,
         credential_type: credential.type,
         credential_slot: credential.slot,
@@ -617,7 +619,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (!this._params?.user) {
       return;
     }
-    const response = await getZwaveUsers(this.hass, this._params.device_id);
+    const response = await getZwaveUsers(this.hass, this._params.entity_id);
     const updated = response.users.find(
       (u) => u.user_index === this._params!.user!.user_index
     );
