@@ -258,6 +258,7 @@ const computeStateToPartsFromEntityAttributes = (
       "infrared",
       "input_button",
       "notify",
+      "radio_frequency",
       "scene",
       "stt",
       "tag",

@@ -54,6 +54,7 @@ export const FIXED_DOMAIN_STATES = {
   ],
   person: ["home", "not_home"],
   plant: ["ok", "problem"],
+  radio_frequency: [],
   remote: ["on", "off"],
   scene: [],
   schedule: ["on", "off"],
