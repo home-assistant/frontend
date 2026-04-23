@@ -449,8 +449,8 @@ export class HaControlSlider extends LitElement {
         )
       );
     }
-    .tooltip.start:dir(ltr),
-    .tooltip.end:dir(rtl) {
+    .tooltip:dir(ltr).start,
+    .tooltip:dir(rtl).end {
       --slider-tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
     }
     .tooltip:dir(ltr).end,
