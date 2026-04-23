@@ -10,7 +10,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { FormatEntityAttributeNameFunc } from "../../../../common/translations/entity-state";
 import "../../../../components/ha-button-toggle-group";
-import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-input-helper-text";
 import "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
@@ -20,10 +19,6 @@ import {
   registriesContext,
 } from "../../../../data/context";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
 import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
@@ -96,7 +91,7 @@ export class HuiStateCardFeatureEditor
       : "custom";
   }
 
-  private _getOptions = memoizeOne(
+  private _getContentOptions = memoizeOne(
     (
       localize: LocalizeFunc,
       formatEntityAttributeName: FormatEntityAttributeNameFunc,
@@ -174,58 +169,21 @@ export class HuiStateCardFeatureEditor
     }
   );
 
-  private _getSchema = memoizeOne(
-    (options: { value: string; label: string }[], localize: LocalizeFunc) =>
-      [
-        {
-          name: "state_content",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options,
-            },
-          },
-        },
-        {
-          name: "font_weight",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: FONT_WEIGHT_OPTIONS.map((weight) => ({
-                value: String(weight),
-                label: localize(
-                  `ui.panel.lovelace.editor.features.types.state.font_weight_options.${weight}`
-                ),
-              })),
-            },
-          },
-        },
-      ] as const satisfies HaFormSchema[]
-  );
-
   protected render() {
     if (!this.hass || !this._config || !this._i18n) {
       return nothing;
     }
 
-    const options = this._getOptions(
+    const contentOptions = this._getContentOptions(
       this._i18n.localize,
       this.hass.formatEntityAttributeName,
       this._stateObj,
       this.context?.entity_id
     );
-    const schema = this._getSchema(options, this._i18n.localize);
 
-    // Normalize array to first value for display
-    const value = Array.isArray(this._config.state_content)
+    const stateContent = Array.isArray(this._config.state_content)
       ? this._config.state_content[0]
-      : this._config.state_content;
-
-    const data = {
-      ...this._config,
-      state_content: value,
-      font_weight: String(this._config.font_weight ?? DEFAULT_FONT_WEIGHT),
-    };
+      : (this._config.state_content ?? "state");
 
     const mode = this._fontSizeMode ?? "preset";
     const targetFontSize = this._config.target_font_size;
@@ -252,13 +210,16 @@ export class HuiStateCardFeatureEditor
         : String(DEFAULT_TARGET_FONT_SIZE);
 
     return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${data}
-        .schema=${schema}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
+      <ha-select
+        .label=${this._i18n.localize(
+          "ui.panel.lovelace.editor.card.tile.state_content"
+        )}
+        naturalMenuWidth
+        .value=${stateContent}
+        .options=${contentOptions}
+        @closed=${this._stopPropagation}
+        @selected=${this._stateContentChanged}
+      ></ha-select>
       <div class="font-size">
         <div class="header">
           <label>
@@ -308,6 +269,21 @@ export class HuiStateCardFeatureEditor
           )}
         </ha-input-helper-text>
       </div>
+      <ha-select
+        .label=${this._i18n.localize(
+          "ui.panel.lovelace.editor.features.types.state.font_weight"
+        )}
+        naturalMenuWidth
+        .value=${String(this._config.font_weight ?? DEFAULT_FONT_WEIGHT)}
+        .options=${FONT_WEIGHT_OPTIONS.map((weight) => ({
+          value: String(weight),
+          label: this._i18n!.localize(
+            `ui.panel.lovelace.editor.features.types.state.font_weight_options.${weight}`
+          ),
+        }))}
+        @closed=${this._stopPropagation}
+        @selected=${this._fontWeightChanged}
+      ></ha-select>
     `;
   }
 
@@ -365,36 +341,32 @@ export class HuiStateCardFeatureEditor
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
-  private _valueChanged(ev: ValueChangedEvent<StateCardFeatureConfig>): void {
-    const config = { ...ev.detail.value };
-    if (!config.state_content) {
-      delete config.state_content;
-    }
-    const weight = Number(config.font_weight);
-    if (!weight || weight === DEFAULT_FONT_WEIGHT) {
-      delete config.font_weight;
+  private _stateContentChanged(ev: HaSelectSelectEvent<string>) {
+    ev.stopPropagation();
+    if (!this._config) return;
+    const newConfig = { ...this._config };
+    const value = ev.detail.value;
+    if (!value || value === "state") {
+      delete newConfig.state_content;
     } else {
-      config.font_weight = weight;
+      newConfig.state_content = value;
     }
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._getSchema>>
-  ) => {
-    switch (schema.name) {
-      case "state_content":
-        return this._i18n?.localize(
-          "ui.panel.lovelace.editor.card.tile.state_content"
-        );
-      case "font_weight":
-        return this._i18n?.localize(
-          "ui.panel.lovelace.editor.features.types.state.font_weight"
-        );
-      default:
-        return "";
+  private _fontWeightChanged(ev: HaSelectSelectEvent<string | number>) {
+    ev.stopPropagation();
+    if (!this._config) return;
+    const weight = Number(ev.detail.value);
+    if (!Number.isFinite(weight)) return;
+    const newConfig = { ...this._config };
+    if (weight === DEFAULT_FONT_WEIGHT) {
+      delete newConfig.font_weight;
+    } else {
+      newConfig.font_weight = weight;
     }
-  };
+    fireEvent(this, "config-changed", { config: newConfig });
+  }
 
   static styles = css`
     .font-size {
