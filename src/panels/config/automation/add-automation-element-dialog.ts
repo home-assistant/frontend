@@ -178,7 +178,7 @@ const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
-const GENERIC_GROUPS = new Set(["device", "entity"]);
+const GENERIC_GROUPS = new Set(["device", "entity", `${DYNAMIC_PREFIX}event`]);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
