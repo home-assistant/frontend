@@ -134,7 +134,7 @@ export class HuiCreateDialogCard
                 <hui-recipe-picker
                   .hass=${this.hass}
                   ?in-section=${this._params!.path.length === 2}
-                  .suggestedCards=${this._params.suggestedCards}
+                  .prioritizedCardTypes=${this._params.suggestedCards}
                   @config-changed=${this._handleCardPicked}
                   @recipe-cards-picked=${this._handleRecipeCardsPicked}
                   @recipe-browse-cards=${this._handleBrowseCards}

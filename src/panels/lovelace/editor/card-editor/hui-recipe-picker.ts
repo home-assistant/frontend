@@ -23,8 +23,7 @@ import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CardSuggestion } from "../../card-suggestions/types";
 import { generateCardSuggestions } from "../../common/card-suggestions";
-import { tryCreateCardElement } from "../../create-element/create-card-element";
-import type { LovelaceCard } from "../../types";
+import { PREVIEW_ITEM_CAP } from "./hui-recipe-preview";
 
 declare global {
   interface HASSDomEvents {
@@ -33,27 +32,9 @@ declare global {
   }
 }
 
-const PREVIEW_ITEM_CAP = 6;
-
 const getItemCount = (config: LovelaceCardConfig): number => {
   const c = config as { cards?: unknown[]; entities?: unknown[] };
   return c.cards?.length ?? c.entities?.length ?? 0;
-};
-
-const cappedPreviewConfig = (
-  config: LovelaceCardConfig
-): LovelaceCardConfig => {
-  const cast = config as {
-    cards?: LovelaceCardConfig[];
-    entities?: unknown[];
-  };
-  if (cast.cards && cast.cards.length > PREVIEW_ITEM_CAP) {
-    return { ...config, cards: cast.cards.slice(0, PREVIEW_ITEM_CAP) };
-  }
-  if (cast.entities && cast.entities.length > PREVIEW_ITEM_CAP) {
-    return { ...config, entities: cast.entities.slice(0, PREVIEW_ITEM_CAP) };
-  }
-  return config;
 };
 
 @customElement("hui-recipe-picker")
@@ -63,21 +44,25 @@ export class HuiRecipePicker extends LitElement {
   @property({ type: Boolean, attribute: "in-section" })
   public inSection = false;
 
-  @property({ type: Array, attribute: false }) public suggestedCards?: string[];
+  @property({ type: Array, attribute: false })
+  public prioritizedCardTypes?: string[];
 
   @state() private _entityIds: string[] = [];
 
+  // Keyed on string args (not hass) so preview elements stay stable across
+  // hass updates — see `hui-recipe-preview` which rebuilds only on config
+  // change.
   private _computeSuggestions = memoizeOne(
-    (
-      hass: HomeAssistant,
-      entityIdsKey: string,
-      suggestedCards: string[] | undefined
-    ): CardSuggestion[] => {
+    (entityIdsKey: string, priorityTypesKey: string): CardSuggestion[] => {
       const entityIds = entityIdsKey ? entityIdsKey.split("|") : [];
-      const suggestions = generateCardSuggestions(hass, entityIds);
-      if (!suggestedCards?.length) return suggestions;
+      const priorityTypes = priorityTypesKey
+        ? priorityTypesKey.split("|")
+        : undefined;
+      if (!this.hass) return [];
+      const suggestions = generateCardSuggestions(this.hass, entityIds);
+      if (!priorityTypes?.length) return suggestions;
       const isPrioritized = (s: CardSuggestion) =>
-        suggestedCards.includes(s.config.type);
+        priorityTypes.includes(s.config.type);
       return [
         ...suggestions.filter(isPrioritized),
         ...suggestions.filter((s) => !isPrioritized(s)),
@@ -95,9 +80,8 @@ export class HuiRecipePicker extends LitElement {
     }
 
     const suggestions = this._computeSuggestions(
-      this.hass,
       this._entityIds.join("|"),
-      this.suggestedCards
+      (this.prioritizedCardTypes ?? []).join("|")
     );
 
     return html`
@@ -221,7 +205,6 @@ export class HuiRecipePicker extends LitElement {
   private _renderSuggestionCard(suggestion: CardSuggestion): TemplateResult {
     const totalCount = getItemCount(suggestion.config);
     const hiddenCount = Math.max(0, totalCount - PREVIEW_ITEM_CAP);
-    const previewConfig = cappedPreviewConfig(suggestion.config);
     return html`
       <div class="card" tabindex="0">
         <div
@@ -232,7 +215,12 @@ export class HuiRecipePicker extends LitElement {
           .suggestion=${suggestion}
         ></div>
         <div class="card-header">${suggestion.label}</div>
-        <div class="preview">${this._renderPreview(previewConfig)}</div>
+        <div class="preview">
+          <hui-recipe-preview
+            .hass=${this.hass}
+            .config=${suggestion.config}
+          ></hui-recipe-preview>
+        </div>
         ${hiddenCount > 0
           ? html`
               <div class="more-badge">
@@ -246,41 +234,6 @@ export class HuiRecipePicker extends LitElement {
         <ha-ripple></ha-ripple>
       </div>
     `;
-  }
-
-  private _renderPreview(config: LovelaceCardConfig): TemplateResult {
-    let element: LovelaceCard | undefined;
-    try {
-      element = tryCreateCardElement(config) as LovelaceCard;
-      element.hass = this.hass;
-      element.tabIndex = -1;
-      element.addEventListener(
-        "ll-rebuild",
-        (ev) => {
-          ev.stopPropagation();
-          this._rebuildCard(element!, config);
-        },
-        { once: true }
-      );
-    } catch {
-      element = undefined;
-    }
-    return html`${element ?? nothing}`;
-  }
-
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
-  ): void {
-    let newCardEl: LovelaceCard;
-    try {
-      newCardEl = tryCreateCardElement(config) as LovelaceCard;
-      newCardEl.hass = this.hass;
-      newCardEl.tabIndex = -1;
-    } catch {
-      return;
-    }
-    cardElToReplace.parentElement?.replaceChild(newCardEl, cardElToReplace);
   }
 
   private _suggestionPicked(ev: MouseEvent): void {
