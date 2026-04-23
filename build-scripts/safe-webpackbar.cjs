@@ -1,9 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const WebpackBar = require("webpackbar/rspack");
 
-// Rspack 2's ProgressPlugin passes the third `info` arg as an object, but
-// webpackbar@7's parseRequest assumes a string and crashes on `split`.
-// Coerce non-string entries to "" before webpackbar sees them.
+// Rspack 2's ProgressPlugin passes the third `info` arg as
+// `{ builtModules, moduleIdentifier? }` instead of the v1 string. webpackbar@7's
+// parseRequest still expects a string and crashes on `split`. Extract
+// moduleIdentifier (the v1 equivalent) so progress still shows the active module.
 class SafeWebpackBar extends WebpackBar {
   constructor(options) {
     super(options);
@@ -13,7 +14,10 @@ class SafeWebpackBar extends WebpackBar {
       originalUpdate(
         percent,
         message,
-        details.map((d) => (typeof d === "string" ? d : ""))
+        details.map((d) => {
+          if (typeof d === "string") return d;
+          return d?.moduleIdentifier ?? "";
+        })
       );
   }
 }
