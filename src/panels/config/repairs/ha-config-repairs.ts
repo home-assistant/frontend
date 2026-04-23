@@ -1,10 +1,10 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
-import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import { domainToName } from "../../../data/integration";
 import type { StatisticsValidationResult } from "../../../data/recorder";
 import {
@@ -19,9 +19,9 @@ import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-c
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../developer-tools/statistics/fix-statistics";
+import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -40,7 +40,9 @@ class HaConfigRepairs extends LitElement {
     const issues = this.repairsIssues;
 
     return html`
-      <ha-md-list>
+      <ha-list-base
+        aria-label=${this.hass.localize("ui.panel.config.repairs.caption")}
+      >
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
 
@@ -55,12 +57,11 @@ class HaConfigRepairs extends LitElement {
               : "";
 
           return html`
-            <ha-md-list-item
+            <ha-list-item-button
               .hasMeta=${!this.narrow}
               .issue=${issue}
               class=${issue.ignored ? "ignored" : ""}
               @click=${this._openShowMoreDialog}
-              type="button"
             >
               <img
                 slot="start"
@@ -92,12 +93,12 @@ class HaConfigRepairs extends LitElement {
                         `ui.panel.config.repairs.${issue.severity}`
                       )}</span
                     >`
-                  : ""}
+                  : nothing}
                 ${(issue.severity === "critical" ||
                   issue.severity === "error") &&
                 issue.created
                   ? STRINGS_SEPARATOR_DOT
-                  : ""}
+                  : nothing}
                 ${createdBy
                   ? html`<span .title=${createdBy}>${createdBy}</span>`
                   : nothing}
@@ -106,15 +107,15 @@ class HaConfigRepairs extends LitElement {
                       "ui.panel.config.repairs.dialog.ignored_in_version_short",
                       { version: issue.dismissed_version }
                     )}`
-                  : ""}
+                  : nothing}
               </span>
               ${!this.narrow
                 ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : ""}
-            </ha-md-list-item>
+                : nothing}
+            </ha-list-item-button>
           `;
         })}
-      </ha-md-list>
+      </ha-list-base>
     `;
   }
 
@@ -202,11 +203,14 @@ class HaConfigRepairs extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-md-list-item img[slot="start"] {
+    ha-list-item-button img[slot="start"] {
       width: 40px;
       height: 40px;
     }
-    ha-md-list-item span[slot="supporting-text"] {
+    ha-list-item-button ha-icon-next[slot="end"] {
+      color: var(--secondary-text-color);
+    }
+    ha-list-item-button span[slot="supporting-text"] {
       white-space: nowrap;
     }
     .error {

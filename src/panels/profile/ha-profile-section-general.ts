@@ -2,12 +2,14 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
+import "../../components/item/ha-row-item";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -33,7 +35,6 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -145,29 +146,29 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
+            <ha-row-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}</span
+              >
+              <ha-button
+                slot="end"
+                appearance="plain"
+                size="small"
+                @click=${this._customizeSidebar}
+              >
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </ha-button>
+            </ha-row-item>
             <ha-md-list>
-              <ha-md-list-item>
-                <span slot="headline"
-                  >${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.header"
-                  )}</span
-                >
-                <span slot="supporting-text"
-                  >${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.description"
-                  )}</span
-                >
-                <ha-button
-                  slot="end"
-                  appearance="plain"
-                  size="small"
-                  @click=${this._customizeSidebar}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.button"
-                  )}
-                </ha-button>
-              </ha-md-list-item>
               ${this.hass.user!.is_admin
                 ? html`
                     <ha-advanced-mode-row

@@ -4,11 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-navigation-list";
 import type { CloudStatus } from "../../../data/cloud";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-config-navigation-list";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
@@ -65,20 +65,17 @@ class HaConfigNavigation extends LitElement {
       <div class="visually-hidden" role="heading" aria-level="2">
         ${this.hass.localize("panel.config")}
       </div>
-      <ha-navigation-list
+      <ha-config-navigation-list
         has-secondary
         .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}
         .label=${this.hass.localize("panel.config")}
-      ></ha-navigation-list>
+      ></ha-config-navigation-list>
     `;
   }
 
   static styles: CSSResultGroup = css`
-    ha-navigation-list {
-      --navigation-list-item-title-font-size: var(--ha-font-size-l);
-    }
     /* Accessibility */
     .visually-hidden {
       position: absolute;

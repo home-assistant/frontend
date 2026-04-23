@@ -10,9 +10,9 @@ import { getDeviceArea } from "../../../common/entity/context/get_device_context
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import "../../../components/progress/ha-progress-ring";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
@@ -86,7 +86,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <ha-md-list>
+      <ha-list-base
+        aria-label=${this.hass.localize("ui.panel.config.updates.caption")}
+      >
         ${updates.map((entity) => {
           const entityEntry = this.getEntityEntry(entity.entity_id);
           const deviceEntry =
@@ -101,7 +103,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               : undefined;
 
           return html`
-            <ha-md-list-item
+            <ha-list-item-button
               class=${ifDefined(
                 entity.attributes.skipped_version ? "skipped" : undefined
               )}
@@ -149,10 +151,10 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                     ${this._renderUpdateProgress(entity)}
                   </div>`
                 : nothing}
-            </ha-md-list-item>
+            </ha-list-item-button>
           `;
         })}
-      </ha-md-list>
+      </ha-list-base>
     `;
   }
 
@@ -168,10 +170,10 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         .skipped {
           background: var(--secondary-background-color);
         }
-        ha-md-list-item {
+        ha-list-item-button {
           --md-list-item-leading-icon-size: 40px;
         }
-        ha-icon-next {
+        ha-list-item-button ha-icon-next {
           color: var(--secondary-text-color);
           height: 24px;
           width: 24px;
