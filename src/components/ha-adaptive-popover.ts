@@ -80,6 +80,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         aria-modal="true"
         aria-labelledby=${ifDefined(this._defaultAriaLabelledBy)}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
+        @pointerdown=${this._handlePopoverPointerDown}
         @wa-show=${this._handlePopoverShow}
         @wa-hide=${this._handlePopoverHide}
         @wa-after-show=${this._handlePopoverAfterShow}
@@ -185,6 +186,22 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
     fireEvent(this, "closed");
   }
 
+  private _handlePopoverPointerDown(ev: PointerEvent) {
+    if (this.preventScrimClose) {
+      return;
+    }
+
+    const target = ev.composedPath()[0];
+
+    if (!(target instanceof HTMLDialogElement)) {
+      return;
+    }
+
+    this._allowPopoverHide = true;
+    this._popoverOpen = false;
+    this.open = false;
+  }
+
   static override get styles() {
     return [
       ...super.styles,
@@ -213,6 +230,10 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           );
           --wa-color-surface-border: transparent;
           --max-width: var(--width);
+        }
+
+        wa-popover::part(dialog) {
+          pointer-events: auto;
         }
 
         :host([width="small"]) wa-popover {
