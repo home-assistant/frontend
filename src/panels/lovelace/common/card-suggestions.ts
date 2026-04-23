@@ -1,5 +1,6 @@
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import { pickBestTileFeatures } from "../card-suggestions/hui-tile-card-suggestions";
 import { CARD_SUGGESTION_PROVIDERS } from "../card-suggestions/registry";
 import type { CardSuggestion } from "../card-suggestions/types";
 
@@ -7,11 +8,28 @@ export type { CardSuggestion } from "../card-suggestions/types";
 
 const GRID_COLUMNS = 2;
 
-const buildMultiEntitySuggestions = (entityIds: string[]): CardSuggestion[] => {
-  const tiles: LovelaceCardConfig[] = entityIds.map((id) => ({
+const buildMultiEntitySuggestions = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): CardSuggestion[] => {
+  const plainTiles: LovelaceCardConfig[] = entityIds.map((id) => ({
     type: "tile",
     entity: id,
   }));
+
+  const featuredTiles: LovelaceCardConfig[] = entityIds.map((id) => {
+    const features = pickBestTileFeatures(hass, id);
+    return features.length
+      ? {
+          type: "tile",
+          entity: id,
+          features: features.map((type) => ({ type })),
+        }
+      : { type: "tile", entity: id };
+  });
+  const anyFeature = featuredTiles.some(
+    (tile) => (tile as { features?: unknown[] }).features?.length
+  );
 
   return [
     {
@@ -22,9 +40,24 @@ const buildMultiEntitySuggestions = (entityIds: string[]): CardSuggestion[] => {
         type: "grid",
         columns: GRID_COLUMNS,
         square: false,
-        cards: tiles,
+        cards: plainTiles,
       },
     },
+    ...(anyFeature
+      ? [
+          {
+            id: "tile-cards-with-features",
+            label: "Tile cards with features",
+            flattenInSection: true,
+            config: {
+              type: "grid",
+              columns: GRID_COLUMNS,
+              square: false,
+              cards: featuredTiles,
+            },
+          },
+        ]
+      : []),
     {
       id: "entities-card",
       label: "Entities card",
@@ -54,5 +87,5 @@ export const generateCardSuggestions = (
   const validIds = entityIds.filter((id) => hass.states[id] !== undefined);
   if (validIds.length === 0) return [];
   if (validIds.length === 1) return collectEntitySuggestions(hass, validIds[0]);
-  return buildMultiEntitySuggestions(validIds);
+  return buildMultiEntitySuggestions(hass, validIds);
 };
