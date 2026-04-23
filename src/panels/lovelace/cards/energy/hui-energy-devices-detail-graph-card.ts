@@ -3,7 +3,6 @@ import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
@@ -21,6 +20,13 @@ import {
   computeConsumptionData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import type { EnergyUnitMode } from "../../../../data/energy_device_cost";
+import {
+  computeGridCostRatios,
+  deviceCostSeries,
+  ENERGY_UNIT_MODE_STORAGE_KEY,
+  hasGridCostData,
+} from "../../../../data/energy_device_cost";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
@@ -28,7 +34,7 @@ import {
 } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ToggleButton } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
@@ -43,8 +49,8 @@ import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
-
-const UNIT = "kWh";
+import "../../../../components/ha-button-toggle-group";
+import "../../../../components/ha-tooltip";
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
@@ -92,6 +98,20 @@ export class HuiEnergyDevicesDetailGraphCard
   })
   private _hiddenStats: string[] = [];
 
+  @state()
+  @storage({
+    key: ENERGY_UNIT_MODE_STORAGE_KEY,
+    state: true,
+    subscribe: true,
+  })
+  private _unitMode: EnergyUnitMode = "energy";
+
+  @state() private _costAvailable = false;
+
+  private _costRatios = new Map<number, number>();
+
+  private _costRatiosCompare = new Map<number, number>();
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -100,6 +120,18 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
+        this._costAvailable = hasGridCostData(data);
+        if (!this._costAvailable && this._unitMode === "cost") {
+          this._unitMode = "energy";
+        }
+        this._costRatios = computeGridCostRatios(
+          data.stats,
+          data.info,
+          data.prefs
+        );
+        this._costRatiosCompare = data.statsCompare
+          ? computeGridCostRatios(data.statsCompare, data.info, data.prefs)
+          : new Map();
       }),
     ];
   }
@@ -124,7 +156,11 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_config") || changedProps.has("_data")) {
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_data") ||
+      changedProps.has("_unitMode")
+    ) {
       this._processStatistics();
     }
   }
@@ -136,14 +172,11 @@ export class HuiEnergyDevicesDetailGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
-        <div
-          class="content ${classMap({
-            "has-header": !!this._config.title,
-          })}"
-        >
+        <div class="card-header">
+          <h1>${this._config.title ?? ""}</h1>
+          ${this._renderUnitToggle()}
+        </div>
+        <div class="content has-header">
           <ha-chart-base
             .hass=${this.hass}
             .data=${this._chartData}
@@ -152,7 +185,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._end,
               this.hass.locale,
               this.hass.config,
-              UNIT,
+              this._unitSymbol,
               this._compareStart,
               this._compareEnd
             )}
@@ -164,11 +197,69 @@ export class HuiEnergyDevicesDetailGraphCard
     `;
   }
 
-  private _formatTotal = (total: number) =>
-    this.hass.localize(
+  private get _unitSymbol(): string {
+    return this._unitMode === "cost" ? this.hass.config.currency : "kWh";
+  }
+
+  private _formatTotal = (total: number) => {
+    if (this._unitMode === "cost") {
+      return this.hass.localize(
+        "ui.panel.lovelace.cards.energy.device_unit_mode.total_cost",
+        {
+          num: formatNumber(total, this.hass.locale, {
+            style: "currency",
+            currency: this.hass.config.currency,
+          }),
+        }
+      );
+    }
+    return this.hass.localize(
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-      { num: formatNumber(total, this.hass.locale), unit: UNIT }
+      { num: formatNumber(total, this.hass.locale), unit: "kWh" }
     );
+  };
+
+  private _renderUnitToggle() {
+    const buttons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.energy"
+        ),
+        value: "energy",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.cost"
+        ),
+        value: "cost",
+      },
+    ];
+    const toggle = html`<ha-button-toggle-group
+      id="unit-mode-toggle"
+      .buttons=${buttons}
+      .active=${this._unitMode}
+      size="small"
+      @value-changed=${this._unitModeChanged}
+    ></ha-button-toggle-group>`;
+    if (this._costAvailable) {
+      return toggle;
+    }
+    return html`${toggle}
+      <ha-tooltip for="unit-mode-toggle">
+        ${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.cost_unavailable"
+        )}
+      </ha-tooltip>`;
+  }
+
+  private _unitModeChanged(ev: CustomEvent<{ value: string }>): void {
+    const value = ev.detail.value as EnergyUnitMode;
+    if (value === "cost" && !this._costAvailable) {
+      this.requestUpdate();
+      return;
+    }
+    this._unitMode = value;
+  }
 
   // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
   // But it will only fire the event for the primary ID, and we will convert and store a list of statistic ids only
@@ -249,12 +340,35 @@ export class HuiEnergyDevicesDetailGraphCard
     this._compareStart = energyData.startCompare;
     this._compareEnd = energyData.endCompare;
 
-    const data = energyData.stats;
-    const compareData = energyData.statsCompare;
+    const rawData = energyData.stats;
+    const rawCompareData = energyData.statsCompare;
 
     const computedStyle = getComputedStyle(this);
 
     const devices = energyData.prefs.device_consumption;
+
+    const costMode = this._unitMode === "cost";
+    const scaleDeviceStats = (
+      stats: Statistics,
+      ratios: Map<number, number>
+    ): Statistics => {
+      if (!costMode) {
+        return stats;
+      }
+      const scaled: Statistics = { ...stats };
+      for (const device of devices) {
+        scaled[device.stat_consumption] = deviceCostSeries(
+          stats,
+          device.stat_consumption,
+          ratios
+        );
+      }
+      return scaled;
+    };
+    const data = scaleDeviceStats(rawData, this._costRatios);
+    const compareData = rawCompareData
+      ? scaleDeviceStats(rawCompareData, this._costRatiosCompare)
+      : rawCompareData;
 
     const childMap: Record<string, string[]> = {};
     devices.forEach((d) => {
@@ -295,9 +409,10 @@ export class HuiEnergyDevicesDetailGraphCard
     const { summedData, compareSummedData } = getSummedData(energyData);
 
     const showUntracked =
-      "from_grid" in summedData ||
-      "solar" in summedData ||
-      "from_battery" in summedData;
+      !costMode &&
+      ("from_grid" in summedData ||
+        "solar" in summedData ||
+        "from_battery" in summedData);
 
     const {
       consumption: consumptionData,
@@ -567,7 +682,22 @@ export class HuiEnergyDevicesDetailGraphCard
 
   static styles = css`
     .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding-bottom: 0;
+      gap: var(--ha-space-2);
+    }
+    .card-header h1 {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card-header h1:empty {
+      display: none;
     }
     .content {
       padding: 16px;

@@ -20,13 +20,21 @@ import {
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import type { EnergyUnitMode } from "../../../../data/energy_device_cost";
+import {
+  calculateDeviceCostGrowth,
+  computeGridCostRatios,
+  ENERGY_UNIT_MODE_STORAGE_KEY,
+  hasGridCostData,
+} from "../../../../data/energy_device_cost";
+import type { Statistics } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ToggleButton } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
@@ -35,6 +43,8 @@ import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-button-toggle-group";
+import "../../../../components/ha-tooltip";
 import { storage } from "../../../../common/decorators/storage";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
@@ -86,9 +96,23 @@ export class HuiEnergyDevicesGraphCard
   })
   private _hiddenStats: string[] = [];
 
+  @state()
+  @storage({
+    key: ENERGY_UNIT_MODE_STORAGE_KEY,
+    state: true,
+    subscribe: true,
+  })
+  private _unitMode: EnergyUnitMode = "energy";
+
+  @state() private _costAvailable = false;
+
   @state() private _isMobile = false;
 
   private _compoundStats: string[] = [];
+
+  private _costRatios = new Map<number, number>();
+
+  private _costRatiosCompare = new Map<number, number>();
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -98,6 +122,18 @@ export class HuiEnergyDevicesGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
+        this._costAvailable = hasGridCostData(data);
+        if (!this._costAvailable && this._unitMode === "cost") {
+          this._unitMode = "energy";
+        }
+        this._costRatios = computeGridCostRatios(
+          data.stats,
+          data.info,
+          data.prefs
+        );
+        this._costRatiosCompare = data.statsCompare
+          ? computeGridCostRatios(data.statsCompare, data.info, data.prefs)
+          : new Map();
         this._getStatistics(data);
       }),
       listenMediaQuery(
@@ -147,6 +183,10 @@ export class HuiEnergyDevicesGraphCard
         this._chartType = allowedModes[0];
       }
     }
+
+    if (changedProps.has("_unitMode") && this._data) {
+      this._getStatistics(this._data);
+    }
   }
 
   protected render() {
@@ -160,19 +200,22 @@ export class HuiEnergyDevicesGraphCard
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${modes.length > 1
-            ? html`
-                <ha-icon-button
-                  .path=${this._chartType === "pie"
-                    ? mdiChartBar
-                    : mdiChartDonut}
-                  .label=${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
-                  )}
-                  @click=${this._handleChartTypeChange}
-                ></ha-icon-button>
-              `
-            : nothing}
+          <div class="header-actions">
+            ${this._renderUnitToggle()}
+            ${modes.length > 1
+              ? html`
+                  <ha-icon-button
+                    .path=${this._chartType === "pie"
+                      ? mdiChartBar
+                      : mdiChartDonut}
+                    .label=${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
+                    )}
+                    @click=${this._handleChartTypeChange}
+                  ></ha-icon-button>
+                `
+              : nothing}
+          </div>
         </div>
         <div
           class="content ${classMap({
@@ -185,7 +228,8 @@ export class HuiEnergyDevicesGraphCard
             .options=${this._createOptions(
               this._chartData,
               this._chartType,
-              this._legendData
+              this._legendData,
+              this._unitSymbol
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
@@ -198,14 +242,75 @@ export class HuiEnergyDevicesGraphCard
     `;
   }
 
+  private get _unitSymbol(): string {
+    return this._unitMode === "cost" ? this.hass.config.currency : "kWh";
+  }
+
+  private _formatValue(
+    value: number,
+    options?: Intl.NumberFormatOptions
+  ): string {
+    if (this._unitMode === "cost") {
+      return formatNumber(value, this.hass.locale, {
+        ...options,
+        style: "currency",
+        currency: this.hass.config.currency,
+      });
+    }
+    return `${formatNumber(value, this.hass.locale, options)} kWh`;
+  }
+
+  private _renderUnitToggle() {
+    const buttons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.energy"
+        ),
+        value: "energy",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.cost"
+        ),
+        value: "cost",
+      },
+    ];
+    const toggle = html`<ha-button-toggle-group
+      id="unit-mode-toggle"
+      .buttons=${buttons}
+      .active=${this._unitMode}
+      size="small"
+      @value-changed=${this._unitModeChanged}
+    ></ha-button-toggle-group>`;
+    if (this._costAvailable) {
+      return toggle;
+    }
+    return html`${toggle}
+      <ha-tooltip for="unit-mode-toggle">
+        ${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.device_unit_mode.cost_unavailable"
+        )}
+      </ha-tooltip>`;
+  }
+
+  private _unitModeChanged(ev: CustomEvent<{ value: string }>): void {
+    const value = ev.detail.value as EnergyUnitMode;
+    if (value === "cost" && !this._costAvailable) {
+      this.requestUpdate();
+      return;
+    }
+    this._unitMode = value;
+  }
+
   private _renderTooltip(params: any) {
     const deviceName = filterXSS(this._getDeviceName(params.name));
     const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
-    const value = `${formatNumber(
-      params.value[0] as number,
-      this.hass.locale,
-      params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
+    const rawValue = params.value[0] as number;
+    const formattedValue = this._formatValue(
+      rawValue,
+      rawValue < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
+    const value = `${formattedValue} ${params.percent ? `(${params.percent} %)` : ""}`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
@@ -213,7 +318,8 @@ export class HuiEnergyDevicesGraphCard
     (
       data: (BarSeriesOption | PieSeriesOption)[],
       chartType: "bar" | "pie",
-      legendData: typeof this._legendData
+      legendData: typeof this._legendData,
+      unitSymbol: string
     ): ECOption => {
       const options: ECOption = {
         grid: {
@@ -235,7 +341,7 @@ export class HuiEnergyDevicesGraphCard
         options.xAxis = {
           show: true,
           type: "value",
-          name: "kWh",
+          name: unitSymbol,
           axisPointer: {
             show: false,
           },
@@ -368,22 +474,41 @@ export class HuiEnergyDevicesGraphCard
       .filter(Boolean) as string[];
 
     const devices = energyData.prefs.device_consumption;
+    const costMode = this._unitMode === "cost";
+    const ratios = this._costRatios;
+    const ratiosCompare = this._costRatiosCompare;
+    const deviceTotal = (stats: Statistics, id: string): number => {
+      if (!(id in stats)) {
+        return 0;
+      }
+      if (costMode) {
+        return calculateDeviceCostGrowth(stats, id, ratios) || 0;
+      }
+      return calculateStatisticSumGrowth(stats[id]) || 0;
+    };
+    const deviceTotalCompare = (stats: Statistics, id: string): number => {
+      if (!(id in stats)) {
+        return 0;
+      }
+      if (costMode) {
+        return calculateDeviceCostGrowth(stats, id, ratiosCompare) || 0;
+      }
+      return calculateStatisticSumGrowth(stats[id]) || 0;
+    };
     const devicesTotals: Record<string, number> = {};
     devices.forEach((device) => {
-      devicesTotals[device.stat_consumption] =
-        device.stat_consumption in data
-          ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
-          : 0;
+      devicesTotals[device.stat_consumption] = deviceTotal(
+        data,
+        device.stat_consumption
+      );
     });
     const devicesTotalsCompare: Record<string, number> = {};
     if (compareData) {
       devices.forEach((device) => {
-        devicesTotalsCompare[device.stat_consumption] =
-          device.stat_consumption in compareData
-            ? calculateStatisticSumGrowth(
-                compareData[device.stat_consumption]
-              ) || 0
-            : 0;
+        devicesTotalsCompare[device.stat_consumption] = deviceTotalCompare(
+          compareData,
+          device.stat_consumption
+        );
       });
     }
     devices.forEach((device, idx) => {
@@ -412,12 +537,7 @@ export class HuiEnergyDevicesGraphCard
       });
 
       if (compareData) {
-        let compareValue =
-          device.stat_consumption in compareData
-            ? calculateStatisticSumGrowth(
-                compareData[device.stat_consumption]
-              ) || 0
-            : 0;
+        let compareValue = devicesTotalsCompare[device.stat_consumption] || 0;
         const compareChildSum = devices.reduce((acc, d) => {
           if (d.included_in_stat === device.stat_consumption) {
             return acc + devicesTotalsCompare[d.stat_consumption];
@@ -447,9 +567,10 @@ export class HuiEnergyDevicesGraphCard
       );
       const totalUsed = consumption.total.used_total;
       const showUntracked =
-        "from_grid" in summedData ||
-        "solar" in summedData ||
-        "from_battery" in summedData;
+        !costMode &&
+        ("from_grid" in summedData ||
+          "solar" in summedData ||
+          "from_battery" in summedData);
       const untracked = showUntracked
         ? totalUsed -
           pieChartData.reduce(
@@ -519,7 +640,7 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
+          formatter: `{a}\n${this._formatValue(totalChart)}`,
         },
         cursor: "default",
         itemStyle: {
@@ -542,7 +663,7 @@ export class HuiEnergyDevicesGraphCard
     this._legendData = chartData.map((d) => ({
       ...d,
       name: this._getDeviceName(d.name),
-      value: `${formatNumber(d.value[0], this.hass.locale)} kWh`,
+      value: this._formatValue(d.value[0]),
     }));
     // filter out hidden stats in place
     for (let i = chartData.length - 1; i >= 0; i--) {
@@ -612,6 +733,11 @@ export class HuiEnergyDevicesGraphCard
       justify-content: space-between;
       align-items: center;
       padding-bottom: 0;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
     }
     .content {
       padding: 16px;

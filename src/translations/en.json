@@ -8513,6 +8513,13 @@
               "untracked": "untracked",
               "other": "Other"
             },
+            "device_unit_mode": {
+              "label": "Display unit",
+              "energy": "Energy",
+              "cost": "Cost",
+              "cost_unavailable": "Cost is unavailable. Configure a grid source with cost tracking to see device costs.",
+              "total_cost": "Total cost {num}"
+            },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
