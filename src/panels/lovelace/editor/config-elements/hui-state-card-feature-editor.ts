@@ -52,6 +52,10 @@ const DEFAULT_TARGET_FONT_SIZE = 24;
 const MIN_TARGET_FONT_SIZE = 12;
 const MAX_TARGET_FONT_SIZE = 28;
 
+const FONT_WEIGHT_OPTIONS = [300, 400, 500, 700] as const;
+
+const DEFAULT_FONT_WEIGHT = 500;
+
 type FontSizeMode = "preset" | "custom";
 
 @customElement("hui-state-card-feature-editor")
@@ -171,7 +175,7 @@ export class HuiStateCardFeatureEditor
   );
 
   private _getSchema = memoizeOne(
-    (options: { value: string; label: string }[]) =>
+    (options: { value: string; label: string }[], localize: LocalizeFunc) =>
       [
         {
           name: "state_content",
@@ -179,6 +183,20 @@ export class HuiStateCardFeatureEditor
             select: {
               mode: "dropdown",
               options,
+            },
+          },
+        },
+        {
+          name: "font_weight",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: FONT_WEIGHT_OPTIONS.map((weight) => ({
+                value: String(weight),
+                label: localize(
+                  `ui.panel.lovelace.editor.features.types.state.font_weight_options.${weight}`
+                ),
+              })),
             },
           },
         },
@@ -196,14 +214,18 @@ export class HuiStateCardFeatureEditor
       this._stateObj,
       this.context?.entity_id
     );
-    const schema = this._getSchema(options);
+    const schema = this._getSchema(options, this._i18n.localize);
 
     // Normalize array to first value for display
     const value = Array.isArray(this._config.state_content)
       ? this._config.state_content[0]
       : this._config.state_content;
 
-    const data = { ...this._config, state_content: value };
+    const data = {
+      ...this._config,
+      state_content: value,
+      font_weight: String(this._config.font_weight ?? DEFAULT_FONT_WEIGHT),
+    };
 
     const mode = this._fontSizeMode ?? "preset";
     const targetFontSize = this._config.target_font_size;
@@ -344,9 +366,15 @@ export class HuiStateCardFeatureEditor
   }
 
   private _valueChanged(ev: ValueChangedEvent<StateCardFeatureConfig>): void {
-    const config = ev.detail.value;
+    const config = { ...ev.detail.value };
     if (!config.state_content) {
       delete config.state_content;
+    }
+    const weight = Number(config.font_weight);
+    if (!weight || weight === DEFAULT_FONT_WEIGHT) {
+      delete config.font_weight;
+    } else {
+      config.font_weight = weight;
     }
     fireEvent(this, "config-changed", { config });
   }
@@ -358,6 +386,10 @@ export class HuiStateCardFeatureEditor
       case "state_content":
         return this._i18n?.localize(
           "ui.panel.lovelace.editor.card.tile.state_content"
+        );
+      case "font_weight":
+        return this._i18n?.localize(
+          "ui.panel.lovelace.editor.features.types.state.font_weight"
         );
       default:
         return "";

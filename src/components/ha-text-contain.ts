@@ -38,6 +38,10 @@ export class HaTextContain extends LitElement {
   @property({ type: Number, attribute: "max-size" })
   public maxSize?: number;
 
+  /** Font weight. Applied directly to the content element. */
+  @property({ type: Number, attribute: "font-weight" })
+  public fontWeight?: number;
+
   @query(".content") private _content?: HTMLDivElement;
 
   private _resizeObserver?: ResizeObserver;
@@ -71,7 +75,11 @@ export class HaTextContain extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    if (changedProps.has("minSize") || changedProps.has("maxSize")) {
+    if (
+      changedProps.has("minSize") ||
+      changedProps.has("maxSize") ||
+      changedProps.has("fontWeight")
+    ) {
       this._scheduleFit();
     }
   }
@@ -89,6 +97,8 @@ export class HaTextContain extends LitElement {
     const content = this._content;
     const { minSize, maxSize } = this;
     if (!content || minSize === undefined || maxSize === undefined) return;
+
+    content.style.fontWeight = this.fontWeight ? String(this.fontWeight) : "";
 
     const scaleRaw = getComputedStyle(this)
       .getPropertyValue("--ha-font-size-scale")

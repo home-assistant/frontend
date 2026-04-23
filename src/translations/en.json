@@ -9983,6 +9983,13 @@
                   "xl": "Extra large",
                   "2xl": "2X large",
                   "3xl": "3X large"
+                },
+                "font_weight": "Font weight",
+                "font_weight_options": {
+                  "300": "Light",
+                  "400": "Normal",
+                  "500": "Medium",
+                  "700": "Bold"
                 }
               },
               "toggle": {
