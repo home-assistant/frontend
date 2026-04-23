@@ -258,7 +258,6 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
             --ha-dialog-border-radius,
             var(--ha-border-radius-3xl)
           );
-          --wa-color-surface-border: transparent;
           --max-width: var(--width);
         }
 
@@ -280,6 +279,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
 
         wa-popover::part(body) {
           padding: 0;
+          border-color: transparent;
           box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           min-width: var(--width, var(--full-width));
           max-width: var(--width);
