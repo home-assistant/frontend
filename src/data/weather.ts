@@ -21,6 +21,7 @@ import {
   mdiWeatherWindyVariant,
 } from "@mdi/js";
 import type {
+  Connection,
   HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
@@ -667,12 +668,12 @@ export const getForecast = (
 };
 
 export const subscribeForecast = (
-  hass: HomeAssistant,
+  connection: Connection,
   entity_id: string,
   forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
-  hass.connection.subscribeMessage<ForecastEvent>(callback, {
+  connection.subscribeMessage<ForecastEvent>(callback, {
     type: "weather/subscribe_forecast",
     forecast_type,
     entity_id,

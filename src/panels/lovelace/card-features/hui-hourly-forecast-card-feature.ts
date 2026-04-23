@@ -214,7 +214,7 @@ class HuiHourlyForecastCardFeature
     const entityId = this.context.entity_id;
 
     this._subscribed = subscribeForecast(
-      this.hass,
+      this.hass.connection,
       entityId,
       "hourly",
       (forecastEvent) => {
