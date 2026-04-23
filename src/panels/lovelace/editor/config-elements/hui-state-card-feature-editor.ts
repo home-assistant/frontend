@@ -9,6 +9,7 @@ import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-input-helper-text";
 import "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
+import { HIDDEN_STATE_CONTENT_ATTRIBUTES } from "../../../../components/entity/hidden-state-content-attributes";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import type {
   HaFormSchema,
@@ -25,60 +26,6 @@ import type {
   StateCardFeatureConfig,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-
-const HIDDEN_ATTRIBUTES = [
-  "access_token",
-  "available_modes",
-  "battery_icon",
-  "battery_level",
-  "code_arm_required",
-  "code_format",
-  "color_modes",
-  "device_class",
-  "editable",
-  "effect_list",
-  "entity_id",
-  "entity_picture",
-  "event_types",
-  "fan_modes",
-  "fan_speed_list",
-  "friendly_name",
-  "frontend_stream_type",
-  "has_date",
-  "has_time",
-  "hvac_modes",
-  "icon",
-  "id",
-  "max_color_temp_kelvin",
-  "max_mireds",
-  "max_temp",
-  "max",
-  "min_color_temp_kelvin",
-  "min_mireds",
-  "min_temp",
-  "min",
-  "mode",
-  "operation_list",
-  "options",
-  "percentage_step",
-  "precipitation_unit",
-  "preset_modes",
-  "pressure_unit",
-  "remaining",
-  "sound_mode_list",
-  "source_list",
-  "state_class",
-  "step",
-  "supported_color_modes",
-  "supported_features",
-  "swing_modes",
-  "target_temp_step",
-  "temperature_unit",
-  "token",
-  "unit_of_measurement",
-  "visibility_unit",
-  "wind_speed_unit",
-];
 
 const FONT_SIZE_PRESETS: {
   value: number;
@@ -198,7 +145,7 @@ export class HuiStateCardFeatureEditor
 
       if (stateObj) {
         Object.keys(stateObj.attributes)
-          .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
+          .filter((a) => !HIDDEN_STATE_CONTENT_ATTRIBUTES.includes(a))
           .forEach((attribute) => {
             options.push({
               value: attribute,
@@ -294,7 +241,7 @@ export class HuiStateCardFeatureEditor
                 .value=${presetValue}
                 .options=${FONT_SIZE_PRESETS.map((preset) => ({
                   value: String(preset.value),
-                  label: this.hass.localize(
+                  label: this.hass?.localize(
                     `ui.panel.lovelace.editor.features.types.state.target_font_size_presets.${preset.tokenKey}`
                   ),
                 }))}

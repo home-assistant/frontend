@@ -12,6 +12,7 @@ import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
 } from "../../state-display/state-display";
+import { HIDDEN_STATE_CONTENT_ATTRIBUTES } from "./hidden-state-content-attributes";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
@@ -25,60 +26,6 @@ import {
   type PickerComboBoxItem,
 } from "../ha-picker-combo-box";
 import "../ha-sortable";
-
-const HIDDEN_ATTRIBUTES = [
-  "access_token",
-  "available_modes",
-  "battery_icon",
-  "battery_level",
-  "code_arm_required",
-  "code_format",
-  "color_modes",
-  "device_class",
-  "editable",
-  "effect_list",
-  "entity_id",
-  "entity_picture",
-  "event_types",
-  "fan_modes",
-  "fan_speed_list",
-  "friendly_name",
-  "frontend_stream_type",
-  "has_date",
-  "has_time",
-  "hvac_modes",
-  "icon",
-  "id",
-  "max_color_temp_kelvin",
-  "max_mireds",
-  "max_temp",
-  "max",
-  "min_color_temp_kelvin",
-  "min_mireds",
-  "min_temp",
-  "min",
-  "mode",
-  "operation_list",
-  "options",
-  "percentage_step",
-  "precipitation_unit",
-  "preset_modes",
-  "pressure_unit",
-  "remaining",
-  "sound_mode_list",
-  "source_list",
-  "state_class",
-  "step",
-  "supported_color_modes",
-  "supported_features",
-  "swing_modes",
-  "target_temp_step",
-  "temperature_unit",
-  "token",
-  "unit_of_measurement",
-  "visibility_unit",
-  "wind_speed_unit",
-];
 
 @customElement("ha-entity-state-content-picker")
 export class HaStateContentPicker extends LitElement {
@@ -221,7 +168,7 @@ export class HaStateContentPicker extends LitElement {
             )
           : []),
         ...Object.keys(stateObj?.attributes ?? {})
-          .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
+          .filter((a) => !HIDDEN_STATE_CONTENT_ATTRIBUTES.includes(a))
           .map(
             (attribute) =>
               ({
