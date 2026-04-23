@@ -177,6 +177,7 @@ export interface TargetTemperatureCardFeatureConfig {
 export interface StateCardFeatureConfig {
   type: "state";
   state_content?: string;
+  target_font_size?: number;
 }
 
 export interface ToggleCardFeatureConfig {

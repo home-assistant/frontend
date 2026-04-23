@@ -9971,7 +9971,19 @@
                 "customize_options": "Customize options"
               },
               "state": {
-                "label": "State"
+                "label": "State",
+                "target_font_size": "Target font size",
+                "target_font_size_mode_preset": "Preset",
+                "target_font_size_mode_custom": "Custom",
+                "target_font_size_helper": "Sets the target size for the text. The text will still scale down to fit the available space.",
+                "target_font_size_presets": {
+                  "s": "Small",
+                  "m": "Medium",
+                  "l": "Large",
+                  "xl": "Extra large",
+                  "2xl": "2X large",
+                  "3xl": "3X large"
+                }
               },
               "toggle": {
                 "label": "Toggle"
