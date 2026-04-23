@@ -369,11 +369,15 @@ export class HuiStateCardFeatureEditor
   }
 
   static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-4);
+    }
     .font-size {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-2);
-      margin-top: var(--ha-space-4);
     }
     .header {
       display: flex;
