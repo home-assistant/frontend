@@ -15,15 +15,15 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-ripple";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { domainToName } from "../../../../data/integration";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CardSuggestion } from "../../card-suggestions/types";
 import { generateCardSuggestions } from "../../common/card-suggestions";
-import { PREVIEW_ITEM_CAP } from "./hui-recipe-preview";
+import "./hui-recipe-suggestion";
 
 declare global {
   interface HASSDomEvents {
@@ -32,17 +32,12 @@ declare global {
   }
 }
 
-const getItemCount = (config: LovelaceCardConfig): number => {
-  const c = config as { cards?: unknown[]; entities?: unknown[] };
-  return c.cards?.length ?? c.entities?.length ?? 0;
-};
-
 @customElement("hui-recipe-picker")
 export class HuiRecipePicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean, attribute: "in-section" })
-  public inSection = false;
+  @property({ attribute: false })
+  public sectionConfig?: LovelaceSectionConfig;
 
   @property({ type: Array, attribute: false })
   public prioritizedCardTypes?: string[];
@@ -50,8 +45,7 @@ export class HuiRecipePicker extends LitElement {
   @state() private _entityIds: string[] = [];
 
   // Keyed on string args (not hass) so preview elements stay stable across
-  // hass updates — see `hui-recipe-preview` which rebuilds only on config
-  // change.
+  // hass updates.
   private _computeSuggestions = memoizeOne(
     (entityIdsKey: string, priorityTypesKey: string): CardSuggestion[] => {
       const entityIds = entityIdsKey ? entityIdsKey.split("|") : [];
@@ -129,11 +123,17 @@ export class HuiRecipePicker extends LitElement {
               </div>
             `
           : html`
-              <div class="recipes">
+              <div class="recipes" @suggestion-picked=${this._suggestionPicked}>
                 ${repeat(
                   suggestions,
                   (s: CardSuggestion) => s.id,
-                  (s: CardSuggestion) => this._renderSuggestionCard(s)
+                  (s: CardSuggestion) => html`
+                    <hui-recipe-suggestion
+                      .hass=${this.hass}
+                      .suggestion=${s}
+                      .sectionConfig=${this.sectionConfig}
+                    ></hui-recipe-suggestion>
+                  `
                 )}
               </div>
               <div class="not-found">
@@ -212,49 +212,17 @@ export class HuiRecipePicker extends LitElement {
     this._entityIds = this._entityIds.filter((id) => id !== target.entityId);
   }
 
-  private _renderSuggestionCard(suggestion: CardSuggestion): TemplateResult {
-    const totalCount = getItemCount(suggestion.config);
-    const hiddenCount = Math.max(0, totalCount - PREVIEW_ITEM_CAP);
-    return html`
-      <div class="card" tabindex="0">
-        <div
-          class="overlay"
-          role="button"
-          aria-label=${suggestion.label}
-          @click=${this._suggestionPicked}
-          .suggestion=${suggestion}
-        ></div>
-        <div class="card-header">${suggestion.label}</div>
-        <div class="preview">
-          <hui-recipe-preview
-            .hass=${this.hass}
-            .config=${suggestion.config}
-          ></hui-recipe-preview>
-        </div>
-        ${hiddenCount > 0
-          ? html`
-              <div class="more-badge">
-                ${this.hass!.localize(
-                  "ui.panel.lovelace.editor.cardpicker.more_cards",
-                  { count: hiddenCount }
-                )}
-              </div>
-            `
-          : nothing}
-        <ha-ripple></ha-ripple>
-      </div>
-    `;
-  }
-
-  private _suggestionPicked(ev: MouseEvent): void {
-    const suggestion: CardSuggestion = (
-      ev.currentTarget as HTMLElement & { suggestion: CardSuggestion }
-    ).suggestion;
+  private _suggestionPicked(
+    ev: CustomEvent<{ suggestion: CardSuggestion }>
+  ): void {
+    const { suggestion } = ev.detail;
     const config = suggestion.config;
-    const wrapper = config as { type: string; cards?: LovelaceCardConfig[] };
-    if (this.inSection && wrapper.type === "grid" && wrapper.cards?.length) {
-      fireEvent(this, "recipe-cards-picked", { cards: wrapper.cards });
-      return;
+    if (this.sectionConfig && suggestion.flattenInSection) {
+      const cards = config.cards as LovelaceCardConfig[] | undefined;
+      if (cards?.length) {
+        fireEvent(this, "recipe-cards-picked", { cards });
+        return;
+      }
     }
     fireEvent(this, "config-changed", { config });
   }
@@ -354,62 +322,6 @@ export class HuiRecipePicker extends LitElement {
         .not-found p {
           margin: 0;
           color: var(--ha-color-text-secondary);
-        }
-        .card {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          background: var(--primary-background-color, #fafafa);
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-          border: var(--ha-card-border-width, 1px) solid
-            var(--ha-card-border-color, var(--divider-color));
-        }
-        .card-header {
-          color: var(--ha-card-header-color, var(--primary-text-color));
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-          padding: var(--ha-space-3) var(--ha-space-4);
-          text-align: center;
-        }
-        .preview {
-          pointer-events: none;
-          margin: var(--ha-space-4);
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .preview > :first-child {
-          display: block;
-          width: 100%;
-        }
-        .overlay {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-          box-sizing: border-box;
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-        }
-        .more-badge {
-          margin: 0 var(--ha-space-4) var(--ha-space-3);
-          padding: var(--ha-space-1) var(--ha-space-2);
-          align-self: flex-start;
-          border-radius: var(--ha-border-radius-md);
-          background: var(--ha-color-fill-neutral-quiet-resting);
-          color: var(--ha-color-text-secondary);
-          font-size: var(--ha-font-size-s);
-          font-weight: var(--ha-font-weight-medium);
         }
 
         @media (max-width: 700px) {
