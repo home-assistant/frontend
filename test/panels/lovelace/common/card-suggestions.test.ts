@@ -21,6 +21,7 @@ const makeState = (
 const makeHass = (states: HassEntity[]): HomeAssistant =>
   ({
     states: Object.fromEntries(states.map((s) => [s.entity_id, s])),
+    localize: (key: string) => key,
   }) as unknown as HomeAssistant;
 
 const registerTestProviders = (
@@ -63,7 +64,7 @@ describe("generateCardSuggestions", () => {
       "light.ghost",
     ]);
     expect(suggestions.some((s) => s.id === "tile")).toBe(true);
-    expect(suggestions.every((s) => s.id !== "grid-of-tiles")).toBe(true);
+    expect(suggestions.every((s) => s.id !== "tile-cards")).toBe(true);
   });
 
   it("suggests a grid and an entities card when picking multiple entities", () => {
@@ -80,11 +81,12 @@ describe("generateCardSuggestions", () => {
     ]);
 
     expect(suggestions.map((s) => s.id)).toEqual([
-      "grid-of-tiles",
+      "tile-cards",
+      "tile-cards-with-features",
       "entities-card",
     ]);
     expect(suggestions[0].config.type).toBe("grid");
-    expect(suggestions[1].config).toEqual({
+    expect(suggestions[suggestions.length - 1].config).toEqual({
       type: "entities",
       entities: ["light.a", "light.b", "light.c"],
     });

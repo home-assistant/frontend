@@ -31,10 +31,11 @@ const buildMultiEntitySuggestions = (
     (tile) => (tile as { features?: unknown[] }).features?.length
   );
 
+  const prefix = "ui.panel.lovelace.editor.cardpicker.suggestions.";
   return [
     {
       id: "tile-cards",
-      label: "Tile cards",
+      label: hass.localize(`${prefix}tile_cards`),
       flattenInSection: true,
       config: {
         type: "grid",
@@ -47,7 +48,7 @@ const buildMultiEntitySuggestions = (
       ? [
           {
             id: "tile-cards-with-features",
-            label: "Tile cards with features",
+            label: hass.localize(`${prefix}featured_tile_cards`),
             flattenInSection: true,
             config: {
               type: "grid",
@@ -60,7 +61,7 @@ const buildMultiEntitySuggestions = (
       : []),
     {
       id: "entities-card",
-      label: "Entities card",
+      label: hass.localize(`${prefix}entities_card`),
       config: { type: "entities", entities: entityIds },
     },
   ];
