@@ -58,6 +58,7 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the content body a flex container.
  * @attr {boolean} without-header - Hides the default header.
+ * @attr {boolean} hide-close-button - Hides the default close button.
  * @attr {boolean} allow-mode-change - When set, the component can switch between dialog and bottom-sheet modes as the viewport changes.
  *
  * @event opened - Fired when the dialog/sheet is shown.
@@ -116,6 +117,9 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: Boolean, attribute: "without-header" })
   public withoutHeader = false;
 
+  @property({ type: Boolean, attribute: "hide-close-button" })
+  public hideCloseButton = false;
+
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
@@ -152,6 +156,10 @@ export class HaAdaptiveDialog extends LitElement {
   protected _renderCloseButton(
     slotName: "navigationIcon" | "headerNavigationIcon"
   ) {
+    if (this.hideCloseButton) {
+      return html`<span slot=${slotName}></span>`;
+    }
+
     return html`
       <slot name="headerNavigationIcon" slot=${slotName}>
         <ha-icon-button
