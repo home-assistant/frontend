@@ -194,26 +194,32 @@ export class HaSerialPortSelector extends LitElement {
         };
 
         if (type === "serial_proxy") {
-          const url = new URL(port.device);
-          primary = url.searchParams.get("port_name") || port.device;
-          const configEntryId = url.pathname.replace(/^\/+/, "");
-          const device = Object.values(devices).find(
-            (d) => d.primary_config_entry === configEntryId
-          );
-          const deviceName = device ? computeDeviceName(device) : undefined;
-          const areaName =
-            device && device.area_id ? areas[device.area_id]?.name : undefined;
-          if (deviceName && areaName) {
-            secondary = localize(
-              "ui.components.selectors.serial_port.device_in_area",
-              { device: deviceName, area: areaName }
+          try {
+            const url = new URL(port.device);
+            primary = url.searchParams.get("port_name") || port.device;
+            const configEntryId = url.pathname.replace(/^\/+/, "");
+            const device = Object.values(devices).find(
+              (d) => d.primary_config_entry === configEntryId
             );
-          } else {
-            secondary = deviceName || areaName;
+            const deviceName = device ? computeDeviceName(device) : undefined;
+            const areaName =
+              device && device.area_id ? areas[device.area_id]?.name : undefined;
+            if (deviceName && areaName) {
+              secondary = localize(
+                "ui.components.selectors.serial_port.device_in_area",
+                { device: deviceName, area: areaName }
+              );
+            } else {
+              secondary = deviceName || areaName;
+            }
+            searchLabels.port_name = primary;
+            searchLabels.device_name = deviceName ?? null;
+            searchLabels.area_name = areaName ?? null;
+          } catch (_err) {
+            primary = port.device;
+            secondary = undefined;
+            searchLabels.port_name = port.device;
           }
-          searchLabels.port_name = primary;
-          searchLabels.device_name = deviceName ?? null;
-          searchLabels.area_name = areaName ?? null;
         } else {
           primary =
             port.description && port.manufacturer
