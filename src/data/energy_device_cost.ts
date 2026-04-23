@@ -1,10 +1,11 @@
 import type {
+  DeviceConsumptionEnergyPreference,
   EnergyData,
   EnergyInfo,
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "./energy";
-import type { Statistics, StatisticValue } from "./recorder";
+import type { Statistics } from "./recorder";
 
 export type EnergyUnitMode = "energy" | "cost";
 
@@ -87,6 +88,46 @@ export const computeGridCostRatios = (
   return ratios;
 };
 
+// Period-wide average cost ratio: Σimport_cost / Σimport_kWh over every bucket
+// in `stats`. Used as a fallback when per-hour ratios are missing (e.g. hours
+// where grid import was 0 because solar covered everything, but we still want
+// to price the untracked residual at something sensible).
+export const computePeriodAverageRatio = (
+  stats: Statistics,
+  info: EnergyInfo,
+  prefs: EnergyPreferences
+): number => {
+  let totalEnergy = 0;
+  let totalCost = 0;
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "grid") {
+      continue;
+    }
+    if (source.stat_energy_from) {
+      const energyStats = stats[source.stat_energy_from];
+      if (energyStats) {
+        for (const value of energyStats) {
+          if (value.change != null) {
+            totalEnergy += value.change;
+          }
+        }
+      }
+    }
+    const costStatId = resolveImportCostStatId(source, info);
+    if (costStatId) {
+      const costStats = stats[costStatId];
+      if (costStats) {
+        for (const value of costStats) {
+          if (value.change != null) {
+            totalCost += value.change;
+          }
+        }
+      }
+    }
+  }
+  return totalEnergy > 0 ? totalCost / totalEnergy : 0;
+};
+
 // True iff at least one bucket has both grid import kWh and grid cost. Checks
 // both live and compare stats so the availability signal is stable when only
 // the compare window has data.
@@ -135,25 +176,50 @@ export const calculateDeviceCostGrowth = (
   return total;
 };
 
-// Synthetic StatisticValue[] with change = device_kWh(h) * ratio(h). Lets the
-// detail chart's existing `for (const point of stats)` loop run unchanged.
-// Buckets without a ratio emit change = 0 so the chart preserves the x-axis
-// spacing.
-export const deviceCostSeries = (
+// Per-hour cost of the "untracked" residual: used_total(h) minus the sum of
+// tracked device consumption that hour, priced at grid rate. Buckets where
+// tracked > used_total are clamped to 0 so we never subtract cost. When a
+// bucket has no per-hour ratio (e.g. grid import was 0 that hour because
+// solar covered it), fall back to the period-average ratio so untracked
+// energy still gets priced at something sensible.
+export const calculateUntrackedCost = (
   stats: Statistics,
-  deviceStatId: string,
-  ratios: Map<number, number>
-): StatisticValue[] => {
-  const values = stats[deviceStatId];
-  if (!values) {
-    return [];
+  ratios: Map<number, number>,
+  usedTotalPerHour: Record<string, number>,
+  devices: DeviceConsumptionEnergyPreference[],
+  fallbackRatio = 0
+): number => {
+  // Pre-build one Map<start, change> per device so the per-hour inner loop
+  // is O(1) lookups instead of O(n) linear searches.
+  const deviceBuckets: Map<number, number>[] = [];
+  for (const device of devices) {
+    const deviceStats = stats[device.stat_consumption];
+    if (!deviceStats) {
+      continue;
+    }
+    const map = new Map<number, number>();
+    for (const v of deviceStats) {
+      if (v.change != null) {
+        map.set(v.start, v.change);
+      }
+    }
+    deviceBuckets.push(map);
   }
-  return values.map((value) => ({
-    start: value.start,
-    end: value.end,
-    change:
-      value.change == null
-        ? null
-        : value.change * (ratios.get(value.start) ?? 0),
-  }));
+  let total = 0;
+  for (const [timeStr, hourUsedTotal] of Object.entries(usedTotalPerHour)) {
+    const time = Number(timeStr);
+    const ratio = ratios.get(time) ?? fallbackRatio;
+    if (ratio === 0) {
+      continue;
+    }
+    let trackedThisHour = 0;
+    for (const map of deviceBuckets) {
+      trackedThisHour += map.get(time) ?? 0;
+    }
+    const untrackedKwh = hourUsedTotal - trackedThisHour;
+    if (untrackedKwh > 0) {
+      total += untrackedKwh * ratio;
+    }
+  }
+  return total;
 };

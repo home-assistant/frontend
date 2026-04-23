@@ -23,7 +23,9 @@ import {
 import type { EnergyUnitMode } from "../../../../data/energy_device_cost";
 import {
   calculateDeviceCostGrowth,
+  calculateUntrackedCost,
   computeGridCostRatios,
+  computePeriodAverageRatio,
   ENERGY_UNIT_MODE_STORAGE_KEY,
   hasGridCostData,
 } from "../../../../data/energy_device_cost";
@@ -44,7 +46,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-button-toggle-group";
-import "../../../../components/ha-tooltip";
 import { storage } from "../../../../common/decorators/storage";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
@@ -114,6 +115,10 @@ export class HuiEnergyDevicesGraphCard
 
   private _costRatiosCompare = new Map<number, number>();
 
+  private _costAvgRatio = 0;
+
+  private _costAvgRatioCompare = 0;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -122,7 +127,8 @@ export class HuiEnergyDevicesGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
-        this._costAvailable = hasGridCostData(data);
+        this._costAvailable =
+          hasGridCostData(data) && !!this.hass.config.currency;
         if (!this._costAvailable && this._unitMode === "cost") {
           this._unitMode = "energy";
         }
@@ -134,6 +140,14 @@ export class HuiEnergyDevicesGraphCard
         this._costRatiosCompare = data.statsCompare
           ? computeGridCostRatios(data.statsCompare, data.info, data.prefs)
           : new Map();
+        this._costAvgRatio = computePeriodAverageRatio(
+          data.stats,
+          data.info,
+          data.prefs
+        );
+        this._costAvgRatioCompare = data.statsCompare
+          ? computePeriodAverageRatio(data.statsCompare, data.info, data.prefs)
+          : 0;
         this._getStatistics(data);
       }),
       listenMediaQuery(
@@ -261,6 +275,9 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _renderUnitToggle() {
+    if (!this._costAvailable) {
+      return nothing;
+    }
     const buttons: ToggleButton[] = [
       {
         label: this.hass.localize(
@@ -275,41 +292,30 @@ export class HuiEnergyDevicesGraphCard
         value: "cost",
       },
     ];
-    const toggle = html`<ha-button-toggle-group
-      id="unit-mode-toggle"
+    return html`<ha-button-toggle-group
       .buttons=${buttons}
       .active=${this._unitMode}
       size="small"
       @value-changed=${this._unitModeChanged}
     ></ha-button-toggle-group>`;
-    if (this._costAvailable) {
-      return toggle;
-    }
-    return html`${toggle}
-      <ha-tooltip for="unit-mode-toggle">
-        ${this.hass.localize(
-          "ui.panel.lovelace.cards.energy.device_unit_mode.cost_unavailable"
-        )}
-      </ha-tooltip>`;
   }
 
   private _unitModeChanged(ev: CustomEvent<{ value: string }>): void {
-    const value = ev.detail.value as EnergyUnitMode;
-    if (value === "cost" && !this._costAvailable) {
-      this.requestUpdate();
-      return;
-    }
-    this._unitMode = value;
+    this._unitMode = ev.detail.value as EnergyUnitMode;
   }
 
   private _renderTooltip(params: any) {
     const deviceName = filterXSS(this._getDeviceName(params.name));
     const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
     const rawValue = params.value[0] as number;
-    const formattedValue = this._formatValue(
-      rawValue,
-      rawValue < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    );
+    // Only bump kWh precision for tiny values — currency formatting already
+    // respects the target currency's minimum fraction digits, so leave it to
+    // Intl in cost mode.
+    const extraOpts =
+      this._unitMode === "energy" && rawValue < 0.1
+        ? { maximumFractionDigits: 3 }
+        : undefined;
+    const formattedValue = this._formatValue(rawValue, extraOpts);
     const value = `${formattedValue} ${params.percent ? `(${params.percent} %)` : ""}`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
@@ -565,17 +571,35 @@ export class HuiEnergyDevicesGraphCard
         summedData,
         compareSummedData
       );
-      const totalUsed = consumption.total.used_total;
       const showUntracked =
-        !costMode &&
-        ("from_grid" in summedData ||
-          "solar" in summedData ||
-          "from_battery" in summedData);
+        "from_grid" in summedData ||
+        "solar" in summedData ||
+        "from_battery" in summedData;
+      const computeUntracked = (
+        cons: typeof consumption,
+        stats: Statistics,
+        periodRatios: Map<number, number>,
+        fallbackRatio: number,
+        pieValues: number[]
+      ): number => {
+        if (costMode) {
+          return calculateUntrackedCost(
+            stats,
+            periodRatios,
+            cons.used_total,
+            devices,
+            fallbackRatio
+          );
+        }
+        return cons.total.used_total - pieValues.reduce((acc, v) => acc + v, 0);
+      };
       const untracked = showUntracked
-        ? totalUsed -
-          pieChartData.reduce(
-            (acc: number, d) => acc + (d as PieDataItemOption).value![0],
-            0
+        ? computeUntracked(
+            consumption,
+            data,
+            this._costRatios,
+            this._costAvgRatio,
+            pieChartData.map((d) => (d as PieDataItemOption).value![0])
           )
         : 0;
       if (untracked > 0) {
@@ -598,12 +622,13 @@ export class HuiEnergyDevicesGraphCard
           },
         });
         if (compareData) {
-          const compareUntracked =
-            compareConsumption!.total.used_total -
-            chartDataCompare.reduce(
-              (acc: number, d: any) => acc + d.value[0],
-              0
-            );
+          const compareUntracked = computeUntracked(
+            compareConsumption!,
+            compareData,
+            this._costRatiosCompare,
+            this._costAvgRatioCompare,
+            chartDataCompare.map((d: any) => d.value[0])
+          );
           if (compareUntracked > 0) {
             chartDataCompare.push({
               id: "untracked",

@@ -1,13 +1,15 @@
 import { assert, describe, it } from "vitest";
 import type {
+  DeviceConsumptionEnergyPreference,
   EnergyData,
   EnergyInfo,
   EnergyPreferences,
 } from "../../src/data/energy";
 import {
   calculateDeviceCostGrowth,
+  calculateUntrackedCost,
   computeGridCostRatios,
-  deviceCostSeries,
+  computePeriodAverageRatio,
   hasGridCostData,
 } from "../../src/data/energy_device_cost";
 import type { Statistics } from "../../src/data/recorder";
@@ -245,21 +247,97 @@ describe("calculateDeviceCostGrowth", () => {
   });
 });
 
-describe("deviceCostSeries", () => {
-  it("returns an empty array when the device stat is absent", () => {
-    const ratios = new Map<number, number>();
-    assert.deepEqual(deviceCostSeries({}, "device", ratios), []);
+describe("computePeriodAverageRatio", () => {
+  it("returns 0 when there are no grid sources", () => {
+    assert.equal(computePeriodAverageRatio({}, info(), prefs()), 0);
   });
 
-  it("applies ratio per bucket and emits 0 for buckets without a ratio", () => {
-    const ratios = new Map<number, number>([[1, 0.5]]);
+  it("returns Σcost / Σenergy across all grid buckets", () => {
     const stats: Statistics = {
-      device: [bucket(1, 2), bucket(2, 4), bucket(3, null)],
+      grid_kwh: [bucket(1, 2), bucket(2, 3)],
+      grid_cost: [bucket(1, 0.4), bucket(2, 1.2)],
     };
-    const series = deviceCostSeries(stats, "device", ratios);
-    assert.equal(series.length, 3);
-    assert.equal(series[0].change, 1);
-    assert.equal(series[1].change, 0);
-    assert.equal(series[2].change, null);
+    const p = prefs({
+      energy_sources: [
+        {
+          type: "grid",
+          stat_energy_from: "grid_kwh",
+          stat_energy_to: null,
+          stat_cost: "grid_cost",
+          entity_energy_price: null,
+          number_energy_price: null,
+          stat_compensation: null,
+          entity_energy_price_export: null,
+          number_energy_price_export: null,
+          cost_adjustment_day: 0,
+        },
+      ],
+    });
+    // total cost 1.6 / total energy 5 = 0.32
+    assert.closeTo(computePeriodAverageRatio(stats, info(), p), 0.32, 1e-9);
+  });
+});
+
+describe("calculateUntrackedCost", () => {
+  const devices: DeviceConsumptionEnergyPreference[] = [
+    { stat_consumption: "d1" },
+    { stat_consumption: "d2" },
+  ];
+
+  it("returns 0 when no ratios and no usage are provided", () => {
+    assert.equal(calculateUntrackedCost({}, new Map(), {}, devices), 0);
+  });
+
+  it("sums (used_total - tracked) * ratio per hour", () => {
+    const stats: Statistics = {
+      d1: [bucket(1, 1), bucket(2, 2)],
+      d2: [bucket(1, 1), bucket(2, 0)],
+    };
+    const ratios = new Map<number, number>([
+      [1, 0.2], // used 5, tracked 2, untracked 3 -> 0.6
+      [2, 0.3], // used 4, tracked 2, untracked 2 -> 0.6
+    ]);
+    const used = { "1": 5, "2": 4 };
+    const total = calculateUntrackedCost(stats, ratios, used, devices);
+    assert.closeTo(total, 1.2, 1e-9);
+  });
+
+  it("clamps to 0 when tracked exceeds used_total in a bucket", () => {
+    const stats: Statistics = {
+      d1: [bucket(1, 10)],
+      d2: [bucket(1, 10)],
+    };
+    const ratios = new Map<number, number>([[1, 0.2]]);
+    const used = { "1": 5 };
+    const total = calculateUntrackedCost(stats, ratios, used, devices);
+    assert.equal(total, 0);
+  });
+
+  it("skips buckets without a ratio", () => {
+    const stats: Statistics = {
+      d1: [bucket(1, 1), bucket(2, 1)],
+    };
+    const ratios = new Map<number, number>([[2, 0.5]]);
+    const used = { "1": 5, "2": 3 };
+    // Only bucket 2 counted: (3 - 1) * 0.5 = 1
+    assert.closeTo(
+      calculateUntrackedCost(stats, ratios, used, devices),
+      1,
+      1e-9
+    );
+  });
+
+  it("uses fallback ratio for buckets without a per-hour ratio", () => {
+    const stats: Statistics = {
+      d1: [bucket(1, 1), bucket(2, 1)],
+    };
+    const ratios = new Map<number, number>([[2, 0.5]]);
+    const used = { "1": 5, "2": 3 };
+    // Bucket 1: (5-1) * 0.2 (fallback) = 0.8; bucket 2: (3-1) * 0.5 = 1.0
+    assert.closeTo(
+      calculateUntrackedCost(stats, ratios, used, devices, 0.2),
+      1.8,
+      1e-9
+    );
   });
 });

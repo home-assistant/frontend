@@ -23,7 +23,7 @@ import {
 import type { EnergyUnitMode } from "../../../../data/energy_device_cost";
 import {
   computeGridCostRatios,
-  deviceCostSeries,
+  computePeriodAverageRatio,
   ENERGY_UNIT_MODE_STORAGE_KEY,
   hasGridCostData,
 } from "../../../../data/energy_device_cost";
@@ -50,7 +50,6 @@ import type { ECOption } from "../../../../resources/echarts/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-button-toggle-group";
-import "../../../../components/ha-tooltip";
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
@@ -112,6 +111,10 @@ export class HuiEnergyDevicesDetailGraphCard
 
   private _costRatiosCompare = new Map<number, number>();
 
+  private _costAvgRatio = 0;
+
+  private _costAvgRatioCompare = 0;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -120,7 +123,8 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
-        this._costAvailable = hasGridCostData(data);
+        this._costAvailable =
+          hasGridCostData(data) && !!this.hass.config.currency;
         if (!this._costAvailable && this._unitMode === "cost") {
           this._unitMode = "energy";
         }
@@ -132,6 +136,14 @@ export class HuiEnergyDevicesDetailGraphCard
         this._costRatiosCompare = data.statsCompare
           ? computeGridCostRatios(data.statsCompare, data.info, data.prefs)
           : new Map();
+        this._costAvgRatio = computePeriodAverageRatio(
+          data.stats,
+          data.info,
+          data.prefs
+        );
+        this._costAvgRatioCompare = data.statsCompare
+          ? computePeriodAverageRatio(data.statsCompare, data.info, data.prefs)
+          : 0;
       }),
     ];
   }
@@ -173,8 +185,12 @@ export class HuiEnergyDevicesDetailGraphCard
     return html`
       <ha-card>
         <div class="card-header">
-          <h1>${this._config.title ?? ""}</h1>
-          ${this._renderUnitToggle()}
+          <span
+            >${this._config.title
+              ? html`<h1>${this._config.title}</h1>`
+              : nothing}</span
+          >
+          <div class="header-actions">${this._renderUnitToggle()}</div>
         </div>
         <div class="content has-header">
           <ha-chart-base
@@ -220,6 +236,9 @@ export class HuiEnergyDevicesDetailGraphCard
   };
 
   private _renderUnitToggle() {
+    if (!this._costAvailable) {
+      return nothing;
+    }
     const buttons: ToggleButton[] = [
       {
         label: this.hass.localize(
@@ -234,31 +253,16 @@ export class HuiEnergyDevicesDetailGraphCard
         value: "cost",
       },
     ];
-    const toggle = html`<ha-button-toggle-group
-      id="unit-mode-toggle"
+    return html`<ha-button-toggle-group
       .buttons=${buttons}
       .active=${this._unitMode}
       size="small"
       @value-changed=${this._unitModeChanged}
     ></ha-button-toggle-group>`;
-    if (this._costAvailable) {
-      return toggle;
-    }
-    return html`${toggle}
-      <ha-tooltip for="unit-mode-toggle">
-        ${this.hass.localize(
-          "ui.panel.lovelace.cards.energy.device_unit_mode.cost_unavailable"
-        )}
-      </ha-tooltip>`;
   }
 
   private _unitModeChanged(ev: CustomEvent<{ value: string }>): void {
-    const value = ev.detail.value as EnergyUnitMode;
-    if (value === "cost" && !this._costAvailable) {
-      this.requestUpdate();
-      return;
-    }
-    this._unitMode = value;
+    this._unitMode = ev.detail.value as EnergyUnitMode;
   }
 
   // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
@@ -340,35 +344,14 @@ export class HuiEnergyDevicesDetailGraphCard
     this._compareStart = energyData.startCompare;
     this._compareEnd = energyData.endCompare;
 
-    const rawData = energyData.stats;
-    const rawCompareData = energyData.statsCompare;
+    const data = energyData.stats;
+    const compareData = energyData.statsCompare;
 
     const computedStyle = getComputedStyle(this);
 
     const devices = energyData.prefs.device_consumption;
 
     const costMode = this._unitMode === "cost";
-    const scaleDeviceStats = (
-      stats: Statistics,
-      ratios: Map<number, number>
-    ): Statistics => {
-      if (!costMode) {
-        return stats;
-      }
-      const scaled: Statistics = { ...stats };
-      for (const device of devices) {
-        scaled[device.stat_consumption] = deviceCostSeries(
-          stats,
-          device.stat_consumption,
-          ratios
-        );
-      }
-      return scaled;
-    };
-    const data = scaleDeviceStats(rawData, this._costRatios);
-    const compareData = rawCompareData
-      ? scaleDeviceStats(rawCompareData, this._costRatiosCompare)
-      : rawCompareData;
 
     const childMap: Record<string, string[]> = {};
     devices.forEach((d) => {
@@ -409,10 +392,9 @@ export class HuiEnergyDevicesDetailGraphCard
     const { summedData, compareSummedData } = getSummedData(energyData);
 
     const showUntracked =
-      !costMode &&
-      ("from_grid" in summedData ||
-        "solar" in summedData ||
-        "from_battery" in summedData);
+      "from_grid" in summedData ||
+      "solar" in summedData ||
+      "from_battery" in summedData;
 
     const {
       consumption: consumptionData,
@@ -491,6 +473,47 @@ export class HuiEnergyDevicesDetailGraphCard
           borderColor: untrackedData.itemStyle?.borderColor as string,
         },
       });
+    }
+
+    if (costMode) {
+      const scaleDataset = (
+        ds: BarSeriesOption,
+        ratios: Map<number, number>,
+        fallback: number
+      ) => {
+        if (!ds.data || !Array.isArray(ds.data)) {
+          return;
+        }
+        ds.data = (ds.data as EnergyDataPoint[]).map((dp) => [
+          dp[0],
+          dp[1] * (ratios.get(dp[2]) ?? fallback),
+          dp[2],
+        ]);
+      };
+      for (const ds of datasets) {
+        if (!ds.id) {
+          continue;
+        }
+        const idStr = String(ds.id);
+        const isCompare = idStr.startsWith("compare-");
+        // Untracked residual is priced at period average when the per-hour
+        // ratio is missing (typically hours where solar covered all grid
+        // import). Tracked devices keep strict per-hour pricing — a device
+        // running during a pure-solar hour is "free".
+        const isUntracked =
+          idStr.startsWith("untracked-") ||
+          idStr.startsWith("compare-untracked-");
+        const fallback = isUntracked
+          ? isCompare
+            ? this._costAvgRatioCompare
+            : this._costAvgRatio
+          : 0;
+        scaleDataset(
+          ds,
+          isCompare ? this._costRatiosCompare : this._costRatios,
+          fallback
+        );
+      }
     }
 
     fillDataGapsAndRoundCaps(datasets);
@@ -686,18 +709,17 @@ export class HuiEnergyDevicesDetailGraphCard
       justify-content: space-between;
       align-items: center;
       padding-bottom: 0;
-      gap: var(--ha-space-2);
     }
     .card-header h1 {
       margin: 0;
-      flex: 1;
-      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .card-header h1:empty {
-      display: none;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
     }
     .content {
       padding: 16px;
