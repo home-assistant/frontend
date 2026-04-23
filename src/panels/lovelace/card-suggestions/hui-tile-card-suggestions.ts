@@ -43,12 +43,12 @@ const DATE_VARIANTS: TileVariant[] = [
 const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   light: [
     { id: "tile", label: TILE_LABEL, features: [] },
-    { id: "tile-toggle", label: TILE_TOGGLE_LABEL, features: ["toggle"] },
     {
       id: "tile-brightness",
       label: "Tile with brightness",
       features: ["light-brightness"],
     },
+    { id: "tile-toggle", label: TILE_TOGGLE_LABEL, features: ["toggle"] },
     {
       id: "tile-color-temp",
       label: "Tile with color temperature",
@@ -251,6 +251,25 @@ const allFeaturesSupported = (
       return false;
     }
   });
+
+export const pickBestTileFeatures = (
+  hass: HomeAssistant,
+  entityId: string
+): UiFeatureType[] => {
+  const domain = computeDomain(entityId);
+  if (EXCLUDED_DOMAINS.includes(domain)) return [];
+  const variants = DOMAIN_VARIANTS[domain];
+  if (!variants) return [];
+  for (const variant of variants) {
+    if (
+      variant.features.length &&
+      allFeaturesSupported(hass, entityId, variant.features)
+    ) {
+      return variant.features;
+    }
+  }
+  return [];
+};
 
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
   getEntitySuggestion(hass, entityId) {
