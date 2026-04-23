@@ -39,7 +39,7 @@ const FONT_SIZE_PRESETS: {
   { value: 28, tokenKey: "3xl" },
 ];
 
-const DEFAULT_TARGET_FONT_SIZE = 20;
+const DEFAULT_TARGET_FONT_SIZE = 24;
 const MIN_TARGET_FONT_SIZE = 12;
 const MAX_TARGET_FONT_SIZE = 28;
 

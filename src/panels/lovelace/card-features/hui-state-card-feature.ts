@@ -65,7 +65,7 @@ class HuiStateCardFeature extends LitElement implements LovelaceCardFeature {
     return html`
       <ha-text-contain
         min-size="12"
-        .maxSize=${this._config.target_font_size ?? 20}
+        .maxSize=${this._config.target_font_size ?? 24}
       >
         <state-display
           .hass=${this.hass}
