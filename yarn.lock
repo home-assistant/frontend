@@ -8426,7 +8426,7 @@ __metadata:
     vite-tsconfig-paths: "npm:6.1.1"
     vitest: "npm:4.1.4"
     webpack-stats-plugin: "npm:1.1.3"
-    webpackbar: "patch:webpackbar@npm%3A7.0.0#~/.yarn/patches/webpackbar-npm-7.0.0-f8e86fbfa1.patch"
+    webpackbar: "npm:7.0.0"
     weekstart: "npm:2.0.0"
     workbox-build: "patch:workbox-build@npm%3A7.4.0#~/.yarn/patches/workbox-build-npm-7.4.0-c84561662c.patch"
     workbox-cacheable-response: "npm:7.4.0"
@@ -13530,26 +13530,6 @@ __metadata:
     webpack:
       optional: true
   checksum: 10/d123164e26cf3ab77611574602cc2bdd339b3f7e929074d90b53bd4409ab1b778e746cd0ea232f78a7746a938638d1bc4d218fe69aff396c41c77da15a26e659
-  languageName: node
-  linkType: hard
-
-"webpackbar@patch:webpackbar@npm%3A7.0.0#~/.yarn/patches/webpackbar-npm-7.0.0-f8e86fbfa1.patch":
-  version: 7.0.0
-  resolution: "webpackbar@patch:webpackbar@npm%3A7.0.0#~/.yarn/patches/webpackbar-npm-7.0.0-f8e86fbfa1.patch::version=7.0.0&hash=fa0d3b"
-  dependencies:
-    ansis: "npm:^3.2.0"
-    consola: "npm:^3.2.3"
-    pretty-time: "npm:^1.1.0"
-    std-env: "npm:^3.7.0"
-  peerDependencies:
-    "@rspack/core": "*"
-    webpack: 3 || 4 || 5
-  peerDependenciesMeta:
-    "@rspack/core":
-      optional: true
-    webpack:
-      optional: true
-  checksum: 10/abb0411f2d89c1bf4d99113a4a7bb1ee54936c66a47cae756705839754dc87f26f621a293ab00a923e494f489ec1b9cb02344349d551071ab0f883ac6c3a1657
   languageName: node
   linkType: hard
 

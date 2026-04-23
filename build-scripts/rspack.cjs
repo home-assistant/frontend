@@ -12,7 +12,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const WebpackBar = require("webpackbar/rspack");
+const SafeWebpackBar = require("./safe-webpackbar.cjs");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -126,7 +126,7 @@ const createRspackConfig = ({
       },
     },
     plugins: [
-      !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
+      !isStatsBuild && new SafeWebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
