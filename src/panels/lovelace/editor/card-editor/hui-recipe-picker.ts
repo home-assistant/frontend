@@ -15,6 +15,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-ripple";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
@@ -135,22 +136,25 @@ export class HuiRecipePicker extends LitElement {
                     ></hui-recipe-suggestion>
                   `
                 )}
-              </div>
-              <div class="not-found">
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.not_found"
-                  )}
-                </p>
-                <ha-button appearance="plain" @click=${this._browseCards}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiViewGridPlus}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
-                  )}
-                </ha-button>
+                <div
+                  class="browse-card"
+                  tabindex="0"
+                  role="button"
+                  @click=${this._browseCards}
+                >
+                  <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
+                  <span class="browse-card-title">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.editor.cardpicker.browse_cards"
+                    )}
+                  </span>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.editor.cardpicker.not_found"
+                    )}
+                  </p>
+                  <ha-ripple></ha-ripple>
+                </div>
               </div>
             `}
       </div>
@@ -311,17 +315,39 @@ export class HuiRecipePicker extends LitElement {
           color: var(--ha-color-text-secondary);
           line-height: var(--ha-line-height-expanded);
         }
-        .not-found {
+        .browse-card {
+          position: relative;
+          box-sizing: border-box;
+          height: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           gap: var(--ha-space-2);
-          padding: var(--ha-space-6) var(--ha-space-4);
+          padding: var(--ha-space-6);
           text-align: center;
+          cursor: pointer;
+          overflow: hidden;
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
+          border: var(--ha-card-border-width, 1px) dashed
+            var(--ha-card-border-color, var(--divider-color));
+          background: var(--primary-background-color, #fafafa);
+          color: var(--primary-text-color);
         }
-        .not-found p {
+        .browse-card ha-svg-icon {
+          color: var(--ha-color-text-secondary);
+        }
+        .browse-card-title {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .browse-card p {
           margin: 0;
           color: var(--ha-color-text-secondary);
+          font-size: var(--ha-font-size-s);
         }
 
         @media (max-width: 700px) {
