@@ -10,177 +10,91 @@ import type { CardSuggestion, CardSuggestionProvider } from "./types";
 
 interface TileVariant {
   id: string;
-  label: string;
   features: UiFeatureType[];
 }
 
-const TILE_LABEL = "Tile";
-const TILE_TOGGLE_LABEL = "Tile with toggle";
+const LABEL_PREFIX = "ui.panel.lovelace.editor.cardpicker.suggestions.";
+
+const TILE_VARIANT: TileVariant = { id: "tile", features: [] };
+const TILE_TOGGLE_VARIANT: TileVariant = {
+  id: "tile_toggle",
+  features: ["toggle"],
+};
 
 const SELECT_VARIANTS: TileVariant[] = [
-  { id: "tile", label: TILE_LABEL, features: [] },
-  {
-    id: "tile-options",
-    label: "Tile with options",
-    features: ["select-options"],
-  },
+  TILE_VARIANT,
+  { id: "tile_options", features: ["select-options"] },
 ];
 
 const NUMERIC_INPUT_VARIANTS: TileVariant[] = [
-  { id: "tile", label: TILE_LABEL, features: [] },
-  {
-    id: "tile-input",
-    label: "Tile with numeric input",
-    features: ["numeric-input"],
-  },
+  TILE_VARIANT,
+  { id: "tile_numeric_input", features: ["numeric-input"] },
 ];
 
 const DATE_VARIANTS: TileVariant[] = [
-  { id: "tile", label: TILE_LABEL, features: [] },
-  { id: "tile-date", label: "Tile with date picker", features: ["date-set"] },
+  TILE_VARIANT,
+  { id: "tile_date_picker", features: ["date-set"] },
 ];
 
 const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   light: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-brightness",
-      label: "Tile with brightness",
-      features: ["light-brightness"],
-    },
-    { id: "tile-toggle", label: TILE_TOGGLE_LABEL, features: ["toggle"] },
-    {
-      id: "tile-color-temp",
-      label: "Tile with color temperature",
-      features: ["light-color-temp"],
-    },
-    {
-      id: "tile-color-favorites",
-      label: "Tile with favorite colors",
-      features: ["light-color-favorites"],
-    },
+    TILE_VARIANT,
+    { id: "tile_brightness", features: ["light-brightness"] },
+    TILE_TOGGLE_VARIANT,
+    { id: "tile_color_temperature", features: ["light-color-temp"] },
+    { id: "tile_favorite_colors", features: ["light-color-favorites"] },
   ],
   cover: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-open-close",
-      label: "Tile with open/close",
-      features: ["cover-open-close"],
-    },
-    {
-      id: "tile-position",
-      label: "Tile with position",
-      features: ["cover-position"],
-    },
-    {
-      id: "tile-tilt",
-      label: "Tile with tilt",
-      features: ["cover-tilt"],
-    },
+    TILE_VARIANT,
+    { id: "tile_open_close", features: ["cover-open-close"] },
+    { id: "tile_position", features: ["cover-position"] },
+    { id: "tile_tilt", features: ["cover-tilt"] },
   ],
   climate: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-hvac-modes",
-      label: "Tile with HVAC modes",
-      features: ["climate-hvac-modes"],
-    },
+    TILE_VARIANT,
+    { id: "tile_hvac_modes", features: ["climate-hvac-modes"] },
   ],
   media_player: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-playback",
-      label: "Tile with playback controls",
-      features: ["media-player-playback"],
-    },
-    {
-      id: "tile-volume-slider",
-      label: "Tile with volume slider",
-      features: ["media-player-volume-slider"],
-    },
+    TILE_VARIANT,
+    { id: "tile_playback_controls", features: ["media-player-playback"] },
+    { id: "tile_volume_slider", features: ["media-player-volume-slider"] },
   ],
   fan: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    { id: "tile-speed", label: "Tile with speed", features: ["fan-speed"] },
-    {
-      id: "tile-preset-modes",
-      label: "Tile with preset modes",
-      features: ["fan-preset-modes"],
-    },
+    TILE_VARIANT,
+    { id: "tile_speed", features: ["fan-speed"] },
+    { id: "tile_preset_modes", features: ["fan-preset-modes"] },
   ],
-  switch: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    { id: "tile-toggle", label: TILE_TOGGLE_LABEL, features: ["toggle"] },
-  ],
-  input_boolean: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    { id: "tile-toggle", label: TILE_TOGGLE_LABEL, features: ["toggle"] },
-  ],
+  switch: [TILE_VARIANT, TILE_TOGGLE_VARIANT],
+  input_boolean: [TILE_VARIANT, TILE_TOGGLE_VARIANT],
   lock: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-commands",
-      label: "Tile with lock commands",
-      features: ["lock-commands"],
-    },
+    TILE_VARIANT,
+    { id: "tile_lock_commands", features: ["lock-commands"] },
   ],
   humidifier: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-toggle",
-      label: "Tile with humidifier toggle",
-      features: ["humidifier-toggle"],
-    },
-    {
-      id: "tile-modes",
-      label: "Tile with humidifier modes",
-      features: ["humidifier-modes"],
-    },
+    TILE_VARIANT,
+    { id: "tile_humidifier_toggle", features: ["humidifier-toggle"] },
+    { id: "tile_humidifier_modes", features: ["humidifier-modes"] },
   ],
   vacuum: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-commands",
-      label: "Tile with vacuum commands",
-      features: ["vacuum-commands"],
-    },
+    TILE_VARIANT,
+    { id: "tile_vacuum_commands", features: ["vacuum-commands"] },
   ],
   lawn_mower: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-commands",
-      label: "Tile with mower commands",
-      features: ["lawn-mower-commands"],
-    },
+    TILE_VARIANT,
+    { id: "tile_mower_commands", features: ["lawn-mower-commands"] },
   ],
   valve: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-open-close",
-      label: "Tile with open/close",
-      features: ["valve-open-close"],
-    },
-    {
-      id: "tile-position",
-      label: "Tile with position",
-      features: ["valve-position"],
-    },
+    TILE_VARIANT,
+    { id: "tile_open_close", features: ["valve-open-close"] },
+    { id: "tile_position", features: ["valve-position"] },
   ],
   alarm_control_panel: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-modes",
-      label: "Tile with alarm modes",
-      features: ["alarm-modes"],
-    },
+    TILE_VARIANT,
+    { id: "tile_alarm_modes", features: ["alarm-modes"] },
   ],
   counter: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-actions",
-      label: "Tile with counter actions",
-      features: ["counter-actions"],
-    },
+    TILE_VARIANT,
+    { id: "tile_counter_actions", features: ["counter-actions"] },
   ],
   input_select: SELECT_VARIANTS,
   select: SELECT_VARIANTS,
@@ -189,36 +103,20 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   input_datetime: DATE_VARIANTS,
   date: DATE_VARIANTS,
   update: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-actions",
-      label: "Tile with update actions",
-      features: ["update-actions"],
-    },
+    TILE_VARIANT,
+    { id: "tile_update_actions", features: ["update-actions"] },
   ],
   water_heater: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-operation-modes",
-      label: "Tile with operation modes",
-      features: ["water-heater-operation-modes"],
-    },
+    TILE_VARIANT,
+    { id: "tile_operation_modes", features: ["water-heater-operation-modes"] },
   ],
   weather: [
-    { id: "tile", label: TILE_LABEL, features: [] },
-    {
-      id: "tile-hourly-forecast",
-      label: "Tile with hourly forecast",
-      features: ["hourly-forecast"],
-    },
+    TILE_VARIANT,
+    { id: "tile_hourly_forecast", features: ["hourly-forecast"] },
   ],
 };
 
-const DEFAULT_VARIANT: TileVariant = {
-  id: "tile",
-  label: TILE_LABEL,
-  features: [],
-};
+const DEFAULT_VARIANT: TileVariant = TILE_VARIANT;
 
 const SENSOR_TREND_DEVICE_CLASSES = new Set<string>([
   "battery",
@@ -237,12 +135,8 @@ const SENSOR_TREND_DEVICE_CLASSES = new Set<string>([
 ]);
 
 const SENSOR_TREND_VARIANTS: TileVariant[] = [
-  { id: "tile", label: TILE_LABEL, features: [] },
-  {
-    id: "tile-trend-graph",
-    label: "Tile with trend graph",
-    features: ["trend-graph"],
-  },
+  TILE_VARIANT,
+  { id: "tile_trend_graph", features: ["trend-graph"] },
 ];
 
 const EXCLUDED_DOMAINS = ["calendar", "todo"];
@@ -319,7 +213,7 @@ export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
       if (!allFeaturesSupported(hass, entityId, variant.features)) continue;
       suggestions.push({
         id: variant.id,
-        label: variant.label,
+        label: hass.localize(`${LABEL_PREFIX}${variant.id}`),
         config: buildTileConfig(entityId, variant.features),
       });
     }
