@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-text-contain";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -62,13 +63,13 @@ class HuiStateCardFeature extends LitElement implements LovelaceCardFeature {
       : this._config.state_content;
 
     return html`
-      <div class="container">
+      <ha-text-contain min-size="14" max-size="28">
         <state-display
           .hass=${this.hass}
           .stateObj=${this._stateObj}
           .content=${content}
         ></state-display>
-      </div>
+      </ha-text-contain>
     `;
   }
 
@@ -76,29 +77,22 @@ class HuiStateCardFeature extends LitElement implements LovelaceCardFeature {
     :host {
       width: 100%;
       height: 100%;
-    }
-    .container {
-      width: 100%;
-      height: 100%;
+      min-height: var(--feature-height);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0 var(--ha-space-2);
       box-sizing: border-box;
-      font-size: var(--ha-font-size-3xl);
-      font-weight: var(--ha-font-weight-medium);
-      line-height: var(--ha-line-height-condensed);
       color: var(--primary-text-color);
       text-align: center;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      pointer-events: none !important;
+      user-select: none;
     }
-    state-display {
-      display: block;
+    ha-text-contain {
       width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      height: 100%;
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }
