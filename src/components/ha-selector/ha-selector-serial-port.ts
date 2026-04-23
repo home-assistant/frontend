@@ -203,7 +203,9 @@ export class HaSerialPortSelector extends LitElement {
             );
             const deviceName = device ? computeDeviceName(device) : undefined;
             const areaName =
-              device && device.area_id ? areas[device.area_id]?.name : undefined;
+              device && device.area_id
+                ? areas[device.area_id]?.name
+                : undefined;
             if (deviceName && areaName) {
               secondary = localize(
                 "ui.components.selectors.serial_port.device_in_area",
