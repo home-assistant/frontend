@@ -10217,8 +10217,12 @@
             "by_card": "By card",
             "empty_title": "What do you want to control?",
             "empty_description": "Pick an entity to see suggested cards, or browse all card types.",
+            "sidebar_title": "What do you want to add?",
             "browse_cards": "Browse all cards",
-            "more_cards": "+{count} more"
+            "more_cards": "+{count} more",
+            "content_empty_title": "Add an entity to see suggestions",
+            "content_empty_description": "Pick an entity from the sidebar, or browse all card types.",
+            "not_found": "Can't find the card you want?"
           },
           "badge_picker": {
             "no_description": "No description available.",
