@@ -68,7 +68,8 @@ export interface MockHomeAssistant extends HomeAssistant {
 
 export const provideHass = (
   elements,
-  overrideData: Partial<HomeAssistant> = {}
+  overrideData: Partial<HomeAssistant> = {},
+  setHassProperty = false
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.
@@ -395,6 +396,13 @@ export const provideHass = (
     ],
     ...overrideData,
   };
+
+  // Set hass if required
+  if (setHassProperty) {
+    elements.forEach((el) => {
+      el.hass = hassObj;
+    });
+  }
 
   // Update the elements. Note, we call it on hassObj so that if it was
   // overridden (like in the demo), it will still work.

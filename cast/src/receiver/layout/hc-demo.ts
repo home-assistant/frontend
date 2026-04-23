@@ -42,7 +42,7 @@ class HcDemo extends HassElement {
         this._updateHass(hassUpdate),
     };
 
-    const hass = (this.hass = provideHass(this, initial));
+    const hass = provideHass(this, initial, true);
 
     mockHistory(hass);
 
