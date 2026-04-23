@@ -143,7 +143,7 @@
     "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
     "@rsdoctor/rspack-plugin": "1.5.9",
-    "@rspack/core": "1.7.11",
+    "@rspack/core": "2.0.0",
     "@rspack/dev-server": "2.0.0",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.26",
@@ -207,7 +207,7 @@
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.4",
     "webpack-stats-plugin": "1.1.3",
-    "webpackbar": "7.0.0",
+    "webpackbar": "patch:webpackbar@npm%3A7.0.0#~/.yarn/patches/webpackbar-npm-7.0.0-f8e86fbfa1.patch",
     "workbox-build": "patch:workbox-build@npm%3A7.4.0#~/.yarn/patches/workbox-build-npm-7.4.0-c84561662c.patch"
   },
   "resolutions": {
