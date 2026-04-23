@@ -220,7 +220,48 @@ const DEFAULT_VARIANT: TileVariant = {
   features: [],
 };
 
+const SENSOR_TREND_DEVICE_CLASSES = new Set<string>([
+  "battery",
+  "carbon_dioxide",
+  "carbon_monoxide",
+  "humidity",
+  "illuminance",
+  "pm1",
+  "pm10",
+  "pm25",
+  "power",
+  "pressure",
+  "temperature",
+  "volatile_organic_compounds",
+  "wind_speed",
+]);
+
+const SENSOR_TREND_VARIANTS: TileVariant[] = [
+  { id: "tile", label: TILE_LABEL, features: [] },
+  {
+    id: "tile-trend-graph",
+    label: "Tile with trend graph",
+    features: ["trend-graph"],
+  },
+];
+
 const EXCLUDED_DOMAINS = ["calendar", "todo"];
+
+const getVariants = (
+  hass: HomeAssistant,
+  entityId: string
+): TileVariant[] | undefined => {
+  const domain = computeDomain(entityId);
+  if (EXCLUDED_DOMAINS.includes(domain)) return undefined;
+  if (domain === "sensor") {
+    const deviceClass = hass.states[entityId]?.attributes.device_class;
+    if (deviceClass && SENSOR_TREND_DEVICE_CLASSES.has(deviceClass)) {
+      return SENSOR_TREND_VARIANTS;
+    }
+    return undefined;
+  }
+  return DOMAIN_VARIANTS[domain];
+};
 
 const buildTileConfig = (
   entityId: string,
@@ -256,9 +297,7 @@ export const pickBestTileFeatures = (
   hass: HomeAssistant,
   entityId: string
 ): UiFeatureType[] => {
-  const domain = computeDomain(entityId);
-  if (EXCLUDED_DOMAINS.includes(domain)) return [];
-  const variants = DOMAIN_VARIANTS[domain];
+  const variants = getVariants(hass, entityId);
   if (!variants) return [];
   for (const variant of variants) {
     if (
@@ -274,9 +313,7 @@ export const pickBestTileFeatures = (
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
   getEntitySuggestion(hass, entityId) {
     if (EXCLUDED_DOMAINS.includes(computeDomain(entityId))) return null;
-    const variants = DOMAIN_VARIANTS[computeDomain(entityId)] ?? [
-      DEFAULT_VARIANT,
-    ];
+    const variants = getVariants(hass, entityId) ?? [DEFAULT_VARIANT];
     const suggestions: CardSuggestion<TileCardConfig>[] = [];
     for (const variant of variants) {
       if (!allFeaturesSupported(hass, entityId, variant.features)) continue;
