@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -9,6 +8,7 @@ import type {
   SchemaUnion,
   HaFormSchema,
 } from "../../../../../components/ha-form/types";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
 import type {
   NumericStateCondition,
@@ -18,6 +18,7 @@ import type {
 const numericStateConditionStruct = object({
   condition: literal("numeric_state"),
   entity: optional(string()),
+  attribute: optional(string()),
   above: optional(number()),
   below: optional(number()),
 });
@@ -41,9 +42,24 @@ export class HaCardConditionNumericState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (noEntity: boolean, stateObj?: HassEntity) =>
+    (noEntity: boolean, unit?: string) =>
       [
-        ...(noEntity ? [] : [{ name: "entity", selector: { entity: {} } }]),
+        ...(noEntity
+          ? []
+          : [
+              { name: "entity", selector: { entity: {} } },
+              {
+                name: "attribute",
+                selector: {
+                  attribute: {
+                    hide_attributes: NON_NUMERIC_ATTRIBUTES,
+                  },
+                },
+                context: {
+                  filter_entity: "entity",
+                },
+              },
+            ]),
         {
           name: "",
           type: "grid",
@@ -54,7 +70,7 @@ export class HaCardConditionNumericState extends LitElement {
                 number: {
                   step: "any",
                   mode: "box",
-                  unit_of_measurement: stateObj?.attributes.unit_of_measurement,
+                  unit_of_measurement: unit,
                 },
               },
             },
@@ -64,7 +80,7 @@ export class HaCardConditionNumericState extends LitElement {
                 number: {
                   step: "any",
                   mode: "box",
-                  unit_of_measurement: stateObj?.attributes.unit_of_measurement,
+                  unit_of_measurement: unit,
                 },
               },
             },
@@ -78,11 +94,15 @@ export class HaCardConditionNumericState extends LitElement {
       ? this.hass.states[this.condition.entity]
       : undefined;
 
+    const unit = this.condition.attribute
+      ? undefined
+      : stateObj?.attributes.unit_of_measurement;
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this.condition}
-        .schema=${this._schema(this.noEntity, stateObj)}
+        .schema=${this._schema(this.noEntity, unit)}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
@@ -92,7 +112,10 @@ export class HaCardConditionNumericState extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const condition = ev.detail.value as NumericStateCondition;
+    const condition = { ...ev.detail.value } as NumericStateCondition;
+    if (!condition.attribute) {
+      delete condition.attribute;
+    }
     fireEvent(this, "value-changed", { value: condition });
   }
 
@@ -102,6 +125,10 @@ export class HaCardConditionNumericState extends LitElement {
     switch (schema.name) {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
+      case "attribute":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.condition.numeric_state.attribute"
+        );
       case "below":
       case "above":
         return this.hass.localize(

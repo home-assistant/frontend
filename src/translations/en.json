@@ -8969,6 +8969,7 @@
               },
               "numeric_state": {
                 "label": "Entity numeric state",
+                "attribute": "[%key:ui::panel::lovelace::editor::condition-editor::condition::state::attribute%]",
                 "above": "Above",
                 "below": "Below"
               },
@@ -8985,6 +8986,7 @@
               },
               "state": {
                 "label": "Entity state",
+                "attribute": "Attribute (optional)",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
