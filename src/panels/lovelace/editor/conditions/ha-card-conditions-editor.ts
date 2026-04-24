@@ -30,7 +30,6 @@ import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
-import type { PresetState } from "./types/ha-card-condition-state";
 import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
@@ -66,7 +65,7 @@ export class HaCardConditionsEditor extends LitElement {
 
   @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
-  @property({ attribute: false }) public presetStates: PresetState[] = [];
+  @property({ attribute: false }) public entityIds: string[] = [];
 
   private _focusLastConditionOnChange = false;
 
@@ -112,7 +111,7 @@ export class HaCardConditionsEditor extends LitElement {
               .hass=${this.hass}
               .condition=${cond}
               .noEntity=${this.noEntity}
-              .presetStates=${this.presetStates}
+              .entityIds=${this.entityIds}
             ></ha-card-condition-editor>
           `
         )}

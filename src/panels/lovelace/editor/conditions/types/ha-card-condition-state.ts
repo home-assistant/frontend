@@ -30,11 +30,6 @@ interface StateConditionData {
   state?: string | string[];
 }
 
-export interface PresetState {
-  value: string;
-  label: string;
-}
-
 @customElement("ha-card-condition-state")
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,7 +40,7 @@ export class HaCardConditionState extends LitElement {
 
   @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
-  @property({ attribute: false }) public presetStates: PresetState[] = [];
+  @property({ attribute: false }) public entityIds: string[] = [];
 
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
@@ -67,7 +62,7 @@ export class HaCardConditionState extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (noEntity: boolean, localize: LocalizeFunc, presetStates: PresetState[]) =>
+    (noEntity: boolean, localize: LocalizeFunc, entityIds: string[]) =>
       [
         ...(noEntity
           ? []
@@ -118,8 +113,7 @@ export class HaCardConditionState extends LitElement {
                     name: "state",
                     selector: {
                       state: {
-                        extra_options: presetStates,
-                        no_entity: true,
+                        entity_id: entityIds,
                       },
                     },
                   }
@@ -156,7 +150,7 @@ export class HaCardConditionState extends LitElement {
         .schema=${this._schema(
           this.noEntity,
           this.hass.localize,
-          this.presetStates
+          this.entityIds
         )}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}

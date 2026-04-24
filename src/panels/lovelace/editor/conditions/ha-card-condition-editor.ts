@@ -43,7 +43,6 @@ import {
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import type { PresetState } from "./types/ha-card-condition-state";
 
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
 
@@ -82,7 +81,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
 
-  @property({ attribute: false }) public presetStates: PresetState[] = [];
+  @property({ attribute: false }) public entityIds: string[] = [];
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -266,9 +265,7 @@ export class HaCardConditionEditor extends LitElement {
                       NO_ENTITY_CONDITIONS_EXT.includes(condition.condition)
                         ? {
                             noEntity: this.noEntity,
-                            ...(condition.condition === "numeric_state"
-                              ? {}
-                              : { presetStates: this.presetStates }),
+                            entityIds: this.entityIds,
                           }
                         : {}),
                     }
