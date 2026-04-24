@@ -6,7 +6,6 @@ import {
   mdiInformationOutline,
   mdiMapMarker,
   mdiOpenInNew,
-  mdiPencil,
   mdiViewDashboard,
   mdiWifi,
 } from "@mdi/js";
@@ -18,9 +17,8 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/item/ha-list-item-base";
 import "../../../../src/components/item/ha-list-item-button";
 import "../../../../src/components/item/ha-list-item-option";
-import "../../../../src/components/item/ha-list-item-todo";
 import "../../../../src/components/list/ha-list-base";
-import "../../../../src/components/list/ha-list-box";
+import "../../../../src/components/list/ha-list-selectable";
 import "../../../../src/components/list/ha-list-nav";
 import type { HaListSelectedDetail } from "../../../../src/components/list/types";
 
@@ -205,7 +203,7 @@ export class DemoHaList extends LitElement {
         </ha-list-base>
       </ha-card>
 
-      <h2>ha-list-box + ha-list-item-option</h2>
+      <h2>ha-list-selectable + ha-list-item-option</h2>
       <p>
         Selectable list (<code>role="listbox"</code>). Items must be
         <code>ha-list-item-option</code>. Set <code>multi</code> for
@@ -213,7 +211,7 @@ export class DemoHaList extends LitElement {
       </p>
 
       <ha-card header="Single select, appearance=line">
-        <ha-list-box
+        <ha-list-selectable
           aria-label="Single select"
           @ha-list-selected=${this._onSingle}
         >
@@ -227,12 +225,12 @@ export class DemoHaList extends LitElement {
               </ha-list-item-option>
             `
           )}
-        </ha-list-box>
+        </ha-list-selectable>
         <pre>selected: ${JSON.stringify(this._toJson(this._single))}</pre>
       </ha-card>
 
       <ha-card header="Multi select, appearance=line">
-        <ha-list-box
+        <ha-list-selectable
           multi
           aria-label="Multi select line"
           @ha-list-selected=${this._onMultiLine}
@@ -247,14 +245,14 @@ export class DemoHaList extends LitElement {
               </ha-list-item-option>
             `
           )}
-        </ha-list-box>
+        </ha-list-selectable>
         <pre>selected: ${JSON.stringify(this._toJson(this._multiLine))}</pre>
       </ha-card>
 
       <ha-card
         header='Multi select, appearance=checkbox, selection-position="start"'
       >
-        <ha-list-box
+        <ha-list-selectable
           multi
           aria-label="Multi checkbox start"
           @ha-list-selected=${this._onMultiCheckStart}
@@ -271,7 +269,7 @@ export class DemoHaList extends LitElement {
               </ha-list-item-option>
             `
           )}
-        </ha-list-box>
+        </ha-list-selectable>
         <pre>
 selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
         >
@@ -280,7 +278,7 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
       <ha-card
         header='Multi select, appearance=checkbox, selection-position="end"'
       >
-        <ha-list-box
+        <ha-list-selectable
           multi
           aria-label="Multi checkbox end"
           @ha-list-selected=${this._onMultiCheckEnd}
@@ -298,7 +296,7 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
               </ha-list-item-option>
             `
           )}
-        </ha-list-box>
+        </ha-list-selectable>
         <pre>
 selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
         >
@@ -333,52 +331,6 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
             )
           )}
         </div>
-      </ha-card>
-
-      <h2>ha-list-item-todo</h2>
-      <p>
-        Todo-shaped row. Use inside <code>ha-list-base</code> (role
-        <code>list</code>), not <code>ha-list-box</code>.
-      </p>
-
-      <ha-card header="Todo list (checkbox-start)">
-        <ha-list-base aria-label="Todos">
-          ${this._todos.map(
-            (todo) => html`
-              <ha-list-item-todo
-                .checked=${todo.checked}
-                data-id=${todo.id}
-                @item-toggle=${this._onTodoToggle}
-                @item-click=${this._onTodoClick}
-              >
-                <span slot="headline">${todo.text}</span>
-                <ha-svg-icon slot="end" .path=${mdiPencil}></ha-svg-icon>
-              </ha-list-item-todo>
-            `
-          )}
-        </ha-list-base>
-        <pre>
-item-toggle: ${this._lastToggle}
-item-click:  ${this._lastClick}</pre
-        >
-      </ha-card>
-
-      <ha-card header="Todo list (checkbox-end)">
-        <ha-list-base aria-label="Todos checkbox-end">
-          ${this._todos.map(
-            (todo) => html`
-              <ha-list-item-todo
-                checkbox-end
-                .checked=${todo.checked}
-                data-id=${todo.id}
-                @item-toggle=${this._onTodoToggle}
-                @item-click=${this._onTodoClick}
-              >
-                <span slot="headline">${todo.text}</span>
-              </ha-list-item-todo>
-            `
-          )}
-        </ha-list-base>
       </ha-card>
 
       <h2>ha-list-nav</h2>

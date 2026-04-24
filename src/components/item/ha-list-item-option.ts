@@ -15,7 +15,7 @@ export type HaListItemOptionSelectionPosition = "start" | "end";
  *
  * @summary
  * Selectable list row (role `option`). Selection state is driven by the parent
- * `ha-list-box`; reflects `aria-selected`. When `appearance="checkbox"`, renders
+ * `ha-list-selectable`; reflects `aria-selected`. When `appearance="checkbox"`, renders
  * a decorative `<ha-checkbox>` (clicks on the row are handled by the listbox).
  *
  * @csspart checkbox - Wrapper around the `<ha-checkbox>` when `appearance="checkbox"`.
@@ -23,7 +23,7 @@ export type HaListItemOptionSelectionPosition = "start" | "end";
  *
  * @cssprop --ha-list-item-selected-background - Background color when selected (`appearance="line"`).
  *
- * @attr {boolean} selected - Whether the option is selected. Set by the parent `ha-list-box`.
+ * @attr {boolean} selected - Whether the option is selected. Set by the parent `ha-list-selectable`.
  * @attr {string} value - Value identifying the option.
  * @attr {("line"|"checkbox")} appearance - Visual style. "line" highlights the row; "checkbox" renders an `ha-checkbox`.
  * @attr {("start"|"end")} selection-position - Side the checkbox sits on when `appearance="checkbox"`.
@@ -56,9 +56,11 @@ export class HaListItemOption extends HaListItemBase {
 
   protected _renderBase(inner: TemplateResult): TemplateResult {
     return html`<div part="base" class="base" id="item">
-      ${this._renderRipple()}${this._renderCheckbox(
-        "start"
-      )}${inner}${this._renderCheckbox("end")}
+      ${this._renderRipple()}${this.selectionPosition === "start"
+        ? this._renderCheckbox()
+        : nothing}${inner}${this.selectionPosition === "end"
+        ? this._renderCheckbox()
+        : nothing}
     </div>`;
   }
 
@@ -70,20 +72,13 @@ export class HaListItemOption extends HaListItemBase {
     ></ha-ripple>`;
   }
 
-  private _renderCheckbox(pos: HaListItemOptionSelectionPosition) {
+  private _renderCheckbox() {
     if (this.appearance !== "checkbox") {
       return nothing;
     }
-    if (this.selectionPosition !== pos) {
-      return nothing;
-    }
-    return html`<div
-      part="checkbox"
-      class="checkbox checkbox-${pos}"
-      aria-hidden="true"
-    >
+
+    return html`<div part="checkbox" class="checkbox" inert>
       <ha-checkbox
-        tabindex="-1"
         .checked=${this.selected}
         .disabled=${this.disabled}
       ></ha-checkbox>
@@ -122,6 +117,9 @@ export class HaListItemOption extends HaListItemBase {
       }
       .checkbox ha-checkbox {
         pointer-events: none;
+      }
+      ha-checkbox::part(base) {
+        gap: 0;
       }
     `,
   ];

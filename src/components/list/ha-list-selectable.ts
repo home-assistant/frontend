@@ -1,11 +1,11 @@
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaListBase } from "./ha-list-base";
 import { HaListItemOption } from "../item/ha-list-item-option";
+import { HaListBase } from "./ha-list-base";
 import type { HaListSelectedDetail } from "./types";
 
 /**
- * @element ha-list-box
+ * @element ha-list-selectable
  * @extends {HaListBase}
  *
  * @summary
@@ -16,13 +16,13 @@ import type { HaListSelectedDetail } from "./types";
  *
  * @fires ha-list-selected - Fired when the selection changes. `detail: HaListSelectedDetail`.
  */
-@customElement("ha-list-box")
-export class HaListBox extends HaListBase {
+@customElement("ha-list-selectable")
+export class HaListSelectable extends HaListBase {
   @property({ type: Boolean, reflect: true }) public multi = false;
 
   protected override readonly hostRole = "listbox";
 
-  private _selectedIndices = new Set<number>();
+  private _selectedIndices?: Set<number>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -39,8 +39,8 @@ export class HaListBox extends HaListBase {
     super.updated(changed);
     if (changed.has("multi")) {
       this.setAttribute("aria-multiselectable", this.multi ? "true" : "false");
-      if (!this.multi && this._selectedIndices.size > 1) {
-        const first = Math.min(...this._selectedIndices);
+      if (!this.multi && (this._selectedIndices?.size ?? 0) > 1) {
+        const first = Math.min(...this._selectedIndices!);
         this._setSelection(new Set([first]));
       }
     }
@@ -54,9 +54,9 @@ export class HaListBox extends HaListBase {
     if (this.multi) {
       return new Set(this._selectedIndices);
     }
-    return this._selectedIndices.size === 0
+    return (this._selectedIndices?.size ?? 0) === 0
       ? -1
-      : this._selectedIndices.values().next().value!;
+      : this._selectedIndices!.values().next().value!;
   }
 
   public get selectedItems(): HaListItemOption[] {
@@ -109,7 +109,7 @@ export class HaListBox extends HaListBase {
       }
       this._setSelection(next);
     } else {
-      const isSelected = this._selectedIndices.has(index);
+      const isSelected = this._selectedIndices!.has(index);
       const shouldSelect = force !== undefined ? force : !isSelected;
       this._setSelection(shouldSelect ? new Set([index]) : new Set());
     }
@@ -125,13 +125,24 @@ export class HaListBox extends HaListBase {
   }
 
   private _sortedSelectedIndices(): number[] {
-    return [...this._selectedIndices].sort((a, b) => a - b);
+    return [...this._selectedIndices!].sort((a, b) => a - b);
   }
 
   private _syncItemSelectedState() {
+    if (!this._selectedIndices) {
+      this._selectedIndices = new Set<number>();
+      this.items.forEach((item, i) => {
+        const opt = item as HaListItemOption;
+        if (opt.selected) {
+          this._selectedIndices!.add(i);
+        }
+      });
+      return;
+    }
+
     this.items.forEach((item, i) => {
       const opt = item as HaListItemOption;
-      const shouldBe = this._selectedIndices.has(i);
+      const shouldBe = this._selectedIndices!.has(i);
       if (opt.selected !== shouldBe) {
         opt.selected = shouldBe;
       }
@@ -139,7 +150,7 @@ export class HaListBox extends HaListBase {
   }
 
   private _setSelection(next: Set<number>): void {
-    const prev = this._selectedIndices;
+    const prev = this._selectedIndices!;
     const added = new Set<number>();
     const removed = new Set<number>();
     next.forEach((i) => {
@@ -196,6 +207,6 @@ export class HaListBox extends HaListBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-list-box": HaListBox;
+    "ha-list-selectable": HaListSelectable;
   }
 }

@@ -34,7 +34,7 @@ focused item.
 - `--ha-list-gap` — spacing between items.
 - `--ha-list-padding` — padding around the list.
 
-### `<ha-list-box>`
+### `<ha-list-selectable>`
 
 Selectable list. Host role is `listbox`; items must be `<ha-list-item-option>`
 (role `option`). Set `multi` for multi-select.
@@ -66,19 +66,12 @@ tab stop and the inner button/anchor has `tabindex="-1"`.
 ### `<ha-list-item-option>`
 
 Selectable row. Host role is `option`. Reflects `aria-selected`. Typically
-placed inside `ha-list-box`; the parent listbox owns selection state and
+placed inside `<ha-list-selectable>`; the parent listbox owns selection state and
 toggles `selected` on this item.
 
 - `appearance="line" | "checkbox"` (default `line`)
 - `selection-position="start" | "end"` (default `start`, only meaningful with checkbox)
 - `selected: boolean`, `value?: string`, `disabled: boolean`
-
-### `<ha-list-item-todo>`
-
-Todo-shaped row combining a real `<ha-checkbox>` with an independent row-body
-action. Use inside `<ha-list-base>` (role `list`), **not** `<ha-list-box>`:
-ARIA forbids interactive descendants inside `role="option"`, but allows them
-inside `role="listitem"`.
 
 **Events**
 

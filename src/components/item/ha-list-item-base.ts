@@ -9,13 +9,13 @@ import { HaRowItem } from "./ha-row-item";
  *
  * @summary
  * Non-interactive list row (role `listitem`). Base class for
- * `ha-list-item-button`, `ha-list-item-option`, and `ha-list-item-todo`.
+ * `ha-list-item-button`, `ha-list-item-option`.
  *
  * @cssprop --ha-list-item-focus-radius - Focus outline border-radius.
  * @cssprop --ha-list-item-focus-width - Focus outline width (steady state).
  * @cssprop --ha-list-item-focus-width-start - Focus outline width at the start of the focus-in animation.
  * @cssprop --ha-list-item-focus-offset - Focus outline offset.
- * @cssprop --ha-list-item-focus-background - Background color applied on keyboard focus, matching the ripple hover tint.
+ * @cssprop --ha-list-item-focus-background - Background color applied on keyboard focus.
  *
  * @attr {boolean} interactive - Opts the row into the parent list's roving tabindex. Interactive subclasses set this automatically.
  */
@@ -59,10 +59,8 @@ export class HaListItemBase extends HaRowItem {
         --ha-list-item-focus-width: 2px;
         --ha-list-item-focus-width-start: var(--ha-space-2);
         --ha-list-item-focus-offset: -2px;
-        --ha-list-item-focus-background: color-mix(
-          in srgb,
-          var(--ha-ripple-color, var(--primary-text-color)) 8%,
-          transparent
+        --ha-list-item-focus-background: var(
+          --ha-color-fill-neutral-quiet-hover
         );
       }
       :host(:focus) {
