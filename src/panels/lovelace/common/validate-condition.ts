@@ -37,6 +37,7 @@ interface BaseCondition {
 
 export interface ConditionContext {
   max_columns?: number;
+  entity_id?: string;
 }
 
 export interface ViewColumnsCondition extends BaseCondition {
@@ -110,9 +111,11 @@ function getValueFromEntityId(
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ) {
-  const stateObj = condition.entity ? hass.states[condition.entity] : undefined;
+  const entityId = condition.entity || context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
   const attribute = "attribute" in condition ? condition.attribute : undefined;
   let state: string;
   if (!stateObj) {
@@ -151,9 +154,11 @@ function checkStateCondition(
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ) {
-  const stateObj = condition.entity ? hass.states[condition.entity] : undefined;
+  const entityId = condition.entity || context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
   const state = condition.attribute
     ? stateObj?.attributes[condition.attribute]
     : stateObj?.state;
@@ -282,7 +287,7 @@ export function checkConditionsMet(
         case "location":
           return checkLocationCondition(c, hass);
         case "numeric_state":
-          return checkStateNumericCondition(c, hass);
+          return checkStateNumericCondition(c, hass, context);
         case "and":
           return checkAndCondition(c, hass, context);
         case "not":
@@ -290,10 +295,10 @@ export function checkConditionsMet(
         case "or":
           return checkOrCondition(c, hass, context);
         default:
-          return checkStateCondition(c, hass);
+          return checkStateCondition(c, hass, context);
       }
     }
-    return checkStateCondition(c, hass);
+    return checkStateCondition(c, hass, context);
   });
 }
 
@@ -341,10 +346,7 @@ export function extractConditionEntityIds(
 }
 
 function validateStateCondition(condition: StateCondition | LegacyCondition) {
-  return (
-    condition.entity != null &&
-    (condition.state != null || condition.state_not != null)
-  );
+  return condition.state != null || condition.state_not != null;
 }
 
 function validateScreenCondition(condition: ScreenCondition) {
@@ -405,10 +407,7 @@ function validateViewColumnsCondition(condition: ViewColumnsCondition) {
 }
 
 function validateNumericStateCondition(condition: NumericStateCondition) {
-  return (
-    condition.entity != null &&
-    (condition.above != null || condition.below != null)
-  );
+  return condition.above != null || condition.below != null;
 }
 /**
  * Validate the conditions config for the UI

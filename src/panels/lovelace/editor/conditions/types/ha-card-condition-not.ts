@@ -24,10 +24,6 @@ export class HaCardConditionNot extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
-
-  @property({ attribute: false }) public entityIds: string[] = [];
-
   public static get defaultConfig(): NotCondition {
     return { condition: "not", conditions: [] };
   }
@@ -42,8 +38,6 @@ export class HaCardConditionNot extends LitElement {
         nested
         .hass=${this.hass}
         .conditions=${this.condition.conditions}
-        .noEntity=${this.noEntity}
-        .entityIds=${this.entityIds}
         @value-changed=${this._valueChanged}
       >
       </ha-card-conditions-editor>

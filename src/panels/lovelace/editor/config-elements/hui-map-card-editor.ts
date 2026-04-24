@@ -15,6 +15,7 @@ import {
   string,
   union,
 } from "superstruct";
+import { ContextProvider } from "@lit/context";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -38,6 +39,8 @@ import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
 import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
+import type { ConditionsEntityContext } from "../conditions/context";
+import { conditionsEntityContext } from "../conditions/context";
 import "../conditions/ha-card-conditions-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
@@ -107,10 +110,18 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   private _locationEntities: string[] = [];
 
-  private _conditionEntityIds = memoizeOne(
-    (entities: MapCardConfig["entities"]) =>
-      entities?.map((e) => (typeof e === "string" ? e : e.entity)) ?? []
+  private _entityContext = memoizeOne(
+    (entities: MapCardConfig["entities"]): ConditionsEntityContext => ({
+      mode: "filter",
+      entityIds:
+        entities?.map((e) => (typeof e === "string" ? e : e.entity)) ?? [],
+    })
   );
+
+  private _contextProvider = new ContextProvider(this, {
+    context: conditionsEntityContext,
+    initialValue: { mode: "filter", entityIds: [] } as ConditionsEntityContext,
+  });
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -339,7 +350,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   renderConditions() {
     const conditions = this._config?.conditions ?? [];
-    const entityIds = this._conditionEntityIds(this._config?.entities);
     return html`
       <h3>
         ${this.hass!.localize("ui.panel.lovelace.editor.card.map.conditions")}
@@ -350,10 +360,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         )}
       </p>
       <ha-card-conditions-editor
-        no-entity
         .hass=${this.hass!}
         .conditions=${conditions}
-        .entityIds=${entityIds}
         @value-changed=${this._conditionsChanged}
       >
       </ha-card-conditions-editor>
@@ -486,7 +494,13 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config });
   }
 
-  protected willUpdate() {
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("_config")) {
+      this._contextProvider.setValue(
+        this._entityContext(this._config?.entities)
+      );
+    }
+
     if (this.hass && !this._possibleGeoSources) {
       const sources: Record<string, string> = {};
       Object.entries(this.hass.states).forEach(([entity_id, stateObj]) => {

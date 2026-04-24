@@ -1,8 +1,9 @@
+import { consume } from "@lit/context";
 import { mdiContentPaste, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
@@ -16,6 +17,8 @@ import type {
   Condition,
   LegacyCondition,
 } from "../../common/validate-condition";
+import type { ConditionsEntityContext } from "./context";
+import { conditionsEntityContext } from "./context";
 import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
@@ -63,9 +66,13 @@ export class HaCardConditionsEditor extends LitElement {
     | LegacyCondition
   )[];
 
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
+  @state()
+  @consume({ context: conditionsEntityContext, subscribe: true })
+  private _entityContext?: ConditionsEntityContext;
 
-  @property({ attribute: false }) public entityIds: string[] = [];
+  private get _noEntity(): boolean {
+    return this._entityContext?.mode === "filter";
+  }
 
   private _focusLastConditionOnChange = false;
 
@@ -110,8 +117,6 @@ export class HaCardConditionsEditor extends LitElement {
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
-              .noEntity=${this.noEntity}
-              .entityIds=${this.entityIds}
             ></ha-card-condition-editor>
           `
         )}
@@ -168,7 +173,7 @@ export class HaCardConditionsEditor extends LitElement {
       conditions.push(newCondition);
     } else {
       const elClass = customElements.get(
-        getConditionClassName(condition, this.noEntity)
+        getConditionClassName(condition, this._noEntity)
       ) as LovelaceConditionEditorConstructor | undefined;
 
       const defaultConfig = elClass?.defaultConfig;

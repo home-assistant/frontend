@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -42,16 +43,13 @@ import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";
+import type { ConditionsEntityContext } from "./context";
+import { conditionsEntityContext } from "./context";
 import type { LovelaceConditionEditorConstructor } from "./types";
 
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
 
 const CONTAINER_CONDITIONS = ["and", "or", "not"];
-
-const NO_ENTITY_CONDITIONS_EXT = [
-  ...CONTAINER_CONDITIONS,
-  ...NO_ENTITY_CONDITIONS,
-];
 
 const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
   NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
@@ -79,9 +77,13 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
+  @state()
+  @consume({ context: conditionsEntityContext, subscribe: true })
+  private _entityContext?: ConditionsEntityContext;
 
-  @property({ attribute: false }) public entityIds: string[] = [];
+  private get _noEntity(): boolean {
+    return this._entityContext?.mode === "filter";
+  }
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -104,7 +106,7 @@ export class HaCardConditionEditor extends LitElement {
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
-      getConditionClassName(this._condition.condition, this.noEntity)
+      getConditionClassName(this._condition.condition, this._noEntity)
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
@@ -175,8 +177,8 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${isNoEntityCondition(condition.condition, this.noEntity) ||
-            containsNoEntityCondition(condition, this.noEntity)
+            ${isNoEntityCondition(condition.condition, this._noEntity) ||
+            containsNoEntityCondition(condition, this._noEntity)
               ? nothing
               : html`<ha-dropdown-item value="test">
                   ${this.hass.localize(
@@ -257,17 +259,10 @@ export class HaCardConditionEditor extends LitElement {
                 `
               : html`
                   ${dynamicElement(
-                    getConditionClassName(condition.condition, this.noEntity),
+                    getConditionClassName(condition.condition, this._noEntity),
                     {
                       hass: this.hass,
                       condition: condition,
-                      ...(this.noEntity &&
-                      NO_ENTITY_CONDITIONS_EXT.includes(condition.condition)
-                        ? {
-                            noEntity: this.noEntity,
-                            entityIds: this.entityIds,
-                          }
-                        : {}),
                     }
                   )}
                 `}
@@ -346,7 +341,15 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    this._testingResult = checkConditionsMet([condition], this.hass, {});
+    const testContext =
+      this._entityContext?.mode === "current"
+        ? { entity_id: this._entityContext.entityId }
+        : {};
+    this._testingResult = checkConditionsMet(
+      [condition],
+      this.hass,
+      testContext
+    );
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
