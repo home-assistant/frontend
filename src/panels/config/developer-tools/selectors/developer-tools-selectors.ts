@@ -1,10 +1,13 @@
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dump } from "js-yaml";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select";
@@ -14,161 +17,15 @@ import "../../../../components/ha-selector/ha-selector";
 import type { Selector } from "../../../../data/selector";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-
-type SelectorKey =
-  | "action"
-  | "addon"
-  | "app"
-  | "area"
-  | "areas_display"
-  | "assist_pipeline"
-  | "attribute"
-  | "backup_location"
-  | "boolean"
-  | "button_toggle"
-  | "choose"
-  | "color_rgb"
-  | "color_temp"
-  | "condition"
-  | "config_entry"
-  | "constant"
-  | "conversation_agent"
-  | "country"
-  | "date"
-  | "datetime"
-  | "device"
-  | "duration"
-  | "entity"
-  | "entity_name"
-  | "file"
-  | "floor"
-  | "icon"
-  | "label"
-  | "language"
-  | "location"
-  | "media"
-  | "navigation"
-  | "number"
-  | "numeric_threshold"
-  | "object"
-  | "period"
-  | "qr_code"
-  | "select"
-  | "selector"
-  | "serial_port"
-  | "state"
-  | "statistic"
-  | "stt"
-  | "target"
-  | "template"
-  | "text"
-  | "theme"
-  | "time"
-  | "timezone"
-  | "trigger"
-  | "tts"
-  | "tts_voice"
-  | "ui_action"
-  | "ui_color"
-  | "ui_state_content";
-
-// Sensible default config per selector type so the preview renders something
-// useful without the user having to hand-craft YAML.
-const SELECTOR_PRESETS: Record<SelectorKey, Record<string, unknown>> = {
-  action: {},
-  addon: {},
-  app: {},
-  area: {},
-  areas_display: {},
-  assist_pipeline: {},
-  attribute: { entity_id: "" },
-  backup_location: {},
-  boolean: {},
-  button_toggle: {
-    options: [
-      { value: "on", label: "On" },
-      { value: "off", label: "Off" },
-    ],
-  },
-  choose: {
-    choices: {
-      number: { selector: { number: { min: 0, max: 100 } } },
-      text: { selector: { text: {} } },
-    },
-  },
-  color_rgb: {},
-  color_temp: {},
-  condition: {},
-  config_entry: {},
-  constant: { value: true, label: "Enabled" },
-  conversation_agent: {},
-  country: {},
-  date: {},
-  datetime: {},
-  device: {},
-  duration: {},
-  entity: {},
-  entity_name: {},
-  file: { accept: "*" },
-  floor: {},
-  icon: {},
-  label: {},
-  language: {},
-  location: {},
-  media: {},
-  navigation: {},
-  number: { min: 0, max: 100, mode: "slider", step: 1 },
-  numeric_threshold: {},
-  object: {},
-  period: {},
-  qr_code: { data: "https://www.home-assistant.io" },
-  select: {
-    options: [
-      "Option 1",
-      "Option 2",
-      "Option 3",
-      "Option 4",
-      "Option 5",
-      "Option 6",
-    ],
-  },
-  selector: {},
-  serial_port: {},
-  state: { entity_id: "" },
-  statistic: {},
-  stt: {},
-  target: {},
-  template: {},
-  text: {},
-  theme: {},
-  time: {},
-  timezone: {},
-  trigger: {},
-  tts: {},
-  tts_voice: {},
-  ui_action: {},
-  ui_color: {},
-  ui_state_content: {},
-};
-
-const SELECTOR_TYPES = (Object.keys(SELECTOR_PRESETS) as SelectorKey[]).sort();
-
-const ACRONYMS = new Set(["qr", "rgb", "stt", "tts", "ui"]);
-
-const formatSelectorName = (type: string): string =>
-  type
-    .split("_")
-    .map((word) =>
-      ACRONYMS.has(word)
-        ? word.toUpperCase()
-        : word.charAt(0).toUpperCase() + word.slice(1)
-    )
-    .join(" ");
-
-const SELECTOR_OPTIONS = SELECTOR_TYPES.map((type) => ({
-  value: type,
-  label: formatSelectorName(type),
-}));
+import { showToast } from "../../../../util/toast";
+import type { SelectorKey } from "./presets";
+import {
+  SELECTOR_OPTIONS,
+  SELECTOR_PRESETS,
+  formatSelectorName,
+  getInitialConfig,
+  getVariants,
+} from "./presets";
 
 const formatYaml = (value: unknown): string => {
   if (value === undefined) {
@@ -189,8 +46,11 @@ class DeveloperToolsSelectors extends LitElement {
 
   @state() private _type: SelectorKey = "select";
 
+  @state() private _variantId: string =
+    getVariants("select")[0]?.id ?? "default";
+
   @state() private _config: Record<string, unknown> =
-    SELECTOR_PRESETS.select ?? {};
+    getInitialConfig("select");
 
   @state() private _configValid = true;
 
@@ -206,6 +66,13 @@ class DeveloperToolsSelectors extends LitElement {
 
   protected render(): TemplateResult {
     const selector = { [this._type]: this._config } as unknown as Selector;
+    const configYaml = formatYaml(selector).trimEnd();
+    const variants = getVariants(this._type);
+    const showVariants = variants.length > 1;
+    const variantOptions = variants.map((v) => ({
+      value: v.id,
+      label: v.name,
+    }));
     return html`
       <div class="content">
         <ha-card header=${this._localizeTitle()}>
@@ -226,6 +93,18 @@ class DeveloperToolsSelectors extends LitElement {
                   .options=${SELECTOR_OPTIONS}
                   @selected=${this._typeSelected}
                 ></ha-select>
+                ${showVariants
+                  ? html`
+                      <ha-select
+                        .label=${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.selectors.preset"
+                        )}
+                        .value=${this._variantId}
+                        .options=${variantOptions}
+                        @selected=${this._variantSelected}
+                      ></ha-select>
+                    `
+                  : nothing}
 
                 <ha-md-list class="toggles">
                   <ha-md-list-item>
@@ -342,6 +221,25 @@ class DeveloperToolsSelectors extends LitElement {
                 </div>
 
                 <div class="field">
+                  <div class="field-header">
+                    <div class="field-label">
+                      ${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.selectors.configuration_used"
+                      )}
+                    </div>
+                    <ha-icon-button
+                      .label=${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.selectors.copy_configuration"
+                      )}
+                      .path=${mdiContentCopy}
+                      .disabled=${!this._configValid}
+                      @click=${this._copyConfig}
+                    ></ha-icon-button>
+                  </div>
+                  <pre class="value">${configYaml || nothing}</pre>
+                </div>
+
+                <div class="field">
                   <div class="field-label">
                     ${this.hass.localize(
                       "ui.panel.config.developer-tools.tabs.selectors.value"
@@ -355,6 +253,18 @@ class DeveloperToolsSelectors extends LitElement {
         </ha-card>
       </div>
     `;
+  }
+
+  private async _copyConfig() {
+    const selector = { [this._type]: this._config };
+    const yaml = formatYaml(selector).trimEnd();
+    if (!yaml) {
+      return;
+    }
+    await copyToClipboard(yaml);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _renderValue() {
@@ -382,7 +292,25 @@ class DeveloperToolsSelectors extends LitElement {
       return;
     }
     this._type = newType;
-    this._config = { ...(SELECTOR_PRESETS[newType] ?? {}) };
+    const variants = getVariants(newType);
+    this._variantId = variants[0]?.id ?? "default";
+    this._config = { ...(variants[0]?.config ?? {}) };
+    this._configValid = true;
+    this._value = undefined;
+  }
+
+  private _variantSelected(ev: CustomEvent<{ value: string | undefined }>) {
+    ev.stopPropagation();
+    const newVariantId = ev.detail?.value;
+    if (!newVariantId || newVariantId === this._variantId) {
+      return;
+    }
+    const variant = getVariants(this._type).find((v) => v.id === newVariantId);
+    if (!variant) {
+      return;
+    }
+    this._variantId = newVariantId;
+    this._config = { ...variant.config };
     this._configValid = true;
     this._value = undefined;
   }
@@ -416,7 +344,12 @@ class DeveloperToolsSelectors extends LitElement {
   }
 
   private _resetConfig() {
-    this._config = { ...(SELECTOR_PRESETS[this._type] ?? {}) };
+    const variant = getVariants(this._type).find(
+      (v) => v.id === this._variantId
+    );
+    this._config = {
+      ...(variant?.config ?? SELECTOR_PRESETS[this._type] ?? {}),
+    };
     this._configValid = true;
   }
 
@@ -479,6 +412,20 @@ class DeveloperToolsSelectors extends LitElement {
           font-size: var(--ha-font-size-s);
           text-transform: uppercase;
           letter-spacing: 0.5px;
+        }
+        .field-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: var(--ha-space-2);
+        }
+        .field-header .field-label {
+          flex: 1;
+        }
+        .field-header ha-icon-button {
+          --mdc-icon-button-size: 32px;
+          --mdc-icon-size: 18px;
+          color: var(--secondary-text-color);
         }
         .preview {
           padding: var(--ha-space-3);
