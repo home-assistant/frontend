@@ -7,6 +7,7 @@ import {
   type HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import {
   getSummaryLabel,
@@ -54,18 +55,19 @@ export class HomeSummariesEditor extends LitElement {
           const label = this._getSummaryLabel(item.key);
           const color = computeCssColor(item.color);
           return html`
-            <label class="home-list-item summary-toggle">
+            <ha-settings-row slim>
               <ha-icon
+                slot="prefix"
                 .icon=${item.icon}
                 style=${styleMap({ "--mdc-icon-size": "24px", color })}
               ></ha-icon>
-              <span class="label">${label}</span>
+              <span slot="heading">${label}</span>
               <ha-switch
                 .checked=${!hidden.has(item.key)}
                 .summary=${item.key}
                 @change=${this._toggleChanged}
               ></ha-switch>
-            </label>
+            </ha-settings-row>
           `;
         })}
       </div>
@@ -104,16 +106,19 @@ export class HomeSummariesEditor extends LitElement {
       display: flex;
       flex-direction: column;
     }
-    .summary-toggle {
-      display: flex;
-      align-items: center;
+    ha-settings-row {
+      padding: 0;
       gap: var(--ha-space-3);
-      padding: var(--ha-space-2) 0;
-      cursor: pointer;
+      min-height: 40px;
+      --settings-row-prefix-display: contents;
+      --settings-row-content-display: contents;
+      --settings-row-body-padding-top: var(--ha-space-1);
+      --settings-row-body-padding-bottom: var(--ha-space-1);
     }
-    .summary-toggle .label {
-      flex: 1;
-      font-size: 14px;
+    [slot="heading"] {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   `;
 }

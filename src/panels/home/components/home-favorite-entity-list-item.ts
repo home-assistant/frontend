@@ -5,6 +5,7 @@ import { computeEntityPickerDisplay } from "../../../common/entity/compute_entit
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-settings-row";
 import type { HomeAssistant } from "../../../types";
 
 declare global {
@@ -31,18 +32,22 @@ export class HomeFavoriteEntityListItem extends LitElement {
       : { primary: this.entityId, secondary: undefined };
 
     return html`
-      <state-badge .hass=${this.hass} .stateObj=${stateObj}></state-badge>
-      <div class="text">
-        <span class="primary">${primary}</span>
+      <ha-settings-row slim>
+        <state-badge
+          slot="prefix"
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></state-badge>
+        <span slot="heading">${primary}</span>
         ${secondary
-          ? html`<span class="secondary">${secondary}</span>`
+          ? html`<span slot="description">${secondary}</span>`
           : nothing}
-      </div>
-      <ha-icon-button
-        .path=${mdiDelete}
-        .label=${this.hass.localize("ui.common.delete")}
-        @click=${this._delete}
-      ></ha-icon-button>
+        <ha-icon-button
+          .path=${mdiDelete}
+          .label=${this.hass.localize("ui.common.delete")}
+          @click=${this._delete}
+        ></ha-icon-button>
+      </ha-settings-row>
     `;
   }
 
@@ -52,9 +57,16 @@ export class HomeFavoriteEntityListItem extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
-      align-items: center;
+      display: block;
+    }
+    ha-settings-row {
+      padding: 0;
       gap: var(--ha-space-3);
+      min-height: 40px;
+      --settings-row-prefix-display: contents;
+      --settings-row-content-display: contents;
+      --settings-row-body-padding-top: var(--ha-space-1);
+      --settings-row-body-padding-bottom: var(--ha-space-1);
     }
     state-badge {
       flex-shrink: 0;
@@ -62,25 +74,12 @@ export class HomeFavoriteEntityListItem extends LitElement {
       height: 24px;
       --state-icon-color: var(--secondary-text-color);
     }
-    .text {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-    }
-    .primary,
-    .secondary {
+    [slot="heading"],
+    [slot="description"] {
+      display: block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-    .primary {
-      font-size: 14px;
-      color: var(--primary-text-color);
-    }
-    .secondary {
-      font-size: 12px;
-      color: var(--secondary-text-color);
     }
     ha-icon-button {
       --ha-icon-button-size: 40px;
