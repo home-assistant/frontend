@@ -372,15 +372,13 @@ function collectAllEdges(sections: Node[][]): GraphEdge[] {
 }
 
 function getEdgeSegmentsBetween(
-  sectionL: Node[],
-  sectionR: Node[],
   depthL: number,
   depthR: number,
   depths: number[],
-  edges: GraphEdge[]
+  edges: GraphEdge[],
+  lMap: Map<string, number>,
+  rMap: Map<string, number>
 ): EdgeSegment[] {
-  const lMap = buildIdIndexMap(sectionL);
-  const rMap = buildIdIndexMap(sectionR);
   const segments: EdgeSegment[] = [];
   edges.forEach((edge) => {
     if (edge.getLayout().value === 0) return;
@@ -435,6 +433,7 @@ function countCrossings(segments: EdgeSegment[]): number {
 function crossingsAdjacentTo(
   sectionIndex: number,
   sections: Node[][],
+  sectionMaps: Map<string, number>[],
   depths: number[],
   edges: GraphEdge[]
 ): number {
@@ -442,24 +441,24 @@ function crossingsAdjacentTo(
   if (sectionIndex > 0) {
     total += countCrossings(
       getEdgeSegmentsBetween(
-        sections[sectionIndex - 1],
-        sections[sectionIndex],
         depths[sectionIndex - 1],
         depths[sectionIndex],
         depths,
-        edges
+        edges,
+        sectionMaps[sectionIndex - 1],
+        sectionMaps[sectionIndex]
       )
     );
   }
   if (sectionIndex < sections.length - 1) {
     total += countCrossings(
       getEdgeSegmentsBetween(
-        sections[sectionIndex],
-        sections[sectionIndex + 1],
         depths[sectionIndex],
         depths[sectionIndex + 1],
         depths,
-        edges
+        edges,
+        sectionMaps[sectionIndex],
+        sectionMaps[sectionIndex + 1]
       )
     );
   }
@@ -473,20 +472,26 @@ export function sortNodesInSections(
   depths: number[]
 ): Record<number, Node[]> {
   const sections: Node[][] = depths.map((d) => [...(nodesPerSection[d] || [])]);
+  // Id→index lookup per section, kept in sync with sections. Rebuilt only when
+  // a section's order actually changes (inside tryReplace).
+  const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
   const edges = collectAllEdges(sections);
 
   // Replace a section with a candidate ordering only when crossings strictly
   // drop on either side. This keeps user-intended ordering intact when
   // barycenter would shuffle nodes without improving the layout.
   const tryReplace = (i: number, candidate: Node[]): boolean => {
-    const before = crossingsAdjacentTo(i, sections, depths, edges);
-    const snapshot = sections[i];
+    const before = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
+    const sectionSnapshot = sections[i];
+    const mapSnapshot = sectionMaps[i];
     sections[i] = candidate;
-    const after = crossingsAdjacentTo(i, sections, depths, edges);
+    sectionMaps[i] = buildIdIndexMap(candidate);
+    const after = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
     if (after < before) {
       return true;
     }
-    sections[i] = snapshot;
+    sections[i] = sectionSnapshot;
+    sectionMaps[i] = mapSnapshot;
     return false;
   };
 
@@ -494,10 +499,11 @@ export function sortNodesInSections(
     let changed = false;
 
     for (let i = 1; i < sections.length; i++) {
-      const prevMap = buildIdIndexMap(sections[i - 1]);
       const prevDepth = depths[i - 1];
-      const result = sortSectionByBarycenter(sections[i], prevMap, (node) =>
-        getNeighborIds(node, "source", prevDepth, depths)
+      const result = sortSectionByBarycenter(
+        sections[i],
+        sectionMaps[i - 1],
+        (node) => getNeighborIds(node, "source", prevDepth, depths)
       );
       if (result.changed && tryReplace(i, result.sorted)) {
         changed = true;
@@ -505,10 +511,11 @@ export function sortNodesInSections(
     }
 
     for (let i = sections.length - 2; i >= 0; i--) {
-      const nextMap = buildIdIndexMap(sections[i + 1]);
       const nextDepth = depths[i + 1];
-      const result = sortSectionByBarycenter(sections[i], nextMap, (node) =>
-        getNeighborIds(node, "target", nextDepth, depths)
+      const result = sortSectionByBarycenter(
+        sections[i],
+        sectionMaps[i + 1],
+        (node) => getNeighborIds(node, "target", nextDepth, depths)
       );
       if (result.changed && tryReplace(i, result.sorted)) {
         changed = true;
