@@ -18,8 +18,8 @@ import "../../../../src/components/item/ha-list-item-base";
 import "../../../../src/components/item/ha-list-item-button";
 import "../../../../src/components/item/ha-list-item-option";
 import "../../../../src/components/list/ha-list-base";
-import "../../../../src/components/list/ha-list-selectable";
 import "../../../../src/components/list/ha-list-nav";
+import "../../../../src/components/list/ha-list-selectable";
 import type { HaListSelectedDetail } from "../../../../src/components/list/types";
 
 type Appearance = "line" | "checkbox";
@@ -29,12 +29,6 @@ const appearances: Appearance[] = ["line", "checkbox"];
 const positions: Position[] = ["start", "end"];
 const selectedStates = [false, true];
 const disabledStates = [false, true];
-
-interface Todo {
-  id: string;
-  text: string;
-  checked: boolean;
-}
 
 @customElement("demo-components-ha-list")
 export class DemoHaList extends LitElement {
@@ -47,28 +41,6 @@ export class DemoHaList extends LitElement {
   @state() private _multiCheckStart: number | Set<number> = new Set();
 
   @state() private _multiCheckEnd: number | Set<number> = new Set();
-
-  @state() private _todos: Todo[] = [
-    { id: "a", text: "Buy milk", checked: false },
-    { id: "b", text: "Walk the dog", checked: true },
-    { id: "c", text: "Write docs", checked: false },
-  ];
-
-  @state() private _lastToggle = "(none)";
-
-  @state() private _lastClick = "(none)";
-
-  @state() private _sortRows = [
-    "Apple",
-    "Banana",
-    "Cherry",
-    "Date",
-    "Elderberry",
-  ];
-
-  @state() private _handleRows = ["One", "Two", "Three", "Four"];
-
-  @state() private _lastMove = "(none)";
 
   private _options = ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
 
@@ -389,36 +361,6 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
 
   private _onMultiCheckEnd = (ev: CustomEvent<HaListSelectedDetail>) => {
     this._multiCheckEnd = ev.detail.index;
-  };
-
-  private _onTodoToggle = (ev: CustomEvent<{ checked: boolean }>) => {
-    const id = (ev.currentTarget as HTMLElement).dataset.id!;
-    this._todos = this._todos.map((t) =>
-      t.id === id ? { ...t, checked: ev.detail.checked } : t
-    );
-    this._lastToggle = `${id} → ${ev.detail.checked}`;
-  };
-
-  private _onTodoClick = (ev: CustomEvent) => {
-    const id = (ev.currentTarget as HTMLElement).dataset.id!;
-    this._lastClick = id;
-  };
-
-  private _onMoved = (ev: CustomEvent) => {
-    const { oldIndex, newIndex } = ev.detail;
-    const next = [...this._sortRows];
-    const [item] = next.splice(oldIndex, 1);
-    next.splice(newIndex, 0, item);
-    this._sortRows = next;
-    this._lastMove = `${oldIndex} → ${newIndex}`;
-  };
-
-  private _onHandleMoved = (ev: CustomEvent) => {
-    const { oldIndex, newIndex } = ev.detail;
-    const next = [...this._handleRows];
-    const [item] = next.splice(oldIndex, 1);
-    next.splice(newIndex, 0, item);
-    this._handleRows = next;
   };
 
   static styles = css`
