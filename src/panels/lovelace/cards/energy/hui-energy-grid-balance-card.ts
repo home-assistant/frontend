@@ -155,7 +155,7 @@ class HuiEnergyGridBalanceCard
               </span>
               <ha-tooltip for="eq-net" placement="top">
                 ${this.hass.localize(
-                  `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"`,
+                  `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"}`,
                   { value: fmt(Math.abs(net)) }
                 )}
               </ha-tooltip>
@@ -235,8 +235,8 @@ class HuiEnergyGridBalanceCard
     .content {
       display: flex;
       align-items: center;
-      padding: 10px;
-      gap: 10px;
+      padding: var(--ha-space-3);
+      gap: var(--ha-space-3);
       flex: 1;
       min-width: 0;
     }
