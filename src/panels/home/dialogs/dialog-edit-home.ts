@@ -6,7 +6,9 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import type {
   CustomShortcutItem,
@@ -108,69 +110,89 @@ export class DialogEditHome
           })}
         </ha-alert>
 
-        <h2 class="group-header">
-          ${this.hass.localize("ui.panel.home.editor.personalize")}
-        </h2>
-        <p class="group-description">
-          ${this.hass.localize("ui.panel.home.editor.personalize_description")}
-        </p>
-
-        <ha-form
-          .hass=${this.hass}
-          .data=${{ show_welcome_message: this._state.show_welcome_message }}
-          .schema=${WELCOME_SCHEMA}
-          .computeLabel=${this._computeWelcomeLabel}
-          .computeHelper=${this._computeWelcomeHelper}
-          @value-changed=${this._welcomeChanged}
-        ></ha-form>
-
-        <home-favorites-editor
-          .hass=${this.hass}
-          .favorites=${this._state.favorite_entities}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.personalize")}
+          .secondary=${this.hass.localize(
+            "ui.panel.home.editor.personalize_description"
           )}
-          @value-changed=${this._favoriteEntitiesChanged}
-        ></home-favorites-editor>
+        >
+          <ha-icon slot="leading-icon" icon="mdi:palette-outline"></ha-icon>
+          <div class="expansion-content">
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_welcome_message: this._state.show_welcome_message,
+              }}
+              .schema=${WELCOME_SCHEMA}
+              .computeLabel=${this._computeWelcomeLabel}
+              .computeHelper=${this._computeWelcomeHelper}
+              @value-changed=${this._welcomeChanged}
+            ></ha-form>
 
-        <ha-form
-          .hass=${this.hass}
-          .data=${{
-            show_suggested_entities: this._state.show_suggested_entities,
-          }}
-          .schema=${this._suggestedSchema(
-            this._state.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
+            <home-favorites-editor
+              .hass=${this.hass}
+              .favorites=${this._state.favorite_entities}
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy.home.favorite_entities"
+              )}
+              @value-changed=${this._favoriteEntitiesChanged}
+            ></home-favorites-editor>
+
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_suggested_entities: this._state.show_suggested_entities,
+              }}
+              .schema=${this._suggestedSchema(
+                this._state.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
+              )}
+              .computeLabel=${this._computeSuggestedLabel}
+              .computeHelper=${this._computeSuggestedHelper}
+              @value-changed=${this._suggestedChanged}
+            ></ha-form>
+          </div>
+        </ha-expansion-panel>
+
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.summaries")}
+          .secondary=${this.hass.localize(
+            "ui.panel.home.editor.summaries_description"
           )}
-          .computeLabel=${this._computeSuggestedLabel}
-          .computeHelper=${this._computeSuggestedHelper}
-          @value-changed=${this._suggestedChanged}
-        ></ha-form>
+        >
+          <ha-icon
+            slot="leading-icon"
+            icon="mdi:view-dashboard-outline"
+          ></ha-icon>
+          <div class="expansion-content">
+            <home-summaries-editor
+              .hass=${this.hass}
+              .hiddenSummaries=${this._state.hidden_summaries}
+              @value-changed=${this._hiddenSummariesChanged}
+            ></home-summaries-editor>
+          </div>
+        </ha-expansion-panel>
 
-        <h2 class="group-header">
-          ${this.hass.localize("ui.panel.home.editor.summaries")}
-        </h2>
-        <p class="group-description">
-          ${this.hass.localize("ui.panel.home.editor.summaries_description")}
-        </p>
-        <home-summaries-editor
-          .hass=${this.hass}
-          .hiddenSummaries=${this._state.hidden_summaries}
-          @value-changed=${this._hiddenSummariesChanged}
-        ></home-summaries-editor>
-
-        <h2 class="group-header">
-          ${this.hass.localize("ui.panel.home.editor.custom_shortcuts")}
-        </h2>
-        <p class="group-description">
-          ${this.hass.localize(
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.custom_shortcuts")}
+          .secondary=${this.hass.localize(
             "ui.panel.home.editor.custom_shortcuts_description"
           )}
-        </p>
-        <home-custom-shortcuts-editor
-          .hass=${this.hass}
-          .shortcuts=${this._state.custom_shortcuts}
-          @value-changed=${this._shortcutsChanged}
-        ></home-custom-shortcuts-editor>
+        >
+          <ha-icon slot="leading-icon" icon="mdi:link-variant"></ha-icon>
+          <div class="expansion-content">
+            <home-custom-shortcuts-editor
+              .hass=${this.hass}
+              .shortcuts=${this._state.custom_shortcuts}
+              @value-changed=${this._shortcutsChanged}
+            ></home-custom-shortcuts-editor>
+          </div>
+        </ha-expansion-panel>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -301,16 +323,19 @@ export class DialogEditHome
         --dialog-content-padding: var(--ha-space-6);
       }
 
-      .group-header {
-        font-size: 18px;
-        font-weight: 500;
-        margin: var(--ha-space-6) 0 var(--ha-space-1) 0;
+      ha-expansion-panel {
+        display: block;
+        --expansion-panel-content-padding: 0;
+        border-radius: var(--ha-border-radius-md);
+        --ha-card-border-radius: var(--ha-border-radius-md);
       }
 
-      .group-description {
-        margin: 0 0 var(--ha-space-3) 0;
-        color: var(--secondary-text-color);
-        font-size: 14px;
+      ha-expansion-panel + ha-expansion-panel {
+        margin-top: var(--ha-space-2);
+      }
+
+      .expansion-content {
+        padding: var(--ha-space-3);
       }
 
       ha-form {
@@ -326,7 +351,7 @@ export class DialogEditHome
       ha-alert {
         display: block;
         margin: calc(-1 * var(--dialog-content-padding));
-        margin-bottom: 0;
+        margin-bottom: var(--ha-space-4);
       }
     `,
   ];
