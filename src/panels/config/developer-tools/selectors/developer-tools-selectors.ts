@@ -70,7 +70,7 @@ class DeveloperToolsSelectors extends LitElement {
 
   protected render(): TemplateResult {
     const selector = { [this._type]: this._config } as unknown as Selector;
-    const configYaml = formatYaml(selector).trimEnd();
+    const configYaml = formatYaml(this._buildFullConfig(selector)).trimEnd();
     const variants = getVariants(this._type);
     const groups = getVariantGroups(this._type);
     const showVariants = variants.length > 1;
@@ -289,8 +289,8 @@ class DeveloperToolsSelectors extends LitElement {
   }
 
   private async _copyConfig() {
-    const selector = { [this._type]: this._config };
-    const yaml = formatYaml(selector).trimEnd();
+    const selector = { [this._type]: this._config } as unknown as Selector;
+    const yaml = formatYaml(this._buildFullConfig(selector)).trimEnd();
     if (!yaml) {
       return;
     }
@@ -298,6 +298,26 @@ class DeveloperToolsSelectors extends LitElement {
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  // Mirrors the props flipped by the switches so the YAML output matches what
+  // the preview is rendering. Ordered so the selector body stays at the bottom.
+  private _buildFullConfig(selector: Selector): Record<string, unknown> {
+    const config: Record<string, unknown> = {};
+    if (this._label) {
+      config.label = formatSelectorName(this._type);
+    }
+    if (this._helper) {
+      config.helper = "Example helper text";
+    }
+    if (this._required) {
+      config.required = true;
+    }
+    if (this._disabled) {
+      config.disabled = true;
+    }
+    config.selector = selector;
+    return config;
   }
 
   private _localizeTitle() {
