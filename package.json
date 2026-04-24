@@ -53,7 +53,7 @@
     "@fullcalendar/list": "6.1.20",
     "@fullcalendar/luxon3": "6.1.20",
     "@fullcalendar/timegrid": "6.1.20",
-    "@home-assistant/webawesome": "3.3.1-ha.0",
+    "@home-assistant/webawesome": "3.3.1-ha.1",
     "@lezer/highlight": "1.2.3",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
