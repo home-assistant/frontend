@@ -7,11 +7,11 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-code-editor";
 import "../../../../components/ha-generic-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-selector/ha-selector";
@@ -90,14 +90,16 @@ class DeveloperToolsSelectors extends LitElement {
 
             <div class="grid">
               <div class="config-pane">
-                <ha-select
+                <ha-generic-picker
+                  .hass=${this.hass}
                   .label=${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.selectors.selector_type"
                   )}
                   .value=${this._type}
-                  .options=${SELECTOR_OPTIONS}
-                  @selected=${this._typeSelected}
-                ></ha-select>
+                  .getItems=${this._getTypeItems}
+                  .valueRenderer=${this._typeValueRenderer}
+                  @value-changed=${this._typePicked}
+                ></ha-generic-picker>
                 ${showVariants
                   ? html`
                       <ha-generic-picker
@@ -217,6 +219,7 @@ class DeveloperToolsSelectors extends LitElement {
                               : undefined}
                             .required=${this._required}
                             .disabled=${this._disabled}
+                            .localizeValue=${this._localizeValue}
                             @value-changed=${this._valueChanged}
                           ></ha-selector>
                         `
@@ -246,7 +249,14 @@ class DeveloperToolsSelectors extends LitElement {
                       @click=${this._copyConfig}
                     ></ha-icon-button>
                   </div>
-                  <pre class="value">${configYaml || nothing}</pre>
+                  <ha-code-editor
+                    class="readonly-editor"
+                    mode="yaml"
+                    .hass=${this.hass}
+                    .value=${configYaml}
+                    read-only
+                    dir="ltr"
+                  ></ha-code-editor>
                 </div>
 
                 <div class="field">
@@ -255,7 +265,20 @@ class DeveloperToolsSelectors extends LitElement {
                       "ui.panel.config.developer-tools.tabs.selectors.value"
                     )}
                   </div>
-                  <pre class="value">${this._renderValue()}</pre>
+                  ${this._value === undefined || this._value === null
+                    ? html`<div class="empty-value">
+                        ${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.selectors.no_value"
+                        )}
+                      </div>`
+                    : html`<ha-code-editor
+                        class="readonly-editor"
+                        mode="yaml"
+                        .hass=${this.hass}
+                        .value=${formatYaml(this._value).trimEnd()}
+                        read-only
+                        dir="ltr"
+                      ></ha-code-editor>`}
                 </div>
               </div>
             </div>
@@ -277,25 +300,13 @@ class DeveloperToolsSelectors extends LitElement {
     });
   }
 
-  private _renderValue() {
-    if (this._value === undefined || this._value === null) {
-      return html`<span class="muted"
-        >${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.selectors.no_value"
-        )}</span
-      >`;
-    }
-    const yaml = formatYaml(this._value).trimEnd();
-    return yaml || nothing;
-  }
-
   private _localizeTitle() {
     return this.hass.localize(
       "ui.panel.config.developer-tools.tabs.selectors.title"
     );
   }
 
-  private _typeSelected(ev: CustomEvent<{ value: string | undefined }>) {
+  private _typePicked(ev: CustomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
     const newType = ev.detail?.value as SelectorKey | undefined;
     if (!newType || newType === this._type) {
@@ -308,6 +319,28 @@ class DeveloperToolsSelectors extends LitElement {
     this._configValid = true;
     this._value = undefined;
   }
+
+  private _getTypeItems = (searchString?: string): PickerComboBoxItem[] => {
+    const lowerSearch = searchString?.toLowerCase();
+    const items = lowerSearch
+      ? SELECTOR_OPTIONS.filter(
+          (o) =>
+            o.value.toLowerCase().includes(lowerSearch) ||
+            o.label.toLowerCase().includes(lowerSearch)
+        )
+      : SELECTOR_OPTIONS;
+    return items.map((o) => ({
+      id: o.value,
+      primary: o.label,
+      secondary: o.value,
+      sorting_label: o.label,
+    }));
+  };
+
+  private _typeValueRenderer: PickerValueRenderer = (value) => {
+    const option = SELECTOR_OPTIONS.find((o) => o.value === value);
+    return html`<span slot="headline">${option?.label ?? value}</span>`;
+  };
 
   private _variantPicked(ev: CustomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
@@ -393,6 +426,25 @@ class DeveloperToolsSelectors extends LitElement {
     this._value = ev.detail?.value;
   }
 
+  // Fake localizer so presets that set `translation_key` show a visible effect
+  // in the preview. `ha-selector-select` calls this with
+  // `<translation_key>.options.<value>` and swaps the option label with the
+  // returned string when truthy.
+  private _localizeValue = (key: string): string => {
+    const match = key.match(/^demo_select\.options\.(.+)$/);
+    if (!match) {
+      return "";
+    }
+    const value = match[1];
+    const labels: Record<string, string> = {
+      option_1: "Living room",
+      option_2: "Kitchen",
+      option_3: "Bedroom",
+      option_4: "Office",
+    };
+    return labels[value] ?? `Localized: ${value}`;
+  };
+
   private _toggleChanged(ev: Event) {
     const target = ev.target as HTMLInputElement & { name: string };
     const key = `_${target.name}` as
@@ -450,8 +502,8 @@ class DeveloperToolsSelectors extends LitElement {
           gap: var(--ha-space-4);
           min-width: 0;
         }
-        ha-select {
-          width: 100%;
+        ha-generic-picker {
+          display: block;
         }
         .toggles {
           padding: 0;
@@ -494,23 +546,16 @@ class DeveloperToolsSelectors extends LitElement {
           background: var(--card-background-color);
           min-height: 56px;
         }
-        .value {
+        .readonly-editor {
+          display: block;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-md, 8px);
+          overflow: hidden;
+        }
+        .empty-value {
           padding: var(--ha-space-3);
           border: 1px solid var(--divider-color);
           border-radius: var(--ha-border-radius-md, 8px);
-          background: var(
-            --code-editor-background-color,
-            var(--primary-background-color)
-          );
-          font-family: var(--ha-font-family-code);
-          font-size: var(--ha-font-size-s);
-          white-space: pre-wrap;
-          word-break: break-word;
-          margin: 0;
-          overflow: auto;
-          max-height: 400px;
-        }
-        .muted {
           color: var(--secondary-text-color);
           font-style: italic;
         }
