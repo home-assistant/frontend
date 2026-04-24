@@ -107,6 +107,7 @@ function layoutSankey(
   const processedNodes = processNodes(
     filteredNodes,
     passThroughNodes,
+    edges,
     depths,
     width,
     height,
@@ -357,20 +358,6 @@ interface EdgeSegment {
   targetIdx: number;
 }
 
-function collectAllEdges(sections: Node[][]): GraphEdge[] {
-  // Each edge appears in its source node's outEdges and its target node's
-  // inEdges. Scanning only outEdges reaches every edge exactly once.
-  const collected: GraphEdge[] = [];
-  sections.forEach((section) =>
-    section.forEach((node) => {
-      if (!isPassThroughNode(node)) {
-        node.outEdges.forEach((edge) => collected.push(edge));
-      }
-    })
-  );
-  return collected;
-}
-
 function getEdgeSegmentsBetween(
   depthL: number,
   depthR: number,
@@ -469,13 +456,13 @@ const MAX_SORT_ITERATIONS = 4;
 
 export function sortNodesInSections(
   nodesPerSection: Record<number, Node[]>,
-  depths: number[]
+  depths: number[],
+  edges: GraphEdge[]
 ): Record<number, Node[]> {
   const sections: Node[][] = depths.map((d) => [...(nodesPerSection[d] || [])]);
   // Id→index lookup per section, kept in sync with sections. Rebuilt only when
   // a section's order actually changes (inside tryReplace).
   const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
-  const edges = collectAllEdges(sections);
 
   // Replace a section with a candidate ordering only when crossings strictly
   // drop on either side. This keeps user-intended ordering intact when
@@ -617,6 +604,7 @@ function positionNodesInSection(
 function processNodes(
   nodes: GraphNode[],
   passThroughNodes: PassThroughNode[],
+  edges: GraphEdge[],
   depths: number[],
   width: number,
   height: number,
@@ -632,7 +620,11 @@ function processNodes(
   );
 
   const nodesPerSection = groupNodesBySection(nodes, passThroughNodes);
-  const sortedNodesPerSection = sortNodesInSections(nodesPerSection, depths);
+  const sortedNodesPerSection = sortNodesInSections(
+    nodesPerSection,
+    depths,
+    edges
+  );
   let globalValueToSizeRatio = 0;
 
   const sections = depths.map((depth) => {

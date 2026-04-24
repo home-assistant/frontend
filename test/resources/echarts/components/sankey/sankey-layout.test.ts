@@ -447,9 +447,8 @@ describe("Sankey Layout Functions", () => {
       });
     };
 
-    const buildGraphNode = (testNodes: Record<string, TestNode>) => {
+    const buildGraph = (testNodes: Record<string, TestNode>) => {
       const nodesById: Record<string, any> = {};
-      // First pass: build node shells
       Object.values(testNodes).forEach((t) => {
         nodesById[t.id] = {
           id: t.id,
@@ -464,27 +463,34 @@ describe("Sankey Layout Functions", () => {
           outEdges: [] as any[],
         };
       });
-      // Second pass: wire edges referencing node shells
+      // Create one canonical edge object per TestEdge reference, then wire it
+      // into both source.outEdges and target.inEdges so they point at the same
+      // object (matching echarts' Graph shape).
+      const edgeByTestEdge = new Map<TestEdge, any>();
       Object.values(testNodes).forEach((t) => {
         [...t.inEdges, ...t.outEdges].forEach((e) => {
-          const edge = {
-            dataIndex: 0,
-            node1: nodesById[e.source],
-            node2: nodesById[e.target],
-            hostGraph: {
-              edgeData: { getRawDataItem: () => ({ value: e.value }) },
-            },
-            getLayout: () => ({ value: e.value }),
-          };
-          if (t.inEdges.includes(e)) {
-            nodesById[t.id].inEdges.push(edge);
-          }
-          if (t.outEdges.includes(e)) {
-            nodesById[t.id].outEdges.push(edge);
+          if (!edgeByTestEdge.has(e)) {
+            edgeByTestEdge.set(e, {
+              dataIndex: 0,
+              node1: nodesById[e.source],
+              node2: nodesById[e.target],
+              hostGraph: {
+                edgeData: { getRawDataItem: () => ({ value: e.value }) },
+              },
+              getLayout: () => ({ value: e.value }),
+            });
           }
         });
       });
-      return nodesById;
+      Object.values(testNodes).forEach((t) => {
+        t.inEdges.forEach((e) =>
+          nodesById[t.id].inEdges.push(edgeByTestEdge.get(e))
+        );
+        t.outEdges.forEach((e) =>
+          nodesById[t.id].outEdges.push(edgeByTestEdge.get(e))
+        );
+      });
+      return { nodes: nodesById, edges: [...edgeByTestEdge.values()] };
     };
 
     it("reorders children to eliminate a crossing (#28764)", () => {
@@ -498,13 +504,13 @@ describe("Sankey Layout Functions", () => {
         a: { id: "a", depth: 1, value: 1, inEdges: [edgeAa], outEdges: [] },
         b: { id: "b", depth: 1, value: 1, inEdges: [edgeBb], outEdges: [] },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
 
       const input = {
         0: [graph.A, graph.B],
         1: [graph.b, graph.a],
       };
-      const result = sortNodesInSections(input, [0, 1]);
+      const result = sortNodesInSections(input, [0, 1], edges);
 
       expect(sectionIds(result)).toEqual({
         0: ["A", "B"],
@@ -516,7 +522,7 @@ describe("Sankey Layout Functions", () => {
     it("does not reorder when crossings would not decrease", () => {
       // Fully connected pair with no crossing differences possible.
       // Input order should be preserved verbatim.
-      const edges = {
+      const e = {
         Aa: { source: "A", target: "a", value: 1 },
         Ab: { source: "A", target: "b", value: 1 },
         Ba: { source: "B", target: "a", value: 1 },
@@ -528,34 +534,34 @@ describe("Sankey Layout Functions", () => {
           depth: 0,
           value: 2,
           inEdges: [],
-          outEdges: [edges.Aa, edges.Ab],
+          outEdges: [e.Aa, e.Ab],
         },
         B: {
           id: "B",
           depth: 0,
           value: 2,
           inEdges: [],
-          outEdges: [edges.Ba, edges.Bb],
+          outEdges: [e.Ba, e.Bb],
         },
         a: {
           id: "a",
           depth: 1,
           value: 2,
-          inEdges: [edges.Aa, edges.Ba],
+          inEdges: [e.Aa, e.Ba],
           outEdges: [],
         },
         b: {
           id: "b",
           depth: 1,
           value: 2,
-          inEdges: [edges.Ab, edges.Bb],
+          inEdges: [e.Ab, e.Bb],
           outEdges: [],
         },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
 
       const input = { 0: [graph.B, graph.A], 1: [graph.b, graph.a] };
-      const result = sortNodesInSections(input, [0, 1]);
+      const result = sortNodesInSections(input, [0, 1], edges);
 
       expect(sectionIds(result)).toEqual({
         0: ["B", "A"],
@@ -622,7 +628,7 @@ describe("Sankey Layout Functions", () => {
           outEdges: [],
         },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
       const passThrough = createPassThroughNode("A", "Z", 1, 1);
 
       const input = {
@@ -631,7 +637,7 @@ describe("Sankey Layout Functions", () => {
         1: [graph.Achild, graph.Bchild, passThrough],
         2: [graph.Z, graph.Bgrand],
       };
-      const result = sortNodesInSections(input, [0, 1, 2]);
+      const result = sortNodesInSections(input, [0, 1, 2], edges);
 
       expect(sectionIds(result)).toEqual({
         0: ["A", "B"],
@@ -687,13 +693,13 @@ describe("Sankey Layout Functions", () => {
           outEdges: [],
         },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
 
       const input = {
         0: [graph.top, graph.middle, graph.bottom],
         1: [graph.other, graph.child],
       };
-      const result = sortNodesInSections(input, [0, 1]);
+      const result = sortNodesInSections(input, [0, 1], edges);
 
       // child's barycenter = (0 + 2) / 2 = 1; other's = 2. Reordering removes
       // one crossing, so the sort fires.
@@ -713,11 +719,11 @@ describe("Sankey Layout Functions", () => {
         C: { id: "C", depth: 1, value: 2, inEdges: [edgeAC], outEdges: [] },
         D: { id: "D", depth: 1, value: 1, inEdges: [edgeBD], outEdges: [] },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
 
       const input = { 0: [graph.A, graph.B], 1: [graph.D, graph.C] };
-      const once = sortNodesInSections(input, [0, 1]);
-      const twice = sortNodesInSections(once, [0, 1]);
+      const once = sortNodesInSections(input, [0, 1], edges);
+      const twice = sortNodesInSections(once, [0, 1], edges);
 
       expect(sectionIds(once)).toEqual({ 0: ["A", "B"], 1: ["C", "D"] });
       expect(sectionIds(twice)).toEqual(sectionIds(once));
@@ -738,10 +744,10 @@ describe("Sankey Layout Functions", () => {
         },
         B: { id: "B", depth: 1, value: 1, inEdges: [edgeAB], outEdges: [] },
       };
-      const graph = buildGraphNode(testNodes);
+      const { nodes: graph, edges } = buildGraph(testNodes);
 
       const input = { 0: [graph.A, graph.orphan], 1: [graph.B] };
-      const result = sortNodesInSections(input, [0, 1]);
+      const result = sortNodesInSections(input, [0, 1], edges);
 
       // Orphan has no neighbors on either side, so it stays in place.
       expect(sectionIds(result)).toEqual({
