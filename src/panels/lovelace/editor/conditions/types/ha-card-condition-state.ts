@@ -92,8 +92,8 @@ export class HaCardConditionState extends LitElement {
     (
       localize: LocalizeFunc,
       currentEntityLabel: string | undefined,
-      entityIds: string[] | undefined,
-      showEntityPicker: boolean
+      showEntityPicker: boolean,
+      entityIds: string[] | undefined
     ) => {
       const modeField = currentEntityLabel
         ? entityModeSchemaField(localize, currentEntityLabel)
@@ -201,8 +201,8 @@ export class HaCardConditionState extends LitElement {
         .schema=${this._schema(
           this.hass.localize,
           currentEntityLabel,
-          entityIds,
-          showEntityPicker
+          showEntityPicker,
+          entityIds
         )}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
