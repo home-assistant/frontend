@@ -155,9 +155,7 @@ class HuiEnergyGridBalanceCard
               </span>
               <ha-tooltip for="eq-net" placement="top">
                 ${this.hass.localize(
-                  isConsumption
-                    ? "ui.panel.lovelace.cards.energy.grid_balance.net_import"
-                    : "ui.panel.lovelace.cards.energy.grid_balance.net_export",
+                  `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"`,
                   { value: fmt(Math.abs(net)) }
                 )}
               </ha-tooltip>
@@ -277,7 +275,7 @@ class HuiEnergyGridBalanceCard
       position: relative;
       display: flex;
       height: 42px;
-      margin: 0 12px 16px;
+      margin: 0 var(--ha-space-3) var(--ha-space-4);
       overflow: visible;
     }
 
@@ -287,7 +285,7 @@ class HuiEnergyGridBalanceCard
       flex: 1;
       height: 100%;
       overflow: hidden;
-      border: 1px solid;
+      border: var(--ha-border-width-sm) solid;
     }
 
     .bar-left {
@@ -316,7 +314,7 @@ class HuiEnergyGridBalanceCard
       top: 0;
       height: 100%;
       opacity: 0.3;
-      transition: width 180ms ease-in-out;
+      transition: width var(--ha-animation-duration-fast) ease-in-out;
     }
 
     .bar-left .bar-fill {
@@ -339,7 +337,7 @@ class HuiEnergyGridBalanceCard
       position: absolute;
       top: 0;
       height: 100%;
-      transition: width 180ms ease-in-out;
+      transition: width var(--ha-animation-duration-fast) ease-in-out;
     }
 
     .bar-left .bar-net {
