@@ -81,7 +81,7 @@ export interface ZwaveCredential {
 }
 
 export interface ZwaveUser {
-  user_index: number;
+  user_id: number;
   user_name: string | null;
   active: boolean;
   user_type: string;
@@ -95,7 +95,7 @@ export interface ZwaveUsersResponse {
 }
 
 export interface SetZwaveUserParams {
-  user_index?: number;
+  user_id?: number;
   user_name?: string | null;
   user_type?: string;
   credential_rule?: string;
@@ -103,11 +103,11 @@ export interface SetZwaveUserParams {
 }
 
 export interface SetZwaveUserResult {
-  user_index: number;
+  user_id: number;
 }
 
 export interface SetZwaveCredentialParams {
-  user_index: number;
+  user_id: number;
   credential_type: string;
   credential_data: string;
   credential_slot?: number;
@@ -115,11 +115,11 @@ export interface SetZwaveCredentialParams {
 
 export interface SetZwaveCredentialResult {
   credential_slot: number;
-  user_index: number;
+  user_id: number;
 }
 
 export interface ClearZwaveCredentialParams {
-  user_index: number;
+  user_id: number;
   credential_type: string;
   credential_slot: number;
 }
@@ -179,15 +179,9 @@ export const setZwaveUser = async (
 export const clearZwaveUser = (
   hass: HomeAssistant,
   entity_id: string,
-  user_index: number
+  user_id: number
 ) =>
-  hass.callService(
-    "zwave_js",
-    "clear_user",
-    { user_index },
-    { entity_id },
-    false
-  );
+  hass.callService("zwave_js", "clear_user", { user_id }, { entity_id }, false);
 
 export const clearZwaveAllUsers = (hass: HomeAssistant, entity_id: string) =>
   hass.callService("zwave_js", "clear_all_users", {}, { entity_id }, false);
@@ -214,7 +208,7 @@ export const clearZwaveCredential = (
   hass.callService(
     "zwave_js",
     "clear_credential",
-    params as unknown as Record<string, unknown>,
+    params,
     { entity_id },
     false
   );
@@ -222,12 +216,12 @@ export const clearZwaveCredential = (
 export const clearZwaveAllCredentials = (
   hass: HomeAssistant,
   entity_id: string,
-  user_index: number
+  user_id: number
 ) =>
   hass.callService(
     "zwave_js",
     "clear_all_credentials",
-    { user_index },
+    { user_id },
     { entity_id },
     false
   );

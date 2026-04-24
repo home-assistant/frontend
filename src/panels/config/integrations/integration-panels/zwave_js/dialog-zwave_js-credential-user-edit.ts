@@ -26,7 +26,10 @@ import {
   setZwaveCredential,
   setZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
-import type { ZwaveCredential } from "../../../../../data/zwave_js-credentials";
+import type {
+  ZwaveCredential,
+  ZwaveUser,
+} from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -36,6 +39,10 @@ import type { HomeAssistant } from "../../../../../types";
 import { showZwaveCredentialEditDialog } from "./show-dialog-zwave_js-credential-edit";
 import type { ZwaveCredentialUserEditDialogParams } from "./show-dialog-zwave_js-credential-user-edit";
 
+// UI surfaces only general + disposable to stay aligned with Matter lock UX.
+// Other types (programming, duress, non_access, remote_only, expiring) are
+// defined in translations for display in existing-user rows, but are not
+// selectable here.
 const SIMPLE_USER_TYPES: readonly string[] = ["general", "disposable"];
 
 @customElement("dialog-zwave_js-credential-user-edit")
@@ -78,7 +85,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (params.user) {
       this._userName = params.user.user_name || "";
       this._userType = params.user.user_type;
-      this._credentials = params.user.credentials || [];
+      this._credentials = params.user.credentials;
     } else {
       this._userName = "";
       const supported = params.capabilities.supported_user_types ?? [];
@@ -127,7 +134,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       user.user_name ||
       this.hass.localize(
         "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-        { index: user.user_index }
+        { index: user.user_id }
       )
     );
   }
@@ -163,7 +170,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
             ? html`<p class="user-id-info">
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-                  { index: this._params.user!.user_index }
+                  { index: this._params.user!.user_id }
                 )}
               </p>`
             : nothing}
@@ -267,23 +274,23 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   slot="secondaryAction"
                   appearance="plain"
                   @click=${this.closeDialog}
+                  ?disabled=${this._saving}
                 >
                   ${this.hass.localize("ui.common.cancel")}
                 </ha-button>
                 <ha-button
                   slot="primaryAction"
                   @click=${this._save}
-                  .disabled=${this._saving ||
+                  ?disabled=${this._saving ||
                   (isNew && !hasEnterableType) ||
                   !this._canSave}
+                  ?loading=${this._saving}
                 >
-                  ${this._saving
-                    ? html`<ha-spinner size="small"></ha-spinner>`
-                    : isNew
-                      ? this.hass.localize(
-                          "ui.panel.config.zwave_js.credentials.users.add"
-                        )
-                      : this.hass.localize("ui.common.save")}
+                  ${isNew
+                    ? this.hass.localize(
+                        "ui.panel.config.zwave_js.credentials.users.add"
+                      )
+                    : this.hass.localize("ui.common.save")}
                 </ha-button>
               `
             : html`
@@ -291,6 +298,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   slot="primaryAction"
                   appearance="plain"
                   @click=${this.closeDialog}
+                  ?disabled=${this._saving}
                 >
                   ${this.hass.localize("ui.common.close")}
                 </ha-button>
@@ -332,21 +340,23 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                       <ha-icon-button
                         slot="end"
                         .path=${mdiPencil}
-                        .credential=${credential}
                         .label=${this.hass.localize(
                           "ui.panel.config.zwave_js.credentials.credentials.edit"
                         )}
-                        .disabled=${this._saving}
+                        data-credential-type=${credential.type}
+                        data-credential-slot=${credential.slot}
+                        ?disabled=${this._saving}
                         @click=${this._handleEditCredential}
                       ></ha-icon-button>
                       <ha-icon-button
                         slot="end"
                         .path=${mdiDelete}
-                        .credential=${credential}
                         .label=${this.hass.localize(
                           "ui.panel.config.zwave_js.credentials.credentials.delete"
                         )}
-                        .disabled=${this._saving}
+                        data-credential-type=${credential.type}
+                        data-credential-slot=${credential.slot}
+                        ?disabled=${this._saving}
                         @click=${this._handleDeleteCredential}
                       ></ha-icon-button>
                     </ha-md-list-item>
@@ -367,7 +377,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                 class="add-credential"
                 appearance="filled"
                 @click=${this._handleAddCredential}
-                .disabled=${this._saving}
+                ?disabled=${this._saving}
               >
                 <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize(
@@ -487,21 +497,31 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     showZwaveCredentialEditDialog(this, {
       entity_id: this._params.entity_id,
       capabilities: this._params.capabilities,
-      user_index: this._params.user.user_index,
+      user_id: this._params.user.user_id,
       user_label: this._userLabel,
       onSaved: () => this._onCredentialSaved(),
     });
+  }
+
+  private _credentialFromEvent(ev: Event): ZwaveCredential | undefined {
+    const target = ev.currentTarget as HTMLElement;
+    const type = target.dataset.credentialType;
+    const slot = Number(target.dataset.credentialSlot ?? "");
+    return this._credentials.find((c) => c.type === type && c.slot === slot);
   }
 
   private _handleEditCredential(ev: Event): void {
     if (!this._params?.user) {
       return;
     }
-    const credential = (ev.currentTarget as any).credential as ZwaveCredential;
+    const credential = this._credentialFromEvent(ev);
+    if (!credential) {
+      return;
+    }
     showZwaveCredentialEditDialog(this, {
       entity_id: this._params.entity_id,
       capabilities: this._params.capabilities,
-      user_index: this._params.user.user_index,
+      user_id: this._params.user.user_id,
       user_label: this._userLabel,
       credential,
       onSaved: () => this._onCredentialSaved(),
@@ -509,6 +529,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   }
 
   private async _onCredentialSaved(): Promise<void> {
+    this._error = "";
     await this._refreshCredentials();
     this._params?.onSaved();
   }
@@ -539,7 +560,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     try {
       if (isNew) {
-        const { user_index } = await setZwaveUser(
+        const { user_id } = await setZwaveUser(
           this.hass,
           this._params.entity_id,
           {
@@ -551,14 +572,23 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           }
         );
 
-        await setZwaveCredential(this.hass, this._params.entity_id, {
-          user_index,
-          credential_type: this._credentialType,
-          credential_data: this._credentialData,
-        });
+        // User exists on the lock now. If the credential call fails, flip
+        // the dialog into edit mode for the new user so the operator can
+        // retry adding a credential inline instead of reopening from the
+        // list.
+        try {
+          await setZwaveCredential(this.hass, this._params.entity_id, {
+            user_id,
+            credential_type: this._credentialType,
+            credential_data: this._credentialData,
+          });
+        } catch (err: unknown) {
+          await this._switchToEditModeAfterCredentialFailure(user_id, err);
+          return;
+        }
       } else {
         await setZwaveUser(this.hass, this._params.entity_id, {
-          user_index: this._params.user!.user_index,
+          user_id: this._params.user!.user_id,
           user_name: this._supportsUserNames
             ? this._userName.trim()
             : undefined,
@@ -583,7 +613,10 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (!this._params?.user) {
       return;
     }
-    const credential = (ev.currentTarget as any).credential as ZwaveCredential;
+    const credential = this._credentialFromEvent(ev);
+    if (!credential) {
+      return;
+    }
     const typeLabel =
       this.hass.localize(
         `ui.panel.config.zwave_js.credentials.credential_types.${credential.type}` as any
@@ -603,10 +636,11 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._saving = true;
     try {
       await clearZwaveCredential(this.hass, this._params.entity_id, {
-        user_index: this._params.user.user_index,
+        user_id: this._params.user.user_id,
         credential_type: credential.type,
         credential_slot: credential.slot,
       });
+      this._error = "";
       await this._refreshCredentials();
       this._params.onSaved();
     } catch (err: unknown) {
@@ -628,9 +662,66 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
     const response = await getZwaveUsers(this.hass, this._params.entity_id);
     const updated = response.users.find(
-      (u) => u.user_index === this._params!.user!.user_index
+      (u) => u.user_id === this._params!.user!.user_id
     );
     this._credentials = updated?.credentials || [];
+  }
+
+  private async _switchToEditModeAfterCredentialFailure(
+    user_id: number,
+    err: unknown
+  ): Promise<void> {
+    if (!this._params) {
+      return;
+    }
+    // Notify parent so the new user appears in the manage list too.
+    this._params.onSaved();
+
+    let newUser: ZwaveUser | undefined;
+    try {
+      const response = await getZwaveUsers(this.hass, this._params.entity_id);
+      newUser = response.users.find((u) => u.user_id === user_id);
+    } catch {
+      // Fallback: close and alert if we cannot fetch the new user row.
+      this.closeDialog();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.credentials.errors.save_failed"
+        ),
+        text: (err as Error).message,
+      });
+      return;
+    }
+
+    if (!newUser) {
+      this.closeDialog();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.credentials.errors.save_failed"
+        ),
+        text: (err as Error).message,
+      });
+      return;
+    }
+
+    this._params = { ...this._params, user: newUser };
+    this._userName = newUser.user_name || "";
+    this._userType = newUser.user_type;
+    this._initialUserName = this._userName;
+    this._initialUserType = this._userType;
+    this._credentials = newUser.credentials;
+    this._credentialData = "";
+    this._dataTouched = false;
+    this._error = this.hass.localize(
+      "ui.panel.config.zwave_js.credentials.errors.credential_save_failed_user_created",
+      {
+        message:
+          (err as Error).message ||
+          this.hass.localize(
+            "ui.panel.config.zwave_js.credentials.errors.save_failed"
+          ),
+      }
+    );
   }
 
   public closeDialog(): void {

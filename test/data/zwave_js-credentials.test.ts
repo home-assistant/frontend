@@ -84,14 +84,14 @@ describe("zwave_js-credentials", () => {
         max_users: 20,
         users: [
           {
-            user_index: 1,
+            user_id: 1,
             user_name: "Alice",
             active: true,
             user_type: "general",
             credential_rule: "single",
             credentials: [
-              { type: "pin_code", slot: 1 },
-              { type: "finger_biometric", slot: 1 },
+              { type: "pin_code", slot: 1, data: null },
+              { type: "finger_biometric", slot: 1, data: null },
             ],
           },
         ],
@@ -133,11 +133,11 @@ describe("zwave_js-credentials", () => {
           .mockResolvedValue({ response: { [ENTITY_ID]: inner } }),
       }) as unknown as HomeAssistant;
 
-    it("unwraps the entity_id-keyed response and returns user_index", async () => {
-      const hass = setUserResponse({ user_index: 5 });
+    it("unwraps the entity_id-keyed response and returns user_id", async () => {
+      const hass = setUserResponse({ user_id: 5 });
 
       const result = await setZwaveUser(hass, ENTITY_ID, {
-        user_index: 5,
+        user_id: 5,
         user_name: "Bob",
         user_type: "general",
       });
@@ -145,16 +145,16 @@ describe("zwave_js-credentials", () => {
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "set_user",
-        { user_index: 5, user_name: "Bob", user_type: "general" },
+        { user_id: 5, user_name: "Bob", user_type: "general" },
         { entity_id: ENTITY_ID },
         false,
         true
       );
-      expect(result.user_index).toBe(5);
+      expect(result.user_id).toBe(5);
     });
 
-    it("returns the allocated user_index when auto-finding", async () => {
-      const hass = setUserResponse({ user_index: 1 });
+    it("returns the allocated user_id when auto-finding", async () => {
+      const hass = setUserResponse({ user_id: 1 });
 
       const result = await setZwaveUser(hass, ENTITY_ID, {
         user_name: "Carol",
@@ -168,12 +168,12 @@ describe("zwave_js-credentials", () => {
         false,
         true
       );
-      expect(result.user_index).toBe(1);
+      expect(result.user_id).toBe(1);
     });
   });
 
   describe("clearZwaveUser", () => {
-    it("calls the correct service with user_index and entity_id target", async () => {
+    it("calls the correct service with user_id and entity_id target", async () => {
       const hass = mockHass();
 
       await clearZwaveUser(hass, ENTITY_ID, 2);
@@ -181,7 +181,7 @@ describe("zwave_js-credentials", () => {
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "clear_user",
-        { user_index: 2 },
+        { user_id: 2 },
         { entity_id: ENTITY_ID },
         false
       );
@@ -215,12 +215,12 @@ describe("zwave_js-credentials", () => {
     it("unwraps the entity_id-keyed response", async () => {
       const credentialResult = {
         credential_slot: 1,
-        user_index: 3,
+        user_id: 3,
       };
       const hass = setCredResponse(credentialResult);
 
       const result = await setZwaveCredential(hass, ENTITY_ID, {
-        user_index: 3,
+        user_id: 3,
         credential_type: "pin_code",
         credential_data: "1234",
       });
@@ -229,7 +229,7 @@ describe("zwave_js-credentials", () => {
         "zwave_js",
         "set_credential",
         {
-          user_index: 3,
+          user_id: 3,
           credential_type: "pin_code",
           credential_data: "1234",
         },
@@ -239,14 +239,14 @@ describe("zwave_js-credentials", () => {
       );
       expect(result).toEqual(credentialResult);
       expect(result.credential_slot).toBe(1);
-      expect(result.user_index).toBe(3);
+      expect(result.user_id).toBe(3);
     });
 
     it("forwards explicit credential_slot when provided", async () => {
-      const hass = setCredResponse({ credential_slot: 5, user_index: 3 });
+      const hass = setCredResponse({ credential_slot: 5, user_id: 3 });
 
       await setZwaveCredential(hass, ENTITY_ID, {
-        user_index: 3,
+        user_id: 3,
         credential_type: "pin_code",
         credential_data: "1234",
         credential_slot: 5,
@@ -256,7 +256,7 @@ describe("zwave_js-credentials", () => {
         "zwave_js",
         "set_credential",
         {
-          user_index: 3,
+          user_id: 3,
           credential_type: "pin_code",
           credential_data: "1234",
           credential_slot: 5,
@@ -274,7 +274,7 @@ describe("zwave_js-credentials", () => {
 
       await expect(
         setZwaveCredential(hass, ENTITY_ID, {
-          user_index: 1,
+          user_id: 1,
           credential_type: "pin_code",
           credential_data: "1234",
         })
@@ -287,7 +287,7 @@ describe("zwave_js-credentials", () => {
       const hass = mockHass();
 
       await clearZwaveCredential(hass, ENTITY_ID, {
-        user_index: 2,
+        user_id: 2,
         credential_type: "pin_code",
         credential_slot: 1,
       });
@@ -295,7 +295,7 @@ describe("zwave_js-credentials", () => {
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "clear_credential",
-        { user_index: 2, credential_type: "pin_code", credential_slot: 1 },
+        { user_id: 2, credential_type: "pin_code", credential_slot: 1 },
         { entity_id: ENTITY_ID },
         false
       );
@@ -303,7 +303,7 @@ describe("zwave_js-credentials", () => {
   });
 
   describe("clearZwaveAllCredentials", () => {
-    it("calls clear_all_credentials with user_index and entity_id target", async () => {
+    it("calls clear_all_credentials with user_id and entity_id target", async () => {
       const hass = mockHass();
 
       await clearZwaveAllCredentials(hass, ENTITY_ID, 3);
@@ -311,7 +311,7 @@ describe("zwave_js-credentials", () => {
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
         "clear_all_credentials",
-        { user_index: 3 },
+        { user_id: 3 },
         { entity_id: ENTITY_ID },
         false
       );

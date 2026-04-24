@@ -7879,7 +7879,8 @@
               "name_required": "Please enter a name for this user.",
               "credential_required": "Please enter a credential value.",
               "credential_length": "Credential must be {min}-{max} characters.",
-              "pin_digits_only": "PIN code must contain only numbers."
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "credential_save_failed_user_created": "User was created, but saving the credential failed ({message}). Add a credential below to finish setup."
             },
             "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
             "confirm_clear_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",

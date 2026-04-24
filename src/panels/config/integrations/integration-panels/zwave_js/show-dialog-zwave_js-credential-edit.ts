@@ -7,7 +7,7 @@ import type {
 export interface ZwaveCredentialEditDialogParams {
   entity_id: string;
   capabilities: ZwaveCredentialCapabilities;
-  user_index: number;
+  user_id: number;
   user_label: string;
   credential?: ZwaveCredential;
   onSaved: () => void;

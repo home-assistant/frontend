@@ -1,10 +1,4 @@
-import {
-  mdiAccountKey,
-  mdiAccountRemove,
-  mdiDelete,
-  mdiKeyRemove,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiAccountKey, mdiAccountRemove, mdiDelete, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,7 +11,6 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-tooltip";
 import "../../../../../components/ha-dialog";
 import type {
   ZwaveCredentialCapabilities,
@@ -25,7 +18,6 @@ import type {
 } from "../../../../../data/zwave_js-credentials";
 import {
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
-  clearZwaveAllCredentials,
   clearZwaveAllUsers,
   clearZwaveUser,
   getZwaveCredentialCapabilities,
@@ -52,6 +44,8 @@ class DialogZwaveCredentialManage extends LitElement {
   @state() private _users: ZwaveUser[] = [];
 
   @state() private _loading = true;
+
+  @state() private _busy = false;
 
   @state() private _open = false;
 
@@ -124,7 +118,9 @@ class DialogZwaveCredentialManage extends LitElement {
                   )}
                 </ha-alert>
               </div>`
-            : html`<div class="content">${this._renderUsers(activeUsers)}</div>`}
+            : html`<div class="content">
+                ${this._renderUsers(activeUsers)}
+              </div>`}
         ${showFooter
           ? html`<ha-dialog-footer slot="footer">
               ${activeUsers.length > 0
@@ -133,9 +129,10 @@ class DialogZwaveCredentialManage extends LitElement {
                     appearance="plain"
                     variant="danger"
                     @click=${this._clearAllUsers}
+                    ?disabled=${this._busy}
                   >
                     <ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiAccountRemove}
                     ></ha-svg-icon>
                     ${this.hass.localize(
@@ -144,8 +141,12 @@ class DialogZwaveCredentialManage extends LitElement {
                   </ha-button>`
                 : nothing}
               ${this._supportsEnterableCredential
-                ? html`<ha-button slot="primaryAction" @click=${this._addUser}>
-                    <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ? html`<ha-button
+                    slot="primaryAction"
+                    @click=${this._addUser}
+                    ?disabled=${this._busy}
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.credentials.users.add"
                     )}
@@ -192,7 +193,7 @@ class DialogZwaveCredentialManage extends LitElement {
                   (user) => html`
                     <ha-md-list-item
                       type="button"
-                      .user=${user}
+                      data-user-id=${user.user_id}
                       @click=${this._handleUserClick}
                     >
                       <div slot="start" class="icon-background">
@@ -202,7 +203,7 @@ class DialogZwaveCredentialManage extends LitElement {
                         ${user.user_name ||
                         this.hass.localize(
                           "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-                          { index: user.user_index }
+                          { index: user.user_id }
                         )}
                       </div>
                       <div slot="supporting-text">
@@ -223,24 +224,14 @@ class DialogZwaveCredentialManage extends LitElement {
                             </span>`
                           : nothing}
                       </div>
-                      ${user.credentials.length > 0
-                        ? html`<ha-tooltip
-                            slot="end"
-                            .content=${this.hass.localize(
-                              "ui.panel.config.zwave_js.credentials.users.clear_all_credentials"
-                            )}
-                          >
-                            <ha-icon-button
-                              .path=${mdiKeyRemove}
-                              .user=${user}
-                              @click=${this._handleClearAllCredentialsClick}
-                            ></ha-icon-button>
-                          </ha-tooltip>`
-                        : nothing}
                       <ha-icon-button
                         slot="end"
                         .path=${mdiDelete}
-                        .user=${user}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.users.delete"
+                        )}
+                        data-user-id=${user.user_id}
+                        ?disabled=${this._busy}
                         @click=${this._handleDeleteUserClick}
                       ></ha-icon-button>
                     </ha-md-list-item>
@@ -261,41 +252,41 @@ class DialogZwaveCredentialManage extends LitElement {
 
     return Array.from(typeCounts.entries()).map(
       ([type, count]) => html`
-        <ha-tooltip
-          .content=${this.hass.localize(
+        <span
+          class="credential-badge"
+          title=${this.hass.localize(
             `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
           ) || type}
         >
-          <span class="credential-badge">
-            <ha-svg-icon .path=${getZwaveCredentialTypeIcon(type)}></ha-svg-icon>
-            ${count > 1 ? html`<span class="badge-count">${count}</span>` : ""}
-          </span>
-        </ha-tooltip>
+          <ha-svg-icon .path=${getZwaveCredentialTypeIcon(type)}></ha-svg-icon>
+          ${count > 1 ? html`<span class="badge-count">${count}</span>` : ""}
+        </span>
       `
     );
   }
 
+  private _userFromEvent(ev: Event): ZwaveUser | undefined {
+    const idx = Number((ev.currentTarget as HTMLElement).dataset.userId ?? "");
+    return this._users.find((u) => u.user_id === idx);
+  }
+
   private _handleUserClick(ev: Event): void {
-    const path = ev.composedPath();
-    if (path.some((el) => (el as HTMLElement).tagName === "HA-ICON-BUTTON")) {
+    if (this._busy) {
       return;
     }
-    const user = (ev.currentTarget as any).user as ZwaveUser;
-    this._editUser(user);
+    const user = this._userFromEvent(ev);
+    if (user) {
+      this._editUser(user);
+    }
   }
 
   private _handleDeleteUserClick(ev: Event): void {
     ev.preventDefault();
     ev.stopPropagation();
-    const user = (ev.currentTarget as any).user as ZwaveUser;
-    this._deleteUser(user);
-  }
-
-  private _handleClearAllCredentialsClick(ev: Event): void {
-    ev.preventDefault();
-    ev.stopPropagation();
-    const user = (ev.currentTarget as any).user as ZwaveUser;
-    this._clearAllCredentialsForUser(user);
+    const user = this._userFromEvent(ev);
+    if (user) {
+      this._deleteUser(user);
+    }
   }
 
   private _addUser(): void {
@@ -327,7 +318,7 @@ class DialogZwaveCredentialManage extends LitElement {
             user.user_name ||
             this.hass.localize(
               "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-              { index: user.user_index }
+              { index: user.user_id }
             ),
         }
       ),
@@ -339,8 +330,9 @@ class DialogZwaveCredentialManage extends LitElement {
       return;
     }
 
+    this._busy = true;
     try {
-      await clearZwaveUser(this.hass, this._entityId!, user.user_index);
+      await clearZwaveUser(this.hass, this._entityId!, user.user_id);
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -349,7 +341,11 @@ class DialogZwaveCredentialManage extends LitElement {
         text: (err as Error).message,
       });
     }
-    await this._fetchData();
+    try {
+      await this._fetchData();
+    } finally {
+      this._busy = false;
+    }
   }
 
   private async _clearAllUsers(): Promise<void> {
@@ -366,6 +362,7 @@ class DialogZwaveCredentialManage extends LitElement {
     if (!confirmed) {
       return;
     }
+    this._busy = true;
     try {
       await clearZwaveAllUsers(this.hass, this._entityId!);
     } catch (err: unknown) {
@@ -376,46 +373,11 @@ class DialogZwaveCredentialManage extends LitElement {
         text: (err as Error).message,
       });
     }
-    await this._fetchData();
-  }
-
-  private async _clearAllCredentialsForUser(user: ZwaveUser): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.zwave_js.credentials.users.clear_all_credentials"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.zwave_js.credentials.confirm_clear_all_credentials",
-        {
-          name:
-            user.user_name ||
-            this.hass.localize(
-              "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-              { index: user.user_index }
-            ),
-        }
-      ),
-      confirmText: this.hass.localize("ui.common.delete"),
-      destructive: true,
-    });
-    if (!confirmed) {
-      return;
-    }
     try {
-      await clearZwaveAllCredentials(
-        this.hass,
-        this._entityId!,
-        user.user_index
-      );
-    } catch (err: unknown) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.credentials.errors.save_failed"
-        ),
-        text: (err as Error).message,
-      });
+      await this._fetchData();
+    } finally {
+      this._busy = false;
     }
-    await this._fetchData();
   }
 
   public closeDialog(): void {
@@ -427,6 +389,7 @@ class DialogZwaveCredentialManage extends LitElement {
     this._capabilities = undefined;
     this._users = [];
     this._loading = true;
+    this._busy = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

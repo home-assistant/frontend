@@ -178,23 +178,23 @@ class DialogZwaveCredentialEdit extends LitElement {
             slot="secondaryAction"
             appearance="plain"
             @click=${this.closeDialog}
+            ?disabled=${this._saving}
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving ||
+            ?disabled=${this._saving ||
             !!this._credentialError ||
             !this._isDirty}
+            ?loading=${this._saving}
           >
-            ${this._saving
-              ? html`<ha-spinner size="small"></ha-spinner>`
-              : isEdit
-                ? this.hass.localize("ui.common.save")
-                : this.hass.localize(
-                    "ui.panel.config.zwave_js.credentials.credential_data.add"
-                  )}
+            ${isEdit
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.credential_data.add"
+                )}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -276,17 +276,16 @@ class DialogZwaveCredentialEdit extends LitElement {
     this._error = "";
     try {
       const existing = this._params.credential;
-      const typeChanged =
-        !!existing && existing.type !== this._credentialType;
+      const typeChanged = !!existing && existing.type !== this._credentialType;
       if (typeChanged) {
         await clearZwaveCredential(this.hass, this._params.entity_id, {
-          user_index: this._params.user_index,
+          user_id: this._params.user_id,
           credential_type: existing!.type,
           credential_slot: existing!.slot,
         });
       }
       await setZwaveCredential(this.hass, this._params.entity_id, {
-        user_index: this._params.user_index,
+        user_id: this._params.user_id,
         credential_type: this._credentialType,
         credential_data: this._credentialData,
         credential_slot: typeChanged ? undefined : existing?.slot,
