@@ -1198,6 +1198,8 @@
         "documentation": "documentation",
         "no_local_media_found": "No local media found",
         "no_media_folder": "It looks like you have not yet created a media directory.",
+        "no_ai_generated_images": "No AI-generated images found yet. Generate images using the ai_task.generate_image action to see them here.",
+        "ai_task_help": "To generate AI images, use the {documentation}. You can create images programmatically in your automations and scripts.",
         "setup_local_help": "Check the {documentation} on how to set up local media.",
         "file_management": {
           "title": "Media management",

@@ -907,22 +907,38 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _renderError(err: { message: string; code: string }) {
-    if (err.message === "Media directory does not exist.") {
+    if (
+      err.message === "Media directory does not exist." ||
+      err.message.includes("No AI-generated images")
+    ) {
+      const isAIGeneratedImages =
+        err.message.includes("AI-generated images") ||
+        (this._currentItem &&
+          this._currentItem.media_content_id &&
+          this._currentItem.media_content_id.startsWith(
+            "media-source://ai_task"
+          ));
+
+      const docPath = isAIGeneratedImages
+        ? "/integrations/ai_task/#action-ai_taskgenerate_image"
+        : "/more-info/local-media/setup-media";
+
+      const helpKey = isAIGeneratedImages
+        ? "ui.components.media-browser.ai_task_help"
+        : "ui.components.media-browser.setup_local_help";
+
       return html`
         <h2>
           ${this.hass.localize(
-            "ui.components.media-browser.no_local_media_found"
+            isAIGeneratedImages
+              ? "ui.components.media-browser.no_ai_generated_images"
+              : "ui.components.media-browser.no_local_media_found"
           )}
         </h2>
         <p>
-          ${this.hass.localize("ui.components.media-browser.no_media_folder")}
-          <br />
-          ${this.hass.localize("ui.components.media-browser.setup_local_help", {
+          ${this.hass.localize(helpKey, {
             documentation: html`<a
-              href=${documentationUrl(
-                this.hass,
-                "/more-info/local-media/setup-media"
-              )}
+              href=${documentationUrl(this.hass, docPath)}
               target="_blank"
               rel="noreferrer"
               >${this.hass.localize(
@@ -930,8 +946,6 @@ export class HaMediaPlayerBrowse extends LitElement {
               )}</a
             >`,
           })}
-          <br />
-          ${this.hass.localize("ui.components.media-browser.local_media_files")}
         </p>
       `;
     }
