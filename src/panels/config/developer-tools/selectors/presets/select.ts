@@ -39,6 +39,16 @@ const DISABLED_OPTIONS = [
   { label: "Option 4", value: "option_4" },
 ];
 
+// Options whose values line up with the `demo_select` localizer in
+// developer-tools-selectors.ts so the `translation_key` preset shows visible
+// relabeling in the preview.
+const TRANSLATION_KEY_OPTIONS = [
+  { value: "option_1", label: "Option 1 (raw)" },
+  { value: "option_2", label: "Option 2 (raw)" },
+  { value: "option_3", label: "Option 3 (raw)" },
+  { value: "option_4", label: "Option 4 (raw)" },
+];
+
 export const SELECT_DEFAULT_CONFIG: Record<string, unknown> = {
   options: SELECT_OPTIONS_SIMPLE,
 };
@@ -71,6 +81,15 @@ export const SELECT_VARIANT_GROUPS: SelectorVariantGroup[] = [
         id: "dropdown_auto_from_count",
         name: "Auto-selected for 6+ options",
         config: { options: SELECT_OPTIONS_SIMPLE },
+      },
+      {
+        id: "dropdown_translation_key",
+        name: "translation_key (relabels via localizeValue)",
+        config: {
+          mode: "dropdown",
+          translation_key: "demo_select",
+          options: TRANSLATION_KEY_OPTIONS,
+        },
       },
     ],
   },
@@ -172,7 +191,7 @@ export const SELECT_VARIANT_GROUPS: SelectorVariantGroup[] = [
       },
       {
         id: "box_with_images",
-        name: "With images",
+        name: "With images (object form)",
         config: {
           mode: "box",
           box_max_columns: 1,
@@ -200,6 +219,45 @@ export const SELECT_VARIANT_GROUPS: SelectorVariantGroup[] = [
               },
             },
           ],
+        },
+      },
+      {
+        id: "box_image_string",
+        name: "With image (string form)",
+        config: {
+          mode: "box",
+          box_max_columns: 1,
+          options: [
+            {
+              value: "ohf",
+              label: "Open Home Foundation",
+              description: "image is a plain URL string, not an object.",
+              image: "/static/images/ohf-badge.svg",
+            },
+            {
+              value: "none",
+              label: "None",
+              description: "An option without an image for contrast.",
+            },
+          ],
+        },
+      },
+      {
+        id: "box_two_columns",
+        name: "Two columns",
+        config: {
+          mode: "box",
+          box_max_columns: 2,
+          options: SELECT_OPTIONS_SHORT,
+        },
+      },
+      {
+        id: "box_disabled_option",
+        name: "With disabled option",
+        config: {
+          mode: "box",
+          box_max_columns: 2,
+          options: DISABLED_OPTIONS,
         },
       },
     ],
@@ -250,6 +308,33 @@ export const SELECT_VARIANT_GROUPS: SelectorVariantGroup[] = [
           options: ["Charlie", "Alpha", "Echo", "Bravo", "Delta"],
         },
       },
+      {
+        id: "chips_disabled_option",
+        name: "With disabled option",
+        config: {
+          multiple: true,
+          options: DISABLED_OPTIONS,
+        },
+      },
+      {
+        id: "chips_list_mode_reorder",
+        name: "mode:list + reorder (falls through to chips)",
+        config: {
+          mode: "list",
+          multiple: true,
+          reorder: true,
+          options: SELECT_OPTIONS_SIMPLE,
+        },
+      },
+      {
+        id: "chips_box_mode",
+        name: "mode:box + multiple (falls through to chips)",
+        config: {
+          mode: "box",
+          multiple: true,
+          options: SELECT_OPTIONS_SIMPLE,
+        },
+      },
     ],
   },
   {
@@ -260,6 +345,15 @@ export const SELECT_VARIANT_GROUPS: SelectorVariantGroup[] = [
         id: "picker_custom_value",
         name: "Custom value (searchable)",
         config: { custom_value: true, options: SELECT_OPTIONS_SIMPLE },
+      },
+      {
+        id: "picker_list_mode",
+        name: "mode:list + custom_value (falls through to picker)",
+        config: {
+          mode: "list",
+          custom_value: true,
+          options: SELECT_OPTIONS_SIMPLE,
+        },
       },
     ],
   },
