@@ -117,6 +117,8 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "add-button", type: Boolean })
   public addButton = false;
 
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -293,7 +295,8 @@ export class HaEntityPicker extends LitElement {
         .searchKeys=${entityComboBoxKeys}
         use-top-label
         .addButtonLabel=${this.addButton
-          ? this.hass.localize("ui.components.entity.entity-picker.add")
+          ? (this.addButtonLabel ??
+            this.hass.localize("ui.components.entity.entity-picker.add"))
           : undefined}
         .unknownItemText=${this.hass.localize(
           "ui.components.entity.entity-picker.unknown"
