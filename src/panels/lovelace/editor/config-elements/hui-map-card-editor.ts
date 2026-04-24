@@ -1,5 +1,5 @@
 import { mdiPalette } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -291,7 +291,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._geoSourcesStrings(this._config!.geo_location_sources) || [];
   }
 
-  protected firstUpdated(changedProperties) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._locationEntities = !this.hass
       ? []

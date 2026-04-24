@@ -89,7 +89,7 @@ class HuiHourlyForecastCardFeature
     this._subscribeForecast();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       const oldContext = changedProps.get("context") as
         | LovelaceCardFeatureContext
@@ -214,7 +214,7 @@ class HuiHourlyForecastCardFeature
     const entityId = this.context.entity_id;
 
     this._subscribed = subscribeForecast(
-      this.hass,
+      this.hass.connection,
       entityId,
       "hourly",
       (forecastEvent) => {

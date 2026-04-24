@@ -225,7 +225,7 @@ export class HAFullCalendar extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this.calendar) {

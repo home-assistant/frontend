@@ -51,7 +51,7 @@ export class HuiClockCardDigital extends LitElement {
     this._tick();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass");
       if (!oldHass || oldHass.locale !== this.hass?.locale) {

@@ -135,7 +135,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     this._subscribed = subscribeForecast(
-      this.hass!,
+      this.hass!.connection,
       this._config!.entity,
       this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
       (event) => {
@@ -188,7 +188,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||

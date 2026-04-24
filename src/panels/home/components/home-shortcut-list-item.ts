@@ -31,7 +31,7 @@ export class HomeShortcutListItem extends LitElement {
 
   private _navInfo = new NavigationPathInfoController(this);
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     if (
       (changedProps.has("hass") || changedProps.has("item")) &&
       this.hass &&

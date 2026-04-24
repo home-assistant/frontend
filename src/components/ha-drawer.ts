@@ -67,7 +67,7 @@ export class HaDrawer extends DrawerBase {
     };
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("direction")) {
       this.mdcRoot.dir = this.direction;

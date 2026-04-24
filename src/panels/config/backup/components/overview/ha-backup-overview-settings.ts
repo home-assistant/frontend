@@ -31,7 +31,7 @@ class HaBackupBackupsSummary extends LitElement {
 
   @state() private _showDbOption = true;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
   }

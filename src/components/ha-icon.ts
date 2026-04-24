@@ -39,6 +39,8 @@ const CUSTOM_ICONS: Record<string, () => Promise<string>> = {
     import("../resources/music-assistant-logo-svg").then(
       (mod) => mod.mdiMusicAssistant
     ),
+  esphome: () =>
+    import("../resources/esphome-logo-svg").then((mod) => mod.mdiEsphomeLogo),
 };
 
 @customElement("ha-icon")
@@ -53,7 +55,7 @@ export class HaIcon extends LitElement {
 
   @state() private _legacy = false;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;

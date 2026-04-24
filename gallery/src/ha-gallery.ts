@@ -135,7 +135,7 @@ class HaGallery extends LitElement {
     `;
   }
 
-  firstUpdated(changedProps: PropertyValues) {
+  firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this.addEventListener("show-notification", (ev) =>

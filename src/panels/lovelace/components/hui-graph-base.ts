@@ -53,7 +53,7 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.coordinates) {
       return;
     }

@@ -154,7 +154,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ),
   };
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {

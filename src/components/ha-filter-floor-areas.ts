@@ -39,7 +39,7 @@ export class HaFilterFloorAreas extends LitElement {
 
   @state() private _shouldRender = false;
 
-  public willUpdate(properties: PropertyValues) {
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (
@@ -187,7 +187,7 @@ export class HaFilterFloorAreas extends LitElement {
     listItem.selected = this.value[type]?.includes(value);
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;

@@ -37,7 +37,7 @@ export class HaAnsiToHtml extends LitElement {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
 
     // handle initial content

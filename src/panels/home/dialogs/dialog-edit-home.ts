@@ -54,6 +54,11 @@ const SUMMARY_ITEMS: SummaryInfo[] = [
     icon: HOME_SUMMARIES_ICONS.media_players,
     color: "blue",
   },
+  {
+    key: "maintenance",
+    icon: HOME_SUMMARIES_ICONS.maintenance,
+    color: "orange",
+  },
   { key: "weather", icon: "mdi:weather-partly-cloudy", color: "teal" },
   { key: "energy", icon: HOME_SUMMARIES_ICONS.energy, color: "amber" },
 ];

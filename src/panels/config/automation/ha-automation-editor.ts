@@ -104,6 +104,9 @@ declare global {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
     "save-automation": undefined;
+    paste: {
+      item: Trigger | Condition | Action;
+    };
   }
 }
 
@@ -139,7 +142,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (

@@ -246,6 +246,12 @@ export interface HourlyForecastCardFeatureConfig {
   hours_to_show?: number;
 }
 
+export interface DailyForecastCardFeatureConfig {
+  type: "daily-forecast";
+  forecast_type?: "daily" | "twice_daily";
+  days_to_show?: number;
+}
+
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -301,6 +307,7 @@ export type LovelaceCardFeatureConfig =
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
   | HourlyForecastCardFeatureConfig
+  | DailyForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig

@@ -35,7 +35,7 @@ export class HaNumberSelector extends LitElement {
     return this._input?.reportValidity() ?? true;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("value")) {
       if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
         this._valueStr =

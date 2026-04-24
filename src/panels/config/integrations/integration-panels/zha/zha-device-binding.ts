@@ -24,7 +24,7 @@ export class ZHADeviceBindingControl extends LitElement {
 
   @state() private _bindingOperationInProgress = false;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("device")) {
       this._bindTargetIndex = -1;
     }

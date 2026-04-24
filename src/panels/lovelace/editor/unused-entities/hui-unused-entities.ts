@@ -33,7 +33,7 @@ export class HuiUnusedEntities extends LitElement {
     return this.lovelace.config;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     if (changedProperties.has("lovelace")) {

@@ -125,7 +125,7 @@ export class HaPanelLogbook extends LitElement {
   private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
     filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {
@@ -140,7 +140,7 @@ export class HaPanelLogbook extends LitElement {
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this._loadNumericDeviceClasses();

@@ -48,7 +48,17 @@ export class HaGauge extends LitElement {
 
   private _sortedLevels?: LevelDefinition[];
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  private _rescaleOnConnect = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._rescaleOnConnect) {
+      this._rescaleSvg();
+      this._rescaleOnConnect = false;
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     afterNextRender(() => {
       this._updated = true;
@@ -60,7 +70,7 @@ export class HaGauge extends LitElement {
     });
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("levels") || changedProperties.has("min")) {
       if (this.levels) {
         this._sortedLevels = [...this.levels].sort((a, b) => a.level - b.level);
@@ -122,8 +132,6 @@ export class HaGauge extends LitElement {
 
           const x1 = -arcRadius * Math.cos((startAngle * Math.PI) / 180);
           const y1 = -arcRadius * Math.sin((startAngle * Math.PI) / 180);
-          const x2 = -arcRadius * Math.cos((endAngle * Math.PI) / 180);
-          const y2 = -arcRadius * Math.sin((endAngle * Math.PI) / 180);
 
           const isFirst = i === 0;
           const isLast = i === arr.length - 1;
@@ -134,7 +142,7 @@ export class HaGauge extends LitElement {
                 class="level"
                 stroke="${level.stroke}"
                 style="stroke-linecap: butt"
-                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
+                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
               />
             `;
           }
@@ -147,9 +155,9 @@ export class HaGauge extends LitElement {
 
             return svg`
                 <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
-                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${xm} ${ym}" />
+                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0" />
                 <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
-                      d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 ${x2} ${y2}" />
+                      d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 40 0" />
             `;
           }
 
@@ -158,7 +166,7 @@ export class HaGauge extends LitElement {
               class="level"
               stroke="${level.stroke}"
               style="stroke-linecap: butt"
-              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
+              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
             ></path>
           `;
         })}
@@ -168,7 +176,7 @@ export class HaGauge extends LitElement {
             ? svg`
                 <path
                 class="needle"
-                d="M -34,-3 L -48,-1 A 1,1,0,0,0,-48,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
+                d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
 
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
               />
@@ -212,6 +220,13 @@ export class HaGauge extends LitElement {
     // Set the viewbox of the SVG containing the value to perfectly
     // fit the text
     // That way it will auto-scale correctly
+
+    if (!this.isConnected) {
+      // Retry this later if we're disconnected, otherwise we get a 0 bbox and missing label
+      this._rescaleOnConnect = true;
+      return;
+    }
+
     const svgRoot = this.shadowRoot!.querySelector(".text")!;
     const box = svgRoot.querySelector("text")!.getBBox()!;
     svgRoot.setAttribute(

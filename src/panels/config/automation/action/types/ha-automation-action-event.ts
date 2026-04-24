@@ -29,7 +29,7 @@ export class HaEventAction extends LitElement implements ActionElement {
     return { event: "", event_data: {} };
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return;
     }

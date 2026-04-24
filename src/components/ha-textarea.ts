@@ -6,6 +6,7 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { WaInputMixin, waInputStyles } from "./input/wa-input-mixin";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 /**
  * Home Assistant textarea component
@@ -71,6 +72,16 @@ export class HaTextArea extends WaInputMixin(LitElement) {
     } else {
       this.removeAttribute("focused");
     }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keydown", stopPropagation);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", stopPropagation);
   }
 
   protected render() {

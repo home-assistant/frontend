@@ -3,8 +3,8 @@ import type { CoverEntity } from "../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsTiltPosition,
-  normalizeCoverFavoritePositions,
 } from "../../../data/cover";
+import { normalizeFavoritePositions } from "../../../data/favorite_positions";
 import type { HomeAssistant } from "../../../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
@@ -24,7 +24,7 @@ const coverTiltFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefiniti
     getFavoritePositions: (entry) =>
       entry?.options?.cover?.favorite_tilt_positions,
     getCurrentValue: (stateObj) => stateObj.attributes.current_tilt_position,
-    normalizeFavoritePositions: normalizeCoverFavoritePositions,
+    normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_COVER_FAVORITE_POSITIONS,
     setPositionService: "set_cover_tilt_position",
     serviceDataKey: "tilt_position",

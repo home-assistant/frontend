@@ -128,7 +128,7 @@ class HuiMediaPlayerPlaybackCardFeature
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const entityId = this.context?.entity_id;
     return (

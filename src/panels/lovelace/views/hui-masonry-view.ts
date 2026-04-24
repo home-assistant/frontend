@@ -117,7 +117,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     return this._mqls!;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode) {

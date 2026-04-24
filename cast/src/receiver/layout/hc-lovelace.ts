@@ -1,4 +1,5 @@
-import { css, html, LitElement, type TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
@@ -64,7 +65,7 @@ class HcLovelace extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("viewPath") || changedProps.has("lovelaceConfig")) {

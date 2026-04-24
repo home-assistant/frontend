@@ -107,7 +107,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("triggers");
   }
@@ -137,6 +137,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 .trigger=${trg}
                 .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -231,7 +232,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     fireEvent(this, "value-changed", { value: triggers });
   };
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (

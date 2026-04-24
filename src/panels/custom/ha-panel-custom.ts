@@ -59,7 +59,7 @@ export class HaPanelCustom extends ReactiveElement {
     this._cleanupPanel();
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (changedProps.has("panel")) {
       // Clean up old things if we had a panel and the new one is different.

@@ -296,7 +296,7 @@ class ErrorLogCard extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._streamSupported = atLeastVersion(
@@ -322,7 +322,7 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
@@ -331,7 +331,7 @@ class ErrorLogCard extends LitElement {
     this._scrolledToTopController.observe(this._scrollTopMarkerElement!);
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     if (this._newLogsIndicator && this._scrolledToBottomController.value) {

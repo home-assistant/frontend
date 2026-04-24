@@ -2,12 +2,18 @@ import Fuse from "fuse.js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
+import { subscribeOneCollection } from "../common/util/subscribe-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
+import { getIngressPanelInfoCollection } from "../data/hassio/ingress";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { SYSTEM_PANELS } from "../data/panel";
-import { computeNavigationPathInfo } from "../data/compute-navigation-path-info";
+import {
+  CONFIG_SUB_ROUTES,
+  computeNavigationPathInfo,
+} from "../data/compute-navigation-path-info";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
@@ -22,7 +28,12 @@ import {
   type PickerComboBoxItem,
 } from "./ha-picker-combo-box";
 
-type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
+type NavigationGroup =
+  | "related"
+  | "dashboards"
+  | "views"
+  | "apps"
+  | "other_routes";
 
 const RELATED_SORT_PREFIX = {
   area_view: "0_area_view",
@@ -75,6 +86,7 @@ export class HaNavigationPicker extends LitElement {
     related: [],
     dashboards: [],
     views: [],
+    apps: [],
     other_routes: [],
   };
 
@@ -104,6 +116,14 @@ export class HaNavigationPicker extends LitElement {
         id: "views",
         label: this.hass.localize("ui.components.navigation-picker.views"),
       },
+      ...(this._navigationGroups.apps.length
+        ? [
+            {
+              id: "apps",
+              label: this.hass.localize("ui.components.navigation-picker.apps"),
+            },
+          ]
+        : []),
       {
         id: "other_routes",
         label: this.hass.localize(
@@ -196,6 +216,9 @@ export class HaNavigationPicker extends LitElement {
     views: memoizeOne((items: NavigationItem[]) =>
       Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
     ),
+    apps: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
     other_routes: memoizeOne((items: NavigationItem[]) =>
       Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
     ),
@@ -234,6 +257,7 @@ export class HaNavigationPicker extends LitElement {
     const related = getGroupItems("related");
     const dashboards = getGroupItems("dashboards");
     const views = getGroupItems("views");
+    const apps = getGroupItems("apps");
     const otherRoutes = getGroupItems("other_routes");
 
     const addGroup = (group: NavigationGroup, groupItems: NavigationItem[]) => {
@@ -251,6 +275,7 @@ export class HaNavigationPicker extends LitElement {
     addGroup("related", related);
     addGroup("dashboards", dashboards);
     addGroup("views", views);
+    addGroup("apps", apps);
     addGroup("other_routes", otherRoutes);
 
     return items;
@@ -289,10 +314,13 @@ export class HaNavigationPicker extends LitElement {
     const related = this._navigationGroups.related;
     const dashboards: NavigationItem[] = [];
     const views: NavigationItem[] = [];
+    const apps: NavigationItem[] = [];
     const otherRoutes: NavigationItem[] = [];
 
     for (const panel of panels) {
       if (SYSTEM_PANELS.includes(panel.id)) continue;
+      // Skip app panels — they are handled by the ingress panels fetch below
+      if (panel.component_name === "app") continue;
       const path = `/${panel.url_path}`;
       const resolved = computeNavigationPathInfo(this.hass!, path);
       const isDashboardPanel =
@@ -335,10 +363,53 @@ export class HaNavigationPicker extends LitElement {
       });
     }
 
+    // Fetch all ingress add-on panels
+    if (isComponentLoaded(this.hass!.config, "hassio")) {
+      try {
+        const ingressPanels = await subscribeOneCollection(
+          getIngressPanelInfoCollection(this.hass!.connection)
+        );
+        for (const slug of Object.keys(ingressPanels)) {
+          const path = `/app/${slug}`;
+          const resolved = computeNavigationPathInfo(
+            this.hass!,
+            path,
+            undefined,
+            ingressPanels
+          );
+          apps.push({
+            id: path,
+            primary: resolved.label,
+            secondary: path,
+            icon: resolved.icon,
+            icon_path: resolved.iconPath,
+            sorting_label: createSortingLabel(resolved.label, path),
+            group: "apps",
+          });
+        }
+      } catch (_err) {
+        // Supervisor may not be available, silently ignore
+      }
+    }
+
+    for (const [subPath, route] of Object.entries(CONFIG_SUB_ROUTES)) {
+      const path = `/config/${subPath}`;
+      const label = this.hass!.localize(route.translationKey) || subPath;
+      otherRoutes.push({
+        id: path,
+        primary: label,
+        secondary: path,
+        icon_path: route.iconPath,
+        sorting_label: createSortingLabel(label, path),
+        group: "other_routes",
+      });
+    }
+
     this._navigationGroups = {
       related,
       dashboards,
       views,
+      apps,
       other_routes: otherRoutes,
     };
 
@@ -346,13 +417,14 @@ export class HaNavigationPicker extends LitElement {
       ...related,
       ...dashboards,
       ...views,
+      ...apps,
       ...otherRoutes,
     ];
 
     this._loading = false;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       this._loadRelatedItems();
     }
@@ -368,6 +440,7 @@ export class HaNavigationPicker extends LitElement {
         ...relatedItems,
         ...this._navigationGroups.dashboards,
         ...this._navigationGroups.views,
+        ...this._navigationGroups.apps,
         ...this._navigationGroups.other_routes,
       ];
     };

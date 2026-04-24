@@ -69,7 +69,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("schema")) {
       this.toggleAttribute("own-margin", !!this.schema.required);
     }

@@ -176,7 +176,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
     ];
   }
 
-  protected willUpdate(changed: PropertyValues) {
+  protected willUpdate(changed: PropertyValues<this>) {
     super.willUpdate(changed);
     if (this.hasUpdated) {
       return;

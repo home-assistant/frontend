@@ -154,7 +154,7 @@ export class HuiEntityFilterCard
     return false;
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (
       !this.hass ||

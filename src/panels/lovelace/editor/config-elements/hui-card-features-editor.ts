@@ -40,6 +40,7 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-cover-tilt-favorite-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDailyForecastCardFeature } from "../../card-features/hui-daily-forecast-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
 import { supportsHourlyForecastCardFeature } from "../../card-features/hui-hourly-forecast-card-feature";
@@ -101,6 +102,7 @@ const UI_FEATURE_TYPES = [
   "cover-tilt-favorite",
   "cover-tilt-position",
   "cover-tilt",
+  "daily-forecast",
   "date-set",
   "fan-direction",
   "fan-oscillate",
@@ -149,6 +151,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "counter-actions",
   "cover-position-favorite",
   "cover-tilt-favorite",
+  "daily-forecast",
   "fan-preset-modes",
   "hourly-forecast",
   "humidifier-modes",
@@ -186,6 +189,10 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "daily-forecast": (hass, context) =>
+    supportsDailyForecastCardFeature(
+      context.entity_id ? hass.states[context.entity_id] : undefined
+    ),
   "date-set": supportsDateSetCardFeature,
   "fan-direction": supportsFanDirectionCardFeature,
   "fan-oscillate": supportsFanOscilatteCardFeature,

@@ -73,7 +73,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     // Load preview_features translations
     this.hass.loadBackendTranslation("preview_features");

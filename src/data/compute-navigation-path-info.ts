@@ -1,8 +1,21 @@
-import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
+import {
+  mdiDevices,
+  mdiHammer,
+  mdiLink,
+  mdiPalette,
+  mdiPuzzle,
+  mdiRobot,
+  mdiScriptText,
+  mdiShape,
+  mdiTextureBox,
+} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
-import { getIngressPanelInfoCollection } from "./hassio/ingress";
+import {
+  getIngressPanelInfoCollection,
+  type IngressPanelInfoMap,
+} from "./hassio/ingress";
 import { getLovelaceCollection } from "./lovelace";
 import type { LovelaceRawConfig } from "./lovelace/config/types";
 import { computeViewIcon, computeViewTitle } from "./lovelace/config/view";
@@ -12,6 +25,7 @@ import {
   getPanelIconPath,
   getPanelTitleFromUrlPath,
 } from "./panel";
+import type { LocalizeKeys } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 
 export interface NavigationPathInfo {
@@ -27,6 +41,40 @@ export const DEFAULT_NAVIGATION_PATH_INFO: NavigationPathInfo = {
 
 const AREA_VIEW_PREFIX = "areas-";
 
+export const CONFIG_SUB_ROUTES: Record<
+  string,
+  { translationKey: LocalizeKeys; iconPath: string }
+> = {
+  automation: {
+    translationKey: "ui.components.navigation-picker.route.automations",
+    iconPath: mdiRobot,
+  },
+  scene: {
+    translationKey: "ui.components.navigation-picker.route.scenes",
+    iconPath: mdiPalette,
+  },
+  script: {
+    translationKey: "ui.components.navigation-picker.route.scripts",
+    iconPath: mdiScriptText,
+  },
+  "developer-tools": {
+    translationKey: "ui.components.navigation-picker.route.developer_tools",
+    iconPath: mdiHammer,
+  },
+  integrations: {
+    translationKey: "ui.components.navigation-picker.route.integrations",
+    iconPath: mdiPuzzle,
+  },
+  devices: {
+    translationKey: "ui.components.navigation-picker.route.devices",
+    iconPath: mdiDevices,
+  },
+  entities: {
+    translationKey: "ui.components.navigation-picker.route.entities",
+    iconPath: mdiShape,
+  },
+};
+
 /**
  * Resolve a navigation path to a display label and icon.
  * Works synchronously for panels, areas, and devices.
@@ -35,7 +83,8 @@ const AREA_VIEW_PREFIX = "areas-";
 export const computeNavigationPathInfo = (
   hass: HomeAssistant,
   path: string,
-  lovelaceConfig?: LovelaceRawConfig
+  lovelaceConfig?: LovelaceRawConfig,
+  ingressPanels?: IngressPanelInfoMap
 ): NavigationPathInfo => {
   const segments = path.replace(/^\//, "").split(/[/?]/);
   const panelUrlPath = segments[0];
@@ -59,6 +108,20 @@ export const computeNavigationPathInfo = (
     segments[3]
   ) {
     return computeDeviceNavigationPathInfo(hass, segments[3]);
+  }
+
+  // /app/<slug> (ingress addon panel)
+  if (panelUrlPath === APP_PANEL && subPath) {
+    return computeIngressNavigationPathInfo(subPath, ingressPanels);
+  }
+
+  // /config/{subRoute} (e.g. /config/automation, /config/integrations)
+  if (panelUrlPath === "config" && subPath && subPath in CONFIG_SUB_ROUTES) {
+    const route = CONFIG_SUB_ROUTES[subPath];
+    return {
+      label: hass.localize(route.translationKey) || subPath,
+      iconPath: route.iconPath,
+    };
   }
 
   const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
@@ -120,23 +183,69 @@ const computeDeviceNavigationPathInfo = (
   };
 };
 
+const computeIngressNavigationPathInfo = (
+  slug: string,
+  ingressPanels?: IngressPanelInfoMap
+): NavigationPathInfo => {
+  const panel = ingressPanels?.[slug];
+  return {
+    label: panel?.title || slug,
+    icon: panel?.icon || undefined,
+    iconPath: mdiPuzzle,
+  };
+};
+
 /**
  * Subscribe to navigation path info updates.
  * Resolves synchronously first, then subscribes to lovelace config
- * updates for view paths.
+ * updates for view paths and ingress panel info for app paths.
  */
 export const subscribeNavigationPathInfo = (
   hass: HomeAssistant,
   path: string,
   onChange: (info: NavigationPathInfo) => void
 ): UnsubscribeFunc | undefined => {
+  const segments = path.replace(/^\//, "").split(/[/?]/);
+  const panelUrlPath = segments[0];
+
+  // Subscribe to ingress panels for /app/<slug> paths
+  if (
+    panelUrlPath === APP_PANEL &&
+    segments[1] &&
+    isComponentLoaded(hass.config, "hassio")
+  ) {
+    try {
+      const collection = getIngressPanelInfoCollection(hass.connection);
+      // Use cached state for immediate resolution if available
+      const info = computeNavigationPathInfo(
+        hass,
+        path,
+        undefined,
+        collection.state
+      );
+      onChange(info);
+      let current = info;
+      return collection.subscribe((panels) => {
+        const newInfo = computeNavigationPathInfo(
+          hass,
+          path,
+          undefined,
+          panels
+        );
+        if (newInfo.label !== current.label || newInfo.icon !== current.icon) {
+          current = newInfo;
+          onChange(newInfo);
+        }
+      });
+    } catch (_err) {
+      // Supervisor may not be available
+    }
+  }
+
   const info = computeNavigationPathInfo(hass, path);
   onChange(info);
 
-  const segments = path.replace(/^\//, "").split(/[/?]/);
-  const panelUrlPath = segments[0];
   const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
-
   if (segments[1] && panel?.component_name === "lovelace") {
     let current = info;
     const collection = getLovelaceCollection(hass.connection, panelUrlPath);
@@ -145,26 +254,6 @@ export const subscribeNavigationPathInfo = (
       if (newInfo.label !== current.label || newInfo.icon !== current.icon) {
         current = newInfo;
         onChange(newInfo);
-      }
-    });
-  }
-
-  // /app/{addonSlug}
-  if (
-    panelUrlPath === APP_PANEL &&
-    segments[1] &&
-    isComponentLoaded(hass.config, "hassio")
-  ) {
-    const addonSlug = segments[1];
-    const collection = getIngressPanelInfoCollection(hass.connection);
-    return collection.subscribe((addonMap) => {
-      const addon = addonMap[addonSlug];
-      if (addon) {
-        onChange({
-          label: addon.title,
-          icon: addon.icon,
-          iconPath: info.iconPath,
-        });
       }
     });
   }

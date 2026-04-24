@@ -53,7 +53,7 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _tinykeysUnsub?: () => void;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {

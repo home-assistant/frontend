@@ -28,7 +28,7 @@ class ZHANetworkInfoPage extends LitElement {
 
   @state() private _networkSettings?: ZHANetworkSettings;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchSettings();

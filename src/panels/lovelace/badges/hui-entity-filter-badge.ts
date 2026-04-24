@@ -79,7 +79,7 @@ export class HuiEntityFilterBadge
     return false;
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (!this.hass || !this._configEntities) {
       return;

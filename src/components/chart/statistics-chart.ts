@@ -116,7 +116,7 @@ export class StatisticsChart extends LitElement {
 
   private _previousYAxisLabelValue = 0;
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
   }
 

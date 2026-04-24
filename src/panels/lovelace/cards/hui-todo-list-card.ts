@@ -20,7 +20,7 @@ import {
   isSameDay,
 } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValueMap, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -331,9 +331,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     this._refreshTimer = undefined;
   }
 
-  public willUpdate(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
+  public willUpdate(changedProperties: PropertyValues): void {
     if (!this.hasUpdated) {
       if (!this._entityId) {
         this._entityId = this.getEntityId();
