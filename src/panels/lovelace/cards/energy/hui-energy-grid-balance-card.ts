@@ -291,6 +291,7 @@ class HuiEnergyGridBalanceCard
     .bar-left {
       flex-direction: row-reverse;
       border-radius: var(--ha-border-radius-lg) 0 0 var(--ha-border-radius-lg);
+      border-color: var(--ha-color-border-neutral-quiet);
       border-color: color-mix(
         in srgb,
         var(--energy-grid-return-color) 30%,
@@ -301,6 +302,7 @@ class HuiEnergyGridBalanceCard
 
     .bar-right {
       border-radius: 0 var(--ha-border-radius-lg) var(--ha-border-radius-lg) 0;
+      border-color: var(--ha-color-border-neutral-quiet);
       border-color: color-mix(
         in srgb,
         var(--energy-grid-consumption-color) 30%,
