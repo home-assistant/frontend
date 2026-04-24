@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -68,7 +69,7 @@ export class HomeFavoritesEditor extends LitElement {
     const entityId = ev.detail.value as string | undefined;
     if (!entityId) return;
 
-    (ev.currentTarget as any).value = "";
+    (ev.currentTarget as HaEntityPicker).value = "";
 
     if (this.favorites.includes(entityId)) return;
 

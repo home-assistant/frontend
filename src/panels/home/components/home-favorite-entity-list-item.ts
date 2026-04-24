@@ -1,8 +1,7 @@
 import { mdiDelete } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-icon-button";
@@ -27,28 +26,9 @@ export class HomeFavoriteEntityListItem extends LitElement {
 
   protected render() {
     const stateObj = this.hass.states[this.entityId];
-
-    let primary: string;
-    let secondary: string | undefined;
-
-    if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-      const isRTL = computeRTL(this.hass);
-      primary = entityName || deviceName || this.entityId;
-      secondary =
-        [areaName, entityName ? deviceName : undefined]
-          .filter(Boolean)
-          .join(isRTL ? " ◂ " : " ▸ ") || undefined;
-    } else {
-      primary = this.entityId;
-    }
+    const { primary, secondary } = stateObj
+      ? computeEntityPickerDisplay(this.hass, stateObj)
+      : { primary: this.entityId, secondary: undefined };
 
     return html`
       <state-badge .hass=${this.hass} .stateObj=${stateObj}></state-badge>

@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
 import { ensureArray } from "../array/ensure-array";
+import { computeRTL } from "../util/compute_rtl";
 import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
@@ -116,4 +117,33 @@ export const computeEntityNameList = (
   });
 
   return names;
+};
+
+export interface EntityPickerDisplay {
+  primary: string;
+  secondary?: string;
+}
+
+export const computeEntityPickerDisplay = (
+  hass: HomeAssistant,
+  stateObj: HassEntity
+): EntityPickerDisplay => {
+  const [entityName, deviceName, areaName] = computeEntityNameList(
+    stateObj,
+    [{ type: "entity" }, { type: "device" }, { type: "area" }],
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors
+  );
+
+  const isRTL = computeRTL(hass);
+
+  const primary = entityName || deviceName || stateObj.entity_id;
+  const secondary =
+    [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ") || undefined;
+
+  return { primary, secondary };
 };

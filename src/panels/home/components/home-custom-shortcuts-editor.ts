@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HaNavigationPicker } from "../../../components/ha-navigation-picker";
 import "../../../components/ha-navigation-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -77,7 +78,7 @@ export class HomeCustomShortcutsEditor extends LitElement {
     const path = ev.detail.value as string;
     if (!path) return;
 
-    (ev.currentTarget as any).value = "";
+    (ev.currentTarget as HaNavigationPicker).value = "";
 
     if (this.shortcuts.some((item) => item.path === path)) return;
 
