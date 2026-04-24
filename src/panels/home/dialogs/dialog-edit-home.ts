@@ -5,6 +5,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
@@ -12,6 +13,7 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import "../../../components/ha-navigation-picker";
 import "../../../components/ha-switch";
+import type { HaFormSchema } from "../../../components/ha-form/types";
 import type {
   CustomShortcutItem,
   HomeFrontendSystemData,
@@ -33,6 +35,10 @@ interface SummaryInfo {
   icon: string;
   color: string;
 }
+
+const SUGGESTED_ENTITIES_SCHEMA: HaFormSchema[] = [
+  { name: "show_suggested", selector: { boolean: {} } },
+];
 
 // Ordered to match dashboard rendering order
 const SUMMARY_ITEMS: SummaryInfo[] = [
@@ -69,7 +75,7 @@ const SUMMARY_PANEL_PATHS = [
 
 const WELCOME_MESSAGE_SCHEMA = [
   { name: "welcome_message", selector: { boolean: {} } },
-] as const;
+];
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -137,24 +143,46 @@ export class DialogEditHome
           })}
         </ha-alert>
 
-        <h3 class="section-header">
-          ${this.hass.localize(
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize(
             "ui.panel.lovelace.editor.strategy.home.favorite_entities"
           )}
-        </h3>
-        <p class="section-description">
-          ${this.hass.localize("ui.panel.home.editor.favorite_entities_helper")}
-        </p>
-        <ha-entities-picker
-          autofocus
-          .hass=${this.hass}
-          .value=${this._config?.favorite_entities || []}
-          .placeholder=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-          )}
-          reorder
-          @value-changed=${this._favoriteEntitiesChanged}
-        ></ha-entities-picker>
+        >
+          <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
+          <div class="expansion-content">
+            <p class="section-description">
+              ${this.hass.localize(
+                "ui.panel.home.editor.favorite_entities_description"
+              )}
+            </p>
+            <ha-entities-picker
+              autofocus
+              .hass=${this.hass}
+              .value=${this._config?.favorite_entities || []}
+              .placeholder=${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
+              )}
+              .helper=${this.hass.localize(
+                "ui.panel.home.editor.favorite_entities_helper"
+              )}
+              reorder
+              @value-changed=${this._favoriteEntitiesChanged}
+            ></ha-entities-picker>
+
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_suggested: !this._config?.hide_suggested_entities,
+              }}
+              .schema=${SUGGESTED_ENTITIES_SCHEMA}
+              .computeLabel=${this._computeSuggestedLabel}
+              .computeHelper=${this._computeSuggestedHelper}
+              @value-changed=${this._suggestedEntitiesChanged}
+            ></ha-form>
+          </div>
+        </ha-expansion-panel>
 
         <h3 class="section-header">
           ${this.hass.localize("ui.panel.home.editor.welcome_message")}
@@ -291,6 +319,21 @@ export class DialogEditHome
     };
   }
 
+  private _computeSuggestedLabel = (): string =>
+    this.hass.localize("ui.panel.home.editor.suggested_entities");
+
+  private _computeSuggestedHelper = (): string =>
+    this.hass.localize("ui.panel.home.editor.suggested_entities_description");
+
+  private _suggestedEntitiesChanged(ev: CustomEvent): void {
+    const showSuggested = (ev.detail.value as { show_suggested: boolean })
+      .show_suggested;
+    this._config = {
+      ...this._config,
+      hide_suggested_entities: showSuggested ? undefined : true,
+    };
+  }
+
   private _updateShortcuts(
     updater: (shortcuts: CustomShortcutItem[]) => CustomShortcutItem[]
   ): void {
@@ -400,6 +443,18 @@ export class DialogEditHome
       .summary-toggle .label {
         flex: 1;
         font-size: 14px;
+      }
+
+      ha-expansion-panel {
+        display: block;
+        margin-top: var(--ha-space-4);
+        --expansion-panel-content-padding: 0;
+        border-radius: var(--ha-border-radius-md);
+        --ha-card-border-radius: var(--ha-border-radius-md);
+      }
+
+      .expansion-content {
+        padding: var(--ha-space-3);
       }
 
       ha-navigation-picker {
