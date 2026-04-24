@@ -8493,6 +8493,13 @@
               "net_consumed_grid": "Net imported from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
+            "grid_balance": {
+              "title": "Grid energy balance",
+              "imported": "Total energy imported: {value} kWh",
+              "exported": "Total energy exported: {value} kWh",
+              "net_import": "Net energy imported: {value} kWh",
+              "net_export": "Net energy exported: {value} kWh"
+            },
             "energy_distribution": {
               "title_today": "Energy distribution today",
               "grid": "Grid",
@@ -9275,6 +9282,10 @@
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
               "description": "This card shows how self-sufficient from the grid your home is."
+            },
+            "energy-grid-balance": {
+              "name": "Grid energy balance",
+              "description": "This card shows the balance between imported and exported grid energy."
             },
             "energy-grid-neutrality-gauge": {
               "name": "Grid neutrality gauge",

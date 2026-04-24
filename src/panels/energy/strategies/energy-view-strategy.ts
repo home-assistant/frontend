@@ -90,6 +90,21 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
+    // Only include if we have both grid import and export configured
+    if (hasGrid && hasReturn) {
+      const gridResultCard = {
+        type: "energy-grid-balance",
+        collection_key: collectionKey,
+      };
+      sidebarSection.cards!.push(gridResultCard);
+      view.sections!.push({
+        type: "grid",
+        column_span: 1,
+        visibility: [SMALL_SCREEN_CONDITION],
+        cards: [gridResultCard],
+      });
+    }
+
     // Only include if we have a grid source & return.
     if (hasReturn) {
       const card = {
