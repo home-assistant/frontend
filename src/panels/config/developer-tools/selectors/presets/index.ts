@@ -2,14 +2,15 @@
 //
 // Each selector type has a default config in SELECTOR_PRESETS. Types that have
 // multiple meaningful configurations worth side-by-side testing expose named
-// variants via SELECTOR_VARIANTS; these populate the "Preset" picker in the
-// UI. Types without an entry there fall back to a single "Default" variant
-// built from SELECTOR_PRESETS.
+// variants via SELECTOR_VARIANT_GROUPS; groups become section filter buttons
+// and section headers in the `ha-generic-picker` preset picker. Types without
+// an entry there fall back to a single "Default" variant built from
+// SELECTOR_PRESETS.
 //
-// Per-type variant lists live in sibling files (e.g. ./select.ts) and are
-// aggregated into SELECTOR_VARIANTS below.
+// Per-type variant groups live in sibling files (e.g. ./select.ts) and are
+// aggregated into SELECTOR_VARIANT_GROUPS below.
 
-import { SELECT_DEFAULT_CONFIG, SELECT_VARIANTS } from "./select";
+import { SELECT_DEFAULT_CONFIG, SELECT_VARIANT_GROUPS } from "./select";
 
 export type SelectorKey =
   | "action"
@@ -72,6 +73,12 @@ export interface SelectorVariant {
   id: string;
   name: string;
   config: Record<string, unknown>;
+}
+
+export interface SelectorVariantGroup {
+  id: string;
+  label: string;
+  variants: SelectorVariant[];
 }
 
 export const SELECTOR_PRESETS: Record<SelectorKey, Record<string, unknown>> = {
@@ -146,16 +153,19 @@ export const SELECTOR_TYPES = (
   Object.keys(SELECTOR_PRESETS) as SelectorKey[]
 ).sort();
 
-export const SELECTOR_VARIANTS: Partial<
-  Record<SelectorKey, SelectorVariant[]>
+export const SELECTOR_VARIANT_GROUPS: Partial<
+  Record<SelectorKey, SelectorVariantGroup[]>
 > = {
-  select: SELECT_VARIANTS,
+  select: SELECT_VARIANT_GROUPS,
 };
 
+export const getVariantGroups = (type: SelectorKey): SelectorVariantGroup[] =>
+  SELECTOR_VARIANT_GROUPS[type] ?? [];
+
 export const getVariants = (type: SelectorKey): SelectorVariant[] => {
-  const variants = SELECTOR_VARIANTS[type];
-  if (variants && variants.length) {
-    return variants;
+  const groups = getVariantGroups(type);
+  if (groups.length) {
+    return groups.flatMap((g) => g.variants);
   }
   return [
     {

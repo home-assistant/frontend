@@ -7,6 +7,7 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-generic-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
@@ -14,6 +15,8 @@ import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-selector/ha-selector";
+import type { PickerComboBoxItem } from "../../../../components/ha-picker-combo-box";
+import type { PickerValueRenderer } from "../../../../components/ha-picker-field";
 import type { Selector } from "../../../../data/selector";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -24,6 +27,7 @@ import {
   SELECTOR_PRESETS,
   formatSelectorName,
   getInitialConfig,
+  getVariantGroups,
   getVariants,
 } from "./presets";
 
@@ -68,10 +72,11 @@ class DeveloperToolsSelectors extends LitElement {
     const selector = { [this._type]: this._config } as unknown as Selector;
     const configYaml = formatYaml(selector).trimEnd();
     const variants = getVariants(this._type);
+    const groups = getVariantGroups(this._type);
     const showVariants = variants.length > 1;
-    const variantOptions = variants.map((v) => ({
-      value: v.id,
-      label: v.name,
+    const variantSections = groups.map((g) => ({
+      id: g.id,
+      label: g.label,
     }));
     return html`
       <div class="content">
@@ -95,14 +100,19 @@ class DeveloperToolsSelectors extends LitElement {
                 ></ha-select>
                 ${showVariants
                   ? html`
-                      <ha-select
+                      <ha-generic-picker
+                        .hass=${this.hass}
                         .label=${this.hass.localize(
                           "ui.panel.config.developer-tools.tabs.selectors.preset"
                         )}
                         .value=${this._variantId}
-                        .options=${variantOptions}
-                        @selected=${this._variantSelected}
-                      ></ha-select>
+                        .getItems=${this._getVariantItems}
+                        .valueRenderer=${this._variantValueRenderer}
+                        .sections=${variantSections.length
+                          ? variantSections
+                          : undefined}
+                        @value-changed=${this._variantPicked}
+                      ></ha-generic-picker>
                     `
                   : nothing}
 
@@ -299,7 +309,7 @@ class DeveloperToolsSelectors extends LitElement {
     this._value = undefined;
   }
 
-  private _variantSelected(ev: CustomEvent<{ value: string | undefined }>) {
+  private _variantPicked(ev: CustomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
     const newVariantId = ev.detail?.value;
     if (!newVariantId || newVariantId === this._variantId) {
@@ -314,6 +324,56 @@ class DeveloperToolsSelectors extends LitElement {
     this._configValid = true;
     this._value = undefined;
   }
+
+  // Feeds items (with string section headers) into ha-generic-picker's list.
+  // When `section` is set the user has clicked a section filter button and we
+  // emit only that group's variants with no header.
+  private _getVariantItems = (
+    searchString?: string,
+    section?: string
+  ): (PickerComboBoxItem | string)[] => {
+    const groups = getVariantGroups(this._type);
+    const lowerSearch = searchString?.toLowerCase();
+    const items: (PickerComboBoxItem | string)[] = [];
+
+    if (!groups.length) {
+      return getVariants(this._type).map((v) => ({
+        id: v.id,
+        primary: v.name,
+        sorting_label: v.name,
+      }));
+    }
+
+    for (const group of groups) {
+      if (section && section !== group.id) {
+        continue;
+      }
+      const matching = lowerSearch
+        ? group.variants.filter((v) =>
+            v.name.toLowerCase().includes(lowerSearch)
+          )
+        : group.variants;
+      if (!matching.length) {
+        continue;
+      }
+      if (!section) {
+        items.push(group.label);
+      }
+      for (const v of matching) {
+        items.push({
+          id: v.id,
+          primary: v.name,
+          sorting_label: v.name,
+        });
+      }
+    }
+    return items;
+  };
+
+  private _variantValueRenderer: PickerValueRenderer = (value) => {
+    const variant = getVariants(this._type).find((v) => v.id === value);
+    return html`<span slot="headline">${variant?.name ?? value}</span>`;
+  };
 
   private _configChanged(ev: CustomEvent) {
     ev.stopPropagation();
