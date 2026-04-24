@@ -55,6 +55,11 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.config.developer-tools.tabs.debug.title"
               )}
             </ha-dropdown-item>
+            <ha-dropdown-item value="selectors">
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.selectors.title"
+              )}
+            </ha-dropdown-item>
           </ha-dropdown>
         </div>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected}>
@@ -138,8 +143,8 @@ class PanelDeveloperTools extends LitElement {
 
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
-    if (action === "debug") {
-      navigate(`/config/developer-tools/debug`);
+    if (action === "debug" || action === "selectors") {
+      navigate(`/config/developer-tools/${action}`);
     }
   }
 

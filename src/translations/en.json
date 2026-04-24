@@ -3719,6 +3719,18 @@
               "no_match": "No intent matched",
               "language": "[%key:ui::components::language-picker::language%]"
             },
+            "selectors": {
+              "title": "Selectors",
+              "description": "Preview any selector with a custom configuration. Changes to the configuration update the preview live.",
+              "selector_type": "Selector type",
+              "configuration": "Configuration",
+              "preview": "Preview",
+              "value": "Value",
+              "no_value": "No value set",
+              "invalid_config": "Configuration is not valid YAML.",
+              "reset_config": "Reset configuration",
+              "reset_value": "Reset value"
+            },
             "debug": {
               "title": "Debug tools",
               "debug_connection": {

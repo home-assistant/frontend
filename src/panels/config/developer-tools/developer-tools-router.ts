@@ -50,6 +50,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-assist",
         load: () => import("./assist/developer-tools-assist"),
       },
+      selectors: {
+        tag: "developer-tools-selectors",
+        load: () => import("./selectors/developer-tools-selectors"),
+      },
       debug: {
         tag: "developer-tools-debug",
         load: () => import("./debug/developer-tools-debug"),
