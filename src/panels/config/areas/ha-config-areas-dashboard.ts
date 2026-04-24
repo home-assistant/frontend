@@ -402,7 +402,7 @@ export class HaConfigAreasDashboard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
   }

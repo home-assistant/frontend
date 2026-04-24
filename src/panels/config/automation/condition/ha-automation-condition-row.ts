@@ -6,6 +6,7 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
@@ -36,6 +37,7 @@ import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -59,7 +61,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showToast } from "../../../../util/toast";
+import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
@@ -76,7 +78,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -278,6 +279,31 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
+        ${this._pasteAvailable()
+          ? html`
+              <ha-dropdown-item value="paste">
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste"
+                  ),
+                  html`<span class="shortcut">
+                    <span
+                      >${isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )}</span
+                    >
+                    <span>+</span>
+                    <span>V</span>
+                  </span>`
+                )}
+              </ha-dropdown-item>
+            `
+          : nothing}
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
@@ -481,7 +507,7 @@ export default class HaAutomationConditionRow extends LitElement {
       ></ha-automation-row-targets>`
   );
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
     if (this.root) {
@@ -489,7 +515,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues) {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
@@ -531,7 +557,7 @@ export default class HaAutomationConditionRow extends LitElement {
       fireEvent(this, "close-sidebar");
     }
 
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.successfully_deleted"),
       duration: 4000,
       action: {
@@ -665,7 +691,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _copyCondition = () => {
     this._setClipboard();
-    showToast(this, {
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(); // refresh sidebar
+    }
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.copied_to_clipboard"
       ),
@@ -679,13 +708,22 @@ export default class HaAutomationConditionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.cut_to_clipboard"
       ),
       duration: 2000,
     });
   };
+
+  private _pasteCondition = () => {
+    const condition = this._clipboard?.condition;
+    if (!condition) return;
+
+    fireEvent(this, "paste", { item: condition });
+  };
+
+  private _pasteAvailable = () => !!this._clipboard?.condition;
 
   private _moveUp = () => {
     fireEvent(this, "move-up");
@@ -790,6 +828,8 @@ export default class HaAutomationConditionRow extends LitElement {
       insertAfter: this._insertAfter,
       copy: this._copyCondition,
       cut: this._cutCondition,
+      paste: this._pasteCondition,
+      pasteAvailable: this._pasteAvailable,
       test: this._testCondition,
       config: sidebarCondition,
       uiSupported: this._uiSupported(
@@ -857,6 +897,9 @@ export default class HaAutomationConditionRow extends LitElement {
         break;
       case "cut":
         this._cutCondition();
+        break;
+      case "paste":
+        this._pasteCondition();
         break;
       case "move_up":
         this._moveUp();

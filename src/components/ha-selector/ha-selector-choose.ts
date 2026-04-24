@@ -30,7 +30,7 @@ export class HaChooseSelector extends LitElement {
 
   @state() public _activeChoice?: string;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("selector") &&
       (!this._activeChoice ||

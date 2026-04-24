@@ -300,7 +300,7 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
     if (this.route.path === "/import") {
@@ -312,7 +312,7 @@ class HaBlueprintOverview extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("blueprints")) {
       this._loadUsageCounts();

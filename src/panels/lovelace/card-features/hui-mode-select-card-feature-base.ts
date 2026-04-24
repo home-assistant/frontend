@@ -107,7 +107,7 @@ export abstract class HuiModeSelectCardFeatureBase<
     this._config = config;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (

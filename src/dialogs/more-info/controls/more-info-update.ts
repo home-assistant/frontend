@@ -7,7 +7,6 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";

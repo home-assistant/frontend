@@ -115,7 +115,7 @@ export class HaCardConditionEditor extends LitElement {
     });
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("condition")) {
       this._condition = {
         condition: "state",

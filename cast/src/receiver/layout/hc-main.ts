@@ -1,6 +1,6 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { createConnection, getAuth } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { CAST_NS } from "../../../../src/cast/const";
@@ -106,7 +106,7 @@ export class HcMain extends HassElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     import("./hc-lovelace");
     import("../../../../src/resources/append-ha-style");

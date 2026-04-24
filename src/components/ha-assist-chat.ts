@@ -81,7 +81,7 @@ export class HaAssistChat extends LitElement {
 
   private _stt_binary_handler_id?: number | null;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!this.hasUpdated || changedProperties.has("pipeline")) {
       this._conversation = [
         {
@@ -94,7 +94,7 @@ export class HaAssistChat extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (
       this.startListening &&

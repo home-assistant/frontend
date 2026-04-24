@@ -73,7 +73,7 @@ class PanelHome extends LitElement {
       (entries[0]?.target as HTMLElement | undefined)?.offsetHeight ?? 0,
   });
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
@@ -319,6 +319,9 @@ class PanelHome extends LitElement {
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
         hidden_summaries: this._config.hidden_summaries,
+        hide_welcome_message: this._config.hide_welcome_message,
+        hide_suggested_entities: this._config.hide_suggested_entities,
+        custom_shortcuts: this._config.custom_shortcuts,
       },
     };
 

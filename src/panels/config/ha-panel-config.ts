@@ -784,7 +784,7 @@ class HaPanelConfig extends HassRouterPage {
     entityRegistryById.clear();
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");

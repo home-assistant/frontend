@@ -16,8 +16,8 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
+import { deepActiveElement } from "../../../common/dom/deep-active-element";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -380,7 +380,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   );
 
-  protected firstUpdated(changed: PropertyValues) {
+  protected firstUpdated(changed: PropertyValues<this>) {
     super.firstUpdated(changed);
     this._fetchManifests();
     this._fetchEntitySources();
@@ -399,7 +399,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   }
 
-  protected updated(changed: PropertyValues) {
+  protected updated(changed: PropertyValues<this>) {
     super.updated(changed);
     if (changed.has("route")) {
       this._handleRouteChanged();
@@ -428,6 +428,17 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
 
     if (this.configEntries && this.configEntriesInProgress) {
+      const activeElement = deepActiveElement();
+
+      if (
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        (activeElement as HTMLElement | null)?.isContentEditable
+      ) {
+        return;
+      }
+
       this._tabsSubpage?.focusContentScroller();
     }
   }

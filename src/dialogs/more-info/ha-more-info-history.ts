@@ -7,6 +7,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
+import "../../components/ha-alert";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -48,7 +49,7 @@ export class MoreInfoHistory extends LitElement {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
-  private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
@@ -80,7 +81,10 @@ export class MoreInfoHistory extends LitElement {
                 >`}
           </div>
           ${this._error
-            ? html`<div class="errors">${this._error}</div>`
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize("ui.components.history_charts.error")}:
+                ${this._error.message || this._error.code}
+              </ha-alert>`
             : this._statistics
               ? html`<statistics-chart
                   .hass=${this.hass}
@@ -103,7 +107,7 @@ export class MoreInfoHistory extends LitElement {
       : ""}`;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId")) {
@@ -123,6 +127,20 @@ export class MoreInfoHistory extends LitElement {
       this._showMoreHref = `/history?${createSearchParam(params)}`;
 
       this._getStateHistory();
+    } else if (
+      changedProps.has("hass") &&
+      this.entityId &&
+      !this._subscribed &&
+      !this._error
+    ) {
+      // Retry when components become available after backend restart
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        oldHass &&
+        oldHass.config.components !== this.hass.config.components
+      ) {
+        this._getStateHistory();
+      }
     }
   }
 
@@ -141,7 +159,7 @@ export class MoreInfoHistory extends LitElement {
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
@@ -228,8 +246,27 @@ export class MoreInfoHistory extends LitElement {
       this._unsubscribeHistory();
     }
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
+    // Mark as subscribing before the await to prevent re-entrant calls
+    const sentinel = Promise.resolve(undefined) as NonNullable<
+      typeof this._subscribed
+    >;
+    this._subscribed = sentinel;
+
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass));
+    } catch (_err) {
+      if (this._subscribed === sentinel) {
+        this._subscribed = undefined;
+      }
+      return;
+    }
+
+    // Bail out if a newer call replaced our sentinel while we were awaiting
+    if (this._subscribed !== sentinel) {
+      return;
+    }
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,

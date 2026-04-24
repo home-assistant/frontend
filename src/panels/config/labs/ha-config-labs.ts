@@ -73,7 +73,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     // Load preview_features translations
     this.hass.loadBackendTranslation("preview_features");
@@ -426,7 +426,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         0% {
           box-shadow:
             0 0 0 var(--ha-border-width-md) var(--primary-color),
-            0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+            0 0 12px rgba(var(--rgb-primary-color), 0.4);
         }
         100% {
           box-shadow:

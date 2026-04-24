@@ -33,7 +33,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   @state() private _favoriteColors: LightColor[] = [];
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("entry") && this.entry) {
       if (this.entry.options?.light?.favorite_colors) {
         this._favoriteColors = this.entry.options.light.favorite_colors;

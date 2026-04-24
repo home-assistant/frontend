@@ -64,7 +64,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showToast } from "../../../util/toast";
+import { showEditorToast } from "../automation/editor-toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
@@ -104,7 +104,7 @@ export class HaScriptEditor extends SubscribeMixin(
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -495,7 +495,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this.currentEntityId = entity?.entity_id;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");
@@ -593,7 +593,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     await triggerScript(this.hass, this.scriptId!);
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.notification_toast.triggered", {
         name: this.config!.alias,
       }),
@@ -844,7 +844,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _handleSaveScript() {
     if (this.yamlErrors) {
-      showToast(this, {
+      showEditorToast(this, {
         message: this.yamlErrors,
       });
       return;
@@ -932,7 +932,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.dirty = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
-      showToast(this, {
+      showEditorToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;

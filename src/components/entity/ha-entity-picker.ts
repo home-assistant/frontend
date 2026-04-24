@@ -119,7 +119,7 @@ export class HaEntityPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     // Load title translations so it is available when the combo-box opens
     this.hass.loadBackendTranslation("title");

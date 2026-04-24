@@ -157,7 +157,7 @@ export class HaAutomationAddSearch extends LitElement {
     return this.hass.userData?.showEntityIdPicker;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
       loadVirtualizer();
     }

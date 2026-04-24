@@ -44,7 +44,7 @@ export class HuiPictureHeaderFooter
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size === 1 && changedProps.has("hass")) {
       return !changedProps.get("hass");
     }

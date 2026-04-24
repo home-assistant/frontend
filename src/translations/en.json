@@ -492,6 +492,17 @@
     },
     "components": {
       "selectors": {
+        "serial_port": {
+          "enter_manually": "Enter manually",
+          "device_in_area": "{device}, {area}",
+          "type": {
+            "serial_proxy": "Serial proxies",
+            "integration": "Integration-provided",
+            "usb": "USB",
+            "embedded": "Built-in",
+            "unnamed": "Other"
+          }
+        },
         "media": {
           "pick_media_player": "Select media player",
           "browse_not_supported": "Media player does not support browsing media.",
@@ -1432,7 +1443,17 @@
         "related": "Related",
         "views": "Views",
         "area_settings": "{area} - Settings",
-        "other_routes": "Other routes"
+        "apps": "[%key:panel::apps%]",
+        "other_routes": "Other routes",
+        "route": {
+          "automations": "[%key:ui::panel::config::automation::caption%]",
+          "scenes": "[%key:ui::panel::config::scene::caption%]",
+          "scripts": "[%key:ui::panel::config::script::caption%]",
+          "developer_tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+          "integrations": "[%key:ui::panel::config::integrations::caption%]",
+          "devices": "[%key:ui::panel::config::devices::caption%]",
+          "entities": "[%key:ui::panel::config::entities::caption%]"
+        }
       }
     },
     "dialogs": {
@@ -1664,7 +1685,17 @@
           "clean_spot": "Clean spot",
           "locate": "Locate",
           "return_home": "Return home",
-          "start_pause": "Start/pause"
+          "start_pause": "Start/pause",
+          "clean_areas": "Clean areas",
+          "cleaning": "Cleaning",
+          "by_area": "By area",
+          "start_cleaning_areas": "Start cleaning",
+          "no_areas_header": "No areas mapped",
+          "no_areas_text": "Map your vacuum's segments to areas in your home to start cleaning by area.",
+          "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
+          "configure_area_mapping": "Configure area mapping",
+          "configure": "Configure",
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
         },
         "person": {
           "create_zone": "Create zone from current location"
@@ -2463,12 +2494,27 @@
         "editor": {
           "title": "Edit Overview page",
           "description": "Configure your Overview page display preferences.",
-          "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
+          "favorite_entities_description": "Pin entities to always show them on your overview page.",
+          "favorite_entities_helper": "Entities in your favorites always appear first.",
+          "suggested_entities": "Suggested entities",
+          "suggested_entities_description": "Include additional entities based on your most commonly used devices to fill up to 8 slots including your favorites.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
+          "welcome_message": "Welcome message",
+          "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page."
+          "summaries_description": "Choose which summaries to show on your overview page.",
+          "custom_shortcuts": "Custom shortcuts",
+          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "add_custom_shortcut": "Add shortcut",
+          "edit_shortcut": "Edit shortcut",
+          "shortcut": {
+            "path": "Navigation path",
+            "label": "Label",
+            "icon": "Icon",
+            "color": "Color"
+          }
         },
         "new_overview_dialog": {
           "title": "Welcome to your new overview",
@@ -2491,7 +2537,7 @@
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
-        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant OS or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs the Home Assistant OS installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
         "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
@@ -3384,6 +3430,7 @@
               "upload_backup": "Upload backup"
             },
             "agent_error": "Error in location {name}",
+            "create_backup_failed": "Failed to create backup",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -3686,6 +3733,10 @@
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
                 "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+              },
+              "viewport_environment": {
+                "title": "Device and browser environment",
+                "description": "Snapshot of CSS environment values, media features, and viewport-related values."
               }
             },
             "events": {
@@ -4409,7 +4460,8 @@
               },
               "search_dashboards": "Search dashboards",
               "heading": {
-                "default": "Dashboards"
+                "default": "Dashboards",
+                "custom": "Community dashboards"
               }
             },
             "picker": {
@@ -5369,13 +5421,16 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
                   "before": "Before",
                   "after": "After",
+                  "between": "Between",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
+                    "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -7967,10 +8022,8 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
-          "join_x": "X (formerly Twitter)",
-          "join_mastodon": "Mastodon",
-          "join_bluesky": "Bluesky",
+          "join": "Join the community on our {forums}, {social_media}, {discord}, {blog} or {newsletter}",
+          "social_media": "Social Media",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -8304,7 +8357,8 @@
           },
           "security": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "activity": "Activity"
           },
           "climate": {
             "devices": "Devices",
@@ -8859,7 +8913,9 @@
               "background_enabled_helper": "Display a colored background behind the section",
               "background_color": "Color",
               "background_color_default": "Default",
-              "background_opacity": "Opacity"
+              "background_opacity": "Opacity",
+              "theme": "Theme",
+              "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -9256,7 +9312,9 @@
               "chart_type": "Chart type",
               "chart_type_labels": {
                 "line": "Line",
-                "bar": "Bar"
+                "line-stack": "Stacked line",
+                "bar": "Bar",
+                "bar-stack": "Stacked bar"
               },
               "periods": {
                 "auto": "Auto",
@@ -9329,6 +9387,8 @@
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
+              "show_entity_picture": "Show entity picture",
+              "show_entity_picture_helper": "Use the entity's picture if available; falls back to the configured image",
               "camera_view": "Camera view",
               "camera_view_options": {
                 "auto": "Auto",
@@ -9416,6 +9476,15 @@
                 "visibility_explanation": "The button will be shown when ALL conditions below are fulfilled. If no conditions are set, the button will always be shown."
               },
               "default_heading": "Kitchen"
+            },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A card that triggers navigating to a page, opening a URL, or performing an action.",
+              "label": "Label",
+              "card_description": "Description",
+              "text": "Text",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "additional_interactions": "Additional interactions"
             },
             "map": {
               "name": "Map",
@@ -9693,6 +9762,10 @@
                 "state": "State"
               }
             },
+            "shortcut": {
+              "name": "Shortcut",
+              "description": "A badge that triggers navigating to a page, opening a URL, or performing an action."
+            },
             "generic": {
               "manual": "Manual",
               "manual_description": "Need to add a community badge or just want to manually write the YAML?",
@@ -9775,7 +9848,8 @@
                 "label": "Light brightness"
               },
               "light-color-favorites": {
-                "label": "Light color favorites"
+                "label": "Light color favorites",
+                "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
               },
               "light-color-temp": {
                 "label": "Light color temperature"
@@ -9787,7 +9861,8 @@
                 "label": "Lock open door"
               },
               "media-player-playback": {
-                "label": "Media player playback controls"
+                "label": "Media player playback controls",
+                "controls": "Controls"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode"
@@ -9987,6 +10062,19 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "hourly-forecast": {
+                "label": "Hourly forecast",
+                "no_forecast": "No forecast data available"
+              },
+              "daily-forecast": {
+                "label": "Daily forecast",
+                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "forecast_type": "Forecast type",
+                "forecast_type_options": {
+                  "daily": "Daily",
+                  "twice_daily": "Twice daily"
+                }
               }
             }
           },
@@ -10535,8 +10623,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "x": "[%key:ui::panel::config::tips::join_x%]",
-          "mastodon": "Mastodon",
+          "social_media": "Social Media",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -10835,7 +10922,7 @@
             "forums": "[%key:ui::panel::page-onboarding::welcome::forums%]",
             "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
             "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
-            "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "social_media": "[%key:ui::panel::page-onboarding::welcome::social_media%]",
             "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
             "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
           },

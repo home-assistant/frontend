@@ -116,7 +116,9 @@ export class HaEnergyPowerConfig extends LitElement {
 
   @state() private _powerUnits?: string[];
 
-  protected async willUpdate(changedProps: PropertyValues): Promise<void> {
+  protected async willUpdate(
+    changedProps: PropertyValues<this>
+  ): Promise<void> {
     super.willUpdate(changedProps);
 
     if (changedProps.has("hass") && !this._powerUnits) {

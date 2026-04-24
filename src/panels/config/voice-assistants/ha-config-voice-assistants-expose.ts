@@ -49,19 +49,19 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import {
-  getEntityIdTableColumn,
-  getDomainTableColumn,
   getAreaTableColumn,
+  getDomainTableColumn,
+  getEntityIdTableColumn,
 } from "../common/data-table-columns";
-import "./expose/expose-assistant-icon";
 import {
-  getAssistantsTableColumn,
   getAssistantsSortableKey,
+  getAssistantsTableColumn,
 } from "./expose/assistants-table-column";
+import { getAvailableAssistants } from "./expose/available-assistants";
+import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
-import { getAvailableAssistants } from "./expose/available-assistants";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {

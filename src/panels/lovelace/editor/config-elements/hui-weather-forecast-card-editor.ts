@@ -252,7 +252,7 @@ export class HuiWeatherForecastCardEditor
               },
               {
                 name: "forecast_slots",
-                selector: { number: { min: 1, max: 12 } },
+                selector: { number: { min: 1, max: 72 } },
                 default: 5,
               },
               {

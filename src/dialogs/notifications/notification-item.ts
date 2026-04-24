@@ -14,7 +14,7 @@ export class HuiNotificationItem extends LitElement {
   @property({ attribute: false })
   public notification?: HassEntity | PersistentNotification;
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (!this.hass || !this.notification || changedProps.has("notification")) {
       return true;
     }

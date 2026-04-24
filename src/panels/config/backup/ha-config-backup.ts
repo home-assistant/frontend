@@ -57,7 +57,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     { uploaded_bytes: number; total_bytes: number }
   > = {};
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchAll();
     this.addEventListener("ha-refresh-backup-info", () => {

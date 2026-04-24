@@ -5,6 +5,7 @@ import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
+import { findRelated, type RelatedResult } from "../data/search";
 import type {
   QuickBarContextItem,
   QuickBarParams,
@@ -14,7 +15,6 @@ import {
   closeQuickBar,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { findRelated, type RelatedResult } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Constructor, HomeAssistant } from "../types";
@@ -81,7 +81,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
     };
 
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
@@ -148,6 +148,17 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
 
       this._registerShortcut();
+    }
+
+    protected updated(changedProperties: PropertyValues<this>): void {
+      super.updated(changedProperties);
+
+      if (
+        changedProperties.has("hass") &&
+        changedProperties.get("hass")?.user !== this.hass?.user
+      ) {
+        this._registerShortcut();
+      }
     }
 
     public disconnectedCallback() {
@@ -329,8 +340,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         if (repo && repo.source !== "local") {
           myParams.append("repository_url", repo.source);
         }
-      } else if (redirect.redirect === "/hassio/addon") {
-        myParams.append("addon", targetPath.split("/")[3]);
       }
       window.open(
         `https://my.home-assistant.io/create-link/?${myParams.toString()}`,

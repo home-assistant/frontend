@@ -30,10 +30,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
-  @property({ type: Number }) public total?: number;
-
-  @property({ attribute: false }) public isInstallable = true;
-
   @state() private _devices?: DeviceRegistryEntry[];
 
   @state() private _entities?: EntityRegistryEntry[];
@@ -90,18 +86,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.isInstallable
-          ? this.hass.localize("ui.panel.config.updates.title", {
-              count: this.total || this.updateEntities.length,
-            })
-          : this.hass.localize(
-              "ui.panel.config.updates.title_not_installable",
-              {
-                count: this.total || this.updateEntities.length,
-              }
-            )}
-      </div>
       <ha-md-list>
         ${updates.map((entity) => {
           const entityEntry = this.getEntityEntry(entity.entity_id);
@@ -181,11 +165,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        .title {
-          font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
-        }
         .skipped {
           background: var(--secondary-background-color);
         }

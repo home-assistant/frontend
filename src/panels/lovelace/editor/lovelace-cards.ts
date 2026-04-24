@@ -137,6 +137,10 @@ export const coreCards: Card[] = [
     type: "heading",
     showElement: true,
   },
+  {
+    type: "shortcut",
+    showElement: true,
+  },
 ];
 
 export const energyCards: Card[] = [

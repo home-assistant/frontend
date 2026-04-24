@@ -52,7 +52,7 @@ export class HaFormGrid extends LitElement implements HaFormElement {
     return valid;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("schema")) {
       if (this.schema.column_min_width) {

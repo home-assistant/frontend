@@ -50,7 +50,7 @@ export default class HaNumericStateCondition extends LitElement {
     };
   }
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
       try {
         assert(this.condition, numericStateConditionStruct);

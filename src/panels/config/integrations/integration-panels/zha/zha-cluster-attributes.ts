@@ -45,7 +45,7 @@ export class ZHAClusterAttributes extends LitElement {
   @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = undefined;
       this._selectedAttributeId = undefined;

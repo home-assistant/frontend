@@ -31,7 +31,7 @@ class ZHADeviceNeighbors extends LitElement {
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (this.hass && changedProperties.has("device")) {
       this._fetchData();

@@ -99,9 +99,9 @@ import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import { filterSelectorEntities } from "../../../data/selector";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import { subscribeLabFeature } from "../../../data/labs";
+import { filterSelectorEntities } from "../../../data/selector";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,
@@ -178,7 +178,7 @@ const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
-const GENERIC_GROUPS = new Set(["device", "entity"]);
+const GENERIC_GROUPS = new Set(["device", "entity", `${DYNAMIC_PREFIX}event`]);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -2122,6 +2122,12 @@ class DialogAddAutomationElement
             ),
           }
         ),
+        dismissable: true,
+        ...(this._params.clipboardPasteToastBottomOffset != null
+          ? {
+              bottomOffset: this._params.clipboardPasteToastBottomOffset,
+            }
+          : {}),
       });
       this.closeDialog();
     }

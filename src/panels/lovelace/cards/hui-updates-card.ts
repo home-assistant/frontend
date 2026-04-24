@@ -81,7 +81,7 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this._config || !this.hass) {

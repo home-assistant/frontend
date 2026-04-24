@@ -210,7 +210,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
       changedProperties.has("tabs") ||
       (changedProperties.has("hass") &&

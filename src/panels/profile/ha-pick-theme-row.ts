@@ -209,7 +209,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     `;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&

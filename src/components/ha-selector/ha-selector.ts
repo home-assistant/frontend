@@ -45,6 +45,7 @@ const LOAD_ELEMENTS = {
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
   selector: () => import("./ha-selector-selector"),
+  serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
@@ -127,7 +128,7 @@ export class HaSelector extends LitElement {
     return type;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("selector") && this.selector) {
       LOAD_ELEMENTS[this._type]?.();
     }

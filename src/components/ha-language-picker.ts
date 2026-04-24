@@ -111,7 +111,7 @@ export class HaLanguagePicker extends LitElement {
 
   @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._computeDefaultLanguageOptions();
   }

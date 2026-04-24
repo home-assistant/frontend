@@ -136,7 +136,7 @@ export class HaForm extends LitElement implements HaFormElement {
     return isValid;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("schema") && this.schema) {
       this.schema.forEach((item) => {
         if ("selector" in item) {

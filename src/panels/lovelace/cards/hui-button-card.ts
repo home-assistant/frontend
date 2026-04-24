@@ -1,9 +1,5 @@
 import { consume } from "@lit/context";
-import type {
-  HassConfig,
-  HassEntities,
-  HassEntity,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -11,6 +7,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import {
+  consumeEntityRegistryEntry,
+  consumeEntityState,
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -23,23 +23,14 @@ import {
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import {
-  configContext,
-  entitiesContext,
-  localeContext,
-  localizeContext,
-  statesContext,
-  themesContext,
-} from "../../../data/context";
+import { uiContext } from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
@@ -103,39 +94,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @state() private _config?: ButtonCardConfig;
 
   @state()
-  @consume<any>({ context: statesContext, subscribe: true })
-  @transform({
-    transformer: function (this: HuiButtonCard, value: HassEntities) {
-      return this._config?.entity ? value?.[this._config?.entity] : undefined;
-    },
-    watch: ["_config"],
-  })
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
   private _stateObj?: HassEntity;
 
   @state()
-  @consume({ context: themesContext, subscribe: true })
-  _themes!: Themes;
-
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  _localize!: LocalizeFunc;
-
-  @state()
-  @consume({ context: localeContext, subscribe: true })
-  _locale!: FrontendLocaleData;
-
-  @state()
-  @consume({ context: configContext, subscribe: true })
-  _hassConfig!: HassConfig;
-
-  @state()
-  @consume<any>({ context: entitiesContext, subscribe: true })
-  @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
-    transformer: function (this: HuiButtonCard, value) {
-      return this._config?.entity ? value?.[this._config?.entity] : undefined;
-    },
-    watch: ["_config"],
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
   })
+  private _themes!: Themes;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
   _entity?: EntityRegistryDisplayEntry;
 
   public getCardSize(): number {
@@ -184,7 +154,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this._localize || !this._locale) {
+    if (!this._config) {
       return nothing;
     }
     const stateObj = this._stateObj;

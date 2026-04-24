@@ -61,7 +61,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 

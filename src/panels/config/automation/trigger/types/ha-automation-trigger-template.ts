@@ -26,7 +26,7 @@ export class HaTemplateTrigger extends LitElement {
     return { trigger: "template", value_template: "" };
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return;
     }

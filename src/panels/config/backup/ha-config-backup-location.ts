@@ -46,7 +46,7 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     if (changedProps.has("agentId")) {
       if (this.agentId) {
         this._fetchAgent();

@@ -33,7 +33,12 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("card-visibility-changed", this._checkHidden);
+  }
+
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("config")) {
       if (this.config?.card) {
         this.card = this._createCardElement(this.config.card);
@@ -58,8 +63,15 @@ export class HuiViewFooter extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("card-visibility-changed", this._checkHidden);
+  }
+
   private _checkHidden() {
-    const hidden = !this.card && !this.lovelace?.editMode;
+    const hidden =
+      !this.lovelace?.editMode &&
+      (!this.card || this.card.hasAttribute("hidden"));
     this.toggleAttribute("hidden", hidden);
     this.toggleAttribute("sticky", Boolean(this.card));
   }
@@ -173,7 +185,9 @@ export class HuiViewFooter extends LitElement {
     const editMode = Boolean(this.lovelace?.editMode);
     const card = this.card;
 
-    if (!card && !editMode) return nothing;
+    if (!editMode && !card) {
+      return nothing;
+    }
 
     return html`
       <div
@@ -236,7 +250,10 @@ export class HuiViewFooter extends LitElement {
     }
 
     .wrapper:not(.edit-mode) {
-      --ha-card-box-shadow: var(--ha-box-shadow-l);
+      --ha-card-box-shadow: var(
+        --ha-view-footer-box-shadow,
+        var(--ha-box-shadow-l)
+      );
     }
 
     .container {

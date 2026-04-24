@@ -18,6 +18,7 @@ export interface ShowToastParams {
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
+  bottomOffset?: number;
 }
 
 export interface ToastActionParams {
@@ -89,6 +90,7 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
+        .bottomOffset=${this._parameters.bottomOffset ?? 0}
         @toast-closed=${this._toastClosed}
       >
         ${this._parameters?.action

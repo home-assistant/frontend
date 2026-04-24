@@ -3,10 +3,9 @@ import type { CoverEntity } from "../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsPosition,
-  normalizeCoverFavoritePositions,
 } from "../../../data/cover";
+import { normalizeFavoritePositions } from "../../../data/favorite_positions";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeatureEditor } from "../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -16,6 +15,7 @@ import type {
   CoverPositionFavoriteCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const coverPositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefinition<CoverEntity> =
   {
@@ -23,7 +23,7 @@ const coverPositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefi
     supportsPosition: coverSupportsPosition,
     getFavoritePositions: (entry) => entry?.options?.cover?.favorite_positions,
     getCurrentValue: (stateObj) => stateObj.attributes.current_position,
-    normalizeFavoritePositions: normalizeCoverFavoritePositions,
+    normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_COVER_FAVORITE_POSITIONS,
     setPositionService: "set_cover_position",
     serviceDataKey: "position",
@@ -58,12 +58,7 @@ class HuiCoverPositionFavoriteCardFeature extends HuiNumericFavoriteCardFeatureB
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-cover-position-favorite-card-feature-editor");
-    return document.createElement(
-      "hui-cover-position-favorite-card-feature-editor"
-    );
-  }
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 }
 
 declare global {
