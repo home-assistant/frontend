@@ -66,19 +66,6 @@ export interface ClearZwaveCredentialParams {
   credential_slot: number;
 }
 
-export interface GetZwaveCredentialStatusParams {
-  user_index: number;
-  credential_type: string;
-  credential_slot: number;
-}
-
-export interface ZwaveCredentialStatus {
-  credential_exists: boolean;
-  user_index: number;
-  credential_type: string;
-  credential_slot: number;
-}
-
 const callCredentialService = async <T>(
   hass: HomeAssistant,
   service: string,
@@ -185,16 +172,4 @@ export const clearZwaveAllCredentials = (
     { user_index },
     { entity_id },
     false
-  );
-
-export const getZwaveCredentialStatus = (
-  hass: HomeAssistant,
-  entity_id: string,
-  params: GetZwaveCredentialStatusParams
-): Promise<ZwaveCredentialStatus> =>
-  callCredentialService<ZwaveCredentialStatus>(
-    hass,
-    "get_credential_status",
-    entity_id,
-    params as unknown as Record<string, unknown>
   );

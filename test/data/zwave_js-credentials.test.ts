@@ -8,7 +8,6 @@ import {
   setZwaveCredential,
   clearZwaveCredential,
   clearZwaveAllCredentials,
-  getZwaveCredentialStatus,
 } from "../../src/data/zwave_js-credentials";
 import type { HomeAssistant } from "../../src/types";
 
@@ -316,34 +315,6 @@ describe("zwave_js-credentials", () => {
         { entity_id: ENTITY_ID },
         false
       );
-    });
-  });
-
-  describe("getZwaveCredentialStatus", () => {
-    it("calls get_credential_status and returns the response", async () => {
-      const statusResponse = {
-        credential_exists: true,
-        user_index: 1,
-        credential_type: "pin_code",
-        credential_slot: 1,
-      };
-      const hass = mockHass({ [ENTITY_ID]: statusResponse });
-
-      const result = await getZwaveCredentialStatus(hass, ENTITY_ID, {
-        user_index: 1,
-        credential_type: "pin_code",
-        credential_slot: 1,
-      });
-
-      expect(hass.callService).toHaveBeenCalledWith(
-        "zwave_js",
-        "get_credential_status",
-        { user_index: 1, credential_type: "pin_code", credential_slot: 1 },
-        { entity_id: ENTITY_ID },
-        false,
-        true
-      );
-      expect(result).toEqual(statusResponse);
     });
   });
 });
