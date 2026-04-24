@@ -135,36 +135,28 @@ export class HaControlSwitch extends LitElement {
   }
 
   private _keydown(ev: any) {
-    const supportedKeys = ["Enter", " "];
-    if (this.vertical) {
-      supportedKeys.push("ArrowUp", "ArrowDown");
-    } else {
-      supportedKeys.push("ArrowLeft", "ArrowRight");
-    }
-    if (!supportedKeys.includes(ev.key)) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._toggle();
       return;
     }
+
+    const rtl = !this.vertical && mainWindow.document.dir === "rtl";
+    const flip = this.reversed !== rtl;
+    const [forward, backward] = this.vertical
+      ? ["ArrowDown", "ArrowUp"]
+      : ["ArrowRight", "ArrowLeft"];
+    const onKey = flip ? backward : forward;
+    const offKey = flip ? forward : backward;
+
+    if (ev.key !== onKey && ev.key !== offKey) {
+      return;
+    }
+
     ev.preventDefault();
 
-    const supportedToggleKeys = ["Enter", " "];
-
-    let allowTurnOn = !this.checked;
-
-    if (this.reversed) {
-      allowTurnOn = !allowTurnOn;
-    }
-
-    if (this.vertical) {
-      supportedToggleKeys.push(allowTurnOn ? "ArrowDown" : "ArrowUp");
-    } else {
-      if (mainWindow.document.dir === "rtl") {
-        allowTurnOn = !allowTurnOn;
-      }
-
-      supportedToggleKeys.push(allowTurnOn ? "ArrowRight" : "ArrowLeft");
-    }
-
-    if (supportedToggleKeys.includes(ev.key)) {
+    const wantOn = ev.key === onKey;
+    if (wantOn !== this.checked) {
       this._toggle();
     }
   }
