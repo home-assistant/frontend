@@ -16,7 +16,7 @@ import type {
 } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../components/home-custom-shortcuts-editor";
 import "../components/home-favorites-editor";
 import "../components/home-summaries-editor";
@@ -245,40 +245,42 @@ export class DialogEditHome
     );
   };
 
-  private _favoriteEntitiesChanged(ev: CustomEvent): void {
+  private _favoriteEntitiesChanged(ev: ValueChangedEvent<string[]>): void {
     this._state = {
       ...this._state!,
-      favorite_entities: ev.detail.value as string[],
+      favorite_entities: ev.detail.value,
     };
   }
 
-  private _welcomeChanged(ev: CustomEvent): void {
-    const value = ev.detail.value as { show_welcome_message: boolean };
+  private _welcomeChanged(
+    ev: ValueChangedEvent<{ show_welcome_message: boolean }>
+  ): void {
     this._state = {
       ...this._state!,
-      show_welcome_message: value.show_welcome_message,
+      show_welcome_message: ev.detail.value.show_welcome_message,
     };
   }
 
-  private _suggestedChanged(ev: CustomEvent): void {
-    const value = ev.detail.value as { show_suggested_entities: boolean };
+  private _suggestedChanged(
+    ev: ValueChangedEvent<{ show_suggested_entities: boolean }>
+  ): void {
     this._state = {
       ...this._state!,
-      show_suggested_entities: value.show_suggested_entities,
+      show_suggested_entities: ev.detail.value.show_suggested_entities,
     };
   }
 
-  private _hiddenSummariesChanged(ev: CustomEvent): void {
+  private _hiddenSummariesChanged(ev: ValueChangedEvent<string[]>): void {
     this._state = {
       ...this._state!,
-      hidden_summaries: ev.detail.value as string[],
+      hidden_summaries: ev.detail.value,
     };
   }
 
-  private _shortcutsChanged(ev: CustomEvent): void {
+  private _shortcutsChanged(ev: ValueChangedEvent<CustomShortcutItem[]>): void {
     this._state = {
       ...this._state!,
-      custom_shortcuts: ev.detail.value as CustomShortcutItem[],
+      custom_shortcuts: ev.detail.value,
     };
   }
 

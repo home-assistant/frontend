@@ -8,7 +8,7 @@ import "../../../components/ha-navigation-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { CustomShortcutItem } from "../../../data/frontend";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showEditShortcutDialog } from "../dialogs/show-dialog-edit-shortcut";
 import "./home-shortcut-list-item";
 
@@ -73,9 +73,9 @@ export class HomeCustomShortcutsEditor extends LitElement {
     fireEvent(this, "value-changed", { value: next });
   }
 
-  private _addShortcut(ev: CustomEvent): void {
+  private _addShortcut(ev: ValueChangedEvent<string>): void {
     ev.stopPropagation();
-    const path = ev.detail.value as string;
+    const path = ev.detail.value;
     if (!path) return;
 
     (ev.currentTarget as HaNavigationPicker).value = "";
@@ -107,7 +107,7 @@ export class HomeCustomShortcutsEditor extends LitElement {
     this._update(next);
   }
 
-  private _shortcutMoved(ev: CustomEvent): void {
+  private _shortcutMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     const next = [...this.shortcuts];

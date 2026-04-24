@@ -7,7 +7,7 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "./home-favorite-entity-list-item";
 
 @customElement("home-favorites-editor")
@@ -64,9 +64,9 @@ export class HomeFavoritesEditor extends LitElement {
     fireEvent(this, "value-changed", { value: next });
   }
 
-  private _add(ev: CustomEvent): void {
+  private _add(ev: ValueChangedEvent<string | undefined>): void {
     ev.stopPropagation();
-    const entityId = ev.detail.value as string | undefined;
+    const entityId = ev.detail.value;
     if (!entityId) return;
 
     (ev.currentTarget as HaEntityPicker).value = "";
@@ -83,7 +83,7 @@ export class HomeFavoritesEditor extends LitElement {
     this._update(next);
   }
 
-  private _moved(ev: CustomEvent): void {
+  private _moved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     const next = [...this.favorites];

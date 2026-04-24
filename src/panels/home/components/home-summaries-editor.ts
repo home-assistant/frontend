@@ -2,7 +2,10 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import "../../../components/ha-icon";
 import "../../../components/ha-switch";
 import {
@@ -78,11 +81,15 @@ export class HomeSummariesEditor extends LitElement {
     return getSummaryLabel(this.hass.localize, key as HomeSummary);
   }
 
-  private _toggleChanged(ev: Event): void {
-    const target = ev.target as HTMLElement & {
-      checked: boolean;
-      summary: string;
-    };
+  private _toggleChanged(
+    ev: HASSDomTargetEvent<
+      HTMLElement & {
+        checked: boolean;
+        summary: string;
+      }
+    >
+  ): void {
+    const target = ev.target;
     const hidden = new Set(this.hiddenSummaries);
     if (target.checked) {
       hidden.delete(target.summary);
