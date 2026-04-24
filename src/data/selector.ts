@@ -513,6 +513,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    primary_entities_only?: boolean;
   } | null;
 }
 

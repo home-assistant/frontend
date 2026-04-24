@@ -85,6 +85,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public createDomains?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -307,6 +310,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -323,6 +327,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -342,6 +347,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -358,6 +364,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
