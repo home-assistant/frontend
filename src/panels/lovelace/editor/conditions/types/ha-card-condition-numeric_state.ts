@@ -76,7 +76,7 @@ export class HaCardConditionNumericState extends LitElement {
       localize: LocalizeFunc,
       currentEntityLabel: string | undefined,
       showEntityPicker: boolean,
-      unit?: string
+      unit: string | undefined
     ) => {
       const modeField = currentEntityLabel
         ? entityModeSchemaField(localize, currentEntityLabel)
@@ -109,21 +109,13 @@ export class HaCardConditionNumericState extends LitElement {
             {
               name: "above",
               selector: {
-                number: {
-                  step: "any",
-                  mode: "box",
-                  unit_of_measurement: unit,
-                },
+                number: { step: "any", mode: "box", unit_of_measurement: unit },
               },
             },
             {
               name: "below",
               selector: {
-                number: {
-                  step: "any",
-                  mode: "box",
-                  unit_of_measurement: unit,
-                },
+                number: { step: "any", mode: "box", unit_of_measurement: unit },
               },
             },
           ],
