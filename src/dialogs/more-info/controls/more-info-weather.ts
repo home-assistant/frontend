@@ -72,7 +72,7 @@ class MoreInfoWeather extends LitElement {
     }
 
     this._subscribed = subscribeForecast(
-      this.hass!,
+      this.hass!.connection,
       this.stateObj!.entity_id,
       this._forecastType,
       (event) => {

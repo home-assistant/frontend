@@ -339,7 +339,6 @@ export interface HomeAssistant
     HomeAssistantConfig {
   states: HassEntities;
   services: HassServices;
-  resources: Resources;
 }
 
 export interface Route {

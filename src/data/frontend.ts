@@ -30,6 +30,7 @@ export interface HomeFrontendSystemData {
   welcome_banner_dismissed?: boolean;
   hidden_summaries?: string[];
   hide_welcome_message?: boolean;
+  hide_suggested_entities?: boolean;
   custom_shortcuts?: CustomShortcutItem[];
 }
 
