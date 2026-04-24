@@ -7,20 +7,21 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-radio";
+import type { HaRadio } from "../../../../../components/ha-radio";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/input/ha-input";
 import {
-  ENTERABLE_CREDENTIAL_TYPES,
-  getCredentialTypeIcon,
-} from "../../../../../data/lock-common";
-import {
+  ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   clearZwaveCredential,
+  getZwaveCredentialTypeIcon,
   getZwaveUsers,
   setZwaveCredential,
   setZwaveUser,
@@ -102,7 +103,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (!this._params?.capabilities.supported_credential_types) {
       return [];
     }
-    return ENTERABLE_CREDENTIAL_TYPES.filter(
+    return ENTERABLE_ZWAVE_CREDENTIAL_TYPES.filter(
       (type) => type in this._params!.capabilities.supported_credential_types
     );
   }
@@ -189,12 +190,24 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                             "ui.panel.config.zwave_js.credentials.credential_data.type"
                           )}
                         </label>
-                        <ha-select-box
-                          .options=${this._credentialTypeOptions}
-                          .value=${this._credentialType}
-                          .maxColumns=${2}
-                          @value-changed=${this._handleCredentialTypeChanged}
-                        ></ha-select-box>
+                        <div class="radio-group">
+                          ${this._enterableTypes.map(
+                            (type) => html`
+                              <ha-formfield
+                                .label=${this.hass.localize(
+                                  `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
+                                )}
+                              >
+                                <ha-radio
+                                  name="credential-type"
+                                  .value=${type}
+                                  .checked=${this._credentialType === type}
+                                  @change=${this._handleCredentialTypeChanged}
+                                ></ha-radio>
+                              </ha-formfield>
+                            `
+                          )}
+                        </div>
                       </div>
                     `
                   : nothing}
@@ -208,6 +221,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   @blur=${this._handleCredentialBlur}
                   type="password"
                   password-toggle
+                  autocomplete="off"
                   inputmode=${isPin ? "numeric" : "text"}
                   pattern=${isPin ? "[0-9]+" : ".+"}
                   placeholder=${this.hass.localize(
@@ -302,7 +316,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                     <ha-md-list-item>
                       <ha-svg-icon
                         slot="start"
-                        .path=${getCredentialTypeIcon(credential.type)}
+                        .path=${getZwaveCredentialTypeIcon(credential.type)}
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${this.hass.localize(
@@ -350,7 +364,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
         ${hasEnterableType
           ? html`
               <ha-button
-                appearance="plain"
+                class="add-credential"
+                appearance="filled"
                 @click=${this._handleAddCredential}
                 .disabled=${this._saving}
               >
@@ -440,19 +455,10 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     return "";
   }
 
-  private _handleCredentialTypeChanged(ev: CustomEvent): void {
-    this._credentialType = ev.detail.value as string;
+  private _handleCredentialTypeChanged(ev: Event): void {
+    this._credentialType = (ev.target as HaRadio).value;
     this._credentialData = "";
     this._dataTouched = false;
-  }
-
-  private get _credentialTypeOptions(): SelectBoxOption[] {
-    return this._enterableTypes.map((type) => ({
-      value: type,
-      label: this.hass.localize(
-        `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
-      ),
-    }));
   }
 
   private get _userTypeOptions(): SelectBoxOption[] {
@@ -587,6 +593,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
         "ui.panel.config.zwave_js.credentials.confirm_delete_credential",
         { type: typeLabel, slot: credential.slot }
       ),
+      confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
     if (!confirmed) {
@@ -665,9 +672,16 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           font-weight: 500;
           color: var(--primary-text-color);
         }
+        .radio-group {
+          display: flex;
+          flex-direction: column;
+        }
         .credentials-section .empty {
           color: var(--secondary-text-color);
           margin: 0;
+        }
+        .credentials-section .add-credential {
+          align-self: flex-start;
         }
         .user-id-info {
           margin: 0;

@@ -19,20 +19,18 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-tooltip";
 import "../../../../../components/ha-dialog";
-import {
-  ENTERABLE_CREDENTIAL_TYPES,
-  getCredentialTypeIcon,
-} from "../../../../../data/lock-common";
 import type {
   ZwaveCredentialCapabilities,
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
-  getZwaveCredentialCapabilities,
-  getZwaveUsers,
-  clearZwaveUser,
-  clearZwaveAllUsers,
+  ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   clearZwaveAllCredentials,
+  clearZwaveAllUsers,
+  clearZwaveUser,
+  getZwaveCredentialCapabilities,
+  getZwaveCredentialTypeIcon,
+  getZwaveUsers,
 } from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
@@ -163,7 +161,7 @@ class DialogZwaveCredentialManage extends LitElement {
     if (!this._capabilities?.supported_credential_types) {
       return false;
     }
-    return ENTERABLE_CREDENTIAL_TYPES.some(
+    return ENTERABLE_ZWAVE_CREDENTIAL_TYPES.some(
       (type) => type in this._capabilities!.supported_credential_types
     );
   }
@@ -269,7 +267,7 @@ class DialogZwaveCredentialManage extends LitElement {
           ) || type}
         >
           <span class="credential-badge">
-            <ha-svg-icon .path=${getCredentialTypeIcon(type)}></ha-svg-icon>
+            <ha-svg-icon .path=${getZwaveCredentialTypeIcon(type)}></ha-svg-icon>
             ${count > 1 ? html`<span class="badge-count">${count}</span>` : ""}
           </span>
         </ha-tooltip>
@@ -333,6 +331,7 @@ class DialogZwaveCredentialManage extends LitElement {
             ),
         }
       ),
+      confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
 
@@ -361,6 +360,7 @@ class DialogZwaveCredentialManage extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.zwave_js.credentials.confirm_clear_all_users"
       ),
+      confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
     if (!confirmed) {
@@ -395,6 +395,7 @@ class DialogZwaveCredentialManage extends LitElement {
             ),
         }
       ),
+      confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
     if (!confirmed) {

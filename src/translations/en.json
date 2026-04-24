@@ -7809,43 +7809,34 @@
               "unnamed_user": "User {index}",
               "credentials": "Credentials",
               "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
-              "user_type": {
-                "general": "Full access",
-                "programming": "Programming",
-                "non_access": "No access",
-                "duress": "Duress",
-                "disposable": "Disposable",
-                "expiring": "Expiring",
-                "remote_only": "Remote only"
-              },
               "user_types": {
                 "general": {
-                  "label": "Full access",
-                  "description": "Can lock/unlock anytime, 24/7"
+                  "label": "General",
+                  "description": "Can operate the lock"
                 },
                 "programming": {
                   "label": "Programming",
-                  "description": "Used for device programming"
+                  "description": "Can program the device, manage users, and can operate the lock"
                 },
                 "non_access": {
-                  "label": "No access",
-                  "description": "Identity verified but access denied (e.g. tracking only)"
+                  "label": "Non-access",
+                  "description": "Is recognized, but cannot open the lock (only sends events)"
                 },
                 "duress": {
                   "label": "Duress",
-                  "description": "Silently triggers an alarm when used"
+                  "description": "Can open the lock, but sends an alarm to the hub"
                 },
                 "disposable": {
                   "label": "Disposable",
-                  "description": "Single-use access, deleted after first use"
+                  "description": "Can open the lock once, disabled after first use"
                 },
                 "expiring": {
                   "label": "Expiring",
-                  "description": "Access valid for a limited time"
+                  "description": "Can operate the lock. Access gets disabled after a certain time when first used."
                 },
                 "remote_only": {
                   "label": "Remote only",
-                  "description": "Can only operate remotely"
+                  "description": "Can only operate the lock remotely"
                 }
               }
             },

@@ -6,12 +6,13 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-select-box";
-import type { SelectBoxOption } from "../../../../../components/ha-select-box";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-radio";
+import type { HaRadio } from "../../../../../components/ha-radio";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input";
-import { ENTERABLE_CREDENTIAL_TYPES } from "../../../../../data/lock-common";
 import {
+  ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   clearZwaveCredential,
   setZwaveCredential,
 } from "../../../../../data/zwave_js-credentials";
@@ -52,7 +53,7 @@ class DialogZwaveCredentialEdit extends LitElement {
     if (params.credential) {
       this._credentialType = params.credential.type;
       this._credentialData =
-        (ENTERABLE_CREDENTIAL_TYPES as readonly string[]).includes(
+        (ENTERABLE_ZWAVE_CREDENTIAL_TYPES as readonly string[]).includes(
           params.credential.type
         ) && params.credential.data
           ? params.credential.data
@@ -76,7 +77,7 @@ class DialogZwaveCredentialEdit extends LitElement {
     if (!this._params?.capabilities.supported_credential_types) {
       return [];
     }
-    return ENTERABLE_CREDENTIAL_TYPES.filter(
+    return ENTERABLE_ZWAVE_CREDENTIAL_TYPES.filter(
       (type) => type in this._params!.capabilities.supported_credential_types
     );
   }
@@ -93,8 +94,6 @@ class DialogZwaveCredentialEdit extends LitElement {
     }
     const isEdit = !!this._params.credential;
     const multipleEnterableTypes = this._enterableTypes.length > 1;
-    const typeChanged =
-      isEdit && this._credentialType !== this._params.credential!.type;
     const minLength = this._selectedTypeCapability?.min_length ?? 4;
     const maxLength = this._selectedTypeCapability?.max_length ?? 10;
     const isPin = this._credentialType === "pin_code";
@@ -127,22 +126,26 @@ class DialogZwaveCredentialEdit extends LitElement {
                       "ui.panel.config.zwave_js.credentials.credential_data.type"
                     )}
                   </label>
-                  <ha-select-box
-                    .options=${this._credentialTypeOptions}
-                    .value=${this._credentialType}
-                    .maxColumns=${2}
-                    @value-changed=${this._handleCredentialTypeChanged}
-                  ></ha-select-box>
+                  <div class="radio-group">
+                    ${this._enterableTypes.map(
+                      (type) => html`
+                        <ha-formfield
+                          .label=${this.hass.localize(
+                            `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
+                          )}
+                        >
+                          <ha-radio
+                            name="credential-type"
+                            .value=${type}
+                            .checked=${this._credentialType === type}
+                            @change=${this._handleCredentialTypeChanged}
+                          ></ha-radio>
+                        </ha-formfield>
+                      `
+                    )}
+                  </div>
                 </div>
               `
-            : nothing}
-          ${isEdit && !typeChanged
-            ? html`<p class="slot-info">
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.credentials.slot",
-                  { slot: this._params.credential!.slot }
-                )}
-              </p>`
             : nothing}
           <ha-input
             .label=${this.hass.localize(
@@ -154,6 +157,7 @@ class DialogZwaveCredentialEdit extends LitElement {
             @blur=${this._handleCredentialBlur}
             type="password"
             password-toggle
+            autocomplete="off"
             inputmode=${isPin ? "numeric" : "text"}
             pattern=${isPin ? "[0-9]+" : ".+"}
             placeholder=${this.hass.localize(
@@ -197,17 +201,8 @@ class DialogZwaveCredentialEdit extends LitElement {
     `;
   }
 
-  private get _credentialTypeOptions(): SelectBoxOption[] {
-    return this._enterableTypes.map((type) => ({
-      value: type,
-      label: this.hass.localize(
-        `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
-      ),
-    }));
-  }
-
-  private _handleCredentialTypeChanged(ev: CustomEvent): void {
-    this._credentialType = ev.detail.value as string;
+  private _handleCredentialTypeChanged(ev: Event): void {
+    this._credentialType = (ev.target as HaRadio).value;
     this._credentialData = "";
     this._dataTouched = false;
   }
@@ -341,9 +336,9 @@ class DialogZwaveCredentialEdit extends LitElement {
           font-weight: 500;
           color: var(--primary-text-color);
         }
-        .slot-info {
-          margin: 0;
-          color: var(--secondary-text-color);
+        .radio-group {
+          display: flex;
+          flex-direction: column;
         }
         ha-alert {
           display: block;
