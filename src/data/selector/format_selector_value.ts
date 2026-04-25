@@ -98,5 +98,25 @@ export const formatSelectorValue = (
       .join(", ");
   }
 
-  return ensureArray(value).join(", ");
+  if ("object" in selector) {
+    const labelField = selector.object?.label_field;
+    const items = ensureArray(value);
+    return items
+      .map((item) => {
+        if (item == null || typeof item !== "object") {
+          return String(item);
+        }
+        if (labelField && labelField in item) {
+          return String(item[labelField]);
+        }
+        return JSON.stringify(item);
+      })
+      .join(", ");
+  }
+
+  return ensureArray(value)
+    .map((v) =>
+      v != null && typeof v === "object" ? JSON.stringify(v) : String(v)
+    )
+    .join(", ");
 };

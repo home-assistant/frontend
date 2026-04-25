@@ -7,7 +7,7 @@ import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import type { HassDialog } from "../make-dialog-manager";
+import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
 
 @customElement("dialog-form")
@@ -35,6 +35,47 @@ export class DialogForm
     this._open = false;
     return true;
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener(
+      "show-dialog",
+      this._handleNestedShowDialog as unknown as EventListener
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "show-dialog",
+      this._handleNestedShowDialog as unknown as EventListener
+    );
+  }
+
+  private _handleNestedShowDialog = async (
+    ev: CustomEvent<ShowDialogParams<unknown>>
+  ) => {
+    if (ev.detail.dialogTag !== "dialog-form") {
+      return;
+    }
+    ev.stopPropagation();
+
+    const { dialogImport, dialogParams } = ev.detail;
+    if (dialogImport) {
+      await dialogImport();
+    }
+    const nestedDialog = document.createElement("dialog-form") as DialogForm;
+    nestedDialog.hass = this.hass;
+    this.shadowRoot!.appendChild(nestedDialog);
+    nestedDialog.showDialog(dialogParams as FormDialogParams);
+    nestedDialog.addEventListener(
+      "dialog-closed",
+      () => {
+        nestedDialog.remove();
+      },
+      { once: true }
+    );
+  };
 
   private _dialogClosed(): void {
     if (!this._closeState) {
