@@ -7,7 +7,14 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const compareState = state !== undefined ? state : stateObj?.state;
 
   if (
-    ["button", "event", "infrared", "input_button", "scene"].includes(domain)
+    [
+      "button",
+      "event",
+      "infrared",
+      "input_button",
+      "radio_frequency",
+      "scene",
+    ].includes(domain)
   ) {
     return compareState !== UNAVAILABLE;
   }

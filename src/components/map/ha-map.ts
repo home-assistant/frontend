@@ -602,7 +602,7 @@ export class HaMap extends ReactiveElement {
         }
 
         // create icon
-        let iconHTML = "";
+        let iconHTML: string;
         if (icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", icon);

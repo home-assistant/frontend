@@ -421,7 +421,7 @@ class AddIntegrationDialog extends LitElement {
       return [];
     }
     // Get domains for this brand
-    let domains: string[] = [];
+    let domains: string[];
     if ("integrations" in integration && integration.integrations) {
       domains = Object.keys(integration.integrations);
       if (this._pickedBrand === "apple") {

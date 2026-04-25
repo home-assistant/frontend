@@ -83,6 +83,7 @@ export class HaTargetSelector extends LitElement {
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
         .createDomains=${this._createDomains}
+        .primaryEntitiesOnly=${this.selector.target?.primary_entities_only}
       ></ha-target-picker>`;
   }
 

@@ -6,6 +6,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import type { CustomShortcutItem } from "../../../data/frontend";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
@@ -55,14 +56,19 @@ export class HomeShortcutListItem extends LitElement {
     const iconStyle = { "--mdc-icon-size": "24px", color };
 
     return html`
-      ${icon
-        ? html`<ha-icon .icon=${icon} style=${styleMap(iconStyle)}></ha-icon>`
-        : html`<ha-svg-icon
-            .path=${iconPath}
-            style=${styleMap(iconStyle)}
-          ></ha-svg-icon>`}
-      <span class="label">${label}</span>
-      <div class="actions">
+      <ha-settings-row slim>
+        ${icon
+          ? html`<ha-icon
+              slot="prefix"
+              .icon=${icon}
+              style=${styleMap(iconStyle)}
+            ></ha-icon>`
+          : html`<ha-svg-icon
+              slot="prefix"
+              .path=${iconPath}
+              style=${styleMap(iconStyle)}
+            ></ha-svg-icon>`}
+        <span slot="heading">${label}</span>
         <ha-icon-button
           .path=${mdiPencil}
           .label=${this.hass.localize("ui.common.edit")}
@@ -73,7 +79,7 @@ export class HomeShortcutListItem extends LitElement {
           .label=${this.hass.localize("ui.common.delete")}
           @click=${this._delete}
         ></ha-icon-button>
-      </div>
+      </ha-settings-row>
     `;
   }
 
@@ -87,26 +93,26 @@ export class HomeShortcutListItem extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
-      align-items: center;
+      display: block;
+    }
+    ha-settings-row {
+      padding: 0;
       gap: var(--ha-space-3);
+      min-height: 40px;
+      --settings-row-prefix-display: contents;
+      --settings-row-content-display: contents;
+      --settings-row-body-padding-top: var(--ha-space-1);
+      --settings-row-body-padding-bottom: var(--ha-space-1);
     }
     ha-icon,
     ha-svg-icon {
       --mdc-icon-size: 24px;
       flex-shrink: 0;
     }
-    .label {
-      flex: 1;
-      min-width: 0;
-      font-size: 14px;
+    [slot="heading"] {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-    .actions {
-      display: flex;
-      align-items: center;
     }
     ha-icon-button {
       --ha-icon-button-size: 40px;

@@ -360,14 +360,12 @@ export class HaChartBase extends LitElement {
             return nothing;
           }
           let itemStyle: Record<string, any> = {};
-          let name = "";
           let id = "";
           let value = "";
+          const name = typeof item === "string" ? item : (item.name ?? "");
           if (typeof item === "string") {
-            name = item;
             id = item;
           } else {
-            name = item.name ?? "";
             id = item.id ?? name;
             value = item.value ?? "";
             itemStyle = item.itemStyle ?? {};

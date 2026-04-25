@@ -27,7 +27,6 @@ export class DemoHaInput extends LitElement {
   constructor() {
     super();
     // Provides internationalizationContext for ha-input-copy, ha-input-multi and ha-input-search
-    // eslint-disable-next-line no-new
     new ContextProvider(this, {
       context: internationalizationContext,
       initialValue: {

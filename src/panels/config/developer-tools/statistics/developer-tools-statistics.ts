@@ -267,8 +267,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn: this._sortColumn
-                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}` ||
-                    ""
+                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
                   : "",
               })}
             >

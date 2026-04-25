@@ -58,7 +58,7 @@ class HaConfigSystemNavigation extends LitElement {
     const pages = configSections.general
       .filter((page) => canShowPage(this.hass, page))
       .map((page) => {
-        let description = "";
+        let description: string;
 
         switch (page.translationKey) {
           case "backup":

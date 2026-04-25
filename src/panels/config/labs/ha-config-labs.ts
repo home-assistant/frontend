@@ -47,10 +47,12 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
       return featuresToSort.sort((a, b) => {
         // Place frontend.winter_mode at the bottom
-        if (a.domain === "frontend" && a.preview_feature === "winter_mode")
+        if (a.domain === "frontend" && a.preview_feature === "winter_mode") {
           return 1;
-        if (b.domain === "frontend" && b.preview_feature === "winter_mode")
+        }
+        if (b.domain === "frontend" && b.preview_feature === "winter_mode") {
           return -1;
+        }
 
         // Sort everything else alphabetically
         return domainToName(localize, a.domain).localeCompare(

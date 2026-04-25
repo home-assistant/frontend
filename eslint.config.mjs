@@ -2,10 +2,7 @@
 
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import { configs as litConfigs } from "eslint-plugin-lit";
@@ -14,35 +11,8 @@ import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
 import importX from "eslint-plugin-import-x";
 
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
-const compat = new FlatCompat({
-  baseDirectory: _dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-// Load airbnb-base via FlatCompat for non-import rules only.
-// eslint-plugin-import is incompatible with ESLint 10 (uses removed APIs),
-// so we strip its plugin/rules/settings and use eslint-plugin-import-x instead.
-const airbnbConfigs = compat.extends("airbnb-base").map((config) => {
-  const { plugins = {}, rules = {}, settings = {}, ...rest } = config;
-  return {
-    ...rest,
-    plugins: Object.fromEntries(
-      Object.entries(plugins).filter(([key]) => key !== "import")
-    ),
-    rules: Object.fromEntries(
-      Object.entries(rules).filter(([key]) => !key.startsWith("import/"))
-    ),
-    settings: Object.fromEntries(
-      Object.entries(settings).filter(([key]) => !key.startsWith("import/"))
-    ),
-  };
-});
-
 export default tseslint.config(
-  ...airbnbConfigs,
+  js.configs.recommended,
   eslintConfigPrettier,
   litConfigs["flat/all"],
   tseslint.configs.recommended,
@@ -86,35 +56,59 @@ export default tseslint.config(
     },
 
     rules: {
-      "class-methods-use-this": "off",
-      "new-cap": "off",
-      "prefer-template": "off",
-      "object-shorthand": "off",
-      "func-names": "off",
-      "no-underscore-dangle": "off",
-      strict: "off",
-      "no-plusplus": "off",
-      "no-bitwise": "error",
-      "comma-dangle": "off",
-      "vars-on-top": "off",
-      "no-continue": "off",
-      "no-param-reassign": "off",
-      "no-multi-assign": "off",
-      "no-console": "error",
-      radix: "off",
-      "no-alert": "off",
-      "no-nested-ternary": "off",
-      "prefer-destructuring": "off",
-      "no-restricted-globals": [2, "event"],
-      "prefer-promise-reject-errors": "off",
-      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
-      "object-curly-newline": "off",
-      "default-case": "off",
-      "wc/no-self-class": "off",
-      "no-shadow": "off",
-      "no-use-before-define": "off",
+      "array-callback-return": ["error", { allowImplicit: true }],
+      "block-scoped-var": "error",
+      "consistent-return": "error",
+      curly: ["error", "multi-line"],
+      "default-case-last": "error",
+      eqeqeq: ["error", "always", { null: "ignore" }],
+      "guard-for-in": "error",
+      "no-await-in-loop": "error",
+      "no-caller": "error",
+      "no-constructor-return": "error",
+      "no-eval": "error",
+      "no-extend-native": "error",
+      "no-implied-eval": "error",
+      "no-iterator": "error",
+      "no-new-func": "error",
+      "no-new-wrappers": "error",
+      "no-octal-escape": "error",
+      "no-promise-executor-return": "error",
+      "no-return-assign": ["error", "always"],
+      "no-script-url": "error",
+      "no-self-compare": "error",
+      "no-sequences": "error",
+      "no-template-curly-in-string": "error",
+      "no-unreachable-loop": "error",
 
-      // import-x rules (migrated from eslint-plugin-import / airbnb-base)
+      "no-else-return": ["error", { allowElseIf: false }],
+      "no-lonely-if": "error",
+      "no-unneeded-ternary": ["error", { defaultAssignment: false }],
+      "no-useless-computed-key": "error",
+      "no-useless-concat": "error",
+      "no-useless-rename": "error",
+      "no-useless-return": "error",
+      "one-var": ["error", "never"],
+      "operator-assignment": ["error", "always"],
+      "prefer-arrow-callback": "error",
+      "prefer-exponentiation-operator": "error",
+      "prefer-object-spread": "error",
+      "prefer-regex-literals": ["error", { disallowRedundantWrapping: true }],
+      "symbol-description": "error",
+      yoda: "error",
+
+      // TODO: Enable once violations are fixed (43 instances as of 2026-04)
+      // "no-useless-assignment": "error",
+      "no-useless-assignment": "error",
+
+      // Project rules
+      "no-bitwise": "error",
+      "no-console": "error",
+      "no-restricted-globals": [2, "event"],
+      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+      "wc/no-self-class": "off",
+
+      // import-x rules
       "import-x/named": "off",
       "import-x/prefer-default-export": "off",
       "import-x/no-default-export": "off",
@@ -146,13 +140,9 @@ export default tseslint.config(
       "import-x/no-relative-packages": "error",
 
       // TypeScript rules
-      "@typescript-eslint/camelcase": "off",
       "@typescript-eslint/ban-ts-comment": "off",
-      "@typescript-eslint/no-use-before-define": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-shadow": ["error"],
 
       "@typescript-eslint/naming-convention": [
@@ -216,7 +206,6 @@ export default tseslint.config(
       "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
-      camelcase: "off",
       "@typescript-eslint/no-dynamic-delete": "off",
       "@typescript-eslint/no-empty-object-type": [
         "error",

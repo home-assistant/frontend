@@ -2494,7 +2494,11 @@
         "editor": {
           "title": "Edit Overview page",
           "description": "Configure your Overview page display preferences.",
-          "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
+          "personalize": "Personalize",
+          "personalize_description": "Customize the top of your Overview page.",
+          "suggested_entities": "Suggested entities",
+          "suggested_entities_description": "Show entities you use often alongside your favorites.",
+          "suggested_entities_disabled_description": "Your favorites already fill the section. Remove a favorite to make room for suggestions.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
@@ -8490,6 +8494,13 @@
               "net_consumed_grid": "Net imported from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
+            "grid_balance": {
+              "title": "Grid energy balance",
+              "imported": "Total energy imported: {value} kWh",
+              "exported": "Total energy exported: {value} kWh",
+              "net_import": "Net energy imported: {value} kWh",
+              "net_export": "Net energy exported: {value} kWh"
+            },
             "energy_distribution": {
               "title_today": "Energy distribution today",
               "grid": "Grid",
@@ -9272,6 +9283,10 @@
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
               "description": "This card shows how self-sufficient from the grid your home is."
+            },
+            "energy-grid-balance": {
+              "name": "Grid energy balance",
+              "description": "This card shows the balance between imported and exported grid energy."
             },
             "energy-grid-neutrality-gauge": {
               "name": "Grid neutrality gauge",
@@ -10094,7 +10109,7 @@
             },
             "home": {
               "favorite_entities": "Favorite entities",
-              "add_favorite_entity": "Add favorite entity"
+              "add_favorite_entity": "Add favorite"
             }
           },
           "view": {

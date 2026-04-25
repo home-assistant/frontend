@@ -128,8 +128,9 @@ export class StateHistoryChartLine extends LitElement {
       if (
         dataset.tooltip?.show === false ||
         this._hiddenStats.has(dataset.id as string)
-      )
+      ) {
         return;
+      }
       const param = params.find(
         (p: Record<string, any>) => p.seriesIndex === index
       );

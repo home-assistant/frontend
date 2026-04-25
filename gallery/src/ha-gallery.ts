@@ -1,16 +1,21 @@
 import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
-import { mdiMenu } from "@mdi/js";
+import { mdiMenu, mdiSwapHorizontal } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
+import { setDirectionStyles } from "../../src/common/util/compute_rtl";
+import "../../src/components/ha-button";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import "../../src/components/ha-icon-button";
+import "../../src/components/ha-svg-icon";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import "./components/page-description";
+
+const RTL_STORAGE_KEY = "gallery-rtl";
 
 const GITHUB_DEMO_URL =
   "https://github.com/home-assistant/frontend/blob/dev/gallery/src/pages/";
@@ -28,6 +33,8 @@ class HaGallery extends LitElement {
   @state() private _page =
     document.location.hash.substring(1) ||
     `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
+
+  @state() private _rtl = localStorage.getItem(RTL_STORAGE_KEY) === "true";
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
@@ -97,33 +104,43 @@ class HaGallery extends LitElement {
             ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
           </div>
           <div class="page-footer">
-            <div class="header">Help us to improve our documentation</div>
-            <div class="secondary">
-              Suggest an edit to this page, or provide/view feedback for this
-              page.
+            <div class="edit-docs">
+              <div class="header">Help us to improve our documentation</div>
+              <div class="secondary">
+                Suggest an edit to this page, or provide/view feedback for this
+                page.
+              </div>
+              <div>
+                ${PAGES[this._page].description ||
+                Object.keys(PAGES[this._page].metadata).length > 0
+                  ? html`
+                      <a
+                        href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                        target="_blank"
+                      >
+                        Edit text
+                      </a>
+                    `
+                  : ""}
+                ${PAGES[this._page].demo
+                  ? html`
+                      <a
+                        href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
+                        target="_blank"
+                      >
+                        Edit demo
+                      </a>
+                    `
+                  : ""}
+              </div>
             </div>
-            <div>
-              ${PAGES[this._page].description ||
-              Object.keys(PAGES[this._page].metadata).length > 0
-                ? html`
-                    <a
-                      href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                      target="_blank"
-                    >
-                      Edit text
-                    </a>
-                  `
-                : ""}
-              ${PAGES[this._page].demo
-                ? html`
-                    <a
-                      href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
-                      target="_blank"
-                    >
-                      Edit demo
-                    </a>
-                  `
-                : ""}
+            <div class="rtl-toggle">
+              <ha-icon-button
+                @click=${this._toggleRtl}
+                .label=${this._rtl ? "Switch to LTR" : "Switch to RTL"}
+              >
+                <ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>
+              </ha-icon-button>
             </div>
           </div>
         </div>
@@ -137,6 +154,8 @@ class HaGallery extends LitElement {
 
   firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+
+    this._applyDirection();
 
     this.addEventListener("show-notification", (ev) =>
       this._notifications.showDialog({ message: ev.detail.message })
@@ -164,6 +183,11 @@ class HaGallery extends LitElement {
 
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
+    if (changedProps.has("_rtl")) {
+      this._applyDirection();
+    }
+
     if (!changedProps.has("_page")) {
       return;
     }
@@ -184,6 +208,15 @@ class HaGallery extends LitElement {
 
   private _menuTapped() {
     this._drawer.open = !this._drawer.open;
+  }
+
+  private _toggleRtl() {
+    this._rtl = !this._rtl;
+    localStorage.setItem(RTL_STORAGE_KEY, String(this._rtl));
+  }
+
+  private _applyDirection() {
+    setDirectionStyles(this._rtl ? "rtl" : "ltr", this);
   }
 
   static styles = [
@@ -238,11 +271,16 @@ class HaGallery extends LitElement {
       }
 
       .page-footer {
+        display: flex;
+        border-radius: var(--ha-border-radius-lg);
+        background-color: var(--primary-background-color);
+      }
+
+      .edit-docs {
+        flex: 1;
         text-align: center;
         margin: 16px;
         padding: 16px;
-        border-radius: var(--ha-border-radius-lg);
-        background-color: var(--primary-background-color);
       }
 
       .page-footer div {
@@ -265,6 +303,18 @@ class HaGallery extends LitElement {
         display: inline-block;
         margin: 0 8px;
         text-decoration: none;
+      }
+
+      .rtl-toggle {
+        padding: var(--ha-space-4);
+        display: inline-flex;
+        align-items: flex-end;
+        margin-top: 12px !important;
+      }
+
+      .rtl-toggle ha-icon-button {
+        border: 1px solid var(--divider-color);
+        border-radius: var(--ha-border-radius-pill);
       }
     `,
   ];

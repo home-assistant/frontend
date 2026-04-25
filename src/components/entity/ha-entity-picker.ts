@@ -4,9 +4,8 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   entityComboBoxKeys,
@@ -117,6 +116,8 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "add-button", type: Boolean })
   public addButton = false;
 
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -141,21 +142,10 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
+    const { primary, secondary } = computeEntityPickerDisplay(
+      this.hass,
+      stateObj
     );
-
-    const isRTL = computeRTL(this.hass);
-
-    const primary = entityName || deviceName || entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
-      .filter(Boolean)
-      .join(isRTL ? " ◂ " : " ▸ ");
 
     return html`
       <state-badge
@@ -293,7 +283,8 @@ export class HaEntityPicker extends LitElement {
         .searchKeys=${entityComboBoxKeys}
         use-top-label
         .addButtonLabel=${this.addButton
-          ? this.hass.localize("ui.components.entity.entity-picker.add")
+          ? (this.addButtonLabel ??
+            this.hass.localize("ui.components.entity.entity-picker.add"))
           : undefined}
         .unknownItemText=${this.hass.localize(
           "ui.components.entity.entity-picker.unknown"
