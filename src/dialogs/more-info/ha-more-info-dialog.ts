@@ -495,8 +495,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goToAddEntityTo(ev) {
     // Only check for request-selected events (from menu items), not regular clicks (from icon button)
-    if (ev.type === "request-selected" && !shouldHandleRequestSelectedEvent(ev))
+    if (
+      ev.type === "request-selected" &&
+      !shouldHandleRequestSelectedEvent(ev)
+    ) {
       return;
+    }
     this._setView("add_to");
   }
 

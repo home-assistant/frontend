@@ -44,9 +44,9 @@ export const normalizeLuminance = (color: string): string => {
       return midL;
     }
     if (testLuminance < targetLuminance) {
-      return findLightness(midL, highL, iterations--);
+      return findLightness(midL, highL, iterations - 1);
     }
-    return findLightness(lowL, midL, iterations--);
+    return findLightness(lowL, midL, iterations - 1);
   }
 
   baseOklch.l = findLightness();

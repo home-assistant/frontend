@@ -370,11 +370,12 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _fullscreenLabel(): string {
-    if (this._isFullscreen)
+    if (this._isFullscreen) {
       return (
         this.hass?.localize("ui.components.yaml-editor.exit_fullscreen") ||
         "Exit fullscreen"
       );
+    }
     return (
       this.hass?.localize("ui.components.yaml-editor.enter_fullscreen") ||
       "Enter fullscreen"
@@ -914,7 +915,7 @@ export class HaCodeEditor extends ReactiveElement {
     // In both cases the parent is a MemberExpression.
     const memberNode = node.parent;
     // "from" for the completion result (start of what the user is currently typing)
-    let completionFrom = pos;
+    let completionFrom: number;
 
     if (
       node.name === "PropertyName" &&

@@ -68,14 +68,18 @@ export function buildPowerExcludeList(
   sources.forEach((entry) => {
     if (entry.stat_rate) powerIds.push(entry.stat_rate);
     if (entry.power_config) {
-      if (entry.power_config.stat_rate)
+      if (entry.power_config.stat_rate) {
         powerIds.push(entry.power_config.stat_rate);
-      if (entry.power_config.stat_rate_inverted)
+      }
+      if (entry.power_config.stat_rate_inverted) {
         powerIds.push(entry.power_config.stat_rate_inverted);
-      if (entry.power_config.stat_rate_from)
+      }
+      if (entry.power_config.stat_rate_from) {
         powerIds.push(entry.power_config.stat_rate_from);
-      if (entry.power_config.stat_rate_to)
+      }
+      if (entry.power_config.stat_rate_to) {
         powerIds.push(entry.power_config.stat_rate_to);
+      }
     }
   });
 
