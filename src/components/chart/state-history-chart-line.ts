@@ -311,12 +311,52 @@ export class StateHistoryChartLine extends LitElement {
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
               const stateObj = this.hass.states[item.entityId];
+              let value: string | undefined;
+
+              if (stateObj) {
+                // For climate temperature datasets, show temperature values
+                const datasetId = item.dataset.id as string;
+                if (
+                  datasetId?.endsWith("-current_temperature") ||
+                  datasetId?.endsWith("-target_temperature") ||
+                  datasetId?.endsWith("-target_temperature_mode") ||
+                  datasetId?.endsWith("-target_temperature_mode_low")
+                ) {
+                  const attrs = stateObj.attributes;
+                  let tempValue: number | undefined;
+                  if (datasetId.endsWith("-current_temperature")) {
+                    tempValue = attrs?.current_temperature;
+                  } else if (
+                    datasetId.endsWith("-target_temperature_mode_low")
+                  ) {
+                    tempValue = attrs?.target_temp_low;
+                  } else if (datasetId.endsWith("-target_temperature_mode")) {
+                    tempValue = attrs?.target_temp_high;
+                  } else {
+                    tempValue = attrs?.temperature;
+                  }
+                  // Format temperature with unit
+                  if (tempValue !== undefined) {
+                    value = `${formatNumber(
+                      tempValue,
+                      this.hass.locale
+                    )}${blankBeforeUnit(
+                      this.hass.config.unit_system.temperature,
+                      this.hass.locale
+                    )}${this.hass.config.unit_system.temperature}`;
+                  }
+                }
+
+                // If not a temperature dataset, use the entity state
+                if (value === undefined) {
+                  value = this.hass.formatEntityState(stateObj);
+                }
+              }
+
               return {
                 id: item.dataset.id as string,
                 name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
+                value: value,
               };
             }),
         },
