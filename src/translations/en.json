@@ -8503,6 +8503,7 @@
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
               "untracked": "untracked",
+              "untracked_adjusted": "During some periods, tracked devices reported more energy than total grid consumption. This is common when energy meters report in whole-number increments. Untracked consumption has been adjusted to zero for these periods. Hover over a bar to see the specific value.",
               "other": "Other"
             },
             "carbon_consumed_gauge": {

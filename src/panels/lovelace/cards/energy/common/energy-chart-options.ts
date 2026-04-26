@@ -44,11 +44,13 @@ export { fillDataGapsAndRoundCaps } from "../../../../../components/chart/round-
  * [0] displayX  - bar position (midpoint for sub-daily periods, start otherwise)
  * [1] value     - the energy value
  * [2] originalStart - original period start timestamp, used for tooltips
+ * [3] rawUnclamped  - (optional) raw negative untracked value before clamping
  */
 export type EnergyDataPoint = [
   displayX: number,
   value: number,
   originalStart: number,
+  rawUnclamped?: number,
 ];
 
 // Number of days of padding when showing time axis in months
@@ -251,6 +253,15 @@ function formatTooltip(
   const values = params
     .map((param) => {
       const y = param.value?.[1] as number;
+      // A negative 4th element indicates the untracked value was clamped to
+      // zero — show the original value so users understand the adjustment.
+      const rawUnclamped = param.value?.[3] as number | undefined;
+      if (rawUnclamped != null && rawUnclamped < 0) {
+        const excessFormatted = formatNumber(Math.abs(rawUnclamped), locale, {
+          maximumFractionDigits: 3,
+        });
+        return `${param.marker} Tracked devices exceeded grid consumption by ${excessFormatted} ${unit}`;
+      }
       const value = formatNumber(
         y,
         locale,
@@ -347,6 +358,13 @@ export function computeStatMidpoint(
   return (start + end) / 2;
 }
 
+export interface UntrackedConsumptionResult {
+  /** Untracked consumption per timestamp, clamped to >= 0. */
+  values: Record<number, number>;
+  /** Raw (unclamped) values for timestamps where the value was negative. */
+  rawNegatives: Record<number, number>;
+}
+
 /**
  * Compute untracked energy consumption per timestamp.
  *
@@ -354,17 +372,25 @@ export function computeStatMidpoint(
  * consumption and clamps the result to zero. Negative untracked values are
  * physically impossible — they arise from meter resolution mismatches
  * (e.g., integer grid meter vs fractional device sensors).
+ *
+ * Returns the clamped values and the raw negative values for timestamps
+ * where clamping occurred, so callers can surface per-period indicators.
  */
 export function computeUntrackedConsumption(
   usedTotal: Record<number, number>,
   totalDeviceConsumption: Record<number, number>
-): Record<number, number> {
-  const result: Record<number, number> = {};
+): UntrackedConsumptionResult {
+  const values: Record<number, number> = {};
+  const rawNegatives: Record<number, number> = {};
   for (const time of Object.keys(usedTotal)) {
     const ts = Number(time);
-    result[ts] = Math.max(0, usedTotal[ts] - (totalDeviceConsumption[ts] || 0));
+    const raw = usedTotal[ts] - (totalDeviceConsumption[ts] || 0);
+    if (raw < 0) {
+      rawNegatives[ts] = raw;
+    }
+    values[ts] = Math.max(0, raw);
   }
-  return result;
+  return { values, rawNegatives };
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

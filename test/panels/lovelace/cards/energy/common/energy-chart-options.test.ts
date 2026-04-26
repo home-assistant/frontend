@@ -540,51 +540,61 @@ describe("computeUntrackedConsumption", () => {
     const usedTotal = { 1000: 5, 2000: 3 };
     const deviceTotal = { 1000: 2, 2000: 1 };
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.deepEqual(result, { 1000: 3, 2000: 2 });
+    assert.deepEqual(result.values, { 1000: 3, 2000: 2 });
+    assert.deepEqual(result.rawNegatives, {});
   });
 
-  it("clamps negative untracked to zero", () => {
+  it("clamps negative untracked to zero and records raw negatives", () => {
     // Device sensors report more than the integer grid meter
     const usedTotal = { 1000: 0, 2000: 1 };
     const deviceTotal = { 1000: 0.3, 2000: 1.7 };
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.equal(result[1000], 0);
-    assert.equal(result[2000], 0);
+    assert.equal(result.values[1000], 0);
+    assert.equal(result.values[2000], 0);
+    assert.approximately(result.rawNegatives[1000], -0.3, 0.001);
+    assert.approximately(result.rawNegatives[2000], -0.7, 0.001);
   });
 
   it("returns zero when grid equals devices", () => {
     const usedTotal = { 1000: 2.5 };
     const deviceTotal = { 1000: 2.5 };
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.equal(result[1000], 0);
+    assert.equal(result.values[1000], 0);
+    assert.deepEqual(result.rawNegatives, {});
   });
 
   it("returns full grid value when no device data exists for timestamp", () => {
     const usedTotal = { 1000: 4 };
     const deviceTotal = {};
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.equal(result[1000], 4);
+    assert.equal(result.values[1000], 4);
+    assert.deepEqual(result.rawNegatives, {});
   });
 
   it("ignores device timestamps not present in usedTotal", () => {
     const usedTotal = { 1000: 2 };
     const deviceTotal = { 1000: 1, 9999: 5 };
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.deepEqual(result, { 1000: 1 });
+    assert.deepEqual(result.values, { 1000: 1 });
+    assert.deepEqual(result.rawNegatives, {});
   });
 
   it("handles mixed positive and negative across timestamps", () => {
     const usedTotal = { 1000: 0, 2000: 3, 3000: 1 };
     const deviceTotal = { 1000: 0.5, 2000: 1, 3000: 2 };
     const result = computeUntrackedConsumption(usedTotal, deviceTotal);
-    assert.equal(result[1000], 0); // clamped
-    assert.equal(result[2000], 2); // positive
-    assert.equal(result[3000], 0); // clamped
+    assert.equal(result.values[1000], 0); // clamped
+    assert.equal(result.values[2000], 2); // positive
+    assert.equal(result.values[3000], 0); // clamped
+    assert.approximately(result.rawNegatives[1000], -0.5, 0.001);
+    assert.approximately(result.rawNegatives[3000], -1, 0.001);
+    assert.isUndefined(result.rawNegatives[2000]); // positive, not in rawNegatives
   });
 
-  it("returns empty object for empty inputs", () => {
+  it("returns empty result for empty inputs", () => {
     const result = computeUntrackedConsumption({}, {});
-    assert.deepEqual(result, {});
+    assert.deepEqual(result.values, {});
+    assert.deepEqual(result.rawNegatives, {});
   });
 
   it("does not mutate input objects", () => {

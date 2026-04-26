@@ -1,7 +1,13 @@
 import { endOfToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  type PropertyValues,
+  type TemplateResult,
+  css,
+  html,
+  LitElement,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -9,6 +15,7 @@ import type { BarSeriesOption } from "echarts/charts";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/chart/ha-chart-base";
 import type {
   DeviceConsumptionEnergyPreference,
@@ -85,6 +92,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
+  @state() private _hasClampedNegatives = false;
+
   @state()
   @storage({
     key: "energy-devices-hidden-stats",
@@ -160,8 +169,22 @@ export class HuiEnergyDevicesDetailGraphCard
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
           ></ha-chart-base>
+          ${this._renderClampedAlert()}
         </div>
       </ha-card>
+    `;
+  }
+
+  private _renderClampedAlert(): TemplateResult | typeof nothing {
+    if (!this._hasClampedNegatives) {
+      return nothing;
+    }
+    return html`
+      <ha-alert alert-type="info">
+        ${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_adjusted"
+        )}
+      </ha-alert>
     `;
   }
 
@@ -307,6 +330,8 @@ export class HuiEnergyDevicesDetailGraphCard
       ? computeConsumptionData(summedData, compareSummedData)
       : { consumption: undefined, compareConsumption: undefined };
 
+    let compareHasClampedNegatives = false;
+
     if (compareData) {
       const processedCompareData = this._processDataSet(
         computedStyle,
@@ -321,13 +346,17 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(...processedCompareData);
 
       if (showUntracked) {
-        const untrackedCompareData = this._processUntracked(
+        const {
+          dataset: untrackedCompareData,
+          hasClampedNegatives: compareHasClamped,
+        } = this._processUntracked(
           computedStyle,
           processedCompareData,
           consumptionCompareData,
           true
         );
         datasets.push(untrackedCompareData);
+        compareHasClampedNegatives = compareHasClamped;
       }
     }
 
@@ -361,12 +390,13 @@ export class HuiEnergyDevicesDetailGraphCard
     }));
 
     if (showUntracked) {
-      const untrackedData = this._processUntracked(
-        computedStyle,
-        processedData,
-        consumptionData,
-        false
-      );
+      const { dataset: untrackedData, hasClampedNegatives: mainHasClamped } =
+        this._processUntracked(
+          computedStyle,
+          processedData,
+          consumptionData,
+          false
+        );
       datasets.push(untrackedData);
       this._legendData.push({
         id: untrackedData.id as string,
@@ -377,6 +407,9 @@ export class HuiEnergyDevicesDetailGraphCard
           borderColor: untrackedData.itemStyle?.borderColor as string,
         },
       });
+      this._hasClampedNegatives = mainHasClamped || compareHasClampedNegatives;
+    } else {
+      this._hasClampedNegatives = false;
     }
 
     fillDataGapsAndRoundCaps(datasets);
@@ -388,7 +421,7 @@ export class HuiEnergyDevicesDetailGraphCard
     processedData,
     consumptionData,
     compare: boolean
-  ): BarSeriesOption {
+  ): { dataset: BarSeriesOption; hasClampedNegatives: boolean } {
     const totalDeviceConsumption: Record<number, number> = {};
 
     processedData.forEach((device) => {
@@ -413,10 +446,12 @@ export class HuiEnergyDevicesDetailGraphCard
       (period === "hour" || period === "5minute") && sortedTimes.length >= 2
         ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
         : 0;
-    const untrackedValues = computeUntrackedConsumption(
-      consumptionData.used_total,
-      totalDeviceConsumption
-    );
+    const { values: untrackedValues, rawNegatives } =
+      computeUntrackedConsumption(
+        consumptionData.used_total,
+        totalDeviceConsumption
+      );
+    const hasClampedNegatives = Object.keys(rawNegatives).length > 0;
     sortedTimes.forEach((time) => {
       const ts = Number(time);
       const dataPoint: EnergyDataPoint = [
@@ -424,6 +459,10 @@ export class HuiEnergyDevicesDetailGraphCard
         untrackedValues[ts],
         ts,
       ];
+      // Carry the raw negative value so the tooltip can show it
+      if (ts in rawNegatives) {
+        dataPoint[3] = rawNegatives[ts];
+      }
       if (compare) {
         dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
       }
@@ -458,7 +497,7 @@ export class HuiEnergyDevicesDetailGraphCard
       data: untrackedConsumption,
       stack: compare ? "devicesCompare" : "devices",
     };
-    return dataset;
+    return { dataset, hasClampedNegatives };
   }
 
   private _processDataSet(
