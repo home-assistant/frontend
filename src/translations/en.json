@@ -4887,7 +4887,13 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
+              "result": "Result",
               "icon": "Icon"
+            },
+            "result_errors": {
+              "none": "All runs successfully completed",
+              "all": "All runs ended with error",
+              "some": "Some runs ended with error"
             },
             "bulk_action": "Action",
             "bulk_actions": {

@@ -23,7 +23,7 @@ class HaDataTableIcon extends LitElement {
       position: relative;
     }
     ha-svg-icon {
-      color: var(--secondary-text-color);
+      color: var(--ha-data-table-icon-color, var(--secondary-text-color));
     }
   `;
 }
