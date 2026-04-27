@@ -8,12 +8,14 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
+import type { ConfigEntry } from "../../data/config_entries";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
   subscribeDataEntryFlowProgress,
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { RepairsIssue } from "../../data/repairs";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -176,7 +178,9 @@ class DataEntryFlowDialog extends LitElement {
       this._params.dialogClosedCallback({
         flowFinished,
         entryId:
-          "result" in this._step ? this._step.result?.entry_id : undefined,
+          "result" in this._step
+            ? (this._step.result as ConfigEntry)?.entry_id
+            : undefined,
       });
     }
 
@@ -236,7 +240,7 @@ class DataEntryFlowDialog extends LitElement {
         const devicesLength = this._devices(
           this._params.flowConfig.showDevices,
           Object.values(this.hass.devices),
-          this._step.result?.entry_id,
+          (this._step.result as ConfigEntry)?.entry_id,
           this._params.carryOverDevices
         ).length;
         return this.hass.localize(
@@ -423,7 +427,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .devices=${this._devices(
                                     this._params.flowConfig.showDevices,
                                     Object.values(this.hass.devices),
-                                    this._step.result?.entry_id,
+                                    (this._step.result as ConfigEntry)
+                                      ?.entry_id,
                                     this._params.carryOverDevices
                                   )}
                                 ></step-flow-create-entry>
@@ -502,29 +507,27 @@ class DataEntryFlowDialog extends LitElement {
           carryOverDevices: this._devices(
             this._params!.flowConfig.showDevices,
             Object.values(this.hass.devices),
-            _step.type === "create_entry" ? _step.result?.entry_id : undefined,
+            _step.type === "create_entry"
+              ? (_step.result as ConfigEntry)?.entry_id
+              : undefined,
             this._params!.carryOverDevices
           ).map((device) => device.id),
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "options_flow") {
-        if (_step.type === "create_entry") {
-          showOptionsFlowDialog(this, _step.result!, {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          });
-        }
+        showOptionsFlowDialog(this, (_step.result as ConfigEntry)!, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else if (_step.next_flow[0] === "config_subentries_flow") {
-        if (_step.type === "create_entry") {
-          showSubConfigFlowDialog(this, _step.result!, "", {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          });
-        }
+        showSubConfigFlowDialog(this, (_step.result as ConfigEntry)!, "", {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else if (_step.next_flow[0] === "repair_flow") {
-        showRepairsFlowDialog(this, _step.issue!, {
+        showRepairsFlowDialog(this, (_step.result as RepairsIssue)!, {
           continueFlowId: _step.next_flow[1],
           navigateToResult: this._params!.navigateToResult,
           dialogClosedCallback: this._params!.dialogClosedCallback,

@@ -67,8 +67,7 @@ export interface DataEntryFlowStepCreateEntry {
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
-  result?: ConfigEntry;
-  issue?: RepairsIssue;
+  result?: ConfigEntry | RepairsIssue;
   description: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
@@ -81,8 +80,7 @@ export interface DataEntryFlowStepAbort {
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
-  result?: ConfigEntry;
-  issue?: RepairsIssue;
+  result?: ConfigEntry | RepairsIssue;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 
