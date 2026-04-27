@@ -92,7 +92,7 @@ export class HaFilterFloorAreas extends LitElement {
                   (floor) => html`
                     <ha-list-item-option
                       appearance="checkbox"
-                      selectionPosition="end"
+                      selection-position="end"
                       .value=${floor.floor_id}
                       .type=${"floors"}
                       .selected=${this.value?.floors?.includes(
@@ -103,10 +103,7 @@ export class HaFilterFloorAreas extends LitElement {
                         slot="start"
                         .floor=${floor}
                       ></ha-floor-icon>
-                      <span slot="headline"
-                        >${floor.name}
-                        ${this.value?.floors?.includes(floor.floor_id) || false}
-                      </span>
+                      <span slot="headline">${floor.name} </span>
                     </ha-list-item-option>
                     ${repeat(
                       floor.areas,
@@ -135,12 +132,10 @@ export class HaFilterFloorAreas extends LitElement {
     return html`
       <ha-list-item-option
         appearance="checkbox"
-        selectionPosition="end"
+        selection-position="end"
         .value=${area.area_id}
         .selected=${this.value?.areas?.includes(area.area_id) || false}
         .type=${"areas"}
-        @request-selected=${this._handleItemClick}
-        @keydown=${this._handleItemKeydown}
         class=${classMap({
           rtl: computeRTL(this.hass),
           floor: hasFloor,
@@ -161,13 +156,6 @@ export class HaFilterFloorAreas extends LitElement {
         <span slot="headline">${area.name}</span>
       </ha-list-item-option>
     `;
-  }
-
-  private _handleItemKeydown(ev) {
-    if (ev.key === " " || ev.key === "Enter") {
-      ev.preventDefault();
-      this._handleItemClick(ev);
-    }
   }
 
   private _handleListChanged(ev: CustomEvent<HaListSelectedDetail>) {
@@ -210,35 +198,6 @@ export class HaFilterFloorAreas extends LitElement {
         ),
       };
     }
-  }
-
-  private _handleItemClick(ev) {
-    // ev.stopPropagation();
-
-    const listItem = ev.currentTarget;
-    const type = listItem?.type;
-    const value = listItem?.value;
-
-    if (ev.detail.selected === listItem.selected || !value) {
-      return;
-    }
-
-    if (this.value?.[type]?.includes(value)) {
-      this.value = {
-        ...this.value,
-        [type]: this.value[type].filter((val) => val !== value),
-      };
-    } else {
-      if (!this.value) {
-        this.value = {};
-      }
-      this.value = {
-        ...this.value,
-        [type]: [...(this.value[type] || []), value],
-      };
-    }
-
-    listItem.selected = this.value[type]?.includes(value);
   }
 
   protected updated(changed: PropertyValues<this>) {
