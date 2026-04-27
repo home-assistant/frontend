@@ -11,14 +11,19 @@ import {
 } from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
 import type { HomeOtherDevicesViewStrategyConfig } from "./home-other-devices-view-strategy";
-import type { CustomShortcutItem } from "../../../../data/frontend";
+import type {
+  CustomShortcutItem,
+  HomeSummaryConfig,
+} from "../../../../data/frontend";
 import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
 export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
   home_panel?: boolean;
+  /** @deprecated Use `summaries` instead. */
   hidden_summaries?: string[];
+  summaries?: HomeSummaryConfig[];
   hide_welcome_message?: boolean;
   hide_suggested_entities?: boolean;
   custom_shortcuts?: CustomShortcutItem[];
@@ -100,6 +105,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
             favorite_entities: config.favorite_entities,
             home_panel: config.home_panel,
             hidden_summaries: config.hidden_summaries,
+            summaries: config.summaries,
             hide_welcome_message: config.hide_welcome_message,
             hide_suggested_entities: config.hide_suggested_entities,
             custom_shortcuts: config.custom_shortcuts,
