@@ -342,12 +342,11 @@ export const colorStyles = css`
 export const darkColorStyles = css`
   html {
     --card-background-color: var(--ha-color-surface-default);
-    --primary-background-color: var(--ha-color-surface-lower);
-    --secondary-background-color: var(--ha-color-surface-low);
+    --primary-background-color: var(--ha-color-surface-low);
+    --secondary-background-color: var(--ha-color-surface-lower);
     --clear-background-color: #ffffff;
 
     --sidebar-background-color: var(--ha-color-surface-low);
-    --card-background-color: var(--ha-color-surface-low);
 
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;

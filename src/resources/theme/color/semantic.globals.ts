@@ -161,19 +161,17 @@ export const semanticColorStyles = css`
     --ha-color-on-success-loud: var(--white-color);
 
     /* Surfaces */
-    --ha-color-surface-default: var(--ha-color-neutral-95);
-    --ha-color-on-surface-default: var(--ha-color-neutral-05);
-
-    /* forms */
-    --ha-color-form-background: var(--ha-color-neutral-95);
-    --ha-color-form-background-hover: var(--ha-color-neutral-90);
-    --ha-color-form-background-disabled: var(--ha-color-neutral-80);
     --ha-color-surface-default: var(--ha-color-white);
     --ha-color-surface-low: var(--ha-color-neutral-95);
     --ha-color-surface-lower: var(--ha-color-neutral-90);
     --ha-color-surface-default-inverted: var(--ha-color-neutral-10);
     --ha-color-surface-low-inverted: var(--ha-color-neutral-05);
     --ha-color-surface-lower-inverted: var(--ha-color-black);
+
+    /* forms */
+    --ha-color-form-background: var(--ha-color-neutral-95);
+    --ha-color-form-background-hover: var(--ha-color-neutral-90);
+    --ha-color-form-background-disabled: var(--ha-color-neutral-80);
 
     /* Scrollable fade */
     --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
@@ -314,16 +312,15 @@ export const darkSemanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
-    --ha-color-on-surface-default: var(--ha-color-neutral-95);
-
-    /* forms */
-    --ha-color-form-background: var(--ha-color-neutral-20);
-    --ha-color-form-background-hover: var(--ha-color-neutral-30);
-    --ha-color-form-background-disabled: var(--ha-color-neutral-20);
     --ha-color-surface-low: var(--ha-color-neutral-05);
     --ha-color-surface-lower: var(--ha-color-black);
     --ha-color-surface-default-inverted: var(--ha-color-white);
     --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
     --ha-color-surface-lower-inverted: var(--ha-color-90);
+
+    /* forms */
+    --ha-color-form-background: var(--ha-color-neutral-20);
+    --ha-color-form-background-hover: var(--ha-color-neutral-30);
+    --ha-color-form-background-disabled: var(--ha-color-neutral-20);
   }
 `;
