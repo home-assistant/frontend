@@ -623,7 +623,6 @@
         },
         "automation_behavior": {
           "trigger": {
-            "label": "Triggers when",
             "options": {
               "any": {
                 "label": "Each",
@@ -640,7 +639,6 @@
             }
           },
           "condition": {
-            "label": "Is true when",
             "options": {
               "any": {
                 "label": "Any",

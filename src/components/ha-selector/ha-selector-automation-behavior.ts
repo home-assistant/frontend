@@ -30,8 +30,6 @@ export class HaSelectorAutomationBehavior extends LitElement {
 
   @property() public value?: AutomationBehavior;
 
-  @property() public label?: string;
-
   @property() public helper?: string;
 
   @property({ attribute: false })
@@ -45,14 +43,7 @@ export class HaSelectorAutomationBehavior extends LitElement {
     const { mode } = this.selector.automation_behavior ?? {};
     const modeKey = mode ?? "trigger";
 
-    const sectionLabel =
-      this.label ||
-      this.hass.localize(
-        `ui.components.selectors.automation_behavior.${modeKey}.label` as LocalizeKeys
-      );
-
-    const isTrigger =
-      (this.selector.automation_behavior?.mode ?? "trigger") === "trigger";
+    const isTrigger = modeKey === "trigger";
 
     const options = this._behaviors().map<SelectBoxOption>((behavior) => ({
       value: behavior,
@@ -68,9 +59,6 @@ export class HaSelectorAutomationBehavior extends LitElement {
     }));
 
     return html`
-      ${sectionLabel
-        ? html`<span class="label">${sectionLabel}</span>`
-        : nothing}
       <ha-select-box
         .hass=${this.hass}
         .options=${options}
@@ -122,13 +110,6 @@ export class HaSelectorAutomationBehavior extends LitElement {
   }
 
   static styles = css`
-    .label {
-      display: block;
-      margin-bottom: var(--ha-space-2);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-    }
-
     ha-select-box {
       --ha-select-box-image-size: 28px;
     }
