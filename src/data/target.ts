@@ -118,7 +118,8 @@ export const areaMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const areaDevices = Object.values(devices).filter(
     (device) => device.area_id === area.area_id
@@ -133,7 +134,8 @@ export const areaMeetsFilter = (
         includeDomains,
         includeDeviceClasses,
         states,
-        entityFilter
+        entityFilter,
+        includeSecondary
       )
     )
   ) {
@@ -148,7 +150,7 @@ export const areaMeetsFilter = (
     areaEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
@@ -169,7 +171,8 @@ export const deviceMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
@@ -179,7 +182,7 @@ export const deviceMeetsFilter = (
     !devEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
