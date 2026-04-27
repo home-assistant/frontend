@@ -25,10 +25,23 @@ export interface CustomShortcutItem {
   color?: string;
 }
 
+export interface HomeSummaryConfig {
+  key: string;
+  hidden?: boolean;
+}
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
+  /**
+   * @deprecated Use `summaries` instead. Kept for reading existing configs
+   * saved before the `summaries` field was introduced.
+   */
   hidden_summaries?: string[];
+  /** Ordered list of summaries with their visibility. Encodes both display
+   * order (array position) and visibility (hidden field). Replaces
+   * hidden_summaries. */
+  summaries?: HomeSummaryConfig[];
   hide_welcome_message?: boolean;
   hide_suggested_entities?: boolean;
   custom_shortcuts?: CustomShortcutItem[];

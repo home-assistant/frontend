@@ -13,6 +13,7 @@ import type { HaFormSchema } from "../../../components/ha-form/types";
 import type {
   CustomShortcutItem,
   HomeFrontendSystemData,
+  HomeSummaryConfig,
 } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -22,11 +23,32 @@ import "../components/home-favorites-editor";
 import "../components/home-summaries-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
+// Default summary order — must match SUMMARY_META keys in home-summaries-editor.ts
+const DEFAULT_SUMMARY_ORDER = [
+  "light",
+  "climate",
+  "security",
+  "media_players",
+  "maintenance",
+  "weather",
+  "energy",
+] as const;
+
+// Builds the initial summaries state when no `summaries` config exists yet
+// (new user or migration from legacy `hidden_summaries`).
+function buildDefaultSummaries(hiddenKeys: string[]): HomeSummaryConfig[] {
+  const hidden = new Set(hiddenKeys);
+  return DEFAULT_SUMMARY_ORDER.map((key) => ({
+    key,
+    ...(hidden.has(key) && { hidden: true }),
+  }));
+}
+
 interface EditorState {
   favorite_entities: string[];
   show_suggested_entities: boolean;
   show_welcome_message: boolean;
-  hidden_summaries: string[];
+  summaries: HomeSummaryConfig[];
   custom_shortcuts: CustomShortcutItem[];
 }
 
@@ -62,9 +84,9 @@ export class DialogEditHome
         : [],
       show_suggested_entities: !params.config.hide_suggested_entities,
       show_welcome_message: !params.config.hide_welcome_message,
-      hidden_summaries: params.config.hidden_summaries
-        ? [...params.config.hidden_summaries]
-        : [],
+      summaries: params.config.summaries
+        ? [...params.config.summaries]
+        : buildDefaultSummaries(params.config.hidden_summaries ?? []),
       custom_shortcuts: params.config.custom_shortcuts
         ? [...params.config.custom_shortcuts]
         : [],
@@ -170,8 +192,8 @@ export class DialogEditHome
           <div class="expansion-content">
             <home-summaries-editor
               .hass=${this.hass}
-              .hiddenSummaries=${this._state.hidden_summaries}
-              @value-changed=${this._hiddenSummariesChanged}
+              .summaries=${this._state.summaries}
+              @value-changed=${this._summariesChanged}
             ></home-summaries-editor>
           </div>
         </ha-expansion-panel>
@@ -270,10 +292,10 @@ export class DialogEditHome
     };
   }
 
-  private _hiddenSummariesChanged(ev: ValueChangedEvent<string[]>): void {
+  private _summariesChanged(ev: ValueChangedEvent<HomeSummaryConfig[]>): void {
     this._state = {
       ...this._state!,
-      hidden_summaries: ev.detail.value,
+      summaries: ev.detail.value,
     };
   }
 
@@ -300,10 +322,12 @@ export class DialogEditHome
         ? undefined
         : true,
       hide_welcome_message: editor.show_welcome_message ? undefined : true,
-      hidden_summaries:
-        editor.hidden_summaries.length > 0
-          ? editor.hidden_summaries
-          : undefined,
+      summaries: editor.summaries,
+      // hidden_summaries is intentionally omitted: it is superseded by
+      // summaries. Existing values from the loaded config are preserved via
+      // the spread above only until the user saves, at which point summaries
+      // takes over.
+      hidden_summaries: undefined,
       custom_shortcuts:
         editor.custom_shortcuts.length > 0
           ? editor.custom_shortcuts
