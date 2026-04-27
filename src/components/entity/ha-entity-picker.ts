@@ -4,9 +4,8 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   entityComboBoxKeys,
@@ -14,6 +13,7 @@ import {
   type EntityComboBoxItem,
 } from "../../data/entity/entity_picker";
 import { domainToName } from "../../data/integration";
+import type { EntitySelectorExtraOption } from "../../data/selector";
 import {
   isHelperDomain,
   type HelperDomain,
@@ -22,6 +22,7 @@ import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
+import "../ha-icon";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
@@ -111,11 +112,20 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  /**
+   * Extra options shown alongside entities. The `id` is used as the value
+   * when the option is selected (it does not need to be a valid entity id).
+   */
+  @property({ attribute: false })
+  public extraOptions?: EntitySelectorExtraOption[];
+
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
   @property({ attribute: "add-button", type: Boolean })
   public addButton = false;
+
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -125,8 +135,53 @@ export class HaEntityPicker extends LitElement {
     this.hass.loadBackendTranslation("title");
   }
 
+  private _findExtraOption(value: string | undefined) {
+    return value
+      ? this.extraOptions?.find((opt) => opt.id === value)
+      : undefined;
+  }
+
+  private _renderExtraOptionStart(extraOption: EntitySelectorExtraOption) {
+    const stateObj = extraOption.entity_id
+      ? this.hass.states[extraOption.entity_id]
+      : undefined;
+    if (stateObj) {
+      return html`
+        <state-badge
+          slot="start"
+          .stateObj=${stateObj}
+          .hass=${this.hass}
+        ></state-badge>
+      `;
+    }
+    if (extraOption.icon_path) {
+      return html`
+        <ha-svg-icon
+          slot="start"
+          .path=${extraOption.icon_path}
+          style="margin: 0 4px"
+        ></ha-svg-icon>
+      `;
+    }
+    if (extraOption.icon) {
+      return html`<ha-icon slot="start" .icon=${extraOption.icon}></ha-icon>`;
+    }
+    return nothing;
+  }
+
   private _valueRenderer: PickerValueRenderer = (value) => {
     const entityId = value || "";
+
+    const extraOption = this._findExtraOption(entityId);
+    if (extraOption) {
+      return html`
+        ${this._renderExtraOptionStart(extraOption)}
+        <span slot="headline">${extraOption.primary}</span>
+        ${extraOption.secondary
+          ? html`<span slot="supporting-text">${extraOption.secondary}</span>`
+          : nothing}
+      `;
+    }
 
     const stateObj = this.hass.states[entityId];
 
@@ -141,21 +196,10 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
+    const { primary, secondary } = computeEntityPickerDisplay(
+      this.hass,
+      stateObj
     );
-
-    const isRTL = computeRTL(this.hass);
-
-    const primary = entityName || deviceName || entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
-      .filter(Boolean)
-      .join(isRTL ? " ◂ " : " ▸ ");
 
     return html`
       <state-badge
@@ -253,8 +297,8 @@ export class HaEntityPicker extends LitElement {
 
   private _getEntitiesMemoized = memoizeOne(getEntities);
 
-  private _getItems = () =>
-    this._getEntitiesMemoized(
+  private _getItems = () => {
+    const items = this._getEntitiesMemoized(
       this.hass,
       this.includeDomains,
       this.excludeDomains,
@@ -265,6 +309,19 @@ export class HaEntityPicker extends LitElement {
       this.excludeEntities,
       this.value
     );
+    if (this.extraOptions?.length) {
+      const resolvedExtras = this.extraOptions.map((opt) => ({
+        ...opt,
+        stateObj: opt.entity_id ? this.hass.states[opt.entity_id] : undefined,
+      }));
+      return [...resolvedExtras, ...items];
+    }
+    return items;
+  };
+
+  private _shouldHideClearIcon() {
+    return !!this._findExtraOption(this.value)?.hide_clear;
+  }
 
   protected render() {
     const placeholder =
@@ -287,13 +344,14 @@ export class HaEntityPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .hideClearIcon=${this.hideClearIcon}
+        .hideClearIcon=${this.hideClearIcon || this._shouldHideClearIcon()}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         .searchKeys=${entityComboBoxKeys}
         use-top-label
         .addButtonLabel=${this.addButton
-          ? this.hass.localize("ui.components.entity.entity-picker.add")
+          ? (this.addButtonLabel ??
+            this.hass.localize("ui.components.entity.entity-picker.add"))
           : undefined}
         .unknownItemText=${this.hass.localize(
           "ui.components.entity.entity-picker.unknown"
@@ -347,7 +405,7 @@ export class HaEntityPicker extends LitElement {
       return;
     }
 
-    if (!isValidEntityId(value)) {
+    if (!isValidEntityId(value) && !this._findExtraOption(value)) {
       return;
     }
 

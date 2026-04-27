@@ -2494,10 +2494,11 @@
         "editor": {
           "title": "Edit Overview page",
           "description": "Configure your Overview page display preferences.",
-          "favorite_entities_description": "Pin entities to always show them on your overview page.",
-          "favorite_entities_helper": "Entities in your favorites always appear first.",
+          "personalize": "Personalize",
+          "personalize_description": "Customize the top of your Overview page.",
           "suggested_entities": "Suggested entities",
-          "suggested_entities_description": "Include additional entities based on your most commonly used devices to fill up to 8 slots including your favorites.",
+          "suggested_entities_description": "Show entities you use often alongside your favorites.",
+          "suggested_entities_disabled_description": "Your favorites already fill the section. Remove a favorite to make room for suggestions.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
@@ -8982,6 +8983,7 @@
               },
               "numeric_state": {
                 "label": "Entity numeric state",
+                "attribute": "[%key:ui::panel::lovelace::editor::condition-editor::condition::state::attribute%]",
                 "above": "Above",
                 "below": "Below"
               },
@@ -8998,6 +9000,8 @@
               },
               "state": {
                 "label": "Entity state",
+                "attribute": "Attribute (optional)",
+                "current_entity": "Current entity",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
@@ -10114,7 +10118,7 @@
             },
             "home": {
               "favorite_entities": "Favorite entities",
-              "add_favorite_entity": "Add favorite entity"
+              "add_favorite_entity": "Add favorite"
             }
           },
           "view": {

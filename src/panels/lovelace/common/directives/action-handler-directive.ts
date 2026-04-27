@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import type { AttributePart } from "lit";
 import { noChange } from "lit";
 import { customElement } from "lit/decorators";

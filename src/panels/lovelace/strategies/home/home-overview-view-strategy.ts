@@ -22,6 +22,7 @@ import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
+  HeadingCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   RepairsCardConfig,
@@ -33,7 +34,7 @@ import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
-import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
@@ -193,25 +194,46 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const favoritesSection = {
-      strategy: {
-        type: "common-controls",
-        limit: maxCommonControls,
-        include_entities: favoriteEntities,
-        hide_empty: true,
-        show_predicted: !config.hide_suggested_entities,
-        heading: {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-          heading_style: "title",
-          visibility: [LARGE_SCREEN_CONDITION],
-          grid_options: {
-            rows: "auto", // Compact style
-          },
-        },
-      } satisfies CommonControlSectionStrategyConfig,
-      column_span: maxColumns,
-    } as LovelaceStrategySectionConfig;
+    const favoritesHeadingCard: HeadingCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+      heading_style: "title",
+      visibility: [LARGE_SCREEN_CONDITION],
+      grid_options: {
+        rows: "auto",
+      },
+    };
+
+    let favoritesSection: LovelaceSectionRawConfig | undefined;
+    if (!config.hide_suggested_entities) {
+      favoritesSection = {
+        strategy: {
+          type: "common-controls",
+          limit: maxCommonControls,
+          include_entities: favoriteEntities,
+          hide_empty: true,
+          heading: favoritesHeadingCard,
+        } satisfies CommonControlsSectionStrategyConfig,
+        column_span: maxColumns,
+      } satisfies LovelaceStrategySectionConfig;
+    } else if (favoriteEntities.length > 0) {
+      favoritesSection = {
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          favoritesHeadingCard,
+          ...favoriteEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                state_content: ["state", "area_name"],
+                show_entity_picture: true,
+              }) satisfies TileCardConfig
+          ),
+        ],
+      };
+    }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
       (filter) => generateEntityFilter(hass, filter)

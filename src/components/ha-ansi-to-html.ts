@@ -177,7 +177,6 @@ export class HaAnsiToHtml extends LitElement {
       lineDiv.appendChild(span);
     };
 
-    /* eslint-disable no-cond-assign */
     let match;
 
     while ((match = re.exec(line)) !== null) {

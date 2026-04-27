@@ -38,8 +38,6 @@ export class HaEntityStatePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
-
   private _getItems = memoizeOne(
     (
       hass: HomeAssistant,
@@ -122,12 +120,13 @@ export class HaEntityStatePicker extends LitElement {
       return nothing;
     }
 
+    const noEntity = !ensureArray(this.entityId)?.length;
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
-        .disabled=${this.disabled ||
-        (!this.entityId && this.noEntity === false)}
+        .disabled=${this.disabled || noEntity}
         .autofocus=${this.autofocus}
         .required=${this.required}
         .label=${this.label ??
