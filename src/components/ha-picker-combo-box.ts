@@ -52,6 +52,7 @@ export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
+  disabled?: boolean;
   search_labels?: Record<string, string | null>;
   sorting_label?: string;
   icon_path?: string;
@@ -425,6 +426,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
       .value=${item.id}
       .index=${index}
+      .disabled=${item.disabled}
       @click=${this._valueSelected}
     >
       ${renderer(item, index)}
@@ -439,6 +441,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _valueSelected = (ev: MouseEvent) => {
     ev.stopPropagation();
+    if ((ev.currentTarget as any).disabled) {
+      return;
+    }
     const value = (ev.currentTarget as any).value as string;
     const index = Number((ev.currentTarget as any).index);
     const newValue = value?.trim();
