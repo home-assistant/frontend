@@ -743,7 +743,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       (
         this.virtualizerElement?.items as (PickerComboBoxItem | string)[]
       ).forEach((item, index) => {
-        if (typeof item !== "string") {
+        if (typeof item !== "string" && !item.disabled) {
           this._fireSelectedEvents(item.id, index, newTab);
         }
       });
@@ -763,7 +763,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const item = this.virtualizerElement?.items[
       this._selectedItemIndex
     ] as PickerComboBoxItem;
-    if (item) {
+    if (item && !item.disabled) {
       this._fireSelectedEvents(item.id, this._selectedItemIndex, newTab);
     }
   };
