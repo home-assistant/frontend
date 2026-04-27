@@ -26,12 +26,12 @@ export type ZwaveCredentialType =
   | "unspecified_biometric"
   | "desfire";
 
-export type EnterableZwaveCredentialType = "pin_code" | "password";
-
-export const ENTERABLE_ZWAVE_CREDENTIAL_TYPES: readonly EnterableZwaveCredentialType[] =
+export const ENTERABLE_ZWAVE_CREDENTIAL_TYPES: readonly ZwaveCredentialType[] =
   ["pin_code", "password"];
 
-export const getZwaveCredentialTypeIcon = (type: string): string => {
+export const getZwaveCredentialTypeIcon = (
+  type: ZwaveCredentialType
+): string => {
   switch (type) {
     case "pin_code":
       return mdiDialpad;
@@ -71,11 +71,13 @@ export interface ZwaveCredentialCapabilities {
   supported_user_types: string[];
   max_user_name_length: number;
   supported_credential_rules: string[];
-  supported_credential_types: Record<string, ZwaveCredentialTypeCapability>;
+  supported_credential_types: Partial<
+    Record<ZwaveCredentialType, ZwaveCredentialTypeCapability>
+  >;
 }
 
 export interface ZwaveCredential {
-  type: string;
+  type: ZwaveCredentialType;
   slot: number;
   data: string | null;
 }
@@ -108,7 +110,7 @@ export interface SetZwaveUserResult {
 
 export interface SetZwaveCredentialParams {
   user_id: number;
-  credential_type: string;
+  credential_type: ZwaveCredentialType;
   credential_data: string;
   credential_slot?: number;
 }
@@ -120,7 +122,7 @@ export interface SetZwaveCredentialResult {
 
 export interface ClearZwaveCredentialParams {
   user_id: number;
-  credential_type: string;
+  credential_type: ZwaveCredentialType;
   credential_slot: number;
 }
 
@@ -209,19 +211,6 @@ export const clearZwaveCredential = (
     "zwave_js",
     "clear_credential",
     params,
-    { entity_id },
-    false
-  );
-
-export const clearZwaveAllCredentials = (
-  hass: HomeAssistant,
-  entity_id: string,
-  user_id: number
-) =>
-  hass.callService(
-    "zwave_js",
-    "clear_all_credentials",
-    { user_id },
     { entity_id },
     false
   );

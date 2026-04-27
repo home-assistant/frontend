@@ -28,6 +28,7 @@ import {
 } from "../../../../../data/zwave_js-credentials";
 import type {
   ZwaveCredential,
+  ZwaveCredentialType,
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
@@ -55,7 +56,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   @state() private _userType = "";
 
-  @state() private _credentialType = "";
+  @state() private _credentialType: ZwaveCredentialType | "" = "";
 
   @state() private _credentialData = "";
 
@@ -106,7 +107,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     );
   }
 
-  private get _enterableTypes(): string[] {
+  private get _enterableTypes(): ZwaveCredentialType[] {
     if (!this._params?.capabilities.supported_credential_types) {
       return [];
     }
@@ -467,7 +468,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   }
 
   private _handleCredentialTypeChanged(ev: Event): void {
-    this._credentialType = (ev.target as HaRadio).value;
+    this._credentialType = (ev.target as HaRadio).value as ZwaveCredentialType;
     this._credentialData = "";
     this._dataTouched = false;
   }
@@ -552,7 +553,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     if (isNew) {
       this._dataTouched = true;
-      if (this._credentialError) {
+      if (this._credentialError || !this._credentialType) {
         return;
       }
     }
@@ -580,7 +581,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
         try {
           await setZwaveCredential(this.hass, this._params.entity_id, {
             user_id,
-            credential_type: this._credentialType,
+            credential_type: this._credentialType as ZwaveCredentialType,
             credential_data: this._credentialData,
           });
         } catch (err: unknown) {

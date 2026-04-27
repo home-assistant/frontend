@@ -24,6 +24,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-dialog";
 import type {
   ZwaveCredentialCapabilities,
+  ZwaveCredentialType,
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
@@ -270,7 +271,7 @@ class DialogZwaveCredentialManage extends LitElement {
 
   private _renderCredentialBadges(user: ZwaveUser) {
     // Group credentials by type and count them
-    const typeCounts = new Map<string, number>();
+    const typeCounts = new Map<ZwaveCredentialType, number>();
     for (const cred of user.credentials) {
       typeCounts.set(cred.type, (typeCounts.get(cred.type) || 0) + 1);
     }

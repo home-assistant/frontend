@@ -16,6 +16,7 @@ import {
   clearZwaveCredential,
   setZwaveCredential,
 } from "../../../../../data/zwave_js-credentials";
+import type { ZwaveCredentialType } from "../../../../../data/zwave_js-credentials";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZwaveCredentialEditDialogParams } from "./show-dialog-zwave_js-credential-edit";
@@ -26,7 +27,7 @@ class DialogZwaveCredentialEdit extends LitElement {
 
   @state() private _params?: ZwaveCredentialEditDialogParams;
 
-  @state() private _credentialType = "";
+  @state() private _credentialType: ZwaveCredentialType | "" = "";
 
   @state() private _credentialData = "";
 
@@ -38,7 +39,7 @@ class DialogZwaveCredentialEdit extends LitElement {
 
   @state() private _open = false;
 
-  private _initialType = "";
+  private _initialType: ZwaveCredentialType | "" = "";
 
   private _initialData = "";
 
@@ -53,9 +54,8 @@ class DialogZwaveCredentialEdit extends LitElement {
     if (params.credential) {
       this._credentialType = params.credential.type;
       this._credentialData =
-        (ENTERABLE_ZWAVE_CREDENTIAL_TYPES as readonly string[]).includes(
-          params.credential.type
-        ) && params.credential.data
+        ENTERABLE_ZWAVE_CREDENTIAL_TYPES.includes(params.credential.type) &&
+        params.credential.data
           ? params.credential.data
           : "";
     } else {
@@ -73,7 +73,7 @@ class DialogZwaveCredentialEdit extends LitElement {
     );
   }
 
-  private get _enterableTypes(): string[] {
+  private get _enterableTypes(): ZwaveCredentialType[] {
     if (!this._params?.capabilities.supported_credential_types) {
       return [];
     }
@@ -202,7 +202,7 @@ class DialogZwaveCredentialEdit extends LitElement {
   }
 
   private _handleCredentialTypeChanged(ev: Event): void {
-    this._credentialType = (ev.target as HaRadio).value;
+    this._credentialType = (ev.target as HaRadio).value as ZwaveCredentialType;
     this._credentialData = "";
     this._dataTouched = false;
   }
@@ -265,7 +265,7 @@ class DialogZwaveCredentialEdit extends LitElement {
   }
 
   private async _save(): Promise<void> {
-    if (!this._params) {
+    if (!this._params || !this._credentialType) {
       return;
     }
     this._dataTouched = true;

@@ -7802,7 +7802,6 @@
               "edit": "Edit user",
               "delete": "Delete user",
               "clear_all": "Clear all users",
-              "clear_all_credentials": "Clear all credentials",
               "name": "Name",
               "type": "Type",
               "no_users": "No users configured",
@@ -7884,7 +7883,6 @@
             },
             "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
             "confirm_clear_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",
-            "confirm_clear_all_credentials": "Are you sure you want to delete all credentials for user {name}? This cannot be undone.",
             "confirm_delete_credential": "Are you sure you want to delete this credential ({type}, slot {slot})? This cannot be undone."
           }
         },

@@ -7,7 +7,6 @@ import {
   clearZwaveAllUsers,
   setZwaveCredential,
   clearZwaveCredential,
-  clearZwaveAllCredentials,
 } from "../../src/data/zwave_js-credentials";
 import type { HomeAssistant } from "../../src/types";
 
@@ -296,22 +295,6 @@ describe("zwave_js-credentials", () => {
         "zwave_js",
         "clear_credential",
         { user_id: 2, credential_type: "pin_code", credential_slot: 1 },
-        { entity_id: ENTITY_ID },
-        false
-      );
-    });
-  });
-
-  describe("clearZwaveAllCredentials", () => {
-    it("calls clear_all_credentials with user_id and entity_id target", async () => {
-      const hass = mockHass();
-
-      await clearZwaveAllCredentials(hass, ENTITY_ID, 3);
-
-      expect(hass.callService).toHaveBeenCalledWith(
-        "zwave_js",
-        "clear_all_credentials",
-        { user_id: 3 },
         { entity_id: ENTITY_ID },
         false
       );
