@@ -4,6 +4,7 @@ import { mdiMonitor } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -116,7 +117,6 @@ export class HaMediaPlayerPicker extends LitElement {
           id: BROWSER_PLAYER,
           primary: webBrowserLabel,
           icon_path: mdiMonitor,
-          pinned: true,
           search_labels: {
             entityName: webBrowserLabel,
             friendlyName: webBrowserLabel,
@@ -179,35 +179,40 @@ export class HaMediaPlayerPicker extends LitElement {
     item,
     index
   ) => html`
-    <ha-combo-box-item
-      type="button"
-      compact
-      .borderTop=${index !== 0}
-      .disabled=${item.disabled}
+    <div
+      style=${styleMap({
+        width: "100%",
+        borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
+      })}
     >
-      ${item.icon_path
-        ? html`
-            <ha-svg-icon
-              slot="start"
-              style="margin: 0 4px"
-              .path=${item.icon_path}
-            ></ha-svg-icon>
-          `
-        : html`
-            <state-badge slot="start" .stateObj=${item.stateObj}></state-badge>
-          `}
-      <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.stateObj && this._hassConfig.userData?.showEntityIdPicker
-        ? html`
-            <span slot="supporting-text" class="code">
-              ${item.stateObj.entity_id}
-            </span>
-          `
-        : nothing}
-    </ha-combo-box-item>
+      <ha-combo-box-item type="button" compact .disabled=${item.disabled}>
+        ${item.icon_path
+          ? html`
+              <ha-svg-icon
+                slot="start"
+                style="margin: 0 4px"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : html`
+              <state-badge
+                slot="start"
+                .stateObj=${item.stateObj}
+              ></state-badge>
+            `}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${item.stateObj && this._hassConfig.userData?.showEntityIdPicker
+          ? html`
+              <span slot="supporting-text" class="code">
+                ${item.stateObj.entity_id}
+              </span>
+            `
+          : nothing}
+      </ha-combo-box-item>
+    </div>
   `;
 
   private _playerSearchFn: PickerComboBoxSearchFn<EntityComboBoxItem> = (
