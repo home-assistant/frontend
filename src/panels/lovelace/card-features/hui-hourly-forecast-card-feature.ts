@@ -178,8 +178,9 @@ class HuiHourlyForecastCardFeature
     }
     const width = this.clientWidth || 300;
     const height = this.clientHeight || 42;
-    const padding = 4;
-    const drawableHeight = height - padding * 2;
+    // No bottom padding so bars and dots line up with the line graph baseline.
+    const topPadding = 4;
+    const drawableHeight = height - topPadding;
 
     const now = Date.now();
     const hoursToShow = this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
@@ -235,7 +236,7 @@ class HuiHourlyForecastCardFeature
             1,
             (value / maxPrecipitation) * drawableHeight
           );
-          const y = padding + drawableHeight - barHeight;
+          const y = height - barHeight;
           rainRects.push(svg`<rect
             x=${x}
             y=${y}
@@ -251,7 +252,7 @@ class HuiHourlyForecastCardFeature
     const dots: TemplateResult[] = [];
     if (showDots) {
       const dotRadius = 1.5;
-      const cy = padding + drawableHeight - dotRadius;
+      const cy = height - dotRadius;
       for (const { entry, t } of inRange) {
         const value = getForecastPrecipitation(entry, precipitationType);
         if (Number.isFinite(value) && value! > 0) {
