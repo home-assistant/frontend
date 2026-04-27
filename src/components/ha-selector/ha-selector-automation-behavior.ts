@@ -9,9 +9,9 @@ import type {
   AutomationBehaviorTriggerMode,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-formfield";
 import "../ha-input-helper-text";
-import "../ha-radio";
+import type { SelectBoxOption } from "../ha-select-box";
+import "../ha-select-box";
 
 const TRIGGER_BEHAVIORS: AutomationBehaviorTriggerMode[] = [
   "any",
@@ -42,27 +42,43 @@ export class HaSelectorAutomationBehavior extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    const behaviors = this._behaviors();
+    const { mode } = this.selector.automation_behavior ?? {};
+    const modeKey = mode ?? "trigger";
+
+    const sectionLabel =
+      this.label ||
+      this.hass.localize(
+        `ui.components.selectors.automation_behavior.${modeKey}.label` as LocalizeKeys
+      );
+
+    const isTrigger =
+      (this.selector.automation_behavior?.mode ?? "trigger") === "trigger";
+
+    const options = this._behaviors().map<SelectBoxOption>((behavior) => ({
+      value: behavior,
+      label: this._localizeOption(behavior, "label"),
+      description: this._localizeOption(behavior, "description"),
+      disabled: this.disabled,
+      ...(isTrigger && {
+        image: {
+          src: `/static/images/form/automation_behavior_trigger_${behavior}.svg`,
+          src_dark: `/static/images/form/automation_behavior_trigger_${behavior}_dark.svg`,
+        },
+      }),
+    }));
 
     return html`
-      ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
-      <div class="container">
-        ${behaviors.map(
-          (behavior) => html`
-            <ha-formfield
-              .label=${this._localizeOption(behavior)}
-              .disabled=${this.disabled}
-            >
-              <ha-radio
-                .checked=${behavior === this.value}
-                .value=${behavior}
-                .disabled=${this.disabled}
-                @change=${this._radioChanged}
-              ></ha-radio>
-            </ha-formfield>
-          `
-        )}
-      </div>
+      ${sectionLabel
+        ? html`<span class="label">${sectionLabel}</span>`
+        : nothing}
+      <ha-select-box
+        .hass=${this.hass}
+        .options=${options}
+        .value=${this.value ?? ""}
+        max_columns="1"
+        ?stacked_image=${isTrigger}
+        @value-changed=${this._valueChanged}
+      ></ha-select-box>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
             >${this.helper}</ha-input-helper-text
@@ -76,28 +92,29 @@ export class HaSelectorAutomationBehavior extends LitElement {
     return mode === "condition" ? CONDITION_BEHAVIORS : TRIGGER_BEHAVIORS;
   }
 
-  private _localizeOption(behavior: AutomationBehavior): string {
+  private _localizeOption(
+    behavior: AutomationBehavior,
+    field: "label" | "description"
+  ): string {
     const { translation_key: translationKey, mode } =
       this.selector.automation_behavior ?? {};
 
     if (this.localizeValue && translationKey) {
       const translated = this.localizeValue(
-        `${translationKey}.options.${behavior}`
+        `${translationKey}.options.${behavior}.${field}`
       );
       if (translated) {
         return translated;
       }
     }
-    return (
-      this.hass.localize(
-        `ui.components.selectors.automation_behavior.${mode ?? "trigger"}.options.${behavior}` as LocalizeKeys
-      ) || behavior
+    return this.hass.localize(
+      `ui.components.selectors.automation_behavior.${mode ?? "trigger"}.options.${behavior}.${field}` as LocalizeKeys
     );
   }
 
-  private _radioChanged(ev: Event) {
+  private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = (ev.target as HTMLInputElement).value as AutomationBehavior;
+    const value = ev.detail.value as AutomationBehavior;
     if (this.disabled || value === this.value) {
       return;
     }
@@ -112,15 +129,8 @@ export class HaSelectorAutomationBehavior extends LitElement {
       font-size: var(--ha-font-size-s);
     }
 
-    .container {
-      border: 1px solid var(--divider-color);
-      border-radius: var(--ha-border-radius-lg);
-      padding: var(--ha-space-2) var(--ha-space-4);
-      padding-left: 0;
-    }
-
-    ha-formfield {
-      display: block;
+    ha-select-box {
+      --ha-select-box-image-size: 28px;
     }
   `;
 }

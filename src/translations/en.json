@@ -623,16 +623,33 @@
         },
         "automation_behavior": {
           "trigger": {
+            "label": "Triggers when",
             "options": {
-              "any": "When any entity gets in the required state",
-              "first": "When the first entity gets in the required state",
-              "last": "When the last entity gets in the required state"
+              "any": {
+                "label": "Each",
+                "description": "Triggers once for every target that changes"
+              },
+              "first": {
+                "label": "First",
+                "description": "Triggers the first time any target changes"
+              },
+              "last": {
+                "label": "All",
+                "description": "Triggers once all targets have changed"
+              }
             }
           },
           "condition": {
+            "label": "Is true when",
             "options": {
-              "any": "When any entity is in the required state",
-              "all": "When all entities are in the required state"
+              "any": {
+                "label": "Any",
+                "description": "Is true when any target matches the desired state"
+              },
+              "all": {
+                "label": "All",
+                "description": "Is true when all targets matches the desired state"
+              }
             }
           }
         }
