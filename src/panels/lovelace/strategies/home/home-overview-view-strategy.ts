@@ -16,6 +16,7 @@ import type {
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { DEFAULT_SUMMARIES } from "../../../../data/frontend";
 import type {
   CustomShortcutItem,
   HomeSummaryConfig,
@@ -50,18 +51,6 @@ export interface HomeOverviewViewStrategyConfig {
   hide_suggested_entities?: boolean;
   custom_shortcuts?: CustomShortcutItem[];
 }
-
-// Default order — matches the original hardcoded sequence.
-// Used as fallback when config.summaries is not yet set.
-const DEFAULT_SUMMARY_ORDER: HomeSummaryConfig[] = [
-  { key: "light" },
-  { key: "climate" },
-  { key: "security" },
-  { key: "media_players" },
-  { key: "maintenance" },
-  { key: "weather" },
-  { key: "energy" },
-];
 
 const computeAreaCard = (
   areaId: string,
@@ -397,7 +386,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     // Resolve display order: use user-defined summaries if set, otherwise
     // fall back to DEFAULT_SUMMARY_ORDER with all summaries visible.
     const orderedSummaries: HomeSummaryConfig[] =
-      config.summaries ?? DEFAULT_SUMMARY_ORDER;
+      config.summaries ?? DEFAULT_SUMMARIES;
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [

@@ -30,6 +30,16 @@ export interface HomeSummaryConfig {
   hidden?: boolean;
 }
 
+export const DEFAULT_SUMMARIES: HomeSummaryConfig[] = [
+  { key: "light" },
+  { key: "climate" },
+  { key: "security" },
+  { key: "media_players" },
+  { key: "maintenance" },
+  { key: "weather" },
+  { key: "energy" },
+];
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;

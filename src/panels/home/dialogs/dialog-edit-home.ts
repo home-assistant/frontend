@@ -10,10 +10,11 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import type {
-  CustomShortcutItem,
-  HomeFrontendSystemData,
-  HomeSummaryConfig,
+import {
+  DEFAULT_SUMMARIES,
+  type CustomShortcutItem,
+  type HomeFrontendSystemData,
+  type HomeSummaryConfig,
 } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -22,17 +23,6 @@ import "../components/home-custom-shortcuts-editor";
 import "../components/home-favorites-editor";
 import "../components/home-summaries-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
-
-// Default summary order — must match SUMMARY_META keys in home-summaries-editor.ts
-const DEFAULT_SUMMARY_ORDER = [
-  "light",
-  "climate",
-  "security",
-  "media_players",
-  "maintenance",
-  "weather",
-  "energy",
-] as const;
 
 interface EditorState {
   favorite_entities: string[];
@@ -76,7 +66,7 @@ export class DialogEditHome
       show_welcome_message: !params.config.hide_welcome_message,
       summaries: params.config.summaries
         ? [...params.config.summaries]
-        : DEFAULT_SUMMARY_ORDER.map((key) => ({ key })),
+        : [...DEFAULT_SUMMARIES],
       custom_shortcuts: params.config.custom_shortcuts
         ? [...params.config.custom_shortcuts]
         : [],
