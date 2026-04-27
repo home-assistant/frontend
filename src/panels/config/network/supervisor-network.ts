@@ -1,4 +1,5 @@
 import { mdiDeleteOutline, mdiMenuDown, mdiPlus, mdiWifi } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -38,6 +39,9 @@ import {
 import type { HomeAssistant } from "../../../types";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
+
+const hasText = (value?: string | null): value is string =>
+  typeof value === "string" && value.trim().length > 0;
 
 const PREDEFINED_DNS = {
   ipv4: {
@@ -84,10 +88,10 @@ export class HassioNetwork extends LitElement {
 
   private async _fetchNetworkInfo() {
     const network = await fetchNetworkInfo(this.hass);
-    this._interfaces = network.interfaces.sort((a, b) =>
-      a.primary > b.primary ? -1 : 1
-    );
-    this._interface = { ...this._interfaces[this._curTabIndex] };
+    this._interfaces = network.interfaces
+      .sort((a, b) => (a.primary > b.primary ? -1 : 1))
+      .map((networkInterface) => deepClone(networkInterface));
+    this._interface = deepClone(this._interfaces[this._curTabIndex]);
   }
 
   protected render() {
@@ -327,7 +331,7 @@ export class HassioNetwork extends LitElement {
     if (watingForSSID) {
       return nothing;
     }
-    const nameservers = this._interface![version]?.nameservers || [];
+    const nameservers = [...(this._interface![version]?.nameservers || [])];
     if (nameservers.length === 0) {
       nameservers.push(""); // always show input
     }
@@ -562,14 +566,14 @@ export class HassioNetwork extends LitElement {
       interfaceOptions[version] = {
         method: this._interface![version]?.method || "auto",
         nameservers: this._interface![version]?.nameservers?.filter(
-          (ns: string) => ns.trim()
+          (ns: string | null | undefined) => hasText(ns)
         ),
       };
       if (this._interface![version]?.method === "static") {
         interfaceOptions[version] = {
           ...interfaceOptions[version],
           address: this._interface![version]?.address?.filter(
-            (address: string) => address.trim()
+            (address: string | null | undefined) => hasText(address)
           ),
           gateway: this._interface![version]?.gateway,
         };
@@ -649,7 +653,7 @@ export class HassioNetwork extends LitElement {
       }
     }
     this._curTabIndex = Number(ev.detail.name);
-    this._interface = { ...this._interfaces[this._curTabIndex] };
+    this._interface = deepClone(this._interfaces[this._curTabIndex]);
   }
 
   private _handleRadioValueChanged(ev: Event): void {

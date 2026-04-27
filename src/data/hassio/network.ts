@@ -116,7 +116,10 @@ export const accesspointScan = async (
   );
 };
 
-export const parseAddress = (address: string) => {
+export const parseAddress = (address?: string | null) => {
+  if (!address) {
+    return { ip: "", mask: null, prefix: null };
+  }
   const [ip, cidr] = address.split("/");
   const isIPv6 = ip.includes(":");
   const mask = cidr ? cidrToNetmask(cidr, isIPv6) : null;
