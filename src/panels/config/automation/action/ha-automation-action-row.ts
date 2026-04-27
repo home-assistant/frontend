@@ -37,8 +37,8 @@ import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import "../../../../components/ha-automation-row";
-import type { HaAutomationRow } from "../../../../components/ha-automation-row";
+import "../../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -192,11 +192,21 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @state() private _running = false;
+
+  @state() private _runResult?: {
+    variant: "success" | "danger" | "info";
+    title: string;
+    details?: string;
+  };
+
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
 
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
+
+  private _runResultTimeout?: number;
 
   get selected() {
     return this._selected;
@@ -225,6 +235,14 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._runResultTimeout) {
+      clearTimeout(this._runResultTimeout);
+    }
+  }
+
   private _renderOverflowLabel(label: string, shortcut?: TemplateResult) {
     return html`
       <div class="overflow-label">
@@ -239,7 +257,7 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
-  private _renderRow() {
+  private _renderRow(row = true) {
     const type = getAutomationActionType(this.action);
 
     const action = type === "service" && (this.action as ServiceAction).action;
@@ -298,6 +316,18 @@ export default class HaAutomationActionRow extends LitElement {
               </ha-tooltip>`
           : nothing}
       </h3>
+      <ha-automation-row-event-chip
+        .show=${this._running}
+        .variant=${this._runResult?.variant}
+        .slot=${row ? "event" : ""}
+        aria-live="polite"
+        .interactive=${!!this._runResult?.details}
+        class=${row ? "" : "event-chip"}
+        @click=${this._showRunResultDetails}
+        @keydown=${this._showRunResultDetails}
+      >
+        ${this._runResult?.title}
+      </ha-automation-row-event-chip>
 
       <slot name="icons" slot="icons"></slot>
 
@@ -580,6 +610,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ...ACTION_COMBINED_BLOCKS,
               ].includes(blockType!)}
               .sortSelected=${this.sortSelected}
+              .dim=${this._running}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
@@ -589,7 +620,7 @@ export default class HaAutomationActionRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow()}
+                ${this._renderRow(false)}
               </ha-expansion-panel>
             `}
       </ha-card>
@@ -679,6 +710,10 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _runAction = async () => {
+    if (this._runResultTimeout) {
+      clearTimeout(this._runResultTimeout);
+    }
+
     requestAnimationFrame(() => {
       // @ts-ignore is supported in all browsers except firefox
       if (this.scrollIntoViewIfNeeded) {
@@ -688,36 +723,70 @@ export default class HaAutomationActionRow extends LitElement {
       }
       this.scrollIntoView();
     });
+
+    this._runResult = {
+      variant: "info",
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.run"
+      ),
+    };
+    this._running = true;
+
     const validated = await validateConfig(this.hass, {
       actions: this.action,
     });
 
     if (!validated.actions.valid) {
-      showAlertDialog(this, {
+      this._runResult = {
+        variant: "danger",
         title: this.hass.localize(
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
-        text: validated.actions.error,
-      });
-      return;
+        details: validated.actions.error,
+      };
+    } else {
+      try {
+        await callExecuteScript(this.hass, this.action);
+      } catch (err: any) {
+        this._runResult = {
+          variant: "danger",
+          title: this.hass.localize(
+            "ui.panel.config.automation.editor.actions.run_action_error"
+          ),
+          details: err.message || err,
+        };
+      }
     }
 
-    try {
-      await callExecuteScript(this.hass, this.action);
-    } catch (err: any) {
-      showAlertDialog(this, {
+    if (this._runResult.variant === "info") {
+      this._runResult = {
+        variant: "success",
         title: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.run_action_error"
+          "ui.panel.config.automation.editor.actions.run_action_success"
         ),
-        text: err.message || err,
-      });
+      };
+    }
+
+    this._runResultTimeout = window.setTimeout(() => {
+      this._running = false;
+    }, 2500);
+  };
+
+  private _showRunResultDetails = (ev: Event) => {
+    if (!this._runResult?.details) {
       return;
     }
 
-    showEditorToast(this, {
-      message: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.run_action_success"
-      ),
+    if (ev instanceof KeyboardEvent) {
+      if (ev.key !== "Enter" && ev.key !== " ") {
+        return;
+      }
+    }
+    ev.stopPropagation();
+
+    showAlertDialog(this, {
+      title: this._runResult!.title,
+      text: this._runResult!.details,
     });
   };
 

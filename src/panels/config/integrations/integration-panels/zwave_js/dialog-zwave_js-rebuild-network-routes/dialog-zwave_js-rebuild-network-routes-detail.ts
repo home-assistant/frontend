@@ -12,7 +12,7 @@ import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-domain-icon";
-import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-md-list";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-spinner";
