@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { html } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { HaListBase } from "./ha-list-base";
 
@@ -20,6 +20,10 @@ export class HaListNav extends HaListBase {
   // No host role — the inner <nav> carries the landmark semantics, and the
   // inner <div role="list"> preserves the list semantics for screen readers.
   protected override readonly hostRole = "";
+
+  // The label is forwarded to the inner <nav>
+  @property({ type: String, attribute: "aria-label", reflect: false })
+  public override ariaLabel: string | null = null;
 
   protected render(): TemplateResult {
     return html`<nav

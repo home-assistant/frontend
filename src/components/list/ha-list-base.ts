@@ -33,7 +33,7 @@ export class HaListBase extends LitElement {
   @property({ type: Boolean, attribute: "wrap-focus" })
   public wrapFocus = false;
 
-  @property({ type: String, attribute: "aria-label" })
+  @property({ type: String, attribute: "aria-label", reflect: true })
   public ariaLabel: string | null = null;
 
   public items: readonly HaListItemBase[] = [];
