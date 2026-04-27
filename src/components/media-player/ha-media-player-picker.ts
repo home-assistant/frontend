@@ -239,11 +239,10 @@ export class HaMediaPlayerPicker extends LitElement {
 
   private _valueChanged(ev: CustomEvent<{ value: string }>): void {
     ev.stopPropagation();
-    const { value } = ev.detail;
-    if (!value) {
+    if (!ev.detail.value) {
       return;
     }
-    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   static styles = css`
