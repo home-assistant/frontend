@@ -14,8 +14,8 @@ import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -396,15 +396,24 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                       <span slot="start">
                         ${this._renderIcon(isBrowser, stateObj)}
                       </span>
-                      ${this.narrow
-                        ? nothing
-                        : isBrowser
-                          ? this.hass.localize(
-                              "ui.components.media-browser.web-browser"
-                            )
-                          : stateObj
-                            ? computeStateName(stateObj)
-                            : this.entityId}
+                      ${isBrowser
+                        ? this.hass.localize(
+                            "ui.components.media-browser.web-browser"
+                          )
+                        : stateObj
+                          ? (() => {
+                              const { primary, secondary } =
+                                computeEntityPickerDisplay(this.hass, stateObj);
+                              return html`<div class="player-label">
+                                <div>${primary}</div>
+                                ${secondary
+                                  ? html`<div class="player-secondary">
+                                      ${secondary}
+                                    </div>`
+                                  : nothing}
+                              </div>`;
+                            })()
+                          : this.entityId}
                       <ha-svg-icon
                         slot="end"
                         .path=${mdiChevronDown}
@@ -418,17 +427,26 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
             >
               ${this.hass.localize("ui.components.media-browser.web-browser")}
             </ha-dropdown-item>
-            ${this._mediaPlayerEntities.map(
-              (source) => html`
+            ${this._mediaPlayerEntities.map((source) => {
+              const { primary, secondary } = computeEntityPickerDisplay(
+                this.hass,
+                source
+              );
+              return html`
                 <ha-dropdown-item
                   .selected=${source.entity_id === this.entityId}
                   .disabled=${source.state === UNAVAILABLE}
                   .value=${source.entity_id}
                 >
-                  ${computeStateName(source)}
+                  <div class="content">
+                    ${primary}
+                    ${secondary
+                      ? html`<div class="secondary">${secondary}</div>`
+                      : nothing}
+                  </div>
                 </ha-dropdown-item>
-              `
-            )}
+              `;
+            })}
           </ha-dropdown>
         </div>
       </div>
@@ -708,6 +726,37 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     .secondary,
     .progress {
       color: var(--secondary-text-color);
+    }
+
+    ha-dropdown-item .content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-1);
+    }
+
+    ha-dropdown-item .secondary {
+      font-size: var(--ha-font-size-s);
+      color: var(--ha-color-text-secondary);
+    }
+
+    .player-label {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--ha-space-1);
+      max-width: 120px;
+    }
+
+    .player-label > div {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player-secondary {
+      font-size: var(--ha-font-size-s);
+      color: color-mix(in srgb, currentColor 70%, transparent);
     }
 
     .choose-player {

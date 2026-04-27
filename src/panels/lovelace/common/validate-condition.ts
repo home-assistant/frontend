@@ -53,6 +53,7 @@ export interface LocationCondition extends BaseCondition {
 export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
+  attribute?: string;
   below?: string | number;
   above?: string | number;
 }
@@ -60,6 +61,7 @@ export interface NumericStateCondition extends BaseCondition {
 export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
+  attribute?: string;
   state?: string | string[];
   state_not?: string | string[];
 }
@@ -110,10 +112,17 @@ function checkStateCondition(
   condition: StateCondition | LegacyCondition,
   hass: HomeAssistant
 ) {
-  const state =
-    condition.entity && hass.states[condition.entity]
-      ? hass.states[condition.entity].state
-      : UNKNOWN;
+  const stateObj = condition.entity ? hass.states[condition.entity] : undefined;
+  const attribute = "attribute" in condition ? condition.attribute : undefined;
+  let state: string;
+  if (!stateObj) {
+    state = UNKNOWN;
+  } else if (attribute) {
+    const attrValue = stateObj.attributes[attribute];
+    state = attrValue == null ? UNKNOWN : String(attrValue);
+  } else {
+    state = stateObj.state;
+  }
   let value = condition.state ?? condition.state_not;
 
   // Guard against invalid/incomplete condition configuration
@@ -144,8 +153,10 @@ function checkStateNumericCondition(
   condition: NumericStateCondition,
   hass: HomeAssistant
 ) {
-  const state = (condition.entity ? hass.states[condition.entity] : undefined)
-    ?.state;
+  const stateObj = condition.entity ? hass.states[condition.entity] : undefined;
+  const state = condition.attribute
+    ? stateObj?.attributes[condition.attribute]
+    : stateObj?.state;
   let above = condition.above;
   let below = condition.below;
 
