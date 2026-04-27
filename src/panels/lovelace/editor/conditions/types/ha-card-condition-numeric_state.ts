@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -19,12 +18,11 @@ import type {
 } from "../../../common/validate-condition";
 import type { ConditionsEntityContext } from "../context";
 import { conditionsEntityContext } from "../context";
-import type { EntityMode } from "../entity-mode";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
-  entityModeSchemaField,
-  getCurrentEntityLabel,
-  resolveEntityMode,
-} from "../entity-mode";
+  CURRENT_ENTITY_ID,
+  currentEntityOption,
+} from "../current-entity-option";
 
 const numericStateConditionStruct = object({
   condition: literal("numeric_state"),
@@ -37,7 +35,6 @@ const numericStateConditionStruct = object({
 interface NumericStateConditionData {
   condition: "numeric_state";
   entity?: string;
-  entity_mode?: EntityMode;
   attribute?: string;
   above?: number | string;
   below?: number | string;
@@ -55,8 +52,6 @@ export class HaCardConditionNumericState extends LitElement {
   @consume({ context: conditionsEntityContext, subscribe: true })
   private _entityContext?: ConditionsEntityContext;
 
-  @state() private _entityMode?: EntityMode;
-
   public static get defaultConfig(): NumericStateCondition {
     return { condition: "numeric_state", entity: "" };
   }
@@ -65,43 +60,48 @@ export class HaCardConditionNumericState extends LitElement {
     return assert(condition, numericStateConditionStruct);
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has("condition") && this._entityMode === undefined) {
-      this._entityMode = this.condition.entity ? "specific" : "current";
-    }
-  }
-
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      currentEntityLabel: string | undefined,
-      showEntityPicker: boolean,
+      currentEntityId: string | undefined,
+      currentEntityName: string | undefined,
+      useCurrentEntity: boolean,
+      filterEntityIds: string[] | undefined,
       unit: string | undefined
     ) => {
-      const modeField = currentEntityLabel
-        ? entityModeSchemaField(localize, currentEntityLabel)
+      const showEntityPicker = filterEntityIds === undefined;
+      const currentEntityOpt = currentEntityId
+        ? currentEntityOption(localize, currentEntityId, currentEntityName)
         : undefined;
-      const entityField = showEntityPicker
-        ? { name: "entity", selector: { entity: {} } }
-        : undefined;
-      const attributeField = showEntityPicker
-        ? {
-            name: "attribute",
-            selector: {
-              attribute: {
-                hide_attributes: NON_NUMERIC_ATTRIBUTES,
-              },
-            },
-            context: {
-              filter_entity: "entity",
-            },
-          }
-        : undefined;
+      const fixedEntityIds =
+        filterEntityIds ??
+        (useCurrentEntity && currentEntityId ? [currentEntityId] : undefined);
 
       return [
-        ...(modeField ? [modeField] : []),
-        ...(entityField ? [entityField] : []),
-        ...(attributeField ? [attributeField] : []),
+        ...(showEntityPicker
+          ? [
+              {
+                name: "entity",
+                selector: {
+                  entity: {
+                    extra_options: currentEntityOpt
+                      ? [currentEntityOpt]
+                      : undefined,
+                  },
+                },
+              },
+            ]
+          : []),
+        {
+          name: "attribute",
+          selector: {
+            attribute: {
+              hide_attributes: NON_NUMERIC_ATTRIBUTES,
+              entity_id: fixedEntityIds,
+            },
+          },
+          context: { filter_entity: "entity" },
+        },
         {
           name: "",
           type: "grid",
@@ -125,32 +125,32 @@ export class HaCardConditionNumericState extends LitElement {
   );
 
   protected render() {
-    const { currentEntityId, entityMode } = resolveEntityMode(
-      this._entityContext,
-      this._entityMode,
-      this.condition.entity
-    );
+    const ctx = this._entityContext;
+    const currentEntityId = ctx?.mode === "current" ? ctx.entityId : undefined;
+    const filterEntityIds = ctx?.mode === "filter" ? ctx.entityIds : undefined;
+    const useCurrentEntity =
+      currentEntityId !== undefined && !this.condition.entity;
 
-    const effectiveEntityId =
-      entityMode === "current" ? currentEntityId : this.condition.entity;
-    const stateObj = effectiveEntityId
-      ? this.hass.states[effectiveEntityId]
+    const selectedEntityId = useCurrentEntity
+      ? currentEntityId
+      : this.condition.entity;
+    const stateObj = selectedEntityId
+      ? this.hass.states[selectedEntityId]
+      : undefined;
+    const currentStateObj = currentEntityId
+      ? this.hass.states[currentEntityId]
+      : undefined;
+    const currentEntityName = currentStateObj
+      ? computeStateName(currentStateObj)
       : undefined;
 
     const unit = this.condition.attribute
       ? undefined
       : stateObj?.attributes.unit_of_measurement;
 
-    const currentEntityLabel = getCurrentEntityLabel(
-      this.hass,
-      currentEntityId
-    );
-    const showEntityPicker =
-      this._entityContext?.mode !== "filter" && entityMode !== "current";
-
     const data: NumericStateConditionData = {
       ...this.condition,
-      entity_mode: entityMode,
+      entity: useCurrentEntity ? CURRENT_ENTITY_ID : this.condition.entity,
     };
 
     return html`
@@ -159,8 +159,10 @@ export class HaCardConditionNumericState extends LitElement {
         .data=${data}
         .schema=${this._schema(
           this.hass.localize,
-          currentEntityLabel,
-          showEntityPicker,
+          currentEntityId,
+          currentEntityName,
+          useCurrentEntity,
+          filterEntityIds,
           unit
         )}
         .disabled=${this.disabled}
@@ -173,13 +175,13 @@ export class HaCardConditionNumericState extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const data = { ...ev.detail.value } as NumericStateConditionData;
-    const { entity_mode, entity, ...rest } = data;
+    const { entity, ...rest } = data;
 
-    this._entityMode = entity_mode;
+    const isCurrentEntity = entity === CURRENT_ENTITY_ID;
 
     const condition: NumericStateCondition = {
       ...rest,
-      ...(entity_mode !== "current" && entity ? { entity } : {}),
+      ...(!isCurrentEntity && entity ? { entity } : {}),
     };
 
     if (!condition.attribute) {
@@ -194,7 +196,6 @@ export class HaCardConditionNumericState extends LitElement {
   ): string => {
     switch (schema.name) {
       case "entity":
-      case "entity_mode":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "attribute":
         return this.hass.localize(

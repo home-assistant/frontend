@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,12 +15,11 @@ import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
 import type { ConditionsEntityContext } from "../context";
 import { conditionsEntityContext } from "../context";
-import type { EntityMode } from "../entity-mode";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
-  entityModeSchemaField,
-  getCurrentEntityLabel,
-  resolveEntityMode,
-} from "../entity-mode";
+  CURRENT_ENTITY_ID,
+  currentEntityOption,
+} from "../current-entity-option";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -34,7 +32,6 @@ const stateConditionStruct = object({
 interface StateConditionData {
   condition: "state";
   entity?: string;
-  entity_mode?: EntityMode;
   attribute?: string;
   invert: "true" | "false";
   state?: string | string[];
@@ -52,20 +49,6 @@ export class HaCardConditionState extends LitElement {
   @consume({ context: conditionsEntityContext, subscribe: true })
   private _entityContext?: ConditionsEntityContext;
 
-  @state() private _entityMode?: EntityMode;
-
-  private _resolveStateEntityIds = memoizeOne(
-    (
-      ctx: ConditionsEntityContext | undefined,
-      entityMode: EntityMode | undefined,
-      currentEntityId: string | undefined
-    ): string[] | undefined => {
-      if (ctx?.mode === "filter") return ctx.entityIds;
-      if (entityMode === "current" && currentEntityId) return [currentEntityId];
-      return undefined;
-    }
-  );
-
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
   }
@@ -74,64 +57,47 @@ export class HaCardConditionState extends LitElement {
     return assert(condition, stateConditionStruct);
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>): void {
-    if (!changedProperties.has("condition")) {
-      return;
-    }
-    try {
-      assert(this.condition, stateConditionStruct);
-    } catch (err: any) {
-      fireEvent(this, "ui-mode-not-available", err);
-    }
-    if (this._entityMode === undefined) {
-      this._entityMode = this.condition.entity ? "specific" : "current";
-    }
-  }
-
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      currentEntityLabel: string | undefined,
-      showEntityPicker: boolean,
-      entityIds: string[] | undefined
+      currentEntityId: string | undefined,
+      currentEntityName: string | undefined,
+      useCurrentEntity: boolean,
+      filterEntityIds: string[] | undefined
     ) => {
-      const modeField = currentEntityLabel
-        ? entityModeSchemaField(localize, currentEntityLabel)
+      const currentEntityOpt = currentEntityId
+        ? currentEntityOption(localize, currentEntityId, currentEntityName)
         : undefined;
-      const entityField = showEntityPicker
-        ? { name: "entity", selector: { entity: {} } }
-        : undefined;
-      const attributeField = showEntityPicker
-        ? {
-            name: "attribute",
-            selector: {
-              attribute: {
-                hide_attributes: STATE_CONDITION_HIDDEN_ATTRIBUTES,
-              },
-            },
-            context: {
-              filter_entity: "entity",
-            },
-          }
-        : undefined;
-      const stateField = showEntityPicker
-        ? {
-            name: "state",
-            selector: { state: {} },
-            context: {
-              filter_entity: "entity",
-              filter_attribute: "attribute",
-            },
-          }
-        : {
-            name: "state",
-            selector: { state: { entity_id: entityIds } },
-          };
+      const showEntityPicker = filterEntityIds === undefined;
+      const fixedEntityIds =
+        filterEntityIds ??
+        (useCurrentEntity && currentEntityId ? [currentEntityId] : undefined);
 
       return [
-        ...(modeField ? [modeField] : []),
-        ...(entityField ? [entityField] : []),
-        ...(attributeField ? [attributeField] : []),
+        ...(showEntityPicker
+          ? [
+              {
+                name: "entity",
+                selector: {
+                  entity: {
+                    extra_options: currentEntityOpt
+                      ? [currentEntityOpt]
+                      : undefined,
+                  },
+                },
+              },
+            ]
+          : []),
+        {
+          name: "attribute",
+          selector: {
+            attribute: {
+              hide_attributes: STATE_CONDITION_HIDDEN_ATTRIBUTES,
+              entity_id: fixedEntityIds,
+            },
+          },
+          context: { filter_entity: "entity" },
+        },
         {
           name: "",
           type: "grid",
@@ -159,7 +125,14 @@ export class HaCardConditionState extends LitElement {
                 },
               },
             },
-            stateField,
+            {
+              name: "state",
+              selector: { state: { entity_id: fixedEntityIds } },
+              context: {
+                filter_entity: "entity",
+                filter_attribute: "attribute",
+              },
+            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[];
@@ -169,27 +142,22 @@ export class HaCardConditionState extends LitElement {
   protected render() {
     const { state: _state, state_not: _stateNot, ...content } = this.condition;
 
-    const { currentEntityId, entityMode } = resolveEntityMode(
-      this._entityContext,
-      this._entityMode,
-      this.condition.entity
-    );
-    const currentEntityLabel = getCurrentEntityLabel(
-      this.hass,
-      currentEntityId
-    );
-    const entityIds = this._resolveStateEntityIds(
-      this._entityContext,
-      entityMode,
-      currentEntityId
-    );
-    const showEntityPicker =
-      this._entityContext?.mode !== "filter" && entityMode !== "current";
+    const ctx = this._entityContext;
+    const currentEntityId = ctx?.mode === "current" ? ctx.entityId : undefined;
+    const filterEntityIds = ctx?.mode === "filter" ? ctx.entityIds : undefined;
+    const useCurrentEntity =
+      currentEntityId !== undefined && !this.condition.entity;
+
+    const currentStateObj = currentEntityId
+      ? this.hass.states[currentEntityId]
+      : undefined;
+    const currentEntityName = currentStateObj
+      ? computeStateName(currentStateObj)
+      : undefined;
 
     const data: StateConditionData = {
       ...content,
-      entity: this.condition.entity,
-      entity_mode: entityMode,
+      entity: useCurrentEntity ? CURRENT_ENTITY_ID : this.condition.entity,
       invert: this.condition.state_not !== undefined ? "true" : "false",
       state: this.condition.state_not ?? this.condition.state,
     };
@@ -200,9 +168,10 @@ export class HaCardConditionState extends LitElement {
         .data=${data}
         .schema=${this._schema(
           this.hass.localize,
-          currentEntityLabel,
-          showEntityPicker,
-          entityIds
+          currentEntityId,
+          currentEntityName,
+          useCurrentEntity,
+          filterEntityIds
         )}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
@@ -219,17 +188,16 @@ export class HaCardConditionState extends LitElement {
       invert,
       state: stateValue,
       entity,
-      entity_mode,
       condition: _,
       ...content
     } = data;
 
-    this._entityMode = entity_mode;
+    const isCurrentEntity = entity === CURRENT_ENTITY_ID;
 
     const condition: StateCondition = {
       condition: "state",
       ...content,
-      ...(entity_mode !== "current" && entity ? { entity } : {}),
+      ...(!isCurrentEntity && entity ? { entity } : {}),
       state: invert === "false" ? (stateValue ?? "") : undefined,
       state_not: invert === "true" ? (stateValue ?? "") : undefined,
     };
@@ -246,7 +214,6 @@ export class HaCardConditionState extends LitElement {
   ): string => {
     switch (schema.name) {
       case "entity":
-      case "entity_mode":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "attribute":
         return this.hass.localize(
