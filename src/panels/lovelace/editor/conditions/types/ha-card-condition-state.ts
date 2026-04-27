@@ -10,12 +10,14 @@ import type {
   SchemaUnion,
   HaFormSchema,
 } from "../../../../../components/ha-form/types";
+import { STATE_CONDITION_HIDDEN_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
   entity: optional(string()),
+  attribute: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
 });
@@ -23,6 +25,7 @@ const stateConditionStruct = object({
 interface StateConditionData {
   condition: "state";
   entity?: string;
+  attribute?: string;
   invert: "true" | "false";
   state?: string | string[];
 }
@@ -66,7 +69,22 @@ export class HaCardConditionState extends LitElement {
   private _schema = memoizeOne(
     (noEntity: boolean, localize: LocalizeFunc, presetStates: PresetState[]) =>
       [
-        ...(noEntity ? [] : [{ name: "entity", selector: { entity: {} } }]),
+        ...(noEntity
+          ? []
+          : [
+              { name: "entity", selector: { entity: {} } },
+              {
+                name: "attribute",
+                selector: {
+                  attribute: {
+                    hide_attributes: STATE_CONDITION_HIDDEN_ATTRIBUTES,
+                  },
+                },
+                context: {
+                  filter_entity: "entity",
+                },
+              },
+            ]),
         {
           name: "",
           type: "grid",
@@ -112,6 +130,7 @@ export class HaCardConditionState extends LitElement {
                     },
                     context: {
                       filter_entity: "entity",
+                      filter_attribute: "attribute",
                     },
                   }),
             },
@@ -159,6 +178,10 @@ export class HaCardConditionState extends LitElement {
       state_not: invert === "true" ? (state ?? "") : undefined,
     };
 
+    if (!condition.attribute) {
+      delete condition.attribute;
+    }
+
     fireEvent(this, "value-changed", { value: condition });
   }
 
@@ -168,6 +191,10 @@ export class HaCardConditionState extends LitElement {
     switch (schema.name) {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
+      case "attribute":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.condition.state.attribute"
+        );
       case "state":
         return this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
