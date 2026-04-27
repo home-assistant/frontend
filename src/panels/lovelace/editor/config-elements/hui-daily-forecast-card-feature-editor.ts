@@ -38,6 +38,7 @@ export class HuiDailyForecastCardFeatureEditor
     (
       supportsDaily: boolean,
       supportsTwiceDaily: boolean,
+      showPrecipitation: boolean,
       localize: HomeAssistant["localize"]
     ) =>
       [
@@ -72,6 +73,38 @@ export class HuiDailyForecastCardFeatureEditor
           default: DEFAULT_DAYS_TO_SHOW,
           selector: { number: { min: 1, mode: "box" } },
         },
+        {
+          name: "show_temperature",
+          selector: { boolean: {} },
+        },
+        {
+          name: "show_precipitation",
+          selector: { boolean: {} },
+        },
+        {
+          name: "precipitation_type",
+          required: true,
+          disabled: !showPrecipitation,
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: [
+                {
+                  value: "amount",
+                  label: localize(
+                    "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.amount"
+                  ),
+                },
+                {
+                  value: "probability",
+                  label: localize(
+                    "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.probability"
+                  ),
+                },
+              ],
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -90,15 +123,20 @@ export class HuiDailyForecastCardFeatureEditor
     const resolvedType =
       resolveDailyForecastType(stateObj, this._config.forecast_type) || "daily";
 
+    const showPrecipitation = this._config.show_precipitation ?? false;
+
     const data: DailyForecastCardFeatureConfig = {
       ...this._config,
       forecast_type: resolvedType,
       days_to_show: this._config.days_to_show ?? DEFAULT_DAYS_TO_SHOW,
+      show_temperature: this._config.show_temperature ?? true,
+      precipitation_type: this._config.precipitation_type ?? "amount",
     };
 
     const schema = this._schema(
       supportsDaily,
       supportsTwiceDaily,
+      showPrecipitation,
       this.hass.localize
     );
 
@@ -128,6 +166,18 @@ export class HuiDailyForecastCardFeatureEditor
       case "days_to_show":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+      case "show_temperature":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.show_temperature"
+        );
+      case "show_precipitation":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.show_precipitation"
+        );
+      case "precipitation_type":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type"
         );
       default:
         return "";

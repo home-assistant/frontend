@@ -10066,7 +10066,14 @@
               },
               "hourly-forecast": {
                 "label": "Hourly forecast",
-                "no_forecast": "No forecast data available"
+                "no_forecast": "No forecast data available",
+                "show_temperature": "Show temperature",
+                "show_precipitation": "Show precipitation",
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                }
               },
               "daily-forecast": {
                 "label": "Daily forecast",
@@ -10075,6 +10082,13 @@
                 "forecast_type_options": {
                   "daily": "Daily",
                   "twice_daily": "Twice daily"
+                },
+                "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
+                "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
+                "precipitation_type_options": {
+                  "amount": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::amount%]",
+                  "probability": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::probability%]"
                 }
               }
             }

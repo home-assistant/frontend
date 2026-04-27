@@ -57,6 +57,14 @@ export interface ForecastAttribute {
   wind_speed?: string;
 }
 
+export const getForecastPrecipitation = (
+  entry: ForecastAttribute,
+  type: "amount" | "probability"
+) =>
+  type === "probability"
+    ? entry.precipitation_probability
+    : entry.precipitation;
+
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
   humidity?: number;

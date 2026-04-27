@@ -241,15 +241,23 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
+export type ForecastPrecipitationType = "amount" | "probability";
+
 export interface HourlyForecastCardFeatureConfig {
   type: "hourly-forecast";
   hours_to_show?: number;
+  show_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
 }
 
 export interface DailyForecastCardFeatureConfig {
   type: "daily-forecast";
   forecast_type?: "daily" | "twice_daily";
   days_to_show?: number;
+  show_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
 }
 
 export const AREA_CONTROL_DOMAINS = [
