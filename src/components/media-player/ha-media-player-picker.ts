@@ -5,7 +5,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
@@ -87,88 +86,70 @@ export class HaMediaPlayerPicker extends LitElement {
     this._picker?.open(ev, { selectedValue: this.value });
   }
 
-  private _getPlayerItems = () =>
-    this._getPlayerItemsMemoized(
-      this._states,
-      this._entities,
-      this._devices,
-      this._areas,
-      this._floors,
-      this._i18n
+  private _getPlayerItems = (): EntityComboBoxItem[] => {
+    const webBrowserLabel = this._i18n.localize(
+      "ui.components.media-browser.web-browser"
     );
+    const lang = this._i18n.language || "en";
+    const isRTL =
+      this._i18n.translationMetadata.translations[lang]?.isRTL || false;
 
-  private _getPlayerItemsMemoized = memoizeOne(
-    (
-      states: ContextType<typeof statesContext>,
-      entities: ContextType<typeof entitiesContext>,
-      devices: ContextType<typeof devicesContext>,
-      areas: ContextType<typeof areasContext>,
-      floors: ContextType<typeof floorsContext>,
-      i18n: ContextType<typeof internationalizationContext>
-    ): EntityComboBoxItem[] => {
-      const webBrowserLabel = i18n.localize(
-        "ui.components.media-browser.web-browser"
-      );
-      const lang = i18n.language || "en";
-      const isRTL = i18n.translationMetadata.translations[lang]?.isRTL || false;
-
-      return [
-        {
-          id: BROWSER_PLAYER,
-          primary: webBrowserLabel,
-          icon_path: mdiMonitor,
-          search_labels: {
-            entityName: webBrowserLabel,
-            friendlyName: webBrowserLabel,
-            deviceName: null,
-            areaName: null,
-            domainName: null,
-            entityId: BROWSER_PLAYER,
-          },
+    return [
+      {
+        id: BROWSER_PLAYER,
+        primary: webBrowserLabel,
+        icon_path: mdiMonitor,
+        search_labels: {
+          entityName: webBrowserLabel,
+          friendlyName: webBrowserLabel,
+          deviceName: null,
+          areaName: null,
+          domainName: null,
+          entityId: BROWSER_PLAYER,
         },
-        ...Object.values(states)
-          .filter(this._filterPlayerEntities)
-          .map<EntityComboBoxItem>((stateObj) => {
-            const friendlyName = computeStateName(stateObj);
-            const [entityName, deviceName, areaName] = computeEntityNameList(
-              stateObj,
-              [{ type: "entity" }, { type: "device" }, { type: "area" }],
-              entities,
-              devices,
-              areas,
-              floors
-            );
-            const entityId = stateObj.entity_id;
-            const domainName = domainToName(
-              i18n.localize,
-              computeDomain(entityId)
-            );
-            const primary = entityName || deviceName || entityId;
-            const secondary = [areaName, entityName ? deviceName : undefined]
-              .filter(Boolean)
-              .join(isRTL ? " ◂ " : " ▸ ");
+      },
+      ...Object.values(this._states)
+        .filter(this._filterPlayerEntities)
+        .map<EntityComboBoxItem>((stateObj) => {
+          const friendlyName = computeStateName(stateObj);
+          const [entityName, deviceName, areaName] = computeEntityNameList(
+            stateObj,
+            [{ type: "entity" }, { type: "device" }, { type: "area" }],
+            this._entities,
+            this._devices,
+            this._areas,
+            this._floors
+          );
+          const entityId = stateObj.entity_id;
+          const domainName = domainToName(
+            this._i18n.localize,
+            computeDomain(entityId)
+          );
+          const primary = entityName || deviceName || entityId;
+          const secondary = [areaName, entityName ? deviceName : undefined]
+            .filter(Boolean)
+            .join(isRTL ? " ◂ " : " ▸ ");
 
-            return {
-              id: entityId,
-              primary,
-              secondary,
-              disabled: stateObj.state === UNAVAILABLE,
-              domain_name: domainName,
-              sorting_label: [primary, secondary].filter(Boolean).join("_"),
-              search_labels: {
-                entityName: entityName || null,
-                deviceName: deviceName || null,
-                areaName: areaName || null,
-                domainName: domainName || null,
-                friendlyName: friendlyName || null,
-                entityId,
-              },
-              stateObj,
-            };
-          }),
-      ];
-    }
-  );
+          return {
+            id: entityId,
+            primary,
+            secondary,
+            disabled: stateObj.state === UNAVAILABLE,
+            domain_name: domainName,
+            sorting_label: [primary, secondary].filter(Boolean).join("_"),
+            search_labels: {
+              entityName: entityName || null,
+              deviceName: deviceName || null,
+              areaName: areaName || null,
+              domainName: domainName || null,
+              friendlyName: friendlyName || null,
+              entityId,
+            },
+            stateObj,
+          };
+        }),
+    ];
+  };
 
   private _filterPlayerEntities = (entity: HassEntity): boolean =>
     computeStateDomain(entity) === "media_player" &&
