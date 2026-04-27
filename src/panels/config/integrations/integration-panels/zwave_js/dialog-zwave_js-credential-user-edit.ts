@@ -375,6 +375,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           ? html`
               <ha-button
                 class="add-credential"
+                size="small"
                 appearance="filled"
                 @click=${this._handleAddCredential}
                 ?disabled=${this._saving}

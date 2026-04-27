@@ -1,11 +1,21 @@
-import { mdiAccountKey, mdiAccountRemove, mdiDelete, mdiPlus } from "@mdi/js";
+import {
+  mdiAccountKey,
+  mdiAccountRemove,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPlus,
+} from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -95,7 +105,11 @@ class DialogZwaveCredentialManage extends LitElement {
     const showFooter =
       !this._loading &&
       this._capabilities?.supports_user_management &&
-      (activeUsers.length > 0 || this._supportsEnterableCredential);
+      this._supportsEnterableCredential;
+    const showOverflowMenu =
+      !this._loading &&
+      this._capabilities?.supports_user_management &&
+      activeUsers.length > 0;
 
     return html`
       <ha-dialog
@@ -106,6 +120,30 @@ class DialogZwaveCredentialManage extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
+        ${showOverflowMenu
+          ? html`<ha-dropdown
+              slot="headerActionItems"
+              @closed=${stopPropagation}
+              @wa-select=${this._handleMenuAction}
+              placement="bottom-end"
+            >
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+                ?disabled=${this._busy}
+              ></ha-icon-button>
+              <ha-dropdown-item value="clear_all" variant="danger">
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiAccountRemove}
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.users.clear_all"
+                )}
+              </ha-dropdown-item>
+            </ha-dropdown>`
+          : nothing}
         ${this._loading
           ? html`<div class="center">
               <ha-spinner></ha-spinner>
@@ -123,39 +161,26 @@ class DialogZwaveCredentialManage extends LitElement {
               </div>`}
         ${showFooter
           ? html`<ha-dialog-footer slot="footer">
-              ${activeUsers.length > 0
-                ? html`<ha-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    variant="danger"
-                    @click=${this._clearAllUsers}
-                    ?disabled=${this._busy}
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiAccountRemove}
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.credentials.users.clear_all"
-                    )}
-                  </ha-button>`
-                : nothing}
-              ${this._supportsEnterableCredential
-                ? html`<ha-button
-                    slot="primaryAction"
-                    @click=${this._addUser}
-                    ?disabled=${this._busy}
-                  >
-                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.credentials.users.add"
-                    )}
-                  </ha-button>`
-                : nothing}
+              <ha-button
+                slot="primaryAction"
+                @click=${this._addUser}
+                ?disabled=${this._busy}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.users.add"
+                )}
+              </ha-button>
             </ha-dialog-footer>`
           : nothing}
       </ha-dialog>
     `;
+  }
+
+  private _handleMenuAction(ev: HaDropdownSelectEvent): void {
+    if (ev.detail.item.value === "clear_all") {
+      this._clearAllUsers();
+    }
   }
 
   private get _supportsEnterableCredential(): boolean {
