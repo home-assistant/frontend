@@ -744,6 +744,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       flex-direction: column;
       align-items: flex-start;
       gap: var(--ha-space-1);
+      max-width: 120px;
+    }
+
+    .player-label > div {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .player-secondary {
