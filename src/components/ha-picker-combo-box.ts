@@ -13,7 +13,10 @@ import {
 } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -64,6 +67,12 @@ export interface PickerComboBoxIndexSelectedDetail {
   index: number;
   newTab?: boolean;
 }
+
+type PickerComboBoxRowElement = HTMLDivElement & {
+  disabled?: boolean;
+  index: number;
+  value: string;
+};
 
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
@@ -439,13 +448,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._listScrolled = top > 0;
   }
 
-  private _valueSelected = (ev: MouseEvent) => {
+  private _valueSelected = (
+    ev: MouseEvent & HASSDomCurrentTargetEvent<PickerComboBoxRowElement>
+  ) => {
     ev.stopPropagation();
-    if ((ev.currentTarget as any).disabled) {
+    const { disabled, index, value } = ev.currentTarget;
+    if (disabled) {
       return;
     }
-    const value = (ev.currentTarget as any).value as string;
-    const index = Number((ev.currentTarget as any).index);
     const newValue = value?.trim();
     const newTab = ev.ctrlKey || ev.metaKey;
 

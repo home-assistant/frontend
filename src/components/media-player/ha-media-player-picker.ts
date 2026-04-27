@@ -5,7 +5,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -28,14 +28,31 @@ import {
 import { domainToName } from "../../data/integration";
 import {
   BROWSER_PLAYER,
+  type MediaPlayerEntity,
   MediaPlayerEntityFeature,
 } from "../../data/media-player";
 import "../entity/state-badge";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import "../ha-svg-icon";
+
+interface BrowserPlayerComboBoxItem extends EntityComboBoxItem {
+  id: typeof BROWSER_PLAYER;
+  icon_path: string;
+  stateObj?: never;
+}
+
+interface MediaPlayerComboBoxItem extends EntityComboBoxItem {
+  icon_path?: never;
+  stateObj: MediaPlayerEntity;
+}
+
+type PlayerComboBoxItem = BrowserPlayerComboBoxItem | MediaPlayerComboBoxItem;
 
 @customElement("ha-media-player-picker")
 export class HaMediaPlayerPicker extends LitElement {
@@ -86,7 +103,7 @@ export class HaMediaPlayerPicker extends LitElement {
     this._picker?.open(ev, { selectedValue: this.value });
   }
 
-  private _getPlayerItems = (): EntityComboBoxItem[] => {
+  private _getPlayerItems = (): PlayerComboBoxItem[] => {
     const webBrowserLabel = this._i18n.localize(
       "ui.components.media-browser.web-browser"
     );
@@ -110,7 +127,7 @@ export class HaMediaPlayerPicker extends LitElement {
       },
       ...Object.values(this._states)
         .filter(this._filterPlayerEntities)
-        .map<EntityComboBoxItem>((stateObj) => {
+        .map<MediaPlayerComboBoxItem>((stateObj) => {
           const friendlyName = computeStateName(stateObj);
           const [entityName, deviceName, areaName] = computeEntityNameList(
             stateObj,
@@ -151,58 +168,59 @@ export class HaMediaPlayerPicker extends LitElement {
     ];
   };
 
-  private _filterPlayerEntities = (entity: HassEntity): boolean =>
+  private _filterPlayerEntities = (
+    entity: HassEntity
+  ): entity is MediaPlayerEntity =>
     computeStateDomain(entity) === "media_player" &&
     supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
     !this._entities[entity.entity_id]?.hidden;
 
-  private _playerRowRenderer: RenderItemFunction<EntityComboBoxItem> = (
-    item,
-    index
-  ) => html`
-    <div
-      style=${styleMap({
-        width: "100%",
-        borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
-      })}
-    >
-      <ha-combo-box-item type="button" compact .disabled=${item.disabled}>
-        ${item.icon_path
-          ? html`
-              <ha-svg-icon
-                slot="start"
-                style="margin: 0 4px"
-                .path=${item.icon_path}
-              ></ha-svg-icon>
-            `
-          : html`
-              <state-badge
-                slot="start"
-                .stateObj=${item.stateObj}
-              ></state-badge>
-            `}
-        <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${item.stateObj && this._hassConfig.userData?.showEntityIdPicker
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${item.stateObj.entity_id}
-              </span>
-            `
-          : nothing}
-      </ha-combo-box-item>
-    </div>
-  `;
-
-  private _playerSearchFn: PickerComboBoxSearchFn<EntityComboBoxItem> = (
-    search,
-    filteredItems
+  private _playerRowRenderer: RenderItemFunction<PickerComboBoxItem> = (
+    item: PickerComboBoxItem,
+    index: number
   ) => {
-    const index = filteredItems.findIndex(
-      (item) => item.stateObj?.entity_id === search || item.id === search
-    );
+    const stateObj = this._isMediaPlayerItem(item) ? item.stateObj : undefined;
+
+    return html`
+      <div
+        style=${styleMap({
+          width: "100%",
+          borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
+        })}
+      >
+        <ha-combo-box-item type="button" compact .disabled=${!!item.disabled}>
+          ${item.icon_path
+            ? html`
+                <ha-svg-icon
+                  slot="start"
+                  style="margin: 0 4px"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>
+              `
+            : html`
+                <state-badge slot="start" .stateObj=${stateObj}></state-badge>
+              `}
+          <span slot="headline">${item.primary}</span>
+          ${item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing}
+          ${stateObj && this._hassConfig.userData?.showEntityIdPicker
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${stateObj.entity_id}
+                </span>
+              `
+            : nothing}
+        </ha-combo-box-item>
+      </div>
+    `;
+  };
+
+  private _playerSearchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
+    search: string,
+    filteredItems: PickerComboBoxItem[]
+  ) => {
+    const index = filteredItems.findIndex((item) => item.id === search);
 
     if (index === -1) {
       return filteredItems;
@@ -213,12 +231,18 @@ export class HaMediaPlayerPicker extends LitElement {
     return filteredItems;
   };
 
+  private _isMediaPlayerItem(
+    item: PickerComboBoxItem
+  ): item is MediaPlayerComboBoxItem {
+    return "stateObj" in item && item.stateObj !== undefined;
+  }
+
   private _notFoundPlayerLabel = (search: string) =>
     this._i18n.localize("ui.components.entity.entity-picker.no_match", {
       term: html`<b>${search}</b>`,
     });
 
-  private _valueChanged(ev: CustomEvent<{ value: string }>): void {
+  private _valueChanged(ev: HASSDomEvent<{ value: string }>): void {
     ev.stopPropagation();
     if (!ev.detail.value) {
       return;

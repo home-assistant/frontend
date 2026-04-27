@@ -12,7 +12,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -607,7 +607,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handlePlayerSelect(ev: CustomEvent<{ value: string }>): void {
+  private _handlePlayerSelect(ev: HASSDomEvent<{ value: string }>): void {
     ev.stopPropagation();
     const { value: entityId } = ev.detail;
     if (!entityId) {
