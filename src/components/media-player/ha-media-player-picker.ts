@@ -116,7 +116,7 @@ export class HaMediaPlayerPicker extends LitElement {
           id: BROWSER_PLAYER,
           primary: webBrowserLabel,
           icon_path: mdiMonitor,
-          sorting_label: webBrowserLabel,
+          pinned: true,
           search_labels: {
             entityName: webBrowserLabel,
             friendlyName: webBrowserLabel,
