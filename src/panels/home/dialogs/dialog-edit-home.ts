@@ -34,16 +34,6 @@ const DEFAULT_SUMMARY_ORDER = [
   "energy",
 ] as const;
 
-// Builds the initial summaries state when no `summaries` config exists yet
-// (new user or migration from legacy `hidden_summaries`).
-function buildDefaultSummaries(hiddenKeys: string[]): HomeSummaryConfig[] {
-  const hidden = new Set(hiddenKeys);
-  return DEFAULT_SUMMARY_ORDER.map((key) => ({
-    key,
-    ...(hidden.has(key) && { hidden: true }),
-  }));
-}
-
 interface EditorState {
   favorite_entities: string[];
   show_suggested_entities: boolean;
@@ -86,7 +76,7 @@ export class DialogEditHome
       show_welcome_message: !params.config.hide_welcome_message,
       summaries: params.config.summaries
         ? [...params.config.summaries]
-        : buildDefaultSummaries(params.config.hidden_summaries ?? []),
+        : DEFAULT_SUMMARY_ORDER.map((key) => ({ key })),
       custom_shortcuts: params.config.custom_shortcuts
         ? [...params.config.custom_shortcuts]
         : [],
@@ -323,11 +313,6 @@ export class DialogEditHome
         : true,
       hide_welcome_message: editor.show_welcome_message ? undefined : true,
       summaries: editor.summaries,
-      // hidden_summaries is intentionally omitted: it is superseded by
-      // summaries. Existing values from the loaded config are preserved via
-      // the spread above only until the user saves, at which point summaries
-      // takes over.
-      hidden_summaries: undefined,
       custom_shortcuts:
         editor.custom_shortcuts.length > 0
           ? editor.custom_shortcuts

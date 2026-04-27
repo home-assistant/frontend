@@ -45,8 +45,6 @@ export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
   home_panel?: boolean;
-  /** @deprecated Use `summaries` instead. */
-  hidden_summaries?: string[];
   summaries?: HomeSummaryConfig[];
   hide_welcome_message?: boolean;
   hide_suggested_entities?: boolean;
@@ -396,14 +394,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           : undefined,
     };
 
-    // Resolve display order: use user-defined summaries if set, otherwise fall
-    // back to DEFAULT_SUMMARY_ORDER + legacy hidden_summaries for visibility.
-    const orderedSummaries: HomeSummaryConfig[] = config.summaries
-      ? config.summaries
-      : DEFAULT_SUMMARY_ORDER.map((item) => ({
-          ...item,
-          hidden: config.hidden_summaries?.includes(item.key) || undefined,
-        }));
+    // Resolve display order: use user-defined summaries if set, otherwise
+    // fall back to DEFAULT_SUMMARY_ORDER with all summaries visible.
+    const orderedSummaries: HomeSummaryConfig[] =
+      config.summaries ?? DEFAULT_SUMMARY_ORDER;
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
