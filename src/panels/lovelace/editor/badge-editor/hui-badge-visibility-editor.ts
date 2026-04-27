@@ -1,10 +1,13 @@
-import { LitElement, html, css } from "lit";
+import { ContextProvider } from "@lit/context";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
+import { conditionsEntityContext } from "../conditions/context";
 import "../conditions/ha-card-conditions-editor";
 
 @customElement("hui-badge-visibility-editor")
@@ -12,6 +15,21 @@ export class HuiBadgeVisibilityEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
+
+  @property({ attribute: false }) public entityId?: string;
+
+  private _contextProvider = new ContextProvider(this, {
+    context: conditionsEntityContext,
+    initialValue: undefined,
+  });
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has("entityId")) {
+      this._contextProvider.setValue(
+        this.entityId ? { mode: "current", entityId: this.entityId } : undefined
+      );
+    }
+  }
 
   render() {
     const conditions = this.config.visibility ?? [];

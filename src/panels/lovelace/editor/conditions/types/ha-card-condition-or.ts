@@ -10,7 +10,6 @@ import type {
   StateCondition,
 } from "../../../common/validate-condition";
 import "../ha-card-conditions-editor";
-import type { PresetState } from "./ha-card-condition-state";
 
 const orConditionStruct = object({
   condition: literal("or"),
@@ -24,10 +23,6 @@ export class HaCardConditionOr extends LitElement {
   @property({ attribute: false }) public condition!: OrCondition;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
-
-  @property({ attribute: false }) public presetStates: PresetState[] = [];
 
   public static get defaultConfig(): OrCondition {
     return { condition: "or", conditions: [] };
@@ -43,8 +38,6 @@ export class HaCardConditionOr extends LitElement {
         nested
         .hass=${this.hass}
         .conditions=${this.condition.conditions}
-        .noEntity=${this.noEntity}
-        .presetStates=${this.presetStates}
         @value-changed=${this._valueChanged}
       >
       </ha-card-conditions-editor>

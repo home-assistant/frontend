@@ -8995,6 +8995,7 @@
               "state": {
                 "label": "Entity state",
                 "attribute": "Attribute (optional)",
+                "current_entity": "Current entity",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
