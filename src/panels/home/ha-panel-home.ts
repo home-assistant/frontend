@@ -14,6 +14,7 @@ import { updateAreaRegistryEntry } from "../../data/area/area_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   fetchFrontendSystemData,
+  mergeSummaries,
   saveFrontendSystemData,
   type HomeFrontendSystemData,
 } from "../../data/frontend";
@@ -126,7 +127,10 @@ class PanelHome extends LitElement {
         this.hass.loadFragmentTranslation("lovelace"),
         fetchFrontendSystemData(this.hass.connection, "home"),
       ]);
-      this._config = data || {};
+      const config = data || {};
+      this._config = config.summaries
+        ? { ...config, summaries: mergeSummaries(config.summaries) }
+        : config;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to load favorites:", err);

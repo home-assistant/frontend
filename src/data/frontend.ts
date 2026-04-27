@@ -40,6 +40,18 @@ export const DEFAULT_SUMMARIES: HomeSummaryConfig[] = [
   { key: "energy" },
 ];
 
+/**
+ * Merges saved summaries with DEFAULT_SUMMARIES, appending any key not yet
+ * present in the saved list. This ensures new summaries added in future
+ * releases are visible to users who already have a saved config.
+ */
+export function mergeSummaries(
+  saved: HomeSummaryConfig[]
+): HomeSummaryConfig[] {
+  const savedKeys = new Set(saved.map((s) => s.key));
+  return [...saved, ...DEFAULT_SUMMARIES.filter((s) => !savedKeys.has(s.key))];
+}
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
