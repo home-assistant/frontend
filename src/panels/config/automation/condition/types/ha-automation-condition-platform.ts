@@ -16,7 +16,7 @@ import {
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
-import { getResolvedTargetEntityCount } from "../../../../../data/target";
+import { getTargetEntityCount } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
@@ -433,34 +433,16 @@ export class HaPlatformCondition extends LitElement {
   }
 
   private _resolveTargetEntityCount = memoizeOne(
-    async (target: PlatformCondition["target"]) =>
-      getResolvedTargetEntityCount(this.hass, target)
+    (target: PlatformCondition["target"]) => getTargetEntityCount(target)
   );
 
   private async _updateResolvedTargetEntityCount(
     target: PlatformCondition["target"]
   ) {
-    this._resolvedTargetEntityCount =
-      await this._resolveTargetEntityCount(target);
+    this._resolvedTargetEntityCount = this._resolveTargetEntityCount(target);
 
     if (
-      (!target ||
-        (this._resolvedTargetEntityCount !== undefined &&
-          this._resolvedTargetEntityCount <= 1)) &&
-      this.condition.options?.behavior !== undefined
-    ) {
-      const options = { ...this.condition.options };
-      delete options.behavior;
-
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.condition,
-          options,
-        },
-      });
-    } else if (
       target &&
-      this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
       this.condition.options?.behavior === undefined
     ) {
