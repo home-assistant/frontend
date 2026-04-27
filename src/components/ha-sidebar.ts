@@ -431,7 +431,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       <ha-list-item-button
         .href=${`/${urlPath}`}
-        type="link"
         id="sidebar-panel-${urlPath}"
         class=${classMap({ selected: isSelected })}
       >
@@ -458,7 +457,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       <ha-list-item-button
         class="configuration ${classMap({ selected: isSelected })}"
-        type="button"
         href="/config"
         id="sidebar-config"
       >
@@ -499,7 +497,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <ha-list-item-button
         class="notifications"
         @click=${this._handleShowNotificationDrawer}
-        type="button"
         id="sidebar-notifications"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
@@ -531,7 +528,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       <ha-list-item-button
         href="/profile"
-        type="link"
         id="sidebar-profile"
         class=${classMap({
           user: true,
@@ -561,7 +557,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       <ha-list-item-button
         @click=${this._handleExternalAppConfiguration}
-        type="button"
         id="sidebar-external-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>

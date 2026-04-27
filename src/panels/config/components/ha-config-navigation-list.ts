@@ -1,7 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import "../../../components/item/ha-list-item-button";
@@ -24,7 +23,7 @@ class HaConfigNavigationList extends LitElement {
 
   public render(): TemplateResult {
     return html`
-      <ha-list-nav ariaLabel=${ifDefined(this.label)}>
+      <ha-list-nav .ariaLabel=${this.label}>
         ${this.pages.map((page) => {
           const externalApp = page.path.endsWith("#external-app-configuration");
           return html`

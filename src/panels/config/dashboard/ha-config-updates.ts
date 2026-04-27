@@ -109,7 +109,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               )}
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
-              type="button"
               @click=${this._openMoreInfo}
             >
               <div slot="start">
