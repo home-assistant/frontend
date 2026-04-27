@@ -152,6 +152,7 @@ export class HaMediaPlayerPicker extends LitElement {
               id: entityId,
               primary,
               secondary,
+              disabled: stateObj.state === UNAVAILABLE,
               domain_name: domainName,
               sorting_label: [primary, secondary].filter(Boolean).join("_"),
               search_labels: {
@@ -172,14 +173,18 @@ export class HaMediaPlayerPicker extends LitElement {
   private _filterPlayerEntities = (entity: HassEntity): boolean =>
     computeStateDomain(entity) === "media_player" &&
     supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
-    entity.state !== UNAVAILABLE &&
     !this._entities[entity.entity_id]?.hidden;
 
   private _playerRowRenderer: RenderItemFunction<EntityComboBoxItem> = (
     item,
     index
   ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+    <ha-combo-box-item
+      type="button"
+      compact
+      .borderTop=${index !== 0}
+      .disabled=${item.disabled}
+    >
       ${item.icon_path
         ? html`
             <ha-svg-icon
