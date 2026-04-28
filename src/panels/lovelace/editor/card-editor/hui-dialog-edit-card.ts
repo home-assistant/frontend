@@ -181,7 +181,12 @@ export class HuiDialogEditCard
           .label=${this.hass.localize("ui.common.close")}
           .path=${mdiClose}
         ></ha-icon-button>
-        <span slot="headerTitle" @click=${this._enlarge}>${heading}</span>
+        <span
+          slot="headerTitle"
+          class="title-enlargeable"
+          @click=${this._enlarge}
+          >${heading}</span
+        >
         ${this._documentationURL !== undefined
           ? html`
               <ha-icon-button
@@ -514,6 +519,9 @@ export class HuiDialogEditCard
         }
         ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
+        }
+        .title-enlargeable {
+          display: block;
         }
       `,
     ];
