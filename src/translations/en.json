@@ -5776,6 +5776,7 @@
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
+            "select_trace": "Select trace",
             "download_trace": "Download trace",
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
@@ -5831,6 +5832,18 @@
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
               "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
               "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
+            },
+            "picker": {
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished (runtime: {executiontime}s)",
+              "aborted": "Aborted (runtime: {executiontime}s)",
+              "cancelled": "Cancelled (runtime: {executiontime}s)",
+              "stopped_failed_conditions": "Stopped because a condition failed",
+              "stopped_failed_single": "Stopped because only a single execution is allowed",
+              "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
+              "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
             }
           }
         },
