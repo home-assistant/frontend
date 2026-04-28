@@ -12,10 +12,9 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -26,13 +25,11 @@ import { VolumeSliderController } from "../../common/util/volume-slider";
 import "../../components/ha-button";
 import "../../components/ha-domain-icon";
 import "../../components/ha-dropdown";
-import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-slider";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../data/entity/entity";
 import type {
   ControlButton,
   MediaPlayerEntity,
@@ -59,6 +56,7 @@ import {
   BrowserMediaPlayer,
   ERR_UNSUPPORTED_MEDIA,
 } from "./browser-media-player";
+import "../../components/media-player/ha-media-player-picker";
 
 declare global {
   interface HASSDomEvents {
@@ -378,76 +376,36 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           : ""
       }
 
-          <ha-dropdown
+          <ha-media-player-picker
             class="player-menu"
-            placement="top-end"
-            .distance=${8}
-            @wa-select=${this._handlePlayerSelect}
+            .value=${this.entityId}
+            @value-changed=${this._handlePlayerSelect}
           >
-            ${
-              this.narrow
-                ? html`
-                    <ha-icon-button slot="trigger">
-                      ${this._renderIcon(isBrowser, stateObj)}
-                    </ha-icon-button>
-                  `
-                : html`
-                    <ha-button slot="trigger">
-                      <span slot="start">
-                        ${this._renderIcon(isBrowser, stateObj)}
-                      </span>
-                      ${isBrowser
-                        ? this.hass.localize(
-                            "ui.components.media-browser.web-browser"
-                          )
-                        : stateObj
-                          ? (() => {
-                              const { primary, secondary } =
-                                computeEntityPickerDisplay(this.hass, stateObj);
-                              return html`<div class="player-label">
-                                <div>${primary}</div>
-                                ${secondary
-                                  ? html`<div class="player-secondary">
-                                      ${secondary}
-                                    </div>`
-                                  : nothing}
-                              </div>`;
-                            })()
-                          : this.entityId}
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiChevronDown}
-                      ></ha-svg-icon>
-                    </ha-button>
-                  `
-            }
-            <ha-dropdown-item
-              .selected=${isBrowser}
-              .value=${BROWSER_PLAYER}
-            >
-              ${this.hass.localize("ui.components.media-browser.web-browser")}
-            </ha-dropdown-item>
-            ${this._mediaPlayerEntities.map((source) => {
-              const { primary, secondary } = computeEntityPickerDisplay(
-                this.hass,
-                source
-              );
-              return html`
-                <ha-dropdown-item
-                  .selected=${source.entity_id === this.entityId}
-                  .disabled=${source.state === UNAVAILABLE}
-                  .value=${source.entity_id}
-                >
-                  <div class="content">
-                    ${primary}
-                    ${secondary
-                      ? html`<div class="secondary">${secondary}</div>`
-                      : nothing}
-                  </div>
-                </ha-dropdown-item>
-              `;
-            })}
-          </ha-dropdown>
+            <ha-button slot="field">
+              <span slot="start">${this._renderIcon(isBrowser, stateObj)}</span>
+              ${
+                isBrowser
+                  ? this.hass.localize(
+                      "ui.components.media-browser.web-browser"
+                    )
+                  : stateObj
+                    ? (() => {
+                        const { primary, secondary } =
+                          computeEntityPickerDisplay(this.hass, stateObj);
+                        return html`<div class="player-label">
+                          <div>${primary}</div>
+                          ${secondary
+                            ? html`<div class="player-secondary">
+                                ${secondary}
+                              </div>`
+                            : nothing}
+                        </div>`;
+                      })()
+                    : this.entityId
+              }
+              <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
+            </ha-button>
+          </ha-media-player-picker>
         </div>
       </div>
 
@@ -565,15 +523,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     );
   }
 
-  private get _mediaPlayerEntities() {
-    return Object.values(this.hass!.states).filter(
-      (entity) =>
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
-        !this.hass.entities[entity.entity_id]?.hidden
-    );
-  }
-
   private _updateProgressBar(): void {
     const stateObj = this._stateObj;
 
@@ -658,8 +607,12 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handlePlayerSelect(ev: CustomEvent): void {
-    const entityId = (ev.detail.item as any).value;
+  private _handlePlayerSelect(ev: HASSDomEvent<{ value: string }>): void {
+    ev.stopPropagation();
+    const { value: entityId } = ev.detail;
+    if (!entityId) {
+      return;
+    }
     fireEvent(this, "player-picked", { entityId });
   }
 
@@ -726,17 +679,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     .secondary,
     .progress {
       color: var(--secondary-text-color);
-    }
-
-    ha-dropdown-item .content {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-1);
-    }
-
-    ha-dropdown-item .secondary {
-      font-size: var(--ha-font-size-s);
-      color: var(--ha-color-text-secondary);
     }
 
     .player-label {
