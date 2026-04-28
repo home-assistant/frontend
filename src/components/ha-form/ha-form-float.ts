@@ -1,10 +1,10 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import "../ha-textfield";
-import type { HaTextField } from "../ha-textfield";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 import type {
   HaFormElement,
   HaFormFloatData,
@@ -25,7 +25,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-textfield", true) private _input?: HaTextField;
+  @query("ha-input", true) private _input?: HaInput;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -38,39 +38,46 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-textfield
+      <ha-input
         type="number"
         inputMode="decimal"
         step="any"
         .label=${this.label}
-        .helper=${this.helper}
-        helperPersistent
+        .hint=${this.helper}
         .value=${this.data !== undefined ? this.data : ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required
           ? this.localize?.("ui.common.error_required")
           : undefined}
-        @input=${this._valueChanged}
-      ></ha-textfield>
+        @input=${this._handleInput}
+      >
+        ${this.schema.description?.suffix
+          ? html`<span slot="end">${this.schema.description?.suffix}</span>`
+          : nothing}
+      </ha-input>
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("schema")) {
       this.toggleAttribute("own-margin", !!this.schema.required);
     }
   }
 
-  private _valueChanged(ev: Event) {
-    const source = ev.target as HaTextField;
-    const rawValue = source.value.replace(",", ".");
+  private _handleInput(ev: InputEvent) {
+    const source = ev.target as HaInput;
+    const rawValue = (source.value ?? "").replace(",", ".");
 
     let value: number | undefined;
 
     if (rawValue.endsWith(".")) {
+      return;
+    }
+
+    // Allow user to keep typing decimal places (e.g., 5.0, 5.00, 5.10)
+    if (rawValue.includes(".") && rawValue.endsWith("0")) {
       return;
     }
 
@@ -104,9 +111,6 @@ export class HaFormFloat extends LitElement implements HaFormElement {
   static styles = css`
     :host([own-margin]) {
       margin-bottom: 5px;
-    }
-    ha-textfield {
-      display: block;
     }
   `;
 }

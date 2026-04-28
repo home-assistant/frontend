@@ -88,7 +88,7 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keyup", (ev) => {
       if (this._location && ev.key === "Enter") {
@@ -200,10 +200,6 @@ class OnboardingCoreConfig extends LitElement {
     p {
       font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-condensed);
-    }
-
-    ha-textfield {
-      display: block;
     }
 
     .flex {

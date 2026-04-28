@@ -2,11 +2,12 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../components/entity/state-info";
-import "../components/ha-textfield";
-import type { HomeAssistant } from "../types";
-import { haStyle } from "../resources/styles";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import "../components/entity/state-info";
+import "../components/input/ha-input";
+import type { HaInput } from "../components/input/ha-input";
+import { haStyle } from "../resources/styles";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-input_text")
 class StateCardInputText extends LitElement {
@@ -26,7 +27,7 @@ class StateCardInputText extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info
-        ><ha-textfield
+        ><ha-input
           .minlength=${this.stateObj.attributes.min}
           .maxlength=${this.stateObj.attributes.max}
           .value=${this.value}
@@ -35,22 +36,22 @@ class StateCardInputText extends LitElement {
           @input=${this._onInput}
           @change=${this._selectedValueChanged}
           @click=${stopPropagation}
-          placeholder="(empty value)"
+          .placeholder=${this.hass.localize("ui.card.text.empty_value")}
         >
-        </ha-textfield>
+        </ha-input>
       </div>
     `;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this.value = this.stateObj.state;
     }
   }
 
-  private _onInput(ev) {
-    this.value = ev.target.value;
+  private _onInput(ev: InputEvent) {
+    this.value = (ev.target as HaInput).value ?? "";
   }
 
   private async _selectedValueChanged() {
@@ -67,9 +68,9 @@ class StateCardInputText extends LitElement {
     return [
       haStyle,
       css`
-        ha-textfield {
-          margin-left: 16px;
-          margin-inline-start: 16px;
+        ha-input {
+          margin-left: var(--ha-space-4);
+          margin-inline-start: var(--ha-space-4);
           margin-inline-end: initial;
         }
       `,

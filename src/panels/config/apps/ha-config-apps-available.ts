@@ -9,7 +9,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonRepository,
   HassioAddonsInfo,
@@ -80,7 +80,7 @@ export class HaConfigAppsAvailable extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadData();
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
@@ -143,11 +143,11 @@ export class HaConfigAppsAvailable extends LitElement {
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
               <div class="search">
-                <search-input
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._filterChanged}
-                ></search-input>
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._filterChanged}
+                ></ha-input-search>
               </div>
 
               ${repos}
@@ -260,8 +260,8 @@ export class HaConfigAppsAvailable extends LitElement {
     }
   };
 
-  private _filterChanged(e) {
-    this._filter = e.detail.value;
+  private _filterChanged(e: InputEvent) {
+    this._filter = (e.target as HTMLInputElement).value;
   }
 
   static styles = css`
@@ -278,10 +278,10 @@ export class HaConfigAppsAvailable extends LitElement {
       top: 0;
       z-index: 2;
     }
-    search-input {
-      display: block;
-      --mdc-text-field-fill-color: var(--sidebar-background-color);
-      --mdc-text-field-idle-line-color: var(--divider-color);
+    ha-input-search {
+      padding: var(--ha-space-3) var(--ha-space-2);
+      background: var(--sidebar-background-color);
+      border-bottom: 1px solid var(--divider-color);
     }
   `;
 }

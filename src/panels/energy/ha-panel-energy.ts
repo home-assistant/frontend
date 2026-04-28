@@ -35,12 +35,11 @@ class PanelEnergy extends LitElement {
   @state()
   private _error?: string;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._loadConfig();
+      this._setup();
       return;
     }
 
@@ -52,6 +51,14 @@ class PanelEnergy extends LitElement {
     if (this._lovelace && oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
     }
+  }
+
+  private async _setup() {
+    await Promise.all([
+      this.hass.loadFragmentTranslation("lovelace"),
+      this.hass.loadFragmentTranslation("energy"),
+    ]);
+    this._loadConfig();
   }
 
   private async _loadConfig() {

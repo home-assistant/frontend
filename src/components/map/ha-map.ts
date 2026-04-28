@@ -254,7 +254,11 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
-      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
+        latitude: this.hass?.config.latitude ?? 52.3731339,
+        longitude: this.hass?.config.longitude ?? 4.8903147,
+        zoom: this.zoom,
+      });
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
@@ -598,7 +602,7 @@ export class HaMap extends ReactiveElement {
         }
 
         // create icon
-        let iconHTML = "";
+        let iconHTML: string;
         if (icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", icon);

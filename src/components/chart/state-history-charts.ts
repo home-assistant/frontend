@@ -1,8 +1,8 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { mdiRestart } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiRestart } from "@mdi/js";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -12,12 +12,12 @@ import type {
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
-import type { StateHistoryChartLine } from "./state-history-chart-line";
-import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
-import "../ha-fab";
+import "../ha-button";
 import "../ha-svg-icon";
 import "./state-history-chart-line";
+import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
+import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -105,7 +105,7 @@ export class StateHistoryCharts extends LitElement {
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "history")) {
+    if (!isComponentLoaded(this.hass.config, "history")) {
       return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
       </div>`;
@@ -150,16 +150,14 @@ export class StateHistoryCharts extends LitElement {
             this._renderHistoryItem(item, index)
           )}`}
       ${this.syncCharts && this._hasZoomedCharts
-        ? html`<ha-fab
-            slot="fab"
+        ? html`<ha-button
+            size="large"
             class="reset-button"
-            .label=${this.hass.localize(
-              "ui.components.history_charts.zoom_reset"
-            )}
             @click=${this._handleGlobalZoomReset}
           >
-            <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
-          </ha-fab>`
+            <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
+            ${this.hass.localize("ui.components.history_charts.zoom_reset")}
+          </ha-button>`
         : nothing}
     `;
   }
@@ -448,6 +446,7 @@ export class StateHistoryCharts extends LitElement {
       bottom: calc(24px + var(--safe-area-inset-bottom));
       right: calc(24px + var(--safe-area-inset-bottom));
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

@@ -18,7 +18,6 @@ import type {
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -114,7 +113,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
@@ -252,11 +251,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       </div>`;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      entityConf.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, entityConf.name);
 
     return html`
       <div

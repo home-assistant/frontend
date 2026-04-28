@@ -8,7 +8,7 @@ import type {
   RowClickedEvent,
   DataTableColumnContainer,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";

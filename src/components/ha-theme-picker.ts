@@ -14,6 +14,8 @@ export class HaThemePicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ attribute: "include-default", type: Boolean })
   public includeDefault = false;
 
@@ -49,6 +51,7 @@ export class HaThemePicker extends LitElement {
         .label=${this.label ||
         this.hass!.localize("ui.components.theme-picker.theme")}
         .value=${this.value}
+        .helper=${this.helper}
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}

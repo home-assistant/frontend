@@ -27,7 +27,7 @@ class ZWaveJSNetworkInfoPage extends LitElement {
 
   protected async firstUpdated() {
     if (this.hass && this.configEntryId) {
-      this._network = await fetchZwaveNetworkStatus(this.hass, {
+      this._network = await fetchZwaveNetworkStatus(this.hass.connection, {
         entry_id: this.configEntryId,
       });
     }

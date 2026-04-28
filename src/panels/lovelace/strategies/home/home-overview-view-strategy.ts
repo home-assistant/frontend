@@ -16,22 +16,25 @@ import type {
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { CustomShortcutItem } from "../../../../data/frontend";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
+  HeadingCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   RepairsCardConfig,
+  ShortcutCardConfig,
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../helpers/screen-conditions";
-import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+} from "../helpers/view-columns-conditions";
+import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
@@ -39,6 +42,10 @@ export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
   home_panel?: boolean;
+  hidden_summaries?: string[];
+  hide_welcome_message?: boolean;
+  hide_suggested_entities?: boolean;
+  custom_shortcuts?: CustomShortcutItem[];
 }
 
 const computeAreaCard = (
@@ -187,24 +194,46 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const favoritesSection = {
-      strategy: {
-        type: "common-controls",
-        limit: maxCommonControls,
-        include_entities: favoriteEntities,
-        hide_empty: true,
-        heading: {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-          heading_style: "title",
-          visibility: [LARGE_SCREEN_CONDITION],
-          grid_options: {
-            rows: "auto", // Compact style
-          },
-        },
-      } satisfies CommonControlSectionStrategyConfig,
-      column_span: maxColumns,
-    } as LovelaceStrategySectionConfig;
+    const favoritesHeadingCard: HeadingCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+      heading_style: "title",
+      visibility: [LARGE_SCREEN_CONDITION],
+      grid_options: {
+        rows: "auto",
+      },
+    };
+
+    let favoritesSection: LovelaceSectionRawConfig | undefined;
+    if (!config.hide_suggested_entities) {
+      favoritesSection = {
+        strategy: {
+          type: "common-controls",
+          limit: maxCommonControls,
+          include_entities: favoriteEntities,
+          hide_empty: true,
+          heading: favoritesHeadingCard,
+        } satisfies CommonControlsSectionStrategyConfig,
+        column_span: maxColumns,
+      } satisfies LovelaceStrategySectionConfig;
+    } else if (favoriteEntities.length > 0) {
+      favoritesSection = {
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          favoritesHeadingCard,
+          ...favoriteEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                state_content: ["state", "area_name"],
+                show_entity_picture: true,
+              }) satisfies TileCardConfig
+          ),
+        ],
+      };
+    }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
       (filter) => generateEntityFilter(hass, filter)
@@ -222,6 +251,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
+    const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+      (filter) => generateEntityFilter(hass, filter)
+    );
+
     const hasLights =
       hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
@@ -232,6 +265,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
+    const hasMaintenance =
+      hass.panels.maintenance &&
+      findEntities(allEntities, maintenanceFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -242,7 +278,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .filter(weatherFilter)
       .sort()[0];
 
-    const energyPrefs = isComponentLoaded(hass, "energy")
+    const energyPrefs = isComponentLoaded(hass.config, "energy")
       ? // It raises if not configured, just swallow that.
         await getEnergyPreferences(hass).catch(() => undefined)
       : undefined;
@@ -253,6 +289,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         (source) => source.type === "grid" && !!source.stat_energy_from
       ) ??
         false);
+
+    const hiddenSummaries = new Set(config.hidden_summaries || []);
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
@@ -280,6 +318,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         hide_empty: true,
       } satisfies DiscoveredDevicesCardConfig,
       hasLights &&
+        !hiddenSummaries.has("light") &&
         ({
           type: "home-summary",
           summary: "light",
@@ -289,6 +328,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           },
         } satisfies HomeSummaryCard),
       hasClimate &&
+        !hiddenSummaries.has("climate") &&
         ({
           type: "home-summary",
           summary: "climate",
@@ -298,6 +338,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           },
         } satisfies HomeSummaryCard),
       hasSecurity &&
+        !hiddenSummaries.has("security") &&
         ({
           type: "home-summary",
           summary: "security",
@@ -307,6 +348,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           },
         } satisfies HomeSummaryCard),
       hasMediaPlayers &&
+        !hiddenSummaries.has("media_players") &&
         ({
           type: "home-summary",
           summary: "media_players",
@@ -315,7 +357,20 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             navigation_path: "media-players",
           },
         } satisfies HomeSummaryCard),
+      hasMaintenance &&
+        !hiddenSummaries.has("maintenance") &&
+        ({
+          type: "home-summary",
+          summary: "maintenance",
+          tap_action: {
+            action: "navigate",
+            navigation_path: config.home_panel
+              ? "/maintenance?historyBack=1&backPath=/home"
+              : "/maintenance?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
       weatherEntity &&
+        !hiddenSummaries.has("weather") &&
         ({
           type: "tile",
           entity: weatherEntity,
@@ -325,6 +380,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           state_content: ["temperature", "state"],
         } satisfies TileCardConfig),
       hasEnergy &&
+        !hiddenSummaries.has("energy") &&
         ({
           type: "home-summary",
           summary: "energy",
@@ -336,6 +392,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
+
+    // Append custom shortcut cards
+    for (const shortcut of config.custom_shortcuts || []) {
+      summaryCards.push({
+        type: "shortcut",
+        label: shortcut.label,
+        icon: shortcut.icon,
+        color: shortcut.color,
+        tap_action: { action: "navigate", navigation_path: shortcut.path },
+      } satisfies ShortcutCardConfig);
+    }
 
     // Build summary cards for sidebar (full width: columns 12)
     const sidebarSummaryCards = summaryCards.map((card) => ({
@@ -447,14 +514,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       type: "sections",
       max_columns: maxColumns,
       sections: sections,
-      header: {
-        layout: "responsive",
-        card: {
-          type: "markdown",
-          text_only: true,
-          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
-        } satisfies MarkdownCardConfig,
-      },
+      ...(!config.hide_welcome_message && {
+        header: {
+          layout: "responsive",
+          card: {
+            type: "markdown",
+            text_only: true,
+            content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
+          } satisfies MarkdownCardConfig,
+        },
+      }),
       ...(sidebarSection && {
         sidebar: {
           sections: [sidebarSection],

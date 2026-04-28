@@ -1,4 +1,5 @@
 import { mdiRestore } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -34,7 +35,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._localValue = this.value;
     }

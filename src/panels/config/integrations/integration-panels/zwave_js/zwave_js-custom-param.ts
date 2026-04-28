@@ -6,7 +6,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
@@ -34,14 +34,14 @@ class ZWaveJSCustomParam extends LitElement {
   protected render() {
     return html`
       <div class="custom-config-form">
-        <ha-textfield
+        <ha-input
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.parameter"
           )}
           .value=${this._customParamNumber ?? ""}
           @input=${this._customParamNumberChanged}
           type="number"
-        ></ha-textfield>
+        ></ha-input>
         <ha-select
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.size"
@@ -51,14 +51,14 @@ class ZWaveJSCustomParam extends LitElement {
           .options=${["1", "2", "4"]}
         >
         </ha-select>
-        <ha-textfield
+        <ha-input
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.value"
           )}
           .value=${this._value ?? ""}
           @input=${this._customValueChanged}
           type="number"
-        ></ha-textfield>
+        ></ha-input>
         <ha-select
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.format"
@@ -230,7 +230,7 @@ class ZWaveJSCustomParam extends LitElement {
       margin-bottom: 8px;
     }
 
-    ha-textfield,
+    ha-input,
     ha-select {
       flex-grow: 1;
       flex-basis: calc(50% - 8px);
@@ -242,7 +242,7 @@ class ZWaveJSCustomParam extends LitElement {
         flex-wrap: nowrap;
       }
 
-      ha-textfield,
+      ha-input,
       ha-select {
         flex-basis: 0;
       }

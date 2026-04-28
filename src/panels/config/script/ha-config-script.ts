@@ -68,7 +68,7 @@ class HaConfigScript extends HassRouterPage {
       ) as ScriptEntity[]
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("device_automation");
   }

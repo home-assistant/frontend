@@ -58,7 +58,7 @@ class BrowseMediaTTS extends LitElement {
       <ha-card>
         <div class="card-content">
           <ha-textarea
-            autogrow
+            resize="auto"
             .label=${this.hass.localize(
               "ui.components.media-browser.tts.message"
             )}
@@ -200,7 +200,7 @@ class BrowseMediaTTS extends LitElement {
   }
 
   private async _ttsClicked(): Promise<void> {
-    const message = this.shadowRoot!.querySelector("ha-textarea")!.value;
+    const message = this.shadowRoot!.querySelector("ha-textarea")!.value ?? "";
     this._message = message;
     const item = { ...this.item };
     const query = new URLSearchParams();

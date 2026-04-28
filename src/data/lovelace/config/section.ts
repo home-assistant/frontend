@@ -19,6 +19,7 @@ export interface LovelaceBaseSectionConfig {
    * @deprecated Use heading card instead.
    */
   title?: string;
+  theme?: string;
 }
 
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {

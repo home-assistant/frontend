@@ -107,13 +107,13 @@ class PanelMediaBrowser extends LitElement {
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `}
-        <div slot="title">
+        <h1 class="page-title" slot="title">
           ${!this._currentItem
             ? this.hass.localize(
                 "ui.components.media-browser.media-player-browser"
               )
             : this._currentItem.title}
-        </div>
+        </h1>
         <ha-media-manage-button
           slot="actionItems"
           .hass=${this.hass}
@@ -180,7 +180,7 @@ class PanelMediaBrowser extends LitElement {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (
@@ -347,6 +347,12 @@ class PanelMediaBrowser extends LitElement {
                   var(--safe-area-inset-bottom, 0px)
               )
           );
+        }
+
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
         }
 
         :host([narrow]) ha-media-player-browse {

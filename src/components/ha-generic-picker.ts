@@ -143,7 +143,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _unsubscribeTinyKeys?: () => void;
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._setUnknownValue();
     }
@@ -306,8 +306,13 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _initialFieldValue?: string;
 
+  public refreshItems() {
+    this._comboBox?.refreshItems();
+  }
+
   private _dialogOpened = () => {
     this._opened = true;
+    fireEvent(this, "picker-opened");
     requestAnimationFrame(() => {
       // Set initial field value if needed
       if (this._initialFieldValue) {
@@ -440,10 +445,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         }
 
         wa-popover::part(body) {
-          width: max(var(--body-width), 250px);
+          width: var(--ha-generic-picker-width, max(var(--body-width), 250px));
           max-width: var(
             --ha-generic-picker-max-width,
-            max(var(--body-width), 250px)
+            var(--ha-generic-picker-width, max(var(--body-width), 250px))
           );
           max-height: 500px;
           height: 70vh;
@@ -481,5 +486,6 @@ declare global {
 
   interface HASSDomEvents {
     "picker-closed": undefined;
+    "picker-opened": undefined;
   }
 }

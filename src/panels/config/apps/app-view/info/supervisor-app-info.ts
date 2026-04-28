@@ -21,7 +21,7 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -772,7 +772,7 @@ class SupervisorAppInfo extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("addon")) {
       this._loadData();
@@ -1038,6 +1038,7 @@ class SupervisorAppInfo extends LitElement {
   }
 
   private _updateComplete() {
+    this._scheduleDataUpdate();
     const eventdata = {
       success: true,
       response: undefined,
@@ -1059,11 +1060,16 @@ class SupervisorAppInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      showAlertDialog(this, {
+      showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.apps.dashboard.action_error.install"
         ),
         text: extractApiErrorMessage(err),
+        confirmText: this.hass.localize("ui.common.ok"),
+        dismissText: this.hass.localize(
+          "ui.panel.config.apps.dashboard.action_error.view_supervisor_logs"
+        ),
+        cancel: () => navigate("/config/logs?provider=supervisor"),
       });
     }
     button.progress = false;

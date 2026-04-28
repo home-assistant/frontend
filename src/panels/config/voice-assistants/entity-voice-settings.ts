@@ -17,9 +17,9 @@ import {
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-formfield";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
+import "../../../components/voice-assistant-brand-icon";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import {
@@ -40,7 +40,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
-import "../../../components/voice-assistant-brand-icon";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -63,7 +62,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   > = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (!isComponentLoaded(this.hass, "cloud")) {
+    if (!isComponentLoaded(this.hass.config, "cloud")) {
       return;
     }
     if (changedProps.has("entityId") && this.entityId) {
@@ -241,17 +240,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   : nothing}
                 ${support2fa
                   ? html`
-                      <ha-formfield
+                      <ha-checkbox
                         slot="supporting-text"
-                        .label=${this.hass.localize(
+                        .checked=${!this._googleEntity!.disable_2fa}
+                        @change=${this._2faChanged}
+                      >
+                        ${this.hass.localize(
                           "ui.dialogs.voice-settings.ask_pin"
                         )}
-                      >
-                        <ha-checkbox
-                          .checked=${!this._googleEntity!.disable_2fa}
-                          @change=${this._2faChanged}
-                        ></ha-checkbox>
-                      </ha-formfield>
+                      </ha-checkbox>
                     `
                   : nothing}
                 <ha-switch
@@ -429,14 +426,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ha-alert {
           display: block;
           margin-top: 16px;
-        }
-        ha-formfield {
-          margin-left: -8px;
-          margin-inline-start: -8px;
-          margin-inline-end: initial;
-        }
-        ha-checkbox {
-          --mdc-checkbox-state-layer-size: 40px;
         }
         .unsupported {
           display: flex;

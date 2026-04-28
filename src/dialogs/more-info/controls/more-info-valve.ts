@@ -41,7 +41,7 @@ class MoreInfoValve extends LitElement {
     this._mode = ev.currentTarget.mode;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj") && this.stateObj) {
       const entityId = this.stateObj.entity_id;

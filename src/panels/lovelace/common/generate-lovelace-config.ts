@@ -32,7 +32,6 @@ import type {
 } from "../cards/types";
 import type { EntityConfig } from "../entity-rows/types";
 import type { ButtonsHeaderFooterConfig } from "../header-footer/types";
-import { computeLovelaceEntityName } from "./entity/compute-lovelace-entity-name";
 
 const HIDE_DOMAIN = new Set([
   "ai_task",
@@ -221,7 +220,6 @@ export const computeCards = (
       if (
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix
@@ -235,7 +233,6 @@ export const computeCards = (
       const entityConf =
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix
@@ -271,14 +268,14 @@ export const computeCards = (
           ? computeStateName(states[a])
           : ""
         : states[a.entity]
-          ? computeLovelaceEntityName(hass, states[a.entity], a.name)
+          ? hass.formatEntityName(states[a.entity], a.name)
           : "",
       typeof b === "string"
         ? states[b]
           ? computeStateName(states[b])
           : ""
         : states[b.entity]
-          ? computeLovelaceEntityName(hass, states[b.entity], b.name)
+          ? hass.formatEntityName(states[b.entity], b.name)
           : ""
     );
   });

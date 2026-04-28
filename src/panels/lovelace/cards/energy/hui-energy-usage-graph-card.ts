@@ -24,6 +24,7 @@ import type {
 import {
   computeConsumptionData,
   getEnergyDataCollection,
+  getSuggestedPeriod,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -36,6 +37,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -108,7 +110,7 @@ export class HuiEnergyUsageGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -482,6 +484,15 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
+    // Only center bars for sub-daily periods (hour/5min).
+    // Only start timestamps available here, so estimate midpoint from the gap
+    // between the first two entries. Assumes uniform period spacing.
+    const period = getSuggestedPeriod(this._start, this._end);
+    const periodOffset =
+      (period === "hour" || period === "5minute") && uniqueKeys.length >= 2
+        ? (uniqueKeys[1] - uniqueKeys[0]) / 2
+        : 0;
+
     const compareTransform = getCompareTransform(
       this._start,
       this._compareStart!
@@ -493,15 +504,16 @@ export class HuiEnergyUsageGraphCard
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
-          const dataPoint = [
-            new Date(key),
+          const dataPoint: EnergyDataPoint = [
+            key + periodOffset,
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
               : value,
+            key,
           ];
           if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(dataPoint[0] as Date);
+            dataPoint[0] =
+              compareTransform(new Date(key)).getTime() + periodOffset;
           }
           points.push(dataPoint);
         }

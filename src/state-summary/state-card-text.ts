@@ -4,7 +4,8 @@ import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
-import "../components/ha-textfield";
+import "../components/input/ha-input";
+import type { HaInput } from "../components/input/ha-input";
 import { isUnavailableState, UNAVAILABLE } from "../data/entity/entity";
 import type { TextEntity } from "../data/text";
 import { setValue } from "../data/text";
@@ -19,7 +20,7 @@ class StateCardText extends LitElement {
   protected render(): TemplateResult {
     return html`
       <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
-      <ha-textfield
+      <ha-input
         .label=${computeStateName(this.stateObj)}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         .value=${this.stateObj.state}
@@ -30,17 +31,17 @@ class StateCardText extends LitElement {
         .type=${this.stateObj.attributes.mode}
         @change=${this._valueChanged}
         @click=${stopPropagation}
-        placeholder=${this.hass.localize("ui.card.text.emtpy_value")}
-      ></ha-textfield>
+        .placeholder=${this.hass.localize("ui.card.text.empty_value")}
+      ></ha-input>
     `;
   }
 
-  private _valueChanged(ev): void {
-    const value = ev.target.value;
+  private _valueChanged(ev: InputEvent): void {
+    const value = (ev.target as HaInput).value ?? "";
 
     // Filter out invalid text states
     if (value && isUnavailableState(value)) {
-      ev.target.value = this.stateObj.state;
+      (ev.target as HaInput).value = this.stateObj.state;
       return;
     }
 
@@ -60,7 +61,7 @@ class StateCardText extends LitElement {
       margin-top: 10px;
     }
 
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
   `;

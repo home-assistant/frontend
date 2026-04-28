@@ -22,7 +22,7 @@ class StepFlowAbort extends LitElement {
 
   @property({ attribute: false }) public handler!: string;
 
-  protected firstUpdated(changed: PropertyValues) {
+  protected firstUpdated(changed: PropertyValues<this>) {
     super.firstUpdated(changed);
     if (this.step.reason === "missing_credentials") {
       this._handleMissingCreds();

@@ -4,13 +4,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
 import {
   computeDeviceName,
   computeDeviceNameDisplay,
 } from "../../common/entity/compute_device_name";
 import "../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
+import "../../components/input/ha-input";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
   listAssistPipelines,
@@ -49,7 +50,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _deviceName?: string;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("assistConfiguration")) {
@@ -99,14 +100,18 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           : nothing}
         <div class="rows">
           <div class="row">
-            <ha-textfield
+            <ha-input
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.config_flow.device_name"
               )}
-              .placeholder=${computeDeviceNameDisplay(device, this.hass)}
+              .placeholder=${computeDeviceNameDisplay(
+                device,
+                this.hass.localize,
+                this.hass.states
+              )}
               .value=${this._deviceName ?? computeDeviceName(device)}
               @change=${this._deviceNameChanged}
-            ></ha-textfield>
+            ></ha-input>
           </div>
           ${this.assistConfiguration &&
           this.assistConfiguration.available_wake_words.length > 1

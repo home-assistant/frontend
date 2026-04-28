@@ -99,8 +99,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
               ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
-            ${isComponentLoaded(this.hass, "system_health") ||
-            isComponentLoaded(this.hass, "hassio")
+            ${isComponentLoaded(this.hass.config, "system_health") ||
+            isComponentLoaded(this.hass.config, "hassio")
               ? html`
                   <ha-dropdown-item value="system_information">
                     ${this.hass.localize(
@@ -121,6 +121,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
             <div class="card-content">
               ${issues.length
                 ? html`
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize("ui.panel.config.repairs.title", {
+                        count: issues.length,
+                      })}
+                    </div>
                     <ha-config-repairs
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -191,6 +196,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+
+    .title {
+      padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-repairs {

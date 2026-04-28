@@ -24,7 +24,6 @@ import {
   getStatisticMetadata,
 } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -188,13 +187,19 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._names = {};
     this._entities.forEach((config) => {
       const stateObj = this.hass!.states[config.entity];
-      this._names[config.entity] =
-        computeLovelaceEntityName(this.hass!, stateObj, config.name) ||
-        config.entity;
+      if (stateObj) {
+        this._names[config.entity] =
+          this.hass!.formatEntityName(stateObj, config.name) || config.entity;
+      } else {
+        this._names[config.entity] =
+          (typeof config.name === "string" ? config.name : undefined) ||
+          this._metadata?.[config.entity]?.name ||
+          config.entity;
+      }
     });
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -353,7 +358,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
               ? getSuggestedMax(
                   this._period!,
                   this._energyEnd,
-                  (this._config.chart_type ?? "line") === "line"
+                  (this._config.chart_type ?? "line").startsWith("line")
                 )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}

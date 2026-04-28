@@ -426,7 +426,8 @@ class DialogZWaveJSNodeStatistics extends LitElement {
         devices.forEach((device) => {
           devicesIdToName[device.id] = computeDeviceNameDisplay(
             device,
-            this.hass
+            this.hass.localize,
+            this.hass.states
           );
         });
         this._deviceIDsToName = devicesIdToName;

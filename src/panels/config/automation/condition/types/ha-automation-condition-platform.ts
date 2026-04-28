@@ -16,7 +16,7 @@ import {
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
-import { getResolvedTargetEntityCount } from "../../../../../data/target";
+import { getTargetEntityCount } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
@@ -73,13 +73,16 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (
-      oldValue?.condition !== this.condition?.condition &&
       this.condition &&
+      oldValue?.condition !== this.condition.condition &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.condition;
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.condition);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -106,7 +109,7 @@ export class HaPlatformCondition extends LitElement {
           updatedOptions[key] = field.default;
         }
       });
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.condition,
@@ -166,19 +169,12 @@ export class HaPlatformCondition extends LitElement {
       </div>
       ${conditionDesc && "target" in conditionDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
               )}</span
             >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
-              )}</span
-            ><ha-selector
+            <ha-selector
               .hass=${this.hass}
               .selector=${this._targetSelector(conditionDesc.target)}
               .disabled=${this.disabled}
@@ -240,6 +236,10 @@ export class HaPlatformCondition extends LitElement {
       return nothing;
     }
 
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
+    );
+
     return html`<ha-settings-row narrow>
       ${!showOptional
         ? hasOptional
@@ -248,22 +248,28 @@ export class HaPlatformCondition extends LitElement {
         : html`<ha-checkbox
             .key=${fieldName}
             .checked=${this._checkedKeys.has(fieldName) ||
-            (this.condition?.options &&
+            (!!this.condition?.options &&
               this.condition.options[fieldName] !== undefined)}
             .disabled=${this.disabled}
             @change=${this._checkboxChanged}
             slot="prefix"
           ></ha-checkbox>`}
-      <span slot="heading"
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
         >${this.hass.localize(
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || conditionName}</span
+        ) || fieldName}</span
       >
-      <span slot="description"
-        >${this.hass.localize(
-          `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
-        )}</span
-      >
+      ${description
+        ? html`<span
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            slot="description"
+            >${description}</span
+          >`
+        : nothing}
       <ha-selector
         .disabled=${this.disabled ||
         (showOptional &&
@@ -349,6 +355,13 @@ export class HaPlatformCondition extends LitElement {
     });
   }
 
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
+
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
@@ -419,35 +432,13 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
-  private _resolveTargetEntityCount = memoizeOne(
-    async (target: PlatformCondition["target"]) =>
-      getResolvedTargetEntityCount(this.hass, target)
-  );
-
-  private async _updateResolvedTargetEntityCount(
+  private _updateResolvedTargetEntityCount(
     target: PlatformCondition["target"]
   ) {
-    this._resolvedTargetEntityCount =
-      await this._resolveTargetEntityCount(target);
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     if (
-      (!target ||
-        (this._resolvedTargetEntityCount !== undefined &&
-          this._resolvedTargetEntityCount <= 1)) &&
-      this.condition.options?.behavior !== undefined
-    ) {
-      const options = { ...this.condition.options };
-      delete options.behavior;
-
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.condition,
-          options,
-        },
-      });
-    } else if (
       target &&
-      this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
       this.condition.options?.behavior === undefined
     ) {
@@ -501,11 +492,6 @@ export class HaPlatformCondition extends LitElement {
     .checkbox-spacer {
       width: 32px;
     }
-    ha-checkbox {
-      margin-left: calc(var(--ha-space-4) * -1);
-      margin-inline-start: calc(var(--ha-space-4) * -1);
-      margin-inline-end: initial;
-    }
     .help-icon {
       color: var(--secondary-text-color);
     }
@@ -519,6 +505,9 @@ export class HaPlatformCondition extends LitElement {
     }
     .description p {
       direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
     }
   `;
 }

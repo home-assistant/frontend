@@ -44,7 +44,7 @@ export class HaEntitySelector extends LitElement {
     );
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.entity?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
@@ -70,6 +70,7 @@ export class HaEntitySelector extends LitElement {
         .helper=${this.helper}
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
+        .extraOptions=${this.selector.entity?.extra_options}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
@@ -95,7 +96,7 @@ export class HaEntitySelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&

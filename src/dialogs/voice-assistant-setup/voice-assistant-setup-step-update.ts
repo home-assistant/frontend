@@ -2,8 +2,8 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-progress-ring";
 import "../../components/ha-spinner";
+import "../../components/progress/ha-progress-ring";
 import { ON, UNAVAILABLE } from "../../data/entity/entity";
 import {
   updateCanInstall,
@@ -24,7 +24,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
 
   private _refreshTimeout?: number;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!this.updateEntityId) {

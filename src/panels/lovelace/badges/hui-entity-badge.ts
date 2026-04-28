@@ -19,7 +19,6 @@ import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -175,11 +174,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       "--badge-color": color,
     };
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const stateDisplay = html`
       <state-display

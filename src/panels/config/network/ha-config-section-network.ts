@@ -32,7 +32,7 @@ class HaConfigSectionNetwork extends LitElement {
         .header=${this.hass.localize("ui.panel.config.network.caption")}
       >
         <div class="content">
-          ${isComponentLoaded(this.hass, "hassio")
+          ${isComponentLoaded(this.hass.config, "hassio")
             ? html`<supervisor-hostname
                   .hass=${this.hass}
                   .narrow=${this.narrow}
@@ -42,7 +42,7 @@ class HaConfigSectionNetwork extends LitElement {
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
           ${NETWORK_BROWSERS.some((component) =>
-            isComponentLoaded(this.hass, component)
+            isComponentLoaded(this.hass.config, component)
           )
             ? html`
                 <ha-card

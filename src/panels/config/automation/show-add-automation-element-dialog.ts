@@ -7,6 +7,7 @@ export interface AddAutomationElementDialogParams {
   type: "trigger" | "condition" | "action";
   add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
+  clipboardPasteToastBottomOffset?: number;
 }
 const loadDialog = () => import("./add-automation-element-dialog");
 

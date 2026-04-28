@@ -65,7 +65,7 @@ export class HassRouterPage extends ReactiveElement {
     return this;
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     const routerOptions = this.routerOptions || { routes: {} };
@@ -222,7 +222,7 @@ export class HassRouterPage extends ReactiveElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     const options = this.routerOptions;

@@ -1,5 +1,5 @@
 import { mdiPalette } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,6 +15,8 @@ import {
   string,
   union,
 } from "superstruct";
+import { ContextProvider } from "@lit/context";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { hasLocation } from "../../../../common/entity/has_location";
@@ -25,26 +27,29 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
 import "../../components/hui-entity-editor";
-import "../hui-sub-element-editor";
-import type {
-  EditDetailElementEvent,
-  SubElementEditorConfig,
-  EntitiesEditorEvent,
-} from "../types";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardEditor } from "../../types";
+import type { ConditionsEntityContext } from "../conditions/context";
+import { conditionsEntityContext } from "../conditions/context";
+import "../conditions/ha-card-conditions-editor";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type {
+  EditDetailElementEvent,
+  EntitiesEditorEvent,
+  SubElementEditorConfig,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 export const mapEntitiesConfigStruct = union([
@@ -104,6 +109,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
   private _locationEntities: string[] = [];
+
+  private _entityContext = memoizeOne(
+    (entities: MapCardConfig["entities"]): ConditionsEntityContext => ({
+      mode: "filter",
+      entityIds:
+        entities?.map((e) => (typeof e === "string" ? e : e.entity)) ?? [],
+    })
+  );
+
+  private _contextProvider = new ContextProvider(this, {
+    context: conditionsEntityContext,
+    initialValue: { mode: "filter", entityIds: [] } as ConditionsEntityContext,
+  });
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -197,10 +215,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
               disabled: this._shouldDisableOptions(entityId),
               selector: {
                 attribute: {
-                  entity_id: entityId,
                   hide_attributes: ["entity_picture", "friendly_name", "icon"],
                 },
               },
+              context: { filter_entity: "entity" },
             },
             {
               name: "unit",
@@ -252,7 +270,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._geoSourcesStrings(this._config!.geo_location_sources) || [];
   }
 
-  protected firstUpdated(changedProperties) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._locationEntities = !this.hass
       ? []
@@ -326,7 +344,41 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           this.hass.localize
         )}
       ></ha-selector-select>
+      ${this.renderConditions()}
     `;
+  }
+
+  renderConditions() {
+    const conditions = this._config?.conditions ?? [];
+    return html`
+      <h3>
+        ${this.hass!.localize("ui.panel.lovelace.editor.card.map.conditions")}
+      </h3>
+      <p class="intro">
+        ${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.map.conditions_helper"
+        )}
+      </p>
+      <ha-card-conditions-editor
+        .hass=${this.hass!}
+        .conditions=${conditions}
+        @value-changed=${this._conditionsChanged}
+      >
+      </ha-card-conditions-editor>
+    `;
+  }
+
+  private _conditionsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const conditions = ev.detail.value as Condition[];
+    const newConfig: MapCardConfig = {
+      ...this._config!,
+      conditions: conditions,
+    };
+    if (newConfig.conditions?.length === 0) {
+      delete newConfig.conditions;
+    }
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _goBack(): void {
@@ -442,7 +494,13 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config });
   }
 
-  protected willUpdate() {
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("_config")) {
+      this._contextProvider.setValue(
+        this._entityContext(this._config?.entities)
+      );
+    }
+
     if (this.hass && !this._possibleGeoSources) {
       const sources: Record<string, string> = {};
       Object.entries(this.hass.states).forEach(([entity_id, stateObj]) => {
@@ -546,7 +604,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   static get styles(): CSSResultGroup {
-    return [configElementStyle, css``];
+    return [
+      configElementStyle,
+      css`
+        .intro {
+          margin: 0;
+          margin-bottom: var(--ha-space-1);
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

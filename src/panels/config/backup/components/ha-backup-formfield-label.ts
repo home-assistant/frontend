@@ -35,7 +35,7 @@ class SupervisorFormfieldLabel extends LitElement {
     :host {
       display: flex;
       flex-direction: row;
-      gap: var(--ha-space-4);
+      gap: var(--ha-space-1);
       align-items: center;
     }
     .label {

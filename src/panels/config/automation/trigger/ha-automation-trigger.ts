@@ -23,6 +23,7 @@ import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -41,6 +42,8 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   @property({ attribute: false }) public highlightedTriggers?: Trigger[];
 
   @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
   @state() private _triggerDescriptions: TriggerDescriptions = {};
 
@@ -104,7 +107,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("triggers");
   }
@@ -134,6 +137,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 .trigger=${trg}
                 .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -197,13 +201,16 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
         : isTriggerList(this._clipboard.trigger)
           ? "list"
           : this._clipboard?.trigger?.trigger,
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger!));
     } else if (isDynamic(value)) {
       triggers = this.triggers.concat({
         trigger: getValueFromDynamic(value),
@@ -225,7 +232,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     fireEvent(this, "value-changed", { value: triggers });
   };
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (
@@ -252,6 +259,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
           row.expand();
           row.focus();
         }
+        row.markAsNew();
       });
     }
   }

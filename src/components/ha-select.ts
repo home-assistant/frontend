@@ -11,7 +11,7 @@ import type { HaPickerField } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 export interface HaSelectOption {
-  value: string;
+  value: string | number;
   label?: string;
   secondary?: string;
   iconPath?: string;
@@ -34,13 +34,16 @@ export type HaSelectSelectEvent<
 export class HaSelect extends LitElement {
   @property({ type: Boolean }) public clearable = false;
 
-  @property({ attribute: false }) public options?: HaSelectOption[] | string[];
+  @property({ attribute: false }) public options?:
+    | HaSelectOption[]
+    | string[]
+    | number[];
 
   @property() public label?: string;
 
   @property() public helper?: string;
 
-  @property() public value?: string;
+  @property() public value?: string | number;
 
   @property({ type: Boolean }) public required = false;
 
@@ -52,25 +55,30 @@ export class HaSelect extends LitElement {
 
   private _getValueLabel = memoizeOne(
     (
-      options: HaSelectOption[] | string[] | undefined,
-      value: string | undefined
+      options: HaSelectOption[] | string[] | number[] | undefined,
+      value: string | number | undefined
     ) => {
-      if (!options || !value) {
-        return value;
+      // just in case value is a number, convert it to string to avoid falsy value
+      const valueStr = String(value);
+      if (!options || !valueStr) {
+        return valueStr;
       }
 
       for (const option of options) {
+        const simpleOption = ["string", "number"].includes(typeof option);
         if (
-          (typeof option === "string" && option === value) ||
-          (typeof option !== "string" && option.value === value)
+          (simpleOption && option === valueStr) ||
+          (!simpleOption &&
+            String((option as HaSelectOption).value) === valueStr)
         ) {
-          return typeof option === "string"
+          return simpleOption
             ? option
-            : option.label || option.value;
+            : (option as HaSelectOption).label ||
+                (option as HaSelectOption).value;
         }
       }
 
-      return value;
+      return valueStr;
     }
   );
 
@@ -88,15 +96,14 @@ export class HaSelect extends LitElement {
       >
         ${this._renderField()}
         ${this.options
-          ? this.options.map(
-              (option) => html`
+          ? this.options.map((option) => {
+              const simpleOption = ["string", "number"].includes(typeof option);
+              return html`
                 <ha-dropdown-item
-                  .value=${typeof option === "string" ? option : option.value}
-                  .disabled=${typeof option === "string"
-                    ? false
-                    : (option.disabled ?? false)}
+                  .value=${simpleOption ? option : option.value}
+                  .disabled=${simpleOption ? false : (option.disabled ?? false)}
                   .selected=${this.value ===
-                  (typeof option === "string" ? option : option.value)}
+                  (simpleOption ? option : option.value)}
                 >
                   ${option.iconPath
                     ? html`<ha-svg-icon
@@ -105,16 +112,14 @@ export class HaSelect extends LitElement {
                       ></ha-svg-icon>`
                     : nothing}
                   <div class="content">
-                    ${typeof option === "string"
-                      ? option
-                      : option.label || option.value}
+                    ${simpleOption ? option : option.label || option.value}
                     ${option.secondary
                       ? html`<div class="secondary">${option.secondary}</div>`
                       : nothing}
                   </div>
                 </ha-dropdown-item>
-              `
-            )
+              `;
+            })
           : html`<slot></slot>`}
       </ha-dropdown>
       ${this._renderHelper()}
@@ -139,7 +144,7 @@ export class HaSelect extends LitElement {
         .hideClearIcon=${!this.clearable ||
         this.required ||
         this.disabled ||
-        !this.value}
+        !String(this.value)}
       >
       </ha-picker-field>
     `;
@@ -153,7 +158,7 @@ export class HaSelect extends LitElement {
       : nothing;
   }
 
-  private _handleSelect(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleSelect(ev: CustomEvent<{ item: { value: string | number } }>) {
     ev.stopPropagation();
     const value = ev.detail.item.value;
     if (value === this.value) {
@@ -216,6 +221,6 @@ declare global {
   }
 
   interface HASSDomEvents {
-    selected: { value: string | undefined };
+    selected: { value: string | number | undefined };
   }
 }

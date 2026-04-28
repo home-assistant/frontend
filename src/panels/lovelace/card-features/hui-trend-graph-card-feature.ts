@@ -1,11 +1,15 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
 import "../../../components/ha-spinner";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import {
+  limitedHistoryFromStateObj,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
@@ -31,7 +35,7 @@ export const DEFAULT_HOURS_TO_SHOW = 24;
 
 @customElement("hui-trend-graph-card-feature")
 class HuiHistoryChartCardFeature
-  extends SubscribeMixin(LitElement)
+  extends LitElement
   implements LovelaceCardFeature
 {
   @property({ attribute: false, hasChanged: () => false })
@@ -44,6 +48,10 @@ class HuiHistoryChartCardFeature
   @state() private _coordinates?: [number, number][];
 
   @state() private _yAxisOrigin?: number;
+
+  @state() private _error?: { code: string; message: string };
+
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   private _interval?: number;
 
@@ -70,15 +78,19 @@ class HuiHistoryChartCardFeature
     // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
     this._interval = window.setInterval(() => this.requestUpdate(), 1000 * 60);
+    if (this.hasUpdated) {
+      this._subscribeHistory();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearInterval(this._interval);
+    this._unsubscribeHistory();
   }
 
-  protected hassSubscribe() {
-    return [this._subscribeHistory()];
+  protected firstUpdated() {
+    this._subscribeHistory();
   }
 
   protected render() {
@@ -89,6 +101,13 @@ class HuiHistoryChartCardFeature
       !supportsTrendGraphCardFeature(this.hass, this.context)
     ) {
       return nothing;
+    }
+    if (this._error) {
+      return html`
+        <div class="container">
+          <div class="info">${this._error.message || this._error.code}</div>
+        </div>
+      `;
     }
     if (!this._coordinates) {
       return html`
@@ -112,21 +131,56 @@ class HuiHistoryChartCardFeature
     `;
   }
 
-  private async _subscribeHistory(): Promise<() => Promise<void>> {
+  private _unsubscribeHistory() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
+      this._subscribed = undefined;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
-      !this.context?.entity_id ||
-      !this._config
+      !this._subscribed &&
+      !this._error &&
+      this._config &&
+      this.context?.entity_id &&
+      changedProps.has("hass")
     ) {
-      return () => Promise.resolve();
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        oldHass &&
+        oldHass.config.components !== this.hass!.config.components
+      ) {
+        // Retry subscription when components become available after backend restart
+        this._subscribeHistory();
+      }
+    }
+  }
+
+  private async _subscribeHistory() {
+    if (
+      !isComponentLoaded(this.hass!.config, "history") ||
+      !this.context?.entity_id ||
+      !this._config ||
+      this._subscribed
+    ) {
+      return;
     }
 
     const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
     const detail = this._config.detail !== false; // default to true (high detail)
 
-    return subscribeHistoryStatesTimeWindow(
+    this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
+        const entityId = this.context!.entity_id!;
+        let history = historyStates[entityId];
+        if (!history?.length) {
+          const stateObj = this.hass!.states[entityId];
+          if (stateObj) {
+            history = limitedHistoryFromStateObj(stateObj);
+          }
+        }
         // sample to 1 point per hour for low detail or 1 point per 5 pixels for high detail
         const maxDetails = detail
           ? Math.max(10, this.clientWidth / 5, hourToShow)
@@ -134,7 +188,7 @@ class HuiHistoryChartCardFeature
         const useMean = !detail;
         const { points, yAxisOrigin } =
           coordinatesMinimalResponseCompressedState(
-            historyStates[this.context!.entity_id!],
+            history,
             this.clientWidth,
             this.clientHeight,
             maxDetails,
@@ -146,7 +200,11 @@ class HuiHistoryChartCardFeature
       },
       hourToShow,
       [this.context!.entity_id!]
-    );
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
+      return undefined;
+    });
   }
 
   static styles = css`

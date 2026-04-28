@@ -1,6 +1,6 @@
 import { mdiDownload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultArray } from "lit";
+import type { CSSResultArray, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
@@ -115,7 +115,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
   }

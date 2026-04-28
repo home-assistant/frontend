@@ -25,7 +25,6 @@ import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -143,14 +142,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const indexUnit = stateParts.findIndex((part) => part.type === "unit");
-    const indexValue = stateParts.findIndex((part) => part.type === "value");
+    const indexValue = stateParts.reduceRight(
+      (acc, part, i) => (acc === -1 && part.type === "value" ? i : acc),
+      -1
+    );
     const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 
@@ -209,7 +207,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   >
                   </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
-              : stateParts.find((part) => part.type === "value")?.value}</span
+              : stateParts
+                  .filter((part) => part.type === "value")
+                  .map((part) => part.value)
+                  .join("")}</span
           >${unit
             ? html`<span
                 class=${classMap({
@@ -252,7 +253,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Side Effect used to update footer hass while keeping optimizations
     if (this._footerElement) {
       this._footerElement.hass = this.hass;

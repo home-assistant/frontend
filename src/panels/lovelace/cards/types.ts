@@ -155,7 +155,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
   entity?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_name?: boolean;
   icon?: string;
   icon_height?: string;
@@ -238,6 +238,10 @@ export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
 
 export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
+}
+
+export interface EnergyGridBalanceCardConfig extends EnergyCardConfig {
+  type: "energy-grid-balance";
 }
 
 export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
@@ -415,6 +419,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
   cluster?: boolean;
+  conditions?: Condition[];
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {
@@ -489,7 +494,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
-  chart_type?: "line" | "bar";
+  chart_type?: "line" | "bar" | "line-stack" | "bar-stack";
   min_y_axis?: number;
   max_y_axis?: number;
   fit_y_data?: boolean;
@@ -547,6 +552,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
+  show_entity_picture?: boolean;
   name?: string | EntityNameItem | EntityNameItem[];
   image?: string | MediaSelectorValue;
   camera_image?: string;
@@ -615,6 +621,9 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   hide_create?: boolean;
   hide_section_headers?: boolean;
   sort?: string;
+  due_date_period?: {
+    calendar?: { period: string; offset?: number };
+  };
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
@@ -681,6 +690,17 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface ShortcutCardConfig extends LovelaceCardConfig {
+  label?: string;
+  description?: string;
+  icon?: string;
+  color?: string;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

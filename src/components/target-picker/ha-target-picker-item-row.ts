@@ -93,6 +93,9 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   @state() private _iconImg?: string;
 
   @state() private _domainName?: string;
@@ -109,7 +112,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @query("ha-target-picker-item-row") public itemRow?: HaTargetPickerItemRow;
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
     }
@@ -401,9 +404,14 @@ export class HaTargetPickerItemRow extends LitElement {
       return;
     }
     try {
-      const entries = await extractFromTarget(this.hass, {
-        [`${this.type}_id`]: [this.itemId],
-      });
+      const entries = await extractFromTarget(
+        this.hass,
+        {
+          [`${this.type}_id`]: [this.itemId],
+        },
+        false,
+        this.primaryEntitiesOnly
+      );
 
       const hiddenAreaIds: string[] = [];
       if (this.type === "floor" || this.type === "label") {
@@ -420,7 +428,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;
@@ -450,7 +459,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;
@@ -478,7 +488,7 @@ export class HaTargetPickerItemRow extends LitElement {
           ) {
             return entityRegMeetsFilter(
               entity,
-              this.type === "label",
+              this.type === "label" || !this.primaryEntitiesOnly,
               this.includeDomains,
               this.includeDeviceClasses,
               this.hass.states,
@@ -524,7 +534,13 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : item,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : item,
         context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
         fallbackIconPath: mdiDevices,
         notFound: !device,
@@ -535,7 +551,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       const stateObject: HassEntity | undefined = this.hass.states[item];
       const entityName = stateObject
-        ? computeEntityName(stateObject, this.hass.entities)
+        ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
         : item;
       const { area, device } = stateObject
         ? getEntityContext(
@@ -620,6 +636,7 @@ export class HaTargetPickerItemRow extends LitElement {
       entityFilter: this.entityFilter,
       includeDomains: this.includeDomains,
       includeDeviceClasses: this.includeDeviceClasses,
+      primaryEntitiesOnly: this.primaryEntitiesOnly,
     });
   }
 

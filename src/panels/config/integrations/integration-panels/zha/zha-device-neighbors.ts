@@ -31,7 +31,7 @@ class ZHADeviceNeighbors extends LitElement {
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (this.hass && changedProperties.has("device")) {
       this._fetchData();
@@ -118,7 +118,6 @@ class ZHADeviceNeighbors extends LitElement {
       ${!this._devices
         ? html`<ha-spinner size="large"></ha-spinner>`
         : html`<ha-data-table
-            .hass=${this.hass}
             .columns=${this._columns(this.narrow)}
             .data=${this._deviceNeighbors(this.device, this._devices)}
             auto-height

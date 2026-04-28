@@ -35,7 +35,7 @@ export class HuiDiscoveredDevicesCard
 
   @state() private _config?: DiscoveredDevicesCardConfig;
 
-  @state() private _discoveredFlows: DataEntryFlowProgress[] = [];
+  @state() private _discoveredFlows?: DataEntryFlowProgress[];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     if (!this.hass!.user?.is_admin) {
@@ -57,7 +57,10 @@ export class HuiDiscoveredDevicesCard
 
           messages.forEach((message) => {
             if (message.type === "removed") {
-              this._discoveredFlows = this._discoveredFlows.filter(
+              const flows = Array.isArray(this._discoveredFlows)
+                ? this._discoveredFlows
+                : [];
+              this._discoveredFlows = flows.filter(
                 (flow) => flow.flow_id !== message.flow_id
               );
               return;
@@ -78,7 +81,10 @@ export class HuiDiscoveredDevicesCard
             return;
           }
 
-          const existingFlows = fullUpdate ? [] : this._discoveredFlows;
+          const existingFlows =
+            fullUpdate || !Array.isArray(this._discoveredFlows)
+              ? []
+              : this._discoveredFlows;
           this._discoveredFlows = [...existingFlows, ...newFlows];
         }
       ),
@@ -128,7 +134,7 @@ export class HuiDiscoveredDevicesCard
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this._config || !this.hass) {
@@ -138,7 +144,9 @@ export class HuiDiscoveredDevicesCard
     // Update visibility based on admin status and discovered devices count
     const shouldBeHidden = Boolean(
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._discoveredFlows.length === 0)
+      (this._config.hide_empty &&
+        this._discoveredFlows &&
+        this._discoveredFlows.length === 0)
     );
 
     if (shouldBeHidden !== this.hidden) {
@@ -153,7 +161,9 @@ export class HuiDiscoveredDevicesCard
       return nothing;
     }
 
-    const count = this._discoveredFlows.length;
+    const count = Array.isArray(this._discoveredFlows)
+      ? this._discoveredFlows.length
+      : 0;
 
     const label = this.hass.localize("ui.card.discovered-devices.title");
     const secondary =
@@ -162,6 +172,7 @@ export class HuiDiscoveredDevicesCard
             count,
           })
         : this.hass.localize("ui.card.discovered-devices.no_devices");
+    const secondaryLoading = !this._discoveredFlows;
 
     return html`
       <ha-card>
@@ -179,6 +190,7 @@ export class HuiDiscoveredDevicesCard
             slot="info"
             .primary=${label}
             .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
           ></ha-tile-info>
         </ha-tile-container>
       </ha-card>

@@ -1,4 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { ContextProvider } from "@lit/context";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,6 +13,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -61,6 +63,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _config?: LovelaceViewConfig;
 
   @state() private _sectionColumnCount = 0;
+
+  private _maxColumns = 0;
+
+  private _maxColumnsProvider = new ContextProvider(this, {
+    context: maxColumnsContext,
+  });
 
   @state() _dragging = false;
 
@@ -139,9 +147,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
+    }
+    this._updateMaxColumnCount();
+  }
+
+  private _updateMaxColumnCount(): void {
+    const maxColumnCount = this._columnsController.value ?? 1;
+
+    if (maxColumnCount !== this._maxColumns) {
+      this._maxColumns = maxColumnCount;
+      this._maxColumnsProvider.setValue(maxColumnCount);
     }
   }
 
@@ -156,10 +174,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const totalSectionCount =
       this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
 
-    const maxColumnCount = this._columnsController.value ?? 1;
-
     const columnCount = Math.max(
-      Math.min(maxColumnCount, totalSectionCount),
+      Math.min(this._maxColumns, totalSectionCount),
       1
     );
     // On mobile with sidebar, use full width for whichever view is active
@@ -409,7 +425,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       >
         ${hasBackground
           ? html`<hui-section-background
+              .hass=${this.hass}
               .background=${section.config.background}
+              .theme=${section.config.theme}
             ></hui-section-background>`
           : nothing}
         ${section}
@@ -485,10 +503,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static styles = css`
     :host {
       --row-height: var(--ha-view-sections-row-height, 56px);
-      --row-gap: var(--ha-view-sections-row-gap, 8px);
+      --row-gap: var(--ha-view-sections-row-gap, 24px);
       --column-gap: var(--ha-view-sections-column-gap, 32px);
       --column-max-width: var(--ha-view-sections-column-max-width, 500px);
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+      --narrow-column-gap: var(--ha-view-sections-narrow-column-gap, 8px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
       flex: 1;
@@ -496,15 +515,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     @media (max-width: 600px) {
       :host {
-        --column-gap: var(--ha-view-sections-narrow-column-gap, var(--row-gap));
+        --column-gap: var(--narrow-column-gap);
       }
     }
 
     .wrapper {
       display: flex;
       flex-direction: column;
-      min-height: calc(100% - 2 * var(--row-gap));
-      padding: var(--row-gap) var(--column-gap);
+      min-height: 100%;
+      padding: 0 var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
       max-width: calc(

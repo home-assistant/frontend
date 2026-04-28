@@ -6,11 +6,11 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
@@ -150,7 +150,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       automatic_backups_configured: done,
     };
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       params.create_backup!.include_folders =
         this._config.create_backup.include_folders || [];
       params.create_backup!.include_all_addons =
@@ -265,7 +265,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   private get _defaultAgents(): string[] {
     const agents: string[] = [];
     // Enable local location by default
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       agents.push(HASSIO_LOCAL_AGENT);
     } else {
       agents.push(CORE_LOCAL_AGENT);

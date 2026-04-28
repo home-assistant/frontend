@@ -421,7 +421,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected override firstUpdated(changedProps: PropertyValues) {
+  protected override firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._refresh();
@@ -480,7 +480,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     listThreadDataSets(this.hass).then((datasets) => {
       this._datasets = datasets.datasets;
     });
-    if (!isComponentLoaded(this.hass, "otbr")) {
+    if (!isComponentLoaded(this.hass.config, "otbr")) {
       return;
     }
     try {

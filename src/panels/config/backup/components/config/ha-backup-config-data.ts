@@ -85,10 +85,10 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _storageInfo?: HostDisksUsage | null;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchAddons();
       this._fetchStorageInfo();
     }
@@ -96,7 +96,7 @@ class HaBackupConfigData extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("value")) {
-      if (isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass.config, "hassio")) {
         if (this.value?.include_addons?.length) {
           this._showAddons = true;
         }
@@ -111,7 +111,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private async _checkDbOption() {
-    if (isComponentLoaded(this.hass, "recorder")) {
+    if (isComponentLoaded(this.hass.config, "recorder")) {
       const info = await getRecorderInfo(this.hass.connection);
       this._showDbOption = info.db_in_default_location;
       if (!this._showDbOption && this.value?.include_database) {
@@ -234,7 +234,7 @@ class HaBackupConfigData extends LitElement {
   protected render() {
     const data = this._getData(this.value, this._showAddons);
 
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       ${this._renderSizeEstimate()}
@@ -455,7 +455,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private _renderSizeEstimate() {
-    if (!isComponentLoaded(this.hass, "hassio")) {
+    if (!isComponentLoaded(this.hass.config, "hassio")) {
       return nothing;
     }
 
@@ -567,6 +567,9 @@ class HaBackupConfigData extends LitElement {
         min-width: 140px;
         width: 140px;
       }
+    }
+    ha-expansion-panel {
+      margin-bottom: var(--ha-space-4);
     }
   `;
 }

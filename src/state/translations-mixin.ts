@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -22,7 +23,7 @@ import {
   subscribeTranslationPreferences,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { Constructor, HomeAssistant } from "../types";
+import type { Constructor, HomeAssistant, Resources } from "../types";
 import {
   getLocalLanguage,
   getTranslation,
@@ -68,10 +69,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private __loadedFragmentTranslations = new Set<string>();
 
+    private __inflightFragmentTranslations = new Map<
+      string,
+      Promise<LocalizeFunc>
+    >();
+
     private __loadedTranslations: Record<string, LoadedTranslationCategory> =
       {};
 
-    protected firstUpdated(changedProps) {
+    private __resources: Resources = {};
+
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
         this._selectLanguage((e as CustomEvent).detail, true);
@@ -94,7 +102,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadCoreTranslations(getLocalLanguage());
     }
 
-    protected updated(changedProps) {
+    protected updated(changedProps: PropertyValues<this>) {
       super.updated(changedProps);
       if (!changedProps.has("hass")) {
         return;
@@ -258,6 +266,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
       this.__loadedFragmentTranslations = new Set();
+      this.__inflightFragmentTranslations = new Map();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -380,12 +389,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return undefined;
       }
 
+      if (this.__inflightFragmentTranslations.has(fragment)) {
+        return this.__inflightFragmentTranslations.get(fragment)!;
+      }
       if (this.__loadedFragmentTranslations.has(fragment)) {
         return this.hass!.localize;
       }
-      this.__loadedFragmentTranslations.add(fragment);
-      const result = await getTranslation(fragment, language);
-      return this._updateResources(language, result.data);
+      const promise = getTranslation(fragment, language).then((result) =>
+        this._updateResources(language, result.data).finally(() => {
+          this.__inflightFragmentTranslations.delete(fragment);
+          this.__loadedFragmentTranslations.add(fragment);
+        })
+      );
+      this.__inflightFragmentTranslations.set(fragment, promise);
+      return promise;
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -432,13 +449,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const resources = {
         [language]: {
-          ...(this.hass ?? this._pendingHass)?.resources?.[language],
+          ...this.__resources[language],
           ...data,
         },
       };
 
       // Update resources immediately, so when a new update comes in we don't miss values
-      this._updateHass({ resources });
+      this.__resources = resources;
 
       const localize = await computeLocalize(this, language, resources);
 

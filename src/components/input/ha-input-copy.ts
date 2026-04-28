@@ -3,7 +3,7 @@ import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
-import { localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context";
 import { showToast } from "../../util/toast";
 import "../ha-button";
 import "../ha-icon-button";
@@ -11,6 +11,27 @@ import "../ha-svg-icon";
 import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
+/**
+ * Home Assistant input with copy button
+ *
+ * @element ha-input-copy
+ * @extends {LitElement}
+ *
+ * @summary
+ * A read-only input component with a copy-to-clipboard button.
+ * Supports optional value masking with a toggle to reveal the hidden value.
+ *
+ * @attr {string} value - The value to display and copy.
+ * @attr {string} masked-value - An alternative masked display value (for example, "••••••").
+ * @attr {string} label - Label for the copy button. Defaults to the localized "Copy" text.
+ * @attr {boolean} readonly - Makes the inner input readonly.
+ * @attr {boolean} disabled - Disables the inner input.
+ * @attr {boolean} masked-toggle - Shows a toggle button to reveal/hide the masked value.
+ * @attr {("text"|"password"|"email"|"number"|"tel"|"url"|"search"|"date"|"datetime-local"|"time"|"color")} type - Sets the input type.
+ * @attr {string} placeholder - Placeholder text for the input.
+ * @attr {string} validation-message - Custom validation message.
+ * @attr {boolean} auto-validate - Validates the input on blur.
+ */
 @customElement("ha-input-copy")
 export class HaInputCopy extends LitElement {
   @property({ attribute: "value" }) public value!: string;
@@ -38,8 +59,8 @@ export class HaInputCopy extends LitElement {
     false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _showMasked = true;
 
@@ -69,7 +90,7 @@ export class HaInputCopy extends LitElement {
               ? html`<ha-icon-button
                   slot="end"
                   class="toggle-unmasked"
-                  .label=${this.localize(
+                  .label=${this._i18n.localize(
                     `ui.common.${this._showMasked ? "show" : "hide"}`
                   )}
                   @click=${this._toggleMasked}
@@ -80,7 +101,7 @@ export class HaInputCopy extends LitElement {
         </div>
         <ha-button @click=${this._copy} appearance="plain" size="small">
           <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-          ${this.label || this.localize("ui.common.copy")}
+          ${this.label || this._i18n.localize("ui.common.copy")}
         </ha-button>
       </div>
     `;
@@ -98,7 +119,7 @@ export class HaInputCopy extends LitElement {
   private async _copy(): Promise<void> {
     await copyToClipboard(this.value);
     showToast(this, {
-      message: this.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 

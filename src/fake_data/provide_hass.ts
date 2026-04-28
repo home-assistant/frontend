@@ -15,7 +15,7 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, ValuePart } from "../types";
+import type { HomeAssistant, Resources, ValuePart } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -78,6 +78,7 @@ export const provideHass = (
   const restResponses: [string | RegExp, MockRestCallback][] = [];
   const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
+  let resources: Resources = {};
 
   async function updateTranslations(
     fragment: null | string,
@@ -94,17 +95,14 @@ export const provideHass = (
     language?: string
   ) {
     const lang = language || getLocalLanguage();
-    const resources = {
+    resources = {
       [lang]: {
-        ...(hass().resources && hass().resources[lang]),
+        ...resources[lang],
         ...translations,
       },
     };
     hass().updateHass({
-      resources,
-    });
-    hass().updateHass({
-      localize: await computeLocalize(elements[0], lang, hass().resources),
+      localize: await computeLocalize(elements[0], lang, resources),
     });
     fireEvent(window, "translations-updated");
   }
@@ -291,7 +289,6 @@ export const provideHass = (
       time_zone: TimeZone.local,
       first_weekday: FirstWeekday.language,
     },
-    resources: null as any,
     localize: () => "",
 
     translationMetadata: translationMetadata as any,
@@ -303,7 +300,6 @@ export const provideHass = (
     debugConnection: false,
     kioskMode: false,
     suspendWhenHidden: false,
-    moreInfoEntityId: null as any,
     // @ts-ignore
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {

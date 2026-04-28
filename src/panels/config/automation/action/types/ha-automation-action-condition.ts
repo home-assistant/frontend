@@ -138,7 +138,7 @@ export class HaConditionAction
     const isDynamicValue = isDynamic(value);
     const condition = isDynamicValue ? getValueFromDynamic(value) : value;
 
-    let label = condition;
+    let label: string;
 
     if (isDynamicValue) {
       const domain = getConditionDomain(condition);

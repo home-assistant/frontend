@@ -1,10 +1,12 @@
 import { consume } from "@lit/context";
-import type { CSSResult, TemplateResult, LitElement } from "lit";
+import type { CSSResult, LitElement, TemplateResult } from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -14,8 +16,6 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
-import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
@@ -50,13 +50,14 @@ export const automationScriptEditorStyles: CSSResult = css`
   p {
     margin-bottom: 0;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: fixed;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
   ha-tooltip ha-svg-icon {
@@ -93,7 +94,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     @state()
     @consume({ context: fullEntitiesContext, subscribe: true })
-    entityRegistry!: EntityRegistryEntry[];
+    entityRegistry?: EntityRegistryEntry[];
 
     @state() protected dirty = false;
 
@@ -119,7 +120,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     @transform<EntityRegistryEntry[], EntityRegistryEntry>({
       transformer: function (this: { currentEntityId?: string }, value) {
-        return value.find(
+        return value?.find(
           ({ entity_id }) => entity_id === this.currentEntityId
         );
       },
@@ -234,7 +235,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
           goBack("/config");
           return;
         }
-        const entity = this.entityRegistry.find(
+        const entity = this.entityRegistry?.find(
           (ent) => ent.platform === domain && ent.unique_id === id
         );
         if (entity) {

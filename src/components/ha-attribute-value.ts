@@ -26,7 +26,7 @@ class HaAttributeValue extends LitElement {
         try {
           // If invalid URL, exception will be raised
           const url = new URL(attributeValue);
-          if (url.protocol === "http:" || url.protocol === "https:")
+          if (url.protocol === "http:" || url.protocol === "https:") {
             return html`
               <a
                 target="_blank"
@@ -36,6 +36,7 @@ class HaAttributeValue extends LitElement {
                 ${attributeValue}
               </a>
             `;
+          }
         } catch {
           // Nothing to do here
         }
@@ -56,7 +57,10 @@ class HaAttributeValue extends LitElement {
         this.stateObj!,
         this.attribute
       );
-      return parts.find((part) => part.type === "value")?.value;
+      return parts
+        .filter((part) => part.type === "value")
+        .map((part) => part.value)
+        .join("");
     }
 
     return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);

@@ -6,7 +6,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/input/ha-input";
 import type { ForDict } from "../../../../data/automation";
@@ -97,19 +96,14 @@ class HaTimerForm extends LitElement {
           @value-changed=${this._valueChanged}
           .disabled=${this.disabled}
         ></ha-duration-input>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.timer.restore"
-          )}
+        <ha-checkbox
+          .configValue=${"restore"}
+          .checked=${this._restore}
+          @change=${this._toggleRestore}
+          .disabled=${this.disabled}
         >
-          <ha-checkbox
-            .configValue=${"restore"}
-            .checked=${this._restore}
-            @change=${this._toggleRestore}
-            .disabled=${this.disabled}
-          >
-          </ha-checkbox>
-        </ha-formfield>
+          ${this.hass.localize("ui.dialogs.helper_settings.timer.restore")}
+        </ha-checkbox>
       </div>
     `;
   }
@@ -168,10 +162,13 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield,
         ha-duration-input {
           display: block;
           margin: 8px 0;
+        }
+        ha-checkbox {
+          min-height: 40px;
+          justify-content: center;
         }
       `,
     ];

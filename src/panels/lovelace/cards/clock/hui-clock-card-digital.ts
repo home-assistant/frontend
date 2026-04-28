@@ -73,7 +73,7 @@ export class HuiClockCardDigital extends LitElement {
     this._tick();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("config") || changedProps.has("hass")) {
       const oldHass = changedProps.get("hass");
       if (

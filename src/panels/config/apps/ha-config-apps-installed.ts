@@ -10,11 +10,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -88,13 +88,12 @@ export class HaConfigAppsInstalled extends LitElement {
           )}
         ></ha-icon-button>
         <div class="search">
-          <search-input
-            .hass=${this.hass}
-            suffix
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
+          <ha-input-search
+            appearance="outlined"
+            .value=${this._filter}
+            @input=${this._handleSearchChange}
           >
-          </search-input>
+          </ha-input-search>
         </div>
         <div class="content">
           <div class="card-group">
@@ -158,16 +157,10 @@ export class HaConfigAppsInstalled extends LitElement {
           </div>
         </div>
 
-        <a href="/config/apps/available">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.add_app"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiStorePlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button size="large" href="/config/apps/available">
+          <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -190,8 +183,8 @@ export class HaConfigAppsInstalled extends LitElement {
     }
   );
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HTMLInputElement).value;
   }
 
   private async _loadData(): Promise<void> {
@@ -245,10 +238,10 @@ export class HaConfigAppsInstalled extends LitElement {
         z-index: 2;
       }
 
-      search-input {
-        display: block;
-        --mdc-text-field-fill-color: var(--sidebar-background-color);
-        --mdc-text-field-idle-line-color: var(--divider-color);
+      ha-input-search {
+        padding: var(--ha-space-3) var(--ha-space-2);
+        background: var(--sidebar-background-color);
+        border-bottom: 1px solid var(--divider-color);
       }
 
       .content {
@@ -271,7 +264,7 @@ export class HaConfigAppsInstalled extends LitElement {
         cursor: pointer;
       }
 
-      ha-fab {
+      ha-button[size="large"] {
         position: fixed;
         right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
         bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
@@ -280,6 +273,7 @@ export class HaConfigAppsInstalled extends LitElement {
         );
         inset-inline-start: initial;
         z-index: 1;
+        --ha-button-box-shadow: var(--ha-box-shadow-l);
       }
     `,
   ];

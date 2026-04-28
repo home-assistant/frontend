@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
-import { getDeviceContext } from "../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
   deviceComboBoxKeys,
@@ -14,11 +14,11 @@ import {
   type DevicePickerItem,
 } from "../../data/device/device_picker";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -120,7 +120,7 @@ export class HaDevicePicker extends LitElement {
       )
   );
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
     this._loadConfigEntries();
   }
@@ -154,7 +154,7 @@ export class HaDevicePicker extends LitElement {
         return html`<span slot="headline">${deviceId}</span>`;
       }
 
-      const { area } = getDeviceContext(device, this.hass);
+      const area = getDeviceArea(device, this.hass.areas);
 
       const deviceName = device ? computeDeviceName(device) : undefined;
       const areaName = area ? computeAreaName(area) : undefined;

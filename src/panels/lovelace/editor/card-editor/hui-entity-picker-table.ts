@@ -45,7 +45,7 @@ export class HuiEntityPickerTable extends LitElement {
 
   @property({ type: Array }) public entities?: string[];
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
     this.hass.loadBackendTranslation("title");
   }
@@ -104,7 +104,6 @@ export class HuiEntityPickerTable extends LitElement {
     return html`
       <ha-data-table
         class=${showEntityId ? "show-entity-id" : ""}
-        .hass=${this.hass}
         selectable
         .id=${"entity_id"}
         .columns=${columns}

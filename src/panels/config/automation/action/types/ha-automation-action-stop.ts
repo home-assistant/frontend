@@ -1,20 +1,24 @@
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import { internationalizationContext } from "../../../../../data/context";
 import type { StopAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-stop")
 export class HaStopAction extends LitElement implements ActionElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public action!: StopAction;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public static get defaultConfig(): StopAction {
     return { stop: "" };
@@ -24,25 +28,25 @@ export class HaStopAction extends LitElement implements ActionElement {
     const { error, stop, response_variable } = this.action;
 
     return html`
-      <ha-textfield
-        .label=${this.hass.localize(
+      <ha-input
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.stop"
         )}
         .value=${stop}
         .disabled=${this.disabled}
         @change=${this._stopChanged}
-      ></ha-textfield>
-      <ha-textfield
-        .label=${this.hass.localize(
+      ></ha-input>
+      <ha-input
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.response_variable"
         )}
         .value=${response_variable || ""}
         .disabled=${this.disabled}
         @change=${this._responseChanged}
-      ></ha-textfield>
+      ></ha-input>
       <ha-formfield
         .disabled=${this.disabled}
-        .label=${this.hass.localize(
+        .label=${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.error"
         )}
       >
@@ -55,17 +59,17 @@ export class HaStopAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _stopChanged(ev: Event) {
+  private _stopChanged(ev: InputEvent) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.action, stop: (ev.target as any).value },
+      value: { ...this.action, stop: (ev.target as HaInput).value },
     });
   }
 
-  private _responseChanged(ev: Event) {
+  private _responseChanged(ev: InputEvent) {
     ev.stopPropagation();
     const newAction = { ...this.action };
-    const newValue = (ev.target as any).value;
+    const newValue = (ev.target as HaInput).value;
     if (newValue) {
       newAction.response_variable = newValue;
     } else {
@@ -84,9 +88,8 @@ export class HaStopAction extends LitElement implements ActionElement {
   }
 
   static styles = css`
-    ha-textfield {
-      display: block;
-      margin-bottom: 24px;
+    ha-input {
+      margin-bottom: var(--ha-space-6);
     }
   `;
 }

@@ -1,17 +1,16 @@
 import memoizeOne from "memoize-one";
 
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-check-list-item";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
 import type { PersistentNotificationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-form/ha-form";
 
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
@@ -104,12 +103,6 @@ export class HaPersistentNotificationTrigger
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.persistent_notification.${schema.name}`
     );
-
-  static styles = css`
-    ha-textfield {
-      display: block;
-    }
-  `;
 }
 
 declare global {

@@ -10,7 +10,7 @@ import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
@@ -43,7 +43,7 @@ export class ZHAAddGroupPage extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchData();
@@ -64,23 +64,23 @@ export class ZHAAddGroupPage extends LitElement {
               "ui.panel.config.zha.groups.create_group_details"
             )}
           </p>
-          <ha-textfield
+          <ha-input
             type="string"
             .value=${this._groupName}
             @change=${this._handleNameChange}
             .placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
             )}
-          ></ha-textfield>
+          ></ha-input>
 
-          <ha-textfield
+          <ha-input
             type="number"
             .value=${this._groupId}
             @change=${this._handleGroupIdChange}
             .placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_id_placeholder"
             )}
-          ></ha-textfield>
+          ></ha-input>
 
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
@@ -146,12 +146,12 @@ export class ZHAAddGroupPage extends LitElement {
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
-  private _handleGroupIdChange(event) {
-    this._groupId = event.target.value;
+  private _handleGroupIdChange(event: InputEvent) {
+    this._groupId = (event.target as HTMLInputElement).value;
   }
 
-  private _handleNameChange(event) {
-    this._groupName = event.target.value || "";
+  private _handleNameChange(event: InputEvent) {
+    this._groupName = (event.target as HTMLInputElement).value || "";
   }
 
   static get styles(): CSSResultGroup {

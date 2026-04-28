@@ -10,8 +10,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
 import { updateCloudPref } from "../../../data/cloud";
 import type { ExposeEntitySettings } from "../../../data/expose";
@@ -208,7 +208,7 @@ export class CloudGooglePref extends LitElement {
                         <ha-switch slot="end"></ha-switch>
                       </ha-md-list-item>
 
-                      <ha-textfield
+                      <ha-input
                         id="google_secure_devices_pin"
                         .label=${this.hass.localize(
                           "ui.panel.config.cloud.account.google.devices_pin"
@@ -218,7 +218,7 @@ export class CloudGooglePref extends LitElement {
                         )}
                         .value=${google_secure_devices_pin || ""}
                         @change=${this._pinChanged}
-                      ></ha-textfield>
+                      ></ha-input>
                     `
                   : nothing}
               `}
@@ -292,8 +292,8 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  private async _pinChanged(ev) {
-    const input = ev.target as HaTextField;
+  private async _pinChanged(ev: InputEvent) {
+    const input = ev.target as HaInput;
     try {
       await updateCloudPref(this.hass, {
         [input.id]: input.value || null,
@@ -336,9 +336,8 @@ export class CloudGooglePref extends LitElement {
       --md-list-item-trailing-space: 0;
       --md-item-overflow: visible;
     }
-    ha-textfield {
+    ha-input {
       width: 250px;
-      display: block;
       margin-top: 8px;
     }
     .card-actions {

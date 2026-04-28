@@ -15,11 +15,12 @@ import {
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-list";
 import "../../../components/ha-spinner";
-import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   DISCOVERY_SOURCES,
@@ -420,7 +421,7 @@ class AddIntegrationDialog extends LitElement {
       return [];
     }
     // Get domains for this brand
-    let domains: string[] = [];
+    let domains: string[];
     if ("integrations" in integration && integration.integrations) {
       domains = Object.keys(integration.integrations);
       if (this._pickedBrand === "apple") {
@@ -534,16 +535,16 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    return html`<search-input
-        .hass=${this.hass}
+    return html`<ha-input-search
+        appearance="outlined"
         ?autofocus=${!this._narrow}
-        .filter=${this._filter}
-        @value-changed=${this._filterChanged}
-        .label=${this.hass.localize(
+        .value=${this._filter}
+        @input=${this._filterChanged}
+        .placeholder=${this.hass.localize(
           "ui.panel.config.integrations.search_brand"
         )}
         @keypress=${this._maybeSubmit}
-      ></search-input>
+      ></ha-input-search>
       ${integrations
         ? html`<ha-list ?autofocus=${this._narrow}>
             <lit-virtualizer
@@ -642,8 +643,8 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _integrationPicked(ev) {
@@ -693,7 +694,7 @@ class AddIntegrationDialog extends LitElement {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
-      isComponentLoaded(this.hass, integration.domain)
+      isComponentLoaded(this.hass.config, integration.domain)
     ) {
       this._pickedBrand = integration.domain;
       return;
@@ -736,7 +737,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       integration.domain === "cloud" &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/cloud");
@@ -745,7 +746,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       ["google_assistant", "alexa"].includes(integration.domain) &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/voice-assistants/assistants");
@@ -821,9 +822,8 @@ class AddIntegrationDialog extends LitElement {
       ha-dialog {
         --dialog-content-padding: 0;
       }
-      search-input {
-        display: block;
-        margin: 0 16px;
+      ha-input-search {
+        margin: 0 var(--ha-space-4) var(--ha-space-3);
       }
       .divider {
         border-bottom-color: var(--divider-color);

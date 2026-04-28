@@ -40,8 +40,10 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-cover-tilt-favorite-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDailyForecastCardFeature } from "../../card-features/hui-daily-forecast-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsHourlyForecastCardFeature } from "../../card-features/hui-hourly-forecast-card-feature";
 import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -53,6 +55,8 @@ import { supportsLightColorTempCardFeature } from "../../card-features/hui-light
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerSoundModeCardFeature } from "../../card-features/hui-media-player-sound-mode-card-feature";
+import { supportsMediaPlayerSourceCardFeature } from "../../card-features/hui-media-player-source-card-feature";
 import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
@@ -98,11 +102,13 @@ const UI_FEATURE_TYPES = [
   "cover-tilt-favorite",
   "cover-tilt-position",
   "cover-tilt",
+  "daily-forecast",
   "date-set",
   "fan-direction",
   "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
+  "hourly-forecast",
   "humidifier-modes",
   "humidifier-toggle",
   "lawn-mower-commands",
@@ -112,6 +118,8 @@ const UI_FEATURE_TYPES = [
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
@@ -143,9 +151,13 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "counter-actions",
   "cover-position-favorite",
   "cover-tilt-favorite",
+  "daily-forecast",
   "fan-preset-modes",
+  "hourly-forecast",
   "humidifier-modes",
   "lawn-mower-commands",
+  "media-player-playback",
+  "light-color-favorites",
   "media-player-volume-buttons",
   "numeric-input",
   "select-options",
@@ -177,11 +189,16 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "daily-forecast": (hass, context) =>
+    supportsDailyForecastCardFeature(
+      context.entity_id ? hass.states[context.entity_id] : undefined
+    ),
   "date-set": supportsDateSetCardFeature,
   "fan-direction": supportsFanDirectionCardFeature,
   "fan-oscillate": supportsFanOscilatteCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
+  "hourly-forecast": supportsHourlyForecastCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
@@ -191,6 +208,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-sound-mode": supportsMediaPlayerSoundModeCardFeature,
+  "media-player-source": supportsMediaPlayerSourceCardFeature,
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,

@@ -32,7 +32,7 @@ export class HaMarqueeText extends LitElement {
 
   private _pauseTimeout?: number;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._setupAnimation();

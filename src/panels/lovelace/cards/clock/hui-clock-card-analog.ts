@@ -75,7 +75,7 @@ export class HuiClockCardAnalog extends LitElement {
     this._stopDateTick();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("config") || changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (

@@ -14,9 +14,9 @@ import {
 } from "../data/supervisor/mounts";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-list-item";
 import "./ha-select";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
 const _BACKUP_DATA_DISK_ = "/backup";
 
@@ -129,7 +129,7 @@ class HaMountPicker extends LitElement {
 
   private async _getMounts() {
     try {
-      if (isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass.config, "hassio")) {
         this._mounts = await fetchSupervisorMounts(this.hass);
         if (this.usage === SupervisorMountUsage.BACKUP && !this.value) {
           this.value = this._mounts.default_backup_mount || _BACKUP_DATA_DISK_;

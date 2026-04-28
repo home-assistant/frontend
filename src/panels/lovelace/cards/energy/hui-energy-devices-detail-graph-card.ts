@@ -16,6 +16,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
+  getSuggestedPeriod,
   getSummedData,
   computeConsumptionData,
   validateEnergyCollectionKey,
@@ -32,6 +33,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -112,7 +115,7 @@ export class HuiEnergyDevicesDetailGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -389,31 +392,36 @@ export class HuiEnergyDevicesDetailGraphCard
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
-          (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
-          datapoint[1];
+        totalDeviceConsumption[datapoint[2]] =
+          (totalDeviceConsumption[datapoint[2]] || 0) + datapoint[1];
       });
     });
     const compareTransform = getCompareTransform(
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.used_total)
-      .sort((a, b) => Number(a) - Number(b))
-      .forEach((time) => {
-        const ts = Number(time);
-        const value =
-          consumptionData.used_total[time] -
-          (totalDeviceConsumption[time] || 0);
-        const dataPoint: number[] = [ts, value];
-        if (compare) {
-          dataPoint[2] = dataPoint[0];
-          dataPoint[0] = compareTransform(new Date(ts)).getTime();
-        }
-        untrackedConsumption.push(dataPoint);
-      });
+    const sortedTimes = Object.keys(consumptionData.used_total).sort(
+      (a, b) => Number(a) - Number(b)
+    );
+    // Only start timestamps available here, so estimate midpoint from the gap
+    // between the first two entries. Assumes uniform period spacing.
+    const periodOffset =
+      (period === "hour" || period === "5minute") && sortedTimes.length >= 2
+        ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
+        : 0;
+    sortedTimes.forEach((time) => {
+      const ts = Number(time);
+      const value =
+        consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
+      const dataPoint: EnergyDataPoint = [ts + periodOffset, value, ts];
+      if (compare) {
+        dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
+      }
+      untrackedConsumption.push(dataPoint);
+    });
     // random id to always add untracked at the end
     const order = Date.now();
     const dataset: BarSeriesOption = {
@@ -460,6 +468,7 @@ export class HuiEnergyDevicesDetailGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     devices.forEach((source, idx) => {
       const order = sorted_devices.indexOf(source.stat_consumption);
@@ -499,11 +508,16 @@ export class HuiEnergyDevicesDetailGraphCard
               cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
           });
 
-          const dataPoint = [point.start, point.change - sumChildren];
-          if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start)).getTime();
-          }
+          const dataPoint: EnergyDataPoint = [
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              period,
+              compare ? compareTransform : undefined
+            ),
+            point.change - sumChildren,
+            point.start,
+          ];
           consumptionData.push(dataPoint);
           prevStart = point.start;
         }

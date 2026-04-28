@@ -84,7 +84,7 @@ export class HuiEnergyCompareCard
     ];
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.has("preview") ||
@@ -93,7 +93,7 @@ export class HuiEnergyCompareCard
     );
   }
 
-  protected update(changedProps: PropertyValues): void {
+  protected update(changedProps: PropertyValues<this>): void {
     super.update(changedProps);
 
     if (changedProps.has("preview")) {
@@ -143,7 +143,11 @@ export class HuiEnergyCompareCard
     );
 
     return html`
-      <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
+      <ha-alert
+        dismissable
+        .localize=${this.hass.localize}
+        @alert-dismissed-clicked=${this._stopCompare}
+      >
         ${this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_compare.info",
           {
