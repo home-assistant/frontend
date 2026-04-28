@@ -366,6 +366,13 @@ ${type === "object"
             max-width: 100%;
           }
         }
+
+        .card-actions {
+          display: flex;
+        }
+        .card-actions > ha-button:last-child {
+          margin-inline-start: auto;
+        }        
       `,
     ];
   }
