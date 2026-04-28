@@ -77,6 +77,7 @@ import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
+import "./types/ha-automation-trigger-event_entity";
 import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-list";

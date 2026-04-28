@@ -215,6 +215,12 @@ export interface CalendarTrigger extends BaseTrigger {
   offset: string;
 }
 
+export interface EventEntityTrigger extends BaseTrigger {
+  trigger: "event_entity";
+  entity_id: string | string[];
+  event_type: string | string[];
+}
+
 export type LegacyTrigger =
   | StateTrigger
   | MqttTrigger
@@ -231,6 +237,7 @@ export type LegacyTrigger =
   | TimeTrigger
   | TemplateTrigger
   | EventTrigger
+  | EventEntityTrigger
   | DeviceTrigger
   | CalendarTrigger;
 

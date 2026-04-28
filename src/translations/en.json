@@ -5178,6 +5178,13 @@
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
+                "event_entity": {
+                  "label": "Event entity",
+                  "event_type": "Event type",
+                  "description": {
+                    "picker": "Triggers when an event entity signal is emitted."
+                  }
+                },
                 "persistent_notification": {
                   "label": "Persistent notification",
                   "notification_id": "Notification ID",

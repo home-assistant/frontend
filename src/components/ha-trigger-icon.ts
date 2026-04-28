@@ -16,6 +16,7 @@ import {
   mdiSwapHorizontal,
   mdiWeatherSunny,
   mdiWebhook,
+  mdiPulse,
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -46,6 +47,7 @@ export const TRIGGER_ICONS = {
   persistent_notification: mdiMessageAlert,
   zone: mdiMapMarkerRadius,
   list: mdiFormatListBulleted,
+  event_entity: mdiPulse,
 };
 
 @customElement("ha-trigger-icon")
