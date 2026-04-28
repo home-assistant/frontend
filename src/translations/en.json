@@ -4421,7 +4421,7 @@
           "detail": {
             "logger": "Logger",
             "source": "Source",
-            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
