@@ -1,12 +1,7 @@
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type {
-  TemplateResult,
-  LitElement,
-  html,
-  nothing,
-  type PropertyValues,
-} from "lit";
+import { LitElement, html, nothing } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";

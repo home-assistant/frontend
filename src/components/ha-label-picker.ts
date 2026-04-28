@@ -2,13 +2,8 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type {
-  TemplateResult,
-  LitElement,
-  html,
-  nothing,
-  type PropertyValues,
-} from "lit";
+import { LitElement, html, nothing } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import {
   customElement,
   property,

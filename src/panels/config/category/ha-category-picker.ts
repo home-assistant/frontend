@@ -1,11 +1,7 @@
 import { mdiPlus, mdiTag } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type {
-  TemplateResult,
-  html,
-  LitElement,
-  type PropertyValues,
-} from "lit";
+import { LitElement, html } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
