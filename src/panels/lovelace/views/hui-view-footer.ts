@@ -276,6 +276,7 @@ export class HuiViewFooter extends LitElement {
       );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
+      background-color: var(--ha-color-surface-low);
     }
 
     .card {
@@ -321,7 +322,10 @@ export class HuiViewFooter extends LitElement {
       );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
-      background: var(--ha-color-surface-lower);
+      background: var(--ha-color-surface-low);
+      border: var(--ha-border-width-md) dashed
+        var(--ha-color-border-neutral-quiet);
+      border-bottom: none;
       --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--primary-text-color);

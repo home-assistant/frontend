@@ -320,7 +320,10 @@ export class HuiViewHeader extends LitElement {
       );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
-      background: var(--ha-color-surface-lower);
+      border: var(--ha-border-width-md) dashed
+        var(--ha-color-border-neutral-quiet);
+      border-bottom: none;
+      background: var(--ha-color-surface-low);
       --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--primary-text-color);
@@ -447,8 +450,10 @@ export class HuiViewHeader extends LitElement {
         --ha-section-border-radius,
         var(--ha-border-radius-xl)
       );
-      border: 2px dashed var(--divider-color);
+      border: var(--ha-border-width-md) dashed
+        var(--ha-color-border-neutral-quiet);
       border-start-end-radius: 0;
+      background-color: var(--ha-color-surface-low);
     }
 
     .container.edit-mode .content {
