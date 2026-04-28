@@ -1,6 +1,9 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
+import type { ForecastPrecipitationType } from "../../../data/weather";
+
+export type { ForecastPrecipitationType };
 
 export type ButtonCardData = Record<string, any>;
 
@@ -244,12 +247,18 @@ export interface TrendGraphCardFeatureConfig {
 export interface HourlyForecastCardFeatureConfig {
   type: "hourly-forecast";
   hours_to_show?: number;
+  show_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
 }
 
 export interface DailyForecastCardFeatureConfig {
   type: "daily-forecast";
   forecast_type?: "daily" | "twice_daily";
   days_to_show?: number;
+  show_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
 }
 
 export const AREA_CONTROL_DOMAINS = [

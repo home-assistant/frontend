@@ -19,7 +19,11 @@ import {
   internationalizationContext,
 } from "../../../data/context";
 import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
-import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
+import {
+  getForecastPrecipitation,
+  subscribeForecast,
+  WeatherEntityFeature,
+} from "../../../data/weather";
 import type {
   HomeAssistantConnection,
   HomeAssistantInternationalization,
@@ -32,7 +36,7 @@ import type {
 
 export const DEFAULT_DAYS_TO_SHOW = 7;
 
-const MAX_BAR_WIDTH = 12;
+const MAX_BAR_WIDTH = 8;
 
 export type DailyForecastType = "daily" | "twice_daily";
 
@@ -183,16 +187,20 @@ class HuiDailyForecastCardFeature
       `;
     }
 
+    const showTemperature = this._config.show_temperature ?? true;
+    const showPrecipitation = this._config.show_precipitation ?? false;
+
     const daysToShow = this._config.days_to_show ?? DEFAULT_DAYS_TO_SHOW;
     const entriesPerDay = this._subscribedType === "twice_daily" ? 2 : 1;
     const entries = this._forecast
-      .filter(
-        (entry) =>
-          entry.temperature != null &&
-          !Number.isNaN(entry.temperature) &&
-          entry.templow != null &&
-          !Number.isNaN(entry.templow)
-      )
+      .filter((entry) => {
+        if (showTemperature) {
+          return (
+            Number.isFinite(entry.temperature) && Number.isFinite(entry.templow)
+          );
+        }
+        return showPrecipitation;
+      })
       .slice(0, daysToShow * entriesPerDay);
 
     if (!entries.length) {
@@ -217,62 +225,145 @@ class HuiDailyForecastCardFeature
     const minGap = 4;
     const slotWidth = width / entries.length;
     const barWidth = Math.max(1, Math.min(MAX_BAR_WIDTH, slotWidth - minGap));
+    const drawableHeight = height - padding * 2;
+
+    const showTemperature = this._config!.show_temperature ?? true;
+    const showPrecipitation = this._config!.show_precipitation ?? false;
+    const precipitationType = this._config!.precipitation_type ?? "amount";
 
     const currentTemp = Number(this._stateObj?.attributes?.temperature);
-    const hasCurrentTemp = currentTemp != null && !Number.isNaN(currentTemp);
+    const hasCurrentTemp = Number.isFinite(currentTemp);
 
-    let tempMin = Infinity;
-    let tempMax = -Infinity;
-    for (const entry of entries) {
-      tempMin = Math.min(tempMin, entry.templow!);
-      tempMax = Math.max(tempMax, entry.temperature);
+    let yFor: ((value: number) => number) | undefined;
+    if (showTemperature) {
+      let tempMin = Infinity;
+      let tempMax = -Infinity;
+      for (const entry of entries) {
+        if (
+          Number.isFinite(entry.templow) &&
+          Number.isFinite(entry.temperature)
+        ) {
+          tempMin = Math.min(tempMin, entry.templow!);
+          tempMax = Math.max(tempMax, entry.temperature);
+        }
+      }
+      if (hasCurrentTemp) {
+        tempMin = Math.min(tempMin, currentTemp);
+        tempMax = Math.max(tempMax, currentTemp);
+      }
+      if (tempMin === tempMax) {
+        tempMin -= 1;
+        tempMax += 1;
+      }
+      yFor = (value: number) =>
+        padding +
+        drawableHeight -
+        ((value - tempMin) / (tempMax - tempMin)) * drawableHeight;
     }
-    if (hasCurrentTemp) {
-      tempMin = Math.min(tempMin, currentTemp);
-      tempMax = Math.max(tempMax, currentTemp);
+
+    let maxPrecipitation = 0;
+    if (showPrecipitation) {
+      if (precipitationType === "probability") {
+        maxPrecipitation = 100;
+      } else {
+        for (const entry of entries) {
+          const value = getForecastPrecipitation(entry, precipitationType);
+          if (Number.isFinite(value)) {
+            maxPrecipitation = Math.max(maxPrecipitation, value!);
+          }
+        }
+      }
     }
-    if (tempMin === tempMax) {
-      tempMin -= 1;
-      tempMax += 1;
-    }
 
-    const drawableHeight = height - padding * 2;
-    const yFor = (value: number) =>
-      padding +
-      drawableHeight -
-      ((value - tempMin) / (tempMax - tempMin)) * drawableHeight;
+    const rainBarWidth = Math.max(
+      barWidth,
+      Math.min(barWidth + 8, slotWidth - 2)
+    );
 
-    const bars = entries.map((entry, i) => {
-      const x = slotWidth * i + (slotWidth - barWidth) / 2;
-      const yHigh = yFor(entry.temperature);
-      const yLow = yFor(entry.templow!);
-      const barHeight = Math.max(1, yLow - yHigh);
-      const rx = Math.min(barWidth / 2, barHeight / 2);
-      const fill = entry.condition
-        ? `var(--state-weather-${slugify(entry.condition, "_")}-color, var(--feature-color))`
-        : "var(--feature-color)";
-      return svg`<rect
-        x=${x}
-        y=${yHigh}
-        width=${barWidth}
-        height=${barHeight}
-        rx=${rx}
-        ry=${rx}
-        fill=${fill}
-      ></rect>`;
-    });
+    const precipitationBars =
+      showPrecipitation && maxPrecipitation > 0
+        ? entries.map((entry, i) => {
+            const value = getForecastPrecipitation(entry, precipitationType);
+            if (!Number.isFinite(value) || value! <= 0) {
+              return nothing;
+            }
+            const x = slotWidth * i + (slotWidth - rainBarWidth) / 2;
+            const barHeight = Math.max(
+              1,
+              (value! / maxPrecipitation) * drawableHeight
+            );
+            const y = padding + drawableHeight - barHeight;
+            return svg`<rect
+              x=${x}
+              y=${y}
+              width=${rainBarWidth}
+              height=${barHeight}
+              fill="var(--state-weather-rainy-color)"
+              opacity="0.4"
+            ></rect>`;
+          })
+        : nothing;
 
-    const currentTempLine = hasCurrentTemp
-      ? svg`<line
-          x1="0"
-          x2=${width}
-          y1=${yFor(currentTemp)}
-          y2=${yFor(currentTemp)}
-          stroke="var(--feature-color)"
-          stroke-width="1"
-          stroke-opacity="0.5"
-          vector-effect="non-scaling-stroke"
-        ></line>`
+    const bars =
+      showTemperature && yFor
+        ? entries.map((entry, i) => {
+            if (
+              !Number.isFinite(entry.temperature) ||
+              !Number.isFinite(entry.templow)
+            ) {
+              return nothing;
+            }
+            const x = slotWidth * i + (slotWidth - barWidth) / 2;
+            const yHigh = yFor(entry.temperature);
+            const yLow = yFor(entry.templow!);
+            const barHeight = Math.max(1, yLow - yHigh);
+            const rx = Math.min(barWidth / 2, barHeight / 2);
+            const fill = entry.condition
+              ? `var(--state-weather-${slugify(entry.condition, "_")}-color, var(--feature-color))`
+              : "var(--feature-color)";
+            return svg`<rect
+              x=${x}
+              y=${yHigh}
+              width=${barWidth}
+              height=${barHeight}
+              rx=${rx}
+              ry=${rx}
+              fill=${fill}
+            ></rect>`;
+          })
+        : nothing;
+
+    const currentTempLine =
+      showTemperature && yFor && hasCurrentTemp
+        ? svg`<line
+            x1="0"
+            x2=${width}
+            y1=${yFor(currentTemp)}
+            y2=${yFor(currentTemp)}
+            stroke="var(--feature-color)"
+            stroke-width="1"
+            stroke-opacity="0.5"
+            vector-effect="non-scaling-stroke"
+          ></line>`
+        : nothing;
+
+    const dotRadius = 1.5;
+    const dots = !showTemperature
+      ? entries.map((entry, i) => {
+          const value = getForecastPrecipitation(entry, precipitationType);
+          if (Number.isFinite(value) && value! > 0) {
+            return nothing;
+          }
+          const cx = slotWidth * i + slotWidth / 2;
+          const cy = padding + drawableHeight - dotRadius;
+          return svg`<circle
+            cx=${cx}
+            cy=${cy}
+            r=${dotRadius}
+            fill="var(--state-weather-rainy-color)"
+            opacity="0.4"
+          ></circle>`;
+        })
       : nothing;
 
     return html`
@@ -282,7 +373,7 @@ class HuiDailyForecastCardFeature
         viewBox="0 0 ${width} ${height}"
         preserveAspectRatio="none"
       >
-        ${bars}${currentTempLine}
+        ${dots}${precipitationBars}${bars}${currentTempLine}
       </svg>
     `;
   }
