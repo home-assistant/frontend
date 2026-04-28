@@ -1,6 +1,9 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
+import type { ForecastPrecipitationType } from "../../../data/weather";
+
+export type { ForecastPrecipitationType };
 
 export type ButtonCardData = Record<string, any>;
 
@@ -240,8 +243,6 @@ export interface TrendGraphCardFeatureConfig {
   hours_to_show?: number;
   detail?: boolean;
 }
-
-export type ForecastPrecipitationType = "amount" | "probability";
 
 export interface HourlyForecastCardFeatureConfig {
   type: "hourly-forecast";

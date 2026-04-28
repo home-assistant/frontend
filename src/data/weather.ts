@@ -57,9 +57,11 @@ export interface ForecastAttribute {
   wind_speed?: string;
 }
 
+export type ForecastPrecipitationType = "amount" | "probability";
+
 export const getForecastPrecipitation = (
   entry: ForecastAttribute,
-  type: "amount" | "probability"
+  type: ForecastPrecipitationType
 ) =>
   type === "probability"
     ? entry.precipitation_probability
