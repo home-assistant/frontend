@@ -10,6 +10,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -187,8 +188,8 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
-        .externalHiddenState=${this.clickForMoreInfo}
-        @chart-legend-click=${this._handleLegendClick}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -203,8 +204,17 @@ export class StatisticsChart extends LitElement {
     this.requestUpdate("_hiddenStats");
   }
 
-  private _handleLegendClick(ev: CustomEvent) {
-    fireEvent(this, "hass-more-info", { entityId: ev.detail.id });
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const entityId = ev.detail.id;
+    // External statistics aren't real entities; nothing to open.
+    if (isExternalStatistic(entityId)) {
+      return;
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
   }
 
   private _renderTooltip = (params: any) => {

@@ -18,6 +18,7 @@ import {
   formatNumber,
 } from "../../common/number/format_number";
 import { measureTextWidth } from "../../util/text";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
@@ -35,6 +36,16 @@ const CLIMATE_MODE_CONFIGS = [
   { mode: "dry", action: "drying", cssVar: "--state-climate-dry-color" },
   { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
 ] as const;
+
+// Used to recover the underlying entity_id from a legend dataset id.
+// Kept in sync with the suffixes appended at dataset construction below.
+const CLIMATE_DATASET_SUFFIXES = [
+  "-current_temperature",
+  "-target_temperature",
+  "-target_temperature_mode",
+  "-target_temperature_mode_low",
+  ...CLIMATE_MODE_CONFIGS.map((c) => `-${c.action}`),
+];
 
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
@@ -112,8 +123,8 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
-        .externalHiddenState=${this.clickForMoreInfo}
-        @chart-legend-click=${this._handleLegendClick}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -225,8 +236,22 @@ export class StateHistoryChartLine extends LitElement {
     });
   }
 
-  private _handleLegendClick(ev: CustomEvent) {
-    fireEvent(this, "hass-more-info", { entityId: ev.detail.id });
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const id = ev.detail.id;
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of CLIMATE_DATASET_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
   }
 
   public willUpdate(changedProps: PropertyValues) {

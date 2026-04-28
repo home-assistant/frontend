@@ -87,8 +87,8 @@ export class HaChartBase extends LitElement {
   })
   private _themes!: Themes;
 
-  @property({ attribute: "external-hidden-state", type: Boolean })
-  public externalHiddenState = false;
+  @property({ attribute: "click-label-for-more-info", type: Boolean })
+  public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
 
@@ -399,8 +399,9 @@ export class HaChartBase extends LitElement {
           >
             <div
               class="legend-toggle"
-              .title=${this.hass.localize("ui.common.toggle") ||
-              "Toggle visibility"}
+              .title=${this.hass.localize(
+                "ui.components.history_charts.toggle_visibility"
+              )}
               @click=${this._toggleDataset}
             >
               <ha-svg-icon
@@ -414,9 +415,11 @@ export class HaChartBase extends LitElement {
             </div>
             <div
               class="label"
-              .title=${this.externalHiddenState
-                ? this.hass.localize("ui.common.more_info") || "Show more info"
-                : this.hass.localize("ui.common.toggle") || "Toggle visibility"}
+              .title=${this.clickLabelForMoreInfo
+                ? this.hass.localize(
+                    "ui.components.history_charts.show_more_info"
+                  )
+                : nothing}
               @click=${this._labelClick}
             >
               ${name}
@@ -1217,8 +1220,8 @@ export class HaChartBase extends LitElement {
       this._soloLegend(id);
       return;
     }
-    if (this.externalHiddenState) {
-      fireEvent(this, "chart-legend-click", { id });
+    if (this.clickLabelForMoreInfo) {
+      fireEvent(this, "legend-label-click", { id });
     } else {
       this._handleDatasetToggle(id);
     }
@@ -1503,7 +1506,7 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
-    "chart-legend-click": { id: string };
+    "legend-label-click": { id: string };
     "chart-zoom": {
       start: number;
       end: number;
