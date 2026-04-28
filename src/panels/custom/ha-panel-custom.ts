@@ -54,6 +54,18 @@ export class HaPanelCustom extends ReactiveElement {
     this.querySelector("iframe")?.classList.add("loaded");
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The suspendWhenHidden disconnect timer in partial-panel-resolver
+    // removes this element from the DOM after 5 minutes, which triggers
+    // _cleanupPanel() and destroys our child panel. When the user returns,
+    // the same element is re-appended but `update()` won't call _createPanel
+    // again (the `panel` property reference hasn't changed). Rebuild here.
+    if (!this._setProperties && !this.hasChildNodes() && this.panel) {
+      this._createPanel(this.panel);
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._cleanupPanel();

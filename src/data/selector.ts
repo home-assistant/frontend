@@ -265,6 +265,16 @@ interface EntitySelectorFilter {
   unit_of_measurement?: string | readonly string[];
 }
 
+export interface EntitySelectorExtraOption {
+  id: string;
+  primary: string;
+  secondary?: string;
+  icon?: string;
+  icon_path?: string;
+  entity_id?: string;
+  hide_clear?: boolean;
+}
+
 export interface EntitySelector {
   entity: {
     multiple?: boolean;
@@ -272,6 +282,7 @@ export interface EntitySelector {
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     reorder?: boolean;
+    extra_options?: EntitySelectorExtraOption[];
   } | null;
 }
 
@@ -479,7 +490,6 @@ export interface StateSelector {
     attribute?: string;
     hide_states?: string[];
     multiple?: boolean;
-    no_entity?: boolean;
   } | null;
 }
 

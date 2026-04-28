@@ -187,6 +187,30 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "xy_color",
 ];
 
+export const STATE_CONDITION_HIDDEN_ATTRIBUTES = [
+  "access_token",
+  "available_modes",
+  "color_modes",
+  "editable",
+  "effect_list",
+  "entity_picture",
+  "event_types",
+  "fan_modes",
+  "fan_speed_list",
+  "forecast",
+  "friendly_name",
+  "hvac_modes",
+  "icon",
+  "operation_list",
+  "options",
+  "preset_modes",
+  "sound_mode_list",
+  "source_list",
+  "state_class",
+  "swing_modes",
+  "token",
+];
+
 export const computeShownAttributes = (stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);
   const filtersArray = STATE_ATTRIBUTES.concat(

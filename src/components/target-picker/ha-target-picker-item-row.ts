@@ -428,7 +428,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;
@@ -458,7 +459,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;

@@ -11,7 +11,7 @@ import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
-import { getResolvedTargetEntityCount } from "../../../../../data/target";
+import { getTargetEntityCount } from "../../../../../data/target";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -468,16 +468,8 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
-  private _resolveTargetEntityCount = memoizeOne(
-    async (target: PlatformTrigger["target"]) =>
-      getResolvedTargetEntityCount(this.hass, target)
-  );
-
-  private async _updateResolvedTargetEntityCount(
-    target: PlatformTrigger["target"]
-  ) {
-    this._resolvedTargetEntityCount =
-      await this._resolveTargetEntityCount(target);
+  private _updateResolvedTargetEntityCount(target: PlatformTrigger["target"]) {
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     const behaviorFieldEntry = Object.entries(
       this.description?.fields ?? {}
@@ -492,23 +484,7 @@ export class HaPlatformTrigger extends LitElement {
     const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
 
     if (
-      (!target ||
-        (this._resolvedTargetEntityCount !== undefined &&
-          this._resolvedTargetEntityCount <= 1)) &&
-      this.trigger.options?.[behaviorFieldName] !== undefined
-    ) {
-      const options = { ...this.trigger.options };
-      delete options[behaviorFieldName];
-
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.trigger,
-          options,
-        },
-      });
-    } else if (
       target &&
-      this._resolvedTargetEntityCount !== undefined &&
       this._resolvedTargetEntityCount > 1 &&
       this.trigger.options?.[behaviorFieldName] === undefined
     ) {
