@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { CustomShortcutItem } from "../../../data/frontend";
+import type { CustomShortcutItem } from "../../../data/home_shortcuts";
 
 export interface EditShortcutDialogParams {
   item: CustomShortcutItem;

@@ -464,7 +464,9 @@ export interface SelectorSelector {
 }
 
 export interface SerialPortSelector {
-  serial_port: {} | null;
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
 }
 
 export interface StateSelector {

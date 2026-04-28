@@ -8,7 +8,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
-import type { CustomShortcutItem } from "../../../data/frontend";
+import type { CustomShortcutItem } from "../../../data/home_shortcuts";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
 import type { HomeAssistant } from "../../../types";
 

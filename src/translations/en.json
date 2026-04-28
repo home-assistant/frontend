@@ -495,12 +495,15 @@
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
@@ -1100,7 +1103,9 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility",
+        "show_more_info": "Show more info"
       },
       "map": {
         "error": "Unable to load map"
@@ -2505,9 +2510,7 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "summaries_description": "Customize the summaries of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
