@@ -1548,8 +1548,20 @@ class DialogAddAutomationElement
 
       const addDomain = (dmn: string) => {
         const services_keys = Object.keys(services[dmn]);
+        const dmnManifest = manifests?.[dmn];
+        const showDomainPrefix =
+          !dmnManifest ||
+          dmnManifest.integration_type !== "entity" ||
+          !dmnManifest.is_built_in;
 
         for (const service of services_keys) {
+          const serviceName =
+            localize(
+              `component.${dmn}.services.${service}.name`,
+              this.hass.services[dmn][service].description_placeholders
+            ) ||
+            services[dmn][service]?.name ||
+            service;
           result.push({
             icon: html`
               <ha-service-icon
@@ -1558,13 +1570,9 @@ class DialogAddAutomationElement
               ></ha-service-icon>
             `,
             key: `${DYNAMIC_PREFIX}${dmn}.${service}`,
-            name:
-              localize(
-                `component.${dmn}.services.${service}.name`,
-                this.hass.services[dmn][service].description_placeholders
-              ) ||
-              services[dmn][service]?.name ||
-              service,
+            name: showDomainPrefix
+              ? `${domainToName(localize, dmn)}: ${serviceName}`
+              : serviceName,
             description:
               localize(
                 `component.${dmn}.services.${service}.description`,

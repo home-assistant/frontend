@@ -26,6 +26,8 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
+import { domainToName } from "../../../../data/integration";
+import type { DomainManifestLookup } from "../../../../data/integration";
 import type {
   NonConditionAction,
   RepeatAction,
@@ -44,6 +46,8 @@ export default class HaAutomationSidebarAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: ActionSidebarConfig;
+
+  @property({ attribute: false }) public manifests?: DomainManifestLookup;
 
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
 
@@ -103,13 +107,24 @@ export default class HaAutomationSidebarAction extends LitElement {
         2
       );
 
-      title =
+      const serviceName =
         this.hass.localize(
           `component.${domain}.services.${service}.name`,
           this.hass.services[domain]?.[service]?.description_placeholders
         ) ||
         this.hass.services[domain]?.[service]?.name ||
         title;
+
+      const manifest = this.manifests?.[domain];
+      const showDomainPrefix =
+        !this.manifests ||
+        !manifest ||
+        manifest.integration_type !== "entity" ||
+        !manifest.is_built_in;
+
+      title = showDomainPrefix
+        ? `${domainToName(this.hass.localize, domain)}: ${serviceName}`
+        : serviceName;
     }
 
     const description = isBuildingBlock
