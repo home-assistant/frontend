@@ -24,6 +24,8 @@ export class HuiEntityEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public required = true;
+
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
 
   private _entityKeys = new WeakMap<EntityConfig, string>();
@@ -125,10 +127,11 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
-          " (" +
-          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
-          ")"}
+        `${this.hass.localize("ui.panel.lovelace.editor.card.generic.entities")}${
+          this.required
+            ? ` (${this.hass.localize("ui.panel.lovelace.editor.card.config.required")})`
+            : ""
+        }`}
       </h3>
       ${this.canEdit
         ? html`
@@ -146,7 +149,7 @@ export class HuiEntityEditor extends LitElement {
               </ha-sortable>
             </div>
           `
-        : html` <ha-sortable
+        : html`<ha-sortable
             handle-selector=".handle"
             @item-moved=${this._entityMoved}
           >
@@ -167,7 +170,6 @@ export class HuiEntityEditor extends LitElement {
                       .index=${index}
                       .entityFilter=${this.entityFilter}
                       @value-changed=${this._valueChanged}
-                      allow-custom-entity
                     ></ha-entity-picker>
                   </div>
                 `
@@ -247,6 +249,7 @@ export class HuiEntityEditor extends LitElement {
     }
     ha-md-list {
       gap: 8px;
+      padding-top: 0;
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);

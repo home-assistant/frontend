@@ -1,150 +1,257 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-  }),
-  getEntity("group", "kitchen", "on", {
-    entity_id: ["light.bed_light"],
-    order: 8,
-    friendly_name: "Kitchen Group",
-  }),
-  getEntity("lock", "kitchen_door", "locked", {
-    friendly_name: "Kitchen Lock",
-  }),
-  getEntity("cover", "kitchen_window", "open", {
-    friendly_name: "Kitchen Window",
-    supported_features: 11,
-  }),
-  getEntity("scene", "romantic_lights", "scening", {
-    entity_id: ["light.bed_light", "light.ceiling_lights"],
-    friendly_name: "Romantic Scene",
-  }),
-  getEntity("device_tracker", "demo_paulus", "home", {
-    source_type: "gps",
-    latitude: 32.877105,
-    longitude: 117.232185,
-    gps_accuracy: 91,
-    battery: 71,
-    friendly_name: "Paulus",
-  }),
-  getEntity("climate", "ecobee", "auto", {
-    current_temperature: 73,
-    min_temp: 45,
-    max_temp: 95,
-    temperature: null,
-    target_temp_high: 75,
-    target_temp_low: 70,
-    fan_mode: "Auto Low",
-    fan_list: ["On Low", "On High", "Auto Low", "Auto High", "Off"],
-    operation_mode: "auto",
-    operation_list: ["heat", "cool", "auto", "off"],
-    hold_mode: "home",
-    swing_mode: "Auto",
-    swing_list: ["Auto", "1", "2", "3", "Off"],
-    unit_of_measurement: "°F",
-    friendly_name: "Ecobee",
-    supported_features: 1014,
-  }),
-  getEntity("input_number", "number", 5, {
-    min: 0,
-    max: 10,
-    step: 1,
-    mode: "slider",
-    unit_of_measurement: "dB",
-    friendly_name: "Number",
-    icon: "mdi:bell-ring",
-  }),
-  getEntity("input_boolean", "toggle", "on", {
-    friendly_name: "Toggle",
-  }),
-  getEntity("input_datetime", "date_and_time", "2022-01-10 00:00:00", {
-    has_date: true,
-    has_time: true,
-    editable: true,
-    year: 2022,
-    month: 1,
-    day: 10,
-    hour: 0,
-    minute: 0,
-    second: 0,
-    timestamp: 1641801600,
-    friendly_name: "Date and Time",
-  }),
-  getEntity("sensor", "humidity", "23.2", {
-    friendly_name: "Humidity",
-    unit_of_measurement: "%",
-  }),
-  getEntity("input_select", "dropdown", "Soda", {
-    friendly_name: "Dropdown",
-    options: ["Soda", "Beer", "Wine"],
-  }),
-  getEntity("input_text", "text", "Inspiration", {
-    friendly_name: "Text",
-    mode: "text",
-  }),
-  getEntity("timer", "timer", "idle", {
-    friendly_name: "Timer",
-    duration: "0:05:00",
-  }),
-  getEntity("counter", "counter", "3", {
-    friendly_name: "Counter",
-    initial: 0,
-    step: 1,
-    minimum: 0,
-    maximum: 10,
-  }),
-  getEntity("text", "message", "Hello!", {
-    friendly_name: "Message",
-  }),
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "group.kitchen",
+    state: "on",
+    attributes: {
+      entity_id: ["light.bed_light"],
+      order: 8,
+      friendly_name: "Kitchen Group",
+    },
+  },
+  {
+    entity_id: "lock.kitchen_door",
+    state: "locked",
+    attributes: {
+      friendly_name: "Kitchen Lock",
+    },
+  },
+  {
+    entity_id: "cover.kitchen_window",
+    state: "open",
+    attributes: {
+      friendly_name: "Kitchen Window",
+      supported_features: 11,
+    },
+  },
+  {
+    entity_id: "scene.romantic_lights",
+    state: "scening",
+    attributes: {
+      entity_id: ["light.bed_light", "light.ceiling_lights"],
+      friendly_name: "Romantic Scene",
+    },
+  },
+  {
+    entity_id: "device_tracker.demo_paulus",
+    state: "home",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.877105,
+      longitude: 117.232185,
+      gps_accuracy: 91,
+      battery: 71,
+      friendly_name: "Paulus",
+    },
+  },
+  {
+    entity_id: "climate.ecobee",
+    state: "auto",
+    attributes: {
+      current_temperature: 73,
+      min_temp: 45,
+      max_temp: 95,
+      temperature: null,
+      target_temp_high: 75,
+      target_temp_low: 70,
+      fan_mode: "Auto Low",
+      fan_list: ["On Low", "On High", "Auto Low", "Auto High", "Off"],
+      operation_mode: "auto",
+      operation_list: ["heat", "cool", "auto", "off"],
+      hold_mode: "home",
+      swing_mode: "Auto",
+      swing_list: ["Auto", "1", "2", "3", "Off"],
+      unit_of_measurement: "°F",
+      friendly_name: "Ecobee",
+      supported_features: 1014,
+    },
+  },
+  {
+    entity_id: "input_number.number",
+    state: "5",
+    attributes: {
+      min: 0,
+      max: 10,
+      step: 1,
+      mode: "slider",
+      unit_of_measurement: "dB",
+      friendly_name: "Number",
+      icon: "mdi:bell-ring",
+    },
+  },
+  {
+    entity_id: "input_boolean.toggle",
+    state: "on",
+    attributes: {
+      friendly_name: "Toggle",
+    },
+  },
+  {
+    entity_id: "input_datetime.date_and_time",
+    state: "2022-01-10 00:00:00",
+    attributes: {
+      has_date: true,
+      has_time: true,
+      editable: true,
+      year: 2022,
+      month: 1,
+      day: 10,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      timestamp: 1641801600,
+      friendly_name: "Date and Time",
+    },
+  },
+  {
+    entity_id: "sensor.humidity",
+    state: "23.2",
+    attributes: {
+      friendly_name: "Humidity",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "input_select.dropdown",
+    state: "Soda",
+    attributes: {
+      friendly_name: "Dropdown",
+      options: ["Soda", "Beer", "Wine"],
+    },
+  },
+  {
+    entity_id: "input_text.text",
+    state: "Inspiration",
+    attributes: {
+      friendly_name: "Text",
+      mode: "text",
+    },
+  },
+  {
+    entity_id: "timer.timer",
+    state: "idle",
+    attributes: {
+      friendly_name: "Timer",
+      duration: "0:05:00",
+    },
+  },
+  {
+    entity_id: "counter.counter",
+    state: "3",
+    attributes: {
+      friendly_name: "Counter",
+      initial: 0,
+      step: 1,
+      minimum: 0,
+      maximum: 10,
+    },
+  },
+  {
+    entity_id: "text.message",
+    state: "Hello!",
+    attributes: {
+      friendly_name: "Message",
+    },
+  },
 
-  getEntity("light", "unavailable", "unavailable", {
-    friendly_name: "Bed Light",
-  }),
-  getEntity("lock", "unavailable", "unavailable", {
-    friendly_name: "Kitchen Door",
-  }),
-  getEntity("cover", "unavailable", "unavailable", {
-    friendly_name: "Kitchen Window",
-    supported_features: 11,
-  }),
-  getEntity("scene", "unavailable", "unavailable", {
-    friendly_name: "Romantic Scene",
-  }),
-  getEntity("device_tracker", "unavailable", "unavailable", {
-    friendly_name: "Paulus",
-  }),
-  getEntity("climate", "unavailable", "unavailable", {
-    unit_of_measurement: "°F",
-    friendly_name: "Ecobee",
-    supported_features: 1014,
-  }),
-  getEntity("input_number", "unavailable", "unavailable", {
-    friendly_name: "Allowed Noise",
-    icon: "mdi:bell-ring",
-  }),
-  getEntity("input_select", "unavailable", "unavailable", {
-    unit_of_measurement: "dB",
-    friendly_name: "Who cooks",
-    icon: "mdi:cheff",
-  }),
-  getEntity("text", "unavailable", "unavailable", {
-    friendly_name: "Message",
-  }),
-  getEntity("event", "unavailable", "unavailable", {
-    friendly_name: "Empty remote",
-  }),
-  getEntity("event", "doorbell", "2023-07-17T21:26:11.615+00:00", {
-    friendly_name: "Doorbell",
-    device_class: "doorbell",
-    event_type: "Ding-Dong",
-  }),
+  {
+    entity_id: "light.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "lock.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Kitchen Door",
+    },
+  },
+  {
+    entity_id: "cover.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Kitchen Window",
+      supported_features: 11,
+    },
+  },
+  {
+    entity_id: "scene.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Romantic Scene",
+    },
+  },
+  {
+    entity_id: "device_tracker.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Paulus",
+    },
+  },
+  {
+    entity_id: "climate.unavailable",
+    state: "unavailable",
+    attributes: {
+      unit_of_measurement: "°F",
+      friendly_name: "Ecobee",
+      supported_features: 1014,
+    },
+  },
+  {
+    entity_id: "input_number.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Allowed Noise",
+      icon: "mdi:bell-ring",
+    },
+  },
+  {
+    entity_id: "input_select.unavailable",
+    state: "unavailable",
+    attributes: {
+      unit_of_measurement: "dB",
+      friendly_name: "Who cooks",
+      icon: "mdi:cheff",
+    },
+  },
+  {
+    entity_id: "text.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Message",
+    },
+  },
+  {
+    entity_id: "event.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Empty remote",
+    },
+  },
+  {
+    entity_id: "event.doorbell",
+    state: "2023-07-17T21:26:11.615+00:00",
+    attributes: {
+      friendly_name: "Doorbell",
+      device_class: "doorbell",
+      event_type: "Ding-Dong",
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -319,7 +426,7 @@ class DemoEntities extends LitElement {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

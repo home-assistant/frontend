@@ -68,7 +68,7 @@ class OnboardingCoreConfig extends LitElement {
 
       <ha-country-picker
         class="flex"
-        .language=${this.hass.locale.language}
+        .hass=${this.hass}
         .label=${this.hass.localize(
           "ui.panel.config.core.section.core.core_config.country"
         ) || "Country"}
@@ -76,8 +76,7 @@ class OnboardingCoreConfig extends LitElement {
         .disabled=${this._working}
         .value=${this._countryValue}
         @value-changed=${this._handleCountryChanged}
-      >
-      </ha-country-picker>
+      ></ha-country-picker>
 
       <div class="footer">
         <ha-button @click=${this._save} .disabled=${this._working}>
@@ -89,7 +88,7 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keyup", (ev) => {
       if (this._location && ev.key === "Enter") {
@@ -201,10 +200,6 @@ class OnboardingCoreConfig extends LitElement {
     p {
       font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-condensed);
-    }
-
-    ha-textfield {
-      display: block;
     }
 
     .flex {

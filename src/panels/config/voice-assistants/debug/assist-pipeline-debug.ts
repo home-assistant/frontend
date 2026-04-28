@@ -3,6 +3,7 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -54,16 +55,14 @@ export class AssistPipelineDebug extends LitElement {
         "ui.panel.config.voice_assistants.debug.header"
       )}
     >
-      <a
+      <ha-icon-button
+        .path=${mdiMicrophoneMessage}
+        .label=${this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.start_debug_run"
+        )}
         href="/config/voice-assistants/debug?pipeline=${this.pipelineId}"
         slot="toolbar-icon"
-        ><ha-icon-button
-          .path=${mdiMicrophoneMessage}
-          .label=${this.hass.localize(
-            "ui.panel.config.voice_assistants.debug.start_debug_run"
-          )}
-        ></ha-icon-button
-      ></a>
+      ></ha-icon-button>
       <div class="toolbar">
         ${this._runs?.length
           ? html`
@@ -120,7 +119,7 @@ export class AssistPipelineDebug extends LitElement {
     </hass-subpage>`;
   }
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues) {
     let clearRefresh = false;
 
     if (changedProperties.has("pipelineId")) {

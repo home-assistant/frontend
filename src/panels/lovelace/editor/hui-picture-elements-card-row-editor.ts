@@ -1,13 +1,20 @@
-import { mdiClose, mdiContentDuplicate, mdiPencil } from "@mdi/js";
+import {
+  mdiClose,
+  mdiContentDuplicate,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlaylistPlus,
+} from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-select";
-import type { HaSelect } from "../../../components/ha-select";
+import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -47,8 +54,6 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
 
   @property({ attribute: false }) public elements?: LovelaceElementConfig[];
 
-  @query("ha-select") private _select!: HaSelect;
-
   protected render() {
     if (!this.elements || !this.hass) {
       return nothing;
@@ -61,69 +66,78 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
         )}
       </h3>
       <div class="elements">
-        ${this.elements.map(
-          (element, index) => html`
-            <div class="element">
-              ${element.type
-                ? html`
-                    <div class="element-row">
-                      <div>
-                        <span>
-                          ${this.hass?.localize(
-                            `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
-                          ) || element.type}
-                        </span>
-                        <span class="secondary"
-                          >${this._getSecondaryDescription(element)}</span
-                        >
-                      </div>
-                    </div>
-                  `
-                : nothing}
-              <ha-icon-button
-                .label=${this.hass!.localize("ui.common.delete")}
-                .path=${mdiClose}
-                class="remove-icon"
-                .index=${index}
-                @click=${this._removeRow}
-              ></ha-icon-button>
-              <ha-icon-button
-                .label=${this.hass!.localize("ui.common.edit")}
-                .path=${mdiPencil}
-                class="edit-icon"
-                .index=${index}
-                @click=${this._editRow}
-              ></ha-icon-button>
-              <ha-icon-button
-                .label=${this.hass!.localize("ui.common.duplicate")}
-                .path=${mdiContentDuplicate}
-                class="duplicate-icon"
-                .index=${index}
-                @click=${this._duplicateRow}
-              ></ha-icon-button>
-            </div>
-          `
-        )}
-        <ha-select
-          fixedMenuPosition
-          naturalMenuWidth
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.picture-elements.new_element"
-          )}
-          .value=${""}
-          @closed=${stopPropagation}
-          @selected=${this._addElement}
+        <ha-sortable
+          handle-selector=".handle"
+          @item-moved=${this._elementMoved}
         >
+          <div>
+            ${this.elements.map(
+              (element, index) => html`
+                <div class="element">
+                  <div class="handle">
+                    <ha-svg-icon
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
+                  </div>
+                  ${element.type
+                    ? html`
+                        <div class="element-row">
+                          <div>
+                            <span>
+                              ${this.hass?.localize(
+                                `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
+                              ) || element.type}
+                            </span>
+                            <span class="secondary"
+                              >${this._getSecondaryDescription(element)}</span
+                            >
+                          </div>
+                        </div>
+                      `
+                    : nothing}
+                  <ha-icon-button
+                    .label=${this.hass!.localize("ui.common.delete")}
+                    .path=${mdiClose}
+                    class="remove-icon"
+                    .index=${index}
+                    @click=${this._removeRow}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    .label=${this.hass!.localize("ui.common.edit")}
+                    .path=${mdiPencil}
+                    class="edit-icon"
+                    .index=${index}
+                    @click=${this._editRow}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    .label=${this.hass!.localize("ui.common.duplicate")}
+                    .path=${mdiContentDuplicate}
+                    class="duplicate-icon"
+                    .index=${index}
+                    @click=${this._duplicateRow}
+                  ></ha-icon-button>
+                </div>
+              `
+            )}
+          </div>
+        </ha-sortable>
+        <ha-dropdown @wa-select=${this._addElement}>
+          <ha-button size="small" slot="trigger" appearance="filled">
+            <ha-svg-icon slot="start" .path=${mdiPlaylistPlus}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.lovelace.editor.card.picture-elements.new_element"
+            )}
+          </ha-button>
           ${elementTypes.map(
             (element) => html`
-              <ha-list-item .value=${element}
-                >${this.hass?.localize(
+              <ha-dropdown-item .value=${element}>
+                ${this.hass?.localize(
                   `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
-                )}</ha-list-item
-              >
+                ) || element}
+              </ha-dropdown-item>
             `
           )}
-        </ha-select>
+        </ha-dropdown>
       </div>
     `;
   }
@@ -177,8 +191,8 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     return element.title ?? "Unknown type";
   }
 
-  private async _addElement(ev): Promise<void> {
-    const value = ev.target!.value;
+  private async _addElement(ev: HaDropdownSelectEvent): Promise<void> {
+    const value = ev.detail.item.value;
     if (value === "") {
       return;
     }
@@ -191,7 +205,17 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       )
     );
     fireEvent(this, "elements-changed", { elements: newElements });
-    this._select.select(-1);
+  }
+
+  private _elementMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+
+    const newElements = this.elements!.concat();
+
+    newElements.splice(newIndex, 0, newElements.splice(oldIndex, 1)[0]);
+
+    fireEvent(this, "elements-changed", { elements: newElements });
   }
 
   private _removeRow(ev: CustomEvent): void {
@@ -243,6 +267,17 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       display: flex;
       align-items: center;
     }
+    .handle {
+      padding-right: var(--ha-space-2);
+      cursor: move;
+      cursor: grab;
+      padding-inline-end: var(--ha-space-2);
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    .handle > * {
+      pointer-events: none;
+    }
 
     .element-row {
       height: 60px;
@@ -261,17 +296,13 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     .remove-icon,
     .edit-icon,
     .duplicate-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 
     .secondary {
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
-    }
-
-    ha-select {
-      width: 100%;
     }
   `;
 }

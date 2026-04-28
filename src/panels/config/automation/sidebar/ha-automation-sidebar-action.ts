@@ -1,8 +1,11 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -11,18 +14,24 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import { STRINGS_SEPARATOR_DOT } from "../../../../common/const";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import { domainToName } from "../../../../data/integration";
-import type { RepeatAction, ServiceAction } from "../../../../data/script";
+import type {
+  NonConditionAction,
+  RepeatAction,
+  ServiceAction,
+} from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
@@ -53,7 +62,7 @@ export default class HaAutomationSidebarAction extends LitElement {
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
       this._warnings = undefined;
       if (this.config) {
@@ -125,7 +134,12 @@ export default class HaAutomationSidebarAction extends LitElement {
           ? html` (${this.hass.localize(
               "ui.panel.config.automation.editor.actions.disabled"
             )})`
-          : ""}</span
+          : ""}${type !== "condition" &&
+        (this.config.config.action as NonConditionAction).continue_on_error
+          ? `${STRINGS_SEPARATOR_DOT}${this.hass.localize(
+              "ui.panel.config.automation.editor.actions.continue_on_error"
+            )}`
+          : nothing}</span
       >
 
       <ha-dropdown-item slot="menu-items" value="run">
@@ -216,6 +230,37 @@ export default class HaAutomationSidebarAction extends LitElement {
             : nothing}
         </div>
       </ha-dropdown-item>
+      ${this.config.pasteAvailable()
+        ? html`
+            <ha-dropdown-item
+              slot="menu-items"
+              value="paste"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.paste"
+                )}
+                ${!this.narrow
+                  ? html`<span class="shortcut">
+                      <span
+                        >${isMac
+                          ? html`<ha-svg-icon
+                              .path=${mdiAppleKeyboardCommand}
+                            ></ha-svg-icon>`
+                          : this.hass.localize(
+                              "ui.panel.config.automation.editor.ctrl"
+                            )}</span
+                      >
+                      <span>+</span>
+                      <span>V</span>
+                    </span>`
+                  : nothing}
+              </div>
+            </ha-dropdown-item>
+          `
+        : nothing}
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -247,6 +292,28 @@ export default class HaAutomationSidebarAction extends LitElement {
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
       </ha-dropdown-item>
+      ${type !== "condition"
+        ? html`<ha-dropdown-item
+              slot="menu-items"
+              value="continue_on_error"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${(this.config.config.action as NonConditionAction)
+                  .continue_on_error
+                  ? mdiCheckboxOutline
+                  : mdiCheckboxBlankOutline}
+              ></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.actions.continue_on_error`
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>
+            <wa-divider slot="menu-items"></wa-divider>`
+        : nothing}
       <ha-dropdown-item
         slot="menu-items"
         value="delete"
@@ -334,7 +401,7 @@ export default class HaAutomationSidebarAction extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {
@@ -357,11 +424,17 @@ export default class HaAutomationSidebarAction extends LitElement {
       case "cut":
         this.config.cut();
         break;
+      case "paste":
+        this.config.paste();
+        break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();
         break;
       case "disable":
         this.config.disable();
+        break;
+      case "continue_on_error":
+        this.config.continueOnError();
         break;
       case "delete":
         this.config.delete();

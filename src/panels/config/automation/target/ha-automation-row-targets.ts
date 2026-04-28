@@ -1,0 +1,264 @@
+import { consume, type ContextType } from "@lit/context";
+import {
+  mdiAlert,
+  mdiAlertOctagon,
+  mdiCodeBraces,
+  mdiFormatListBulleted,
+  mdiShape,
+} from "@mdi/js";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ensureArray } from "../../../../common/array/ensure-array";
+import { transform } from "../../../../common/decorators/transform";
+import { isTemplate } from "../../../../common/string/has-template";
+import "../../../../components/ha-svg-icon";
+import type { ConfigEntry } from "../../../../data/config_entries";
+import {
+  configEntriesContext,
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import type { HomeAssistant } from "../../../../types";
+import { getTargetIcon } from "./get_target_icon";
+import { getTargetText } from "./get_target_text";
+
+@customElement("ha-automation-row-targets")
+export class HaAutomationRowTargets extends LitElement {
+  @property({ attribute: false })
+  public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  public target?: HassServiceTarget;
+
+  @property({ attribute: false })
+  public targetRequired = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labelRegistry!: LabelRegistryEntry[];
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
+    },
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
+
+  protected render() {
+    const length = Object.keys(this.target || {}).length;
+    if (!length) {
+      return this._renderTargetBadge(
+        this.targetRequired
+          ? html`<ha-svg-icon .path=${mdiAlertOctagon}></ha-svg-icon>`
+          : nothing,
+        this._i18n.localize(
+          "ui.panel.config.automation.editor.target_summary.no_target"
+        ),
+        false,
+        this.targetRequired
+      );
+    }
+    const totalLength = Object.values(this.target || {}).reduce(
+      (acc, val) => acc + ensureArray(val).length,
+      0
+    );
+
+    if (totalLength <= 5) {
+      const targets = Object.entries(this.target!).reduce<
+        ["floor" | "area" | "device" | "entity" | "label", string][]
+      >((acc, [targetType, targetId]) => {
+        const type = targetType.replace("_id", "") as
+          | "floor"
+          | "area"
+          | "device"
+          | "entity"
+          | "label";
+        return [
+          ...acc,
+          ...ensureArray(targetId).map((id): [typeof type, string] => [
+            type,
+            id,
+          ]),
+        ];
+      }, []);
+
+      return targets.map(
+        ([targetType, targetId]) =>
+          html`<span class="target-wrapper">
+            ${this._renderTarget(targetType, targetId)}
+          </span>`
+      );
+    }
+
+    return html`<span class="target">
+      <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
+      <div class="label">
+        ${this._i18n.localize(
+          "ui.panel.config.automation.editor.target_summary.targets",
+          {
+            count: totalLength,
+          }
+        )}
+      </div>
+    </span>`;
+  }
+
+  private _getLabel = (id: string) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === id);
+
+  private _checkTargetExists(
+    targetType: "floor" | "area" | "device" | "entity" | "label",
+    targetId: string
+  ): boolean {
+    if (targetType === "floor") {
+      return !!this._registries.floors[targetId];
+    }
+    if (targetType === "area") {
+      return !!this._registries.areas[targetId];
+    }
+    if (targetType === "device") {
+      return !!this._registries.devices[targetId];
+    }
+    if (targetType === "entity") {
+      return !!this._states[targetId];
+    }
+    if (targetType === "label") {
+      return !!this._getLabel(targetId);
+    }
+    return false;
+  }
+
+  private _renderTargetBadge(
+    icon: TemplateResult | typeof nothing,
+    label: string,
+    warning = false,
+    error = false
+  ) {
+    return html`<div class=${classMap({ target: true, warning, error })}>
+      ${icon}
+      <div class="label">${label}</div>
+    </div>`;
+  }
+
+  private _renderTarget(
+    targetType: "floor" | "area" | "device" | "entity" | "label",
+    targetId: string
+  ) {
+    if (targetType === "entity" && ["all", "none"].includes(targetId)) {
+      return this._renderTargetBadge(
+        html`<ha-svg-icon .path=${mdiShape}></ha-svg-icon>`,
+        this._i18n.localize(
+          `ui.panel.config.automation.editor.target_summary.${targetId as "all" | "none"}_entities`
+        )
+      );
+    }
+
+    // Check if the target is a template
+    if (isTemplate(targetId)) {
+      return this._renderTargetBadge(
+        html`<ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>`,
+        this._i18n.localize(
+          "ui.panel.config.automation.editor.target_summary.template"
+        )
+      );
+    }
+
+    const exists = this._checkTargetExists(targetType, targetId);
+    if (!exists) {
+      return this._renderTargetBadge(
+        html`<ha-svg-icon .path=${mdiAlert}></ha-svg-icon>`,
+        getTargetText(this.hass, targetType, targetId, this._getLabel),
+        true
+      );
+    }
+
+    return this._renderTargetBadge(
+      getTargetIcon(
+        this.hass,
+        targetType,
+        targetId,
+        this._configEntryLookup || {},
+        this._getLabel
+      ),
+      getTargetText(this.hass, targetType, targetId, this._getLabel)
+    );
+  }
+
+  static styles = css`
+    :host {
+      display: contents;
+      min-height: 32px;
+    }
+    .target-wrapper {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: var(--ha-space-1);
+    }
+    .target {
+      display: inline-flex;
+      gap: var(--ha-space-1);
+      justify-content: center;
+      align-items: center;
+      border-radius: var(--ha-border-radius-md);
+      background: var(--ha-color-fill-neutral-normal-resting);
+      padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      color: var(--ha-color-on-neutral-normal);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
+      overflow: hidden;
+      height: 32px;
+    }
+    .target.warning {
+      background: var(--ha-color-fill-warning-normal-resting);
+      color: var(--ha-color-on-warning-normal);
+    }
+    .target.error {
+      background: var(--ha-color-fill-danger-normal-resting);
+      color: var(--ha-color-on-danger-normal);
+    }
+    .target .label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .target ha-icon,
+    .target ha-svg-icon,
+    .target ha-domain-icon {
+      display: flex;
+      padding: var(--ha-space-1) 0;
+    }
+
+    .target ha-floor-icon {
+      display: flex;
+      height: 32px;
+      align-items: center;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-row-targets": HaAutomationRowTargets;
+  }
+}

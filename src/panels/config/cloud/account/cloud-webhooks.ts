@@ -2,10 +2,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
 import { createCloudhook, deleteCloudhook } from "../../../../data/cloud";
@@ -20,8 +20,6 @@ export class CloudWebhooks extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
-
-  @property({ type: Boolean }) public narrow = false;
 
   @state() private _cloudHooks?: Record<string, CloudWebhook>;
 
@@ -78,23 +76,24 @@ export class CloudWebhooks extends LitElement {
                 `
               : this._localHooks.map(
                   (entry) => html`
-                    <ha-settings-row .narrow=${this.narrow} .entry=${entry}>
-                      <span slot="heading">
-                        ${entry.name}
+                    <ha-md-list-item .entry=${entry}>
+                      <span slot="headline"
+                        >${entry.name}
                         ${entry.domain !== entry.name.toLowerCase()
                           ? ` (${entry.domain})`
-                          : ""}
-                      </span>
-                      <span slot="description">${entry.webhook_id}</span>
+                          : ""}</span
+                      >
+                      <span slot="supporting-text">${entry.webhook_id}</span>
                       ${this._progress.includes(entry.webhook_id)
                         ? html`
-                            <div class="progress">
+                            <div class="progress" slot="end">
                               <ha-spinner></ha-spinner>
                             </div>
                           `
                         : this._cloudHooks![entry.webhook_id]
                           ? html`
                               <ha-button
+                                slot="end"
                                 appearance="plain"
                                 size="small"
                                 @click=${this._handleManageButton}
@@ -104,9 +103,12 @@ export class CloudWebhooks extends LitElement {
                                 )}
                               </ha-button>
                             `
-                          : html`<ha-switch @click=${this._enableWebhook}>
+                          : html`<ha-switch
+                              slot="end"
+                              @click=${this._enableWebhook}
+                            >
                             </ha-switch>`}
-                    </ha-settings-row>
+                    </ha-md-list-item>
                   `
                 )}
           <div class="footer">
@@ -125,7 +127,7 @@ export class CloudWebhooks extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("cloudStatus") && this.cloudStatus) {
       this._cloudHooks = this.cloudStatus.prefs.cloudhooks || {};
@@ -195,7 +197,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    if (!isComponentLoaded(this.hass!, "webhook")) {
+    if (!isComponentLoaded(this.hass!.config, "webhook")) {
       this._localHooks = [];
       return;
     }
@@ -235,8 +237,13 @@ export class CloudWebhooks extends LitElement {
         .footer a {
           color: var(--primary-color);
         }
-        ha-settings-row {
-          padding: 0;
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-item-overflow: visible;
+        }
+        ha-md-list-item [slot="supporting-text"] {
+          word-break: break-all;
         }
       `,
     ];

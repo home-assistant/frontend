@@ -44,7 +44,7 @@ export class HaEntitySelector extends LitElement {
     );
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.entity?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
@@ -64,17 +64,17 @@ export class HaEntitySelector extends LitElement {
     if (!this.selector.entity?.multiple) {
       return html`<ha-entity-picker
         .hass=${this.hass}
-        .value=${this.value}
+        .value=${typeof this.value === "string" ? this.value : ""}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
+        .extraOptions=${this.selector.entity?.extra_options}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
-        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
-        allow-custom-entity
       ></ha-entity-picker>`;
     }
 
@@ -83,20 +83,20 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
         .reorder=${this.selector.entity.reorder ?? false}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
-        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-entities-picker>
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&

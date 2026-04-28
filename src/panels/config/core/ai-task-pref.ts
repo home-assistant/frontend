@@ -1,8 +1,11 @@
-import { mdiHelpCircle, mdiStarFourPoints } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { mdiHelpCircleOutline, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -14,11 +17,9 @@ import {
   saveAITaskPreferences,
   type AITaskPreferences,
 } from "../../../data/ai_task";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const filterGenData = (entity: HassEntity) =>
   computeDomain(entity.entity_id) === "ai_task" &&
@@ -39,9 +40,9 @@ export class AITaskPref extends LitElement {
 
   private _gen_image_entity_id?: string | null;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    if (!this.hass || !isComponentLoaded(this.hass, "ai_task")) {
+    if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
     }
     fetchAITaskPreferences(this.hass).then((prefs) => {
@@ -55,29 +56,29 @@ export class AITaskPref extends LitElement {
         <h1 class="card-header">
           <img
             alt=""
-            src=${brandsUrl({
-              domain: "ai_task",
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
+            src=${brandsUrl(
+              {
+                domain: "ai_task",
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.ai_task.header")}
         </h1>
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/integrations/ai_task/")}
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
         </div>
         <div class="card-content">
           <p>
@@ -100,7 +101,7 @@ export class AITaskPref extends LitElement {
               data-name="gen_data_entity_id"
               .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass, "ai_task")}
+              isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_data_entity_id ||
               this._prefs?.gen_data_entity_id}
               .entityFilter=${filterGenData}
@@ -120,7 +121,7 @@ export class AITaskPref extends LitElement {
               data-name="gen_image_entity_id"
               .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass, "ai_task")}
+              isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_image_entity_id ||
               this._prefs?.gen_image_entity_id}
               .entityFilter=${filterGenImage}
@@ -137,7 +138,7 @@ export class AITaskPref extends LitElement {
     `;
   }
 
-  private _handlePrefChange(ev: CustomEvent<{ value: string | undefined }>) {
+  private _handlePrefChange(ev: ValueChangedEvent<string | undefined>) {
     const input = ev.target as HaEntityPicker;
     const key = input.dataset.name as keyof AITaskPreferences;
     const value = ev.detail.value || null;
@@ -178,9 +179,6 @@ export class AITaskPref extends LitElement {
     .card-header img {
       max-width: 28px;
       margin-right: 16px;
-    }
-    a {
-      color: var(--primary-color);
     }
     ha-settings-row {
       padding: 0;

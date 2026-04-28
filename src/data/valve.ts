@@ -3,6 +3,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { stateActive } from "../common/entity/state_active";
+import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 
@@ -12,6 +13,11 @@ export const enum ValveEntityFeature {
   SET_POSITION = 4,
   STOP = 8,
 }
+
+export const DEFAULT_VALVE_FAVORITE_POSITIONS = [0, 25, 75, 100];
+
+export const valveSupportsPosition = (stateObj: ValveEntity) =>
+  supportsFeature(stateObj, ValveEntityFeature.SET_POSITION);
 
 export function isFullyOpen(stateObj: ValveEntity) {
   if (

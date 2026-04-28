@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
 import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
 import type { GraphHeaderFooterConfig } from "../../header-footer/types";
@@ -51,7 +51,6 @@ export class HuiGraphFooterEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          allow-custom-entity
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )}
@@ -74,18 +73,18 @@ export class HuiGraphFooterEditor
               @change=${this._change}
             ></ha-switch>
           </ha-formfield>
-          <ha-textfield
+          <ha-input
             type="number"
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.hours_to_show"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value=${this._hours_to_show}
+            .value=${String(this._hours_to_show)}
             min="1"
             .configValue=${"hours_to_show"}
             @input=${this._valueChanged}
-          ></ha-textfield>
+          ></ha-input>
         </div>
       </div>
     `;

@@ -93,7 +93,7 @@ export class HaLogbook extends LitElement {
   private _logbookSubscriptionId = 0;
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "logbook")) {
+    if (!isComponentLoaded(this.hass.config, "logbook")) {
       return nothing;
     }
 
@@ -155,7 +155,7 @@ export class HaLogbook extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }

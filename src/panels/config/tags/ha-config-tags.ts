@@ -1,6 +1,6 @@
 import {
   mdiDelete,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMemoryArrowDown,
   mdiPlus,
   mdiRobot,
@@ -15,7 +15,7 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
@@ -87,6 +87,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         flex: 2,
+      },
+      id: {
+        title: localize("ui.panel.config.tag.headers.tag_id"),
+        main: true,
+        sortable: true,
+        filterable: true,
       },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
@@ -161,7 +167,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     }))
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchTags();
   }
@@ -202,16 +208,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.tag.add_tag")}
-          extended
-          @click=${this._addTag}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addTag}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.tag.add_tag")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { getSensorNumericDeviceClasses } from "../data/sensor";
@@ -11,7 +12,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       this._updateFormatFunctions();
     }
 
-    protected willUpdate(changedProps) {
+    protected willUpdate(changedProps: PropertyValues<this>) {
       super.willUpdate(changedProps);
 
       if (!changedProps.has("hass")) {
@@ -41,7 +42,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
       let sensorNumericDeviceClasses: string[] = [];
 
-      if (isComponentLoaded(this.hass, "sensor")) {
+      if (isComponentLoaded(this.hass.config, "sensor")) {
         try {
           sensorNumericDeviceClasses = (
             await getSensorNumericDeviceClasses(this.hass)
@@ -53,8 +54,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
       const {
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityAttributeValueToParts,
         formatEntityName,
       } = await computeFormatFunctions(
         this.hass.localize,
@@ -68,8 +71,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       );
       this._updateHass({
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityAttributeValueToParts,
         formatEntityName,
       });
     };

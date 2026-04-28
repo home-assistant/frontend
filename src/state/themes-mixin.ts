@@ -1,8 +1,11 @@
+import type { PropertyValues } from "lit";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
+import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { subscribeThemePreferences, saveThemePreferences } from "../data/theme";
 import { subscribeThemes } from "../data/ws-themes";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
@@ -24,7 +27,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _themeApplied = false;
 
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({
@@ -35,6 +38,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
+        saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
+          () => {
+            fireEvent(this, "hass-notification", {
+              message: this.hass!.localize(
+                "ui.notification_toast.theme_save_failed"
+              ),
+            });
+          }
+        );
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
@@ -63,10 +75,25 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         invalidateThemeCache();
         this._applyTheme(mql.matches);
       });
+
+      subscribeThemePreferences(this.hass!, ({ value }) => {
+        if (!value) {
+          return;
+        }
+        this._updateHass({ selectedTheme: value });
+        this._applyTheme(mql.matches);
+        storeState(this.hass!);
+      }).catch(() => {
+        fireEvent(this, "hass-notification", {
+          message: this.hass!.localize(
+            "ui.notification_toast.theme_preferences_unavailable"
+          ),
+        });
+      });
     }
 
     private _applyTheme(darkPreferred: boolean) {
-      if (!this.hass) {
+      if (!this.hass?.config || !this.hass.themes) {
         return;
       }
 

@@ -26,31 +26,34 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/application_credentials",
   },
   developer_assist: {
-    redirect: "/developer-tools/assist",
+    redirect: "/config/developer-tools/assist",
+  },
+  developer_debug: {
+    redirect: "/config/developer-tools/debug",
   },
   developer_states: {
-    redirect: "/developer-tools/state",
+    redirect: "/config/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
     params: {
       service: "string",
     },
   },
   developer_template: {
-    redirect: "/developer-tools/template",
+    redirect: "/config/developer-tools/template",
   },
   developer_events: {
-    redirect: "/developer-tools/event",
+    redirect: "/config/developer-tools/event",
   },
   developer_statistics: {
-    redirect: "/developer-tools/statistics",
+    redirect: "/config/developer-tools/statistics",
   },
   server_controls: {
-    redirect: "/developer-tools/yaml",
+    redirect: "/config/developer-tools/yaml",
   },
   calendar: {
     component: "calendar",
@@ -99,6 +102,14 @@ export const getMyRedirects = (): Redirects => ({
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  config_matter: {
+    component: "matter",
+    redirect: "/config/matter/dashboard",
+  },
+  config_thread: {
+    component: "thread",
+    redirect: "/config/thread",
+  },
   add_zigbee_device: {
     component: "zha",
     redirect: "/config/zha/add",
@@ -136,7 +147,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   config_energy: {
     component: "energy",
-    redirect: "/config/energy/dashboard",
+    redirect: "/config/energy",
   },
   config_ssdp: {
     component: "ssdp",
@@ -285,6 +296,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "history",
     redirect: "/history",
   },
+  overview: {
+    redirect: "/home/overview",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
@@ -320,6 +334,41 @@ export const getMyRedirects = (): Redirects => ({
   supervisor_info: {
     // Moved from Supervisor panel in 2022.5
     redirect: "/config/info",
+  },
+  supervisor_store: {
+    component: "hassio",
+    redirect: "/config/apps/available",
+  },
+  supervisor_addons: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
+  supervisor_app: {
+    component: "hassio",
+    redirect: "/config/app",
+    params: {
+      app: "string",
+    },
+    optional_params: {
+      repository_url: "url",
+    },
+  },
+  supervisor_addon: {
+    component: "hassio",
+    redirect: "/config/app",
+    params: {
+      addon: "string",
+    },
+    optional_params: {
+      repository_url: "url",
+    },
+  },
+  supervisor_add_addon_repository: {
+    component: "hassio",
+    redirect: "/config/apps/available",
+    params: {
+      repository_url: "url",
+    },
   },
   hacs_repository: {
     component: "hacs",
@@ -366,20 +415,8 @@ class HaPanelMy extends LitElement {
       1,
       this.route.path.endsWith("/") ? this.route.path.length - 1 : undefined
     );
-    const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
     this._redirect = getRedirect(path);
-
-    if (path.startsWith("supervisor") && this._redirect === undefined) {
-      if (!hasSupervisor) {
-        this._error = "no_supervisor";
-        return;
-      }
-      navigate(`/hassio/_my_redirect/${path}${window.location.search}`, {
-        replace: true,
-      });
-      return;
-    }
 
     if (!this._redirect) {
       this._error = "not_supported";
@@ -397,10 +434,13 @@ class HaPanelMy extends LitElement {
 
     if (
       this._redirect.component &&
-      !isComponentLoaded(this.hass, this._redirect.component)
+      !isComponentLoaded(this.hass.config, this._redirect.component)
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
-      this._error = "no_component";
+      this._error =
+        this._redirect.component === "hassio"
+          ? "no_supervisor"
+          : "no_component";
       const component = this._redirect.component;
       if ((PROTOCOL_INTEGRATIONS as readonly string[]).includes(component)) {
         const params = extractSearchParamsObject();
@@ -499,13 +539,31 @@ class HaPanelMy extends LitElement {
   }
 
   private _createRedirectUrl(): string {
-    const params = this._createRedirectParams();
-    return `${this._redirect!.redirect}${params}`;
+    const params = extractSearchParamsObject();
+
+    // Special case for supervisor_app/supervisor_addon: use path-based URL
+    // Support both "app" (new) and "addon" (legacy) parameters
+    if (this._redirect!.redirect === "/config/app") {
+      const appSlug = params.app || params.addon;
+      if (appSlug) {
+        delete params.app;
+        delete params.addon;
+        const optionalParams = this._createOptionalParams(params);
+        return `/config/app/${appSlug}/info${optionalParams}`;
+      }
+    }
+
+    const resultParams = this._createRedirectParams();
+    return `${this._redirect!.redirect}${resultParams}`;
   }
 
   private _createRedirectParams(): string {
     const params = extractSearchParamsObject();
-    if (!this._redirect!.params && !Object.keys(params).length) {
+    if (
+      !this._redirect!.params &&
+      !this._redirect!.optional_params &&
+      !Object.keys(params).length
+    ) {
       return "";
     }
     const resultParams = {};
@@ -518,7 +576,37 @@ class HaPanelMy extends LitElement {
       }
       resultParams[key] = params[key];
     }
-    return `?${createSearchParam(resultParams)}`;
+    for (const [key, type] of Object.entries(
+      this._redirect!.optional_params || {}
+    )) {
+      if (params[key]) {
+        if (!this._checkParamType(type, params[key])) {
+          throw Error();
+        }
+        resultParams[key] = params[key];
+      }
+    }
+    return Object.keys(resultParams).length
+      ? `?${createSearchParam(resultParams)}`
+      : "";
+  }
+
+  private _createOptionalParams(params: Record<string, string>): string {
+    if (!this._redirect!.optional_params) {
+      return "";
+    }
+    const resultParams = {};
+    for (const [key, type] of Object.entries(this._redirect!.optional_params)) {
+      if (params[key]) {
+        if (!this._checkParamType(type, params[key])) {
+          throw Error();
+        }
+        resultParams[key] = params[key];
+      }
+    }
+    return Object.keys(resultParams).length
+      ? `?${createSearchParam(resultParams)}`
+      : "";
   }
 
   private _checkParamType(type: ParamType, value: string) {

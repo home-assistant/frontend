@@ -1,27 +1,33 @@
 import {
-  mdiAlertCircle,
-  mdiCheckCircle,
-  mdiCircle,
+  mdiAlertCircleOutline,
+  mdiChartBox,
+  mdiCheck,
+  mdiDevices,
+  mdiDownload,
+  mdiInformationOutline,
   mdiPlus,
+  mdiPoll,
+  mdiQrcode,
   mdiRefresh,
+  mdiShape,
+  mdiTextBoxOutline,
+  mdiTune,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-list";
-import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-progress-ring";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { goBack } from "../../../../../common/navigate";
+import "../../../../../components/progress/ha-progress-ring";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -29,7 +35,6 @@ import {
 } from "../../../../../data/config_entries";
 import type {
   ZWaveJSClient,
-  ZWaveJSControllerStatisticsUpdatedMessage,
   ZWaveJSNetwork,
   ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
@@ -38,24 +43,22 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  NodeStatus,
   ProvisioningEntryStatus,
   restoreZwaveNVM,
-  setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
-  subscribeZwaveControllerStatistics,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
-import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -77,12 +80,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _status?: ZWaveJSClient["state"];
 
-  @state() private _icon = mdiCircle;
-
   @state() private _dataCollectionOptIn?: boolean;
 
-  @state()
-  private _statistics?: ZWaveJSControllerStatisticsUpdatedMessage;
+  @state() private _multipleNetworks = false;
 
   private _dialogOpen = false;
 
@@ -112,19 +112,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeZwaveControllerStatistics(
-        this.hass,
-        this.configEntryId,
-        (message) => {
-          if (!this.hasUpdated) {
-            return;
-          }
-          this._statistics = message;
-        }
-      ),
-      this._subscribeS2Inclusion(),
-    ];
+    return [this._subscribeS2Inclusion()];
   }
 
   protected render() {
@@ -135,21 +123,28 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+
     const provisioningDevices =
       this._provisioningEntries?.filter(
         (entry) =>
           !entry.nodeId && entry.status === ProvisioningEntryStatus.Active
       ).length ?? 0;
+    const nodes = this._network?.controller.nodes ?? [];
+    const offlineDevices = nodes.filter(
+      (node) => node.status === NodeStatus.Dead
+    ).length;
     const notReadyDevices =
-      (this._network?.controller.nodes.filter((node) => !node.ready).length ??
-        0) + provisioningDevices;
+      nodes.filter((node) => !node.ready && node.status !== NodeStatus.Dead)
+        .length + provisioningDevices;
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.navigation.general"
+        )}
+        back-path="/config"
         has-fab
       >
         <ha-icon-button
@@ -161,400 +156,396 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         <div class="container">
           ${this._network
             ? html`
-                <ha-card class="content network-status">
-                  <div class="card-content">
-                    <div class="heading">
-                      <div class="icon">
-                        ${this._status === "disconnected"
-                          ? html`<ha-spinner></ha-spinner>`
-                          : html`
-                              <ha-svg-icon
-                                .path=${this._icon}
-                                class="network-status-icon ${classMap({
-                                  [this._status!]: true,
-                                })}"
-                                slot="item-icon"
-                              ></ha-svg-icon>
-                            `}
-                      </div>
-                      ${this._status !== "disconnected"
-                        ? html`
-                            <div class="details">
-                              Z-Wave
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.common.network"
-                              )}
-                              ${this.hass.localize(
-                                `ui.panel.config.zwave_js.network_status.${this._status}`
-                              )}<br />
-                              <small>
-                                ${this.hass.localize(
-                                  `ui.panel.config.zwave_js.dashboard.devices`,
-                                  {
-                                    count:
-                                      this._network.controller.nodes.length +
-                                      provisioningDevices,
-                                  }
-                                )}
-                                ${notReadyDevices > 0
-                                  ? html`(${this.hass.localize(
-                                      `ui.panel.config.zwave_js.dashboard.not_ready`,
-                                      { count: notReadyDevices }
-                                    )})`
-                                  : nothing}
-                              </small>
-                            </div>
-                          `
-                        : nothing}
-                    </div>
-                  </div>
-                  <div class="card-actions">
-                    <ha-button
-                      appearance="plain"
-                      href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                    >
-                      ${this.hass.localize("ui.panel.config.devices.caption")}
-                    </ha-button>
-                    <ha-button
-                      appearance="plain"
-                      href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                    >
-                      ${this.hass.localize("ui.panel.config.entities.caption")}
-                    </ha-button>
-                    ${this._provisioningEntries?.length
-                      ? html`<ha-button
-                          appearance="plain"
-                          href=${`provisioned?config_entry=${this.configEntryId}`}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.provisioned_devices"
-                          )}
-                        </ha-button>`
-                      : nothing}
-                    <ha-button
-                      class="remove-node-button"
-                      @click=${this._removeNodeClicked}
-                      appearance="filled"
-                      .disabled=${this._status !== "connected" ||
-                      (this._network?.controller.inclusion_state !==
-                        InclusionState.Idle &&
-                        this._network?.controller.inclusion_state !==
-                          InclusionState.SmartStart)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_a_node"
-                      )}
-                    </ha-button>
-                  </div>
-                </ha-card>
-                <ha-card header="Diagnostics">
-                  <div class="card-content">
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.driver_version"
-                        )}:
-                      </span>
-                      <span>${this._network.client.driver_version}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.server_version"
-                        )}:
-                      </span>
-                      <span>${this._network.client.server_version}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.home_id"
-                        )}:
-                      </span>
-                      <span>${this._network.controller.home_id}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.server_url"
-                        )}:
-                      </span>
-                      <span>${this._network.client.ws_server_url}</span>
-                    </div>
-                    <br />
-                    <ha-expansion-panel
-                      .header=${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.statistics.title"
-                      )}
-                    >
-                      <ha-list noninteractive>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_tx ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_rx ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_dropped_tx ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_dropped_rx ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta">${this._statistics?.nak ?? 0}</span>
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.can.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta">${this._statistics?.can ?? 0}</span>
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_ack ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_response ?? 0}</span
-                          >
-                        </ha-list-item>
-                        <ha-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_callback ?? 0}</span
-                          >
-                        </ha-list-item>
-                      </ha-list>
-                    </ha-expansion-panel>
-                  </div>
-                  <div class="card-actions">
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._rebuildNetworkRoutesClicked}
-                      .disabled=${this._status === "disconnected"}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.rebuild_network_routes"
-                      )}
-                    </ha-button>
-                  </div>
-                </ha-card>
-                <ha-card>
-                  <div class="card-header">
-                    <h1>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.data_collection.title"
-                      )}
-                    </h1>
-                    ${this._dataCollectionOptIn !== undefined
-                      ? html`
-                          <ha-switch
-                            .checked=${this._dataCollectionOptIn === true}
-                            @change=${this._dataCollectionToggled}
-                          ></ha-switch>
-                        `
-                      : html` <ha-spinner size="small"></ha-spinner> `}
-                  </div>
-                  <div class="card-content">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.data_collection.description",
-                        {
-                          documentation_link: html`<a
-                            target="_blank"
-                            href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                            >${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
-                            )}</a
-                          >`,
-                        }
-                      )}
-                    </p>
-                  </div>
-                </ha-card>
-                <ha-card
-                  .header=${this.hass.localize(
-                    "ui.panel.config.zwave_js.dashboard.nvm_backup.title"
-                  )}
-                >
-                  <div class="card-content">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.nvm_backup.description"
-                      )}
-                    </p>
-                  </div>
-                  <div class="card-actions">
-                    ${this._backupProgress !== undefined
-                      ? html`<ha-progress-ring
-                            size="small"
-                            .value=${this._backupProgress}
-                          ></ha-progress-ring>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.nvm_backup.creating"
-                          )}
-                          ${this._backupProgress}%`
-                      : this._restoreProgress !== undefined
-                        ? html`<ha-progress-ring
-                              size="small"
-                              .value=${this._restoreProgress}
-                            ></ha-progress-ring>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
-                            )}
-                            ${this._restoreProgress}%`
-                        : html`<ha-button
-                              appearance="plain"
-                              @click=${this._downloadBackup}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
-                              )}
-                            </ha-button>
-                            <div class="right-buttons">
-                              <div class="upload-button">
-                                <ha-button
-                                  appearance="filled"
-                                  @click=${this._restoreButtonClick}
-                                >
-                                  <span class="button-content">
-                                    ${this.hass.localize(
-                                      "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
-                                    )}
-                                  </span>
-                                </ha-button>
-                                <input
-                                  type="file"
-                                  id="nvm-restore-file"
-                                  accept=".bin"
-                                  @change=${this._handleRestoreFileSelected}
-                                  style="display: none"
-                                />
-                              </div>
-                              <ha-button
-                                appearance="filled"
-                                @click=${this._openConfigFlow}
-                              >
-                                ${this.hass.localize(
-                                  "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
-                                )}
-                              </ha-button>
-                            </div>`}
-                  </div>
-                </ha-card>
+                ${this._renderNetworkStatus(
+                  provisioningDevices,
+                  offlineDevices,
+                  notReadyDevices
+                )}
+                ${this._renderNetworkCard()} ${this._renderNavigationCard()}
+                ${this._renderBackupCard()}
               `
             : nothing}
         </div>
-        <ha-fab
+        <ha-button
           slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.zwave_js.common.add_node"
-          )}
-          extended
+          size="large"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
             this._network?.controller.inclusion_state !==
               InclusionState.SmartStart)}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
-      </hass-tabs-subpage>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.zwave_js.common.add_node")}
+        </ha-button>
+      </hass-subpage>
+    `;
+  }
+
+  private _renderNetworkStatus(
+    provisioningDevices: number,
+    offlineDevices: number,
+    notReadyDevices: number
+  ) {
+    const deviceOnline = this._status === "connected";
+    const statusParts: string[] = [];
+    if (offlineDevices > 0) {
+      statusParts.push(
+        this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.devices_offline",
+          { count: offlineDevices }
+        )
+      );
+    }
+    if (notReadyDevices > 0) {
+      statusParts.push(
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
+          count: notReadyDevices,
+        })
+      );
+    }
+    return html`
+      <ha-card class="content network-status">
+        <div class="card-content">
+          <div class="heading">
+            <div class="icon ${deviceOnline ? "online" : "offline"}">
+              <ha-svg-icon
+                .path=${deviceOnline ? mdiCheck : mdiAlertCircleOutline}
+              ></ha-svg-icon>
+            </div>
+            <div class="details">
+              ${this._multipleNetworks && this._configEntry
+                ? this.hass.localize(
+                    `ui.panel.config.zwave_js.network_status.${deviceOnline ? "online" : "offline"}_named`,
+                    { name: this._configEntry.title }
+                  )
+                : this.hass.localize(
+                    `ui.panel.config.zwave_js.network_status.${deviceOnline ? "online" : "offline"}`
+                  )}<br />
+              <small>
+                ${this.hass.localize(
+                  `ui.panel.config.zwave_js.dashboard.devices`,
+                  {
+                    count:
+                      this._network!.controller.nodes.length +
+                      provisioningDevices,
+                  }
+                )}
+              </small>
+              <small class="offline">
+                ${statusParts.length > 0
+                  ? html`(${statusParts.join(
+                      ` ${this.hass.localize("ui.common.and")} `
+                    )})`
+                  : nothing}
+              </small>
+            </div>
+            <img
+              class="logo"
+              alt="Z-Wave"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "zwave_js",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderNetworkCard() {
+    const deviceIds = new Set(
+      Object.values(this.hass.devices)
+        .filter((device) => device.config_entries.includes(this.configEntryId))
+        .map((device) => device.id)
+    );
+    const entityCount = Object.values(this.hass.entities).filter(
+      (entity) => entity.device_id && deviceIds.has(entity.device_id)
+    ).length;
+
+    return html`
+      <ha-card class="network-card">
+        <div class="card-header">
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.dashboard.network_card_title"
+          )}
+          <ha-button
+            appearance="filled"
+            href=${`visualization?config_entry=${this.configEntryId}`}
+          >
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.zwave_js.dashboard.show_map")}
+          </ha-button>
+        </div>
+        <div class="card-content network-card-content">
+          <ha-md-list>
+            <ha-md-list-item
+              type="link"
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.device_count",
+                  { count: deviceIds.size }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.entity_count",
+                  { count: entityCount }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            ${this._provisioningEntries?.length
+              ? html`<ha-md-list-item
+                  type="link"
+                  href=${`provisioned?config_entry=${this.configEntryId}`}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiQrcode}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.provisioned_count",
+                      { count: this._provisioningEntries.length }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>`
+              : nothing}
+          </ha-md-list>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderNavigationCard() {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-content">
+          <ha-md-list>
+            <ha-md-list-item
+              type="link"
+              href=${`options?config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.options_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.options_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href=${`statistics?config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPoll}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.navigation.statistics"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.statistics_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href=${`logs?config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiTextBoxOutline}
+              ></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.navigation.logs"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.logs_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item type="link" href="/config/analytics?section=zwave">
+              <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.analytics_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.analytics_description"
+                )}
+              </div>
+              <span slot="end">
+                ${this._dataCollectionOptIn !== undefined
+                  ? this.hass.localize(
+                      `ui.panel.config.zwave_js.dashboard.analytics_${this._dataCollectionOptIn ? "on" : "off"}`
+                    )
+                  : nothing}
+              </span>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href=${`network-info?config_entry=${this.configEntryId}`}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiInformationOutline}
+              ></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.network_info_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.network_info_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+          </ha-md-list>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderBackupCard() {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-content">
+          ${this._backupProgress !== undefined
+            ? html`<div class="backup-progress">
+                <ha-progress-ring
+                  size="small"
+                  .value=${this._backupProgress}
+                ></ha-progress-ring>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.nvm_backup.creating"
+                )}
+                ${this._backupProgress}%
+              </div>`
+            : this._restoreProgress !== undefined
+              ? html`<div class="backup-progress">
+                  <ha-progress-ring
+                    size="small"
+                    .value=${this._restoreProgress}
+                  ></ha-progress-ring>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
+                  )}
+                  ${this._restoreProgress}%
+                </div>`
+              : html`<ha-md-list>
+                  <ha-md-list-item>
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
+                      )}
+                    </span>
+                    <span slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup_description"
+                      )}
+                    </span>
+                    <ha-button
+                      appearance="plain"
+                      slot="end"
+                      size="small"
+                      @click=${this._downloadBackup}
+                    >
+                      <ha-svg-icon
+                        .path=${mdiDownload}
+                        slot="start"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.download_action"
+                      )}
+                    </ha-button>
+                  </ha-md-list-item>
+                  <ha-md-list-item>
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                      )}
+                    </span>
+                    <span slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup_description"
+                      )}
+                    </span>
+                    <ha-button
+                      appearance="plain"
+                      slot="end"
+                      size="small"
+                      @click=${this._restoreButtonClick}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_action"
+                      )}
+                    </ha-button>
+                    <input
+                      type="file"
+                      id="nvm-restore-file"
+                      accept=".bin"
+                      @change=${this._handleRestoreFileSelected}
+                      style="display: none"
+                    />
+                  </ha-md-list-item>
+                  <ha-md-list-item>
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                      )}
+                    </span>
+                    <span slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate_description"
+                      )}
+                    </span>
+                    <ha-button
+                      appearance="plain"
+                      slot="end"
+                      size="small"
+                      @click=${this._openConfigFlow}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate_action"
+                      )}
+                    </ha-button>
+                  </ha-md-list-item>
+                </ha-md-list>`}
+        </div>
+      </ha-card>
     `;
   }
 
@@ -605,7 +596,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     return html` ${stateText
       ? html`
           <div class="error-message">
-            <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
             <h3>
               ${this._configEntry!.title}: ${this.hass.localize(...stateText)}
             </h3>
@@ -629,6 +620,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
+    this._multipleNetworks =
+      configEntries.filter(
+        (entry) => entry.disabled_by === null && entry.source !== "ignore"
+      ).length > 1;
     this._configEntry = configEntries.find(
       (entry) => entry.entry_id === this.configEntryId
     );
@@ -637,25 +632,29 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const [network, dataCollectionStatus, provisioningEntries] =
-      await Promise.all([
-        fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
-        fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
-        fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
-      ]);
+    const [network, provisioningEntries] = await Promise.all([
+      fetchZwaveNetworkStatus(this.hass!.connection, {
+        entry_id: this.configEntryId,
+      }),
+      fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
+    ]);
 
     this._provisioningEntries = provisioningEntries;
 
     this._network = network;
 
     this._status = this._network.client.state;
-    if (this._status === "connected") {
-      this._icon = mdiCheckCircle;
-    }
 
-    this._dataCollectionOptIn =
-      dataCollectionStatus.opted_in === true ||
-      dataCollectionStatus.enabled === true;
+    try {
+      const status = await fetchZwaveDataCollectionStatus(
+        this.hass,
+        this.configEntryId
+      );
+      this._dataCollectionOptIn =
+        status.opted_in === true || status.enabled === true;
+    } catch {
+      // Data collection status is optional
+    }
   };
 
   private async _addNodeClicked() {
@@ -669,20 +668,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         this._network?.controller.inclusion_state === InclusionState.Excluding,
       onClose: this._fetchData,
     });
-  }
-
-  private async _rebuildNetworkRoutesClicked() {
-    showZWaveJSRebuildNetworkRoutesDialog(this, {
-      entry_id: this.configEntryId!,
-    });
-  }
-
-  private _dataCollectionToggled(ev) {
-    setZwaveDataCollectionPreference(
-      this.hass!,
-      this.configEntryId!,
-      ev.target.checked
-    );
   }
 
   private async _openConfigFlow() {
@@ -820,7 +805,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           url,
           `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
         );
-        URL.revokeObjectURL(url);
       } catch (err: any) {
         showAlertDialog(this, {
           title: this.hass.localize(
@@ -864,24 +848,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        .secondary {
-          color: var(--secondary-text-color);
-        }
-        .connected {
-          color: green;
-        }
-        .starting {
-          color: orange;
-        }
-        .offline {
-          color: red;
-        }
-
         .error-message {
           display: flex;
           color: var(--primary-text-color);
           height: calc(100% - var(--header-height));
-          padding: 16px;
+          padding: var(--ha-space-4);
           align-items: center;
           justify-content: center;
           flex-direction: column;
@@ -899,111 +870,126 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .content {
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
         }
 
-        .sectionHeader {
-          position: relative;
-          padding-right: 40px;
-          padding-inline-end: 40px;
-          padding-inline-start: initial;
+        ha-card {
+          margin: 0px auto var(--ha-space-4);
+          max-width: 600px;
         }
 
-        .row {
+        ha-md-list {
+          background: none;
+          padding: 0;
+        }
+
+        ha-md-list-item {
+          --md-item-overflow: visible;
+        }
+
+        .network-card .card-header {
           display: flex;
+          align-items: center;
           justify-content: space-between;
+          padding-bottom: var(--ha-space-2);
         }
 
-        span[slot="meta"] {
-          font-size: 0.95em;
-          color: var(--primary-text-color);
+        .network-card-content {
+          padding-left: 0;
+          padding-right: 0;
+          padding-bottom: 0;
+        }
+
+        .nav-card {
+          overflow: hidden;
+        }
+
+        .nav-card .card-content {
+          padding: 0;
         }
 
         .network-status div.heading {
           display: flex;
           align-items: center;
+          column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
         }
 
         .network-status div.heading .icon {
-          width: 48px;
-          height: 48px;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
         }
-        .network-status div.heading ha-svg-icon {
-          width: 48px;
-          height: 48px;
+
+        .network-status div.heading .icon.online {
+          --icon-color: var(--success-color);
         }
+
+        .network-status div.heading .icon.offline {
+          --icon-color: var(--error-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color, var(--primary-color));
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color, var(--primary-color));
+          width: 24px;
+          height: 24px;
+        }
+
         .network-status div.heading .details {
-          font-size: 1.5rem;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
         }
 
         .network-status small {
-          font-size: 1rem;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
+          color: var(--secondary-text-color);
         }
 
-        ha-list-item {
-          height: 60px;
-        }
-
-        .card-header {
-          display: flex;
-        }
-        .card-header h1 {
-          flex: 1;
-        }
-        .card-header ha-switch {
-          width: 48px;
-          margin-top: 16px;
-        }
-
-        ha-card {
-          margin: 0px auto 24px;
-          max-width: 600px;
-        }
-
-        .card-actions {
+        .backup-progress {
           display: flex;
           align-items: center;
-          flex-wrap: wrap;
+          padding: var(--ha-space-4);
+          gap: var(--ha-space-4);
         }
 
-        .card-actions ha-progress-ring {
-          margin-right: 16px;
+        ha-button[size="small"] ha-svg-icon {
+          --mdc-icon-size: 16px;
         }
 
         [hidden] {
           display: none;
         }
 
-        .upload-button {
-          position: relative;
-          display: flex;
-        }
-
-        .upload-button ha-button {
-          position: relative;
-          overflow: hidden;
-        }
-
-        .button-content {
-          pointer-events: none;
-        }
-
-        .remove-node-button {
-          margin-left: auto;
-        }
-
-        .right-buttons {
-          display: flex;
-          gap: var(--ha-space-2);
-          margin-left: auto;
-          flex-wrap: wrap;
-        }
-
         .container {
-          padding: 8px 16px 16px;
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];

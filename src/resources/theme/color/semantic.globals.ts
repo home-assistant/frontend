@@ -14,28 +14,32 @@ export const semanticColorStyles = css`
     --ha-color-text-secondary: var(--ha-color-neutral-40);
     --ha-color-text-disabled: var(--ha-color-neutral-60);
     --ha-color-text-link: var(--ha-color-primary-40);
+
+    --ha-color-text-primary-inverted: var(--ha-color-white);
+    --ha-color-text-secondary-inverted: var(--ha-color-neutral-20);
+
     /* border primary */
-    --ha-color-border-primary-quiet: var(--ha-color-primary-80);
+    --ha-color-border-primary-quiet: var(--ha-color-primary-90);
     --ha-color-border-primary-normal: var(--ha-color-primary-70);
     --ha-color-border-primary-loud: var(--ha-color-primary-40);
 
     /* border neutral */
-    --ha-color-border-neutral-quiet: var(--ha-color-neutral-80);
+    --ha-color-border-neutral-quiet: var(--ha-color-neutral-90);
     --ha-color-border-neutral-normal: var(--ha-color-neutral-60);
     --ha-color-border-neutral-loud: var(--ha-color-neutral-40);
 
     /* border danger */
-    --ha-color-border-danger-quiet: var(--ha-color-red-80);
+    --ha-color-border-danger-quiet: var(--ha-color-red-90);
     --ha-color-border-danger-normal: var(--ha-color-red-70);
     --ha-color-border-danger-loud: var(--ha-color-red-40);
 
     /* border warning */
-    --ha-color-border-warning-quiet: var(--ha-color-orange-80);
+    --ha-color-border-warning-quiet: var(--ha-color-orange-90);
     --ha-color-border-warning-normal: var(--ha-color-orange-70);
     --ha-color-border-warning-loud: var(--ha-color-orange-40);
 
     /* border success */
-    --ha-color-border-success-quiet: var(--ha-color-green-80);
+    --ha-color-border-success-quiet: var(--ha-color-green-90);
     --ha-color-border-success-normal: var(--ha-color-green-70);
     --ha-color-border-success-loud: var(--ha-color-green-40);
 
@@ -71,12 +75,15 @@ export const semanticColorStyles = css`
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-95);
+    --ha-color-fill-disabled-quiet-hover: var(--ha-color-neutral-90);
 
     /* fill disabled normal */
     --ha-color-fill-disabled-normal-resting: var(--ha-color-neutral-95);
+    --ha-color-fill-disabled-normal-hover: var(--ha-color-neutral-90);
 
     /* fill disabled loud */
     --ha-color-fill-disabled-loud-resting: var(--ha-color-neutral-80);
+    --ha-color-fill-disabled-loud-hover: var(--ha-color-neutral-70);
 
     /* fill danger quiet */
     --ha-color-fill-danger-quiet-resting: var(--ha-color-red-95);
@@ -156,6 +163,20 @@ export const semanticColorStyles = css`
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-95);
     --ha-color-on-surface-default: var(--ha-color-neutral-05);
+
+    /* forms */
+    --ha-color-form-background: var(--ha-color-neutral-95);
+    --ha-color-form-background-hover: var(--ha-color-neutral-90);
+    --ha-color-form-background-disabled: var(--ha-color-neutral-80);
+    --ha-color-surface-default: var(--ha-color-white);
+    --ha-color-surface-low: var(--ha-color-neutral-95);
+    --ha-color-surface-lower: var(--ha-color-neutral-90);
+    --ha-color-surface-default-inverted: var(--ha-color-neutral-10);
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-05);
+    --ha-color-surface-lower-inverted: var(--ha-color-black);
+
+    /* Scrollable fade */
+    --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
   }
 `;
 
@@ -165,6 +186,9 @@ export const darkSemanticColorStyles = css`
     --ha-color-text-primary: var(--white-color);
     --ha-color-text-secondary: var(--ha-color-neutral-80);
     --ha-color-text-link: var(--ha-color-primary-60);
+
+    --ha-color-text-primary-inverted: var(--ha-color-black);
+    --ha-color-text-secondary-inverted: var(--ha-color-neutral-40);
 
     /* border primary */
     --ha-color-border-normal: var(--ha-color-primary-50);
@@ -204,12 +228,15 @@ export const darkSemanticColorStyles = css`
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10);
+    --ha-color-fill-disabled-quiet-hover: var(--ha-color-neutral-20);
 
     /* fill disabled normal */
     --ha-color-fill-disabled-normal-resting: var(--ha-color-neutral-20);
+    --ha-color-fill-disabled-normal-hover: var(--ha-color-neutral-30);
 
     /* fill disabled loud */
     --ha-color-fill-disabled-loud-resting: var(--ha-color-neutral-30);
+    --ha-color-fill-disabled-loud-hover: var(--ha-color-neutral-40);
 
     /* fill danger quiet */
     --ha-color-fill-danger-quiet-resting: var(--ha-color-red-05);
@@ -288,5 +315,15 @@ export const darkSemanticColorStyles = css`
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
     --ha-color-on-surface-default: var(--ha-color-neutral-95);
+
+    /* forms */
+    --ha-color-form-background: var(--ha-color-neutral-20);
+    --ha-color-form-background-hover: var(--ha-color-neutral-30);
+    --ha-color-form-background-disabled: var(--ha-color-neutral-20);
+    --ha-color-surface-low: var(--ha-color-neutral-05);
+    --ha-color-surface-lower: var(--ha-color-black);
+    --ha-color-surface-default-inverted: var(--ha-color-white);
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
+    --ha-color-surface-lower-inverted: var(--ha-color-90);
   }
 `;

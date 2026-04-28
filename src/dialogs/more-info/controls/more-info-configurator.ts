@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-configurator")
@@ -33,15 +33,15 @@ export class MoreInfoConfigurator extends LitElement {
           ? html`<ha-alert alert-type="error">
               ${this.stateObj.attributes.errors}
             </ha-alert>`
-          : ""}
+          : nothing}
         ${this.stateObj.attributes.fields.map(
           (field) =>
-            html`<ha-textfield
+            html`<ha-input
               .label=${field.name}
               .name=${field.id}
               .type=${field.type}
               @change=${this._fieldChanged}
-            ></ha-textfield>`
+            ></ha-input>`
         )}
         ${this.stateObj.attributes.submit_caption
           ? html`<p class="submit">
@@ -53,7 +53,7 @@ export class MoreInfoConfigurator extends LitElement {
                 ${this.stateObj.attributes.submit_caption}
               </ha-button>
             </p>`
-          : ""}
+          : nothing}
       </div>
     `;
   }
@@ -87,7 +87,7 @@ export class MoreInfoConfigurator extends LitElement {
       flex-direction: column;
     }
     p {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
     }
 
     a {

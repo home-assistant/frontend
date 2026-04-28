@@ -2,17 +2,19 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
 @customElement("dialog-tag-detail")
@@ -32,21 +34,36 @@ class DialogTagDetail
 
   @state() private _submitting = false;
 
+  @state() private _open = false;
+
+  @state() private _qrReady = false;
+
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
+    this._open = true;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
     } else {
       this._id = "";
       this._name = "";
     }
+
+    // Defer QR until dialog has had a chance to apply styles
+    requestAnimationFrame(() => {
+      this._qrReady = true;
+    });
   }
 
-  public closeDialog() {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  public closeDialog(): boolean {
+    this._open = false;
     return true;
+  }
+
+  private _dialogClosed() {
+    this._params = undefined;
+    this._qrReady = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
@@ -56,30 +73,21 @@ class DialogTagDetail
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.entry
-            ? this._params.entry.name || this._params.entry.id
-            : this.hass!.localize("ui.panel.config.tag.detail.new_tag")
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.entry
+          ? this._params.entry.name || this._params.entry.id
+          : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            ${this._params.entry
-              ? html`${this.hass!.localize(
-                  "ui.panel.config.tag.detail.tag_id"
-                )}:
-                ${this._params.entry.id}`
-              : ""}
-            <ha-textfield
-              dialogInitialFocus
+            <ha-input
+              autofocus
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._valueChanged}
@@ -88,20 +96,19 @@ class DialogTagDetail
                 "ui.panel.config.tag.detail.required_error_msg"
               )}
               required
-            ></ha-textfield>
-            ${!this._params.entry
-              ? html`<ha-textfield
-                  .value=${this._id || ""}
-                  .configValue=${"id"}
-                  @input=${this._valueChanged}
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.tag.detail.tag_id"
-                  )}
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.config.tag.detail.tag_id_placeholder"
-                  )}
-                ></ha-textfield>`
-              : ""}
+            ></ha-input>
+            <ha-input
+              .value=${this._params.entry
+                ? this._params.entry.id
+                : this._id || ""}
+              .readonly=${!!this._params.entry}
+              .configValue=${"id"}
+              @input=${this._valueChanged}
+              .label=${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}
+              .placeholder=${this.hass!.localize(
+                "ui.panel.config.tag.detail.tag_id_placeholder"
+              )}
+            ></ha-input>
           </div>
           ${this._params.entry
             ? html`
@@ -120,57 +127,63 @@ class DialogTagDetail
                   </p>
                 </div>
                 <div id="qr">
-                  <ha-qr-code
-                    .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
-                    center-image="/static/icons/favicon-192x192.png"
-                    error-correction-level="quartile"
-                    scale="5"
-                  >
-                  </ha-qr-code>
+                  ${this._qrReady
+                    ? html`
+                        <ha-qr-code
+                          .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
+                          center-image="/static/icons/favicon-192x192.png"
+                          error-correction-level="quartile"
+                          scale="5"
+                        >
+                        </ha-qr-code>
+                      `
+                    : nothing}
                 </div>
               `
             : ``}
         </div>
-        ${this._params.entry
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting || !this._name}
-        >
+        <ha-dialog-footer slot="footer">
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.tag.detail.update")
-            : this.hass!.localize("ui.panel.config.tag.detail.create")}
-        </ha-button>
-        ${this._params.openWrite && !this._params.entry
-          ? html`<ha-button
-              slot="primaryAction"
-              @click=${this._updateWriteEntry}
-              .disabled=${this._submitting || !this._name}
-            >
-              ${this.hass!.localize(
-                "ui.panel.config.tag.detail.create_and_write"
-              )}
-            </ha-button>`
-          : ""}
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteEntry}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
+                </ha-button>
+              `
+            : nothing}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${this._submitting || !this._name}
+          >
+            ${this._params.entry
+              ? this.hass!.localize("ui.panel.config.tag.detail.update")
+              : this.hass!.localize("ui.panel.config.tag.detail.create")}
+          </ha-button>
+          ${this._params.openWrite && !this._params.entry
+            ? html`<ha-button
+                slot="primaryAction"
+                @click=${this._updateWriteEntry}
+                .disabled=${this._submitting || !this._name}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.tag.detail.create_and_write"
+                )}
+              </ha-button>`
+            : ""}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _valueChanged(ev: Event) {
-    const target = ev.target as any;
-    const configValue = target.configValue;
+  private _valueChanged(ev: InputEvent) {
+    const target = ev.target as HaInput;
+    const configValue = (target as any).configValue;
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
@@ -227,9 +240,11 @@ class DialogTagDetail
         #qr {
           text-align: center;
         }
-        ha-textfield {
-          display: block;
-          margin: 8px 0;
+        ha-input {
+          --ha-input-padding-bottom: 0;
+        }
+        ha-input:not([required]) {
+          margin-bottom: var(--ha-space-5);
         }
         ::slotted(img) {
           height: 100%;

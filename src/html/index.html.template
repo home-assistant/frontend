@@ -29,11 +29,11 @@
         }
       }
       ::view-transition-group(launch-screen) {
-        animation-duration: var(--ha-animation-base-duration, 350ms);
+        animation-duration: var(--ha-animation-duration-slow, 350ms);
         animation-timing-function: ease-out;
       }
       ::view-transition-old(launch-screen) {
-        animation: fade-out var(--ha-animation-base-duration, 350ms) ease-out;
+        animation: fade-out var(--ha-animation-duration-slow, 350ms) ease-out;
       }
       html {
         background-color: var(--primary-background-color, #fafafa);

@@ -3,6 +3,7 @@ import type {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
+  MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
@@ -124,8 +125,8 @@ export const subscribeHistory = (
   startTime: Date,
   endTime: Date,
   entityIds: string[]
-): Promise<() => Promise<void>> => {
-  const params = {
+): Promise<() => Promise<void>> =>
+  subscribeHistoryStream(hass, callbackFunction, () => ({
     type: "history/stream",
     entity_ids: entityIds,
     start_time: startTime.toISOString(),
@@ -134,15 +135,9 @@ export const subscribeHistory = (
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
-  };
-  const stream = new HistoryStream(hass);
-  return hass.connection.subscribeMessage<HistoryStreamMessage>(
-    (message) => callbackFunction(stream.processMessage(message)),
-    params
-  );
-};
+  }));
 
-class HistoryStream {
+export class HistoryStream {
   hass: HomeAssistant;
 
   hoursToShow?: number;
@@ -221,6 +216,7 @@ class HistoryStream {
         // only expire the rest of the history as it ages.
         const lastExpiredState = expiredStates[expiredStates.length - 1];
         lastExpiredState.lu = purgeBeforePythonTime;
+        delete lastExpiredState.lc;
         newHistory[entityId].unshift(lastExpiredState);
       }
     }
@@ -237,26 +233,81 @@ export const subscribeHistoryStatesTimeWindow = (
   noAttributes?: boolean,
   minimalResponse = true,
   significantChangesOnly = true
-): Promise<() => Promise<void>> => {
-  const params = {
-    type: "history/stream",
-    entity_ids: entityIds,
-    start_time: new Date(
-      new Date().getTime() - 60 * 60 * hoursToShow * 1000
-    ).toISOString(),
-    minimal_response: minimalResponse,
-    significant_changes_only: significantChangesOnly,
-    no_attributes:
-      noAttributes ??
-      !entityIds.some((entityId) =>
-        entityIdHistoryNeedsAttributes(hass, entityId)
-      ),
-  };
-  const stream = new HistoryStream(hass, hoursToShow);
-  return hass.connection.subscribeMessage<HistoryStreamMessage>(
-    (message) => callbackFunction(stream.processMessage(message)),
-    params
+): Promise<() => Promise<void>> =>
+  subscribeHistoryStream(
+    hass,
+    callbackFunction,
+    () => ({
+      type: "history/stream",
+      entity_ids: entityIds,
+      // Recomputed on every (re)subscribe so the replay window stays anchored
+      // to "now" after a reconnect instead of replaying a stale window.
+      start_time: new Date(
+        new Date().getTime() - 60 * 60 * hoursToShow * 1000
+      ).toISOString(),
+      minimal_response: minimalResponse,
+      significant_changes_only: significantChangesOnly,
+      no_attributes:
+        noAttributes ??
+        !entityIds.some((entityId) =>
+          entityIdHistoryNeedsAttributes(hass, entityId)
+        ),
+    }),
+    hoursToShow
   );
+
+/**
+ * Subscribe to a history stream with transparent reconnect handling.
+ *
+ * Auto-resubscribe in home-assistant-js-websocket replays the original
+ * `subscribeMessage` call, which reuses the `HistoryStream` (its
+ * `combinedHistory` would merge stale state with the replayed stream) and the
+ * original `start_time` (which is stale after a disconnect for time-window
+ * subscriptions). Instead, we disable the library's auto-resubscribe and
+ * reimplement it here: on every `ready` event we build fresh params and start
+ * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
+ */
+const subscribeHistoryStream = async (
+  hass: HomeAssistant,
+  callbackFunction: (data: HistoryStates) => void,
+  buildParams: () => MessageBase,
+  hoursToShow?: number
+): Promise<() => Promise<void>> => {
+  let currentUnsub: (() => Promise<void>) | undefined;
+  let disposed = false;
+
+  const doSubscribe = async () => {
+    const stream = new HistoryStream(hass, hoursToShow);
+    const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
+      (message) => callbackFunction(stream.processMessage(message)),
+      buildParams(),
+      { resubscribe: false }
+    );
+    if (disposed) {
+      unsub().catch(() => undefined);
+      return;
+    }
+    currentUnsub = unsub;
+  };
+
+  const onReady = () => {
+    if (disposed) return;
+    currentUnsub = undefined;
+    // Reconnect failures (e.g. history component not yet loaded) are swallowed;
+    // consumers retry via their own component-availability logic.
+    doSubscribe().catch(() => undefined);
+  };
+
+  await doSubscribe();
+  hass.connection.addEventListener("ready", onReady);
+
+  return async () => {
+    disposed = true;
+    hass.connection.removeEventListener("ready", onReady);
+    if (currentUnsub) {
+      await currentUnsub();
+    }
+  };
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
@@ -463,6 +514,15 @@ export const convertStatisticsToHistory = (
   return statisticsHistory;
 };
 
+export const limitedHistoryFromStateObj = (
+  state: HassEntity
+): EntityHistoryState[] => [
+  {
+    s: state.state,
+    a: state.attributes,
+    lu: new Date(state.last_updated).getTime() / 1000,
+  },
+];
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
@@ -483,13 +543,9 @@ export const computeHistory = (
     if (entity in stateHistory) {
       localStateHistory[entity] = stateHistory[entity];
     } else if (hass.states[entity]) {
-      localStateHistory[entity] = [
-        {
-          s: hass.states[entity].state,
-          a: hass.states[entity].attributes,
-          lu: new Date(hass.states[entity].last_updated).getTime() / 1000,
-        },
-      ];
+      localStateHistory[entity] = limitedHistoryFromStateObj(
+        hass.states[entity]
+      );
     }
   });
 

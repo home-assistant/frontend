@@ -51,6 +51,19 @@ export class HaPanelCustom extends ReactiveElement {
       route: this.route,
     });
     this._setProperties = setProperties;
+    this.querySelector("iframe")?.classList.add("loaded");
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // The suspendWhenHidden disconnect timer in partial-panel-resolver
+    // removes this element from the DOM after 5 minutes, which triggers
+    // _cleanupPanel() and destroys our child panel. When the user returns,
+    // the same element is re-appended but `update()` won't call _createPanel
+    // again (the `panel` property reference hasn't changed). Rebuild here.
+    if (!this._setProperties && !this.hasChildNodes() && this.panel) {
+      this._createPanel(this.panel);
+    }
   }
 
   public disconnectedCallback() {
@@ -58,7 +71,7 @@ export class HaPanelCustom extends ReactiveElement {
     this._cleanupPanel();
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (changedProps.has("panel")) {
       // Clean up old things if we had a panel and the new one is different.
@@ -91,6 +104,8 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
+    this.style.backgroundColor = "var(--primary-background-color)";
+
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
 
@@ -147,20 +162,17 @@ export class HaPanelCustom extends ReactiveElement {
     this.innerHTML = `
       <style>
         iframe {
-          border: 0;
-          width: calc(100% - var(--safe-area-inset-right, 0px));
-          height: calc(100% - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px));
+          border: none;
+          width: 100%;
+          height: 100vh;
+          height: 100dvh;
           display: block;
           background-color: var(--primary-background-color);
-          margin-top: var(--safe-area-inset-top);
-          margin-bottom: var(--safe-area-inset-bottom);
-          margin-right: var(--safe-area-inset-right);
+          opacity: 0;
+          transition: opacity var(--ha-animation-duration-normal) ease;
         }
-        @media (max-width: 870px) {
-          iframe {
-            width: calc(100% - var(--safe-area-inset-left, 0px) - var(--safe-area-inset-right, 0px));
-            margin-left: var(--safe-area-inset-left);
-          }
+        iframe.loaded {
+          opacity: 1;
         }
       </style>
       <iframe ${titleAttr}></iframe>`.trim();

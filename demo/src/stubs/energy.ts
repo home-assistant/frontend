@@ -14,40 +14,28 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
       energy_sources: [
         {
           type: "grid",
-          flow_from: [
-            {
-              stat_energy_from: "sensor.energy_consumption_tarif_1",
-              stat_cost: "sensor.energy_consumption_tarif_1_cost",
-              entity_energy_price: null,
-              number_energy_price: null,
-            },
-            {
-              stat_energy_from: "sensor.energy_consumption_tarif_2",
-              stat_cost: "sensor.energy_consumption_tarif_2_cost",
-              entity_energy_price: null,
-              number_energy_price: null,
-            },
-          ],
-          flow_to: [
-            {
-              stat_energy_to: "sensor.energy_production_tarif_1",
-              stat_compensation:
-                "sensor.energy_production_tarif_1_compensation",
-              entity_energy_price: null,
-              number_energy_price: null,
-            },
-            {
-              stat_energy_to: "sensor.energy_production_tarif_2",
-              stat_compensation:
-                "sensor.energy_production_tarif_2_compensation",
-              entity_energy_price: null,
-              number_energy_price: null,
-            },
-          ],
-          power: [
-            { stat_rate: "sensor.power_grid" },
-            { stat_rate: "sensor.power_grid_return" },
-          ],
+          stat_energy_from: "sensor.energy_consumption_tarif_1",
+          stat_energy_to: "sensor.energy_production_tarif_1",
+          stat_cost: "sensor.energy_consumption_tarif_1_cost",
+          stat_compensation: "sensor.energy_production_tarif_1_compensation",
+          entity_energy_price: null,
+          number_energy_price: null,
+          entity_energy_price_export: null,
+          number_energy_price_export: null,
+          stat_rate: "sensor.power_grid",
+          cost_adjustment_day: 0,
+        },
+        {
+          type: "grid",
+          stat_energy_from: "sensor.energy_consumption_tarif_2",
+          stat_energy_to: "sensor.energy_production_tarif_2",
+          stat_cost: "sensor.energy_consumption_tarif_2_cost",
+          stat_compensation: "sensor.energy_production_tarif_2_compensation",
+          entity_energy_price: null,
+          number_energy_price: null,
+          entity_energy_price_export: null,
+          number_energy_price_export: null,
+          stat_rate: "sensor.power_grid_return",
           cost_adjustment_day: 0,
         },
         {

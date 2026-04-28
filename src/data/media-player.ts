@@ -16,6 +16,8 @@ import {
   mdiPlayPause,
   mdiPodcast,
   mdiPower,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiRepeat,
   mdiRepeatOff,
   mdiRepeatOnce,
@@ -286,7 +288,9 @@ export const computeMediaControls = (
     return undefined;
   }
 
-  if (!stateActive(stateObj)) {
+  const assumedState = stateObj.attributes.assumed_state === true;
+
+  if (!stateActive(stateObj) && !assumedState) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
@@ -299,14 +303,23 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
+  ) {
+    buttons.push({
+      icon: mdiPowerOn,
+      action: "turn_on",
+    });
+  }
+
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPower,
       action: "turn_off",
     });
   }
 
-  const assumedState = stateObj.attributes.assumed_state === true;
   const stateAttr = stateObj.attributes;
 
   if (
@@ -423,12 +436,17 @@ export const formatMediaTime = (seconds: number | undefined): string => {
     return "";
   }
 
-  let secondsString = new Date(seconds * 1000).toISOString();
-  secondsString =
-    seconds > 3600
-      ? secondsString.substring(11, 16)
-      : secondsString.substring(14, 19);
-  return secondsString.replace(/^0+/, "").padStart(4, "0");
+  const totalSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  const pad = (value: number) => value.toString().padStart(2, "0");
+
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  }
+
+  return `${pad(minutes)}:${pad(secs)}`;
 };
 
 export const cleanupMediaTitle = (title?: string): string | undefined => {

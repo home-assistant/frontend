@@ -110,10 +110,9 @@ export const subscribeConfigEntries = (
   if (filters && filters.type) {
     params.type_filter = filters.type;
   }
-  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>(
-    (message) => callbackFunction(message),
-    params
-  );
+  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>((message) => {
+    callbackFunction(message);
+  }, params);
 };
 
 export const getConfigEntries = (
@@ -206,3 +205,29 @@ export const sortConfigEntries = (
   );
   return [primaryEntry, ...otherEntries];
 };
+
+export class ConfigEntryStream {
+  private _entries: ConfigEntry[] = [];
+
+  processMessage(message: ConfigEntryUpdate[]) {
+    message.forEach((configEntry) => {
+      if (configEntry.type === null || configEntry.type === "added") {
+        this._entries.push(configEntry.entry);
+        return;
+      }
+      if (configEntry.type === "removed") {
+        this._entries = this._entries.filter(
+          (entry) => entry.entry_id !== configEntry.entry.entry_id
+        );
+        return;
+      }
+      if (configEntry.type === "updated") {
+        const newEntry = configEntry.entry;
+        this._entries = this._entries.map((entry) =>
+          entry.entry_id === newEntry.entry_id ? newEntry : entry
+        );
+      }
+    });
+    return this._entries;
+  }
+}

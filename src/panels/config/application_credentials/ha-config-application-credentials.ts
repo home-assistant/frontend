@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -10,11 +11,10 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
 import "../../../components/ha-button";
 import "../../../components/ha-help-tooltip";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-svg-icon";
 import type { ApplicationCredential } from "../../../data/application_credential";
 import {
   deleteApplicationCredential,
@@ -30,7 +30,6 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
-import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-application-credentials")
 export class HaConfigApplicationCredentials extends LitElement {
@@ -106,12 +105,11 @@ export class HaConfigApplicationCredentials extends LitElement {
           filterable: true,
         },
         actions: {
+          lastFixed: true,
           title: "",
           label: localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
-          hideable: false,
-          moveable: false,
           template: (credential) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -142,7 +140,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       }))
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._loadTranslations();
     this._fetchApplicationCredentials();
@@ -202,16 +200,16 @@ export class HaConfigApplicationCredentials extends LitElement {
                 </ha-help-tooltip>
               `}
         </div>
-        <ha-fab
+        <ha-button
           slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.application_credentials.picker.add_application_credential"
-          )}
-          extended
+          size="large"
           @click=${this._addApplicationCredential}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.config.application_credentials.picker.add_application_credential"
+          )}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -356,11 +354,6 @@ export class HaConfigApplicationCredentials extends LitElement {
     .header-btns > ha-button,
     .header-btns > ha-icon-button {
       margin: 8px;
-    }
-    ha-button-menu {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
     }
     .warning {
       --mdc-theme-primary: var(--error-color);

@@ -9,15 +9,15 @@ import {
 } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-file-upload";
-import "../../../../components/ha-wa-dialog";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
+  INITIAL_UPLOAD_FORM_DATA,
   SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
-  INITIAL_UPLOAD_FORM_DATA,
   type BackupUploadFileFormData,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -74,7 +74,7 @@ export class DialogUploadBackup
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -120,7 +120,7 @@ export class DialogUploadBackup
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -154,7 +154,7 @@ export class DialogUploadBackup
       return;
     }
 
-    const agentIds = isComponentLoaded(this.hass!, "hassio")
+    const agentIds = isComponentLoaded(this.hass.config, "hassio")
       ? [HASSIO_LOCAL_AGENT]
       : [CORE_LOCAL_AGENT];
 

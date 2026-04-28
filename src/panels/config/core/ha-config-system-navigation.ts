@@ -1,5 +1,5 @@
 import { mdiPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -58,7 +58,7 @@ class HaConfigSystemNavigation extends LitElement {
     const pages = configSections.general
       .filter((page) => canShowPage(this.hass, page))
       .map((page) => {
-        let description = "";
+        let description: string;
 
         switch (page.translationKey) {
           case "backup":
@@ -87,7 +87,9 @@ class HaConfigSystemNavigation extends LitElement {
             description = this._storageInfo
               ? this.hass.localize("ui.panel.config.storage.description", {
                   percent_used: `${Math.round(
-                    (this._storageInfo.used / this._storageInfo.total) * 100
+                    ((this._storageInfo.total - this._storageInfo.free) /
+                      this._storageInfo.total) *
+                      100
                   )}${blankBeforePercent(this.hass.locale)}%`,
                   free_space: `${this._storageInfo.free} GB`,
                 })
@@ -159,11 +161,11 @@ class HaConfigSystemNavigation extends LitElement {
     `;
   }
 
-  protected firstUpdated(_changedProperties): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
 
     this._fetchNetworkStatus();
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
     this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
     this._fetchLabFeatures();
@@ -173,7 +175,10 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchBackupInfo() {
-    const backups: BackupContent[] = isComponentLoaded(this.hass, "backup")
+    const backups: BackupContent[] = isComponentLoaded(
+      this.hass.config,
+      "backup"
+    )
       ? await fetchBackupInfo(this.hass).then(
           (backupData) => backupData.backups
         )
@@ -187,7 +192,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchHardwareInfo(isHassioLoaded: boolean) {
-    if (isComponentLoaded(this.hass, "hardware")) {
+    if (isComponentLoaded(this.hass.config, "hardware")) {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
@@ -212,7 +217,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchNetworkStatus() {
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       const cloudStatus = await fetchCloudStatus(this.hass);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
@@ -223,7 +228,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchLabFeatures() {
-    if (isComponentLoaded(this.hass, "labs")) {
+    if (isComponentLoaded(this.hass.config, "labs")) {
       this._labFeatures = await fetchLabFeatures(this.hass);
     }
   }

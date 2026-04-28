@@ -1,20 +1,16 @@
-import { mdiEye, mdiEyeOff } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
-import "../ha-textfield";
-import type { HaTextField } from "../ha-textfield";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 import type {
   HaFormElement,
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../common/translations/localize";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
@@ -35,75 +31,52 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() protected unmaskedPassword = false;
+  @query("ha-input") private _input?: HaInput;
 
-  @query("ha-textfield") private _input?: HaTextField;
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
 
-  public focus(): void {
-    if (this._input) {
-      this._input.focus();
-    }
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
   }
 
   protected render(): TemplateResult {
     return html`
-      <ha-textfield
-        .type=${!this.isPassword
-          ? this.stringType
-          : this.unmaskedPassword
-            ? "text"
-            : "password"}
+      <ha-input
+        .passwordToggle=${this.isPassword}
+        .type=${!this.isPassword ? this.stringType : "password"}
         .label=${this.label}
         .value=${this.data || ""}
-        .helper=${this.helper}
-        helperPersistent
+        .hint=${this.helper}
         .disabled=${this.disabled}
-        .required=${this.schema.required}
-        .autoValidate=${this.schema.required}
+        .required=${!!this.schema.required}
+        .autoValidate=${!!this.schema.required}
         .name=${this.schema.name}
-        .autofocus=${this.schema.autofocus}
+        .autofocus=${!!this.schema.autofocus}
         .autocomplete=${this.schema.autocomplete}
-        .suffix=${this.isPassword
-          ? // reserve some space for the icon.
-            html`<div style="width: 24px"></div>`
-          : this.schema.description?.suffix}
         .validationMessage=${this.schema.required
           ? this.localize?.("ui.common.error_required")
           : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
-      ></ha-textfield>
-      ${this.renderIcon()}
+      >
+        ${this.schema.description?.suffix
+          ? html`<span slot="end">${this.schema.description.suffix}</span>`
+          : nothing}
+      </ha-input>
     `;
   }
 
-  protected renderIcon() {
-    if (!this.isPassword) return nothing;
-    return html`
-      <ha-icon-button
-        .label=${this.localize?.(
-          `${this.localizeBaseKey}.${
-            this.unmaskedPassword ? "hide_password" : "show_password"
-          }` as LocalizeKeys
-        )}
-        @click=${this.toggleUnmaskedPassword}
-        .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}
-      ></ha-icon-button>
-    `;
-  }
-
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("schema")) {
       this.toggleAttribute("own-margin", !!this.schema.required);
     }
   }
 
-  protected toggleUnmaskedPassword(): void {
-    this.unmaskedPassword = !this.unmaskedPassword;
-  }
-
   protected _valueChanged(ev: Event): void {
-    let value: string | undefined = (ev.target as HaTextField).value;
+    let value: string | undefined = (ev.target as HaInput).value;
     if (this.data === value) {
       return;
     }
@@ -115,10 +88,10 @@ export class HaFormString extends LitElement implements HaFormElement {
     });
   }
 
-  protected get stringType(): string {
+  protected get stringType(): "email" | "url" | "text" {
     if (this.schema.format) {
       if (["email", "url"].includes(this.schema.format)) {
-        return this.schema.format;
+        return this.schema.format as "email" | "url";
       }
       if (this.schema.format === "fqdnurl") {
         return "url";
@@ -138,20 +111,6 @@ export class HaFormString extends LitElement implements HaFormElement {
     }
     :host([own-margin]) {
       margin-bottom: 5px;
-    }
-    ha-textfield {
-      display: block;
-    }
-    ha-icon-button {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      inset-inline-start: initial;
-      inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      direction: var(--direction);
     }
   `;
 }

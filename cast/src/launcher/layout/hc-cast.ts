@@ -1,7 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { CastManager } from "../../../../src/cast/cast_manager";
@@ -150,7 +150,7 @@ class HcCast extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     const llColl = atLeastVersion(this.connection.haVersion, 0, 107)
@@ -183,7 +183,7 @@ class HcCast extends LitElement {
     });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     toggleAttribute(
       this,
@@ -206,7 +206,7 @@ class HcCast extends LitElement {
   }
 
   private async _handlePickView(ev: CustomEvent<ActionDetail>) {
-    const path = this.lovelaceViews![ev.detail.index].path ?? ev.detail.index;
+    const path = this.lovelaceViews?.[ev.detail.index]?.path ?? ev.detail.index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }

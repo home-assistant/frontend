@@ -37,7 +37,7 @@ export class HaAnsiToHtml extends LitElement {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
 
     // handle initial content
@@ -48,7 +48,6 @@ export class HaAnsiToHtml extends LitElement {
 
   static styles = css`
     pre {
-      overflow-x: auto;
       margin: 0;
     }
     pre.wrap {
@@ -178,7 +177,6 @@ export class HaAnsiToHtml extends LitElement {
       lineDiv.appendChild(span);
     };
 
-    /* eslint-disable no-cond-assign */
     let match;
 
     while ((match = re.exec(line)) !== null) {

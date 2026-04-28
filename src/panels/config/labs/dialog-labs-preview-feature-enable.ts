@@ -5,7 +5,7 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -39,7 +39,7 @@ export class DialogLabsPreviewFeatureEnable
     this._createBackup = false;
     this._open = true;
     this._fetchBackupConfig();
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchUpdateBackupConfig();
     }
   }
@@ -144,7 +144,7 @@ export class DialogLabsPreviewFeatureEnable
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.labs.enable_title")}
@@ -193,13 +193,13 @@ export class DialogLabsPreviewFeatureEnable
             ${this.hass.localize("ui.panel.config.labs.enable")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
   static readonly styles = css`
-    ha-wa-dialog {
-      --dialog-content-padding: var(--ha-space-0);
+    ha-dialog {
+      --dialog-content-padding: 0;
     }
 
     p {

@@ -8,6 +8,7 @@ import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
+import "./ha-device-info-matter-lock";
 
 @customElement("ha-device-info-matter")
 export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
@@ -17,7 +18,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
 
   @state() private _nodeDiagnostics?: MatterNodeDiagnostics;
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();
@@ -51,7 +52,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
     return html`
       <ha-expansion-panel
         .header=${this.hass.localize(
-          "ui.panel.config.matter.device_info.device_info"
+          "ui.panel.config.matter.device_info.matter_info"
         )}
       >
         <div class="row">
@@ -124,6 +125,10 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           >
         </div>
       </ha-expansion-panel>
+      <ha-device-info-matter-lock
+        .hass=${this.hass}
+        .device=${this.device}
+      ></ha-device-info-matter-lock>
     `;
   }
 

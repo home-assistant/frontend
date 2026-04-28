@@ -24,6 +24,7 @@ import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
+import { filterXSS } from "../../common/util/xss";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -53,10 +54,19 @@ export interface HaMapPaths {
   fullDatetime?: boolean;
 }
 
+export const MAP_CARD_MARKER_LABEL_MODES = [
+  "name",
+  "state",
+  "attribute",
+  "icon",
+] as const;
+export type MapCardMarkerLabelMode =
+  (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
+
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state" | "attribute" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   name?: string;
@@ -244,7 +254,11 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
-      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
+        latitude: this.hass?.config.latitude ?? 52.3731339,
+        longitude: this.hass?.config.longitude ?? 4.8903147,
+        zoom: this.zoom,
+      });
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
@@ -381,7 +395,7 @@ export class HaMap extends ReactiveElement {
         this.hass.config
       );
     }
-    return `${path.name}<br>${formattedTime}`;
+    return `${filterXSS(path.name ?? "")}<br>${formattedTime}`;
   }
 
   private _drawPaths(): void {
@@ -422,31 +436,77 @@ export class HaMap extends ReactiveElement {
           ? baseOpacity! + pointIndex * opacityStep!
           : undefined;
 
+        const thisPoint = path.points[pointIndex];
+        const nextPoint = path.points[pointIndex + 1];
+
         // DRAW point
         this._mapPaths.push(
-          Leaflet.circleMarker(path.points[pointIndex].point, {
+          Leaflet.circleMarker(thisPoint.point, {
             radius: isTouch ? 8 : 3,
             color: path.color || darkPrimaryColor,
             opacity,
             fillOpacity: opacity,
             interactive: true,
-          }).bindTooltip(
-            this._computePathTooltip(path, path.points[pointIndex]),
-            { direction: "top" }
-          )
+          }).bindTooltip(this._computePathTooltip(path, thisPoint), {
+            direction: "top",
+          })
         );
 
         // DRAW line between this and next point
-        this._mapPaths.push(
-          Leaflet.polyline(
-            [path.points[pointIndex].point, path.points[pointIndex + 1].point],
-            {
+        if (Math.abs(thisPoint.point[1] - nextPoint.point[1]) <= 180) {
+          // if the path does not cross the antimeridian, draw a simple line
+          // between the two points
+          this._mapPaths.push(
+            Leaflet.polyline([thisPoint.point, nextPoint.point], {
               color: path.color || darkPrimaryColor,
               opacity,
               interactive: false,
-            }
-          )
-        );
+            })
+          );
+        } else {
+          // if the path crosses the antimeridian, split the line into two, to
+          // avoid it being drawn across the entire map
+          const longitudeDifference =
+            ((nextPoint.point[1] - thisPoint.point[1] + 540) % 360) - 180;
+          let intersectionLatitude: number;
+          if (longitudeDifference === 0) {
+            // very, very unlikely edge case
+            intersectionLatitude =
+              (thisPoint.point[0] + nextPoint.point[0]) / 2;
+          } else {
+            intersectionLatitude =
+              thisPoint.point[0] +
+              ((nextPoint.point[0] - thisPoint.point[0]) *
+                (thisPoint.point[1] > 0
+                  ? 180 - thisPoint.point[1]
+                  : -180 - thisPoint.point[1])) /
+                longitudeDifference;
+          }
+
+          const intersectionPoint1: LatLngTuple = [
+            intersectionLatitude,
+            thisPoint.point[1] > 0 ? 180 : -180,
+          ];
+          const intersectionPoint2: LatLngTuple = [
+            intersectionLatitude,
+            nextPoint.point[1] > 0 ? 180 : -180,
+          ];
+
+          this._mapPaths.push(
+            Leaflet.polyline([thisPoint.point, intersectionPoint1], {
+              color: path.color || darkPrimaryColor,
+              opacity,
+              interactive: false,
+            })
+          );
+          this._mapPaths.push(
+            Leaflet.polyline([intersectionPoint2, nextPoint.point], {
+              color: path.color || darkPrimaryColor,
+              opacity,
+              interactive: false,
+            })
+          );
+        }
       }
       const pointIndex = path.points.length - 1;
       if (pointIndex >= 0) {
@@ -542,14 +602,14 @@ export class HaMap extends ReactiveElement {
         }
 
         // create icon
-        let iconHTML = "";
+        let iconHTML: string;
         if (icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", icon);
           iconHTML = el.outerHTML;
         } else {
           const el = document.createElement("span");
-          el.innerHTML = title;
+          el.textContent = title;
           iconHTML = el.outerHTML;
         }
 
@@ -560,10 +620,11 @@ export class HaMap extends ReactiveElement {
           radius,
         });
 
+        const markerIconSize = this._getMarkerSize(computedStyles) / 2;
         const marker = new DecoratedMarker([latitude, longitude], circle, {
           icon: Leaflet.divIcon({
             html: iconHTML,
-            iconSize: [24, 24],
+            iconSize: [markerIconSize, markerIconSize],
             className,
           }),
           interactive: this.interactiveZones,
@@ -618,10 +679,11 @@ export class HaMap extends ReactiveElement {
       }
 
       // create marker with the icon
+      const markerSize = this._getMarkerSize(computedStyles);
       const marker = new DecoratedMarker([latitude, longitude], undefined, {
         icon: Leaflet.divIcon({
           html: entityMarker,
-          iconSize: [48, 48],
+          iconSize: [markerSize, markerSize],
           className: "",
         }),
         title: title,
@@ -655,6 +717,13 @@ export class HaMap extends ReactiveElement {
     }
 
     this._mapZones.forEach((marker) => map.addLayer(marker));
+  }
+
+  private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {
+    const markerSizeVarValue =
+      computedStyles.getPropertyValue("--ha-marker-size");
+    const parsed = parseFloat(markerSizeVarValue);
+    return Number.isNaN(parsed) ? 48 : parsed;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -739,14 +808,19 @@ export class HaMap extends ReactiveElement {
       text-align: center;
     }
 
+    ha-icon {
+      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
+    }
+
     .marker-cluster div {
       background-clip: padding-box;
       background-color: var(--primary-color);
       border: 3px solid rgba(var(--rgb-primary-color), 0.2);
-      width: 32px;
-      height: 32px;
-      border-radius: var(--ha-border-radius-2xl);
+      width: calc(var(--ha-marker-size, 48px) * 0.667);
+      height: calc(var(--ha-marker-size, 48px) * 0.667);
+      border-radius: 50%;
       text-align: center;
+      align-content: center;
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-m);
     }

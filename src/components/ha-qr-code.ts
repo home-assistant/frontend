@@ -22,7 +22,7 @@ export class HaQrCode extends LitElement {
   @property({ type: Number })
   public margin = 4;
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public maskPattern?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
   @property({ attribute: "center-image" }) public centerImage?: string;
@@ -31,7 +31,7 @@ export class HaQrCode extends LitElement {
 
   @query("canvas") private _canvas?: HTMLCanvasElement;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (
       (changedProperties.has("data") ||
@@ -46,7 +46,7 @@ export class HaQrCode extends LitElement {
     }
   }
 
-  updated(changedProperties: PropertyValues) {
+  updated(changedProperties: PropertyValues<this>) {
     const canvas = this._canvas;
     if (
       canvas &&

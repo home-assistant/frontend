@@ -1,3 +1,4 @@
+/* eslint-disable import-x/namespace -- echarts/core uses complex re-exports that static analysis can't resolve */
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from "echarts/core";
 
@@ -26,8 +27,9 @@ import { CanvasRenderer } from "echarts/renderers";
 // Import graphic utilities from zrender for use in charts
 // This avoids importing from the full "echarts" package which has a separate registry
 // zrender is a direct dependency of echarts and always available
-// eslint-disable-next-line import/no-extraneous-dependencies
 import LinearGradient from "zrender/lib/graphic/LinearGradient";
+
+import "./axis-proxy-patch";
 
 import type {
   // The series option types are defined with the SeriesOption suffix
@@ -36,6 +38,7 @@ import type {
   CustomSeriesOption,
   SankeySeriesOption,
   GraphSeriesOption,
+  SunburstSeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -61,6 +64,7 @@ export type ECOption = ComposeOption<
   | VisualMapComponentOption
   | SankeySeriesOption
   | GraphSeriesOption
+  | SunburstSeriesOption
 >;
 
 // Register the required components

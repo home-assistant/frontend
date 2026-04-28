@@ -14,11 +14,11 @@ import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button";
 import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
-import type { HaDropdownItem } from "./ha-dropdown-item";
 import "./ha-spinner";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
 prepareZXingModule({
   overrides: {
@@ -64,7 +64,7 @@ class HaQrScanner extends LitElement {
 
   @query("#canvas-container", true) private _canvasContainer?: HTMLDivElement;
 
-  @query("ha-textfield") private _manualInput?: HaTextField;
+  @query("ha-input") private _manualInput?: HaInput;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -135,9 +135,7 @@ class HaQrScanner extends LitElement {
                     (camera) => html`
                       <ha-dropdown-item
                         .value=${camera.id}
-                        class=${this._selectedCamera === camera.id
-                          ? "selected"
-                          : ""}
+                        .selected=${this._selectedCamera === camera.id}
                       >
                         ${camera.label}
                       </ha-dropdown-item>
@@ -155,13 +153,13 @@ class HaQrScanner extends LitElement {
           </ha-alert>
           <p>${this.hass.localize("ui.components.qr-scanner.manual_input")}</p>
           <div class="row">
-            <ha-textfield
+            <ha-input
               .label=${this.hass.localize(
                 "ui.components.qr-scanner.enter_qr_code"
               )}
               @keyup=${this._manualKeyup}
               @paste=${this._manualPaste}
-            ></ha-textfield>
+            ></ha-input>
             <ha-button @click=${this._manualSubmit}>
               ${this.hass.localize("ui.common.submit")}
             </ha-button>
@@ -244,7 +242,7 @@ class HaQrScanner extends LitElement {
 
   private _manualKeyup(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
-      this._qrCodeScanned((ev.target as HaTextField).value);
+      this._qrCodeScanned((ev.target as HaInput).value ?? "");
     }
   }
 
@@ -256,10 +254,10 @@ class HaQrScanner extends LitElement {
   }
 
   private _manualSubmit() {
-    this._qrCodeScanned(this._manualInput!.value);
+    this._qrCodeScanned(this._manualInput!.value ?? "");
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const cameraId = ev.detail?.item?.value;
     if (cameraId) {
       this._selectedCamera = cameraId;
@@ -380,14 +378,11 @@ class HaQrScanner extends LitElement {
       color: white;
       border-radius: var(--ha-border-radius-circle);
     }
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-bold);
-    }
     .row {
       display: flex;
       align-items: center;
     }
-    ha-textfield {
+    ha-input {
       flex: 1;
       margin-right: 8px;
       margin-inline-end: 8px;

@@ -52,6 +52,9 @@ export interface BaseActionConfig {
 
 export interface ConfirmationRestrictionConfig {
   text?: string;
+  title?: string;
+  confirm_text?: string;
+  dismiss_text?: string;
   exemptions?: RestrictionConfig[];
 }
 

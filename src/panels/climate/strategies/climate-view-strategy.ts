@@ -65,6 +65,9 @@ const processAreasForClimate = (
     if (temperatureEntityId && hass.states[temperatureEntityId]) {
       areaCards.push({
         ...computeTileCard(temperatureEntityId),
+        name:
+          hass.localize("component.sensor.entity_component.temperature.name") ||
+          "Temperature",
         features: [{ type: "trend-graph" }],
       });
     }
@@ -73,6 +76,9 @@ const processAreasForClimate = (
     if (humidityEntityId && hass.states[humidityEntityId]) {
       areaCards.push({
         ...computeTileCard(humidityEntityId),
+        name:
+          hass.localize("component.sensor.entity_component.humidity.name") ||
+          "Humidity",
         features: [{ type: "trend-graph" }],
       });
     }
@@ -103,6 +109,12 @@ const processAreasForClimate = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
+        tap_action: hass.panels.home
+          ? {
+              action: "navigate",
+              navigation_path: `/home/areas-${area.area_id}`,
+            }
+          : undefined,
       });
       cards.push(...areaCards);
     }

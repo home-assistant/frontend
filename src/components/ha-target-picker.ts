@@ -1,16 +1,15 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import { consume } from "@lit/context";
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing, unsafeCSS } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
@@ -42,6 +41,7 @@ import {
   deviceMeetsFilter,
   entityRegMeetsFilter,
   getTargetComboBoxItemType,
+  type TargetItem,
   type TargetType,
   type TargetTypeFloorless,
 } from "../data/target";
@@ -53,10 +53,11 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
@@ -65,6 +66,12 @@ import "./target-picker/ha-target-picker-value-chip";
 
 const SEPARATOR = "________";
 const CREATE_ID = "___create-new-entity___";
+const isTargetType = (value: string): value is TargetType =>
+  value === "entity" ||
+  value === "device" ||
+  value === "area" ||
+  value === "label" ||
+  value === "floor";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -76,7 +83,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public compact = false;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ attribute: false }) public createDomains?: string[];
+
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
 
   /**
    * Show only targets with entities from specific domains.
@@ -106,13 +116,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _selectedSection?: TargetTypeFloorless;
 
+  @state() private _replaceTarget?: TargetItem;
+
+  @state() private _replaceTargetAnchor?: HTMLElement;
+
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
-  private _newTarget?: { type: TargetType; id: string };
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  private _newTarget?: TargetItem;
 
   private _getDevicesMemoized = memoizeOne(getDevices);
 
@@ -141,7 +157,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ),
   };
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
@@ -185,7 +201,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <div class="mdc-chip-set items">
+      <div class="items">
         ${floorIds.length
           ? floorIds.map(
               (floor_id) => html`
@@ -286,6 +302,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="entity"
                 .hass=${this.hass}
                 .items=${{ entity: entityIds }}
@@ -293,6 +310,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -301,6 +319,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="device"
                 .hass=${this.hass}
                 .items=${{ device: deviceIds }}
@@ -308,6 +327,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -316,6 +336,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="area"
                 .hass=${this.hass}
                 .items=${{
@@ -326,6 +347,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -334,6 +356,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="label"
                 .hass=${this.hass}
                 .items=${{ label: labelIds }}
@@ -341,6 +364,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -390,9 +414,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           )}
           .sectionTitleFunction=${this._sectionTitleFunction}
           .selectedSection=${this._selectedSection}
+          .popoverAnchor=${this._replaceTargetAnchor}
           .rowRenderer=${this._renderRow}
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
+          @picker-closed=${this._handlePickerClosed}
           .addButtonLabel=${this.hass.localize(
             "ui.components.target-picker.add_target"
           )}
@@ -403,7 +429,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _targetPicked(ev: CustomEvent<{ value: string }>) {
+  private _targetPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
     if (value.startsWith(CREATE_ID)) {
@@ -411,40 +437,94 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const [type, id] = ev.detail.value.split(SEPARATOR);
-    this._addTarget(id, type as TargetType);
+    const [rawType, id] = value.split(SEPARATOR);
+
+    if (!id || !isTargetType(rawType)) {
+      return;
+    }
+
+    if (this._replaceTarget) {
+      this._replaceTargetItem(this._replaceTarget, { type: rawType, id });
+      return;
+    }
+
+    this._addTarget(id, rawType);
+  }
+
+  private _replaceTargetItem(currentTarget: TargetItem, newTarget: TargetItem) {
+    const value = this._replaceTargetInValue(
+      this.value,
+      currentTarget,
+      newTarget
+    );
+
+    if (value === this.value) {
+      return;
+    }
+
+    fireEvent(this, "value-changed", { value });
   }
 
   private _addTarget(id: string, type: TargetType) {
-    const typeId = `${type}_id`;
+    const value = this._addTargetToValue(this.value, { type, id });
 
-    if (typeId === "entity_id" && !isValidEntityId(id)) {
+    if (value === this.value) {
       return;
     }
 
-    if (
-      this.value &&
-      this.value[typeId] &&
-      ensureArray(this.value[typeId]).includes(id)
-    ) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: this.value
-        ? {
-            ...this.value,
-            [typeId]: this.value[typeId]
-              ? [...ensureArray(this.value[typeId]), id]
-              : id,
-          }
-        : { [typeId]: id },
-    });
+    fireEvent(this, "value-changed", { value });
 
     this.shadowRoot
       ?.querySelector(
         `ha-target-picker-item-group[type='${this._newTarget?.type}']`
       )
       ?.removeAttribute("collapsed");
+  }
+
+  private _replaceTargetInValue(
+    value: this["value"],
+    currentTarget: TargetItem,
+    newTarget: TargetItem
+  ): this["value"] {
+    if (
+      !value ||
+      (currentTarget.type === newTarget.type &&
+        currentTarget.id === newTarget.id)
+    ) {
+      return value;
+    }
+
+    const valueWithoutCurrent = this._removeItem(
+      value,
+      currentTarget.type,
+      currentTarget.id
+    );
+
+    return this._addTargetToValue(valueWithoutCurrent, newTarget);
+  }
+
+  private _addTargetToValue(
+    value: this["value"],
+    target: TargetItem
+  ): this["value"] {
+    const typeId = `${target.type}_id`;
+
+    if (typeId === "entity_id" && !isValidEntityId(target.id)) {
+      return value;
+    }
+
+    if (value?.[typeId] && ensureArray(value[typeId]).includes(target.id)) {
+      return value;
+    }
+
+    return value
+      ? {
+          ...value,
+          [typeId]: value[typeId]
+            ? [...ensureArray(value[typeId]), target.id]
+            : target.id,
+        }
+      : { [typeId]: target.id };
   }
 
   private _createNewDomainElement = (domain: string) => {
@@ -461,14 +541,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _handleRemove(ev) {
+  private _handleRemove(ev: HASSDomEvent<HASSDomEvents["remove-target-item"]>) {
     const { type, id } = ev.detail;
     fireEvent(this, "value-changed", {
       value: this._removeItem(this.value, type, id),
     });
   }
 
-  private _handleExpand(ev) {
+  private _handleExpand(ev: HASSDomEvent<HASSDomEvents["expand-target-item"]>) {
     const type = ev.detail.type;
     const itemId = ev.detail.id;
     const newAreas: string[] = [];
@@ -614,6 +694,45 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     fireEvent(this, "value-changed", { value });
   }
 
+  private _handleReplace(
+    ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
+  ) {
+    ev.stopPropagation();
+    this._replaceTargetAnchor = ev
+      .composedPath()
+      .find(
+        (node): node is HTMLElement =>
+          node instanceof HTMLElement &&
+          node.tagName === "HA-TARGET-PICKER-ITEM-ROW"
+      );
+
+    const type = ev.detail.type;
+    if (type === "floor") {
+      this._selectedSection = "area";
+    } else if (
+      type === "entity" ||
+      type === "device" ||
+      type === "area" ||
+      type === "label"
+    ) {
+      this._selectedSection = type;
+    } else {
+      return;
+    }
+    this._replaceTarget = { type, id: ev.detail.id };
+    this._picker?.open(undefined, {
+      selectedValue: `${type}${SEPARATOR}${ev.detail.id}`,
+    });
+  }
+
+  private _handlePickerClosed() {
+    if (this._replaceTarget) {
+      this._selectedSection = undefined;
+    }
+    this._replaceTarget = undefined;
+    this._replaceTargetAnchor = undefined;
+  }
+
   private _addItems(
     value: this["value"],
     type: string,
@@ -704,6 +823,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this.includeDomains,
       this.includeDeviceClasses,
       this.value,
+      this._replaceTarget,
       searchString,
       this._configEntryLookup,
       this._selectedSection
@@ -718,10 +838,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       targetValue: this["value"],
+      replaceTarget: TargetItem | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       filterType?: TargetTypeFloorless
     ) => {
+      const replacingEntityId =
+        replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
+      const replacingDeviceId =
+        replaceTarget?.type === "device" ? replaceTarget.id : undefined;
+      const replacingAreaId =
+        replaceTarget?.type === "area" ? replaceTarget.id : undefined;
+      const replacingFloorId =
+        replaceTarget?.type === "floor" ? replaceTarget.id : undefined;
+      const replacingLabelId =
+        replaceTarget?.type === "label" ? replaceTarget.id : undefined;
+
       const items: (
         | string
         | FloorComboBoxItem
@@ -739,9 +871,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           undefined,
           undefined,
           targetValue?.entity_id
-            ? ensureArray(targetValue.entity_id)
+            ? replacingEntityId
+              ? ensureArray(targetValue.entity_id).filter(
+                  (entityId) => entityId !== replacingEntityId
+                )
+              : ensureArray(targetValue.entity_id)
             : undefined,
-          undefined,
+          replacingEntityId
+            ? `entity${SEPARATOR}${replacingEntityId}`
+            : undefined,
           `entity${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 
@@ -772,9 +910,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           deviceFilter,
           entityFilter,
           targetValue?.device_id
-            ? ensureArray(targetValue.device_id)
+            ? replacingDeviceId
+              ? ensureArray(targetValue.device_id).filter(
+                  (deviceId) => deviceId !== replacingDeviceId
+                )
+              : ensureArray(targetValue.device_id)
             : undefined,
-          undefined,
+          replacingDeviceId,
           `device${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 
@@ -810,8 +952,20 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.area_id ? ensureArray(targetValue.area_id) : undefined,
-          targetValue?.floor_id ? ensureArray(targetValue.floor_id) : undefined
+          targetValue?.area_id
+            ? replacingAreaId
+              ? ensureArray(targetValue.area_id).filter(
+                  (areaId) => areaId !== replacingAreaId
+                )
+              : ensureArray(targetValue.area_id)
+            : undefined,
+          targetValue?.floor_id
+            ? replacingFloorId
+              ? ensureArray(targetValue.floor_id).filter(
+                  (floorId) => floorId !== replacingFloorId
+                )
+              : ensureArray(targetValue.floor_id)
+            : undefined
         );
 
         if (searchTerm) {
@@ -860,7 +1014,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.label_id ? ensureArray(targetValue.label_id) : undefined,
+          targetValue?.label_id
+            ? replacingLabelId
+              ? ensureArray(targetValue.label_id).filter(
+                  (labelId) => labelId !== replacingLabelId
+                )
+              : ensureArray(targetValue.label_id)
+            : undefined,
           `label${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 
@@ -988,7 +1148,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 style=${styleMap({
                   width: "var(--ha-space-12)",
                   position: "absolute",
-                  top: "var(--ha-space-0)",
+                  top: "0",
                   left: rtl ? undefined : "var(--ha-space-1)",
                   right: rtl ? "var(--ha-space-1)" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
@@ -1022,11 +1182,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                       alt=""
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
-                      src=${brandsUrl({
-                        domain: (item as DevicePickerItem).domain!,
-                        type: "icon",
-                        darkOptimized: this.hass.themes.darkMode,
-                      })}
+                      src=${brandsUrl(
+                        {
+                          domain: (item as DevicePickerItem).domain!,
+                          type: "icon",
+                          darkOptimized: this.hass.themes.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
                     />
                   `
                 : type === "floor"
@@ -1075,34 +1238,30 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this.hass?.locale.language ?? navigator.language
     );
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .add-target-wrapper {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: var(--ha-space-3);
-      }
+  static styles = css`
+    .add-target-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: var(--ha-space-3);
+    }
 
-      ha-generic-picker {
-        width: 100%;
-      }
+    ha-generic-picker {
+      width: 100%;
+    }
 
-      ${unsafeCSS(chipStyles)}
-      .items {
-        z-index: 2;
-      }
-      .mdc-chip-set {
-        padding: var(--ha-space-1) var(--ha-space-0);
-        gap: var(--ha-space-2);
-      }
-
-      .item-groups {
-        overflow: hidden;
-        border: 2px solid var(--divider-color);
-        border-radius: var(--ha-border-radius-lg);
-      }
-    `;
-  }
+    .items {
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      padding: var(--ha-space-2) 0;
+      gap: var(--ha-space-2);
+    }
+    .item-groups {
+      overflow: hidden;
+      border: 2px solid var(--divider-color);
+      border-radius: var(--ha-border-radius-lg);
+    }
+  `;
 }
 
 declare global {
@@ -1111,14 +1270,9 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "remove-target-item": {
-      type: string;
-      id: string;
-    };
-    "expand-target-item": {
-      type: string;
-      id: string;
-    };
+    "remove-target-item": TargetItem;
+    "expand-target-item": TargetItem;
+    "replace-target-item": TargetItem;
     "remove-target-group": string;
   }
 }

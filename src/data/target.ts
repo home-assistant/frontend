@@ -1,10 +1,11 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { AreaRegistryEntry } from "./area/area_registry";
 import type { FloorComboBoxItem } from "./area_floor_picker";
-import type { AreaRegistryEntry } from "./area_registry";
 import type { DevicePickerItem } from "./device/device_picker";
 import type { DeviceRegistryEntry } from "./device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
@@ -15,6 +16,11 @@ export const TARGET_SEPARATOR = "________";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
+
+export interface TargetItem {
+  type: TargetType;
+  id: string;
+}
 
 export interface SingleHassServiceTarget {
   entity_id?: string;
@@ -42,12 +48,38 @@ export interface ExtractFromTargetResultReferenced {
 
 export const extractFromTarget = async (
   hass: HomeAssistant,
-  target: HassServiceTarget
+  target: HassServiceTarget,
+  expandGroup = false,
+  primaryEntitiesOnly = true
 ) =>
   hass.callWS<ExtractFromTargetResult>({
     type: "extract_from_target",
     target,
+    expand_group: expandGroup,
+    primary_entities_only: primaryEntitiesOnly,
   });
+
+export const getTargetEntityCount = (target?: HassServiceTarget): number => {
+  const tempTarget = {
+    entity_id: target?.entity_id ? ensureArray(target?.entity_id) : [],
+    device_id: target?.device_id ? ensureArray(target?.device_id) : [],
+    area_id: target?.area_id ? ensureArray(target?.area_id) : [],
+    floor_id: target?.floor_id ? ensureArray(target?.floor_id) : [],
+    label_id: target?.label_id ? ensureArray(target?.label_id) : [],
+  };
+
+  if (
+    tempTarget?.device_id?.length > 0 ||
+    tempTarget?.area_id?.length > 0 ||
+    tempTarget?.floor_id?.length > 0 ||
+    tempTarget?.label_id?.length > 0
+  ) {
+    // if targeting non entities the number of entities is dynamic
+    return Infinity;
+  }
+
+  return tempTarget?.entity_id?.length;
+};
 
 export const getTriggersForTarget = async (
   callWS: HomeAssistant["callWS"],
@@ -90,7 +122,8 @@ export const areaMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const areaDevices = Object.values(devices).filter(
     (device) => device.area_id === area.area_id
@@ -105,7 +138,8 @@ export const areaMeetsFilter = (
         includeDomains,
         includeDeviceClasses,
         states,
-        entityFilter
+        entityFilter,
+        includeSecondary
       )
     )
   ) {
@@ -120,7 +154,7 @@ export const areaMeetsFilter = (
     areaEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
@@ -141,7 +175,8 @@ export const deviceMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
@@ -151,7 +186,7 @@ export const deviceMeetsFilter = (
     !devEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,

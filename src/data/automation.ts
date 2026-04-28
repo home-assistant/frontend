@@ -607,6 +607,8 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   description?: TriggerDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
@@ -623,12 +625,15 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   description?: ConditionDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
   save: (value: Action) => void;
   rename: () => void;
   disable: () => void;
+  continueOnError: () => void;
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
@@ -640,6 +645,8 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   };
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {

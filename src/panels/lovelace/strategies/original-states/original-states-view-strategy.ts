@@ -6,7 +6,9 @@ import type { AreasDisplayValue } from "../../../../components/ha-areas-display-
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { EmptyStateCardConfig } from "../../cards/types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 export interface OriginalStatesViewStrategyConfig {
   type: "original-states";
@@ -35,7 +37,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
 
     const [localize, energyPrefs] = await Promise.all([
       hass.loadBackendTranslation("title"),
-      isComponentLoaded(hass, "energy")
+      isComponentLoaded(hass.config, "energy")
         ? // It raises if not configured, just swallow that.
           getEnergyPreferences(hass).catch(() => undefined)
         : undefined,
@@ -52,8 +54,12 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       config.hide_energy
     );
 
-    // Add map of geo locations to default view if loaded
-    if (hass.config.components.includes("geo_location")) {
+    // Add map of geo locations if any exist
+    if (
+      Object.values(hass.states).some(
+        (state) => computeDomain(state.entity_id) === "geo_location"
+      )
+    ) {
       if (view && view.cards) {
         view.cards.push({
           type: "map",
@@ -64,9 +70,40 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
 
     // User has no entities
     if (view.cards!.length === 0) {
-      view.cards!.push({
-        type: "empty-state",
-      });
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_content"
+            ),
+            ...(hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.original-states.empty_state_action"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/integrations/dashboard",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     return view;

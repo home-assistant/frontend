@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiPlus, mdiRefresh } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,12 +11,17 @@ import type {
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-card";
-import "../../../../components/ha-fab";
+import "../../../../components/ha-button";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
-import type { LovelaceResource } from "../../../../data/lovelace/resource";
+import type {
+  LovelaceInfo,
+  LovelaceResource,
+} from "../../../../data/lovelace/resource";
 import {
   createResource,
   deleteResource,
+  fetchLovelaceInfo,
   fetchResources,
   updateResource,
 } from "../../../../data/lovelace/resource";
@@ -45,6 +50,8 @@ export class HaConfigLovelaceResources extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _resources: LovelaceResource[] = [];
+
+  @state() private _lovelaceInfo?: LovelaceInfo;
 
   @state()
   @storage({
@@ -159,6 +166,8 @@ export class HaConfigLovelaceResources extends LitElement {
       `;
     }
 
+    const isYamlMode = this._lovelaceInfo?.resource_mode === "yaml";
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -181,31 +190,44 @@ export class HaConfigLovelaceResources extends LitElement {
         has-fab
         clickable
       >
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        ${isYamlMode
+          ? html`
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize(
+                  "ui.panel.config.lovelace.resources.reload_resources"
+                )}
+                .path=${mdiRefresh}
+                @click=${this._handleReloadResources}
+              ></ha-icon-button>
+            `
+          : ""}
+        <ha-button slot="fab" size="large" @click=${this._addResource}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.lovelace.resources.picker.add_resource"
           )}
-          extended
-          @click=${this._addResource}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._getResources();
+    this._fetchData();
   }
 
-  private async _getResources() {
-    this._resources = await fetchResources(this.hass.connection);
+  private async _fetchData() {
+    const [resources, lovelaceInfo] = await Promise.all([
+      fetchResources(this.hass.connection),
+      fetchLovelaceInfo(this.hass),
+    ]);
+    this._resources = resources;
+    this._lovelaceInfo = lovelaceInfo;
   }
 
   private _editResource(ev: CustomEvent) {
-    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
       showAlertDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.lovelace.resources.cant_edit_yaml"
@@ -219,7 +241,7 @@ export class HaConfigLovelaceResources extends LitElement {
   }
 
   private _addResource() {
-    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
       showAlertDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.lovelace.resources.cant_edit_yaml"
@@ -251,6 +273,15 @@ export class HaConfigLovelaceResources extends LitElement {
   }
 
   private _removeResource = async (event: any) => {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.cant_edit_yaml"
+        ),
+      });
+      return false;
+    }
+
     const resource = event.currentTarget.resource as LovelaceResource;
 
     if (
@@ -301,6 +332,21 @@ export class HaConfigLovelaceResources extends LitElement {
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
+
+  private _handleReloadResources() {
+    this.hass.callService("lovelace", "reload_resources");
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.resources.reload_refresh_header"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.lovelace.resources.reload_refresh_body"
+      ),
+      confirmText: this.hass.localize("ui.common.refresh"),
+      dismissText: this.hass.localize("ui.common.not_now"),
+      confirm: () => location.reload(),
+    });
   }
 
   static get styles(): CSSResultGroup {

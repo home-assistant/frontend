@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-attributes";
 import "../../../components/ha-button";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
@@ -50,11 +49,6 @@ class MoreInfoPerson extends LitElement {
             </div>
           `
         : ""}
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable,device_trackers"
-      ></ha-attributes>
     `;
   }
 
@@ -72,12 +66,12 @@ class MoreInfoPerson extends LitElement {
       justify-content: space-between;
     }
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       text-align: right;
     }
     ha-map {
-      margin-top: 16px;
-      margin-bottom: 16px;
+      margin-top: var(--ha-space-4);
+      margin-bottom: var(--ha-space-4);
     }
   `;
 }

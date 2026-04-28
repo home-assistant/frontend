@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -8,13 +7,13 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
+import "../../../components/progress/ha-progress-bar";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -150,16 +149,16 @@ class MoreInfoUpdate extends LitElement {
       };
     }
 
-    // Addon backup
+    // App backup
     if (updateType === "addon") {
       const version = this.stateObj.attributes.installed_version;
       return {
         title: this.hass.localize(
-          "ui.dialogs.more_info_control.update.create_backup.addon"
+          "ui.dialogs.more_info_control.update.create_backup.app"
         ),
         description: version
           ? this.hass.localize(
-              "ui.dialogs.more_info_control.update.create_backup.addon_description",
+              "ui.dialogs.more_info_control.update.create_backup.app_description",
               { version: version }
             )
           : undefined,
@@ -191,11 +190,11 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.attributes.in_progress
             ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
               this.stateObj.attributes.update_percentage !== null
-              ? html`<mwc-linear-progress
-                  .progress=${this.stateObj.attributes.update_percentage / 100}
-                  buffer=""
-                ></mwc-linear-progress>`
-              : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              ? html`<ha-progress-bar
+                  loading
+                  .value=${this.stateObj.attributes.update_percentage}
+                ></ha-progress-bar>`
+              : html`<ha-progress-bar indeterminate></ha-progress-bar>`
             : nothing}
           <h3>${this.stateObj.attributes.title}</h3>
           ${this._error
@@ -355,7 +354,7 @@ class MoreInfoUpdate extends LitElement {
       this._fetchEntitySources().then(() => {
         const type = getUpdateType(this.stateObj!, this._entitySources!);
         if (
-          isComponentLoaded(this.hass, "hassio") &&
+          isComponentLoaded(this.hass.config, "hassio") &&
           ["addon", "home_assistant", "home_assistant_os"].includes(type)
         ) {
           this._fetchUpdateBackupConfig(type);
@@ -448,14 +447,14 @@ class MoreInfoUpdate extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
     ha-expansion-panel {
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
 
     .summary {
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     .row {
@@ -473,8 +472,10 @@ class MoreInfoUpdate extends LitElement {
       );
       position: sticky;
       bottom: 0;
-      margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
+      margin: 0 calc(var(--ha-space-6) * -1) 0 calc(var(--ha-space-6) * -1);
+      margin-bottom: calc(
+        -1 * max(var(--safe-area-inset-bottom), var(--ha-space-6))
+      );
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -486,8 +487,8 @@ class MoreInfoUpdate extends LitElement {
     ha-md-list {
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: -16px;
-      margin-top: -4px;
+      margin-bottom: calc(var(--ha-space-4) * -1);
+      margin-top: calc(var(--ha-space-1) * -1);
       --md-sys-color-surface: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
@@ -495,8 +496,8 @@ class MoreInfoUpdate extends LitElement {
     }
 
     ha-md-list-item {
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
+      --md-list-item-leading-space: var(--ha-space-6);
+      --md-list-item-trailing-space: var(--ha-space-6);
     }
 
     .actions {
@@ -506,7 +507,7 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 16px;
+      padding: var(--ha-space-4);
       z-index: 1;
       gap: var(--ha-space-2);
     }
@@ -519,13 +520,9 @@ class MoreInfoUpdate extends LitElement {
       justify-content: center;
       align-items: center;
     }
-    mwc-linear-progress {
-      margin-bottom: -8px;
-      margin-top: 4px;
-    }
     ha-markdown {
       direction: ltr;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
     }
     ha-markdown.hidden {
@@ -534,7 +531,7 @@ class MoreInfoUpdate extends LitElement {
     .loader {
       height: 80px;
       box-sizing: border-box;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
     }
   `;
 }

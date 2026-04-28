@@ -1,19 +1,19 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-slider";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-input-helper-text";
-import "../ha-textfield";
-import type { HaTextField } from "../ha-textfield";
+import "../ha-slider";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 import type {
   HaFormElement,
   HaFormIntegerData,
   HaFormIntegerSchema,
 } from "./types";
-import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
@@ -29,24 +29,39 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-textfield ha-slider") private _input?:
-    | HaTextField
+  @query("ha-input, ha-slider", true) private _input?:
+    | HaInput
     | HTMLInputElement;
 
   private _lastValue?: HaFormIntegerData;
 
-  public focus() {
-    if (this._input) {
-      this._input.focus();
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    const showSlider = this._showSlider();
+    if (showSlider && this.schema.required && isNaN(Number(this.data))) {
+      return false;
     }
+
+    if (!showSlider) {
+      return this._input?.reportValidity() ?? true;
+    }
+    return true;
   }
 
-  protected render(): TemplateResult {
-    if (
+  private _showSlider(): boolean {
+    return (
       this.schema.valueMin !== undefined &&
       this.schema.valueMax !== undefined &&
       this.schema.valueMax - this.schema.valueMin < 256
-    ) {
+    );
+  }
+
+  protected render(): TemplateResult {
+    if (this._showSlider()) {
       return html`
         <div>
           ${this.label}
@@ -74,32 +89,34 @@ export class HaFormInteger extends LitElement implements HaFormElement {
             ? html`<ha-input-helper-text .disabled=${this.disabled}
                 >${this.helper}</ha-input-helper-text
               >`
-            : ""}
+            : nothing}
         </div>
       `;
     }
 
     return html`
-      <ha-textfield
+      <ha-input
         type="number"
         inputMode="numeric"
         .label=${this.label}
-        .helper=${this.helper}
-        helperPersistent
-        .value=${this.data !== undefined ? this.data : ""}
+        .hint=${this.helper}
+        .value=${this.data?.toString() ?? ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required
           ? this.localize?.("ui.common.error_required")
           : undefined}
         @input=${this._valueChanged}
-      ></ha-textfield>
+      >
+        ${this.schema.description?.suffix
+          ? html`<span slot="end">${this.schema.description.suffix}</span>`
+          : nothing}
+      </ha-input>
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("schema")) {
       this.toggleAttribute(
         "own-margin",
@@ -152,8 +169,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     });
   }
 
-  private _valueChanged(ev: Event) {
-    const source = ev.target as HaTextField | HTMLInputElement;
+  private _valueChanged(ev: InputEvent) {
+    const source = ev.target as HaInput | HTMLInputElement;
     const rawValue = source.value;
 
     let value: number | undefined;
@@ -182,12 +199,14 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
     .flex {
       display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
     }
     ha-slider {
       flex: 1;
     }
-    ha-textfield {
-      display: block;
+    ha-input-helper-text {
+      margin-top: var(--ha-space-1);
     }
   `;
 }

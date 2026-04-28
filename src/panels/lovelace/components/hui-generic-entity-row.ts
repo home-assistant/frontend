@@ -8,6 +8,8 @@ import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
+import { getEntityContext } from "../../../common/entity/context/get_entity_context";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -16,7 +18,6 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
@@ -64,11 +65,7 @@ export class HuiGenericEntityRow extends LitElement {
     const pointer = hasAnyAction(this.config);
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this.config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this.config.name);
 
     return html`
       <div
@@ -199,7 +196,9 @@ export class HuiGenericEntityRow extends LitElement {
                                       ? html`${this.hass.formatEntityState(
                                           stateObj
                                         )}`
-                                      : nothing)}
+                                      : this.config.secondary_info === "area"
+                                        ? (this._getArea(stateObj) ?? nothing)
+                                        : nothing)}
                     </div>
                   `
                 : nothing}
@@ -222,7 +221,7 @@ export class HuiGenericEntityRow extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     toggleAttribute(
       this,
@@ -233,6 +232,17 @@ export class HuiGenericEntityRow extends LitElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
+  }
+
+  private _getArea(stateObj) {
+    const context = getEntityContext(
+      stateObj,
+      this.hass!.entities,
+      this.hass!.devices,
+      this.hass!.areas,
+      this.hass!.floors
+    );
+    return context.area ? computeAreaName(context.area) : undefined;
   }
 
   static styles = css`

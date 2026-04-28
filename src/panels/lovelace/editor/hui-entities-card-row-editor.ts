@@ -80,7 +80,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                     `
                   : html`
                       <ha-entity-picker
-                        allow-custom-entity
                         hide-clear-icon
                         .hass=${this.hass}
                         .value=${(entityConf as EntityConfig).entity}
@@ -182,10 +181,14 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   static styles = css`
     ha-entity-picker {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
+    }
+    ha-sortable ha-entity-picker {
+      margin-top: 0;
     }
     .add-entity {
       display: block;
+      margin-bottom: var(--ha-space-1);
       margin-left: 31px;
       margin-right: 71px;
       margin-inline-start: 31px;
@@ -195,6 +198,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     .entity {
       display: flex;
       align-items: center;
+      margin-top: var(--ha-space-2);
     }
 
     .entity .handle {
@@ -230,7 +234,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 

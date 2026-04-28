@@ -1,4 +1,5 @@
 import {
+  mdiChevronRight,
   mdiFan,
   mdiHomeImportOutline,
   mdiMapMarker,
@@ -7,215 +8,49 @@ import {
   mdiPlayPause,
   mdiStop,
   mdiTargetVariant,
+  mdiTextureBox,
 } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-attributes";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-select-menu";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-select";
+import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity/entity_registry";
+import { forwardHaptic } from "../../../data/haptics";
 import type { VacuumEntity } from "../../../data/vacuum";
-import { VacuumEntityFeature } from "../../../data/vacuum";
+import {
+  VacuumEntityFeature,
+  canReturnHome,
+  canStart,
+  canStop,
+  isCleaning,
+} from "../../../data/vacuum";
+import "../../../state-control/vacuum/ha-state-control-vacuum-status";
 import type { HomeAssistant } from "../../../types";
-
-interface VacuumCommand {
-  translationKey: string;
-  icon: string;
-  serviceName: string;
-  isVisible: (stateObj: VacuumEntity) => boolean;
-}
-
-const VACUUM_COMMANDS: VacuumCommand[] = [
-  {
-    translationKey: "start",
-    icon: mdiPlay,
-    serviceName: "start",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, VacuumEntityFeature.START),
-  },
-  {
-    translationKey: "pause",
-    icon: mdiPause,
-    serviceName: "pause",
-    isVisible: (stateObj) =>
-      // We need also to check if Start is supported because if not we show start-pause
-      // Start-pause service is only available for old vacuum entities, new entities have the `STATE` feature
-      supportsFeature(stateObj, VacuumEntityFeature.PAUSE) &&
-      (supportsFeature(stateObj, VacuumEntityFeature.STATE) ||
-        supportsFeature(stateObj, VacuumEntityFeature.START)),
-  },
-  {
-    translationKey: "start_pause",
-    icon: mdiPlayPause,
-    serviceName: "start_pause",
-    isVisible: (stateObj) =>
-      // If start is supported, we don't show this button
-      // This service is only available for old vacuum entities, new entities have the `STATE` feature
-      !supportsFeature(stateObj, VacuumEntityFeature.STATE) &&
-      !supportsFeature(stateObj, VacuumEntityFeature.START) &&
-      supportsFeature(stateObj, VacuumEntityFeature.PAUSE),
-  },
-  {
-    translationKey: "stop",
-    icon: mdiStop,
-    serviceName: "stop",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, VacuumEntityFeature.STOP),
-  },
-  {
-    translationKey: "clean_spot",
-    icon: mdiTargetVariant,
-    serviceName: "clean_spot",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, VacuumEntityFeature.CLEAN_SPOT),
-  },
-  {
-    translationKey: "locate",
-    icon: mdiMapMarker,
-    serviceName: "locate",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, VacuumEntityFeature.LOCATE),
-  },
-  {
-    translationKey: "return_home",
-    icon: mdiHomeImportOutline,
-    serviceName: "return_to_base",
-    isVisible: (stateObj) =>
-      supportsFeature(stateObj, VacuumEntityFeature.RETURN_HOME),
-  },
-];
+import "../components/ha-more-info-control-select-container";
+import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
+import { showVacuumCleanAreasView } from "../components/vacuum/show-view-vacuum-clean-areas";
 
 @customElement("more-info-vacuum")
 class MoreInfoVacuum extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: VacuumEntity;
-
-  protected render() {
-    if (!this.hass || !this.stateObj) {
-      return nothing;
-    }
-
-    const stateObj = this.stateObj;
-
-    const filterExtraAttributes =
-      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
-
-    return html`
-      ${stateObj.state !== UNAVAILABLE
-        ? html` <div class="flex-horizontal">
-            <div>
-              <span class="status-subtitle"
-                >${this.hass!.localize(
-                  "ui.dialogs.more_info_control.vacuum.status"
-                )}:
-              </span>
-              <span>
-                <strong>
-                  ${supportsFeature(stateObj, VacuumEntityFeature.STATUS) &&
-                  stateObj.attributes.status
-                    ? this.hass.formatEntityAttributeValue(stateObj, "status")
-                    : this.hass.formatEntityState(stateObj)}
-                </strong>
-              </span>
-            </div>
-            ${this._renderBattery()}
-          </div>`
-        : ""}
-      ${VACUUM_COMMANDS.some((item) => item.isVisible(stateObj))
-        ? html`
-            <div>
-              <p></p>
-              <div class="status-subtitle">
-                ${this.hass!.localize(
-                  "ui.dialogs.more_info_control.vacuum.commands"
-                )}
-              </div>
-              <div class="flex-horizontal space-around">
-                ${VACUUM_COMMANDS.filter((item) =>
-                  item.isVisible(stateObj)
-                ).map(
-                  (item) => html`
-                    <div>
-                      <ha-icon-button
-                        .path=${item.icon}
-                        .entry=${item}
-                        @click=${this._callService}
-                        .label=${this.hass!.localize(
-                          `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
-                        )}
-                        .disabled=${stateObj.state === UNAVAILABLE}
-                      ></ha-icon-button>
-                    </div>
-                  `
-                )}
-              </div>
-            </div>
-          `
-        : ""}
-      ${supportsFeature(stateObj, VacuumEntityFeature.FAN_SPEED)
-        ? html`
-            <div>
-              <div class="flex-horizontal">
-                <ha-select
-                  .label=${this.hass!.localize(
-                    "ui.dialogs.more_info_control.vacuum.fan_speed"
-                  )}
-                  .disabled=${stateObj.state === UNAVAILABLE}
-                  .value=${stateObj.attributes.fan_speed}
-                  @selected=${this._handleFanSpeedChanged}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.fan_speed_list!.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode}>
-                        ${this.hass.formatEntityAttributeValue(
-                          stateObj,
-                          "fan_speed",
-                          mode
-                        )}
-                      </ha-list-item>
-                    `
-                  )}
-                </ha-select>
-                <div
-                  style="justify-content: center; align-self: center; padding-top: 1.3em"
-                >
-                  <span>
-                    <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
-                    ${this.hass.formatEntityAttributeValue(
-                      stateObj,
-                      "fan_speed"
-                    )}
-                  </span>
-                </div>
-              </div>
-              <p></p>
-            </div>
-          `
-        : ""}
-
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
-      ></ha-attributes>
-    `;
-  }
 
   private _deviceEntities = memoizeOne(
     (
@@ -227,11 +62,27 @@ class MoreInfoVacuum extends LitElement {
     }
   );
 
+  private get _stateOverride(): string | undefined {
+    if (!this.stateObj || !this.hass) {
+      return undefined;
+    }
+
+    if (
+      supportsFeature(this.stateObj, VacuumEntityFeature.STATUS) &&
+      this.stateObj.attributes.status
+    ) {
+      return this.hass.formatEntityAttributeValue(this.stateObj, "status");
+    }
+
+    return undefined;
+  }
+
   private _renderBattery() {
-    const stateObj = this.stateObj!;
+    if (!this.stateObj || !this.hass) {
+      return nothing;
+    }
 
-    const deviceId = this.hass.entities[stateObj.entity_id]?.device_id;
-
+    const deviceId = this.hass.entities[this.stateObj.entity_id]?.device_id;
     const entities = deviceId
       ? this._deviceEntities(deviceId, this.hass.entities)
       : [];
@@ -256,58 +107,99 @@ class MoreInfoVacuum extends LitElement {
         : undefined;
 
       return html`
-        <div>
-          <span>
-            ${batteryDomain === "sensor"
-              ? this.hass.formatEntityState(battery)
-              : nothing}
-            <ha-battery-icon
-              .hass=${this.hass}
-              .batteryStateObj=${battery}
-              .batteryChargingStateObj=${batteryCharging}
-            ></ha-battery-icon>
-          </span>
-        </div>
+        <span class="battery" slot="after-time">
+          ${batteryDomain === "binary_sensor"
+            ? nothing
+            : html`<span
+                >${Number(battery.state).toFixed()}${blankBeforePercent(
+                  this.hass.locale
+                )}%</span
+              >`}
+          <ha-battery-icon
+            .hass=${this.hass}
+            .batteryStateObj=${battery}
+            .batteryChargingStateObj=${batteryCharging}
+          ></ha-battery-icon>
+        </span>
       `;
     }
 
-    // Use battery_level and battery_icon deprecated attributes
+    // Use deprecated battery_level and battery_icon attributes
     if (
-      supportsFeature(stateObj, VacuumEntityFeature.BATTERY) &&
-      stateObj.attributes.battery_level
+      supportsFeature(this.stateObj, VacuumEntityFeature.BATTERY) &&
+      this.stateObj.attributes.battery_level
     ) {
       return html`
-        <div>
-          <span>
-            ${this.hass.formatEntityAttributeValue(
-              stateObj,
-              "battery_level",
-              Math.round(stateObj.attributes.battery_level)
-            )}
-
-            <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
-          </span>
-        </div>
+        <span class="battery" slot="after-time">
+          <span
+            >${Math.round(
+              this.stateObj.attributes.battery_level
+            )}${blankBeforePercent(this.hass.locale)}%</span
+          >
+          <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
+        </span>
       `;
     }
 
     return nothing;
   }
 
-  private _callService(ev: CustomEvent) {
-    const entry = (ev.target! as any).entry as VacuumCommand;
-    this.hass.callService("vacuum", entry.serviceName, {
+  private _callVacuumService(service: string) {
+    forwardHaptic(this, "light");
+    this.hass.callService("vacuum", service, {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
-  private _handleFanSpeedChanged(ev) {
-    const oldVal = this.stateObj!.attributes.fan_speed;
-    const newVal = ev.target.value;
+  private _handleStartPause() {
+    const stateObj = this.stateObj!;
 
-    if (!newVal || oldVal === newVal) {
+    // Legacy start_pause for old vacuum entities without STATE feature
+    if (
+      !supportsFeature(stateObj, VacuumEntityFeature.STATE) &&
+      !supportsFeature(stateObj, VacuumEntityFeature.START) &&
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE)
+    ) {
+      this._callVacuumService("start_pause");
       return;
     }
+
+    if (isCleaning(stateObj)) {
+      this._callVacuumService("pause");
+    } else {
+      this._callVacuumService("start");
+    }
+  }
+
+  private _handleStop() {
+    this._callVacuumService("stop");
+  }
+
+  private _handleReturnHome() {
+    this._callVacuumService("return_to_base");
+  }
+
+  private _handleLocate() {
+    this._callVacuumService("locate");
+  }
+
+  private _handleCleanSpot() {
+    this._callVacuumService("clean_spot");
+  }
+
+  private _handleCleanAreas() {
+    showVacuumCleanAreasView(
+      this,
+      this.hass.localize,
+      this.stateObj!.entity_id
+    );
+  }
+
+  private _handleFanSpeedChanged(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value;
+    const oldVal = this.stateObj!.attributes.fan_speed;
+
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("vacuum", "set_fan_speed", {
       entity_id: this.stateObj!.entity_id,
@@ -315,22 +207,374 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static styles = css`
-    :host {
-      line-height: var(--ha-line-height-normal);
+  private get _supportsStartPause(): boolean {
+    if (!this.stateObj) return false;
+    return (
+      supportsFeature(this.stateObj, VacuumEntityFeature.START) ||
+      supportsFeature(this.stateObj, VacuumEntityFeature.PAUSE)
+    );
+  }
+
+  private get _startPauseIcon(): string {
+    if (!this.stateObj) return mdiPlay;
+
+    // Legacy mode
+    if (
+      !supportsFeature(this.stateObj, VacuumEntityFeature.STATE) &&
+      !supportsFeature(this.stateObj, VacuumEntityFeature.START)
+    ) {
+      return mdiPlayPause;
     }
-    .status-subtitle {
-      color: var(--secondary-text-color);
+
+    return isCleaning(this.stateObj) &&
+      supportsFeature(this.stateObj, VacuumEntityFeature.PAUSE)
+      ? mdiPause
+      : mdiPlay;
+  }
+
+  private get _startPauseLabel(): string {
+    if (!this.stateObj || !this.hass) return "";
+
+    // Legacy mode
+    if (
+      !supportsFeature(this.stateObj, VacuumEntityFeature.STATE) &&
+      !supportsFeature(this.stateObj, VacuumEntityFeature.START)
+    ) {
+      return this.hass.localize(
+        "ui.dialogs.more_info_control.vacuum.start_pause"
+      );
     }
-    .flex-horizontal {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+
+    return isCleaning(this.stateObj) &&
+      supportsFeature(this.stateObj, VacuumEntityFeature.PAUSE)
+      ? this.hass.localize("ui.dialogs.more_info_control.vacuum.pause")
+      : this.hass.localize("ui.dialogs.more_info_control.vacuum.start");
+  }
+
+  private get _startPauseDisabled(): boolean {
+    if (!this.stateObj) return true;
+    if (this.stateObj.state === UNAVAILABLE) return true;
+
+    // Legacy mode - never disabled
+    if (
+      !supportsFeature(this.stateObj, VacuumEntityFeature.STATE) &&
+      !supportsFeature(this.stateObj, VacuumEntityFeature.START)
+    ) {
+      return false;
     }
-    .space-around {
-      justify-content: space-around;
+
+    // If cleaning, pause is always available
+    if (isCleaning(this.stateObj)) return false;
+
+    return !canStart(this.stateObj);
+  }
+
+  protected render() {
+    if (!this.stateObj) {
+      return nothing;
     }
-  `;
+
+    const stateObj = this.stateObj;
+    const isUnavailable = stateObj.state === UNAVAILABLE;
+
+    const supportsStop = supportsFeature(stateObj, VacuumEntityFeature.STOP);
+    const supportsReturnHome = supportsFeature(
+      stateObj,
+      VacuumEntityFeature.RETURN_HOME
+    );
+    const supportsLocate = supportsFeature(
+      stateObj,
+      VacuumEntityFeature.LOCATE
+    );
+    const supportsCleanSpot = supportsFeature(
+      stateObj,
+      VacuumEntityFeature.CLEAN_SPOT
+    );
+    const supportsCleanArea = supportsFeature(
+      stateObj,
+      VacuumEntityFeature.CLEAN_AREA
+    );
+    const supportsFanSpeed = supportsFeature(
+      stateObj,
+      VacuumEntityFeature.FAN_SPEED
+    );
+
+    const hasAnyCommand =
+      this._supportsStartPause ||
+      supportsStop ||
+      supportsReturnHome ||
+      supportsLocate ||
+      supportsCleanSpot ||
+      supportsCleanArea;
+
+    return html`
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .stateOverride=${this._stateOverride}
+      >
+        ${this._renderBattery()}
+      </ha-more-info-state-header>
+
+      <div class="controls">
+        <ha-state-control-vacuum-status
+          .stateObj=${this.stateObj}
+          .hass=${this.hass}
+        ></ha-state-control-vacuum-status>
+
+        ${hasAnyCommand
+          ? html`
+              <div class="buttons">
+                <ha-control-button-group>
+                  ${this._supportsStartPause
+                    ? html`
+                        <ha-control-button
+                          .label=${this._startPauseLabel}
+                          @click=${this._handleStartPause}
+                          .disabled=${this._startPauseDisabled}
+                        >
+                          <ha-svg-icon
+                            .path=${this._startPauseIcon}
+                          ></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsStop
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.stop"
+                          )}
+                          @click=${this._handleStop}
+                          .disabled=${isUnavailable || !canStop(stateObj)}
+                        >
+                          <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsReturnHome
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.return_home"
+                          )}
+                          @click=${this._handleReturnHome}
+                          .disabled=${isUnavailable || !canReturnHome(stateObj)}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiHomeImportOutline}
+                          ></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsLocate
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.locate"
+                          )}
+                          @click=${this._handleLocate}
+                          .disabled=${isUnavailable}
+                        >
+                          <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                  ${supportsCleanSpot
+                    ? html`
+                        <ha-control-button
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.clean_spot"
+                          )}
+                          @click=${this._handleCleanSpot}
+                          .disabled=${isUnavailable}
+                        >
+                          <ha-svg-icon .path=${mdiTargetVariant}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : nothing}
+                </ha-control-button-group>
+              </div>
+            `
+          : nothing}
+      </div>
+
+      ${(supportsFanSpeed && stateObj.attributes.fan_speed_list) ||
+      supportsCleanArea
+        ? html`
+            <ha-more-info-control-select-container>
+              ${supportsFanSpeed && stateObj.attributes.fan_speed_list
+                ? html`
+                    <ha-control-select-menu
+                      .hass=${this.hass}
+                      .label=${this.hass.formatEntityAttributeName(
+                        stateObj,
+                        "fan_speed"
+                      )}
+                      .value=${stateObj.attributes.fan_speed}
+                      .disabled=${isUnavailable}
+                      @wa-select=${this._handleFanSpeedChanged}
+                      .options=${stateObj.attributes.fan_speed_list.map(
+                        (mode) => ({
+                          value: mode,
+                          label: this.hass.formatEntityAttributeValue(
+                            stateObj,
+                            "fan_speed",
+                            mode
+                          ),
+                        })
+                      )}
+                    >
+                      <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                    </ha-control-select-menu>
+                  `
+                : nothing}
+              ${supportsCleanArea
+                ? html`
+                    <button
+                      class="clean-areas-button"
+                      ?disabled=${isUnavailable}
+                      @click=${this._handleCleanAreas}
+                    >
+                      <div class="icon">
+                        <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
+                      </div>
+                      <div class="content">
+                        <p class="label">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.cleaning"
+                          )}
+                        </p>
+                        <p class="value">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.vacuum.by_area"
+                          )}
+                        </p>
+                      </div>
+                      <div class="icon">
+                        <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+                      </div>
+                    </button>
+                  `
+                : nothing}
+            </ha-more-info-control-select-container>
+          `
+        : nothing}
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      moreInfoControlStyle,
+      css`
+        .battery {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          font-size: var(--ha-font-size-m);
+          color: var(--secondary-text-color);
+          --mdc-icon-size: 18px;
+        }
+
+        .battery span {
+          height: var(--mdc-icon-size);
+          line-height: var(--mdc-icon-size);
+        }
+
+        ha-state-control-vacuum-status {
+          margin-bottom: var(--ha-space-4);
+        }
+
+        ha-control-button-group {
+          --control-button-group-thickness: 48px;
+          justify-content: center;
+        }
+
+        ha-control-button-group ha-control-button {
+          flex: 0 0 auto;
+          width: var(--control-button-group-thickness);
+          --control-button-border-radius: var(--ha-border-radius-lg);
+        }
+
+        .clean-areas-button {
+          --mdc-icon-size: 20px;
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          width: auto;
+          max-width: 100%;
+          height: 48px;
+          padding: 6px 10px;
+          border: none;
+          border-radius: var(--ha-border-radius-lg);
+          background: none;
+          color: var(--primary-text-color);
+          font-family: inherit;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: 1.4;
+          letter-spacing: 0.25px;
+          text-align: left;
+          cursor: pointer;
+          overflow: hidden;
+          box-sizing: border-box;
+          -webkit-tap-highlight-color: transparent;
+          z-index: 0;
+          transition: box-shadow 180ms ease-in-out;
+        }
+        .clean-areas-button::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--disabled-color);
+          opacity: 0.2;
+          transition:
+            background-color 180ms ease-in-out,
+            opacity 180ms ease-in-out;
+        }
+        .clean-areas-button:hover::before {
+          background-color: var(--ha-color-on-neutral-quiet);
+        }
+        .clean-areas-button:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 2px var(--secondary-text-color);
+        }
+        .clean-areas-button[disabled] {
+          cursor: not-allowed;
+          color: var(--disabled-color);
+        }
+        .clean-areas-button .icon {
+          display: flex;
+          --mdc-icon-size: 20px;
+        }
+        .clean-areas-button .content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+        }
+        .clean-areas-button .content p {
+          margin: 0;
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .clean-areas-button .label {
+          font-size: var(--ha-font-size-s);
+          letter-spacing: 0.4px;
+        }
+        .clean-areas-button .value {
+          font-size: var(--ha-font-size-m);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

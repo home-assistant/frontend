@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import "../../../components/ha-switch";
+import "../../../components/ha-control-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
@@ -16,7 +16,7 @@ class HuiEntitiesToggle extends LitElement {
 
   @state() private _toggleEntities?: string[];
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
@@ -33,7 +33,7 @@ class HuiEntitiesToggle extends LitElement {
     }
 
     return html`
-      <ha-switch
+      <ha-control-switch
         aria-label=${this.hass!.localize(
           "ui.panel.lovelace.card.entities.toggle"
         )}
@@ -42,18 +42,19 @@ class HuiEntitiesToggle extends LitElement {
           return stateObj && stateObj.state === "on";
         })}
         @change=${this._callService}
-      ></ha-switch>
+      ></ha-control-switch>
     `;
   }
 
   static styles = css`
     :host {
       width: 38px;
-      display: block;
+      display: flex;
+      align-items: center;
     }
-    ha-switch {
-      padding: 13px 5px;
-      margin: -4px -8px;
+    ha-control-switch {
+      --control-switch-thickness: 20px;
+      --control-switch-off-color: var(--state-inactive-color);
     }
   `;
 

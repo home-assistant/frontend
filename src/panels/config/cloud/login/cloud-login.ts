@@ -2,26 +2,24 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
-import "../../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../../components/ha-password-field";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import { haStyle } from "../../../../resources/styles";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-card";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { cloudLogin } from "../../../../data/cloud";
+import { loginHaCloud } from "../../../../data/onboarding";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../lovelace/custom-card-helpers";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
-import type { HomeAssistant } from "../../../../types";
-import { loginHaCloud } from "../../../../data/onboarding";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -40,9 +38,9 @@ export class CloudLogin extends LitElement {
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
-  @query("#email", true) public emailField!: HaTextField;
+  @query("#email", true) public emailField!: HaInput;
 
-  @query("#password", true) private _passwordField!: HaPasswordField;
+  @query("#password", true) private _passwordField!: HaInput;
 
   @state() private _error?: string;
 
@@ -71,7 +69,7 @@ export class CloudLogin extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
-        <ha-textfield
+        <ha-input
           .label=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.email`
           )}
@@ -86,9 +84,11 @@ export class CloudLogin extends LitElement {
           .validationMessage=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
           )}
-        ></ha-textfield>
-        <ha-password-field
+        ></ha-input>
+        <ha-input
           id="password"
+          type="password"
+          password-toggle
           name="password"
           .label=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.password`
@@ -101,7 +101,7 @@ export class CloudLogin extends LitElement {
           .validationMessage=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
           )}
-        ></ha-password-field>
+        ></ha-input>
       </div>
       <div class="card-actions">
         <ha-button
@@ -155,7 +155,7 @@ export class CloudLogin extends LitElement {
         ),
       });
       if (totpCode !== null && totpCode !== "") {
-        this._login(email, password, checkConnection, totpCode);
+        this._login(email, password, checkConnection, totpCode.trim());
         return "continue";
       }
     }
@@ -277,21 +277,29 @@ export class CloudLogin extends LitElement {
 
   private async _handleLogin() {
     if (!this._inProgress) {
+      let valid = true;
+
       if (!this.emailField.reportValidity()) {
         this.emailField.focus();
-        return;
+        valid = false;
       }
 
       if (!this._passwordField.reportValidity()) {
-        this._passwordField.focus();
+        if (valid) {
+          this._passwordField.focus();
+        }
+        valid = false;
+      }
+
+      if (!valid) {
         return;
       }
 
       this._inProgress = true;
 
       this._login(
-        this.emailField.value,
-        this._passwordField.value,
+        this.emailField.value as string,
+        this._passwordField.value as string,
         this.checkConnection
       );
     }

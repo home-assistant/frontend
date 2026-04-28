@@ -48,6 +48,24 @@ export const mainStyles = css`
      */
     --safe-width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
     --safe-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+
+    /* dialog backdrop filter */
+    --ha-dialog-scrim-backdrop-filter: brightness(68%);
+
+    /* scrollbar */
+    scrollbar-color: var(--scrollbar-thumb-color) transparent;
+    scrollbar-width: thin;
+  }
+
+  html::-webkit-scrollbar {
+    width: 0.4rem;
+    height: 0.4rem;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    border-radius: var(--ha-border-radius-sm);
+    background: var(--scrollbar-thumb-color);
+    border: 3px solid transparent;
   }
 `;
 

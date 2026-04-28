@@ -7,9 +7,12 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
-import "../ha-list-item";
+import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
+import "../ha-dropdown-item";
 import "../ha-svg-icon";
 import "./ha-form";
+import type { HaForm } from "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -51,7 +54,12 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     this.renderRoot.querySelector("ha-form")?.focus();
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  public reportValidity(): boolean {
+    const form = this.renderRoot.querySelector<HaForm>("ha-form");
+    return form ? form.reportValidity() : true;
+  }
+
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("data")) {
       const displayActions = this._displayActions ?? NO_ACTIONS;
@@ -116,9 +124,8 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
         : nothing}
       ${hiddenActions.length > 0
         ? html`
-            <ha-button-menu
-              @action=${this._handleAddAction}
-              fixed
+            <ha-dropdown
+              @wa-select=${this._handleAddAction}
               @closed=${stopPropagation}
             >
               <ha-button slot="trigger" appearance="filled" size="small">
@@ -129,26 +136,21 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
               ${hiddenActions.map((action) => {
                 const actionSchema = schemaMap.get(action);
                 return html`
-                  <ha-list-item>
+                  <ha-dropdown-item .value=${action}>
                     ${this.computeLabel && actionSchema
                       ? this.computeLabel(actionSchema)
                       : action}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `;
               })}
-            </ha-button-menu>
+            </ha-dropdown>
           `
         : nothing}
     `;
   }
 
-  private _handleAddAction(ev: CustomEvent) {
-    const hiddenActions = this._hiddenActions(
-      this.schema.schema,
-      this._displayActions ?? NO_ACTIONS
-    );
-    const index = ev.detail.index;
-    const action = hiddenActions[index];
+  private _handleAddAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
     this._displayActions = [...(this._displayActions ?? []), action];
   }
 
@@ -160,6 +162,9 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     }
     :host ha-form {
       display: block;
+    }
+    ha-dropdown {
+      display: inline-block;
     }
   `;
 }

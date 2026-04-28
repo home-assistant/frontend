@@ -1,5 +1,5 @@
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -14,7 +14,8 @@ import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
 import "./ha-list";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-domains")
 export class HaFilterDomains extends LitElement {
@@ -39,9 +40,7 @@ export class HaFilterDomains extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize(
-            "ui.panel.config.entities.picker.headers.domain"
-          )}
+          ${this.hass.localize("ui.panel.config.domains.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -51,15 +50,15 @@ export class HaFilterDomains extends LitElement {
             : nothing}
         </div>
         ${this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 class="ha-scrollbar"
-                @click=${this._handleItemClick}
+                @selected=${this._handleItemSelected}
                 multi
               >
                 ${repeat(
@@ -73,7 +72,6 @@ export class HaFilterDomains extends LitElement {
                     >
                       <ha-domain-icon
                         slot="graphic"
-                        .hass=${this.hass}
                         .domain=${domain}
                         brand-fallback
                       ></ha-domain-icon>
@@ -107,12 +105,15 @@ export class HaFilterDomains extends LitElement {
       .map((entry) => entry.domain);
   });
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
+          `${this.clientHeight - 49 - 4 - 32}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 32px - height of the search input
       }, 300);
     }
   }
@@ -125,19 +126,16 @@ export class HaFilterDomains extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
-      return;
+  private _handleItemSelected(
+    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
+  ) {
+    const domains = this._domains(this.hass.states, this._filter);
+    if (ev.detail.diff.added.length) {
+      this.value = [...(this.value || []), domains[ev.detail.diff.added[0]]];
+    } else if (ev.detail.diff.removed.length) {
+      const removedDomain = domains[ev.detail.diff.removed[0]];
+      this.value = this.value?.filter((value) => value !== removedDomain);
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-
-    listItem.selected = this.value.includes(value);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
@@ -154,8 +152,9 @@ export class HaFilterDomains extends LitElement {
     });
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   static get styles(): CSSResultGroup {
@@ -181,6 +180,9 @@ export class HaFilterDomains extends LitElement {
           margin-inline-start: initial;
           margin-inline-end: 8px;
         }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: var(--ha-space-4);
+        }
         .badge {
           display: inline-block;
           margin-left: 8px;
@@ -197,7 +199,7 @@ export class HaFilterDomains extends LitElement {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

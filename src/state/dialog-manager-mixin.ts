@@ -26,13 +26,13 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // deprecated
       this.addEventListener("register-dialog", (e) =>
         this.registerDialog(e.detail)
       );
-      makeDialogManager(this, this.shadowRoot!);
+      makeDialogManager(this);
     }
 
     protected registerDialog({
@@ -44,10 +44,10 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       this.addEventListener(dialogShowEvent, (showEv) => {
         showDialog(
           this,
-          this.shadowRoot!,
           dialogTag,
           (showEv as HASSDomEvent<unknown>).detail,
           dialogImport,
+          undefined,
           addHistory
         );
       });

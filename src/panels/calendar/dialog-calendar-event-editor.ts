@@ -10,6 +10,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  formatDate,
+  formatTime,
+  parseDate,
+} from "../../common/datetime/calc_date";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -19,12 +24,13 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-date-input";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import "../../components/ha-textarea";
-import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "../../components/input/ha-input";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import {
   CalendarEntityFeature,
@@ -39,11 +45,6 @@ import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
-import {
-  formatDate,
-  formatTime,
-  parseDate,
-} from "../../common/datetime/calc_date";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -56,6 +57,8 @@ class DialogCalendarEventEditor extends LitElement {
   @state() private _info?: string;
 
   @state() private _params?: CalendarEventEditDialogParams;
+
+  @state() private _open = false;
 
   @state() private _calendarId?: string;
 
@@ -87,6 +90,7 @@ class DialogCalendarEventEditor extends LitElement {
     this._error = undefined;
     this._info = undefined;
     this._params = params;
+    this._open = true;
     this._calendarId =
       params.calendarId ||
       Object.values(this.hass.states).find(
@@ -129,19 +133,7 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   public closeDialog(): void {
-    if (!this._params) {
-      return;
-    }
-    this._calendarId = undefined;
-    this._params = undefined;
-    this._dtstart = undefined;
-    this._dtend = undefined;
-    this._summary = "";
-    this._description = "";
-    this._location = "";
-    this._hasLocation = false;
-    this._rrule = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._open = false;
   }
 
   protected render() {
@@ -157,16 +149,13 @@ class DialogCalendarEventEditor extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
-          )
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
         )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         <div class="content">
           ${this._error
@@ -181,7 +170,7 @@ class DialogCalendarEventEditor extends LitElement {
               >`
             : ""}
 
-          <ha-textfield
+          <ha-input
             class="summary"
             name="summary"
             .label=${this.hass.localize("ui.components.calendar.event.summary")}
@@ -189,9 +178,9 @@ class DialogCalendarEventEditor extends LitElement {
             required
             @input=${this._handleSummaryChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-            dialogInitialFocus
-          ></ha-textfield>
-          <ha-textfield
+            autofocus
+          ></ha-input>
+          <ha-input
             class="location"
             name="location"
             .label=${this.hass.localize(
@@ -199,7 +188,7 @@ class DialogCalendarEventEditor extends LitElement {
             )}
             .value=${this._location}
             @change=${this._handleLocationChanged}
-          ></ha-textfield>
+          ></ha-input>
           <ha-textarea
             class="description"
             name="description"
@@ -208,7 +197,7 @@ class DialogCalendarEventEditor extends LitElement {
             )}
             .value=${this._description}
             @change=${this._handleDescriptionChanged}
-            autogrow
+            resize="auto"
           ></ha-textarea>
           <ha-entity-picker
             name="calendar"
@@ -283,42 +272,61 @@ class DialogCalendarEventEditor extends LitElement {
           >
           </ha-recurrence-rule-editor>
         </div>
-        ${isCreate
-          ? html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._createEvent}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.components.calendar.event.add")}
-              </ha-button>
-            `
-          : html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._saveEvent}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.components.calendar.event.save")}
-              </ha-button>
-              ${this._params.canDelete
-                ? html`
-                    <ha-button
-                      slot="secondaryAction"
-                      appearance="plain"
-                      variant="danger"
-                      @click=${this._deleteEvent}
-                      .disabled=${this._submitting}
-                    >
-                      ${this.hass.localize(
-                        "ui.components.calendar.event.delete"
-                      )}
-                    </ha-button>
-                  `
-                : ""}
-            `}
+        <ha-dialog-footer slot="footer">
+          ${isCreate
+            ? html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._createEvent}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize("ui.components.calendar.event.add")}
+                </ha-button>
+              `
+            : html`
+                ${this._params.canDelete
+                  ? html`
+                      <ha-button
+                        slot="secondaryAction"
+                        appearance="plain"
+                        variant="danger"
+                        @click=${this._deleteEvent}
+                        .disabled=${this._submitting}
+                      >
+                        ${this.hass.localize(
+                          "ui.components.calendar.event.delete"
+                        )}
+                      </ha-button>
+                    `
+                  : ""}
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._saveEvent}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize("ui.components.calendar.event.save")}
+                </ha-button>
+              `}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _dialogClosed(): void {
+    if (!this._params) {
+      return;
+    }
+    this._calendarId = undefined;
+    this._params = undefined;
+    this._dtstart = undefined;
+    this._dtend = undefined;
+    this._summary = "";
+    this._description = "";
+    this._location = "";
+    this._hasLocation = false;
+    this._rrule = undefined;
+    this._open = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _isEditableCalendar = (entityStateObj: HassEntity) =>
@@ -609,12 +617,6 @@ class DialogCalendarEventEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px) and (min-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: min(600px, 95vw);
-            --mdc-dialog-max-width: min(600px, 95vw);
-          }
-        }
         state-info {
           line-height: 40px;
         }
@@ -622,7 +624,6 @@ class DialogCalendarEventEditor extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
-        ha-textfield,
         ha-textarea {
           display: block;
         }

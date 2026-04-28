@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/data-table/ha-data-table";
@@ -13,10 +13,14 @@ import type {
   ZHAEntityReference,
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import { getAreaTableColumn } from "../../../common/data-table-columns";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;
   name: string;
+  area: string | undefined;
   model: string;
   manufacturer: string;
   endpoint_id: number;
@@ -31,19 +35,24 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _deviceEndpoints = memoizeOne(
-    (deviceEndpoints: ZHADeviceEndpoint[]) => {
+    (
+      deviceEndpoints: ZHADeviceEndpoint[],
+      areas: Record<string, AreaRegistryEntry>
+    ) => {
       const outputDevices: DeviceEndpointRowData[] = [];
-
       deviceEndpoints.forEach((deviceEndpoint) => {
         outputDevices.push({
           name:
             deviceEndpoint.device.user_given_name || deviceEndpoint.device.name,
+          area: deviceEndpoint.device.area_id
+            ? areas[deviceEndpoint.device.area_id].name
+            : undefined,
           model: deviceEndpoint.device.model,
           manufacturer: deviceEndpoint.device.manufacturer,
           id: deviceEndpoint.device.ieee + "_" + deviceEndpoint.endpoint_id,
@@ -59,11 +68,11 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
+    (localize: LocalizeFunc, narrow: boolean): DataTableColumnContainer =>
       narrow
         ? {
             name: {
-              title: "Devices",
+              title: localize("ui.panel.config.zha.groups.members"),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -71,18 +80,26 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
+                  ${device.area
+                    ? html` <br />
+                        <span
+                          style="font-size: var(--ha-font-size-s);color: var(--ha-color-text-secondary);"
+                        >
+                          ${device.area}
+                        </span>`
+                    : nothing}
                 </a>
               `,
             },
             endpoint_id: {
-              title: "Endpoint",
+              title: localize("ui.panel.config.zha.groups.endpoint"),
               sortable: true,
               filterable: true,
             },
           }
         : {
             name: {
-              title: "Name",
+              title: localize("ui.panel.config.zha.groups.members"),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -93,13 +110,14 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                 </a>
               `,
             },
+            area: getAreaTableColumn(localize),
             endpoint_id: {
-              title: "Endpoint",
+              title: localize("ui.panel.config.zha.groups.endpoint"),
               sortable: true,
               filterable: true,
             },
             entities: {
-              title: "Associated Entities",
+              title: localize("ui.panel.config.zha.groups.associated_entities"),
               sortable: false,
               filterable: false,
               flex: 2,
@@ -116,7 +134,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                                 ${entity.name || entity.original_name}
                               </div>`
                           )}
-                        <div>And ${device.entities.length - 2} more...</div>`
+                        <div>+${device.entities.length - 2}</div>`
                     : device.entities.map(
                         (entity) =>
                           html`<div
@@ -125,7 +143,9 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                             ${entity.name || entity.original_name}
                           </div>`
                       )
-                  : "This endpoint has no associated entities"}
+                  : localize(
+                      "ui.panel.config.zha.groups.no_associated_entities"
+                    )}
               `,
             },
           }
@@ -138,9 +158,8 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
-        .hass=${this.hass}
-        .columns=${this._columns(this.narrow)}
-        .data=${this._deviceEndpoints(this.deviceEndpoints)}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
+        .data=${this._deviceEndpoints(this.deviceEndpoints, this.hass.areas)}
         .selectable=${this.selectable}
         auto-height
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}

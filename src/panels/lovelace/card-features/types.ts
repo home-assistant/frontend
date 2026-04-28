@@ -1,6 +1,9 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
+import type { ForecastPrecipitationType } from "../../../data/weather";
+
+export type { ForecastPrecipitationType };
 
 export type ButtonCardData = Record<string, any>;
 
@@ -26,12 +29,24 @@ export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
 }
 
+export interface CoverPositionFavoriteCardFeatureConfig {
+  type: "cover-position-favorite";
+}
+
+export interface CoverTiltFavoriteCardFeatureConfig {
+  type: "cover-tilt-favorite";
+}
+
 export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
 export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
+}
+
+export interface LightColorFavoritesCardFeatureConfig {
+  type: "light-color-favorites";
 }
 
 export interface LockCommandsCardFeatureConfig {
@@ -42,8 +57,27 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
+export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
+  "turn_on",
+  "turn_off",
+  "media_play",
+  "media_pause",
+  "media_play_pause",
+  "media_stop",
+  "media_previous_track",
+  "media_next_track",
+] as const;
+
+export type MediaPlayerPlaybackControl =
+  (typeof MEDIA_PLAYER_PLAYBACK_CONTROLS)[number];
+
 export interface MediaPlayerPlaybackCardFeatureConfig {
   type: "media-player-playback";
+  controls?: MediaPlayerPlaybackControl[];
+}
+
+export interface MediaPlayerSourceCardFeatureConfig {
+  type: "media-player-source";
 }
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
@@ -53,6 +87,10 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
 export interface MediaPlayerVolumeButtonsCardFeatureConfig {
   type: "media-player-volume-buttons";
   step?: number;
+}
+
+export interface MediaPlayerSoundModeCardFeatureConfig {
+  type: "media-player-sound-mode";
 }
 
 export interface FanDirectionCardFeatureConfig {
@@ -182,6 +220,10 @@ export interface ValvePositionCardFeatureConfig {
   type: "valve-position";
 }
 
+export interface ValvePositionFavoriteCardFeatureConfig {
+  type: "valve-position-favorite";
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -202,7 +244,27 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
-export const AREA_CONTROLS = [
+export interface HourlyForecastCardFeatureConfig {
+  type: "hourly-forecast";
+  hours_to_show?: number;
+  show_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
+  color?: string;
+}
+
+export interface DailyForecastCardFeatureConfig {
+  type: "daily-forecast";
+  forecast_type?: "daily" | "twice_daily";
+  days_to_show?: number;
+  show_temperature?: boolean;
+  show_current_temperature?: boolean;
+  show_precipitation?: boolean;
+  precipitation_type?: ForecastPrecipitationType;
+  color?: string;
+}
+
+export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
   "cover-shutter",
@@ -218,7 +280,9 @@ export const AREA_CONTROLS = [
   "switch",
 ] as const;
 
-export type AreaControl = (typeof AREA_CONTROLS)[number];
+export type AreaControlDomain = (typeof AREA_CONTROL_DOMAINS)[number];
+
+export type AreaControl = AreaControlDomain | { entity_id: string };
 
 export interface AreaControlsCardFeatureConfig {
   type: "area-controls";
@@ -244,6 +308,8 @@ export type LovelaceCardFeatureConfig =
   | CounterActionsCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
+  | CoverPositionFavoriteCardFeatureConfig
+  | CoverTiltFavoriteCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | DateSetCardFeatureConfig
@@ -252,14 +318,19 @@ export type LovelaceCardFeatureConfig =
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
+  | HourlyForecastCardFeatureConfig
+  | DailyForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
+  | LightColorFavoritesCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerSoundModeCardFeatureConfig
+  | MediaPlayerSourceCardFeatureConfig
   | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
@@ -271,6 +342,7 @@ export type LovelaceCardFeatureConfig =
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig
+  | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig

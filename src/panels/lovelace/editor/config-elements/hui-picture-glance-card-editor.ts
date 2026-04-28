@@ -28,6 +28,7 @@ import type { PictureGlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -143,6 +144,7 @@ export class HuiPictureGlanceCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -156,6 +158,7 @@ export class HuiPictureGlanceCardEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
                 {
                   name: "double_tap_action",
@@ -164,6 +167,7 @@ export class HuiPictureGlanceCardEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
               ],
             },
@@ -172,53 +176,54 @@ export class HuiPictureGlanceCardEditor
       ] as const satisfies HaFormSchema[]
   );
 
-  private _subSchema = memoizeOne(
-    (entityId: string) =>
-      [
-        { name: "entity", selector: { entity: {} }, required: true },
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            {
-              name: "icon",
-              selector: {
-                icon: {},
-              },
-              context: {
-                icon_entity: "entity",
-              },
+  private _subForm = memoizeOne((entityId: string) => ({
+    schema: [
+      { name: "entity", selector: { entity: {} }, required: true },
+      {
+        type: "grid",
+        name: "",
+        schema: [
+          {
+            name: "icon",
+            selector: {
+              icon: {},
             },
-            { name: "show_state", selector: { boolean: {} } },
-          ],
-        },
-        {
-          name: "tap_action",
-          selector: {
-            ui_action: {
-              default_action: DOMAINS_TOGGLE.has(computeDomain(entityId))
-                ? "toggle"
-                : "more-info",
+            context: {
+              icon_entity: "entity",
             },
           },
+          { name: "show_state", selector: { boolean: {} } },
+        ],
+      },
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: DOMAINS_TOGGLE.has(computeDomain(entityId))
+              ? "toggle"
+              : "more-info",
+          },
         },
-        {
-          name: "",
-          type: "optional_actions",
-          flatten: true,
-          schema: (["hold_action", "double_tap_action"] as const).map(
-            (action) => ({
-              name: action,
-              selector: {
-                ui_action: {
-                  default_action: "none" as const,
-                },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: (["hold_action", "double_tap_action"] as const).map(
+          (action) => ({
+            name: action,
+            selector: {
+              ui_action: {
+                default_action: "none" as const,
               },
-            })
-          ),
-        },
-      ] as const
-  );
+            },
+            context: ACTION_RELATED_CONTEXT,
+          })
+        ),
+      },
+    ] as const,
+  }));
 
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -236,7 +241,7 @@ export class HuiPictureGlanceCardEditor
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${this._subSchema(
+          .form=${this._subForm(
             (this._subElementEditorConfig.elementConfig! as EntityConfig).entity
           )}
           @go-back=${this._goBack}

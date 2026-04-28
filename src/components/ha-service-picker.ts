@@ -1,6 +1,7 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRoomService } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { html, LitElement, nothing, type TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -50,15 +51,15 @@ class HaServicePicker extends LitElement {
     await this._picker?.open();
   }
 
-  protected firstUpdated(props) {
+  protected firstUpdated(props: PropertyValues<this>) {
     super.firstUpdated(props);
     this.hass.loadBackendTranslation("services");
     getServiceIcons(this.hass);
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (
     item,
-    { index }
+    index
   ) => html`
     <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon
@@ -135,7 +136,6 @@ class HaServicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        allow-custom-value
         .notFoundLabel=${this.hass.localize(
           "ui.components.service-picker.no_match"
         )}

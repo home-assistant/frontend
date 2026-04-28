@@ -3,13 +3,13 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
+import "../../ha-dialog";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
 import "../../ha-md-list";
 import "../../ha-md-list-item";
 import "../../ha-svg-icon";
-import "../../ha-wa-dialog";
 import "../ha-target-picker-item-row";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
@@ -42,7 +42,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._opened}
         header-title=${this.hass.localize(
@@ -62,9 +62,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
           .entityFilter=${this._params.entityFilter}
           .includeDomains=${this._params.includeDomains}
           .includeDeviceClasses=${this._params.includeDeviceClasses}
+          .primaryEntitiesOnly=${this._params.primaryEntitiesOnly}
           expand
         ></ha-target-picker-item-row>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 }

@@ -18,6 +18,17 @@ export const enum CoverEntityFeature {
   SET_TILT_POSITION = 128,
 }
 
+export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
+
+export const coverSupportsPosition = (stateObj: CoverEntity) =>
+  supportsFeature(stateObj, CoverEntityFeature.SET_POSITION);
+
+export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
+  supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION);
+
+export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
+  coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
+
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
     return stateObj.attributes.current_position === 100;

@@ -7,7 +7,7 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
@@ -16,20 +16,36 @@ import type {
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { CustomShortcutItem } from "../../../../data/frontend";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
+  DiscoveredDevicesCardConfig,
+  EmptyStateCardConfig,
+  HeadingCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
-  WeatherForecastCardConfig,
+  RepairsCardConfig,
+  ShortcutCardConfig,
+  TileCardConfig,
+  UpdatesCardConfig,
 } from "../../cards/types";
-import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import {
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../helpers/view-columns-conditions";
+import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import type { Condition } from "../../common/validate-condition";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  home_panel?: boolean;
+  hidden_summaries?: string[];
+  hide_welcome_message?: boolean;
+  hide_suggested_entities?: boolean;
+  custom_shortcuts?: CustomShortcutItem[];
 }
 
 const computeAreaCard = (
@@ -49,7 +65,10 @@ const computeAreaCard = (
     area: areaId,
     display_type: "compact",
     sensor_classes: sensorClasses,
-    navigation_path: path,
+    tap_action: {
+      action: "navigate",
+      navigation_path: path,
+    },
     vertical: true,
     grid_options: {
       rows: 2,
@@ -73,10 +92,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const maxColumns = 3;
 
-    const largeScreenCondition: Condition = {
-      condition: "screen",
-      media_query: "(min-width: 871px)",
-    };
+    const allEntities = Object.keys(hass.states);
+
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -109,23 +131,59 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
-    if (home.areas.length) {
+    if (home.areas.length > 0 || entitiesWithoutAreas.length > 0) {
       const cards: LovelaceCardConfig[] = [];
       for (const areaId of home.areas) {
         cards.push(computeAreaCard(areaId, hass));
       }
+
+      if (entitiesWithoutAreas.length > 0) {
+        cards.push({
+          type: "tile",
+          entity: "zone.home", // zone entity to represent unassigned area as it always exists
+          vertical: true,
+          name: hass.localize("ui.panel.lovelace.strategy.home.devices"),
+          icon: "mdi:devices",
+          hide_state: true,
+          tap_action: {
+            action: "navigate",
+            navigation_path: "other-devices",
+          },
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+        } as TileCardConfig);
+      }
+
+      const noOtherAreas = home.areas.length === 0;
+      const noFloor = home.floors.length === 0;
+
+      // Determine heading based on floor/area configuration
+      let heading: string | undefined;
+      if (noFloor && noOtherAreas) {
+        heading = undefined;
+      } else if (noFloor) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.areas");
+      } else if (noOtherAreas) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.devices");
+      } else {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+      }
+
       floorsSections.push({
         type: "grid",
         column_span: maxColumns,
         cards: [
-          {
-            type: "heading",
-            heading:
-              floorCount > 1
-                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
-                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
-            heading_style: "title",
-          },
+          ...(heading
+            ? [
+                {
+                  type: "heading",
+                  heading: heading,
+                  heading_style: "title",
+                },
+              ]
+            : []),
           ...cards,
         ],
       });
@@ -136,17 +194,46 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const commonControlsSection = {
-      strategy: {
-        type: "common-controls",
-        limit: maxCommonControls,
-        include_entities: favoriteEntities,
-        hide_empty: true,
-      } satisfies CommonControlSectionStrategyConfig,
-      column_span: maxColumns,
-    } as LovelaceStrategySectionConfig;
+    const favoritesHeadingCard: HeadingCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+      heading_style: "title",
+      visibility: [LARGE_SCREEN_CONDITION],
+      grid_options: {
+        rows: "auto",
+      },
+    };
 
-    const allEntities = Object.keys(hass.states);
+    let favoritesSection: LovelaceSectionRawConfig | undefined;
+    if (!config.hide_suggested_entities) {
+      favoritesSection = {
+        strategy: {
+          type: "common-controls",
+          limit: maxCommonControls,
+          include_entities: favoriteEntities,
+          hide_empty: true,
+          heading: favoritesHeadingCard,
+        } satisfies CommonControlsSectionStrategyConfig,
+        column_span: maxColumns,
+      } satisfies LovelaceStrategySectionConfig;
+    } else if (favoriteEntities.length > 0) {
+      favoritesSection = {
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          favoritesHeadingCard,
+          ...favoriteEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                state_content: ["state", "area_name"],
+                show_entity_picture: true,
+              }) satisfies TileCardConfig
+          ),
+        ],
+      };
+    }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
       (filter) => generateEntityFilter(hass, filter)
@@ -164,82 +251,23 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const hasLights = findEntities(allEntities, lightsFilters).length > 0;
+    const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+      (filter) => generateEntityFilter(hass, filter)
+    );
+
+    const hasLights =
+      hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
-    const hasClimate = findEntities(allEntities, climateFilters).length > 0;
-    const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
-
-    const summaryCards: LovelaceCardConfig[] = [
-      hasLights &&
-        ({
-          type: "home-summary",
-          summary: "light",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/light?historyBack=1",
-          },
-          grid_options: {
-            columns: 12,
-          },
-        } satisfies HomeSummaryCard),
-      hasClimate &&
-        ({
-          type: "home-summary",
-          summary: "climate",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/climate?historyBack=1",
-          },
-          grid_options: {
-            columns: 12,
-          },
-        } satisfies HomeSummaryCard),
-      hasSecurity &&
-        ({
-          type: "home-summary",
-          summary: "security",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/security?historyBack=1",
-          },
-          grid_options: {
-            columns: 12,
-          },
-        } satisfies HomeSummaryCard),
-      hasMediaPlayers &&
-        ({
-          type: "home-summary",
-          summary: "media_players",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "media-players",
-          },
-          grid_options: {
-            columns: 12,
-          },
-        } satisfies HomeSummaryCard),
-    ].filter(Boolean) as LovelaceCardConfig[];
-
-    const forYouSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
-          heading_style: "title",
-          visibility: [largeScreenCondition],
-        },
-      ],
-    };
-
-    const widgetSection: LovelaceSectionConfig = {
-      cards: [],
-    };
-
-    if (summaryCards.length) {
-      widgetSection.cards!.push(...summaryCards);
-    }
+    const hasClimate =
+      hass.panels.climate &&
+      findEntities(allEntities, climateFilters).length > 0;
+    const hasSecurity =
+      hass.panels.security &&
+      findEntities(allEntities, securityFilters).length > 0;
+    const hasMaintenance =
+      hass.panels.maintenance &&
+      findEntities(allEntities, maintenanceFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -250,76 +278,262 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .filter(weatherFilter)
       .sort()[0];
 
-    if (weatherEntity) {
-      widgetSection.cards!.push({
-        type: "weather-forecast",
-        entity: weatherEntity,
-        show_forecast: false,
-        show_current: true,
-        grid_options: {
-          columns: 12,
-          rows: "auto",
-        },
-      } as WeatherForecastCardConfig);
-    }
-
-    const energyPrefs = isComponentLoaded(hass, "energy")
+    const energyPrefs = isComponentLoaded(hass.config, "energy")
       ? // It raises if not configured, just swallow that.
         await getEnergyPreferences(hass).catch(() => undefined)
       : undefined;
 
-    if (energyPrefs) {
-      const grid = energyPrefs.energy_sources.find(
-        (source) => source.type === "grid"
-      );
+    const hasEnergy =
+      hass.panels.energy &&
+      (energyPrefs?.energy_sources.some(
+        (source) => source.type === "grid" && !!source.stat_energy_from
+      ) ??
+        false);
 
-      if (grid && grid.flow_from.length > 0) {
-        widgetSection.cards!.push({
-          title: hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
+    const hiddenSummaries = new Set(config.hidden_summaries || []);
+
+    // Build summary cards (used in both mobile section and sidebar)
+    const summaryCards: LovelaceCardConfig[] = [
+      // Repairs card - only visible to admins, hides when empty
+      {
+        type: "repairs",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/repairs?historyBack=1",
+        },
+      } satisfies RepairsCardConfig,
+      // Updates card - only visible to admins, hides when empty
+      {
+        type: "updates",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/updates?historyBack=1",
+        },
+      } satisfies UpdatesCardConfig,
+      // Discovered devices card - only visible to admins, hides when empty
+      {
+        type: "discovered-devices",
+        hide_empty: true,
+      } satisfies DiscoveredDevicesCardConfig,
+      hasLights &&
+        !hiddenSummaries.has("light") &&
+        ({
+          type: "home-summary",
+          summary: "light",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/light?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
+      hasClimate &&
+        !hiddenSummaries.has("climate") &&
+        ({
+          type: "home-summary",
+          summary: "climate",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/climate?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
+      hasSecurity &&
+        !hiddenSummaries.has("security") &&
+        ({
+          type: "home-summary",
+          summary: "security",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/security?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
+      hasMediaPlayers &&
+        !hiddenSummaries.has("media_players") &&
+        ({
+          type: "home-summary",
+          summary: "media_players",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "media-players",
+          },
+        } satisfies HomeSummaryCard),
+      hasMaintenance &&
+        !hiddenSummaries.has("maintenance") &&
+        ({
+          type: "home-summary",
+          summary: "maintenance",
+          tap_action: {
+            action: "navigate",
+            navigation_path: config.home_panel
+              ? "/maintenance?historyBack=1&backPath=/home"
+              : "/maintenance?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
+      weatherEntity &&
+        !hiddenSummaries.has("weather") &&
+        ({
+          type: "tile",
+          entity: weatherEntity,
+          name: hass.localize(
+            "ui.panel.lovelace.strategy.home.summary_list.weather"
           ),
-          type: "energy-distribution",
-          collection_key: "energy_home_dashboard",
-          link_dashboard: true,
-        });
-      }
+          state_content: ["temperature", "state"],
+        } satisfies TileCardConfig),
+      hasEnergy &&
+        !hiddenSummaries.has("energy") &&
+        ({
+          type: "home-summary",
+          summary: "energy",
+          tap_action: {
+            action: "navigate",
+            navigation_path: config.home_panel
+              ? "/energy?historyBack=1&backPath=/home"
+              : "/energy?historyBack=1",
+          },
+        } satisfies HomeSummaryCard),
+    ].filter(Boolean) as LovelaceCardConfig[];
+
+    // Append custom shortcut cards
+    for (const shortcut of config.custom_shortcuts || []) {
+      summaryCards.push({
+        type: "shortcut",
+        label: shortcut.label,
+        icon: shortcut.icon,
+        color: shortcut.color,
+        tap_action: { action: "navigate", navigation_path: shortcut.path },
+      } satisfies ShortcutCardConfig);
+    }
+
+    // Build summary cards for sidebar (full width: columns 12)
+    const sidebarSummaryCards = summaryCards.map((card) => ({
+      ...card,
+      grid_options: { columns: 12 },
+    }));
+
+    // Build summary cards for mobile section (half width: columns 6)
+    const mobileSummaryCards = [
+      ...summaryCards.map((card) => ({
+        ...card,
+        grid_options: { columns: 6 },
+      })),
+    ];
+
+    const summaryHeadingCard: LovelaceCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
+      heading_style: "title",
+    };
+
+    // Mobile summary section (visible on small screens only)
+    const mobileSummarySection: LovelaceSectionConfig | undefined =
+      mobileSummaryCards.length > 0
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            visibility: [SMALL_SCREEN_CONDITION],
+            cards: [summaryHeadingCard, ...mobileSummaryCards],
+          }
+        : undefined;
+
+    // Sidebar section
+    const sidebarSection: LovelaceSectionConfig | undefined =
+      sidebarSummaryCards.length > 0
+        ? {
+            type: "grid",
+            cards: [
+              {
+                ...summaryHeadingCard,
+                grid_options: { rows: "auto" }, // Compact style
+              },
+              ...sidebarSummaryCards,
+            ],
+          }
+        : undefined;
+
+    // No sections, show empty state
+    if (floorsSections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_content"
+            ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_add_device"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-edit",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/areas/dashboard",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     const sections = (
-      [
-        {
-          type: "grid",
-          cards: [
-            // Heading to add some spacing on large screens
-            {
-              type: "heading",
-              heading_style: "subtitle",
-              visibility: [largeScreenCondition],
-            },
-          ],
-        },
-        commonControlsSection,
-        ...floorsSections,
-      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
+        | LovelaceSectionRawConfig
+        | undefined
+      )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
       type: "sections",
       max_columns: maxColumns,
       sections: sections,
-      header: {
-        layout: "responsive",
-        card: {
-          type: "markdown",
-          text_only: true,
-          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
-        } satisfies MarkdownCardConfig,
-      },
-      sidebar: {
-        sections: [forYouSection, widgetSection],
-        content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
-        sidebar_label: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
-      },
+      ...(!config.hide_welcome_message && {
+        header: {
+          layout: "responsive",
+          card: {
+            type: "markdown",
+            text_only: true,
+            content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
+          } satisfies MarkdownCardConfig,
+        },
+      }),
+      ...(sidebarSection && {
+        sidebar: {
+          sections: [sidebarSection],
+          content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
+          sidebar_label: hass.localize(
+            "ui.panel.lovelace.strategy.home.summaries"
+          ),
+          visibility: [LARGE_SCREEN_CONDITION],
+        },
+      }),
     };
   }
 }

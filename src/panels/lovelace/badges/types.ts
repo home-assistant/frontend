@@ -29,6 +29,15 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface ShortcutBadgeConfig extends LovelaceBadgeConfig {
+  text?: string;
+  icon?: string;
+  color?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
 export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   type: "entity";
   entity?: string;
@@ -47,4 +56,21 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
    * @deprecated use `show_state`, `show_name`, `icon_type`
    */
   display_type?: DisplayType;
+}
+
+interface EnergyTotalBadgeConfig extends LovelaceBadgeConfig {
+  title?: string;
+  collection_key?: string;
+}
+
+export interface PowerTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "power-total";
+}
+
+export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "water-total";
+}
+
+export interface GasTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "gas-total";
 }

@@ -89,6 +89,9 @@ export const handleAction = async (
               ) ||
               actionConfig.action,
           }),
+        title: actionConfig.confirmation.title,
+        dismissText: actionConfig.confirmation.dismiss_text,
+        confirmText: actionConfig.confirmation.confirm_text,
       }))
     ) {
       return;

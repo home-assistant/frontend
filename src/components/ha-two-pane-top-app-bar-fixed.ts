@@ -5,7 +5,9 @@ import {
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
 import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
+// eslint-disable-next-line import-x/no-named-as-default
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
+import type { PropertyValues } from "lit";
 import { html, css, nothing } from "lit";
 import { property, query, customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -48,7 +50,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
 
-  @property({ attribute: false, type: Object })
+  @property({ attribute: false })
   get scrollTarget() {
     return this._scrollTarget || window;
   }
@@ -152,7 +154,7 @@ export class TopAppBarBaseBase extends BaseElement {
     `;
   }
 
-  protected updated(changedProperties) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (
       changedProperties.has("pane") &&
@@ -288,9 +290,18 @@ export class TopAppBarBaseBase extends BaseElement {
         );
         padding-top: var(--safe-area-inset-top);
         padding-right: var(--safe-area-inset-right);
+        transition:
+          width var(--ha-animation-duration-normal) ease,
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-right var(--ha-animation-duration-normal) ease;
       }
       :host([narrow]) .mdc-top-app-bar {
         padding-left: var(--safe-area-inset-left);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mdc-top-app-bar {
+          transition: 1ms;
+        }
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
         box-shadow: none;

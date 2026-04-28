@@ -53,7 +53,7 @@ export class HaAreaSelector extends LitElement {
     );
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.area?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
@@ -65,7 +65,7 @@ export class HaAreaSelector extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("selector") &&
       this._hasIntegration(this.selector) &&
@@ -123,6 +123,7 @@ export class HaAreaSelector extends LitElement {
           : undefined}
         .disabled=${this.disabled}
         .required=${this.required}
+        .reorder=${this.selector.area?.reorder ?? false}
       ></ha-areas-picker>
     `;
   }

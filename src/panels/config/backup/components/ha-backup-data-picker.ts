@@ -16,7 +16,6 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
 import type { BackupData } from "../../../../data/backup";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
@@ -61,13 +60,13 @@ export class HaBackupDataPicker extends LitElement {
     | "page-onboarding.restore"
     | "config.backup" = "config.backup";
 
-  @property({ type: Boolean, attribute: false }) public addonsDisabled = false;
+  @property({ attribute: false }) public addonsDisabled = false;
 
   @state() public _addonIcons: Record<string, boolean> = {};
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
-    if (this.hass && isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass && isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchAddonInfo();
     }
   }
@@ -122,7 +121,7 @@ export class HaBackupDataPicker extends LitElement {
         return localize(`ui.panel.${this.translationKeyPanel}.data_picker.ssl`);
       case "addons/local":
         return localize(
-          `ui.panel.${this.translationKeyPanel}.data_picker.local_addons`
+          `ui.panel.${this.translationKeyPanel}.data_picker.local_apps`
         );
     }
     return capitalizeFirstLetter(folder);
@@ -243,44 +242,37 @@ export class HaBackupDataPicker extends LitElement {
       ${homeAssistantItems.length
         ? html`
             <div class="section">
-              <ha-formfield>
+              <ha-checkbox
+                .id=${"homeassistant"}
+                .checked=${selectedItems.homeassistant.length ===
+                homeAssistantItems.length}
+                .indeterminate=${selectedItems.homeassistant.length > 0 &&
+                selectedItems.homeassistant.length < homeAssistantItems.length}
+                @change=${this._sectionChanged}
+                ?disabled=${this.requiredItems.length > 0}
+              >
                 <ha-backup-formfield-label
-                  slot="label"
                   label="Home Assistant"
                   .iconPath=${mdiHomeAssistant}
                 >
                 </ha-backup-formfield-label>
-                <ha-checkbox
-                  .id=${"homeassistant"}
-                  .checked=${selectedItems.homeassistant.length ===
-                  homeAssistantItems.length}
-                  .indeterminate=${selectedItems.homeassistant.length > 0 &&
-                  selectedItems.homeassistant.length <
-                    homeAssistantItems.length}
-                  @change=${this._sectionChanged}
-                  ?disabled=${this.requiredItems.length > 0}
-                ></ha-checkbox>
-              </ha-formfield>
+              </ha-checkbox>
               <div class="items">
                 ${homeAssistantItems.map(
                   (item) => html`
-                    <ha-formfield>
+                    <ha-checkbox
+                      .id=${item.id}
+                      .checked=${selectedItems.homeassistant.includes(item.id)}
+                      @change=${this._homeassistantChanged}
+                      .disabled=${this.requiredItems.includes(item.id)}
+                    >
                       <ha-backup-formfield-label
-                        slot="label"
                         .label=${item.label}
                         .version=${item.version}
                         .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
                       >
                       </ha-backup-formfield-label>
-                      <ha-checkbox
-                        .id=${item.id}
-                        .checked=${selectedItems.homeassistant.includes(
-                          item.id
-                        )}
-                        @change=${this._homeassistantChanged}
-                        .disabled=${this.requiredItems.includes(item.id)}
-                      ></ha-checkbox>
-                    </ha-formfield>
+                    </ha-checkbox>
                   `
                 )}
               </div>
@@ -290,24 +282,22 @@ export class HaBackupDataPicker extends LitElement {
       ${addonsItems.length
         ? html`
             <div class="section">
-              <ha-formfield>
+              <ha-checkbox
+                .id=${"addons"}
+                .checked=${selectedItems.addons.length === addonsItems.length}
+                .indeterminate=${selectedItems.addons.length > 0 &&
+                selectedItems.addons.length < addonsItems.length}
+                @change=${this._sectionChanged}
+                .disabled=${this.addonsDisabled}
+              >
                 <ha-backup-formfield-label
-                  slot="label"
                   .label=${localize(
-                    `ui.panel.${this.translationKeyPanel}.data_picker.addons`
+                    `ui.panel.${this.translationKeyPanel}.data_picker.apps`
                   )}
                   .iconPath=${mdiPuzzle}
                 >
                 </ha-backup-formfield-label>
-                <ha-checkbox
-                  .id=${"addons"}
-                  .checked=${selectedItems.addons.length === addonsItems.length}
-                  .indeterminate=${selectedItems.addons.length > 0 &&
-                  selectedItems.addons.length < addonsItems.length}
-                  @change=${this._sectionChanged}
-                  .disabled=${this.addonsDisabled}
-                ></ha-checkbox>
-              </ha-formfield>
+              </ha-checkbox>
               <ha-backup-addons-picker
                 .hass=${this.hass}
                 .value=${selectedItems.addons}
@@ -329,17 +319,24 @@ export class HaBackupDataPicker extends LitElement {
       margin-inline-end: initial;
     }
     .items {
-      padding-left: 40px;
-      padding-inline-start: 40px;
+      padding-inline-start: 52px;
       padding-inline-end: initial;
       display: flex;
       flex-direction: column;
+      gap: var(--ha-space-2);
+      margin-bottom: var(--ha-space-3);
     }
     ha-backup-addons-picker {
       display: block;
-      padding-left: 40px;
-      padding-inline-start: 40px;
+      padding-inline-start: 42px;
       padding-inline-end: initial;
+    }
+    ha-checkbox {
+      justify-content: center;
+    }
+    .section > ha-checkbox {
+      min-height: 40px;
+      padding-inline-start: var(--ha-space-5);
     }
   `;
 }

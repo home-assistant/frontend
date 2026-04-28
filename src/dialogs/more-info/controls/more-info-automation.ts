@@ -52,7 +52,7 @@ class MoreInfoAutomation extends LitElement {
       justify-content: space-between;
     }
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -60,7 +60,7 @@ class MoreInfoAutomation extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
   `;
 }

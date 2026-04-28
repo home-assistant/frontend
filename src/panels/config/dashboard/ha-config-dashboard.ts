@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiCloudLock,
   mdiDotsVertical,
@@ -8,19 +7,20 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
+import "../../../components/ha-tooltip";
 import "../../../components/ha-top-app-bar-fixed";
 import type { CloudStatus } from "../../../data/cloud";
 import type { RepairsIssue } from "../../../data/repairs";
@@ -31,12 +31,9 @@ import {
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
-import {
-  QuickBarMode,
-  showQuickBar,
-} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -44,6 +41,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -62,23 +60,11 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
           rel="noreferrer"
           >${hass.localize("ui.panel.config.tips.join_forums")}</a
         >`,
-        twitter: html`<a
-          href=${documentationUrl(hass, `/twitter`)}
+        social_media: html`<a
+          href=${documentationUrl(hass, `/socials`)}
           target="_blank"
           rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_x")}</a
-        >`,
-        mastodon: html`<a
-          href=${documentationUrl(hass, `/mastodon`)}
-          target="_blank"
-          rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_mastodon")}</a
-        >`,
-        bluesky: html`<a
-          href=${documentationUrl(hass, `/bluesky`)}
-          target="_blank"
-          rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_bluesky")}</a
+          >${hass.localize("ui.panel.config.tips.social_media")}</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
@@ -113,12 +99,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       >`,
     };
 
-    tips.push(
-      {
+    if (hass.user?.is_admin) {
+      tips.push({
         content: hass.localize("ui.tips.key_c_tip", localizeParam),
         weight: 1,
         narrow: false,
-      },
+      });
+    }
+    tips.push(
       {
         content: hass.localize("ui.tips.key_m_tip", localizeParam),
         weight: 1,
@@ -126,6 +114,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       },
       {
         content: hass.localize("ui.tips.key_a_tip", localizeParam),
+        weight: 1,
+        narrow: false,
+      },
+      {
+        content: hass.localize("ui.tips.key_shortcut_quick_search", {
+          ...localizeParam,
+          modifier: isMac ? "⌘" : "Ctrl",
+        }),
         weight: 1,
         narrow: false,
       }
@@ -155,8 +151,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _tip?: string;
 
   @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
@@ -164,21 +158,39 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => {
-    const pages: PageNavigation[] = [];
-    if (isCloudLoaded) {
-      pages.push({
-        component: "cloud",
-        path: "/config/cloud",
-        name: "Home Assistant Cloud",
-        info: cloudStatus,
-        iconPath: mdiCloudLock,
-        iconColor: "#3B808E",
-        translationKey: "cloud",
-      });
+  private _pages = memoizeOne(
+    (
+      cloudStatus,
+      isCloudLoaded,
+      hasExternalSettings,
+      isAppsInfoDismissed,
+      isHassioLoaded
+    ) => {
+      const filterApps = (pages: PageNavigation[]) =>
+        isAppsInfoDismissed && !isHassioLoaded
+          ? pages.filter((page) => page.path !== "/config/apps")
+          : pages;
+      return [
+        isCloudLoaded
+          ? filterApps([
+              {
+                component: "cloud",
+                path: "/config/cloud",
+                name: "Home Assistant Cloud",
+                info: cloudStatus,
+                iconPath: mdiCloudLock,
+                iconColor: "#3B808E",
+                translationKey: "cloud",
+              },
+              ...configSections.dashboard,
+            ])
+          : filterApps(configSections.dashboard),
+        hasExternalSettings ? configSections.dashboard_external_settings : [],
+        configSections.dashboard_2,
+        configSections.dashboard_3,
+      ];
     }
-    return [...pages, ...configSections.dashboard];
-  });
+  );
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -202,8 +214,19 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const quickBarLabel = [
+      this.hass.localize("ui.dialogs.quick-bar.title"),
+      this.hass.enableShortcuts && !isMobileClient
+        ? isMac
+          ? "(⌘ + K)"
+          : "(Ctrl + K)"
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(
+      this._filterUpdateEntitiesParameterized(
         this.hass.states,
         this.hass.entities
       );
@@ -222,29 +245,34 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         <ha-icon-button
           slot="actionItems"
-          .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+          id="button-quick-bar"
+          .label=${quickBarLabel}
           .path=${mdiMagnify}
+          hide-title
           @click=${this._showQuickBar}
         ></ha-icon-button>
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-tooltip placement="bottom" for="button-quick-bar"
+          >${quickBarLabel}</ha-tooltip
+        >
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="check-updates">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="restart">
             ${this.hass.localize(
               "ui.panel.config.system_dashboard.restart_homeassistant"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <ha-config-section
           .narrow=${this.narrow}
@@ -252,81 +280,87 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           full-width
         >
           ${repairsIssues.length || canInstallUpdates.length
-            ? html`<ha-card outlined>
+            ? html`<div class="dashboard-alerts">
                 ${repairsIssues.length
                   ? html`
-                      <ha-config-repairs
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalRepairIssues}
-                        .repairsIssues=${repairsIssues}
-                      ></ha-config-repairs>
-                      ${totalRepairIssues > repairsIssues.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/repairs"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.repairs.more_repairs",
-                                {
-                                  count:
-                                    totalRepairIssues - repairsIssues.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <ha-card outlined class="dashboard-alert-card">
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/repairs?historyBack=1">
+                            ${this.hass.localize(
+                              "ui.panel.config.repairs.title",
+                              {
+                                count: totalRepairIssues,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
+                        <ha-config-repairs
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .repairsIssues=${repairsIssues}
+                        ></ha-config-repairs>
+                      </ha-card>
                     `
-                  : ""}
-                ${repairsIssues.length && canInstallUpdates.length
-                  ? html`<hr />`
                   : ""}
                 ${canInstallUpdates.length
                   ? html`
-                      <ha-config-updates
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalUpdates}
-                        .updateEntities=${canInstallUpdates}
-                      ></ha-config-updates>
-                      ${totalUpdates > canInstallUpdates.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/updates"
-                              label=${this.hass.localize(
-                                "ui.panel.config.updates.more_updates",
-                                {
-                                  count:
-                                    totalUpdates - canInstallUpdates.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
+                      <ha-card outlined class="dashboard-alert-card">
+                        <div
+                          class="dashboard-alert-title"
+                          role="heading"
+                          aria-level="2"
+                        >
+                          <a href="/config/updates?historyBack=1">
+                            ${this.hass.localize(
+                              "ui.panel.config.updates.title",
+                              {
+                                count: totalUpdates,
+                              }
+                            )}
+                            <ha-icon-next></ha-icon-next>
+                          </a>
+                        </div>
+                        <ha-config-updates
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .updateEntities=${canInstallUpdates}
+                        ></ha-config-updates>
+                      </ha-card>
                     `
                   : ""}
-              </ha-card>`
+              </div>`
             : ""}
-
-          <ha-card outlined>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${this._pages(
-                this.cloudStatus,
-                isComponentLoaded(this.hass, "cloud")
-              )}
-            ></ha-config-navigation>
-          </ha-card>
+          ${this._pages(
+            this.cloudStatus,
+            isComponentLoaded(this.hass.config, "cloud"),
+            this.hass.auth.external?.config.hasSettingsScreen,
+            this.hass.userData?.apps_info_dismissed,
+            isComponentLoaded(this.hass.config, "hassio")
+          ).map((categoryPages) =>
+            categoryPages.length === 0
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <ha-config-navigation
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${categoryPages}
+                    ></ha-config-navigation>
+                  </ha-card>
+                `
+          )}
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>
     `;
   }
 
-  protected override updated(changedProps: PropertyValues): void {
+  protected override updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     if (!this._tip && changedProps.has("hass")) {
@@ -340,14 +374,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     showShortcutsDialog(this);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
+  private _filterUpdateEntitiesParameterized = memoizeOne(
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
     ): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities).filter(
-        (entity) => !entityRegistry[entity.entity_id]?.hidden
-      );
+      const updates = filterUpdateEntitiesParameterized(
+        entities,
+        false,
+        false
+      ).filter((entity) => !entityRegistry[entity.entity_id]?.hidden);
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
@@ -357,26 +393,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    const params = {
-      keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
-        >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-      >`,
-    };
-
-    showQuickBar(this, {
-      mode: QuickBarMode.Command,
-      hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
-        : undefined,
-    });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "check-updates":
         checkForEntityUpdates(this, this.hass);
         break;
-      case 1:
+      case "restart":
         showRestartDialog(this);
         break;
     }
@@ -386,10 +412,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: 24px;
-        }
-
         ha-config-section {
           margin: auto;
           margin-top: -32px;
@@ -398,20 +420,34 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         ha-card {
           overflow: hidden;
+          margin-bottom: 0;
         }
         ha-card a {
           text-decoration: none;
           color: var(--primary-text-color);
         }
 
-        ha-assist-chip {
-          margin: 8px 16px 16px 16px;
+        .dashboard-alerts {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
         }
 
-        .title {
+        .dashboard-alert-title {
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
           font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
+        }
+
+        .dashboard-alert-title a {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+
+        .dashboard-alert-title ha-icon-next {
+          color: var(--secondary-text-color);
+          width: 20px;
+          height: 20px;
         }
 
         @media all and (max-width: 600px) {
@@ -435,16 +471,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
         .keep-together {
           display: inline-block;
-        }
-
-        hr {
-          height: 1px;
-          background-color: var(
-            --ha-card-border-color,
-            var(--divider-color, #e0e0e0)
-          );
-          border: none;
-          margin-top: 0;
         }
       `,
     ];

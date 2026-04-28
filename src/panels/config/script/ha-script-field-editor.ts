@@ -17,8 +17,7 @@ export default class HaScriptFieldEditor extends LitElement {
 
   @property() public key!: string;
 
-  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
-    [];
+  @property({ attribute: false }) public excludeKeys: string[] = [];
 
   @property({ attribute: false }) public field!: Field;
 
@@ -104,7 +103,7 @@ export default class HaScriptFieldEditor extends LitElement {
           "field"
         : slugify(value.name);
       if (this.excludeKeys.includes(key)) {
-        let uniqueKey = key;
+        let uniqueKey: string;
         let i = 2;
         do {
           uniqueKey = `${key}_${i}`;

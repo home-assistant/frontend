@@ -1,5 +1,21 @@
 import type { Selector } from "../../data/selector";
-import type { HaFormSchema } from "./types";
+import type { HaFormData, HaFormSchema } from "./types";
+
+const setDefaultValue = (
+  field: HaFormSchema,
+  value: HaFormData | undefined
+) => {
+  if ("selector" in field && "choose" in field.selector) {
+    const firstChoice = Object.keys(field.selector.choose.choices)[0];
+    if (firstChoice) {
+      return {
+        active_choice: firstChoice,
+        [firstChoice]: value,
+      };
+    }
+  }
+  return value;
+};
 
 export const computeInitialHaFormData = (
   schema: HaFormSchema[] | readonly HaFormSchema[]
@@ -10,9 +26,12 @@ export const computeInitialHaFormData = (
       field.description?.suggested_value !== undefined &&
       field.description?.suggested_value !== null
     ) {
-      data[field.name] = field.description.suggested_value;
+      data[field.name] = setDefaultValue(
+        field,
+        field.description.suggested_value
+      );
     } else if ("default" in field) {
-      data[field.name] = field.default;
+      data[field.name] = setDefaultValue(field, field.default);
     } else if (field.type === "expandable") {
       const expandableData = computeInitialHaFormData(field.schema);
       if (field.required || Object.keys(expandableData).length) {
@@ -60,6 +79,7 @@ export const computeInitialHaFormData = (
         "attribute" in selector ||
         "file" in selector ||
         "icon" in selector ||
+        "serial_port" in selector ||
         "template" in selector ||
         "text" in selector ||
         "theme" in selector ||
@@ -108,6 +128,34 @@ export const computeInitialHaFormData = (
         data[field.name] = {};
       } else if ("state" in selector) {
         data[field.name] = selector.state?.multiple ? [] : "";
+      } else if ("choose" in selector) {
+        const firstChoice = Object.keys(selector.choose.choices)[0];
+        if (!firstChoice) {
+          data[field.name] = {};
+        } else {
+          data[field.name] = {
+            active_choice: firstChoice,
+            [firstChoice]: computeInitialHaFormData([
+              {
+                name: firstChoice,
+                selector: selector.choose.choices[firstChoice].selector,
+              },
+            ])[firstChoice],
+          };
+        }
+      } else if ("numeric_threshold" in selector) {
+        const mode = selector.numeric_threshold?.mode ?? "crossed";
+        const type = mode === "changed" ? "any" : "above";
+        data[field.name] =
+          type === "any"
+            ? { type }
+            : {
+                type,
+                value: {
+                  number: selector.numeric_threshold?.number?.min ?? 0,
+                  active_choice: "number",
+                },
+              };
       } else {
         throw new Error(
           `Selector ${Object.keys(selector)[0]} not supported in initial form data`

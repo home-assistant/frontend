@@ -57,9 +57,12 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @state() private _config?: T;
 
-  @state() private _configElement?: LovelaceGenericElementEditor;
+  @state() protected _configElement?: LovelaceGenericElementEditor;
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
@@ -89,7 +92,11 @@ export abstract class HuiElementEditor<
   }
 
   public set value(config: T | undefined) {
-    if (this._config && deepEqual(config, this._config)) {
+    // Compare symbols to detect callback changes (e.g., preview click handlers)
+    if (
+      this._config &&
+      deepEqual(config, this._config, { compareSymbols: true })
+    ) {
       return;
     }
     this._config = config;
@@ -146,6 +153,9 @@ export abstract class HuiElementEditor<
   }
 
   public toggleMode() {
+    if (!this.GUImode) {
+      this._yamlEditor?.disableCodeEditorFullscreen();
+    }
     this.GUImode = !this.GUImode;
   }
 
@@ -239,6 +249,7 @@ export abstract class HuiElementEditor<
                   .defaultValue=${this._config}
                   autofocus
                   .hass=${this.hass}
+                  .inDialog=${this.inDialog}
                   @value-changed=${this._handleYAMLChanged}
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
@@ -296,7 +307,7 @@ export abstract class HuiElementEditor<
     `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (this._configElement && changedProperties.has("hass")) {

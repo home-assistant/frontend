@@ -11,6 +11,8 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
 import "../../components/ha-button";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
@@ -22,7 +24,7 @@ import {
   type EntityRegistryDisplayEntry,
 } from "../../data/entity/entity_registry";
 import { domainToName } from "../../data/integration";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
@@ -61,12 +63,12 @@ class StepFlowCreateEntry extends LitElement {
       )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
       return;
     }
@@ -140,11 +142,15 @@ class StepFlowCreateEntry extends LitElement {
                                   this.hass.localize,
                                   domains[device.primary_config_entry]
                                 )}
-                                src=${brandsUrl({
-                                  domain: domains[device.primary_config_entry],
-                                  type: "icon",
-                                  darkOptimized: this.hass.themes?.darkMode,
-                                })}
+                                src=${brandsUrl(
+                                  {
+                                    domain:
+                                      domains[device.primary_config_entry],
+                                    type: "icon",
+                                    darkOptimized: this.hass.themes?.darkMode,
+                                  },
+                                  this.hass.auth.data.hassUrl
+                                )}
                                 crossorigin="anonymous"
                                 referrerpolicy="no-referrer"
                               />`
@@ -158,19 +164,20 @@ class StepFlowCreateEntry extends LitElement {
                               : nothing}
                           </div>
                         </div>
-                        <ha-textfield
+                        <ha-input
                           .label=${localize(
                             "ui.panel.config.integrations.config_flow.device_name"
                           )}
                           .placeholder=${computeDeviceNameDisplay(
                             device,
-                            this.hass
+                            this.hass.localize,
+                            this.hass.states
                           )}
                           .value=${this._deviceUpdate[device.id]?.name ??
                           computeDeviceName(device)}
                           @change=${this._deviceNameChanged}
                           .device=${device.id}
-                        ></ha-textfield>
+                        ></ha-input>
                         <ha-area-picker
                           .hass=${this.hass}
                           .device=${device.id}
@@ -274,7 +281,7 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  private async _areaPicked(ev: CustomEvent) {
+  private async _areaPicked(ev: ValueChangedEvent<string>) {
     const picker = ev.currentTarget as any;
     const device = picker.device;
     const area = ev.detail.value;
@@ -286,9 +293,9 @@ class StepFlowCreateEntry extends LitElement {
     this.requestUpdate("_deviceUpdate");
   }
 
-  private _deviceNameChanged(ev): void {
-    const picker = ev.currentTarget as any;
-    const device = picker.device;
+  private _deviceNameChanged(ev: InputEvent): void {
+    const picker = ev.currentTarget as HaInput;
+    const device = (picker as any).device;
     const name = picker.value;
 
     if (!(device in this._deviceUpdate)) {
@@ -339,12 +346,11 @@ class StepFlowCreateEntry extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-textfield,
         ha-area-picker {
           display: block;
         }
-        ha-textfield {
-          margin: 8px 0;
+        ha-input {
+          margin: var(--ha-space-2) 0;
         }
         .buttons > *:last-child {
           margin-left: auto;

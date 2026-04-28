@@ -50,7 +50,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
     /**
      * Safe area padding in pixels for the scrollable element.
      */
-    protected scrollFadeSafeAreaPadding = 16;
+    protected scrollFadeSafeAreaPadding = 4;
 
     /**
      * Scroll threshold in pixels for showing the fades.
@@ -71,18 +71,23 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       return ScrollableFadeClass.DEFAULT_SCROLLABLE_ELEMENT;
     }
 
-    protected firstUpdated(changedProperties: PropertyValues) {
+    protected firstUpdated(changedProperties: PropertyValues<this>) {
       super.firstUpdated?.(changedProperties);
+      if (this.scrollableElement) {
+        this._updateScrollableState(this.scrollableElement);
+      }
       this._attachScrollableElement();
     }
 
-    protected updated(changedProperties: PropertyValues) {
+    protected updated(changedProperties: PropertyValues<this>) {
       super.updated?.(changedProperties);
       this._attachScrollableElement();
     }
 
     disconnectedCallback() {
       this._detachScrollableElement();
+      this._contentScrolled = false;
+      this._contentScrollable = false;
       super.disconnectedCallback();
     }
 
@@ -123,24 +128,24 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
           .fade-top,
           .fade-bottom {
             position: absolute;
-            left: var(--ha-space-0);
-            right: var(--ha-space-0);
-            height: var(--ha-space-4);
+            left: 0;
+            right: 0;
+            height: var(--ha-space-2);
             pointer-events: none;
             transition: opacity 180ms ease-in-out;
-            background: linear-gradient(
-              to bottom,
-              var(--shadow-color),
-              transparent
-            );
             border-radius: var(--ha-border-radius-square);
             opacity: 0;
+            background: linear-gradient(
+              to bottom,
+              var(--ha-color-shadow-scrollable-fade),
+              transparent
+            );
           }
           .fade-top {
-            top: var(--ha-space-0);
+            top: 0;
           }
           .fade-bottom {
-            bottom: var(--ha-space-0);
+            bottom: 0;
             transform: rotate(180deg);
           }
 

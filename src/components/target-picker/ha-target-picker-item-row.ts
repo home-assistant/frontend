@@ -9,6 +9,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -20,7 +21,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type { AreaRegistryEntry } from "../../data/area_registry";
+import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
@@ -92,6 +93,9 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   @state() private _iconImg?: string;
 
   @state() private _domainName?: string;
@@ -108,7 +112,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @query("ha-target-picker-item-row") public itemRow?: HaTargetPickerItemRow;
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
     }
@@ -131,8 +135,17 @@ export class HaTargetPickerItemRow extends LitElement {
       return nothing;
     }
 
+    const replaceable = !this.subEntry && !this.expand;
+
     return html`
-      <ha-md-list-item type="text" class=${notFound ? "error" : ""}>
+      <ha-md-list-item
+        type=${replaceable ? "button" : "text"}
+        class=${classMap({
+          error: notFound,
+          replaceable,
+        })}
+        @click=${replaceable ? this._replaceItem : undefined}
+      >
         <div class="icon" slot="start">
           ${this.subEntry
             ? html`
@@ -391,9 +404,14 @@ export class HaTargetPickerItemRow extends LitElement {
       return;
     }
     try {
-      const entries = await extractFromTarget(this.hass, {
-        [`${this.type}_id`]: [this.itemId],
-      });
+      const entries = await extractFromTarget(
+        this.hass,
+        {
+          [`${this.type}_id`]: [this.itemId],
+        },
+        false,
+        this.primaryEntitiesOnly
+      );
 
       const hiddenAreaIds: string[] = [];
       if (this.type === "floor" || this.type === "label") {
@@ -410,7 +428,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;
@@ -440,7 +459,8 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.includeDomains,
                 this.includeDeviceClasses,
                 this.hass.states,
-                this.entityFilter
+                this.entityFilter,
+                !this.primaryEntitiesOnly
               )
             ) {
               return true;
@@ -468,7 +488,7 @@ export class HaTargetPickerItemRow extends LitElement {
           ) {
             return entityRegMeetsFilter(
               entity,
-              this.type === "label",
+              this.type === "label" || !this.primaryEntitiesOnly,
               this.includeDomains,
               this.includeDeviceClasses,
               this.hass.states,
@@ -514,7 +534,13 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : item,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : item,
         context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
         fallbackIconPath: mdiDevices,
         notFound: !device,
@@ -565,7 +591,7 @@ export class HaTargetPickerItemRow extends LitElement {
     this._domainName = domainToName(this.hass.localize, domain);
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -577,11 +603,14 @@ export class HaTargetPickerItemRow extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl({
-        domain: domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      this._iconImg = brandsUrl(
+        {
+          domain: domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
 
       this._setDomainName(domain);
     } catch {
@@ -589,7 +618,16 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _openDetails() {
+  private _replaceItem(ev: MouseEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "replace-target-item", {
+      type: this.type,
+      id: this.itemId,
+    });
+  }
+
+  private _openDetails(ev: MouseEvent) {
+    ev.stopPropagation();
     showTargetDetailsDialog(this, {
       title: this._itemData(this.type, this.itemId).name,
       type: this.type,
@@ -598,6 +636,7 @@ export class HaTargetPickerItemRow extends LitElement {
       entityFilter: this.entityFilter,
       includeDomains: this.includeDomains,
       includeDeviceClasses: this.includeDeviceClasses,
+      primaryEntitiesOnly: this.primaryEntitiesOnly,
     });
   }
 
@@ -605,8 +644,8 @@ export class HaTargetPickerItemRow extends LitElement {
     buttonLinkStyle,
     css`
       :host {
-        --md-list-item-top-space: var(--ha-space-0);
-        --md-list-item-bottom-space: var(--ha-space-0);
+        --md-list-item-top-space: 0;
+        --md-list-item-bottom-space: 0;
         --md-list-item-leading-space: var(--ha-space-2);
         --md-list-item-trailing-space: var(--ha-space-2);
         --md-list-item-two-line-container-height: 56px;
@@ -626,6 +665,14 @@ export class HaTargetPickerItemRow extends LitElement {
         color: var(--ha-color-on-warning-normal);
       }
 
+      .replaceable {
+        cursor: pointer;
+      }
+
+      .replaceable:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
       }
@@ -641,7 +688,7 @@ export class HaTargetPickerItemRow extends LitElement {
         z-index: 1;
       }
       ha-icon-button {
-        --mdc-icon-button-size: 32px;
+        --ha-icon-button-size: 32px;
       }
       .summary {
         display: flex;

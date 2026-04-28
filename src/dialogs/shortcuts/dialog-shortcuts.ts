@@ -1,14 +1,13 @@
-import { mdiAppleKeyboardCommand } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import { consume, type ContextType } from "@lit/context";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
-import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import { internationalizationContext } from "../../data/context";
 import { isMac } from "../../util/is_mac";
+import { DialogMixin } from "../dialog-mixin";
 
 interface Text {
   textTranslationKey: LocalizeKeys;
@@ -38,6 +37,10 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         textTranslationKey: "ui.dialogs.shortcuts.searching.on_any_page",
+      },
+      {
+        shortcut: [CTRL_CMD, "K"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.searching.search",
       },
       {
         shortcut: ["C"],
@@ -154,24 +157,19 @@ const _SHORTCUTS: Section[] = [
         shortcut: ["M"],
         descriptionTranslationKey: "ui.dialogs.shortcuts.other.my_link",
       },
+      {
+        shortcut: ["Shift", "/"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.show_shortcuts",
+      },
     ],
   },
 ];
 
 @customElement("dialog-shortcuts")
-class DialogShortcuts extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _opened = false;
-
-  public async showDialog(): Promise<void> {
-    this._opened = true;
-  }
-
-  public async closeDialog(): Promise<void> {
-    this._opened = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
+class DialogShortcuts extends DialogMixin(LitElement) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   private _renderShortcut(
     shortcutKeys: ShortcutString[],
@@ -184,42 +182,30 @@ class DialogShortcuts extends LitElement {
             html`<span
               >${shortcutKey === CTRL_CMD
                 ? isMac
-                  ? html`<ha-svg-icon
-                      .path=${mdiAppleKeyboardCommand}
-                    ></ha-svg-icon>`
-                  : this.hass.localize("ui.panel.config.automation.editor.ctrl")
+                  ? "⌘"
+                  : this._i18n.localize("ui.dialogs.shortcuts.keys.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey
-                  : this.hass.localize(
+                  : this._i18n.localize(
                       shortcutKey.shortcutTranslationKey
                     )}</span
             >`
         )}
-        ${this.hass.localize(descriptionKey)}
+        ${this._i18n.localize(descriptionKey)}
       </div>
     `;
   }
 
   protected render() {
-    if (!this._opened) {
-      return nothing;
-    }
-
     return html`
       <ha-dialog
         open
-        hideActions
-        @closed=${this.closeDialog}
-        defaultAction="ignore"
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.shortcuts.title")
-        )}
+        .headerTitle=${this._i18n.localize("ui.dialogs.shortcuts.title")}
       >
         <div class="content">
           ${_SHORTCUTS.map(
             (section) => html`
-              <h3>${this.hass.localize(section.titleTranslationKey)}</h3>
+              <h3>${this._i18n.localize(section.titleTranslationKey)}</h3>
               <div class="items">
                 ${section.items.map((item) => {
                   if ("shortcut" in item) {
@@ -229,7 +215,7 @@ class DialogShortcuts extends LitElement {
                     );
                   }
                   return html`<p>
-                    ${this.hass.localize((item as Text).textTranslationKey)}
+                    ${this._i18n.localize((item as Text).textTranslationKey)}
                   </p>`;
                 })}
               </div>
@@ -237,10 +223,10 @@ class DialogShortcuts extends LitElement {
           )}
         </div>
 
-        <ha-alert>
-          ${this.hass.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
+        <ha-alert slot="footer">
+          ${this._i18n.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
             user_profile: html`<a href="/profile/general#shortcuts"
-              >${this.hass.localize(
+              >${this._i18n.localize(
                 "ui.dialogs.shortcuts.enable_shortcuts_hint_user_profile"
               )}</a
             >`,
@@ -251,20 +237,7 @@ class DialogShortcuts extends LitElement {
   }
 
   static styles = [
-    haStyleDialog,
     css`
-      ha-dialog {
-        --dialog-z-index: 15;
-      }
-
-      h3:first-of-type {
-        margin-top: 0;
-      }
-
-      .content {
-        margin-bottom: 24px;
-      }
-
       .shortcut {
         display: flex;
         flex-direction: row;
@@ -285,6 +258,10 @@ class DialogShortcuts extends LitElement {
 
       ha-svg-icon {
         width: 12px;
+      }
+
+      ha-alert a {
+        color: var(--primary-color);
       }
     `,
   ];

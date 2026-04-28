@@ -44,7 +44,7 @@ export class HaSelectorAttribute extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       // No need to filter value if no value
@@ -68,7 +68,7 @@ export class HaSelectorAttribute extends LitElement {
     }
 
     // Validate that that the attribute is still valid for this entity, else unselect.
-    let invalid = false;
+    let invalid: boolean;
     if (this.context.filter_entity) {
       const entityIds = ensureArray(this.context.filter_entity);
 

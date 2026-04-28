@@ -1,9 +1,11 @@
+import { endOfDay, startOfDay } from "date-fns";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { calcDate } from "../../../common/datetime/calc_date";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   findEntities,
@@ -11,14 +13,19 @@ import {
 } from "../../../common/entity/entity_filter";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
-import "../../../components/ha-ripple";
+import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import type { EnergyData } from "../../../data/energy";
+import {
+  computeConsumptionData,
+  formatConsumptionShort,
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../../data/energy";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
@@ -27,7 +34,9 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
+import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
 
 const COLORS: Record<HomeSummary, string> = {
@@ -35,13 +44,42 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
+  maintenance: "grey",
+  energy: "amber",
+  persons: "green",
 };
 
 @customElement("hui-home-summary-card")
-export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
+export class HuiHomeSummaryCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HomeSummaryCard;
+
+  @state() private _energyData?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    if (this._config?.summary !== "energy") {
+      return [];
+    }
+    const collection = getEnergyDataCollection(this.hass!, {
+      key: "energy_home_dashboard",
+    });
+    // Ensure we always show today's energy data
+    collection.setPeriod(
+      calcDate(new Date(), startOfDay, this.hass!.locale, this.hass!.config),
+      calcDate(new Date(), endOfDay, this.hass!.locale, this.hass!.config)
+    );
+    return [
+      collection.subscribe((data) => {
+        this._energyData = data;
+      }),
+    ];
+  }
 
   public setConfig(config: HomeSummaryCard): void {
     this._config = config;
@@ -79,6 +117,11 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
       hasAction(this._config?.double_tap_action)
     );
   }
+
+  private _computeSecondaryLoading = memoizeOne(
+    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
+      summary === "energy" && !energyData
+  );
 
   private _computeSummaryState(): string {
     if (!this._config || !this.hass) {
@@ -214,6 +257,55 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
+      case "maintenance": {
+        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
+        );
+
+        const maintenanceEntities = findEntities(
+          allEntities,
+          maintenanceFilters
+        );
+
+        const needsAttentionEntities = filterNeedsAttentionEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        if (needsAttentionEntities.length > 0) {
+          return this.hass.localize(
+            "ui.card.home-summary.count_maintenance_issues",
+            {
+              count: needsAttentionEntities.length,
+            }
+          );
+        }
+        return this.hass.localize("ui.card.home-summary.all_maintenance_good");
+      }
+      case "energy": {
+        if (!this._energyData) {
+          return "";
+        }
+        const { summedData } = getSummedData(this._energyData);
+        const { consumption } = computeConsumptionData(summedData, undefined);
+        const totalConsumption = consumption.total.used_total;
+        return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+      }
+      case "persons": {
+        const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+        const personEntities = findEntities(allEntities, personsFilters);
+        const personsHome = personEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "home";
+        });
+        return personsHome.length
+          ? this.hass.localize("ui.card.home-summary.count_persons_home", {
+              count: personsHome.length,
+            })
+          : this.hass.localize("ui.card.home-summary.nobody_home");
+      }
     }
     return "";
   }
@@ -223,8 +315,6 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const contentClasses = { vertical: Boolean(this._config.vertical) };
-
     const color = computeCssColor(COLORS[this._config.summary]);
 
     const style = {
@@ -232,131 +322,45 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     };
 
     const secondary = this._computeSummaryState();
+    const secondaryLoading = this._computeSecondaryLoading(
+      this._config.summary,
+      this._energyData
+    );
 
     const label = getSummaryLabel(this.hass.localize, this._config.summary);
     const icon = HOME_SUMMARIES_ICONS[this._config.summary];
 
     return html`
       <ha-card style=${styleMap(style)}>
-        <div
-          class="background"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler({
+        <ha-tile-container
+          .vertical=${Boolean(this._config.vertical)}
+          .interactive=${this._hasCardAction}
+          .actionHandlerOptions=${{
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
-          })}
-          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
-          aria-labelledby="info"
+          }}
+          @action=${this._handleAction}
         >
-          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
-        </div>
-        <div class="container">
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon>
-              <ha-icon slot="icon" .icon=${icon}></ha-icon>
-            </ha-tile-icon>
-            <ha-tile-info
-              id="info"
-              .primary=${label}
-              .secondary=${secondary}
-            ></ha-tile-info>
-          </div>
-        </div>
+          <ha-tile-icon slot="icon" .icon=${icon}></ha-tile-icon>
+          <ha-tile-info
+            slot="info"
+            .primary=${label}
+            .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
+          ></ha-tile-info>
+        </ha-tile-container>
       </ha-card>
     `;
   }
 
-  static styles = css`
-    :host {
-      --tile-color: var(--state-inactive-color);
-      -webkit-tap-highlight-color: transparent;
-    }
-    ha-card:has(.background:focus-visible) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    ha-card.active {
-      --tile-color: var(--state-icon-color);
-    }
-    [role="button"] {
-      cursor: pointer;
-      pointer-events: auto;
-    }
-    [role="button"]:focus {
-      outline: none;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      overflow: hidden;
-    }
-    .container {
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .container.horizontal {
-      flex-direction: row;
-    }
-
-    .content {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 10px;
-      flex: 1;
-      min-width: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      gap: 10px;
-    }
-
-    .vertical {
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-    }
-    .vertical ha-tile-info {
-      width: 100%;
-      flex: none;
-    }
-
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-      position: relative;
-      padding: 6px;
-      margin: -6px;
-    }
-
-    ha-tile-info {
-      position: relative;
-      min-width: 0;
-      transition: background-color 180ms ease-in-out;
-      box-sizing: border-box;
-    }
-  `;
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-inactive-color);
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -87,7 +87,13 @@ class AssistDevicesPage extends LitElement {
 
         return {
           ...assistDevice,
-          name: device ? computeDeviceNameDisplay(device, this.hass) : "",
+          name: device
+            ? computeDeviceNameDisplay(
+                device,
+                this.hass.localize,
+                this.hass.states
+              )
+            : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {
                 preferred: pipelineName,
@@ -99,7 +105,7 @@ class AssistDevicesPage extends LitElement {
       })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     listAssistPipelines(this.hass).then((pipelines) => {
@@ -129,7 +135,6 @@ class AssistDevicesPage extends LitElement {
         <ha-data-table
           clickable
           id="device_id"
-          .hass=${this.hass}
           .columns=${this._columns(this.hass.localize)}
           .data=${this._data(
             this.hass.localize,

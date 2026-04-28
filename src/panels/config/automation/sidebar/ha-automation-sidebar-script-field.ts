@@ -1,10 +1,10 @@
 import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -12,6 +12,7 @@ import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-script-field")
 export default class HaAutomationSidebarScriptField extends LitElement {
@@ -35,7 +36,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
       this._warnings = undefined;
       if (this.config) {
@@ -156,7 +157,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

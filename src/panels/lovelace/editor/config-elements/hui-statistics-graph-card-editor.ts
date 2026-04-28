@@ -62,20 +62,35 @@ const cardConfigStruct = assign(
         literal("day"),
         literal("week"),
         literal("month"),
+        literal("year"),
+        literal("auto"),
       ])
     ),
-    chart_type: optional(union([literal("bar"), literal("line")])),
+    chart_type: optional(
+      union([
+        literal("line"),
+        literal("line-stack"),
+        literal("bar"),
+        literal("bar-stack"),
+      ])
+    ),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
+    expand_legend: optional(boolean()),
     logarithmic_scale: optional(boolean()),
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
     fit_y_data: optional(boolean()),
+    energy_date_selection: optional(boolean()),
+    collection_key: optional(string()),
   })
 );
 
-const periods = ["5minute", "hour", "day", "week", "month"] as const;
+const chartTypes = ["line", "line-stack", "bar", "bar-stack"] as const;
+const periods = ["5minute", "hour", "day", "week", "month", "year"] as const;
+const energyPeriods = [...periods, "auto"] as const;
+
 const stat_types = [
   "mean",
   "min",
@@ -130,7 +145,9 @@ export class HuiStatisticsGraphCardEditor
       localize: LocalizeFunc,
       statisticIds: string[] | undefined,
       metaDatas: StatisticsMetaData[] | undefined,
-      showFitOption: boolean
+      showFitOption: boolean,
+      hiddenLegend: boolean,
+      enableDateSelect: boolean
     ) => {
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
@@ -150,30 +167,80 @@ export class HuiStatisticsGraphCardEditor
           type: "grid",
           schema: [
             {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "chart_type",
+                  required: true,
+                  type: "select",
+                  options: chartTypes.map((type) => [
+                    type,
+                    localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.${type}`
+                    ),
+                  ]),
+                },
+                ...(!enableDateSelect
+                  ? ([
+                      {
+                        name: "days_to_show",
+                        default: DEFAULT_DAYS_TO_SHOW,
+                        selector: { number: { min: 1, mode: "box" } },
+                      },
+                    ] as HaFormSchema[])
+                  : []),
+              ],
+            },
+            {
               name: "period",
               required: true,
               selector: {
                 select: {
-                  options: periods.map((period) => ({
-                    value: period,
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                    ),
-                    disabled:
-                      period === "5minute" &&
-                      // External statistics don't support 5-minute statistics.
-                      statisticIds?.some((statistic_id) =>
-                        isExternalStatistic(statistic_id)
+                  mode: "list",
+                  options: (enableDateSelect ? energyPeriods : periods).map(
+                    (period) => ({
+                      value: period,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
                       ),
-                  })),
+                      disabled:
+                        // External statistics don't support 5-minute statistics.
+                        period === "5minute" &&
+                        statisticIds?.some((statistic_id) =>
+                          isExternalStatistic(statistic_id)
+                        ),
+                    })
+                  ),
                 },
               },
             },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            ...(enableDateSelect
+              ? ([
+                  {
+                    type: "string",
+                    name: "collection_key",
+                    required: false,
+                  },
+                ] as HaFormSchema[])
+              : []),
             {
-              name: "days_to_show",
-              default: DEFAULT_DAYS_TO_SHOW,
-              selector: { number: { min: 1, mode: "box" } },
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
             },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
             {
               name: "stat_types",
               required: true,
@@ -199,25 +266,6 @@ export class HuiStatisticsGraphCardEditor
               },
             },
             {
-              name: "chart_type",
-              required: true,
-              type: "select",
-              options: [
-                [
-                  "line",
-                  localize(
-                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
-                  ),
-                ],
-                [
-                  "bar",
-                  localize(
-                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
-                  ),
-                ],
-              ],
-            },
-            {
               name: "",
               type: "grid",
               schema: [
@@ -231,47 +279,55 @@ export class HuiStatisticsGraphCardEditor
                   required: false,
                   selector: { number: { mode: "box", step: "any" } },
                 },
+                ...(showFitOption
+                  ? [
+                      {
+                        name: "fit_y_data",
+                        required: false,
+                        selector: { boolean: {} },
+                      },
+                    ]
+                  : []),
+                {
+                  name: "logarithmic_scale",
+                  required: false,
+                  selector: { boolean: {} },
+                },
+                {
+                  name: "hide_legend",
+                  required: false,
+                  selector: { boolean: {} },
+                },
+                ...(!hiddenLegend
+                  ? [
+                      {
+                        name: "expand_legend",
+                        required: false,
+                        selector: { boolean: {} },
+                      },
+                    ]
+                  : []),
               ],
-            },
-
-            ...(showFitOption
-              ? [
-                  {
-                    name: "fit_y_data",
-                    required: false,
-                    selector: { boolean: {} },
-                  },
-                ]
-              : []),
-
-            {
-              name: "hide_legend",
-              required: false,
-              selector: { boolean: {} },
-            },
-            {
-              name: "logarithmic_scale",
-              required: false,
-              selector: { boolean: {} },
             },
           ],
         },
+        ...(units.size > 1
+          ? [
+              {
+                name: "unit",
+                required: false,
+                selector: {
+                  select: {
+                    options: Array.from(units).map((unit) => ({
+                      value: unit,
+                      label: unit,
+                    })),
+                  },
+                },
+              },
+            ]
+          : []),
       ];
-
-      if (units.size > 1) {
-        (schema[1] as any).schema.push({
-          name: "unit",
-          required: false,
-          selector: {
-            select: {
-              options: Array.from(units).map((unit) => ({
-                value: unit,
-                label: unit,
-              })),
-            },
-          },
-        });
-      }
 
       return schema;
     }
@@ -287,7 +343,9 @@ export class HuiStatisticsGraphCardEditor
       this._configEntities,
       this._metaDatas,
       this._config!.min_y_axis !== undefined ||
-        this._config!.max_y_axis !== undefined
+        this._config!.max_y_axis !== undefined,
+      !!this._config!.hide_legend,
+      !!this._config!.energy_date_selection
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
@@ -298,7 +356,7 @@ export class HuiStatisticsGraphCardEditor
         );
     const data = {
       chart_type: "line",
-      period: "hour",
+      period: this._config!.energy_date_selection ? "auto" : "hour",
       ...this._config,
       stat_types: configured_stat_types,
     };
@@ -313,10 +371,10 @@ export class HuiStatisticsGraphCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
         <ha-statistics-picker
-          allow-custom-entity
           .hass=${this.hass}
           .placeholder=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
@@ -384,6 +442,17 @@ export class HuiStatisticsGraphCardEditor
     });
   }
 
+  private _computeHelperCallback = (schema) => {
+    switch (schema.name) {
+      case "collection_key":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+        );
+      default:
+        return undefined;
+    }
+  };
+
   private _computeLabelCallback = (schema) => {
     switch (schema.name) {
       case "chart_type":
@@ -391,6 +460,7 @@ export class HuiStatisticsGraphCardEditor
       case "period":
       case "unit":
       case "hide_legend":
+      case "expand_legend":
       case "logarithmic_scale":
       case "min_y_axis":
       case "max_y_axis":

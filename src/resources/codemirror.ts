@@ -1,21 +1,42 @@
 import { indentLess, indentMore } from "@codemirror/commands";
 import {
-  foldService,
   HighlightStyle,
-  StreamLanguage,
+  syntaxTree,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
-import { yaml } from "@codemirror/legacy-modes/mode/yaml";
-import { Compartment } from "@codemirror/state";
-import type { KeyBinding } from "@codemirror/view";
-import { EditorView } from "@codemirror/view";
+import { jinja, closePercentBrace } from "@codemirror/lang-jinja";
+import { yaml } from "@codemirror/lang-yaml";
+import {
+  Compartment,
+  EditorState,
+  Prec,
+  RangeSetBuilder,
+} from "@codemirror/state";
+import type { KeyBinding, DecorationSet, ViewUpdate } from "@codemirror/view";
+import { Decoration, EditorView, ViewPlugin } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
+import { NodeProp } from "@lezer/common";
 
-export { autocompletion } from "@codemirror/autocomplete";
+export {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  selectedCompletion,
+} from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-export { highlightingFor, foldGutter } from "@codemirror/language";
-export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export {
+  foldGutter,
+  highlightingFor,
+  bracketMatching,
+  syntaxTree,
+} from "@codemirror/language";
+export {
+  closeSearchPanel,
+  highlightSelectionMatches,
+  openSearchPanel,
+  search,
+  searchKeymap,
+} from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,
@@ -26,19 +47,156 @@ export {
   lineNumbers,
   rectangularSelection,
   dropCursor,
+  tooltips,
 } from "@codemirror/view";
 export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
 
+const _yamlWithJinja = jinja({ base: yaml() });
+
 export const langs = {
-  jinja2: StreamLanguage.define(jinja2),
-  yaml: StreamLanguage.define(yaml),
+  jinja2: _yamlWithJinja,
+  yaml: _yamlWithJinja,
 };
+
+// @codemirror/lang-jinja registers closeBrackets language data with only "{",
+// which overrides the full default set and breaks "[" and quote auto-closing.
+// This higher-priority override restores the full default bracket set.
+export const closeBracketsOverride = Prec.highest(
+  EditorState.languageData.of(() => [
+    { closeBrackets: { brackets: ["(", "[", "{", "'", '"'] } },
+  ])
+);
+
+export {
+  haJinjaCompletionSource,
+  JINJA_FUNCTION_ARG_TYPES,
+} from "./jinja_ha_completions";
+export type { JinjaArgType } from "./jinja_ha_completions";
+export { closePercentBrace };
 
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
-export const foldingCompartment = new Compartment();
+
+// ---------------------------------------------------------------------------
+// YAML scalar type highlighter
+//
+// @lezer/yaml assigns tags.content to all unquoted Literal nodes regardless
+// of whether the value is a boolean, number, or plain string. This plugin
+// walks the syntax tree on each update and applies fine-grained CSS classes
+// so the editor can colour each scalar type distinctly — reproducing the
+// behaviour of the old @codemirror/legacy-modes YAML mode.
+// ---------------------------------------------------------------------------
+
+const yamlBoolMark = Decoration.mark({ class: "yaml-bool" });
+const yamlNumberMark = Decoration.mark({ class: "yaml-number" });
+const yamlNullMark = Decoration.mark({ class: "yaml-null" });
+const yamlStringMark = Decoration.mark({ class: "yaml-string" });
+
+// YAML 1.1 booleans (what Home Assistant / PyYAML recognises)
+const YAML_BOOL_RE =
+  /^(?:true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO|on|On|ON|off|Off|OFF)$/;
+const YAML_NULL_RE = /^(?:~|null|Null|NULL)$/;
+const YAML_INT_RE =
+  /^(?:[+-]?(?:0|[1-9][0-9]*)(?:_[0-9]+)*|0o[0-7]+|0x[0-9a-fA-F]+)$/;
+const YAML_FLOAT_RE =
+  /^(?:[+-]?(?:[0-9][0-9_]*)?\.[0-9.]*(?:[eE][+-]?[0-9]+)?|[+-]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))$/;
+
+function buildYamlDecorations(view: EditorView): DecorationSet {
+  const builder = new RangeSetBuilder<Decoration>();
+  const { doc } = view.state;
+  const tree = syntaxTree(view.state);
+
+  for (const { from, to } of view.visibleRanges) {
+    // Iterate the top-level tree first. For plain yaml() mode this finds
+    // Literal nodes directly. For jinja({ base: yaml() }) mode, the YAML
+    // content lives in Text nodes as a mounted subtree — we descend into
+    // those explicitly using NodeProp.mounted.
+    tree.iterate({
+      from,
+      to,
+      enter(node): boolean | undefined {
+        // In jinja({ base: yaml() }) mode, the top-level Template node carries
+        // the YAML parse as a mounted subtree with offsets relative to node.from.
+        if (node.name === "Template" || node.name === "Text") {
+          const nodeTree = node.node.tree;
+          const mounted = nodeTree ? nodeTree.prop(NodeProp.mounted) : null;
+          if (mounted) {
+            const offset = node.from;
+            const rangeFrom = Math.max(from, node.from) - offset;
+            const rangeTo = Math.min(to, node.to) - offset;
+            mounted.tree.iterate({
+              from: rangeFrom,
+              to: rangeTo,
+              enter(n) {
+                if (n.name !== "Literal") return;
+                if (n.node.parent?.name === "Key") return;
+                const absFrom = n.from + offset;
+                const absTo = n.to + offset;
+                const text = doc.sliceString(absFrom, absTo);
+                let mark: Decoration;
+                if (YAML_BOOL_RE.test(text)) {
+                  mark = yamlBoolMark;
+                } else if (YAML_NULL_RE.test(text)) {
+                  mark = yamlNullMark;
+                } else if (YAML_INT_RE.test(text) || YAML_FLOAT_RE.test(text)) {
+                  mark = yamlNumberMark;
+                } else {
+                  mark = yamlStringMark;
+                }
+                builder.add(absFrom, absTo, mark);
+              },
+            });
+          }
+          return false; // don't recurse further into this node
+        }
+
+        // In plain yaml() mode Literal nodes are directly in the top-level tree.
+        if (node.name !== "Literal") return undefined;
+        if (node.node.parent?.name === "Key") return undefined;
+        const text = doc.sliceString(node.from, node.to);
+        let mark: Decoration;
+        if (YAML_BOOL_RE.test(text)) {
+          mark = yamlBoolMark;
+        } else if (YAML_NULL_RE.test(text)) {
+          mark = yamlNullMark;
+        } else if (YAML_INT_RE.test(text) || YAML_FLOAT_RE.test(text)) {
+          mark = yamlNumberMark;
+        } else {
+          mark = yamlStringMark;
+        }
+        builder.add(node.from, node.to, mark);
+        return undefined;
+      },
+    });
+  }
+  return builder.finish();
+}
+
+export const yamlScalarHighlighter = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet;
+
+    constructor(view: EditorView) {
+      this.decorations = buildYamlDecorations(view);
+    }
+
+    update(update: ViewUpdate) {
+      if (update.docChanged || update.viewportChanged) {
+        this.decorations = buildYamlDecorations(update.view);
+      }
+    }
+  },
+  { decorations: (v) => v.decorations }
+);
+
+export const yamlScalarHighlightStyle = EditorView.baseTheme({
+  ".yaml-bool": { color: "var(--codemirror-atom, #F90)" },
+  ".yaml-null": { color: "var(--codemirror-atom, #F90)" },
+  ".yaml-number": { color: "var(--codemirror-number, #ca7841)" },
+  ".yaml-string": { color: "var(--codemirror-string, #07a)" },
+});
 
 export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
@@ -145,8 +303,20 @@ export const haTheme = EditorView.theme({
       "var(--code-editor-background-color, var(--card-background-color))",
     border: "1px solid var(--divider-color)",
     borderRadius: "var(--mdc-shape-medium, 4px)",
+    maxWidth: "min(420px, calc(var(--safe-width) - var(--ha-space-8)))",
+    boxSizing: "border-box",
     boxShadow:
       "0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)",
+  },
+
+  ".cm-tooltip.cm-tooltip-autocomplete": {
+    maxWidth:
+      "min(420px, calc(var(--safe-width) - var(--ha-space-8)), calc(100% - var(--ha-space-2)))",
+  },
+
+  ".cm-tooltip-autocomplete > ul": {
+    maxWidth: "100%",
+    boxSizing: "border-box",
   },
 
   "& .cm-tooltip.cm-tooltip-autocomplete > ul > li": {
@@ -169,15 +339,6 @@ export const haTheme = EditorView.theme({
 
   "li[aria-selected] .cm-completionDetail": {
     color: "var(--text-primary-color)",
-  },
-
-  "& .cm-completionInfo.cm-completionInfo-right": {
-    left: "calc(100% + 4px)",
-  },
-
-  "& .cm-tooltip.cm-completionInfo": {
-    padding: "4px 8px",
-    marginTop: "-5px",
   },
 
   ".cm-selectionMatch": {
@@ -280,65 +441,10 @@ const haHighlightStyle = HighlightStyle.define([
   { tag: tags.string, color: "var(--codemirror-string, #07a)" },
   { tag: tags.inserted, color: "var(--codemirror-string2, #07a)" },
   { tag: tags.invalid, color: "var(--error-color)" },
+  {
+    tag: [tags.squareBracket, tags.brace, tags.punctuation],
+    color: "var(--codemirror-def, #8DA6CE)",
+  },
 ]);
 
 export const haSyntaxHighlighting = syntaxHighlighting(haHighlightStyle);
-
-// A folding service for indent-based languages such as YAML.
-export const foldingOnIndent = foldService.of((state, from, to) => {
-  const line = state.doc.lineAt(from);
-
-  // empty lines continue their indentation from surrounding lines
-  if (!line.length || !line.text.trim().length) {
-    return null;
-  }
-
-  let onlyEmptyNext = true;
-
-  const lineCount = state.doc.lines;
-  const indent = line.text.search(/\S|$/); // Indent level of the first line
-
-  let foldStart = from; // Start of the fold
-  let foldEnd = to; // End of the fold
-
-  // Check if the next line is on a deeper indent level
-  // If so, continue subsequent lines
-  // If not, go on with the foldEnd
-  let nextLine = line;
-  while (nextLine.number < lineCount) {
-    nextLine = state.doc.line(nextLine.number + 1); // Next line
-    const nextIndent = nextLine.text.search(/\S|$/); // Indent level of the next line
-
-    // If the next line is on a deeper indent level, add it to the fold
-    // empty lines continue their indentation from surrounding lines
-    if (
-      !nextLine.length ||
-      !nextLine.text.trim().length ||
-      nextIndent > indent
-    ) {
-      if (onlyEmptyNext) {
-        onlyEmptyNext = nextLine.text.trim().length === 0;
-      }
-      // include this line in the fold and continue
-      foldEnd = nextLine.to;
-    } else {
-      // If the next line is not on a deeper indent level, we found the end of the region
-      break;
-    }
-  }
-
-  // Don't create fold if it's a single line
-  if (
-    onlyEmptyNext ||
-    state.doc.lineAt(foldStart).number === state.doc.lineAt(foldEnd).number
-  ) {
-    return null;
-  }
-
-  // Set the fold start to the end of the first line
-  // With this, the fold will not include the first line
-  foldStart = line.to;
-
-  // Return a fold that covers the entire indent level
-  return { from: foldStart, to: foldEnd };
-});

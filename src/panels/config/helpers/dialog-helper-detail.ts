@@ -1,21 +1,23 @@
 import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-list";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -27,10 +29,12 @@ import { createInputText } from "../../../data/input_text";
 import {
   domainToName,
   fetchIntegrationManifest,
+  type IntegrationManifest,
 } from "../../../data/integration";
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -102,7 +106,7 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _item?: Helper;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _domain?: string;
 
@@ -110,13 +114,17 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _submitting = false;
 
-  @query(".form") private _form?: HTMLDivElement;
-
   @state() private _helperFlows?: string[];
 
   @state() private _loading = false;
 
   @state() private _filter?: string;
+
+  private _pendingConfigFlow?: {
+    startFlowHandler: string;
+    manifest: IntegrationManifest;
+    dialogClosedCallback?: ShowDialogHelperDetailParams["dialogClosedCallback"];
+  };
 
   private _params?: ShowDialogHelperDetailParams;
 
@@ -127,29 +135,47 @@ export class DialogHelperDetail extends LitElement {
     if (this._domain && this._domain in HELPERS) {
       await HELPERS[this._domain].import();
     }
-    this._opened = true;
+    this._open = true;
     await this.updateComplete;
     this.hass.loadFragmentTranslation("config");
     const flows = await getConfigFlowHandlers(this.hass, ["helper"]);
     await this.hass.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;
+
+    await this.updateComplete;
+    await this._focusSearchInput();
   }
 
   public closeDialog(): void {
-    this._opened = false;
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     this._error = undefined;
     this._domain = undefined;
     this._params = undefined;
     this._filter = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+
+    if (this._pendingConfigFlow) {
+      const pendingConfigFlow = this._pendingConfigFlow;
+      this._pendingConfigFlow = undefined;
+      showConfigFlowDialog(this, {
+        startFlowHandler: pendingConfigFlow.startFlowHandler,
+        manifest: pendingConfigFlow.manifest,
+        dialogClosedCallback: pendingConfigFlow.dialogClosedCallback,
+      });
+    }
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
     let content: TemplateResult;
+    let footer: TemplateResult | typeof nothing = nothing;
 
     if (this._domain) {
       content = html`
@@ -159,25 +185,30 @@ export class DialogHelperDetail extends LitElement {
             hass: this.hass,
             item: this._item,
             new: true,
+            autofocus: true,
           })}
         </div>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._createItem}
-          .disabled=${this._submitting}
-        >
-          ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
-        </ha-button>
-        ${this._params?.domain
-          ? nothing
-          : html`<ha-button
-              appearance="plain"
-              slot="secondaryAction"
-              @click=${this._goBack}
-              .disabled=${this._submitting}
-            >
-              ${this.hass!.localize("ui.common.back")}
-            </ha-button>`}
+      `;
+      footer = html`
+        <ha-dialog-footer slot="footer">
+          ${this._params?.domain
+            ? nothing
+            : html`<ha-button
+                slot="secondaryAction"
+                appearance="plain"
+                @click=${this._goBack}
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.common.back")}
+              </ha-button>`}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._createItem}
+            .disabled=${this._submitting}
+          >
+            ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
+          </ha-button>
+        </ha-dialog-footer>
       `;
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-spinner></ha-spinner>`;
@@ -189,15 +220,15 @@ export class DialogHelperDetail extends LitElement {
       );
 
       content = html`
-        <search-input
-          .hass=${this.hass}
-          dialogInitialFocus="true"
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-          .label=${this.hass.localize(
+        <ha-input-search
+          appearance="outlined"
+          autofocus
+          .value=${this._filter}
+          @input=${this._filterChanged}
+          .placeholder=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
-        ></search-input>
+        ></ha-input-search>
         <ha-list
           class="ha-scrollbar"
           innerRole="listbox"
@@ -206,15 +237,14 @@ export class DialogHelperDetail extends LitElement {
             "ui.panel.config.helpers.dialog.create_helper"
           )}
           rootTabbable
-          dialogInitialFocus
         >
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
             const isLoaded =
-              !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+              !(domain in HELPERS) ||
+              isComponentLoaded(this.hass.config, domain);
             return html`
               <ha-list-item
-                .disabled=${!isLoaded}
                 hasmeta
                 .domain=${domain}
                 @request-selected=${this._domainPicked}
@@ -224,19 +254,21 @@ export class DialogHelperDetail extends LitElement {
                   slot="graphic"
                   loading="lazy"
                   alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <span class="item-text"> ${label} </span>
                 ${isLoaded
                   ? html`<ha-icon-next slot="meta"></ha-icon-next>`
-                  : html` <ha-svg-icon
+                  : html`<ha-svg-icon
                         slot="meta"
                         .id="icon-${domain}"
                         path=${mdiAlertOutline}
@@ -257,32 +289,26 @@ export class DialogHelperDetail extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        class=${classMap({ "button-left": !this._domain })}
-        scrimClickAction
-        escapeKeyAction
-        .hideActions=${!this._domain}
-        .heading=${createCloseHeading(
-          this.hass,
-          this._domain
-            ? this.hass.localize(
-                "ui.panel.config.helpers.dialog.create_platform",
-                {
-                  platform:
-                    (isHelperDomain(this._domain) &&
-                      this.hass.localize(
-                        `ui.panel.config.helpers.types.${
-                          this._domain as HelperDomain
-                        }`
-                      )) ||
-                    this._domain,
-                }
-              )
-            : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._domain
+          ? this.hass.localize(
+              "ui.panel.config.helpers.dialog.create_platform",
+              {
+                platform:
+                  (isHelperDomain(this._domain) &&
+                    this.hass.localize(
+                      `ui.panel.config.helpers.types.${
+                        this._domain as HelperDomain
+                      }`
+                    )) ||
+                  this._domain,
+              }
+            )
+          : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")}
+        @closed=${this._dialogClosed}
       >
-        ${content}
+        ${content} ${footer}
       </ha-dialog>
     `;
   }
@@ -329,8 +355,9 @@ export class DialogHelperDetail extends LitElement {
     }
   );
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(e: InputEvent) {
+    const target = e.target as HaInputSearch;
+    this._filter = target.value;
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -364,6 +391,17 @@ export class DialogHelperDetail extends LitElement {
 
   private async _domainPicked(ev): Promise<void> {
     const domain = ev.target.closest("ha-list-item").domain;
+    const isLoaded =
+      !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
+    if (!isLoaded) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.platform_not_loaded",
+          { platform: domain }
+        ),
+      });
+      return;
+    }
 
     if (domain in HELPERS) {
       this._loading = true;
@@ -373,26 +411,35 @@ export class DialogHelperDetail extends LitElement {
       } finally {
         this._loading = false;
       }
-      this._focusForm();
     } else {
-      showConfigFlowDialog(this, {
+      this._pendingConfigFlow = {
         startFlowHandler: domain,
         manifest: await fetchIntegrationManifest(this.hass, domain),
-        dialogClosedCallback: this._params!.dialogClosedCallback,
-      });
+        dialogClosedCallback: this._params?.dialogClosedCallback,
+      };
       this.closeDialog();
     }
   }
 
-  private async _focusForm(): Promise<void> {
-    await this.updateComplete;
-    (this._form?.lastElementChild as HTMLElement).focus();
-  }
-
-  private _goBack() {
+  private async _goBack() {
     this._domain = undefined;
     this._item = undefined;
     this._error = undefined;
+    await this.updateComplete;
+    await this._focusSearchInput();
+  }
+
+  private async _focusSearchInput() {
+    const searchInput = this.shadowRoot?.querySelector("ha-input-search") as
+      | (HTMLElement & { updateComplete?: Promise<unknown> })
+      | null;
+
+    if (!searchInput) {
+      return;
+    }
+
+    await searchInput.updateComplete;
+    searchInput.focus();
   }
 
   static get styles(): CSSResultGroup {
@@ -400,31 +447,20 @@ export class DialogHelperDetail extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        ha-dialog.button-left {
-          --justify-action-buttons: flex-start;
-        }
         ha-dialog {
           --dialog-content-padding: 0;
-          --dialog-scroll-divider-color: transparent;
-          --mdc-dialog-max-height: 90vh;
-        }
-        @media all and (min-width: 550px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 500px;
-          }
         }
         ha-icon-next {
-          width: 24px;
+          width: var(--ha-space-6);
         }
         ha-tooltip {
           pointer-events: auto;
         }
         .form {
-          padding: 24px;
+          padding: var(--ha-space-6);
         }
-        search-input {
-          display: block;
-          margin: 16px 16px 0;
+        ha-input-search {
+          margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
         ha-list {
           height: calc(60vh - 184px);

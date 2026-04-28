@@ -18,6 +18,7 @@ import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -44,9 +45,24 @@ export class HuiEnergyDevicesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-devices-card-editor");
+    return document.createElement("hui-energy-devices-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDevicesGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDevicesGraphCardConfig {
+    return {
+      type: "energy-devices-graph",
+    };
+  }
 
   @state() private _chartData: (BarSeriesOption | PieSeriesOption)[] = [];
 
@@ -98,6 +114,9 @@ export class HuiEnergyDevicesGraphCard
   }
 
   public setConfig(config: EnergyDevicesGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -109,7 +128,7 @@ export class HuiEnergyDevicesGraphCard
     return this._config.modes;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -186,7 +205,7 @@ export class HuiEnergyDevicesGraphCard
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh`;
+    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
@@ -523,6 +542,7 @@ export class HuiEnergyDevicesGraphCard
     this._legendData = chartData.map((d) => ({
       ...d,
       name: this._getDeviceName(d.name),
+      value: `${formatNumber(d.value[0], this.hass.locale)} kWh`,
     }));
     // filter out hidden stats in place
     for (let i = chartData.length - 1; i >= 0; i--) {

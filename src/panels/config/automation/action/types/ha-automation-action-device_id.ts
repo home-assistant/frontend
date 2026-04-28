@@ -35,7 +35,7 @@ export class HaDeviceAction extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origAction?: DeviceAction;
 
@@ -59,7 +59,7 @@ export class HaDeviceAction extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return true;
     }
@@ -136,7 +136,7 @@ export class HaDeviceAction extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     const prevAction = changedProps.get("action");
     if (
       prevAction &&

@@ -13,6 +13,7 @@ import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
+  | ViewColumnsCondition
   | LocationCondition
   | NumericStateCondition
   | StateCondition
@@ -34,6 +35,17 @@ interface BaseCondition {
   condition: string;
 }
 
+export interface ConditionContext {
+  max_columns?: number;
+  entity_id?: string;
+}
+
+export interface ViewColumnsCondition extends BaseCondition {
+  condition: "view_columns";
+  min?: number;
+  max?: number;
+}
+
 export interface LocationCondition extends BaseCondition {
   condition: "location";
   locations?: string[];
@@ -42,6 +54,7 @@ export interface LocationCondition extends BaseCondition {
 export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
+  attribute?: string;
   below?: string | number;
   above?: string | number;
 }
@@ -49,6 +62,7 @@ export interface NumericStateCondition extends BaseCondition {
 export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
+  attribute?: string;
   state?: string | string[];
   state_not?: string | string[];
 }
@@ -97,13 +111,27 @@ function getValueFromEntityId(
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ) {
-  const state =
-    condition.entity && hass.states[condition.entity]
-      ? hass.states[condition.entity].state
-      : UNKNOWN;
+  const entityId = condition.entity || context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
+  const attribute = "attribute" in condition ? condition.attribute : undefined;
+  let state: string;
+  if (!stateObj) {
+    state = UNKNOWN;
+  } else if (attribute) {
+    const attrValue = stateObj.attributes[attribute];
+    state = attrValue == null ? UNKNOWN : String(attrValue);
+  } else {
+    state = stateObj.state;
+  }
   let value = condition.state ?? condition.state_not;
+
+  // Guard against invalid/incomplete condition configuration
+  if (value === undefined) {
+    return false;
+  }
 
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {
@@ -126,10 +154,14 @@ function checkStateCondition(
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ) {
-  const state = (condition.entity ? hass.states[condition.entity] : undefined)
-    ?.state;
+  const entityId = condition.entity || context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
+  const state = condition.attribute
+    ? stateObj?.attributes[condition.attribute]
+    : stateObj?.state;
   let above = condition.above;
   let below = condition.below;
 
@@ -156,6 +188,17 @@ function checkStateNumericCondition(
     (condition.below == null ||
       isNaN(numericBelow) ||
       numericBelow > numericState)
+  );
+}
+
+function checkViewColumnsCondition(
+  condition: ViewColumnsCondition,
+  context: ConditionContext
+) {
+  if (!context.max_columns) return true;
+  return (
+    (condition.min == null || context.max_columns >= condition.min) &&
+    (condition.max == null || context.max_columns <= condition.max)
   );
 }
 
@@ -189,34 +232,52 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
     : false;
 }
 
-function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
+function checkAndCondition(
+  condition: AndCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return checkConditionsMet(condition.conditions, hass);
+  return checkConditionsMet(condition.conditions, hass, context);
 }
 
-function checkNotCondition(condition: NotCondition, hass: HomeAssistant) {
+function checkNotCondition(
+  condition: NotCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return !checkConditionsMet(condition.conditions, hass);
+  return !checkConditionsMet(condition.conditions, hass, context);
 }
 
-function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
+function checkOrCondition(
+  condition: OrCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
   if (!condition.conditions) return true;
-  return condition.conditions.some((c) => checkConditionsMet([c], hass));
+  return condition.conditions.some((c) =>
+    checkConditionsMet([c], hass, context)
+  );
 }
 
 /**
  * Return the result of applying conditions
  * @param conditions conditions to apply
  * @param hass Home Assistant object
+ * @param context optional context for conditions that need runtime information
  * @returns true if conditions are respected
  */
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
       switch (c.condition) {
+        case "view_columns":
+          return checkViewColumnsCondition(c, context);
         case "time":
           return checkTimeCondition(c, hass);
         case "screen":
@@ -226,18 +287,18 @@ export function checkConditionsMet(
         case "location":
           return checkLocationCondition(c, hass);
         case "numeric_state":
-          return checkStateNumericCondition(c, hass);
+          return checkStateNumericCondition(c, hass, context);
         case "and":
-          return checkAndCondition(c, hass);
+          return checkAndCondition(c, hass, context);
         case "not":
-          return checkNotCondition(c, hass);
+          return checkNotCondition(c, hass, context);
         case "or":
-          return checkOrCondition(c, hass);
+          return checkOrCondition(c, hass, context);
         default:
-          return checkStateCondition(c, hass);
+          return checkStateCondition(c, hass, context);
       }
     }
-    return checkStateCondition(c, hass);
+    return checkStateCondition(c, hass, context);
   });
 }
 
@@ -285,10 +346,7 @@ export function extractConditionEntityIds(
 }
 
 function validateStateCondition(condition: StateCondition | LegacyCondition) {
-  return (
-    condition.entity != null &&
-    (condition.state != null || condition.state_not != null)
-  );
+  return condition.state != null || condition.state_not != null;
 }
 
 function validateScreenCondition(condition: ScreenCondition) {
@@ -344,11 +402,12 @@ function validateOrCondition(condition: OrCondition) {
   return condition.conditions != null;
 }
 
+function validateViewColumnsCondition(condition: ViewColumnsCondition) {
+  return condition.min != null || condition.max != null;
+}
+
 function validateNumericStateCondition(condition: NumericStateCondition) {
-  return (
-    condition.entity != null &&
-    (condition.above != null || condition.below != null)
-  );
+  return condition.above != null || condition.below != null;
 }
 /**
  * Validate the conditions config for the UI
@@ -361,6 +420,8 @@ export function validateConditionalConfig(
   return conditions.every((c) => {
     if ("condition" in c) {
       switch (c.condition) {
+        case "view_columns":
+          return validateViewColumnsCondition(c);
         case "screen":
           return validateScreenCondition(c);
         case "time":
@@ -409,8 +470,8 @@ export function addEntityToCondition(
     condition.condition === "numeric_state"
   ) {
     return {
-      entity: entityId,
       ...condition,
+      entity: entityId,
     };
   }
   return condition;

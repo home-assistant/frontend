@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -27,11 +26,12 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-button-menu";
-import "../../components/ha-date-range-picker";
+import "../../components/date-picker/ha-date-range-picker";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
@@ -47,7 +47,7 @@ import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
@@ -86,7 +86,7 @@ class HaPanelHistory extends LitElement {
   @query("state-history-charts")
   private _stateHistoryCharts?: StateHistoryCharts;
 
-  private _subscribed?: Promise<UnsubscribeFunc>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   private _interval?: number;
 
@@ -136,7 +136,9 @@ class HaPanelHistory extends LitElement {
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `}
-        <div slot="title">${this.hass.localize("panel.history")}</div>
+        <h1 class="page-title" slot="title">
+          ${this.hass.localize("panel.history")}
+        </h1>
         ${entitiesSelected
           ? html`
               <ha-icon-button
@@ -148,28 +150,27 @@ class HaPanelHistory extends LitElement {
               ></ha-icon-button>
             `
           : ""}
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-dropdown-item value="download" .disabled=${this._isLoading}>
             ${this.hass.localize("ui.panel.history.download_data")}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-dropdown-item value="add-card" .disabled=${this._isLoading}>
             ${this.hass.localize("ui.panel.history.add_card")}
-            <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiImagePlus}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
-        <div class="flex content">
+        <div class="flex content ha-scrollbar">
           <div class="filters">
             <ha-date-range-picker
-              .hass=${this.hass}
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
@@ -275,7 +276,7 @@ class HaPanelHistory extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
@@ -319,18 +320,28 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
-    const statistics = await fetchStatistics(
-      this.hass!,
-      statsStartDate,
-      this._endDate,
-      statisticIds,
-      "hour",
-      undefined,
-      ["mean", "state"]
-    );
+    let statistics;
+    try {
+      statistics = await fetchStatistics(
+        this.hass!,
+        statsStartDate,
+        this._endDate,
+        statisticIds,
+        "hour",
+        undefined,
+        ["mean", "state"]
+      );
+    } catch (_err) {
+      return;
+    }
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass));
+    } catch (_err) {
+      return;
+    }
 
     this._statisticsHistory = convertStatisticsToHistory(
       this.hass!,
@@ -357,8 +368,28 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
+    // Mark as subscribing before the await to prevent re-entrant calls
+    const sentinel = Promise.resolve(undefined) as NonNullable<
+      typeof this._subscribed
+    >;
+    this._subscribed = sentinel;
+
+    let sensorNumericDeviceClasses: string[];
+    try {
+      ({ numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass));
+    } catch (_err) {
+      if (this._subscribed === sentinel) {
+        this._subscribed = undefined;
+        this._isLoading = false;
+      }
+      return;
+    }
+
+    // Bail out if a newer call replaced our sentinel while we were awaiting
+    if (this._subscribed !== sentinel) {
+      return;
+    }
 
     this._subscribed = subscribeHistory(
       this.hass,
@@ -408,7 +439,7 @@ class HaPanelHistory extends LitElement {
       this._interval = undefined;
     }
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
@@ -477,12 +508,13 @@ class HaPanelHistory extends LitElement {
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "download":
         this._downloadHistory();
         break;
-      case 1:
+      case "add-card":
         this._suggestCard();
         break;
     }
@@ -619,6 +651,7 @@ class HaPanelHistory extends LitElement {
   static get styles() {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-top-app-bar-fixed {
           height: 100vh;
@@ -626,7 +659,21 @@ class HaPanelHistory extends LitElement {
           overflow-y: visible;
         }
 
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
+        }
+
         .content {
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
+          box-sizing: border-box;
+          overflow-x: hidden;
           padding: 0 16px 16px;
         }
 
@@ -659,6 +706,8 @@ class HaPanelHistory extends LitElement {
 
         ha-target-picker {
           flex: 1;
+          max-width: 100%;
+          min-width: 0;
         }
 
         @media all and (max-width: 1025px) {

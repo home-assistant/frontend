@@ -157,7 +157,7 @@ export class HaAutomationAddSearch extends LitElement {
     return this.hass.userData?.showEntityIdPicker;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
@@ -327,7 +327,7 @@ export class HaAutomationAddSearch extends LitElement {
                 style=${styleMap({
                   width: "var(--ha-space-12)",
                   position: "absolute",
-                  top: "var(--ha-space-0)",
+                  top: "0",
                   left: rtl ? undefined : "var(--ha-space-1)",
                   right: rtl ? "var(--ha-space-1)" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
@@ -362,7 +362,6 @@ export class HaAutomationAddSearch extends LitElement {
                   ? html`
                       <ha-domain-icon
                         slot="start"
-                        .hass=${this.hass}
                         .domain=${(item as DevicePickerItem).domain!}
                         brand-fallback
                       ></ha-domain-icon>
@@ -451,8 +450,10 @@ export class HaAutomationAddSearch extends LitElement {
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     area: memoizeOne((states: PickerComboBoxItem[]) =>

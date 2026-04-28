@@ -1,24 +1,24 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiCog, mdiContentCopy } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-check-list-item";
+import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type {
   AutomationConfig,
   WebhookTrigger,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { showToast } from "../../../../../util/toast";
+import { showEditorToast } from "../../editor-toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
@@ -79,7 +79,7 @@ export class HaWebhookTrigger extends LitElement {
     return `${urlSafeAlias}-${urlSafeId}`;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
       if (this.trigger.allowed_methods === undefined) {
@@ -103,29 +103,32 @@ export class HaWebhookTrigger extends LitElement {
 
     return html`
       <div class="flex">
-        <ha-textfield
+        <ha-input
           name="webhook_id"
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
           )}
-          .helper=${this.hass.localize(
+          .hint=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
           )}
           .disabled=${this.disabled}
-          iconTrailing
           .value=${webhookId || ""}
           @input=${this._valueChanged}
         >
           <ha-icon-button
             @click=${this._copyUrl}
-            slot="trailingIcon"
+            slot="end"
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
             )}
             .path=${mdiContentCopy}
           ></ha-icon-button>
-        </ha-textfield>
-        <ha-button-menu multi @closed=${stopPropagation} fixed>
+        </ha-input>
+        <ha-dropdown
+          @wa-select=${this._handleDropdownSelect}
+          placement="bottom-end"
+          distance="-24"
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
@@ -135,27 +138,29 @@ export class HaWebhookTrigger extends LitElement {
           ></ha-icon-button>
           ${SUPPORTED_METHODS.map(
             (method) => html`
-              <ha-check-list-item
-                left
+              <ha-dropdown-item
                 .value=${method}
+                type="checkbox"
                 @request-selected=${this._allowedMethodsChanged}
-                .selected=${allowedMethods!.includes(method)}
+                .checked=${allowedMethods!.includes(method)}
               >
                 ${method}
-              </ha-check-list-item>
+              </ha-dropdown-item>
             `
           )}
-          <li divider role="separator"></li>
-          <ha-check-list-item
-            left
-            @request-selected=${this._localOnlyChanged}
-            .selected=${localOnly!}
+          ${SUPPORTED_METHODS.length
+            ? html`<wa-divider></wa-divider>`
+            : nothing}
+          <ha-dropdown-item
+            type="checkbox"
+            .checked=${localOnly!}
+            value="local_only"
           >
             ${this.hass!.localize(
               "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
             )}
-          </ha-check-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </div>
     `;
   }
@@ -164,23 +169,18 @@ export class HaWebhookTrigger extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  private _localOnlyChanged(ev: CustomEvent<RequestSelectedDetail>): void {
-    ev.stopPropagation();
-    if (this.trigger.local_only === ev.detail.selected) {
+  private _localOnlyChanged(local_only: boolean): void {
+    if (this.trigger.local_only === local_only) {
       return;
     }
     const newTrigger = {
       ...this.trigger,
-      local_only: ev.detail.selected,
+      local_only,
     };
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _allowedMethodsChanged(ev: CustomEvent<RequestSelectedDetail>): void {
-    ev.stopPropagation();
-    const method = (ev.target as any).value;
-    const selected = ev.detail.selected;
-
+  private _allowedMethodsChanged(method: string, selected: boolean): void {
     if (selected === this.trigger.allowed_methods?.includes(method)) {
       return;
     }
@@ -198,13 +198,29 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   private async _copyUrl(ev): Promise<void> {
-    const inputElement = ev.target.parentElement as HaTextField;
+    const inputElement = ev.target.parentElement as HaInput;
     const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
     await copyToClipboard(url);
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // don't close the dropdown to select multiple options
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    if (action === "local_only") {
+      this._localOnlyChanged(ev.detail.item.checked);
+      return;
+    }
+
+    this._allowedMethodsChanged(ev.detail.item.value, ev.detail.item.checked);
   }
 
   static styles = css`
@@ -212,17 +228,17 @@ export class HaWebhookTrigger extends LitElement {
       display: flex;
     }
 
-    ha-textfield {
+    ha-input {
       flex: 1;
     }
 
-    ha-textfield > ha-icon-button {
-      --mdc-icon-button-size: 24px;
+    ha-input > ha-icon-button {
+      --ha-icon-button-size: 24px;
       --mdc-icon-size: 18px;
       color: var(--secondary-text-color);
     }
 
-    ha-button-menu {
+    ha-dropdown ha-icon-button {
       padding-top: 4px;
     }
   `;

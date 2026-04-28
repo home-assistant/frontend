@@ -25,6 +25,7 @@ import type { HomeAssistant } from "../../../../types";
 import { STUB_IMAGE } from "../../cards/hui-picture-entity-card";
 import type { PictureEntityCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -34,6 +35,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
+    show_entity_picture: optional(boolean()),
     image: optional(union([string(), object()])),
     name: optional(entityNameStruct),
     camera_image: optional(string()),
@@ -67,6 +69,7 @@ export class HuiPictureEntityCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "entity", required: true, selector: { entity: {} } },
+        { name: "show_entity_picture", selector: { boolean: {} } },
         {
           name: "name",
           selector: {
@@ -154,6 +157,7 @@ export class HuiPictureEntityCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -167,6 +171,7 @@ export class HuiPictureEntityCardEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },
@@ -211,6 +216,8 @@ export class HuiPictureEntityCardEditor
       config.entity !== this._config?.entity &&
       (computeDomain(config.entity) === "image" ||
         (computeDomain(config.entity) === "person" &&
+          this.hass?.states[config.entity]?.attributes.entity_picture) ||
+        (config.show_entity_picture &&
           this.hass?.states[config.entity]?.attributes.entity_picture)) &&
       config.image === STUB_IMAGE
     ) {
@@ -244,6 +251,10 @@ export class HuiPictureEntityCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "show_entity_picture":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.show_entity_picture_helper`
+        );
       case "aspect_ratio":
         return typeof this._config?.grid_options?.rows === "number"
           ? this.hass!.localize(

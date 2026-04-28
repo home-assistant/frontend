@@ -1,4 +1,5 @@
-import type { ActionDetail } from "@material/mwc-list";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -16,15 +17,15 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -34,18 +35,55 @@ import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   Condition,
   LegacyCondition,
+  OrCondition,
+  AndCondition,
+  NotCondition,
 } from "../../common/validate-condition";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";
+import type { ConditionsEntityContext } from "./context";
+import { conditionsEntityContext } from "./context";
 import type { LovelaceConditionEditorConstructor } from "./types";
+
+const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
+
+const CONTAINER_CONDITIONS = ["and", "or", "not"];
+
+const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
+  NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
+
+export const getConditionClassName = (condition: string, noEntity: boolean) => {
+  if (isNoEntityCondition(condition, noEntity)) {
+    return `ha-card-condition-${condition}-no_entity`;
+  }
+  return `ha-card-condition-${condition}`;
+};
+
+const containsNoEntityCondition = (
+  condition: Condition,
+  noEntity: boolean
+): boolean =>
+  noEntity &&
+  CONTAINER_CONDITIONS.includes(condition.condition) &&
+  (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
+    (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
+  ) === true;
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
+
+  @state()
+  @consume({ context: conditionsEntityContext, subscribe: true })
+  private _entityContext?: ConditionsEntityContext;
+
+  private get _noEntity(): boolean {
+    return this._entityContext?.mode === "filter";
+  }
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -68,7 +106,7 @@ export class HaCardConditionEditor extends LitElement {
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
-      `ha-card-condition-${this._condition.condition}`
+      getConditionClassName(this._condition.condition, this._noEntity)
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
@@ -78,7 +116,7 @@ export class HaCardConditionEditor extends LitElement {
     });
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("condition")) {
       this._condition = {
         condition: "state",
@@ -126,14 +164,11 @@ export class HaCardConditionEditor extends LitElement {
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}
           </h3>
-          <ha-button-menu
+          <ha-dropdown
             slot="icons"
-            @action=${this._handleAction}
-            @click=${preventDefault}
-            @closed=${stopPropagation}
-            fixed
-            .corner=${"BOTTOM_END"}
-            menu-corner="END"
+            @wa-select=${this._handleAction}
+            @click=${stopPropagation}
+            placement="bottom-end"
           >
             <ha-icon-button
               slot="trigger"
@@ -142,54 +177,53 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.condition-editor.test"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
-            </ha-list-item>
+            ${isNoEntityCondition(condition.condition, this._noEntity) ||
+            containsNoEntityCondition(condition, this._noEntity)
+              ? nothing
+              : html`<ha-dropdown-item value="test">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.test"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+                </ha-dropdown-item>`}
 
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="duplicate">
               ${this.hass.localize(
                 "ui.panel.lovelace.editor.edit_card.duplicate"
               )}
               <ha-svg-icon
-                slot="graphic"
+                slot="icon"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
-            </ha-list-item>
+            </ha-dropdown-item>
 
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="copy">
               ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-              <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            </ha-list-item>
+              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            </ha-dropdown-item>
 
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="cut">
               ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
-              <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            </ha-list-item>
+              <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
+            </ha-dropdown-item>
 
-            <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
+            <ha-dropdown-item
+              value="toggle_yaml"
+              .disabled=${!this._uiAvailable}
+            >
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-dropdown-item>
 
-            <li divider role="separator"></li>
+            <wa-divider></wa-divider>
 
-            <ha-list-item class="warning" graphic="icon">
+            <ha-dropdown-item variant="danger" value="delete">
               ${this.hass!.localize("ui.common.delete")}
-              <ha-svg-icon
-                class="warning"
-                slot="graphic"
-                .path=${mdiDelete}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            </ha-dropdown-item>
+          </ha-dropdown>
           ${!this._uiAvailable
             ? html`
                 <ha-alert
@@ -224,10 +258,13 @@ export class HaCardConditionEditor extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  ${dynamicElement(`ha-card-condition-${condition.condition}`, {
-                    hass: this.hass,
-                    condition: condition,
-                  })}
+                  ${dynamicElement(
+                    getConditionClassName(condition.condition, this._noEntity),
+                    {
+                      hass: this.hass,
+                      condition: condition,
+                    }
+                  )}
                 `}
           </div>
         </ha-expansion-panel>
@@ -252,26 +289,31 @@ export class HaCardConditionEditor extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+
+    if (action === undefined) {
+      return;
+    }
+
+    switch (action) {
+      case "test":
         await this._testCondition();
-        break;
-      case 1:
+        return;
+      case "duplicate":
         this._duplicateCondition();
-        break;
-      case 2:
+        return;
+      case "copy":
         this._copyCondition();
-        break;
-      case 3:
+        return;
+      case "cut":
         this._cutCondition();
-        break;
-      case 4:
+        return;
+      case "toggle_yaml":
         this._yamlMode = !this._yamlMode;
-        break;
-      case 5:
+        return;
+      case "delete":
         this._delete();
-        break;
     }
   }
 
@@ -299,7 +341,15 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    this._testingResult = checkConditionsMet([condition], this.hass);
+    const testContext =
+      this._entityContext?.mode === "current"
+        ? { entity_id: this._entityContext.entityId }
+        : {};
+    this._testingResult = checkConditionsMet(
+      [condition],
+      this.hass,
+      testContext
+    );
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
@@ -321,9 +371,9 @@ export class HaCardConditionEditor extends LitElement {
     this._delete();
   }
 
-  private _delete() {
+  private _delete = () => {
     fireEvent(this, "value-changed", { value: null });
-  }
+  };
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
@@ -337,7 +387,7 @@ export class HaCardConditionEditor extends LitElement {
   static styles = [
     haStyle,
     css`
-      ha-button-menu {
+      ha-dropdown {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
       ha-expansion-panel {

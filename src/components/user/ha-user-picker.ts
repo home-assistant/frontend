@@ -1,5 +1,5 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { TemplateResult } from "lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -39,7 +39,7 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
       this._fetchUsers();
@@ -73,7 +73,7 @@ class HaUserPicker extends LitElement {
     `;
   };
 
-  private _rowRenderer: ComboBoxLitRenderer<UserComboBoxItem> = (item) => {
+  private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
       return html`<ha-combo-box-item type="button" compact>
@@ -132,9 +132,9 @@ class HaUserPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.value}
+        .notFoundLabel=${this._notFoundLabel}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}

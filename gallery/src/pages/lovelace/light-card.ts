@@ -1,29 +1,44 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-    brightness: 255,
-  }),
-  getEntity("light", "dim_on", "on", {
-    friendly_name: "Dining Room",
-    supported_features: 1,
-    brightness: 100,
-  }),
-  getEntity("light", "dim_off", "off", {
-    friendly_name: "Dining Room",
-    supported_features: 1,
-  }),
-  getEntity("light", "unavailable", "unavailable", {
-    friendly_name: "Lost Light",
-    supported_features: 1,
-  }),
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+      brightness: 255,
+    },
+  },
+  {
+    entity_id: "light.dim_on",
+    state: "on",
+    attributes: {
+      friendly_name: "Dining Room",
+      supported_features: 1,
+      brightness: 100,
+    },
+  },
+  {
+    entity_id: "light.dim_off",
+    state: "off",
+    attributes: {
+      friendly_name: "Dining Room",
+      supported_features: 1,
+    },
+  },
+  {
+    entity_id: "light.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Lost Light",
+      supported_features: 1,
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -72,7 +87,7 @@ class DemoLightEntity extends LitElement {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

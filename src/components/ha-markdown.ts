@@ -84,13 +84,11 @@ export class HaMarkdown extends LitElement {
     ha-markdown-element > :is(ol, ul) {
       padding-inline-start: var(--markdown-list-indent, revert);
     }
-    li {
-      &:has(input[type="checkbox"]) {
-        list-style: none;
-        & > input[type="checkbox"] {
-          margin-left: 0;
-        }
-      }
+    li:has(input[type="checkbox"]) {
+      list-style: none;
+    }
+    li:has(input[type="checkbox"]) > input[type="checkbox"] {
+      margin-left: 0;
     }
     svg {
       background-color: var(--markdown-svg-background-color, none);
@@ -134,15 +132,50 @@ export class HaMarkdown extends LitElement {
     }
     table[role="presentation"] {
       --markdown-table-border-collapse: separate;
-      --markdown-table-border-width: attr(border, 0);
+      --markdown-table-border-width: 0;
       --markdown-table-padding-inline: 0;
       --markdown-table-padding-block: 0;
-      th {
-        vertical-align: attr(align, center);
+    }
+    table[role="presentation"] th,
+    table[role="presentation"] td {
+      vertical-align: middle;
+    }
+    table[role="presentation"] td[valign="top"],
+    table[role="presentation"] th[valign="top"] {
+      vertical-align: top;
+    }
+    table[role="presentation"] td[valign="middle"],
+    table[role="presentation"] th[valign="middle"] {
+      vertical-align: middle;
+    }
+    table[role="presentation"] td[valign="bottom"],
+    table[role="presentation"] th[valign="bottom"] {
+      vertical-align: bottom;
+    }
+    table[role="presentation"] td[valign="baseline"],
+    table[role="presentation"] th[valign="baseline"] {
+      vertical-align: baseline;
+    }
+    @supports (border-width: attr(border px, 0)) {
+      table[role="presentation"] {
+        --markdown-table-border-width: attr(border px, 0);
       }
-      td {
-        vertical-align: attr(align, left);
+      table[role="presentation"] th,
+      table[role="presentation"] td {
+        vertical-align: attr(valign, middle);
       }
+    }
+    table[role="presentation"][border="0"] {
+      --markdown-table-border-width: 0;
+    }
+    table[role="presentation"][border="1"] {
+      --markdown-table-border-width: 1px;
+    }
+    table[role="presentation"][border="2"] {
+      --markdown-table-border-width: 2px;
+    }
+    table[role="presentation"][border="3"] {
+      --markdown-table-border-width: 3px;
     }
     table {
       border-collapse: var(--markdown-table-border-collapse, collapse);

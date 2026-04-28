@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDownload,
   mdiEye,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiOpenInNew,
   mdiPlus,
   mdiShareVariant,
@@ -26,7 +26,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
@@ -206,8 +205,8 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         valueColumn: "usageCount",
         type: "numeric",
-        minWidth: "100px",
-        maxWidth: "120px",
+        minWidth: "90px",
+        maxWidth: "90px",
         template: (blueprint) => {
           const count = blueprint.usageCount ?? 0;
           return html`
@@ -232,12 +231,11 @@ class HaBlueprintOverview extends LitElement {
         hidden: true,
       },
       actions: {
+        lastFixed: true,
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
@@ -302,7 +300,7 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
     if (this.route.path === "/import") {
@@ -314,7 +312,7 @@ class HaBlueprintOverview extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("blueprints")) {
       this._loadUsageCounts();
@@ -375,19 +373,15 @@ class HaBlueprintOverview extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="large" @click=${this._addBlueprintClicked}>
+          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
-          extended
-          @click=${this._addBlueprintClicked}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

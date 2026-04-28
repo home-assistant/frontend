@@ -1,4 +1,6 @@
+import { ContextProvider } from "@lit/context";
 import { mdiEye, mdiGestureTap, mdiTextShort } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -24,6 +26,8 @@ import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
 import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
+import { conditionsEntityContext } from "../conditions/context";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -65,12 +69,27 @@ export class HuiHeadingEntityEditor
 
   @state() private _config?: EntityHeadingBadgeConfig;
 
+  private _contextProvider = new ContextProvider(this, {
+    context: conditionsEntityContext,
+    initialValue: undefined,
+  });
+
   public setConfig(config: EntityHeadingBadgeConfig): void {
     assert(config, entityConfigStruct);
     this._config = {
       ...DEFAULT_CONFIG,
       ...config,
     };
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("_config")) {
+      this._contextProvider.setValue(
+        this._config?.entity
+          ? { mode: "current", entityId: this._config.entity }
+          : undefined
+      );
+    }
   }
 
   private _schema = memoizeOne(
@@ -157,6 +176,7 @@ export class HuiHeadingEntityEditor
                   default_action: "none",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -170,6 +190,7 @@ export class HuiHeadingEntityEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

@@ -14,6 +14,12 @@ export const rowStyles = css`
   h3 {
     font-size: inherit;
     font-weight: inherit;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    padding: var(--ha-space-2) 0;
+    min-height: 32px;
   }
 
   ha-card {
@@ -33,9 +39,6 @@ export const rowStyles = css`
   }
   .warning ul {
     margin: 4px 0;
-  }
-  ha-md-menu-item > ha-svg-icon {
-    --mdc-icon-size: 24px;
   }
   ha-tooltip {
     cursor: default;
@@ -93,13 +96,14 @@ export const saveFabStyles = css`
   :host {
     overflow: hidden;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: absolute;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 `;
@@ -126,14 +130,14 @@ export const manualEditorStyles = css`
     justify-content: flex-end;
   }
 
-  .fab-positioner ha-fab {
+  .fab-positioner ha-button[slot="fab"] {
     position: fixed;
     right: unset;
     left: unset;
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
   }
-  .fab-positioner ha-fab.dirty {
+  .fab-positioner ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 
@@ -144,7 +148,7 @@ export const manualEditorStyles = css`
   }
 
   .content {
-    padding-top: 24px;
+    padding-top: var(--ha-space-3);
     padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }
@@ -265,8 +269,5 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
-  }
-  ha-md-menu-item {
-    --mdc-icon-size: 24px;
   }
 `;

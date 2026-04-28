@@ -1,15 +1,18 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-  }),
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -78,7 +81,7 @@ class DemoButtonEntity extends LitElement {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

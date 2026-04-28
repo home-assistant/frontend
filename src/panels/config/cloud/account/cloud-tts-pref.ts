@@ -1,13 +1,15 @@
-import { css, html, LitElement, nothing } from "lit";
 import { mdiContentCopy } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import "../../../../components/ha-language-picker";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
@@ -19,9 +21,8 @@ import {
 } from "../../../../data/cloud/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
-import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../util/toast";
+import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 
 export const getCloudTtsSupportedVoices = (
   language: string,
@@ -96,13 +97,11 @@ export class CloudTTSPref extends LitElement {
               .disabled=${this.savingPreferences}
               .value=${defaultVoice[1]}
               @selected=${this._handleVoiceChange}
+              .options=${voices.map((voice) => ({
+                value: voice.voiceId,
+                label: voice.voiceName,
+              }))}
             >
-              ${voices.map(
-                (voice) =>
-                  html`<ha-list-item .value=${voice.voiceId}>
-                    ${voice.voiceName}
-                  </ha-list-item>`
-              )}
             </ha-select>
           </div>
         </div>
@@ -134,17 +133,7 @@ export class CloudTTSPref extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
-    if (
-      changedProps.has("cloudStatus") &&
-      this.cloudStatus?.prefs.tts_default_voice?.[0] !==
-        changedProps.get("cloudStatus")?.prefs.tts_default_voice?.[0]
-    ) {
-      this.renderRoot.querySelector("ha-select")?.layoutOptions();
-    }
-  }
-
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       getCloudTTSInfo(this.hass).then((info) => {
@@ -195,13 +184,13 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  private async _handleVoiceChange(ev) {
-    if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
+  private async _handleVoiceChange(ev: HaSelectSelectEvent) {
+    const voice = ev.detail.value;
+    if (!voice || voice === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }
     this.savingPreferences = true;
     const language = this.cloudStatus!.prefs.tts_default_voice[0];
-    const voice = ev.target.value;
 
     try {
       await updateCloudPref(this.hass, {
@@ -228,9 +217,6 @@ export class CloudTTSPref extends LitElement {
   }
 
   static styles = css`
-    a {
-      color: var(--primary-color);
-    }
     .example {
       position: absolute;
       right: 16px;
@@ -240,20 +226,11 @@ export class CloudTTSPref extends LitElement {
     }
     .row {
       display: flex;
+      gap: var(--ha-space-2);
     }
     .row > * {
       flex: 1;
       width: 0;
-    }
-    .row > *:first-child {
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-    }
-    .row > *:last-child {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
     }
     .card-actions {
       display: flex;
@@ -269,7 +246,7 @@ export class CloudTTSPref extends LitElement {
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
       --mdc-icon-size: 14px;
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
     }
     :host([narrow]) .voice-id {
       flex-direction: column;

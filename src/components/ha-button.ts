@@ -27,7 +27,7 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @cssprop --ha-button-height - The height of the button.
  * @cssprop --ha-button-border-radius - The border radius of the button. defaults to `var(--ha-border-radius-pill)`.
  *
- * @attr {("small"|"medium")} size - Sets the button size.
+ * @attr {("small"|"medium"|"large")} size - Sets the button size.
  * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
  * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
@@ -42,7 +42,7 @@ export class HaButton extends Button {
       Button.styles,
       css`
         :host {
-          --wa-form-control-padding-inline: 16px;
+          --wa-form-control-padding-inline: var(--ha-space-4);
           --wa-font-weight-action: var(--ha-font-weight-medium);
           --wa-form-control-border-radius: var(
             --ha-button-border-radius,
@@ -57,9 +57,12 @@ export class HaButton extends Button {
         .button {
           font-size: var(--ha-font-size-m);
           line-height: 1;
+          -webkit-tap-highlight-color: transparent;
 
-          transition: background-color 0.15s ease-in-out;
+          transition: background-color var(--ha-animation-duration-fast)
+            ease-out;
           text-wrap: wrap;
+          box-shadow: var(--ha-button-box-shadow);
         }
 
         :host([size="small"]) .button {
@@ -67,8 +70,16 @@ export class HaButton extends Button {
             --ha-button-height,
             var(--button-height, 32px)
           );
-          font-size: var(--wa-font-size-s, var(--ha-font-size-m));
-          --wa-form-control-padding-inline: 12px;
+          font-size: var(--ha-font-size-m);
+          --wa-form-control-padding-inline: var(--ha-space-3);
+        }
+
+        :host([size="large"]) .button {
+          --wa-form-control-height: var(
+            --ha-button-height,
+            var(--button-height, 48px)
+          );
+          font-size: var(--ha-font-size-l);
         }
 
         :host([variant="brand"]) {
@@ -83,6 +94,9 @@ export class HaButton extends Button {
           );
           --button-color-fill-loud-hover: var(
             --ha-color-fill-primary-loud-hover
+          );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-primary-quiet-active
           );
         }
 
@@ -99,6 +113,9 @@ export class HaButton extends Button {
           --button-color-fill-loud-hover: var(
             --ha-color-fill-neutral-loud-hover
           );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-neutral-normal-active
+          );
         }
 
         :host([variant="success"]) {
@@ -113,6 +130,9 @@ export class HaButton extends Button {
           );
           --button-color-fill-loud-hover: var(
             --ha-color-fill-success-loud-hover
+          );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-success-quiet-active
           );
         }
 
@@ -129,6 +149,9 @@ export class HaButton extends Button {
           --button-color-fill-loud-hover: var(
             --ha-color-fill-warning-loud-hover
           );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-warning-quiet-active
+          );
         }
 
         :host([variant="danger"]) {
@@ -143,6 +166,9 @@ export class HaButton extends Button {
           );
           --button-color-fill-loud-hover: var(
             --ha-color-fill-danger-loud-hover
+          );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-danger-quiet-active
           );
         }
 
@@ -187,6 +213,10 @@ export class HaButton extends Button {
           background-color: var(--ha-color-fill-disabled-normal-resting);
           color: var(--ha-color-on-disabled-normal);
         }
+        :host([appearance~="plain"])
+          .button:not(.disabled):not(.loading):active {
+          background-color: var(--button-color-fill-quiet-active);
+        }
 
         :host([appearance~="accent"]) .button {
           background-color: var(
@@ -212,21 +242,21 @@ export class HaButton extends Button {
         }
 
         slot[name="start"]::slotted(*) {
-          margin-inline-end: 4px;
+          margin-inline-end: var(--ha-space-1);
         }
         slot[name="end"]::slotted(*) {
-          margin-inline-start: 4px;
+          margin-inline-start: var(--ha-space-1);
         }
 
         .button.has-start {
-          padding-inline-start: 8px;
+          padding-inline-start: var(--ha-space-2);
         }
         .button.has-end {
-          padding-inline-end: 8px;
+          padding-inline-end: var(--ha-space-2);
         }
 
         .label {
-          overflow: hidden;
+          overflow: var(--ha-button-label-overflow, hidden);
           text-overflow: ellipsis;
           padding: var(--ha-space-1) 0;
         }

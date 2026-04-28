@@ -8,10 +8,12 @@ import {
   mdiNumeric,
   mdiResponsive,
   mdiStateMachine,
+  mdiViewColumnOutline,
 } from "@mdi/js";
 import type { Condition } from "./validate-condition";
 
 export const ICON_CONDITION: Record<Condition["condition"], string> = {
+  view_columns: mdiViewColumnOutline,
   location: mdiMapMarker,
   numeric_state: mdiNumeric,
   state: mdiStateMachine,

@@ -41,7 +41,7 @@ export class HaRelatedItems extends LitElement {
 
   @state() private _related?: RelatedResult;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
   }
 
@@ -64,7 +64,7 @@ export class HaRelatedItems extends LitElement {
     this._blueprints = { automation, script };
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (
       (changedProps.has("itemId") || changedProps.has("itemType")) &&
@@ -220,12 +220,14 @@ export class HaRelatedItems extends LitElement {
                   >
                     <ha-list-item hasMeta graphic="icon">
                       <img
-                        .src=${brandsUrl({
-                          domain: entry.domain,
-                          type: "icon",
-                          useFallback: true,
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
+                        .src=${brandsUrl(
+                          {
+                            domain: entry.domain,
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
                         crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         alt=${entry.domain}
@@ -246,12 +248,14 @@ export class HaRelatedItems extends LitElement {
                     >
                       <ha-list-item hasMeta graphic="icon">
                         <img
-                          .src=${brandsUrl({
-                            domain: integration,
-                            type: "icon",
-                            useFallback: true,
-                            darkOptimized: this.hass.themes?.darkMode,
-                          })}
+                          .src=${brandsUrl(
+                            {
+                              domain: integration,
+                              type: "icon",
+                              darkOptimized: this.hass.themes?.darkMode,
+                            },
+                            this.hass.auth.data.hassUrl
+                          )}
                           crossorigin="anonymous"
                           referrerpolicy="no-referrer"
                           alt=${integration}

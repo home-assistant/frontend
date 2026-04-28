@@ -2,16 +2,16 @@ import { mdiAccount, mdiAccountArrowRight, mdiWaterBoiler } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import {
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
-  computeOperationModeIcon,
 } from "../../../data/water_heater";
 import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import type { HomeAssistant } from "../../../types";
@@ -23,6 +23,14 @@ class MoreInfoWaterHeater extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: WaterHeaterEntity;
+
+  private _renderOperationModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="operation_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
 
   protected render() {
     if (!this.stateObj) {
@@ -74,29 +82,21 @@ class MoreInfoWaterHeater extends LitElement {
         ${supportOperationMode && stateObj.attributes.operation_list
           ? html`
               <ha-control-select-menu
+                .hass=${this.hass}
                 .label=${this.hass.localize("ui.card.water_heater.mode")}
                 .value=${stateObj.state}
                 .disabled=${stateObj.state === UNAVAILABLE}
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._handleOperationModeChanged}
-                @closed=${stopPropagation}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
-                ${stateObj.attributes.operation_list
+                @wa-select=${this._handleOperationModeChanged}
+                .options=${stateObj.attributes.operation_list
                   .concat()
                   .sort(compareWaterHeaterOperationMode)
-                  .map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode} graphic="icon">
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${computeOperationModeIcon(mode)}
-                        ></ha-svg-icon>
-                        ${this.hass.formatEntityState(stateObj, mode)}
-                      </ha-list-item>
-                    `
-                  )}
+                  .map((mode) => ({
+                    value: mode,
+                    label: this.hass.formatEntityState(stateObj, mode),
+                  }))}
+                .renderIcon=${this._renderOperationModeIcon}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
               </ha-control-select-menu>
             `
           : nothing}
@@ -109,31 +109,18 @@ class MoreInfoWaterHeater extends LitElement {
                 )}
                 .value=${stateObj.attributes.away_mode}
                 .disabled=${stateObj.state === UNAVAILABLE}
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._handleAwayModeChanged}
-                @closed=${stopPropagation}
+                @wa-select=${this._handleAwayModeChanged}
+                .options=${["on", "off"].map((mode) => ({
+                  value: mode,
+                  label: this.hass.formatEntityAttributeValue(
+                    stateObj,
+                    "away_mode",
+                    mode
+                  ),
+                  iconPath: mode === "on" ? mdiAccountArrowRight : mdiAccount,
+                }))}
               >
                 <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
-                <ha-list-item value="on" graphic="icon">
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiAccountArrowRight}
-                  ></ha-svg-icon>
-                  ${this.hass.formatEntityAttributeValue(
-                    stateObj,
-                    "away_mode",
-                    "on"
-                  )}
-                </ha-list-item>
-                <ha-list-item value="off" graphic="icon">
-                  <ha-svg-icon slot="graphic" .path=${mdiAccount}></ha-svg-icon>
-                  ${this.hass.formatEntityAttributeValue(
-                    stateObj,
-                    "away_mode",
-                    "off"
-                  )}
-                </ha-list-item>
               </ha-control-select-menu>
             `
           : nothing}
@@ -141,8 +128,8 @@ class MoreInfoWaterHeater extends LitElement {
     `;
   }
 
-  private _handleOperationModeChanged(ev) {
-    const newVal = ev.target.value;
+  private _handleOperationModeChanged(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value;
     this._callServiceHelper(
       this.stateObj!.state,
       newVal,
@@ -153,8 +140,8 @@ class MoreInfoWaterHeater extends LitElement {
     );
   }
 
-  private _handleAwayModeChanged(ev) {
-    const newVal = ev.target.value === "on";
+  private _handleAwayModeChanged(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value === "on";
     const oldVal = this.stateObj!.attributes.away_mode === "on";
 
     this._callServiceHelper(oldVal, newVal, "set_away_mode", {
@@ -214,7 +201,7 @@ class MoreInfoWaterHeater extends LitElement {
           align-items: center;
           justify-content: center;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: var(--ha-space-10);
         }
 
         .current div {
@@ -237,7 +224,7 @@ class MoreInfoWaterHeater extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
-          margin-bottom: 4px;
+          margin-bottom: var(--ha-space-1);
         }
 
         .current .value {

@@ -31,11 +31,14 @@ export class HaIntegrationActionCard extends LitElement {
         <div class="card-content">
           <img
             alt=""
-            src=${brandsUrl({
-              domain: this.domain,
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
+            src=${brandsUrl(
+              {
+                domain: this.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
@@ -43,8 +46,10 @@ export class HaIntegrationActionCard extends LitElement {
           />
           <h2>${this.label}</h2>
           <h3>
-            ${this.localizedDomainName ||
-            domainToName(this.hass.localize, this.domain, this.manifest)}
+            ${this.localizedDomainName &&
+            this.localizedDomainName !== this.domain
+              ? this.localizedDomainName
+              : domainToName(this.hass.localize, this.domain, this.manifest)}
           </h3>
         </div>
         <div class="filler"></div>

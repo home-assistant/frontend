@@ -1,13 +1,13 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { stringCompare } from "../common/string/compare";
 import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
+import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
 @customElement("ha-blueprint-picker")
@@ -55,25 +55,21 @@ class HaBluePrintPicker extends LitElement {
       <ha-select
         .label=${this.label ||
         this.hass.localize("ui.components.blueprint-picker.select_blueprint")}
-        fixedMenuPosition
-        naturalMenuWidth
         .value=${this.value}
         .disabled=${this.disabled}
         @selected=${this._blueprintChanged}
-        @closed=${stopPropagation}
-      >
-        ${this._processedBlueprints(this.blueprints).map(
-          (blueprint) => html`
-            <ha-list-item .value=${blueprint.path}>
-              ${blueprint.name}
-            </ha-list-item>
-          `
+        .options=${this._processedBlueprints(this.blueprints).map(
+          (blueprint) => ({
+            value: blueprint.path,
+            label: blueprint.name,
+          })
         )}
+      >
       </ha-select>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (this.blueprints === undefined) {
       fetchBlueprints(this.hass!, this.domain).then((blueprints) => {
@@ -82,8 +78,8 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  private _blueprintChanged(ev) {
-    const newValue = ev.target.value;
+  private _blueprintChanged(ev: HaSelectSelectEvent) {
+    const newValue = ev.detail.value;
 
     if (newValue !== this.value) {
       this.value = newValue;

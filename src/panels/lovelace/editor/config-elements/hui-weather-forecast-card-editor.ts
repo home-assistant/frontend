@@ -22,6 +22,7 @@ import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -251,7 +252,7 @@ export class HuiWeatherForecastCardEditor
               },
               {
                 name: "forecast_slots",
-                selector: { number: { min: 1, max: 12 } },
+                selector: { number: { min: 1, max: 72 } },
                 default: 5,
               },
               {
@@ -267,6 +268,7 @@ export class HuiWeatherForecastCardEditor
                         default_action: "more-info",
                       },
                     },
+                    context: ACTION_RELATED_CONTEXT,
                   },
                   {
                     name: "",
@@ -280,6 +282,7 @@ export class HuiWeatherForecastCardEditor
                             default_action: "none" as const,
                           },
                         },
+                        context: ACTION_RELATED_CONTEXT,
                       })
                     ),
                   },

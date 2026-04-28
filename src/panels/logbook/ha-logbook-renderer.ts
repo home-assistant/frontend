@@ -16,6 +16,7 @@ import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
+import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
 import {
   createHistoricState,
@@ -31,7 +32,6 @@ import {
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
-import { domainToName } from "../../data/integration";
 
 declare global {
   interface HASSDomEvents {
@@ -156,13 +156,15 @@ class HaLogbookRenderer extends LitElement {
       !item.icon &&
       !item.state &&
       domain &&
-      isComponentLoaded(this.hass, domain)
-        ? brandsUrl({
-            domain: domain!,
-            type: "icon",
-            useFallback: true,
-            darkOptimized: this.hass.themes?.darkMode,
-          })
+      isComponentLoaded(this.hass.config, domain)
+        ? brandsUrl(
+            {
+              domain: domain!,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )
         : undefined;
 
     const traceContext =

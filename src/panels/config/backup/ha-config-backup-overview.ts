@@ -3,16 +3,15 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
-import "../../../components/ha-spinner";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
   BackupAgent,
@@ -31,6 +30,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
@@ -63,13 +63,14 @@ class HaConfigBackupOverview extends LitElement {
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
-  private async _uploadBackup(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  @property({ attribute: false }) public uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
 
+  private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
-  }
+  };
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
@@ -87,7 +88,17 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     fireEvent(this, "ha-refresh-backup-config");
-    await generateBackupWithAutomaticSettings(this.hass);
+    try {
+      await generateBackupWithAutomaticSettings(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
+      return;
+    }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
@@ -109,23 +120,30 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    if (type === "manual") {
-      const params = await showGenerateBackupDialog(this, {
-        cloudStatus: this.cloudStatus,
-      });
+    try {
+      if (type === "manual") {
+        const params = await showGenerateBackupDialog(this, {
+          cloudStatus: this.cloudStatus,
+        });
 
-      if (!params) {
-        return;
+        if (!params) {
+          return;
+        }
+
+        await generateBackup(this.hass, params);
+      } else if (type === "automatic") {
+        await generateBackupWithAutomaticSettings(this.hass);
       }
-
-      await generateBackup(this.hass, params);
-      fireEvent(this, "ha-refresh-backup-info");
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.overview.create_backup_failed"
+        ),
+        text: err.message,
+      });
       return;
     }
-    if (type === "automatic") {
-      await generateBackupWithAutomaticSettings(this.hass);
-      fireEvent(this, "ha-refresh-backup-info");
-    }
+    fireEvent(this, "ha-refresh-backup-info");
   }
 
   private get _needsOnboarding() {
@@ -143,19 +161,23 @@ class HaConfigBackupOverview extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
       >
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown
+          slot="toolbar-icon"
+          placement="bottom-end"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-list-item graphic="icon" @request-selected=${this._uploadBackup}>
-            <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+          <ha-dropdown-item value="upload_backup">
+            <ha-svg-icon slot="icon" .path=${mdiUpload}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.backup.overview.menu.upload_backup"
             )}
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">
           ${this.info && Object.keys(this.info.agent_errors).length
             ? html`${Object.entries(this.info.agent_errors).map(
@@ -182,6 +204,8 @@ class HaConfigBackupOverview extends LitElement {
                 <ha-backup-overview-progress
                   .hass=${this.hass}
                   .manager=${this.manager}
+                  .agents=${this.agents}
+                  .uploadProgress=${this.uploadProgress}
                 >
                 </ha-backup-overview-progress>
               `
@@ -221,23 +245,25 @@ class HaConfigBackupOverview extends LitElement {
             : nothing}
         </div>
 
-        <ha-fab
+        <ha-button
           slot="fab"
-          ?disabled=${backupInProgress}
-          .label=${this.hass.localize(
-            "ui.panel.config.backup.overview.new_backup"
-          )}
-          extended
+          size="large"
+          .loading=${backupInProgress}
           @click=${this._newBackup}
         >
-          ${backupInProgress
-            ? html`<div slot="icon" class="loading">
-                <ha-spinner .size=${"small"}></ha-spinner>
-              </div>`
-            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.backup.overview.new_backup")}
+        </ha-button>
       </hass-subpage>
     `;
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item.value;
+
+    if (action === "upload_backup") {
+      this._uploadBackup();
+    }
   }
 
   static get styles(): CSSResultGroup {

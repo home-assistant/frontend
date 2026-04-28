@@ -43,14 +43,16 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._targetHumidity = this.stateObj.attributes.humidity;
     }
   }
 
-  private _step = 1;
+  private get _step() {
+    return this.stateObj.attributes.target_humidity_step ?? 1;
+  }
 
   private get _min() {
     return this.stateObj.attributes.min_humidity ?? 0;

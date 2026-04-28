@@ -113,13 +113,13 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
-  @property({ type: Number, attribute: false })
+  @property({ attribute: false })
   public renderSize?: number;
 
   @property({ type: Array })
   public value?: [number, number];
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public colorBrightness?: number;
 
   @property({ type: Number })
@@ -131,10 +131,10 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Number })
   public ww?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public minKelvin?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public maxKelvin?: number;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;
@@ -150,7 +150,7 @@ class HaHsColorPicker extends LitElement {
   @state()
   private _localValue?: [number, number];
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     this._setupListeners();
     this._generateColorWheel();
@@ -179,7 +179,7 @@ class HaHsColorPicker extends LitElement {
     this._destroyListeners();
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (
       changedProps.has("colorBrightness") ||

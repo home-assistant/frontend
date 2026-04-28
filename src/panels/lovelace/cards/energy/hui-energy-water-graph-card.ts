@@ -13,7 +13,11 @@ import type {
   EnergyData,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getSuggestedPeriod,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -23,6 +27,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -37,9 +43,24 @@ export class HuiEnergyWaterGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyWaterGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyWaterGraphCardConfig {
+    return {
+      type: "energy-water-graph",
+    };
+  }
 
   @state() private _chartData: BarSeriesOption[] = [];
 
@@ -70,10 +91,13 @@ export class HuiEnergyWaterGraphCard
   }
 
   public setConfig(config: EnergyWaterGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -244,6 +268,7 @@ export class HuiEnergyWaterGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     waterSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -264,14 +289,16 @@ export class HuiEnergyWaterGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint: (Date | string | number)[] = [
-            point.start,
+          const dataPoint: EnergyDataPoint = [
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              period,
+              compare ? compareTransform : undefined
+            ),
             point.change,
+            point.start,
           ];
-          if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start));
-          }
           waterConsumptionData.push(dataPoint);
           prevStart = point.start;
         }

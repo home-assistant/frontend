@@ -52,7 +52,12 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   @state() private _config?: BackupConfig;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  @state() private _uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchAll();
     this.addEventListener("ha-refresh-backup-info", () => {
@@ -138,6 +143,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.config = this._config;
     pageEl.agents = this._agents;
     pageEl.fetching = this._fetching;
+    pageEl.uploadProgress = this._uploadProgress;
 
     if (!changedProps || changedProps.has("route")) {
       switch (this._currentPage) {
@@ -154,6 +160,17 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
       subscribeBackupEvents(this.hass!, (event) => {
+        if ("agent_id" in event) {
+          this._uploadProgress = {
+            ...this._uploadProgress,
+            [event.agent_id]: {
+              uploaded_bytes: event.uploaded_bytes,
+              total_bytes: event.total_bytes,
+            },
+          };
+          return;
+        }
+
         const curState = this._manager.manager_state;
 
         this._manager = event;
@@ -161,6 +178,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
           event.manager_state === "idle" &&
           event.manager_state !== curState
         ) {
+          this._uploadProgress = {};
           this._fetchAll();
         }
         if ("state" in event) {

@@ -9,13 +9,12 @@ import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import { getFloors } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
-import "./ha-textfield";
 
 export interface AreasFloorsDisplayValue {
   areas_display?: {
@@ -200,7 +199,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  private async _areaDisplayChanged(ev: CustomEvent<{ value: DisplayValue }>) {
+  private async _areaDisplayChanged(ev: ValueChangedEvent<DisplayValue>) {
     ev.stopPropagation();
     const value = ev.detail.value;
     const currentFloorId = (ev.currentTarget as any).floorId;

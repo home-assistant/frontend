@@ -55,6 +55,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
+  "energy-grid-balance": () =>
+    import("../cards/energy/hui-energy-grid-balance-card"),
   "energy-solar-consumed-gauge": () =>
     import("../cards/energy/hui-energy-solar-consumed-gauge-card"),
   "energy-self-sufficiency-gauge": () =>
@@ -67,15 +69,22 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-usage-graph-card"),
   "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
   "water-sankey": () => import("../cards/water/hui-water-sankey-card"),
+  "water-flow-sankey": () =>
+    import("../cards/water/hui-water-flow-sankey-card"),
   "power-sources-graph": () =>
     import("../cards/energy/hui-power-sources-graph-card"),
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
   "home-summary": () => import("../cards/hui-home-summary-card"),
+  shortcut: () => import("../cards/hui-shortcut-card"),
+  "discovered-devices": () => import("../cards/hui-discovered-devices-card"),
+  repairs: () => import("../cards/hui-repairs-card"),
+  updates: () => import("../cards/hui-updates-card"),
   gauge: () => import("../cards/hui-gauge-card"),
   "history-graph": () => import("../cards/hui-history-graph-card"),
   "horizontal-stack": () => import("../cards/hui-horizontal-stack-card"),
+  distribution: () => import("../cards/hui-distribution-card"),
   humidifier: () => import("../cards/hui-humidifier-card"),
   iframe: () => import("../cards/hui-iframe-card"),
   logbook: () => import("../cards/hui-logbook-card"),
@@ -89,6 +98,7 @@ const LAZY_LOAD_TYPES = {
   picture: () => import("../cards/hui-picture-card"),
   "plant-status": () => import("../cards/hui-plant-status-card"),
   "recovery-mode": () => import("../cards/hui-recovery-mode-card"),
+  "toggle-group": () => import("../cards/hui-toggle-group-card"),
   "todo-list": () => import("../cards/hui-todo-list-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),

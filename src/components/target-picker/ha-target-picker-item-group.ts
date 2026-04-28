@@ -42,6 +42,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -75,6 +78,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                   .entityFilter=${this.entityFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
                 ></ha-target-picker-item-row>`
             )
           : nothing
@@ -89,7 +93,7 @@ export class HaTargetPickerItemGroup extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --expansion-panel-content-padding: var(--ha-space-0);
+      --expansion-panel-content-padding: 0;
     }
     ha-expansion-panel::part(summary) {
       background-color: var(--ha-color-fill-neutral-quiet-resting);
@@ -101,7 +105,7 @@ export class HaTargetPickerItemGroup extends LitElement {
       min-height: unset;
     }
     ha-md-list {
-      padding: var(--ha-space-0);
+      padding: 0;
     }
   `;
 }

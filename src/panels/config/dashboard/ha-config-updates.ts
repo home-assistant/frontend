@@ -6,14 +6,14 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { getDeviceContext } from "../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-progress-ring";
 import "../../../components/ha-spinner";
+import "../../../components/progress/ha-progress-ring";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -29,8 +29,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
-
-  @property({ type: Number }) public total?: number;
 
   @state() private _devices?: DeviceRegistryEntry[];
 
@@ -88,11 +86,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.total || this.updateEntities.length,
-        })}
-      </div>
       <ha-md-list>
         ${updates.map((entity) => {
           const entityEntry = this.getEntityEntry(entity.entity_id);
@@ -103,7 +96,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
           const areaName =
             deviceEntry && deviceEntry.entry_type !== "service"
-              ? getDeviceContext(deviceEntry, this.hass).area?.name ||
+              ? getDeviceArea(deviceEntry, this.hass.areas)?.name ||
                 this.hass.localize("ui.panel.config.updates.no_area")
               : undefined;
 
@@ -137,7 +130,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </div>
               <span slot="headline"
                 >${deviceEntry
-                  ? computeDeviceNameDisplay(deviceEntry, this.hass)
+                  ? computeDeviceNameDisplay(
+                      deviceEntry,
+                      this.hass.localize,
+                      this.hass.states
+                    )
                   : entity.attributes.friendly_name}</span
               >
               <span slot="supporting-text">
@@ -168,11 +165,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        .title {
-          font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
-        }
         .skipped {
           background: var(--secondary-background-color);
         }

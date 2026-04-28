@@ -16,7 +16,6 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -26,14 +25,17 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-spinner";
-import "../../../components/ha-fab";
+import "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
   BackupAgent,
@@ -71,9 +73,6 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -123,7 +122,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
+  @query("#overflow-menu") private _overflowMenu?: HaDropdown;
+
+  private _openingOverflow = false;
+
+  private _overflowBackup?: BackupRow;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -223,12 +226,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 return html`
                   <img
                     title=${name}
-                    .src=${brandsUrl({
-                      domain,
-                      type: "icon",
-                      useFallback: true,
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    .src=${brandsUrl(
+                      {
+                        domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     height="24"
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
@@ -252,11 +257,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         },
       },
       actions: {
+        lastFixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (backup) => html`
           <ha-icon-button
@@ -288,12 +292,27 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (this._overflowMenu.open) {
-      this._overflowMenu.close();
+    if (this._overflowMenu.anchorElement === ev.target) {
+      this._overflowMenu.anchorElement = undefined;
       return;
     }
+    this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowMenu.show();
+    this._overflowBackup = ev.target.backup;
+    this._overflowMenu.open = true;
+  };
+
+  private _overflowMenuOpened = () => {
+    this._openingOverflow = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // changing the anchorElement triggers a close event, ignore it
+    if (this._openingOverflow || !this._overflowMenu) {
+      return;
+    }
+
+    this._overflowMenu.anchorElement = undefined;
   };
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -345,7 +364,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
     const data = this._data(
       this.backups,
       this._filters,
@@ -402,22 +421,22 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu>
+          <ha-dropdown
+            @wa-select=${this._handleDropdownSelect}
+            placement="bottom-end"
+          >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item
-              graphic="icon"
-              @request-selected=${this._uploadBackup}
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+            <ha-dropdown-item value="upload_backup">
+              <ha-svg-icon slot="icon" .path=${mdiUpload}></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.backup.backups.menu.upload_backup"
               )}
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
 
         <div slot="selection-bar">
@@ -448,7 +467,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         <ha-filter-states
           .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
-          .value=${this._filters["ha-filter-states"]}
+          .value="${this._filters["ha-filter-states"]}q"
           .states=${this._states(this.hass.localize, isHassio)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -457,37 +476,42 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         ></ha-filter-states>
         ${!this._needsOnboarding
           ? html`
-              <ha-fab
+              <ha-button
                 slot="fab"
+                size="large"
                 ?disabled=${backupInProgress}
-                .label=${this.hass.localize(
-                  "ui.panel.config.backup.backups.new_backup"
-                )}
-                extended
                 @click=${this._newBackup}
               >
                 ${backupInProgress
-                  ? html`<div slot="icon" class="loading">
+                  ? html`<div slot="start" class="loading">
                       <ha-spinner .size=${"small"}></ha-spinner>
                     </div>`
                   : html`<ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiPlus}
                     ></ha-svg-icon>`}
-              </ha-fab>
+                ${this.hass.localize(
+                  "ui.panel.config.backup.backups.new_backup"
+                )}
+              </ha-button>
             `
           : nothing}
       </hass-tabs-subpage-data-table>
-      <ha-md-menu id="overflow-menu" positioning="fixed">
-        <ha-md-menu-item .clickAction=${this._downloadBackup}>
-          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+      <ha-dropdown
+        id="overflow-menu"
+        @wa-select=${this._handleOverflowAction}
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
+        <ha-dropdown-item value="download">
+          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
           ${this.hass.localize("ui.common.download")}
-        </ha-md-menu-item>
-        <ha-md-menu-item class="warning" .clickAction=${this._deleteBackup}>
-          <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        </ha-dropdown-item>
+        <ha-dropdown-item variant="danger" value="delete">
+          <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           ${this.hass.localize("ui.common.delete")}
-        </ha-md-menu-item>
-      </ha-md-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
     `;
   }
 
@@ -520,13 +544,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     return !this.config?.automatic_backups_configured;
   }
 
-  private async _uploadBackup(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
-  }
+  };
 
   private async _newBackup(): Promise<void> {
     const config = this.config!;
@@ -561,16 +581,29 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private _downloadBackup = async (ev): Promise<void> => {
-    const backup = ev.parentElement.anchorElement.backup;
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    const action = ev.detail.item.value;
+
+    if (action === "download") {
+      this._downloadBackup();
+      return;
+    }
+
+    if (action === "delete") {
+      this._deleteBackup();
+    }
+  };
+
+  private _downloadBackup = async (): Promise<void> => {
+    const backup = this._overflowBackup;
     if (!backup) {
       return;
     }
     downloadBackup(this.hass, this, backup, this.config);
   };
 
-  private _deleteBackup = async (ev): Promise<void> => {
-    const backup = ev.parentElement.anchorElement.backup;
+  private _deleteBackup = async (): Promise<void> => {
+    const backup = this._overflowBackup;
     if (!backup) {
       return;
     }
@@ -634,6 +667,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
     fireEvent(this, "ha-refresh-backup-info");
     this._dataTable.clearSelection();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item.value;
+
+    if (action === "upload_backup") {
+      this._uploadBackup();
+    }
   }
 
   static get styles(): CSSResultGroup {

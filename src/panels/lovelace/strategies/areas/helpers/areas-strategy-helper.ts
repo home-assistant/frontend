@@ -4,7 +4,7 @@ import type { EntityFilterFunc } from "../../../../../common/entity/entity_filte
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
-import type { AreaRegistryEntry } from "../../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";

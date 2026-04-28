@@ -17,7 +17,6 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -51,7 +50,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const forecastType = getDefaultForecastType(stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
-        this.hass!,
+        this.hass!.connection,
         stateObj.entity_id,
         forecastType,
         (event) => {
@@ -81,7 +80,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -119,11 +118,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const forecastData = getForecast(stateObj.attributes, this._forecastEvent);
     const forecast = forecastData?.forecast;
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
 
     return html`
       <div

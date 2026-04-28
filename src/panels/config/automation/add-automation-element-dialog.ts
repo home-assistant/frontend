@@ -1,8 +1,10 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
+  mdiHelpCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -15,13 +17,14 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
+import { isNumericState } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import type {
   LocalizeFunc,
@@ -36,6 +39,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-combo-box-item";
 import { CONDITION_ICONS } from "../../../components/ha-condition-icon";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-floor-icon";
@@ -43,7 +47,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
@@ -51,18 +54,18 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
-import "../../../components/ha-wa-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -98,6 +101,7 @@ import {
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import { subscribeLabFeature } from "../../../data/labs";
+import { filterSelectorEntities } from "../../../data/selector";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,
@@ -115,7 +119,9 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import type { HomeAssistant } from "../../../types";
+import { haStyleScrollbar } from "../../../resources/styles";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
@@ -123,6 +129,7 @@ import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import { getTargetText } from "./target/get_target_text";
 
 const TYPES = {
   trigger: { collections: TRIGGER_COLLECTIONS, icons: TRIGGER_ICONS },
@@ -135,6 +142,12 @@ const TYPES = {
     icons: ACTION_ICONS,
   },
 };
+
+export interface CollectionGroup {
+  collectionIndex: number;
+  titleKey?: LocalizeKeys;
+  groups: AddAutomationElementListItem[];
+}
 
 export interface AutomationItemComboBoxItem extends PickerComboBoxItem {
   renderedIcon?: TemplateResult;
@@ -164,6 +177,8 @@ const ENTITY_DOMAINS_OTHER = new Set([
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+
+const GENERIC_GROUPS = new Set(["device", "entity", `${DYNAMIC_PREFIX}event`]);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -232,6 +247,8 @@ class DialogAddAutomationElement
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _closing = false;
+
   // #endregion variables
 
   // #region lifecycle
@@ -272,6 +289,7 @@ class DialogAddAutomationElement
 
   public showDialog(params): void {
     this._params = params;
+    this._resetVariables();
 
     this.addKeyboardShortcuts();
 
@@ -347,6 +365,8 @@ class DialogAddAutomationElement
       }
     }
 
+    this._closing = true;
+
     // if dialog is closed, but root level isn't active, clean up history state
     if (mainWindow.history.state?.dialogData) {
       this._open = false;
@@ -359,8 +379,15 @@ class DialogAddAutomationElement
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
-    this._open = true;
     this._params = undefined;
+    this._resetVariables();
+
+    return true;
+  }
+
+  private _resetVariables() {
+    this._open = true;
+    this._closing = false;
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
     this._selectedTarget = undefined;
@@ -372,7 +399,6 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
-    return true;
   }
 
   private _updateNarrow = () => {
@@ -386,6 +412,86 @@ class DialogAddAutomationElement
     if (!deepEqual(domains, this._domains)) {
       this._domains = domains;
     }
+  }
+
+  private _calculateActiveSystemDomains = memoizeOne(
+    (
+      descriptions: TriggerDescriptions | ConditionDescriptions,
+      manifests: DomainManifestLookup,
+      getDomain: (key: string) => string
+    ): { active: Set<string>; byEntityDomain: Map<string, Set<string>> } => {
+      const active = new Set<string>();
+      // Group all entity filters by system domain
+      const domainFilters: Record<
+        string,
+        Parameters<typeof filterSelectorEntities>[0][]
+      > = {};
+      // Also collect which entity domains each system domain targets
+      const entityDomainsPerSystemDomain: Record<string, Set<string>> = {};
+      for (const [key, desc] of Object.entries(descriptions)) {
+        const domain = getDomain(key);
+        if (manifests[domain]?.integration_type !== "system") {
+          continue;
+        }
+        if (!domainFilters[domain]) {
+          domainFilters[domain] = [];
+          entityDomainsPerSystemDomain[domain] = new Set();
+        }
+        const entityFilters = ensureArray(desc.target?.entity);
+        if (entityFilters) {
+          // target.entity can be EntitySelectorFilter | readonly EntitySelectorFilter[]
+          // ensureArray wraps it but each element may still be an array, so flatten
+          for (const filterOrArray of entityFilters) {
+            const filters = ensureArray(filterOrArray);
+            domainFilters[domain].push(...filters);
+            for (const filter of filters) {
+              for (const entityDomain of ensureArray(filter.domain) ?? []) {
+                entityDomainsPerSystemDomain[domain].add(entityDomain);
+              }
+            }
+          }
+        }
+      }
+      // Check each entity in hass.states against the filters
+      for (const entity of Object.values(this.hass.states)) {
+        for (const [domain, filters] of Object.entries(domainFilters)) {
+          if (active.has(domain)) {
+            continue;
+          }
+          if (filters.some((f) => filterSelectorEntities(f, entity))) {
+            active.add(domain);
+          }
+        }
+      }
+      // Build reverse map: entity domain → set of system domains that cover it
+      const byEntityDomain = new Map<string, Set<string>>();
+      for (const [systemDomain, entityDomains] of Object.entries(
+        entityDomainsPerSystemDomain
+      )) {
+        for (const entityDomain of entityDomains) {
+          if (!byEntityDomain.has(entityDomain)) {
+            byEntityDomain.set(entityDomain, new Set());
+          }
+          byEntityDomain.get(entityDomain)!.add(systemDomain);
+        }
+      }
+      return { active, byEntityDomain };
+    }
+  );
+
+  private get _systemDomains() {
+    if (!this._manifests) {
+      return undefined;
+    }
+    const descriptions =
+      this._params?.type === "trigger"
+        ? this._triggerDescriptions
+        : this._conditionDescriptions;
+    return this._calculateActiveSystemDomains(
+      descriptions,
+      this._manifests,
+      this._params?.type === "trigger" ? getTriggerDomain : getConditionDomain
+    );
   }
 
   private async _loadConfigEntries() {
@@ -402,6 +508,11 @@ class DialogAddAutomationElement
       manifests[manifest.domain] = manifest;
     }
     this._manifests = manifests;
+    // If a target was already selected and items computed before manifests
+    // loaded, recompute so system domain grouping applies correctly.
+    if (this._selectedTarget && this._targetItems) {
+      this._getItemsByTarget();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -431,6 +542,24 @@ class DialogAddAutomationElement
 
   // #region render
 
+  private _getEmptyNote(automationElementType: string) {
+    if (
+      automationElementType !== "trigger" &&
+      automationElementType !== "condition"
+    ) {
+      return undefined;
+    }
+
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
+      {
+        labs_link: html`<a href="/config/labs" @click=${this._close}
+          >${this.hass.localize("ui.panel.config.labs.caption")}</a
+        >`,
+      }
+    );
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -449,7 +578,7 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         width="large"
         .open=${this._open}
@@ -457,7 +586,7 @@ class DialogAddAutomationElement
         flexcontent
       >
         ${this._renderContent()}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -467,7 +596,7 @@ class DialogAddAutomationElement
     const tabButtons = [
       {
         label: this.hass.localize(
-          `ui.panel.config.automation.editor.${automationElementType}s.name`
+          "ui.panel.config.automation.editor.tabs.type"
         ),
         value: "groups",
       },
@@ -475,7 +604,9 @@ class DialogAddAutomationElement
 
     if (this._newTriggersAndConditions) {
       tabButtons.unshift({
-        label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
+        label: this.hass.localize(
+          "ui.panel.config.automation.editor.tabs.target"
+        ),
         value: "targets",
       });
     }
@@ -511,13 +642,12 @@ class DialogAddAutomationElement
         ${this._renderHeader()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
-              <search-input
+              <ha-input-search
+                appearance="outlined"
                 ?autofocus=${!this._narrow}
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._debounceFilterChanged}
-                .label=${this.hass.localize(`ui.common.search`)}
-              ></search-input>
+                .value=${this._filter}
+                @input=${this._handleFilterInput}
+              ></ha-input-search>
             `
           : nothing}
         ${!this._filter &&
@@ -573,10 +703,13 @@ class DialogAddAutomationElement
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
-                class=${this._getAddFromTargetHidden(
-                  this._narrow,
-                  this._selectedTarget
-                )}
+                class=${classMap({
+                  "ha-scrollbar": true,
+                  hidden: !!this._getAddFromTargetHidden(
+                    this._narrow,
+                    this._selectedTarget
+                  ),
+                })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
@@ -584,6 +717,7 @@ class DialogAddAutomationElement
                   class=${classMap({
                     groups: true,
                     hidden: hideCollections,
+                    "ha-scrollbar": true,
                   })}
                 >
                   ${this._params!.clipboardItem
@@ -634,13 +768,10 @@ class DialogAddAutomationElement
                             .path=${mdiPlus}
                           ></ha-svg-icon>
                         </ha-md-list-item>
-                        <ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
+                        <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
-                    (collection, index) => html`
+                    (collection) => html`
                       ${collection.titleKey && collection.groups.length
                         ? html`<ha-section-title>
                             ${this.hass.localize(collection.titleKey)}
@@ -654,7 +785,7 @@ class DialogAddAutomationElement
                             interactive
                             type="button"
                             .value=${item.key}
-                            .index=${index}
+                            .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
                             class=${item.key === this._selectedGroup
                               ? "selected"
@@ -696,6 +827,7 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
+                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
@@ -724,11 +856,27 @@ class DialogAddAutomationElement
   }
 
   private _renderHeader() {
+    const docUrl = this._getDocumentationUrl(this._params!.type);
+
     return html`
       <ha-dialog-header subtitle-position="above">
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
+        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
+          ? html`
+              <ha-icon-button
+                .path=${mdiHelpCircleOutline}
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                )}
+                slot="actionItems"
+                href=${docUrl}
+                target="_blank"
+                rel="noreferrer"
+              ></ha-icon-button>
+            `
+          : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
@@ -844,7 +992,8 @@ class DialogAddAutomationElement
                 this._domains,
                 this.hass.localize,
                 this.hass.services,
-                this._manifests
+                this._manifests,
+                this._systemDomains?.byEntityDomain
               ),
             },
           ]
@@ -861,11 +1010,12 @@ class DialogAddAutomationElement
     collectionIndex?: number
   ): AutomationElementGroup => {
     if (group && collectionIndex !== undefined) {
-      return (
-        TYPES[type].collections[collectionIndex].groups[group].members || {
-          [group]: {},
-        }
-      );
+      const selectedGroup =
+        TYPES[type].collections[collectionIndex]?.groups[group] ??
+        TYPES[type].collections.find((collection) => group in collection.groups)
+          ?.groups[group];
+
+      return selectedGroup?.members || { [group]: selectedGroup || {} };
     }
 
     return TYPES[type].collections.reduce(
@@ -892,10 +1042,17 @@ class DialogAddAutomationElement
 
       const items = flattenGroups(groups).flat();
       if (type === "trigger") {
-        items.push(...this._triggers(localize, this._triggerDescriptions));
+        items.push(
+          ...this._triggers(localize, this._triggerDescriptions, undefined)
+        );
       } else if (type === "condition") {
         items.push(
-          ...this._conditions(localize, this._conditionDescriptions, manifests)
+          ...this._conditions(
+            localize,
+            this._conditionDescriptions,
+            manifests,
+            undefined
+          )
         );
       } else if (type === "action") {
         items.push(...this._services(localize, services, manifests));
@@ -915,13 +1072,10 @@ class DialogAddAutomationElement
       triggerDescriptions: TriggerDescriptions,
       conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
-    ): {
-      titleKey?: LocalizeKeys;
-      groups: AddAutomationElementListItem[];
-    }[] => {
-      const generatedCollections: any = [];
+    ): CollectionGroup[] => {
+      const generatedCollections: CollectionGroup[] = [];
 
-      collections.forEach((collection) => {
+      collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
 
@@ -1003,6 +1157,7 @@ class DialogAddAutomationElement
         );
 
         generatedCollections.push({
+          collectionIndex: index,
           titleKey: collection.titleKey,
           groups: groups.sort((a, b) => {
             // make sure device is always on top
@@ -1016,7 +1171,40 @@ class DialogAddAutomationElement
           }),
         });
       });
-      return generatedCollections;
+
+      return !["trigger", "condition"].includes(type)
+        ? generatedCollections
+        : generatedCollections.flatMap(
+            (collection: CollectionGroup): CollectionGroup[] => {
+              const genericGroups = collection.groups.filter((group) =>
+                GENERIC_GROUPS.has(group.key)
+              );
+
+              const mainGroups = collection.groups.filter(
+                (group) => !GENERIC_GROUPS.has(group.key)
+              );
+
+              return [
+                ...(mainGroups.length
+                  ? [
+                      {
+                        ...collection,
+                        groups: mainGroups,
+                      },
+                    ]
+                  : []),
+                ...(genericGroups.length
+                  ? [
+                      {
+                        collectionIndex: collection.collectionIndex,
+                        titleKey: "ui.panel.config.automation.editor.generic",
+                        groups: genericGroups,
+                      } satisfies CollectionGroup,
+                    ]
+                  : []),
+              ];
+            }
+          );
     }
   );
 
@@ -1048,16 +1236,23 @@ class DialogAddAutomationElement
       domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
-      manifests?: DomainManifestLookup
+      manifests?: DomainManifestLookup,
+      systemDomainsByEntityDomain?: Map<string, Set<string>>
     ): AddAutomationElementListItem[] => {
       if (type === "trigger" && isDynamic(group)) {
-        return this._triggers(localize, this._triggerDescriptions, group);
+        return this._triggers(
+          localize,
+          this._triggerDescriptions,
+          systemDomainsByEntityDomain,
+          group
+        );
       }
       if (type === "condition" && isDynamic(group)) {
         return this._conditions(
           localize,
           this._conditionDescriptions,
           manifests,
+          systemDomainsByEntityDomain,
           group
         );
       }
@@ -1140,11 +1335,7 @@ class DialogAddAutomationElement
       ) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
@@ -1156,6 +1347,38 @@ class DialogAddAutomationElement
       stringCompare(a.name, b.name, this.hass.locale.language)
     );
   };
+
+  private _domainMatchesGroupType(
+    domain: string,
+    manifest: DomainManifestLookup[string] | undefined,
+    domainUsed: boolean,
+    type: "helper" | "other" | undefined
+  ): boolean {
+    if (type === undefined) {
+      return (
+        ENTITY_DOMAINS_MAIN.has(domain) ||
+        (manifest?.integration_type === "entity" &&
+          domainUsed &&
+          !ENTITY_DOMAINS_OTHER.has(domain)) ||
+        (manifest?.integration_type === "system" &&
+          (this._systemDomains?.active.has(domain) ?? false))
+      );
+    }
+    if (type === "helper") {
+      return manifest?.integration_type === "helper";
+    }
+    // type === "other"
+    return (
+      !ENTITY_DOMAINS_MAIN.has(domain) &&
+      (ENTITY_DOMAINS_OTHER.has(domain) ||
+        (!domainUsed && manifest?.integration_type === "entity") ||
+        (manifest?.integration_type === "system" &&
+          !(this._systemDomains?.active.has(domain) ?? false)) ||
+        !["helper", "entity", "system"].includes(
+          manifest?.integration_type || ""
+        ))
+    );
+  }
 
   private _triggerGroups = (
     localize: LocalizeFunc,
@@ -1180,26 +1403,10 @@ class DialogAddAutomationElement
       const manifest = manifests[domain];
       const domainUsed = !domains ? true : domains.has(domain);
 
-      if (
-        (type === undefined &&
-          (ENTITY_DOMAINS_MAIN.has(domain) ||
-            (manifest?.integration_type === "entity" &&
-              domainUsed &&
-              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
-        (type === "helper" && manifest?.integration_type === "helper") ||
-        (type === "other" &&
-          !ENTITY_DOMAINS_MAIN.has(domain) &&
-          (ENTITY_DOMAINS_OTHER.has(domain) ||
-            (!domainUsed && manifest?.integration_type === "entity") ||
-            !["helper", "entity"].includes(manifest?.integration_type || "")))
-      ) {
+      if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
@@ -1216,17 +1423,30 @@ class DialogAddAutomationElement
     (
       localize: LocalizeFunc,
       triggers: TriggerDescriptions,
+      systemDomainsByEntityDomain: Map<string, Set<string>> | undefined,
       group?: string
     ): AddAutomationElementListItem[] => {
       if (!triggers) {
         return [];
       }
 
+      const browsedEntityDomain =
+        group && isDynamic(group) ? getValueFromDynamic(group) : undefined;
+
+      // System domains that should be merged into this entity domain group
+      const systemDomainsForGroup = browsedEntityDomain
+        ? systemDomainsByEntityDomain?.get(browsedEntityDomain)
+        : undefined;
+
       return this._getTriggerListItems(
         localize,
         Object.keys(triggers).filter((trigger) => {
           const domain = getTriggerDomain(trigger);
-          return !group || group === `${DYNAMIC_PREFIX}${domain}`;
+          if (!group || group === `${DYNAMIC_PREFIX}${domain}`) {
+            return true;
+          }
+          // Also include system domain triggers that cover the browsed entity domain
+          return systemDomainsForGroup?.has(domain) ?? false;
         })
       );
     }
@@ -1255,26 +1475,10 @@ class DialogAddAutomationElement
       const manifest = manifests[domain];
       const domainUsed = !domains ? true : domains.has(domain);
 
-      if (
-        (type === undefined &&
-          (ENTITY_DOMAINS_MAIN.has(domain) ||
-            (manifest?.integration_type === "entity" &&
-              domainUsed &&
-              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
-        (type === "helper" && manifest?.integration_type === "helper") ||
-        (type === "other" &&
-          !ENTITY_DOMAINS_MAIN.has(domain) &&
-          (ENTITY_DOMAINS_OTHER.has(domain) ||
-            (!domainUsed && manifest?.integration_type === "entity") ||
-            !["helper", "entity"].includes(manifest?.integration_type || "")))
-      ) {
+      if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
         result.push({
           icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
+            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
           `,
           key: `${DYNAMIC_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
@@ -1292,6 +1496,7 @@ class DialogAddAutomationElement
       localize: LocalizeFunc,
       conditions: ConditionDescriptions,
       _manifests: DomainManifestLookup | undefined,
+      systemDomainsByEntityDomain: Map<string, Set<string>> | undefined,
       group?: string
     ): AddAutomationElementListItem[] => {
       if (!conditions) {
@@ -1299,10 +1504,21 @@ class DialogAddAutomationElement
       }
       const result: AddAutomationElementListItem[] = [];
 
+      const browsedEntityDomain =
+        group && isDynamic(group) ? getValueFromDynamic(group) : undefined;
+
+      const systemDomainsForGroup = browsedEntityDomain
+        ? systemDomainsByEntityDomain?.get(browsedEntityDomain)
+        : undefined;
+
       for (const condition of Object.keys(conditions)) {
         const domain = getConditionDomain(condition);
 
-        if (group && group !== `${DYNAMIC_PREFIX}${domain}`) {
+        if (
+          group &&
+          group !== `${DYNAMIC_PREFIX}${domain}` &&
+          !(systemDomainsForGroup?.has(domain) ?? false)
+        ) {
           continue;
         }
 
@@ -1393,18 +1609,28 @@ class DialogAddAutomationElement
     }
   );
 
-  private _getLabel = memoizeOne((labelId) =>
-    this._labelRegistry?.find(({ label_id }) => label_id === labelId)
+  private _getLabel = memoizeOne((id: string) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === id)
   );
 
   private _getDomainType(domain: string) {
-    return ENTITY_DOMAINS_MAIN.has(domain) ||
-      (this._manifests?.[domain].integration_type === "entity" &&
+    if (
+      ENTITY_DOMAINS_MAIN.has(domain) ||
+      (this._manifests?.[domain]?.integration_type === "entity" &&
         !ENTITY_DOMAINS_OTHER.has(domain))
-      ? "dynamicGroups"
-      : this._manifests?.[domain].integration_type === "helper"
-        ? "helpers"
-        : "other";
+    ) {
+      return "dynamicGroups";
+    }
+    if (this._manifests?.[domain]?.integration_type === "helper") {
+      return "helpers";
+    }
+    if (
+      this._manifests?.[domain]?.integration_type === "system" &&
+      this._systemDomains?.active.has(domain)
+    ) {
+      return "dynamicGroups";
+    }
+    return "other";
   }
 
   private _sortDomainsByCollection(
@@ -1509,30 +1735,56 @@ class DialogAddAutomationElement
     iconPath: options.icon || TYPES[type].icons[key],
   });
 
-  private _getDomainGroupedTriggerListItems(
+  private _getDomainGroupedListItems(
     localize: LocalizeFunc,
-    triggerIds: string[]
+    ids: string[],
+    getDomain: (id: string) => string,
+    getListItem: (
+      localize: LocalizeFunc,
+      domain: string,
+      id: string
+    ) => AddAutomationElementListItem
   ): { title: string; items: AddAutomationElementListItem[] }[] {
     const items: Record<
       string,
       { title: string; items: AddAutomationElementListItem[] }
     > = {};
 
-    triggerIds.forEach((trigger) => {
-      const domain = getTriggerDomain(trigger);
+    // When a specific entity is selected, system domain items are merged
+    // under the entity's real domain rather than under their system domain name.
+    const targetEntityId = this._selectedTarget?.entity_id;
+    const targetEntityDomain =
+      targetEntityId &&
+      this._manifests?.[computeDomain(targetEntityId)]?.integration_type !==
+        "system"
+        ? computeDomain(targetEntityId)
+        : undefined;
 
-      if (!items[domain]) {
-        items[domain] = {
-          title: domainToName(localize, domain, this._manifests?.[domain]),
+    ids.forEach((id) => {
+      const itemDomain = getDomain(id);
+      const isSystemDomain =
+        this._manifests?.[itemDomain]?.integration_type === "system";
+
+      // System domain items are grouped under the entity's real domain (if
+      // a specific entity is selected), so they appear alongside that domain's
+      // own items rather than in a separate section.
+      const groupDomain =
+        isSystemDomain && targetEntityDomain ? targetEntityDomain : itemDomain;
+
+      if (!items[groupDomain]) {
+        items[groupDomain] = {
+          title: domainToName(
+            localize,
+            groupDomain,
+            this._manifests?.[groupDomain]
+          ),
           items: [],
         };
       }
 
-      items[domain].items.push(
-        this._getTriggerListItem(localize, domain, trigger)
-      );
+      items[groupDomain].items.push(getListItem(localize, itemDomain, id));
 
-      items[domain].items.sort((a, b) =>
+      items[groupDomain].items.sort((a, b) =>
         stringCompare(a.name, b.name, this.hass.locale.language)
       );
     });
@@ -1654,50 +1906,29 @@ class DialogAddAutomationElement
     );
   }
 
-  private _getDomainGroupedConditionListItems(
-    localize: LocalizeFunc,
-    conditionIds: string[]
-  ): { title: string; items: AddAutomationElementListItem[] }[] {
-    const items: Record<
-      string,
-      { title: string; items: AddAutomationElementListItem[] }
-    > = {};
-
-    conditionIds.forEach((condition) => {
-      const domain = getConditionDomain(condition);
-      if (!items[domain]) {
-        items[domain] = {
-          title: domainToName(localize, domain, this._manifests?.[domain]),
-          items: [],
-        };
-      }
-
-      items[domain].items.push(
-        this._getConditionListItem(localize, domain, condition)
-      );
-
-      items[domain].items.sort((a, b) =>
-        stringCompare(a.name, b.name, this.hass.locale.language)
-      );
-    });
-
-    return this._sortDomainsByCollection(
-      this._params!.type,
-      Object.entries(items)
-    );
-  }
-
   // #endregion render prepare
 
   // #region interaction
 
-  private _close() {
+  private _close = () => {
     this._open = false;
-  }
+  };
 
   private _back() {
     mainWindow.history.back();
   }
+
+  private _getDocumentationUrl = memoizeOne(
+    (type: "trigger" | "condition" | "action") =>
+      documentationUrl(
+        this.hass,
+        type === "trigger"
+          ? "/docs/automation/trigger/"
+          : type === "condition"
+            ? "/docs/automation/condition/"
+            : "/docs/automation/action/"
+      )
+  );
 
   private _groupSelected(ev) {
     const group = ev.currentTarget;
@@ -1728,7 +1959,7 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
-  private _selected(ev: CustomEvent<{ value: string }>) {
+  private _selected(ev: ValueChangedEvent<string>) {
     let target: HassServiceTarget | undefined;
     if (
       this._tab === "targets" &&
@@ -1742,7 +1973,7 @@ class DialogAddAutomationElement
   }
 
   private _handleTargetSelected = (
-    ev: CustomEvent<{ value: SingleHassServiceTarget }>
+    ev: ValueChangedEvent<SingleHassServiceTarget>
   ) => {
     this._targetItems = undefined;
     this._loadItemsError = false;
@@ -1767,6 +1998,31 @@ class DialogAddAutomationElement
     this._getItemsByTarget();
   };
 
+  private _getDefaultStateItems(
+    type: "trigger" | "condition"
+  ): AddAutomationElementListItem[] {
+    const items: AddAutomationElementListItem[] = [
+      this._convertToItem("state", {}, type, this.hass.localize),
+    ];
+
+    const entityId = this._selectedTarget?.entity_id;
+    if (entityId) {
+      const NUMERIC_DOMAINS = ["counter", "input_number", "number", "sensor"];
+      const domain = computeDomain(entityId);
+      const stateObj = this.hass.states[entityId];
+      if (
+        NUMERIC_DOMAINS.includes(domain) ||
+        (stateObj && isNumericState(stateObj))
+      ) {
+        items.push(
+          this._convertToItem("numeric_state", {}, type, this.hass.localize)
+        );
+      }
+    }
+
+    return items;
+  }
+
   private async _getItemsByTarget() {
     if (!this._selectedTarget) {
       return;
@@ -1779,10 +2035,22 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedTriggerListItems(
+        const grouped = this._getDomainGroupedListItems(
           this.hass.localize,
-          items
+          items,
+          getTriggerDomain,
+          (localize, domain, trigger) =>
+            this._getTriggerListItem(localize, domain, trigger)
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.triggers.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("trigger"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
       if (this._params!.type === "condition") {
@@ -1791,10 +2059,22 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedConditionListItems(
+        const grouped = this._getDomainGroupedListItems(
           this.hass.localize,
-          items
+          items,
+          getConditionDomain,
+          (localize, domain, condition) =>
+            this._getConditionListItem(localize, domain, condition)
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("condition"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
 
@@ -1821,14 +2101,13 @@ class DialogAddAutomationElement
     }
   }
 
-  private _debounceFilterChanged = debounce(
-    (ev) => this._filterChanged(ev),
-    200
-  );
-
-  private _filterChanged = (ev) => {
-    this._filter = ev.detail.value;
+  private _handleFilterInput = (ev: InputEvent) => {
+    this._debounceFilterChanged((ev.target as HaInputSearch).value ?? "");
   };
+
+  private _debounceFilterChanged = debounce((value: string) => {
+    this._filter = value;
+  }, 200);
 
   private _addClipboard = () => {
     if (this._params?.clipboardItem) {
@@ -1843,6 +2122,12 @@ class DialogAddAutomationElement
             ),
           }
         ),
+        dismissable: true,
+        ...(this._params.clipboardPasteToastBottomOffset != null
+          ? {
+              bottomOffset: this._params.clipboardPasteToastBottomOffset,
+            }
+          : {}),
       });
       this.closeDialog();
     }
@@ -1875,7 +2160,10 @@ class DialogAddAutomationElement
   }
 
   private _handleClosed() {
-    this.closeDialog();
+    // if closing isn't already in progress, close the dialog
+    if (!this._closing) {
+      this.closeDialog();
+    }
   }
 
   // #region interaction
@@ -1926,32 +2214,12 @@ class DialogAddAutomationElement
       }
 
       if (targetId) {
-        if (targetType === "floor") {
-          return computeFloorName(this.hass.floors[targetId]) || targetId;
-        }
-        if (targetType === "area") {
-          return computeAreaName(this.hass.areas[targetId]) || targetId;
-        }
-        if (targetType === "device") {
-          return computeDeviceName(this.hass.devices[targetId]) || targetId;
-        }
-        if (targetType === "entity" && this.hass.states[targetId]) {
-          const stateObj = this.hass.states[targetId];
-          const [entityName, deviceName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          );
-
-          return entityName || deviceName || targetId;
-        }
-        if (targetType === "label") {
-          const label = this._getLabel(targetId);
-          return label?.name || targetId;
-        }
+        return getTargetText(
+          this.hass,
+          targetType as "floor" | "area" | "device" | "entity" | "label",
+          targetId,
+          this._getLabel
+        );
       }
 
       return undefined;
@@ -2030,20 +2298,21 @@ class DialogAddAutomationElement
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;
           --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
           --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
           --ha-bottom-sheet-max-width: 888px;
-          --ha-bottom-sheet-padding: var(--ha-space-0);
+          --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
-        ha-wa-dialog {
-          --dialog-content-padding: var(--ha-space-0);
+        ha-dialog {
+          --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100vh - max(
                   var(--safe-area-inset-bottom),
@@ -2052,7 +2321,7 @@ class DialogAddAutomationElement
             )
           );
           --ha-dialog-min-height: min(
-            800px,
+            920px,
             calc(
               100dvh - max(
                   var(--safe-area-inset-bottom),
@@ -2063,9 +2332,14 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        search-input {
+        ha-dialog ha-icon-button[slot="actionItems"] {
+          color: var(--secondary-text-color);
+        }
+
+        ha-input-search {
           display: block;
-          margin: var(--ha-space-0) var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+          margin: 0 var(--ha-space-4);
         }
 
         ha-button-toggle-group {
@@ -2082,6 +2356,7 @@ class DialogAddAutomationElement
 
         .content.column {
           flex-direction: column;
+          gap: var(--ha-space-3);
         }
 
         ha-md-list {
@@ -2099,7 +2374,7 @@ class DialogAddAutomationElement
         .groups {
           overflow: auto;
           flex: 4;
-          margin-inline-end: var(--ha-space-0);
+          margin-inline-end: 0;
         }
 
         ha-automation-add-from-target.hidden {
@@ -2148,7 +2423,7 @@ class DialogAddAutomationElement
           overflow: clip;
         }
 
-        ha-wa-dialog ha-automation-add-items {
+        ha-dialog ha-automation-add-items {
           margin-top: var(--ha-space-3);
         }
 
@@ -2169,8 +2444,8 @@ class DialogAddAutomationElement
           width: var(--ha-space-6);
         }
 
-        ha-md-list-item.paste {
-          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+        wa-divider {
+          --spacing: 0;
         }
 
         ha-svg-icon.plus {

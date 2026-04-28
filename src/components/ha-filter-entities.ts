@@ -17,7 +17,8 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-list";
 import "./ha-state-icon";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -35,7 +36,7 @@ export class HaFilterEntities extends LitElement {
 
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (!this.hasUpdated) {
@@ -70,12 +71,12 @@ export class HaFilterEntities extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
-              <search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+              <ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
@@ -87,6 +88,7 @@ export class HaFilterEntities extends LitElement {
                   .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
+                  @keydown=${this._handleItemKeydown}
                 >
                 </lit-virtualizer>
               </ha-list>
@@ -96,12 +98,15 @@ export class HaFilterEntities extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
+          `${this.clientHeight - 49 - 4 - 32}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 32px - height of the search input
       }, 300);
     }
   }
@@ -112,6 +117,7 @@ export class HaFilterEntities extends LitElement {
     !entity
       ? nothing
       : html`<ha-check-list-item
+          tabindex="0"
           .value=${entity.entity_id}
           .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
@@ -123,6 +129,13 @@ export class HaFilterEntities extends LitElement {
           ></ha-state-icon>
           ${computeStateName(entity)}
         </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -146,8 +159,9 @@ export class HaFilterEntities extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   private _entities = memoizeOne(
@@ -262,7 +276,7 @@ export class HaFilterEntities extends LitElement {
           --mdc-list-item-graphic-margin: 16px;
           width: 100%;
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

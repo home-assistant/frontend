@@ -643,7 +643,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "12"
     );
-    expect(result).toBe("12.00 min");
+    expect(result).toBe("12m");
   });
   it("Should format duration sensor with seconds", () => {
     const result = computeStateDisplayFromEntityAttributes(
@@ -678,11 +678,37 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       "number.test",
       {
         device_class: "monetary",
-        unit_of_measurement: "$",
+        unit_of_measurement: "USD",
       },
       "12"
     );
-    expect(result).toBe("12 $");
+    expect(result).toBe("$12.00");
+  });
+
+  it("Should format negative monetary device_class", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "number.test",
+      {
+        device_class: "monetary",
+        unit_of_measurement: "USD",
+      },
+      "-12"
+    );
+    // Joined output matches native Intl formatting
+    const expected = new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    }).format(-12);
+    expect(result).toBe(expected);
   });
 });
 

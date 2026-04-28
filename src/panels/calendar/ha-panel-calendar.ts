@@ -1,35 +1,48 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-card";
-import "../../components/ha-check-list-item";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
-import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import type { Calendar, CalendarEvent } from "../../data/calendar";
-import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventSubscription,
+  CalendarEventApiData,
+} from "../../data/calendar";
+import {
+  getCalendars,
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../data/calendar";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
 
 @customElement("ha-panel-calendar")
-class PanelCalendar extends LitElement {
+class PanelCalendar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -42,6 +55,10 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
+
   @state()
   @storage({
     key: "deSelectedCalendars",
@@ -53,13 +70,13 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
+
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
   private _mql?: MediaQueryList;
-
-  private _headerHeight = 56;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -68,48 +85,71 @@ class PanelCalendar extends LitElement {
     );
     this._mql.addListener(this._setIsMobile);
     this.mobile = this._mql.matches;
-    const computedStyles = getComputedStyle(this);
-    this._headerHeight = Number(
-      computedStyles.getPropertyValue("--header-height").replace("px", "")
-    );
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._mql?.removeListener(this._setIsMobile!);
     this._mql = undefined;
+    this._unsubscribeAll();
   }
 
   private _setIsMobile = (ev: MediaQueryListEvent) => {
     this.mobile = ev.matches;
   };
 
-  public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._calendars = getCalendars(this.hass, this);
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityRegistry = entities;
+        // Refresh calendars when entity registry updates (includes color changes)
+        this._calendars = getCalendars(this.hass, this, this._entityRegistry);
+        // Resubscribe events if view dates are available (handles both initial load and color updates)
+        if (this._start && this._end) {
+          this._unsubscribeAll().then(() => {
+            this._events = [];
+            this._subscribeCalendarEvents(this._selectedCalendars);
+          });
+        }
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
+    if (!this._entityRegistry) {
+      return html`
+        <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
+          <ha-menu-button
+            slot="navigationIcon"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
+          <div slot="title">
+            ${this.hass.localize("ui.components.calendar.my_calendars")}
+          </div>
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </ha-two-pane-top-app-bar-fixed>
+      `;
+    }
+
     const calendarItems = this._calendars.map(
       (selCal) => html`
-        <ha-check-list-item
-          @request-selected=${this._requestSelected}
-          graphic="icon"
-          style=${styleMap({
-            "--mdc-theme-secondary": selCal.backgroundColor!,
-          })}
+        <ha-dropdown-item
+          type="checkbox"
+          @click=${this._requestSelected}
           .value=${selCal.entity_id}
-          .selected=${!this._deSelectedCalendars.includes(selCal.entity_id)}
+          .checked=${!this._deSelectedCalendars.includes(selCal.entity_id)}
         >
           <ha-state-icon
-            slot="graphic"
+            slot="icon"
             .hass=${this.hass}
             .stateObj=${selCal}
+            style="--icon-primary-color: ${selCal.backgroundColor}"
           ></ha-state-icon>
           ${selCal.name}
-        </ha-check-list-item>
+        </ha-dropdown-item>
       `
     );
     const showPane = this._showPaneController.value ?? !this.narrow;
@@ -126,35 +166,22 @@ class PanelCalendar extends LitElement {
         ></ha-menu-button>
 
         ${!showPane
-          ? html`<ha-button-menu
-              slot="title"
-              class="lists"
-              multi
-              fixed
-              .noAnchor=${this.mobile}
-              .y=${this.mobile
-                ? this._headerHeight / 2
-                : this._headerHeight / 4}
-              .x=${this.mobile ? 0 : undefined}
-            >
+          ? html`<ha-dropdown slot="title">
               <ha-button slot="trigger">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
                 <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${calendarItems}
               ${this.hass.user?.is_admin
-                ? html` <li divider role="separator"></li>
-                    <ha-list-item graphic="icon" @click=${this._addCalendar}>
-                      <ha-svg-icon
-                        .path=${mdiPlus}
-                        slot="graphic"
-                      ></ha-svg-icon>
+                ? html`<wa-divider></wa-divider>
+                    <ha-dropdown-item @click=${this._addCalendar}>
+                      <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.components.calendar.create_calendar"
                       )}
-                    </ha-list-item>`
+                    </ha-dropdown-item>`
                 : nothing}
-            </ha-button-menu>`
+            </ha-dropdown>`
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>`}
@@ -176,6 +203,7 @@ class PanelCalendar extends LitElement {
               </ha-list-item>`
           : nothing}
         <ha-full-calendar
+          add-fab
           .events=${this._events}
           .calendars=${this._calendars}
           .narrow=${this.narrow}
@@ -194,83 +222,147 @@ class PanelCalendar extends LitElement {
       .map((cal) => cal);
   }
 
-  private async _fetchEvents(
-    start: Date | undefined,
-    end: Date | undefined,
-    calendars: Calendar[]
-  ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
-    if (!calendars.length || !start || !end) {
-      return { events: [], errors: [] };
+  private _subscribeCalendarEvents(calendars: Calendar[]): void {
+    if (!this._start || !this._end || calendars.length === 0) {
+      return;
     }
 
-    return fetchCalendarEvents(this.hass, start, end, calendars);
+    this._error = undefined;
+
+    calendars.forEach((calendar) => {
+      // Unsubscribe existing subscription if any
+      if (calendar.entity_id in this._unsubs) {
+        this._unsubs[calendar.entity_id]
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          });
+      }
+
+      const unsub = subscribeCalendarEvents(
+        this.hass,
+        calendar.entity_id,
+        this._start!,
+        this._end!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
   }
 
-  private async _requestSelected(ev: CustomEvent<RequestSelectedDetail>) {
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
+      }
+      this._handleErrors(this._errorCalendars);
+      return;
+    }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    this._handleErrors(this._errorCalendars);
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventApiData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
+      )
+      .filter((event): event is CalendarEvent => event !== null);
+
+    this._events = [...this._events, ...newEvents];
+  }
+
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
+    this._unsubs = {};
+  }
+
+  private _unsubscribeCalendar(entityId: string): void {
+    if (entityId in this._unsubs) {
+      this._unsubs[entityId]
+        .then((unsubFunc) => unsubFunc())
+        .catch(() => {
+          // Subscription may have already been closed
+        });
+      delete this._unsubs[entityId];
+    }
+  }
+
+  private _requestSelected(ev: Event) {
     ev.stopPropagation();
-    const entityId = (ev.target as HaListItem).value;
-    if (ev.detail.selected) {
+    const item = ev.currentTarget as HaDropdownItem;
+    const entityId = item.value as string;
+    const checked = item.checked;
+
+    if (!checked) {
       this._deSelectedCalendars = this._deSelectedCalendars.filter(
         (cal) => cal !== entityId
       );
-      if (ev.detail.source === "interaction") {
-        // prevent adding the same calendar twice, an interaction event will be followed by a property event
-        return;
-      }
       const calendar = this._calendars.find(
         (cal) => cal.entity_id === entityId
       );
       if (!calendar) {
         return;
       }
-      const result = await this._fetchEvents(this._start, this._end, [
-        calendar,
-      ]);
-      this._events = [...this._events, ...result.events];
-      this._handleErrors(result.errors);
+      this._subscribeCalendarEvents([calendar]);
     } else {
       this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
+      this._unsubscribeCalendar(entityId);
       this._events = this._events.filter(
         (event) => event.calendar !== entityId
       );
     }
   }
 
-  private async _addCalendar(): Promise<void> {
+  private _addCalendar = async (): Promise<void> => {
     showConfigFlowDialog(this, {
       startFlowHandler: "local_calendar",
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {
-          this._calendars = getCalendars(this.hass, this);
+          this._calendars = getCalendars(this.hass, this, this._entityRegistry);
         }
       },
     });
-  }
+  };
 
   private async _handleViewChanged(
     ev: HASSDomEvent<CalendarViewChanged>
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private async _handleRefresh(): Promise<void> {
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private _handleErrors(error_entity_ids: string[]) {
@@ -308,15 +400,32 @@ class PanelCalendar extends LitElement {
               ) - var(--safe-area-inset-bottom, 0px)
           );
         }
-        ha-button-menu ha-button {
+        ha-dropdown ha-button {
           --ha-font-size-m: var(--ha-font-size-l);
         }
-        :host([mobile]) .lists {
-          --mdc-menu-min-width: 100vw;
+
+        ha-dropdown-item {
+          padding-left: 32px;
+          padding-inline-start: 32px;
+          padding-inline-end: initial;
+          --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
         }
-        :host([mobile]) ha-button-menu {
-          --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
-            var(--mdc-shape-medium);
+
+        ha-dropdown-item[aria-checked="true"] {
+          --icon-primary-color: var(--primary-color);
+        }
+
+        :host([mobile]) {
+          padding-left: unset;
+          padding-inline-start: unset;
+          padding-inline-end: initial;
+        }
+        .loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--ha-space-8);
+          min-height: 400px;
         }
       `,
     ];

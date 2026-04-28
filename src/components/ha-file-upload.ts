@@ -1,17 +1,17 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { bytesToString } from "../util/bytes-to-string";
 import "./ha-button";
 import "./ha-icon-button";
-import { blankBeforePercent } from "../common/translations/blank_before_percent";
-import { ensureArray } from "../common/array/ensure-array";
-import { bytesToString } from "../util/bytes-to-string";
-import type { LocalizeFunc } from "../common/translations/localize";
+import "./progress/ha-progress-bar";
 
 declare global {
   interface HASSDomEvents {
@@ -57,7 +57,7 @@ export class HaFileUpload extends LitElement {
 
   @query("#input") private _input?: HTMLInputElement;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.autoOpenFileDialog) {
       this._openFilePicker();
@@ -100,10 +100,11 @@ export class HaFileUpload extends LitElement {
                   </div>`
                 : nothing}
             </div>
-            <mwc-linear-progress
+            <ha-progress-bar
               .indeterminate=${!this.progress}
-              .progress=${this.progress ? this.progress / 100 : undefined}
-            ></mwc-linear-progress>
+              .value=${this.progress}
+              loading
+            ></ha-progress-bar>
           </div>`
         : html`<label
             for=${this.value ? "" : "input"}
@@ -317,9 +318,9 @@ export class HaFileUpload extends LitElement {
     }
     ha-button {
       --mdc-button-outline-color: var(--primary-color);
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
     }
-    mwc-linear-progress {
+    ha-progress-bar {
       width: 100%;
       padding: 8px 32px;
       box-sizing: border-box;

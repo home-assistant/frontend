@@ -4,7 +4,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-spinner";
 import {
   subscribeBackupEvents,
@@ -75,11 +75,10 @@ class DialogRestartWait extends LitElement {
     const waitMessage = this._getWaitMessage();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this._title}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -94,7 +93,7 @@ class DialogRestartWait extends LitElement {
                 ${waitMessage}
               `}
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -120,7 +119,7 @@ class DialogRestartWait extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         .content {

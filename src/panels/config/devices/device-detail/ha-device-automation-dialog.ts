@@ -4,15 +4,15 @@ import {
   mdiPencilOutline,
   mdiRoomService,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-dialog";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
@@ -44,22 +44,29 @@ export class DialogDeviceAutomation extends LitElement {
 
   @state() private _params?: DeviceAutomationDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("device_automation");
   }
 
-  protected updated(changedProps): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (!changedProps.has("_params")) {
@@ -137,17 +144,17 @@ export class DialogDeviceAutomation extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, title)}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
         <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel="Create new automation"
           rootTabbable
-          dialogInitialFocus
+          autofocus
         >
           ${this._triggers.length
             ? html`

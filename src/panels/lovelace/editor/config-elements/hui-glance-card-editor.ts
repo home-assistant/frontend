@@ -20,6 +20,7 @@ import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -40,54 +41,58 @@ const cardConfigStruct = assign(
   })
 );
 
-const SUB_SCHEMA = [
-  { name: "entity", selector: { entity: {} }, required: true },
-  {
-    name: "name",
-    selector: { entity_name: {} },
-    context: {
-      entity: "entity",
-    },
-  },
-  {
-    type: "grid",
-    name: "",
-    schema: [
-      {
-        name: "icon",
-        selector: {
-          icon: {},
-        },
-        context: {
-          icon_entity: "entity",
-        },
-      },
-      { name: "show_last_changed", selector: { boolean: {} } },
-      { name: "show_state", selector: { boolean: {} }, default: true },
-    ],
-  },
-  {
-    name: "tap_action",
-    selector: {
-      ui_action: {
-        default_action: "more-info",
+const SUB_FORM = {
+  schema: [
+    { name: "entity", selector: { entity: {} }, required: true },
+    {
+      name: "name",
+      selector: { entity_name: {} },
+      context: {
+        entity: "entity",
       },
     },
-  },
-  {
-    name: "",
-    type: "optional_actions",
-    flatten: true,
-    schema: (["hold_action", "double_tap_action"] as const).map((action) => ({
-      name: action,
+    {
+      type: "grid",
+      name: "",
+      schema: [
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+          context: {
+            icon_entity: "entity",
+          },
+        },
+        { name: "show_last_changed", selector: { boolean: {} } },
+        { name: "show_state", selector: { boolean: {} }, default: true },
+      ],
+    },
+    {
+      name: "tap_action",
       selector: {
         ui_action: {
-          default_action: "none" as const,
+          default_action: "more-info",
         },
       },
-    })),
-  },
-] as const;
+      context: ACTION_RELATED_CONTEXT,
+    },
+    {
+      name: "",
+      type: "optional_actions",
+      flatten: true,
+      schema: (["hold_action", "double_tap_action"] as const).map((action) => ({
+        name: action,
+        selector: {
+          ui_action: {
+            default_action: "none" as const,
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
+      })),
+    },
+  ] as const,
+};
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
@@ -141,7 +146,7 @@ export class HuiGlanceCardEditor
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${SUB_SCHEMA}
+          .form=${SUB_FORM}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >

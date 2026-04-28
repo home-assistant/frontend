@@ -6,11 +6,10 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-textarea";
 import type { ZHADevice } from "../../../../../data/zha";
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
-import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
 
 @customElement("zha-add-devices-page")
@@ -61,7 +60,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._formattedEvents = "";
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (
       changedProps.has("hass") &&
@@ -74,11 +73,10 @@ class ZHAAddDevicesPage extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route!}
-        .tabs=${zhaTabs}
+        .header=${this.hass.localize("ui.panel.config.zha.add_device")}
       >
         <ha-button
           appearance="plain"
@@ -163,12 +161,12 @@ class ZHAAddDevicesPage extends LitElement {
           ? html`<ha-textarea
               readonly
               class="log"
-              autogrow
+              resize="auto"
               .value=${this._formattedEvents}
             >
             </ha-textarea>`
           : ""}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

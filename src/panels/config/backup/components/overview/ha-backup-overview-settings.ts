@@ -2,6 +2,7 @@ import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -16,10 +17,9 @@ import {
   getFormattedBackupTime,
   isLocalAgent,
 } from "../../../../../data/backup";
+import { getRecorderInfo } from "../../../../../data/recorder";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import { getRecorderInfo } from "../../../../../data/recorder";
 
 @customElement("ha-backup-overview-settings")
 class HaBackupBackupsSummary extends LitElement {
@@ -31,7 +31,7 @@ class HaBackupBackupsSummary extends LitElement {
 
   @state() private _showDbOption = true;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
   }
@@ -41,7 +41,7 @@ class HaBackupBackupsSummary extends LitElement {
   }
 
   private async _checkDbOption() {
-    if (isComponentLoaded(this.hass, "recorder")) {
+    if (isComponentLoaded(this.hass.config, "recorder")) {
       const info = await getRecorderInfo(this.hass.connection);
       this._showDbOption = info.db_in_default_location;
     } else {
@@ -151,18 +151,18 @@ class HaBackupBackupsSummary extends LitElement {
   private _addonsDescription(config: BackupConfig): string {
     if (config.create_backup.include_all_addons) {
       return this.hass.localize(
-        "ui.panel.config.backup.overview.settings.addons_all"
+        "ui.panel.config.backup.overview.settings.apps_all"
       );
     }
     const count = config.create_backup.include_addons?.length;
     if (count) {
       return this.hass.localize(
-        "ui.panel.config.backup.overview.settings.addons_many",
+        "ui.panel.config.backup.overview.settings.apps_many",
         { count }
       );
     }
     return this.hass.localize(
-      "ui.panel.config.backup.overview.settings.addons_none"
+      "ui.panel.config.backup.overview.settings.apps_none"
     );
   }
 
@@ -260,7 +260,7 @@ class HaBackupBackupsSummary extends LitElement {
                     </div>
                     <div slot="supporting-text">
                       ${this.hass.localize(
-                        "ui.panel.config.backup.overview.settings.addons"
+                        "ui.panel.config.backup.overview.settings.apps"
                       )}
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>

@@ -5,8 +5,7 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -14,15 +13,23 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
+    const collectionKey =
+      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+
     const view: LovelaceViewConfig = {
       type: "sections",
       sections: [],
       dense_section_placement: true,
-      max_columns: 2,
+      max_columns: 3,
+      footer: {
+        card: {
+          type: "energy-date-selection",
+          collection_key: collectionKey,
+          opening_direction: "right",
+          vertical_opening_direction: "up",
+        },
+      },
     };
-
-    const collectionKey =
-      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
@@ -42,10 +49,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     }
 
     const hasGrid = prefs.energy_sources.find(
-      (source) =>
+      (source): source is GridSourceTypeEnergyPreference =>
         source.type === "grid" &&
-        (source.flow_from?.length || source.flow_to?.length)
-    ) as GridSourceTypeEnergyPreference;
+        (!!source.stat_energy_from || !!source.stat_energy_to)
+    );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
@@ -57,31 +64,29 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       (source) => source.type === "water"
     );
     const hasWaterDevices = prefs.device_consumption_water?.length;
-    const hasPowerSources = prefs.energy_sources.find(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSources = prefs.energy_sources.find((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
 
-    const overviewSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "energy-date-selection",
-          collection_key: collectionKey,
-          allow_compare: false,
-        },
-      ],
-    };
     if (hasGrid || hasBattery || hasSolar) {
-      overviewSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-        type: "energy-distribution",
-        collection_key: collectionKey,
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_distribution_title"
+            ),
+            type: "energy-distribution",
+            collection_key: collectionKey,
+          },
+        ],
       });
     }
-    view.sections!.push(overviewSection);
 
     if (prefs.energy_sources.length) {
       view.sections!.push({
@@ -124,7 +129,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
               "ui.panel.energy.cards.energy_usage_graph_title"
             ),
             type: "energy-usage-graph",
-            collection_key: "energy_dashboard",
+            collection_key: collectionKey,
           },
         ],
       });

@@ -7,7 +7,7 @@
     "useDefineForClassFields": false,
     // Modules
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
@@ -76,7 +76,86 @@
       ],
       "@lit-labs/observers/resize-controller": [
         "./node_modules/@lit-labs/observers/resize-controller.js"
-      ]
+      ],
+      "@formatjs/intl-durationformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-durationformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-durationformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-durationformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-datetimeformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-datetimeformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-datetimeformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-datetimeformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-displaynames/should-polyfill": [
+        "./node_modules/@formatjs/intl-displaynames/should-polyfill.js"
+      ],
+      "@formatjs/intl-displaynames/polyfill-force": [
+        "./node_modules/@formatjs/intl-displaynames/polyfill-force.js"
+      ],
+      "@formatjs/intl-getcanonicallocales/should-polyfill": [
+        "./node_modules/@formatjs/intl-getcanonicallocales/should-polyfill.js"
+      ],
+      "@formatjs/intl-getcanonicallocales/polyfill-force": [
+        "./node_modules/@formatjs/intl-getcanonicallocales/polyfill-force.js"
+      ],
+      "@formatjs/intl-listformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-listformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-listformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-listformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-locale/should-polyfill": [
+        "./node_modules/@formatjs/intl-locale/should-polyfill.js"
+      ],
+      "@formatjs/intl-locale/polyfill-force": [
+        "./node_modules/@formatjs/intl-locale/polyfill-force.js"
+      ],
+      "@formatjs/intl-numberformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-numberformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-numberformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-numberformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-pluralrules/should-polyfill": [
+        "./node_modules/@formatjs/intl-pluralrules/should-polyfill.js"
+      ],
+      "@formatjs/intl-pluralrules/polyfill-force": [
+        "./node_modules/@formatjs/intl-pluralrules/polyfill-force.js"
+      ],
+      "@formatjs/intl-relativetimeformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-relativetimeformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-relativetimeformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-relativetimeformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-pluralrules/locale-data/en": [
+        "./node_modules/@formatjs/intl-pluralrules/locale-data/en.js"
+      ],
+      "@home-assistant/webawesome/dist/components/*": [
+        "./node_modules/@home-assistant/webawesome/dist/components/*"
+      ],
+      "@home-assistant/webawesome/dist/events/*": [
+        "./node_modules/@home-assistant/webawesome/dist/events/*"
+      ],
+      "@home-assistant/webawesome/dist/internal/*": [
+        "./node_modules/@home-assistant/webawesome/dist/internal/*"
+      ],
+      "@lit-labs/virtualizer/virtualize": [
+        "./node_modules/@lit-labs/virtualizer/virtualize.js"
+      ],
+      "@lit/reactive-element/reactive-controller": [
+        "./node_modules/@lit/reactive-element/reactive-controller.js"
+      ],
+      "echarts/types/src/*": ["./node_modules/echarts/types/src/*.d.ts"],
+      "echarts/lib/*": ["./node_modules/echarts/lib/*"],
+      "home-assistant-js-websocket/dist/*": [
+        "./node_modules/home-assistant-js-websocket/dist/*"
+      ],
+      "lit/directives/join": ["./node_modules/lit/directives/join.js"],
+      "lit/directives/ref": ["./node_modules/lit/directives/ref.js"]
     }
   }
 }

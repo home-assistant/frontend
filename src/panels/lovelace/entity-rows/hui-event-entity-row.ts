@@ -32,7 +32,7 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -52,7 +52,11 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .catchInteraction=${false}
+      >
         <div
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
@@ -81,6 +85,8 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 

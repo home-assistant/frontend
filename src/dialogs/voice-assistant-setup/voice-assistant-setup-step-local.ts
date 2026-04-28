@@ -156,7 +156,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     </div>`;
   }
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!this.hasUpdated) {
@@ -182,7 +182,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         await this._pickOrCreatePipelineExists();
         return;
       }
-      if (!isComponentLoaded(this.hass, "hassio")) {
+      if (!isComponentLoaded(this.hass.config, "hassio")) {
         this._state = "NOT_SUPPORTED";
         return;
       }
@@ -349,7 +349,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     });
     if (step.type !== "create_entry") {
       throw new Error(
-        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
       );
     }
   }
@@ -456,10 +456,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     );
     let i = 1;
     while (
-      pipelines.pipelines.find(
-        // eslint-disable-next-line no-loop-func
-        (pipeline) => pipeline.name === pipelineName
-      )
+      pipelines.pipelines.find((pipeline) => pipeline.name === pipelineName)
     ) {
       pipelineName = `${this.hass.localize(`ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`)} ${i}`;
       i++;

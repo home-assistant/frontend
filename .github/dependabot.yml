@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: weekly
       time: "06:00"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     labels:
       - Dependencies

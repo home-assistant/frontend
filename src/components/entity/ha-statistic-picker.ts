@@ -1,5 +1,5 @@
-import { mdiChartLine, mdiHelpCircle, mdiShape } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { mdiChartLine, mdiHelpCircleOutline, mdiShape } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -78,7 +78,7 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public statisticIds?: StatisticsMetaData[];
 
   @property({ attribute: false }) public helpMissingEntityUrl =
@@ -130,7 +130,7 @@ export class HaStatisticPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && !this.statisticIds) ||
       changedProps.has("statisticTypes")
@@ -141,6 +141,7 @@ export class HaStatisticPicker extends LitElement {
 
   private async _getStatisticIds() {
     this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
+    this._picker?.requestUpdate();
   }
 
   private _getItems = () =>
@@ -155,17 +156,15 @@ export class HaStatisticPicker extends LitElement {
       this.value
     );
 
-  private _getAdditionalItems(): StatisticComboBoxItem[] {
-    return [
-      {
-        id: MISSING_ID,
-        primary: this.hass.localize(
-          "ui.components.statistic-picker.missing_entity"
-        ),
-        icon_path: mdiHelpCircle,
-      },
-    ];
-  }
+  private _getAdditionalItems = (): StatisticComboBoxItem[] => [
+    {
+      id: MISSING_ID,
+      primary: this.hass.localize(
+        "ui.components.statistic-picker.missing_entity"
+      ),
+      icon_path: mdiHelpCircleOutline,
+    },
+  ];
 
   private _getStatisticsItems = memoizeOne(
     (
@@ -177,9 +176,9 @@ export class HaStatisticPicker extends LitElement {
       entitiesOnly?: boolean,
       excludeStatistics?: string[],
       value?: string
-    ): StatisticComboBoxItem[] => {
+    ): StatisticComboBoxItem[] | undefined => {
       if (!statisticIds) {
-        return [];
+        return undefined;
       }
 
       if (includeStatisticsUnitOfMeasurement) {
@@ -424,9 +423,9 @@ export class HaStatisticPicker extends LitElement {
     };
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<StatisticComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<StatisticComboBoxItem> = (
     item,
-    { index }
+    index
   ) => {
     const showEntityId = this.hass.userData?.showEntityIdPicker;
     return html`
@@ -471,13 +470,15 @@ export class HaStatisticPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
+        .disabled=${this.disabled}
         .label=${this.label}
+        use-top-label
+        .placeholder=${placeholder}
+        .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.statistic-picker.no_statistics"
         )}
-        .placeholder=${placeholder}
-        .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

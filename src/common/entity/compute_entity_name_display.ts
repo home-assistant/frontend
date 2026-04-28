@@ -1,10 +1,12 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
 import { ensureArray } from "../array/ensure-array";
+import { computeRTL } from "../util/compute_rtl";
 import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
+import { computeStateName } from "./compute_state_name";
 import { getEntityContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
@@ -29,14 +31,23 @@ export interface EntityNameOptions {
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[] | undefined,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"],
   options?: EntityNameOptions
 ) => {
-  let items = ensureArray(name || DEFAULT_ENTITY_NAME);
+  if (typeof name === "string") {
+    return name;
+  }
+
+  // If no name config is provided, fall back to the friendly name
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+
+  let items = ensureArray(name);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
@@ -106,4 +117,33 @@ export const computeEntityNameList = (
   });
 
   return names;
+};
+
+export interface EntityPickerDisplay {
+  primary: string;
+  secondary?: string;
+}
+
+export const computeEntityPickerDisplay = (
+  hass: HomeAssistant,
+  stateObj: HassEntity
+): EntityPickerDisplay => {
+  const [entityName, deviceName, areaName] = computeEntityNameList(
+    stateObj,
+    [{ type: "entity" }, { type: "device" }, { type: "area" }],
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors
+  );
+
+  const isRTL = computeRTL(hass);
+
+  const primary = entityName || deviceName || stateObj.entity_id;
+  const secondary =
+    [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ") || undefined;
+
+  return { primary, secondary };
 };

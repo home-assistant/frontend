@@ -64,6 +64,15 @@ const SELECTOR_SCHEMAS = {
       name: "enable_millisecond",
       selector: { boolean: {} },
     },
+    {
+      name: "enable_second",
+      default: true,
+      selector: { boolean: {} },
+    },
+    {
+      name: "allow_negative",
+      selector: { boolean: {} },
+    },
   ] as const,
   entity: [
     {
@@ -161,7 +170,7 @@ export class HaSelectorSelector extends LitElement {
 
   private _yamlMode = false;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.size === 1 && changedProps.has("hass")) {
       return false;
     }

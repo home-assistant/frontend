@@ -4,7 +4,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import type { Fields } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
@@ -58,7 +57,7 @@ export default class HaScriptFields extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("fields") && this._focusLastActionOnChange) {

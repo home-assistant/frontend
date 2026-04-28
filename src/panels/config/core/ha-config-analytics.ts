@@ -2,32 +2,51 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
+import { getConfigEntries } from "../../../data/config_entries";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
+import {
+  fetchZwaveDataCollectionStatus,
+  setZwaveDataCollectionPreference,
+} from "../../../data/zwave_js";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-alert";
 
 @customElement("ha-config-analytics")
-class ConfigAnalytics extends LitElement {
+class ConfigAnalytics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _analyticsDetails?: Analytics;
 
   @state() private _error?: string;
 
+  @state() private _snapshotsLabEnabled = false;
+
+  @state() private _zwaveEntryId?: string;
+
+  @state() private _zwaveDataCollectionOptIn?: boolean;
+
+  @state() private _highlightedSection?: string;
+
   protected render(): TemplateResult {
     const error = this._error
       ? this._error
-      : !isComponentLoaded(this.hass, "analytics")
+      : !isComponentLoaded(this.hass.config, "analytics")
         ? "Analytics integration not loaded"
         : undefined;
 
@@ -56,8 +75,7 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
       </ha-card>
-      ${this._analyticsDetails &&
-      "snapshots" in this._analyticsDetails.preferences
+      ${this._snapshotsLabEnabled
         ? html`<ha-card
             outlined
             .header=${this.hass.localize(
@@ -67,53 +85,116 @@ class ConfigAnalytics extends LitElement {
             <div class="card-content">
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.info"
+                  "ui.panel.config.analytics.preferences.snapshots.info",
+                  {
+                    data_use_statement: html`<a
+                      href="https://www.openhomefoundation.org/device-database-data-use-statement"
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
+                      )}</a
+                    >`,
+                  }
                 )}
-                <a
-                  href=${documentationUrl(this.hass, "/device-database/")}
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.analytics.preferences.snapshots.learn_more"
-                  )}</a
-                >.
               </p>
-              <ha-alert
-                .title=${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.alert.title"
+              <ha-md-list>
+                <ha-md-list-item>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      `ui.panel.config.analytics.preferences.snapshots.title`
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      `ui.panel.config.analytics.preferences.snapshots.description`
+                    )}
+                  </span>
+                  <ha-switch
+                    slot="end"
+                    @change=${this._handleDeviceRowClick}
+                    .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                    .disabled=${this._analyticsDetails === undefined}
+                  ></ha-switch>
+                </ha-md-list-item>
+              </ha-md-list>
+            </div>
+          </ha-card>`
+        : nothing}
+      ${this._zwaveEntryId !== undefined
+        ? html`<ha-card
+            outlined
+            data-section="zwave"
+            class=${this._highlightedSection === "zwave" ? "highlighted" : ""}
+            .header=${this.hass.localize(
+              "ui.panel.config.zwave_js.dashboard.data_collection.title"
+            )}
+          >
+            <div class="card-content">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.data_collection.info",
+                  {
+                    documentation_link: html`<a
+                      target="_blank"
+                      href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
+                      )}</a
+                    >`,
+                  }
                 )}
-                >${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.alert.content"
-                )}</ha-alert
-              >
-              <ha-settings-row>
-                <span slot="heading" data-for="snapshots">
-                  ${this.hass.localize(
-                    `ui.panel.config.analytics.preferences.snapshots.title`
-                  )}
-                </span>
-                <span slot="description" data-for="snapshots">
-                  ${this.hass.localize(
-                    `ui.panel.config.analytics.preferences.snapshots.description`
-                  )}
-                </span>
-                <ha-switch
-                  @change=${this._handleDeviceRowClick}
-                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
-                  .disabled=${this._analyticsDetails === undefined}
-                  name="snapshots"
-                >
-                </ha-switch>
-              </ha-settings-row>
+              </p>
+              <ha-md-list>
+                <ha-md-list-item>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
+                    )}
+                  </span>
+                  ${this._zwaveDataCollectionOptIn !== undefined
+                    ? html`
+                        <ha-switch
+                          slot="end"
+                          @change=${this._zwaveDataCollectionToggled}
+                          .checked=${this._zwaveDataCollectionOptIn === true}
+                        ></ha-switch>
+                      `
+                    : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
+                </ha-md-list-item>
+              </ha-md-list>
             </div>
           </ha-card>`
         : nothing}
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  public hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass.connection,
+        "analytics",
+        "snapshots",
+        (feature: LabPreviewFeature) => {
+          this._snapshotsLabEnabled = feature.enabled;
+        }
+      ),
+    ];
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "analytics")) {
+    const section = extractSearchParam("section");
+    if (section) {
+      this._highlightedSection = section;
+    }
+    if (isComponentLoaded(this.hass.config, "analytics")) {
       this._load();
     }
   }
@@ -124,6 +205,47 @@ class ConfigAnalytics extends LitElement {
       this._analyticsDetails = await getAnalyticsDetails(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
+    }
+    this._loadZwaveDataCollection();
+  }
+
+  private async _loadZwaveDataCollection() {
+    if (!isComponentLoaded(this.hass.config, "zwave_js")) {
+      return;
+    }
+    try {
+      const entries = await getConfigEntries(this.hass, {
+        domain: "zwave_js",
+      });
+      const entry = entries.find((e) => !e.disabled_by);
+      if (entry) {
+        this._zwaveEntryId = entry.entry_id;
+        const status = await fetchZwaveDataCollectionStatus(
+          this.hass,
+          entry.entry_id
+        );
+        this._zwaveDataCollectionOptIn =
+          status.opted_in === true || status.enabled === true;
+        if (this._highlightedSection === "zwave") {
+          this.updateComplete.then(() => {
+            this._scrollToSection("zwave");
+          });
+        }
+      }
+    } catch {
+      // Z-Wave data collection status is optional
+    }
+  }
+
+  private _scrollToSection(section: string): void {
+    const card = this.shadowRoot?.querySelector(
+      `[data-section="${section}"]`
+    ) as HTMLElement;
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        this._highlightedSection = undefined;
+      }, 3000);
     }
   }
 
@@ -152,6 +274,14 @@ class ConfigAnalytics extends LitElement {
     this._save();
   }
 
+  private _zwaveDataCollectionToggled(ev: Event) {
+    setZwaveDataCollectionPreference(
+      this.hass,
+      this._zwaveEntryId!,
+      (ev.target as HTMLInputElement).checked
+    );
+  }
+
   private _preferencesChanged(event: CustomEvent): void {
     this._analyticsDetails = {
       ...this._analyticsDetails!,
@@ -168,14 +298,37 @@ class ConfigAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        ha-settings-row {
-          padding: 0;
-        }
         p {
           margin-top: 0;
         }
         ha-card:not(:first-of-type) {
           margin-top: 24px;
+        }
+        ha-md-list {
+          background: none;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+        }
+        ha-md-list-item {
+          --md-item-overflow: visible;
+        }
+        ha-card {
+          transition: box-shadow 0.3s ease;
+        }
+        ha-card.highlighted {
+          animation: highlight-fade 2.5s ease-out forwards;
+        }
+        @keyframes highlight-fade {
+          0% {
+            box-shadow:
+              0 0 0 var(--ha-border-width-md) var(--primary-color),
+              0 0 12px rgba(var(--rgb-primary-color), 0.4);
+          }
+          100% {
+            box-shadow:
+              0 0 0 var(--ha-border-width-md) transparent,
+              0 0 0 transparent;
+          }
         }
       `,
     ];

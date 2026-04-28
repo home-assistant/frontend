@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -33,12 +34,11 @@ class PanelSecurity extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._setLovelace();
+      this._setup();
       return;
     }
 
@@ -58,7 +58,8 @@ class PanelSecurity extends LitElement {
         oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors
+        oldHass.floors !== this.hass.floors ||
+        oldHass.panels !== this.hass.panels
       ) {
         if (this.hass.config.state === "RUNNING") {
           this._debounceRegistriesChanged();
@@ -73,6 +74,11 @@ class PanelSecurity extends LitElement {
         this._setLovelace();
       }
     }
+  }
+
+  private async _setup() {
+    await this.hass.loadFragmentTranslation("lovelace");
+    this._setLovelace();
   }
 
   private _debounceRegistriesChanged = debounce(
@@ -91,43 +97,38 @@ class PanelSecurity extends LitElement {
 
   protected render() {
     return html`
-      <div class="header">
+      <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          ${
-            this._searchParms.has("historyBack")
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._back}
-                    slot="navigationIcon"
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    slot="navigationIcon"
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-          }
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           <div class="main-title">${this.hass.localize("panel.security")}</div>
         </div>
       </div>
-      ${
-        this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing
-      }
-      </hui-view-container>
+      ${this._lovelace
+        ? html`
+            <hui-view-container .hass=${this.hass}>
+              <hui-view-background .hass=${this.hass}> </hui-view-background>
+              <hui-view
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .lovelace=${this._lovelace}
+                .index=${this._viewIndex}
+              ></hui-view
+            ></hui-view-container>
+          `
+        : nothing}
     `;
   }
 
@@ -171,7 +172,6 @@ class PanelSecurity extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -182,7 +182,6 @@ class PanelSecurity extends LitElement {
           );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
-          transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -216,14 +215,18 @@ class PanelSecurity extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+          border-bottom: var(--app-header-border-bottom, none);
         }
         :host([narrow]) .toolbar {
           padding: 0 4px;
         }
         .main-title {
-          margin: var(--margin-title);
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--ha-space-2);
         }
         hui-view-container {
           position: relative;

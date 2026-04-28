@@ -32,13 +32,13 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Object }) public group?: ZHAGroup;
 
-  @property({ attribute: false, type: Number }) public groupId!: number;
+  @property({ attribute: false }) public groupId!: number;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @state() private _processingAdd = false;
@@ -77,7 +77,7 @@ export class ZHAGroupPage extends LitElement {
     this._filteredDeviceEndpoints = [];
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchData();

@@ -1,44 +1,79 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-  }),
-  getEntity("switch", "bed_ac", "on", {
-    friendly_name: "Ecobee",
-  }),
-  getEntity("sensor", "bed_temp", "72", {
-    friendly_name: "Bedroom Temp",
-    device_class: "temperature",
-    unit_of_measurement: "°F",
-  }),
-  getEntity("light", "living_room_light", "off", {
-    friendly_name: "Living Room Light",
-  }),
-  getEntity("fan", "living_room", "on", {
-    friendly_name: "Living Room Fan",
-  }),
-  getEntity("sensor", "office_humidity", "73", {
-    friendly_name: "Office Humidity",
-    device_class: "humidity",
-    unit_of_measurement: "%",
-  }),
-  getEntity("light", "office", "on", {
-    friendly_name: "Office Light",
-  }),
-  getEntity("fan", "kitchen", "on", {
-    friendly_name: "Kitchen Fan",
-  }),
-  getEntity("binary_sensor", "kitchen_door", "on", {
-    friendly_name: "Office Door",
-    device_class: "door",
-  }),
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "switch.bed_ac",
+    state: "on",
+    attributes: {
+      friendly_name: "Ecobee",
+    },
+  },
+  {
+    entity_id: "sensor.bed_temp",
+    state: "72",
+    attributes: {
+      friendly_name: "Bedroom Temp",
+      device_class: "temperature",
+      unit_of_measurement: "°F",
+    },
+  },
+  {
+    entity_id: "light.living_room_light",
+    state: "off",
+    attributes: {
+      friendly_name: "Living Room Light",
+    },
+  },
+  {
+    entity_id: "fan.living_room",
+    state: "on",
+    attributes: {
+      friendly_name: "Living Room Fan",
+    },
+  },
+  {
+    entity_id: "sensor.office_humidity",
+    state: "73",
+    attributes: {
+      friendly_name: "Office Humidity",
+      device_class: "humidity",
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "light.office",
+    state: "on",
+    attributes: {
+      friendly_name: "Office Light",
+    },
+  },
+  {
+    entity_id: "fan.kitchen",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen Fan",
+    },
+  },
+  {
+    entity_id: "binary_sensor.kitchen_door",
+    state: "on",
+    attributes: {
+      friendly_name: "Office Door",
+      device_class: "door",
+    },
+  },
 ];
 
 // TODO: Update image here
@@ -81,7 +116,7 @@ class DemoArea extends LitElement {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

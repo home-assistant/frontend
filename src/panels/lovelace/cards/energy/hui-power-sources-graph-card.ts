@@ -1,4 +1,4 @@
-import { endOfToday, isToday, startOfToday } from "date-fns";
+import { endOfToday, isSameDay, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -13,6 +13,7 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -31,9 +32,24 @@ export class HuiPowerSourcesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: PowerSourcesGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): PowerSourcesGraphCardConfig {
+    return {
+      type: "power-sources-graph",
+    };
+  }
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -62,10 +78,13 @@ export class HuiPowerSourcesGraphCard
   }
 
   public setConfig(config: PowerSourcesGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -132,7 +151,9 @@ export class HuiPowerSourcesGraphCard
         config,
         "kW",
         compareStart,
-        compareEnd
+        compareEnd,
+        undefined,
+        true
       ),
       legend: {
         show: this._config?.show_legend !== false,
@@ -187,14 +208,15 @@ export class HuiPowerSourcesGraphCard
         continue;
       }
 
-      if (source.type === "grid" && source.power) {
-        statIds.grid.stats.push(...source.power.map((p) => p.stat_rate));
+      if (source.type === "grid") {
+        if (source.stat_rate) {
+          statIds.grid.stats.push(source.stat_rate);
+        }
       }
     }
     const commonSeriesOptions: LineSeriesOption = {
       type: "line",
       smooth: 0.4,
-      smoothMonotone: "x",
       lineStyle: {
         width: 1,
       },
@@ -210,9 +232,17 @@ export class HuiPowerSourcesGraphCard
         const { positive, negative } = this._processData(
           statIds[key].stats.map((id: string) => {
             const stats = energyData.stats[id] ?? [];
-            const currentState = getPowerFromState(this.hass.states[id]);
-            if (currentState !== undefined) {
-              stats.push({ start: now, end: now, mean: currentState });
+            if (isSameDay(now, this._start) && isSameDay(now, this._end)) {
+              // Append current state if we are showing today
+              const currentStateWatts = getPowerFromState(this.hass.states[id]);
+              if (currentStateWatts !== undefined) {
+                // getPowerFromState returns power in W; convert to kW for this graph
+                stats.push({
+                  start: now,
+                  end: now,
+                  mean: currentStateWatts / 1000,
+                });
+              }
             }
             return stats;
           })

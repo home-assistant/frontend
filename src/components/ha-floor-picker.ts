@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
@@ -8,7 +8,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
-import { updateAreaRegistryEntry } from "../data/area_registry";
+import { updateAreaRegistryEntry } from "../data/area/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -303,7 +303,7 @@ export class HaFloorPicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<FloorComboBoxItem> = (item) => html`
     <ha-combo-box-item type="button" compact>
       ${item.icon_path
         ? html`
@@ -359,7 +359,7 @@ export class HaFloorPicker extends LitElement {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
+            "ui.components.floor-picker.add_new_suggestion",
             {
               name: searchString,
             }
@@ -389,12 +389,14 @@ export class HaFloorPicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
         .label=${this.label}
+        .helper=${this.helper}
+        .placeholder=${placeholder}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.floor-picker.no_floors"
         )}
-        .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

@@ -38,6 +38,14 @@ export interface HASSDomEvent<T> extends Event {
   detail: T;
 }
 
+export type HASSDomTargetEvent<T extends EventTarget> = Event & {
+  target: T;
+};
+
+export type HASSDomCurrentTargetEvent<T extends EventTarget> = Event & {
+  currentTarget: T;
+};
+
 /**
  * Dispatches a custom event with an optional detail value.
  *

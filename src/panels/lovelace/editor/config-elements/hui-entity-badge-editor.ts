@@ -28,7 +28,7 @@ import {
 } from "../../badges/hui-entity-badge";
 import type { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
-import "../hui-sub-element-editor";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -172,6 +172,7 @@ export class HuiEntityBadgeEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -185,6 +186,7 @@ export class HuiEntityBadgeEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

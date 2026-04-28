@@ -1,8 +1,11 @@
-import { mdiCheckCircle, mdiCloseCircleOutline, mdiDelete } from "@mdi/js";
+import { mdiCheck, mdiDelete } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
 import {
   fetchZwaveProvisioningEntries,
@@ -14,7 +17,6 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-provisioned")
 class ZWaveJSProvisioned extends LitElement {
@@ -28,15 +30,26 @@ class ZWaveJSProvisioned extends LitElement {
 
   @state() private _provisioningEntries: ZwaveJSProvisioningEntry[] = [];
 
+  @state() private _nodeIdToDevice: Record<number, DeviceRegistryEntry> = {};
+
   protected render() {
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configTabs}
+        .tabs=${[
+          {
+            path: `/config/zwave_js/provisioned?config_entry=${this.configEntryId}`,
+            name: this.hass.localize(
+              "ui.panel.config.zwave_js.provisioned.caption"
+            ),
+          },
+        ]}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._provisioningEntries}
+        .data=${this._getData(this._provisioningEntries, this._nodeIdToDevice)}
       >
       </hass-tabs-subpage-data-table>
     `;
@@ -46,39 +59,13 @@ class ZWaveJSProvisioned extends LitElement {
     (
       localize: LocalizeFunc
     ): DataTableColumnContainer<ZwaveJSProvisioningEntry> => ({
-      included: {
-        showNarrow: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.included"),
-        type: "icon",
-        template: (entry) =>
-          entry.nodeId
-            ? html`
-                <ha-svg-icon
-                  .label=${this.hass.localize(
-                    "ui.panel.config.zwave_js.provisioned.included"
-                  )}
-                  .path=${mdiCheckCircle}
-                ></ha-svg-icon>
-              `
-            : html`
-                <ha-svg-icon
-                  .label=${this.hass.localize(
-                    "ui.panel.config.zwave_js.provisioned.not_included"
-                  )}
-                  .path=${mdiCloseCircleOutline}
-                ></ha-svg-icon>
-              `,
-      },
-      active: {
-        title: localize("ui.panel.config.zwave_js.provisioned.active"),
-        type: "icon",
-        template: (entry) =>
-          entry.status === ProvisioningEntryStatus.Active
-            ? html`<ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>`
-            : html`<ha-svg-icon .path=${mdiCloseCircleOutline}></ha-svg-icon>`,
+      name: {
+        title: localize("ui.panel.config.zwave_js.provisioned.name"),
+        main: true,
+        sortable: true,
+        filterable: true,
       },
       dsk: {
-        main: true,
         title: localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
         filterable: true,
@@ -101,10 +88,35 @@ class ZWaveJSProvisioned extends LitElement {
             .join(", ");
         },
       },
+      included: {
+        title: localize("ui.panel.config.zwave_js.provisioned.included"),
+        sortable: true,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
+        template: (entry) =>
+          entry.nodeId
+            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+            : html`—`,
+      },
+      active: {
+        title: localize("ui.panel.config.zwave_js.provisioned.active"),
+        sortable: true,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
+        template: (entry) =>
+          entry.status === ProvisioningEntryStatus.Active
+            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+            : html`—`,
+      },
       unprovision: {
-        showNarrow: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.unprovision"),
+        title: "",
+        label: localize("ui.panel.config.zwave_js.provisioned.unprovision"),
         type: "icon-button",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         template: (entry) => html`
           <ha-icon-button
             .label=${this.hass.localize(
@@ -119,12 +131,50 @@ class ZWaveJSProvisioned extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps) {
+  private _getData = memoizeOne(
+    (
+      entries: ZwaveJSProvisioningEntry[],
+      nodeIdToDevice: Record<number, DeviceRegistryEntry>
+    ) =>
+      entries.map((entry) => {
+        const device = entry.nodeId ? nodeIdToDevice[entry.nodeId] : undefined;
+        return {
+          ...entry,
+          name: device ? computeDeviceName(device) || "—" : "—",
+        };
+      })
+  );
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
   }
 
-  private async _fetchData() {
+  private _fetchData() {
+    this._buildNodeIdToDeviceMap();
+    this._fetchProvisioningEntries();
+  }
+
+  private _buildNodeIdToDeviceMap() {
+    const map: Record<number, DeviceRegistryEntry> = {};
+    for (const device of Object.values(this.hass.devices)) {
+      if (!device.config_entries.includes(this.configEntryId)) {
+        continue;
+      }
+      for (const [domain, id] of device.identifiers) {
+        if (domain === "zwave_js") {
+          const nodeId = parseInt(id.split("-")[1]);
+          if (!isNaN(nodeId)) {
+            map[nodeId] = device;
+            break;
+          }
+        }
+      }
+    }
+    this._nodeIdToDevice = map;
+  }
+
+  private async _fetchProvisioningEntries() {
     this._provisioningEntries = await fetchZwaveProvisioningEntries(
       this.hass!,
       this.configEntryId
@@ -154,7 +204,7 @@ class ZWaveJSProvisioned extends LitElement {
     }
 
     await unprovisionZwaveSmartStartNode(this.hass, this.configEntryId, dsk);
-    this._fetchData();
+    this._fetchProvisioningEntries();
   };
 }
 

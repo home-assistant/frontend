@@ -1,5 +1,4 @@
-import { mdiClose, mdiPlus } from "@mdi/js";
-import { dump } from "js-yaml";
+import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,8 @@ import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
@@ -16,19 +17,22 @@ import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
 import "../../category/ha-category-picker";
 
-import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
-import { subscribeOne } from "../../../../common/util/subscribe-one";
 import type { GenDataTaskResult } from "../../../../data/ai_task";
-import { fetchCategoryRegistry } from "../../../../data/category_registry";
-import { subscribeEntityRegistry } from "../../../../data/entity/entity_registry";
-import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
+import type { AutomationConfig } from "../../../../data/automation";
+import type { ScriptConfig } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import {
+  type MetadataSuggestionResult,
+  generateMetadataSuggestionTask,
+  processMetadataSuggestion,
+} from "../../common/suggest-metadata-ai";
+import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
 import type {
   EntityRegistryUpdate,
   SaveDialogParams,
@@ -38,7 +42,7 @@ import type {
 class DialogAutomationSave extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _error?: string;
 
@@ -46,7 +50,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   @state() private _entryUpdates!: EntityRegistryUpdate;
 
-  private _params!: SaveDialogParams;
+  @state() private _params?: SaveDialogParams;
 
   @state() private _newName?: string;
 
@@ -55,7 +59,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   private _newDescription?: string;
 
   public showDialog(params: SaveDialogParams): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
     this._newIcon = "icon" in params.config ? params.config.icon : undefined;
     this._newName =
@@ -79,15 +83,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     ].filter(Boolean);
   }
 
-  public closeDialog() {
-    this._params.onClose();
-
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
-    this._visibleOptionals = [];
+  public closeDialog(): boolean {
+    this._open = false;
     return true;
+  }
+
+  private _dialogClosed() {
+    this._params?.onClose();
+    this._visibleOptionals = [];
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -103,15 +108,15 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   protected _renderDiscard() {
-    if (!this._params.onDiscard) {
+    if (!this._params?.onDiscard) {
       return nothing;
     }
     return html`
       <ha-button
-        @click=${this._handleDiscard}
         slot="secondaryAction"
-        variant="danger"
         appearance="plain"
+        variant="danger"
+        @click=${this._handleDiscard}
       >
         ${this.hass.localize("ui.common.dont_save")}
       </ha-button>
@@ -119,45 +124,40 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   protected _renderInputs() {
-    if (this._params.hideInputs) {
+    if (!this._params || this._params.hideInputs) {
       return nothing;
     }
 
     return html`
-      <ha-textfield
-        dialogInitialFocus
+      <ha-input
+        autofocus
         .value=${this._newName}
         .placeholder=${this.hass.localize(
           `ui.panel.config.${this._params.domain}.editor.default_name`
         )}
         .label=${this.hass.localize("ui.panel.config.automation.editor.alias")}
         required
-        type="string"
+        type="text"
         @input=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
 
       ${this._params.domain === "script" &&
       this._visibleOptionals.includes("icon")
         ? html`
             <ha-icon-picker
-              .hass=${this.hass}
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.icon"
               )}
               .value=${this._newIcon}
               @value-changed=${this._iconChanged}
             >
-              <ha-domain-icon
-                slot="fallback"
-                domain=${this._params.domain}
-                .hass=${this.hass}
-              >
+              <ha-domain-icon slot="start" domain=${this._params.domain}>
               </ha-domain-icon>
             </ha-icon-picker>
           `
         : nothing}
       ${this._visibleOptionals.includes("description")
-        ? html` <ha-textarea
+        ? html`<ha-textarea
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.description.label"
             )}
@@ -165,9 +165,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               "ui.panel.config.automation.editor.description.placeholder"
             )}
             name="description"
-            autogrow
+            resize="auto"
             .value=${this._newDescription}
-            .helper=${supportsMarkdownHelper(this.hass.localize)}
+            .hint=${supportsMarkdownHelper(this.hass.localize)}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}
@@ -176,6 +176,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             id="category"
             .hass=${this.hass}
             .scope=${this._params.domain}
+            .label=${this.hass.localize(
+              "ui.components.category-picker.category"
+            )}
             .value=${this._entryUpdates.category}
             @value-changed=${this._registryEntryChanged}
           ></ha-category-picker>`
@@ -213,12 +216,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )
           : nothing}
         ${this._renderOptionalChip(
-          "area",
-          this.hass.localize(
-            "ui.panel.config.automation.editor.dialog.add_area"
-          )
-        )}
-        ${this._renderOptionalChip(
           "category",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_category"
@@ -230,12 +227,18 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             "ui.panel.config.automation.editor.dialog.add_labels"
           )
         )}
+        ${this._renderOptionalChip(
+          "area",
+          this.hass.localize(
+            "ui.panel.config.automation.editor.dialog.add_area"
+          )
+        )}
       </ha-chip-set>
     `;
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -247,28 +250,18 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        @closed=${this.closeDialog}
-        .heading=${title}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        header-title=${this._params.title || title}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">${this._params.title || title}</span>
-          ${this._params.hideInputs
-            ? nothing
-            : html` <ha-suggest-with-ai-button
-                slot="actionItems"
-                .hass=${this.hass}
-                .generateTask=${this._generateTask}
-                @suggestion=${this._handleSuggestion}
-              ></ha-suggest-with-ai-button>`}
-        </ha-dialog-header>
+        ${this._params.hideInputs
+          ? nothing
+          : html`<ha-suggest-with-ai-button
+              slot="headerActionItems"
+              .hass=${this.hass}
+              .generateTask=${this._generateTask}
+              @suggestion=${this._handleSuggestion}
+            ></ha-suggest-with-ai-button>`}
         ${this._error
           ? html`<ha-alert alert-type="error"
               >${this.hass.localize(
@@ -279,20 +272,24 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ${this._params.description
           ? html`<p>${this._params.description}</p>`
           : nothing}
-        ${this._renderInputs()} ${this._renderDiscard()}
-
-        <div slot="primaryAction">
-          <ha-button appearance="plain" @click=${this.closeDialog}>
+        ${this._renderInputs()}
+        <ha-dialog-footer slot="footer">
+          ${this._renderDiscard()}
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._save}>
+          <ha-button slot="primaryAction" @click=${this._save}>
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
                 : "ui.common.save"
             )}
           </ha-button>
-        </div>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -327,189 +324,77 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private _handleDiscard() {
-    this._params.onDiscard?.();
+    this._params?.onDiscard?.();
     this.closeDialog();
   }
 
-  private _getSuggestData() {
-    return Promise.all([
-      subscribeOne(this.hass.connection, subscribeLabelRegistry).then((labs) =>
-        Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-      ),
-      subscribeOne(this.hass.connection, subscribeEntityRegistry).then((ents) =>
-        Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
-      ),
-      fetchCategoryRegistry(this.hass.connection, "automation").then((cats) =>
-        Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
-      ),
-    ]);
-  }
-
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
-    const [labels, entities, categories] = await this._getSuggestData();
-    const inspirations: string[] = [];
-
-    const domain = this._params.domain;
-
-    for (const entity of Object.values(this.hass.states)) {
-      const entityEntry = entities[entity.entity_id];
-      if (
-        computeStateDomain(entity) !== domain ||
-        entity.attributes.restored ||
-        !entity.attributes.friendly_name ||
-        !entityEntry
-      ) {
-        continue;
-      }
-
-      let inspiration = `- ${entity.attributes.friendly_name}`;
-
-      const category = categories[entityEntry.categories.automation];
-      if (category) {
-        inspiration += ` (category: ${category})`;
-      }
-
-      if (entityEntry.labels.length) {
-        inspiration += ` (labels: ${entityEntry.labels
-          .map((label) => labels[label])
-          .join(", ")})`;
-      }
-
-      inspirations.push(inspiration);
+    if (!this._params) {
+      throw new Error("Dialog params not set");
     }
-
-    const term = this._params.domain === "script" ? "script" : "automation";
-
-    return {
-      type: "data",
-      task: {
-        task_name: `frontend__${term}__save`,
-        instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant ${term}.
-
-The name should be relevant to the ${term}'s purpose.
-${
-  inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing ${term}s.
-Suggest a category and labels if relevant to the ${term}'s purpose.
-Only suggest category and labels that are already used by existing ${term}s.`
-    : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
-}
-If the ${term} contains 5+ steps, include a short description.
-
-For inspiration, here are existing ${term}s:
-${inspirations.join("\n")}
-
-The ${term} configuration is as follows:
-
-${dump(this._params.config)}
-`,
-        structure: {
-          name: {
-            description: "The name of the automation",
-            required: true,
-            selector: {
-              text: {},
-            },
-          },
-          description: {
-            description: "A short description of the automation",
-            required: false,
-            selector: {
-              text: {},
-            },
-          },
-          labels: {
-            description: "Labels for the automation",
-            required: false,
-            selector: {
-              text: {
-                multiple: true,
-              },
-            },
-          },
-          category: {
-            description: "The category of the automation",
-            required: false,
-            selector: {
-              select: {
-                options: Object.entries(categories).map(([id, name]) => ({
-                  value: id,
-                  label: name,
-                })),
-              },
-            },
-          },
-        },
-      },
-    };
+    return generateMetadataSuggestionTask<AutomationConfig | ScriptConfig>(
+      this.hass.connection,
+      this.hass.language,
+      this._params.domain,
+      this._params.config,
+      await buildEntityMetadataInspirations(
+        this.hass.connection,
+        this.hass.states,
+        this._params.domain
+      )
+    );
   };
 
   private async _handleSuggestion(
-    event: CustomEvent<
-      GenDataTaskResult<{
-        name: string;
-        description?: string;
-        category?: string;
-        labels?: string[];
-      }>
-    >
+    event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
   ) {
+    if (!this._params) {
+      throw new Error("Dialog params not set");
+    }
     const result = event.detail;
-    const [labels, _entities, categories] = await this._getSuggestData();
+    const processed = await processMetadataSuggestion(
+      this.hass.connection,
+      this._params.domain,
+      result
+    );
 
-    this._newName = result.data.name;
-    if (result.data.description) {
-      this._newDescription = result.data.description;
+    if (processed.name) {
+      this._newName = processed.name;
+    }
+
+    if (processed.description) {
+      this._newDescription = processed.description;
       if (!this._visibleOptionals.includes("description")) {
         this._visibleOptionals = [...this._visibleOptionals, "description"];
       }
     }
-    if (result.data.category) {
-      // We get back category name, convert it to ID
-      const categoryId = Object.entries(categories).find(
-        ([, name]) => name === result.data.category
-      )?.[0];
-      if (categoryId) {
-        this._entryUpdates = {
-          ...this._entryUpdates,
-          category: categoryId,
-        };
-        if (!this._visibleOptionals.includes("category")) {
-          this._visibleOptionals = [...this._visibleOptionals, "category"];
-        }
+
+    if (processed.category) {
+      this._entryUpdates = {
+        ...this._entryUpdates,
+        category: processed.category,
+      };
+      if (!this._visibleOptionals.includes("category")) {
+        this._visibleOptionals = [...this._visibleOptionals, "category"];
       }
     }
-    if (result.data.labels?.length) {
-      // We get back label names, convert them to IDs
-      const newLabels: Record<string, undefined | string> = Object.fromEntries(
-        result.data.labels.map((name) => [name, undefined])
-      );
-      let toFind = result.data.labels.length;
-      for (const [labelId, labelName] of Object.entries(labels)) {
-        if (labelName in newLabels && newLabels[labelName] === undefined) {
-          newLabels[labelName] = labelId;
-          toFind--;
-          if (toFind === 0) {
-            break;
-          }
-        }
-      }
-      const foundLabels = Object.values(newLabels).filter(
-        (labelId) => labelId !== undefined
-      );
-      if (foundLabels.length) {
-        this._entryUpdates = {
-          ...this._entryUpdates,
-          labels: foundLabels,
-        };
-        if (!this._visibleOptionals.includes("labels")) {
-          this._visibleOptionals = [...this._visibleOptionals, "labels"];
-        }
+
+    if (processed.labels?.length) {
+      this._entryUpdates = {
+        ...this._entryUpdates,
+        labels: processed.labels,
+      };
+      if (!this._visibleOptionals.includes("labels")) {
+        this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
   }
 
   private async _save(): Promise<void> {
+    if (!this._params) {
+      return;
+    }
+
     if (!this._newName) {
       this._error = "Name is required";
       return;
@@ -545,17 +430,10 @@ ${dump(this._params.config)}
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-content-padding: 0 24px 24px 24px;
+          --dialog-content-padding: 0 var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
 
-        @media all and (min-width: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: min(500px, 95vw);
-            --mdc-dialog-max-width: min(500px, 95vw);
-          }
-        }
-
-        ha-textfield,
         ha-textarea,
         ha-icon-picker,
         ha-category-picker,
@@ -567,16 +445,16 @@ ${dump(this._params.config)}
         ha-category-picker,
         ha-labels-picker,
         ha-area-picker,
-        ha-chip-set {
-          margin-top: 16px;
+        ha-chip-set:has(> ha-assist-chip) {
+          margin-top: var(--ha-space-4);
         }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         ha-suggest-with-ai-button {
-          margin: 8px 16px;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];

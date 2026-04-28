@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { Selector } from "../../data/selector";
@@ -13,11 +13,13 @@ import type { HomeAssistant } from "../../types";
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
+  app: () => import("./ha-selector-app"),
   area: () => import("./ha-selector-area"),
   areas_display: () => import("./ha-selector-areas-display"),
   attribute: () => import("./ha-selector-attribute"),
   assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),
+  choose: () => import("./ha-selector-choose"),
   color_rgb: () => import("./ha-selector-color-rgb"),
   condition: () => import("./ha-selector-condition"),
   config_entry: () => import("./ha-selector-config-entry"),
@@ -37,10 +39,13 @@ const LOAD_ELEMENTS = {
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
+  numeric_threshold: () => import("./ha-selector-numeric-threshold"),
   object: () => import("./ha-selector-object"),
+  period: () => import("./ha-selector-period"),
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
   selector: () => import("./ha-selector-selector"),
+  serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
@@ -51,6 +56,7 @@ const LOAD_ELEMENTS = {
   icon: () => import("./ha-selector-icon"),
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
+  timezone: () => import("./ha-selector-timezone"),
   button_toggle: () => import("./ha-selector-button-toggle"),
   trigger: () => import("./ha-selector-trigger"),
   tts: () => import("./ha-selector-tts"),
@@ -91,9 +97,27 @@ export class HaSelector extends LitElement {
 
   @property({ attribute: false }) public context?: Record<string, any>;
 
+  @query("#selector", true) private _selectorElement?: HTMLElement;
+
+  public reportValidity(): boolean {
+    if (
+      this._selectorElement &&
+      "reportValidity" in this._selectorElement &&
+      typeof this._selectorElement.reportValidity === "function"
+    ) {
+      return this._selectorElement?.reportValidity() ?? true;
+    }
+    if (this.required) {
+      return (
+        this.value !== undefined && this.value !== null && this.value !== ""
+      );
+    }
+    return true;
+  }
+
   public async focus() {
     await this.updateComplete;
-    (this.renderRoot.querySelector("#selector") as HTMLElement)?.focus();
+    this._selectorElement?.focus();
   }
 
   private get _type() {
@@ -104,7 +128,7 @@ export class HaSelector extends LitElement {
     return type;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("selector") && this.selector) {
       LOAD_ELEMENTS[this._type]?.();
     }
