@@ -346,7 +346,7 @@ export class StateHistoryChartLine extends LitElement {
                   );
                 }
 
-                // If not a temperature dataset, use the entity state
+                // Default for non-temperature datasets / missing attribute
                 if (value === undefined) {
                   value = this.hass.formatEntityState(stateObj);
                 }
