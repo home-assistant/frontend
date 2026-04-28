@@ -361,6 +361,7 @@ export class HaChartBase extends LitElement {
       class=${classMap({
         "chart-legend": true,
         "multiple-items": items.length > 1,
+        "label-clickable": this.clickLabelForMoreInfo,
       })}
     >
       <ul>
@@ -397,8 +398,11 @@ export class HaChartBase extends LitElement {
             @contextmenu=${this._legendContextMenu}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
           >
-            <div
+            <button
+              type="button"
               class="legend-toggle"
+              data-id=${id}
+              aria-pressed=${!this._hiddenDatasets.has(id)}
               .title=${this.hass.localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
@@ -412,10 +416,12 @@ export class HaChartBase extends LitElement {
                   color: this._hiddenDatasets.has(id) ? undefined : color,
                 })}
               ></ha-svg-icon>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               class="label"
-              .title=${this.clickLabelForMoreInfo
+              data-id=${id}
+              title=${this.clickLabelForMoreInfo
                 ? this.hass.localize(
                     "ui.components.history_charts.show_more_info"
                   )
@@ -423,7 +429,7 @@ export class HaChartBase extends LitElement {
               @click=${this._labelClick}
             >
               ${name}
-            </div>
+            </button>
             ${value ? html`<div class="value">${value}</div>` : nothing}
           </li>`;
         })}
@@ -1195,7 +1201,10 @@ export class HaChartBase extends LitElement {
       this._longPressTriggered = false;
       return;
     }
-    const id = (ev.currentTarget as HTMLElement).parentElement!.id;
+    const id = (ev.currentTarget as HTMLElement).dataset.id;
+    if (!id) {
+      return;
+    }
     // Cmd+click on Mac (Ctrl+click is right-click there), Ctrl+click elsewhere
     const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
     if (soloModifier) {
@@ -1214,7 +1223,10 @@ export class HaChartBase extends LitElement {
       this._longPressTriggered = false;
       return;
     }
-    const id = (ev.currentTarget as HTMLElement).parentElement!.id;
+    const id = (ev.currentTarget as HTMLElement).dataset.id;
+    if (!id) {
+      return;
+    }
     const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
     if (soloModifier) {
       this._soloLegend(id);
@@ -1459,11 +1471,19 @@ export class HaChartBase extends LitElement {
       color: var(--secondary-text-color);
     }
     .chart-legend .label {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      text-align: start;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
     }
-    .chart-legend .label:hover {
+    .chart-legend.label-clickable .label:hover {
       text-decoration: underline;
     }
     .chart-legend .value {
@@ -1473,17 +1493,25 @@ export class HaChartBase extends LitElement {
       white-space: nowrap;
     }
     .chart-legend .legend-toggle {
+      background: none;
+      border: none;
+      color: inherit;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       padding: 4px;
       margin: -4px;
-      margin-right: 0;
       margin-inline-end: 0;
     }
     .chart-legend .legend-toggle:hover {
       opacity: 0.5;
+    }
+    .chart-legend .legend-toggle:focus-visible,
+    .chart-legend .label:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: var(--ha-border-radius-small, 4px);
     }
     .chart-legend .legend-toggle ha-svg-icon {
       --mdc-icon-size: 18px;

@@ -48,6 +48,13 @@ export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   change: "sum",
 };
 
+// When the chart has a single entity, ha-chart-base falls back to raw series
+// ids (`${statistic_id}-${type}`) for the legend (see _legendData branch at
+// the bottom of _generateData). Strip the type suffix to recover statistic_id.
+const STAT_TYPE_SUFFIXES = (
+  Object.keys(supportedStatTypeMap) as StatisticType[]
+).map((t) => `-${t}`);
+
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -207,10 +214,19 @@ export class StatisticsChart extends LitElement {
   private _handleLegendLabelClick(
     ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
   ) {
-    const entityId = ev.detail.id;
+    const id = ev.detail.id;
     // External statistics aren't real entities; nothing to open.
-    if (isExternalStatistic(entityId)) {
+    if (isExternalStatistic(id)) {
       return;
+    }
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of STAT_TYPE_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
     }
     if (this.hass.states[entityId]) {
       fireEvent(this, "hass-more-info", { entityId });

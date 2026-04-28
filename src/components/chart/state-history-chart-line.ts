@@ -38,13 +38,18 @@ const CLIMATE_MODE_CONFIGS = [
 ] as const;
 
 // Used to recover the underlying entity_id from a legend dataset id.
-// Kept in sync with the suffixes appended at dataset construction below.
-const CLIMATE_DATASET_SUFFIXES = [
+// Kept in sync with the suffixes appended at dataset construction below
+// for climate / water_heater / humidifier multi-attribute charts.
+const ENTITY_DATASET_SUFFIXES = [
   "-current_temperature",
   "-target_temperature",
   "-target_temperature_mode",
   "-target_temperature_mode_low",
   ...CLIMATE_MODE_CONFIGS.map((c) => `-${c.action}`),
+  "-current_humidity",
+  "-target_humidity",
+  "-humidifying",
+  "-on",
 ];
 
 @customElement("state-history-chart-line")
@@ -242,7 +247,7 @@ export class StateHistoryChartLine extends LitElement {
     const id = ev.detail.id;
     let entityId = id;
     if (!this.hass.states[entityId]) {
-      for (const suffix of CLIMATE_DATASET_SUFFIXES) {
+      for (const suffix of ENTITY_DATASET_SUFFIXES) {
         if (id.endsWith(suffix)) {
           entityId = id.slice(0, -suffix.length);
           break;
