@@ -60,7 +60,7 @@ class HassErrorScreen extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--ha-color-surface-low);
+          background-color: var(--ha-color-surface-lower);
         }
         .toolbar {
           display: flex;

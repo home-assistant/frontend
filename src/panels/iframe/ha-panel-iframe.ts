@@ -54,7 +54,7 @@ class HaPanelIframe extends LitElement {
       width: 100%;
       position: absolute;
       height: 100%;
-      background-color: var(--ha-color-surface-low);
+      background-color: var(--ha-color-surface-lower);
     }
   `;
 }

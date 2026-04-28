@@ -104,7 +104,7 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
-    this.style.backgroundColor = "var(--ha-color-surface-low)";
+    this.style.backgroundColor = "var(--ha-color-surface-lower)";
 
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
