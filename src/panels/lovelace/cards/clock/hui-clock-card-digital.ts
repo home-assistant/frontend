@@ -4,11 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
-import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 import {
   formatClockCardDate,
   getClockCardDateConfig,
   hasClockCardDate,
+  resolveClockCardLocale,
 } from "./clock-date-format";
 
 const INTERVAL = 1000;
@@ -46,15 +46,7 @@ export class HuiClockCardDigital extends LitElement {
       return;
     }
 
-    let locale = this.hass?.locale;
-
-    if (this.config?.time_format) {
-      locale = { ...locale, time_format: this.config.time_format };
-    }
-
-    const timeZone =
-      this.config?.time_zone ||
-      resolveTimeZone(locale.time_zone, this.hass.config?.time_zone);
+    const { locale, timeZone } = resolveClockCardLocale(this.hass, this.config);
 
     const h12 = useAmPm(locale);
     this._language = this.hass.locale.language;

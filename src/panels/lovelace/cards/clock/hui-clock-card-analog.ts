@@ -4,13 +4,13 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 import type { HomeAssistant } from "../../../../types";
 import type { ClockCardConfig } from "../types";
 import {
   formatClockCardDate,
   getClockCardDateConfig,
   hasClockCardDate,
+  resolveClockCardLocale,
 } from "./clock-date-format";
 
 function romanize12HourClock(num: number) {
@@ -102,14 +102,7 @@ export class HuiClockCardAnalog extends LitElement {
       return;
     }
 
-    let locale = this.hass.locale;
-    if (this.config.time_format) {
-      locale = { ...locale, time_format: this.config.time_format };
-    }
-
-    const timeZone =
-      this.config.time_zone ||
-      resolveTimeZone(locale.time_zone, this.hass.config?.time_zone);
+    const { timeZone } = resolveClockCardLocale(this.hass, this.config);
 
     this._language = this.hass.locale.language;
     this._timeZone = timeZone;
