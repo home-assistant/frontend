@@ -275,9 +275,8 @@ export class HuiClockCardEditor
         .data=${this._data(this._config)}
         .schema=${this._schema(
           this.hass.localize,
-          this._data(this._config)
-            .clock_style as ClockCardConfig["clock_style"],
-          this._data(this._config).ticks as ClockCardConfig["ticks"],
+          this._data(this._config).clock_style,
+          this._data(this._config).ticks,
           this._data(this._config).show_seconds
         )}
         .computeLabel=${this._computeLabelCallback}

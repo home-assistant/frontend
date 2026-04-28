@@ -333,9 +333,9 @@ export class HuiClockCardAnalog extends LitElement {
                 })}
                 style=${styleMap({
                   "animation-delay": `-${
-                    (this.config.seconds_motion === "tick"
+                    this.config.seconds_motion === "tick"
                       ? Math.floor(this._secondOffsetSec ?? 0)
-                      : (this._secondOffsetSec ?? 0)) as number
+                      : (this._secondOffsetSec ?? 0)
                   }s`,
                 })}
               ></div>`
