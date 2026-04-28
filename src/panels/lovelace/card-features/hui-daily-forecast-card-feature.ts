@@ -228,6 +228,8 @@ class HuiDailyForecastCardFeature
     const drawableHeight = height - padding * 2;
 
     const showTemperature = this._config!.show_temperature ?? true;
+    const showCurrentTemperature =
+      this._config!.show_current_temperature ?? true;
     const showPrecipitation = this._config!.show_precipitation ?? false;
     const precipitationType = this._config!.precipitation_type ?? "amount";
 
@@ -334,7 +336,7 @@ class HuiDailyForecastCardFeature
         : nothing;
 
     const currentTempLine =
-      showTemperature && yFor && hasCurrentTemp
+      showTemperature && showCurrentTemperature && yFor && hasCurrentTemp
         ? svg`<line
             x1="0"
             x2=${width}

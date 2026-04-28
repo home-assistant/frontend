@@ -10100,6 +10100,7 @@
                   "twice_daily": "Twice daily"
                 },
                 "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_current_temperature": "Show current temperature",
                 "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
                 "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
                 "precipitation_type_options": {

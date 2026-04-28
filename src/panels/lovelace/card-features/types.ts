@@ -257,6 +257,7 @@ export interface DailyForecastCardFeatureConfig {
   forecast_type?: "daily" | "twice_daily";
   days_to_show?: number;
   show_temperature?: boolean;
+  show_current_temperature?: boolean;
   show_precipitation?: boolean;
   precipitation_type?: ForecastPrecipitationType;
 }
