@@ -1,18 +1,24 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
+  mdiAlertCircleOutline,
+  mdiCheckCircleOutline,
+  mdiChevronDown,
   mdiDotsVertical,
   mdiDownload,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiPencil,
+  mdiProgressClock,
+  mdiProgressWrench,
   mdiRayEndArrow,
   mdiRayStartArrow,
   mdiRefresh,
+  mdiStopCircleOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -47,6 +53,9 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import "../../../components/ha-generic-picker";
+import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
+import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -77,6 +86,8 @@ export class HaAutomationTrace extends LitElement {
   @state() private _logbookEntries?: LogbookEntry[];
 
   @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
+
+  @query("ha-generic-picker") private tracePicker?: HaGenericPicker;
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
@@ -180,20 +191,32 @@ export class HaAutomationTrace extends LitElement {
                   this._runId}
                   @click=${this._pickOlderTrace}
                 ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickTrace}>
-                  ${repeat(
-                    this._traces,
-                    (trace) => trace.run_id,
-                    (trace) =>
-                      html`<option value=${trace.run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(trace.timestamp.start),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
+                <ha-generic-picker
+                  name="trace"
+                  .hass=${this.hass}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.trace.select_trace"
                   )}
-                </select>
+                  .value=${this._runId}
+                  .getItems=${this._getTraces}
+                  required
+                  @value-changed=${this._pickTrace}
+                >
+                  <ha-button
+                    slot="field"
+                    appearance="filled"
+                    variant="neutral"
+                    size="small"
+                    @click=${this._openPicker}
+                  >
+                    ${this._renderTracePickerValue(this._runId!)}
+                    <ha-svg-icon
+                      slot="end"
+                      .path=${mdiChevronDown}
+                    ></ha-svg-icon>
+                  </ha-button>
+                </ha-generic-picker>
+
                 <ha-icon-button
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
@@ -321,6 +344,118 @@ export class HaAutomationTrace extends LitElement {
     `;
   }
 
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.tracePicker?.open();
+  }
+
+  private _getTraces = (): PickerComboBoxItem[] =>
+    this._traces?.map((trace) => {
+      const renderRuntime = () =>
+        (
+          (new Date(trace.timestamp.finish!).getTime() -
+            new Date(trace.timestamp.start).getTime()) /
+          1000
+        ).toFixed(2);
+
+      const item: PickerComboBoxItem = {
+        id: trace.run_id,
+        primary: formatDateTimeWithSeconds(
+          new Date(trace.timestamp.start),
+          this.hass.locale,
+          this.hass.config
+        ),
+      };
+      if (trace.state === "running") {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.still_running"
+        );
+        item.icon_path = mdiProgressClock;
+      } else if (trace.state === "debugged") {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.debugged"
+        );
+        item.icon_path = mdiProgressWrench;
+      } else if (trace.script_execution === "finished") {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.finished",
+          {
+            executiontime: renderRuntime(),
+          }
+        );
+        item.icon_path = mdiCheckCircleOutline;
+      } else if (trace.script_execution === "aborted") {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.aborted",
+          {
+            executiontime: renderRuntime(),
+          }
+        );
+        item.icon_path = mdiAlertCircleOutline;
+      } else if (trace.script_execution === "cancelled") {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.cancelled",
+          {
+            executiontime: renderRuntime(),
+          }
+        );
+        item.icon_path = mdiAlertCircleOutline;
+      } else {
+        let message:
+          | "stopped_failed_conditions"
+          | "stopped_failed_single"
+          | "stopped_failed_max_runs"
+          | "stopped_error"
+          | "stopped_unknown_reason";
+        let error: string | undefined;
+        let icon: string;
+
+        switch (trace.script_execution) {
+          case "failed_conditions":
+            message = "stopped_failed_conditions";
+            icon = mdiStopCircleOutline;
+            break;
+          case "failed_single":
+            message = "stopped_failed_single";
+            icon = mdiStopCircleOutline;
+            break;
+          case "failed_max_runs":
+            message = "stopped_failed_max_runs";
+            icon = mdiStopCircleOutline;
+            break;
+          case "error":
+            message = "stopped_error";
+            error = trace.error!;
+            icon = mdiAlertCircleOutline;
+            break;
+          default:
+            message = "stopped_unknown_reason";
+            icon = mdiHelpCircleOutline;
+        }
+
+        item.secondary = this.hass.localize(
+          `ui.panel.config.automation.trace.picker.${message}`,
+          {
+            error,
+            executiontime: renderRuntime(),
+          }
+        );
+        item.icon_path = icon;
+      }
+      return item;
+    }) ?? [];
+
+  private _renderTracePickerValue = (runId: string) => {
+    const trace = this._traces?.find((t) => t.run_id === runId);
+    return html`${trace
+      ? formatDateTimeWithSeconds(
+          new Date(trace.timestamp.start),
+          this.hass.locale,
+          this.hass.config
+        )
+      : runId}`;
+  };
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -378,7 +513,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.target.value;
+    this._runId = ev.detail.value;
     this._selected = undefined;
   }
 
@@ -617,6 +752,13 @@ export class HaAutomationTrace extends LitElement {
 
         ha-trace-logbook {
           direction: var(--direction);
+        }
+        ha-generic-picker {
+          flex-grow: 1;
+          max-width: 500px;
+        }
+        ha-generic-picker > ha-button {
+          width: 100%;
         }
       `,
     ];

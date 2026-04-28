@@ -67,6 +67,7 @@ export type ActionTraceStep =
 
 interface BaseTrace {
   domain: string;
+  error?: string;
   item_id: string;
   last_step: string | null;
   run_id: string;
@@ -97,7 +98,6 @@ interface BaseTrace {
 interface BaseTraceExtended {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  error?: string;
 }
 
 export interface AutomationTrace extends BaseTrace {

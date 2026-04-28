@@ -1,12 +1,18 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-spinner";
-import type { ForecastEvent } from "../../../data/weather";
-import { subscribeForecast, WeatherEntityFeature } from "../../../data/weather";
+import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
+import {
+  getForecastPrecipitation,
+  subscribeForecast,
+  WeatherEntityFeature,
+} from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { coordinates } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
@@ -17,6 +23,9 @@ import type {
 } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
+
+const MS_PER_HOUR = 60 * 60 * 1000;
+const MAX_RAIN_BAR_WIDTH = 16;
 
 export const supportsHourlyForecastCardFeature = (
   hass: HomeAssistant,
@@ -44,6 +53,8 @@ class HuiHourlyForecastCardFeature
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: HourlyForecastCardFeatureConfig;
+
+  @state() private _forecast?: ForecastAttribute[];
 
   @state() private _coordinates?: [number, number][];
 
@@ -117,14 +128,26 @@ class HuiHourlyForecastCardFeature
         </div>
       `;
     }
-    if (!this._coordinates) {
+    if (!this._forecast || !this._coordinates) {
       return html`
         <div class="container loading">
           <ha-spinner size="small"></ha-spinner>
         </div>
       `;
     }
-    if (!this._coordinates.length) {
+
+    const showTemperature = this._config.show_temperature ?? true;
+    const showPrecipitation = this._config.show_precipitation ?? false;
+
+    const showDots = !showTemperature && showPrecipitation;
+    const layer =
+      showPrecipitation || showDots
+        ? this._renderForecastLayer(showPrecipitation, showDots)
+        : nothing;
+    const hasGraphData = this._coordinates.length > 0;
+    const showGraph = showTemperature && hasGraphData;
+
+    if (!showGraph && layer === nothing) {
       return html`
         <div class="container">
           <div class="info">
@@ -135,11 +158,141 @@ class HuiHourlyForecastCardFeature
         </div>
       `;
     }
+
+    const customColor = this._config.color
+      ? computeCssColor(this._config.color)
+      : undefined;
+    const graphStyle = customColor
+      ? styleMap({ "--feature-color": customColor })
+      : nothing;
+
     return html`
-      <hui-graph-base
-        .coordinates=${this._coordinates}
-        .yAxisOrigin=${this._yAxisOrigin}
-      ></hui-graph-base>
+      <div class="layers">
+        ${layer}
+        ${showGraph
+          ? html`
+              <hui-graph-base
+                .coordinates=${this._coordinates}
+                .yAxisOrigin=${this._yAxisOrigin}
+                style=${graphStyle}
+              ></hui-graph-base>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
+  private _renderForecastLayer(showRain: boolean, showDots: boolean) {
+    if (!this._forecast?.length) {
+      return nothing;
+    }
+    const width = this.clientWidth || 300;
+    const height = this.clientHeight || 42;
+    // No bottom padding so bars and dots line up with the line graph baseline.
+    const topPadding = 4;
+    const drawableHeight = height - topPadding;
+
+    const now = Date.now();
+    const hoursToShow = this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
+    const maxTime =
+      Math.floor((now + hoursToShow * MS_PER_HOUR) / MS_PER_HOUR) * MS_PER_HOUR;
+    const timeRange = maxTime - now;
+    if (timeRange <= 0) {
+      return nothing;
+    }
+
+    const precipitationType = this._config!.precipitation_type ?? "amount";
+
+    const inRange: { entry: ForecastAttribute; t: number }[] = [];
+    for (const entry of this._forecast) {
+      const t = new Date(entry.datetime).getTime();
+      if (t >= now && t <= maxTime) {
+        inRange.push({ entry, t });
+      }
+    }
+
+    if (!inRange.length) {
+      return nothing;
+    }
+
+    const rainRects: TemplateResult[] = [];
+    if (showRain) {
+      const rainEntries = inRange.filter(({ entry }) => {
+        const value = getForecastPrecipitation(entry, precipitationType);
+        return Number.isFinite(value) && value! > 0;
+      });
+      let maxPrecipitation = 0;
+      if (precipitationType === "probability") {
+        maxPrecipitation = 100;
+      } else {
+        for (const { entry } of rainEntries) {
+          maxPrecipitation = Math.max(
+            maxPrecipitation,
+            getForecastPrecipitation(entry, precipitationType)!
+          );
+        }
+      }
+      if (maxPrecipitation > 0 && rainEntries.length) {
+        const slotWidth = width / hoursToShow;
+        const barWidth = Math.max(
+          1,
+          Math.min(MAX_RAIN_BAR_WIDTH, slotWidth - 2)
+        );
+        for (const { entry, t } of rainEntries) {
+          const value = getForecastPrecipitation(entry, precipitationType)!;
+          const xCenter = ((t - now) / timeRange) * width;
+          const x = xCenter - barWidth / 2;
+          const barHeight = Math.max(
+            1,
+            (value / maxPrecipitation) * drawableHeight
+          );
+          const y = height - barHeight;
+          rainRects.push(svg`<rect
+            x=${x}
+            y=${y}
+            width=${barWidth}
+            height=${barHeight}
+            fill="var(--state-weather-rainy-color)"
+            opacity="0.4"
+          ></rect>`);
+        }
+      }
+    }
+
+    const dots: TemplateResult[] = [];
+    if (showDots) {
+      const dotRadius = 1.5;
+      const cy = height - dotRadius;
+      for (const { entry, t } of inRange) {
+        const value = getForecastPrecipitation(entry, precipitationType);
+        if (Number.isFinite(value) && value! > 0) {
+          continue;
+        }
+        const cx = ((t - now) / timeRange) * width;
+        dots.push(svg`<circle
+          cx=${cx}
+          cy=${cy}
+          r=${dotRadius}
+          fill="var(--state-weather-rainy-color)"
+          opacity="0.4"
+        ></circle>`);
+      }
+    }
+
+    if (!rainRects.length && !dots.length) {
+      return nothing;
+    }
+
+    return html`
+      <svg
+        class="rain"
+        width="100%"
+        height="100%"
+        viewBox="0 0 ${width} ${height}"
+        preserveAspectRatio="none"
+      >
+        ${dots}${rainRects}
+      </svg>
     `;
   }
 
@@ -162,10 +315,9 @@ class HuiHourlyForecastCardFeature
     const data: [number, number][] = [];
     const now = Date.now();
     const hoursToShow = this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
-    const msPerHour = 60 * 60 * 1000;
     // Round down to the nearest hour so the axis aligns with forecast data points
     const maxTime =
-      Math.floor((now + hoursToShow * msPerHour) / msPerHour) * msPerHour;
+      Math.floor((now + hoursToShow * MS_PER_HOUR) / MS_PER_HOUR) * MS_PER_HOUR;
 
     // Start with current temperature
     const currentTemp = stateObj?.attributes?.temperature;
@@ -218,6 +370,7 @@ class HuiHourlyForecastCardFeature
       entityId,
       "hourly",
       (forecastEvent) => {
+        this._forecast = forecastEvent.forecast ?? [];
         this._computeCoordinates(forecastEvent);
       }
     ).catch((err) => {
@@ -234,23 +387,44 @@ class HuiHourlyForecastCardFeature
       height: var(--feature-height);
       flex-direction: column;
       justify-content: flex-end;
-      align-items: flex-end;
+      align-items: stretch;
       pointer-events: none !important;
     }
 
-    .container.loading {
+    .container {
       width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    hui-graph-base {
+    .info {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+
+    .layers {
+      position: relative;
       width: 100%;
-      --accent-color: var(--feature-color);
+      height: 100%;
       border-bottom-right-radius: 8px;
       border-bottom-left-radius: 8px;
       overflow: hidden;
+    }
+
+    .rain {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
+
+    hui-graph-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      --accent-color: var(--feature-color);
     }
   `;
 }
