@@ -1,3 +1,5 @@
+import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+import type { HomeAssistant } from "../../../../types";
 import type { ClockCardConfig, ClockCardDatePart } from "../types";
 
 type ClockCardSeparatorPart = Extract<
@@ -10,9 +12,29 @@ type ClockCardValuePart = Exclude<ClockCardDatePart, ClockCardSeparatorPart>;
 /**
  * Normalized date configuration used by clock card renderers.
  */
-export interface ClockCardDateConfig {
+interface ClockCardDateConfig {
   parts: ClockCardDatePart[];
 }
+
+/**
+ * Resolves the locale and time zone for a clock card from `hass` and the
+ * card's configuration. Applies the optional `time_format` override to the
+ * locale and falls back to the user's preferred time zone.
+ */
+export const resolveClockCardLocale = (
+  hass: HomeAssistant,
+  config: Pick<ClockCardConfig, "time_format" | "time_zone">
+): { locale: HomeAssistant["locale"]; timeZone: string } => {
+  const locale = config.time_format
+    ? { ...hass.locale, time_format: config.time_format }
+    : hass.locale;
+
+  const timeZone =
+    config.time_zone ||
+    resolveTimeZone(locale.time_zone, hass.config?.time_zone);
+
+  return { locale, timeZone };
+};
 
 /**
  * All selectable date tokens exposed by the clock card editor.
