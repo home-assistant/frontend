@@ -3,10 +3,10 @@ import {
   BaseElement,
 } from "@material/mwc-base/base-element";
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
+import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
-
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+// eslint-disable-next-line import-x/no-named-as-default
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import type { PropertyValues } from "lit";
 import { css, html, nothing } from "lit";
