@@ -372,7 +372,7 @@ ${type === "object"
         }
         .card-actions > ha-button:last-child {
           margin-inline-start: auto;
-        }        
+        }
       `,
     ];
   }
