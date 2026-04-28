@@ -1,3 +1,4 @@
+import { mdiThermometer, mdiWeatherRainy } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -75,41 +76,69 @@ export class HuiDailyForecastCardFeatureEditor
           selector: { number: { min: 1, mode: "box" } },
         },
         {
-          name: "show_temperature",
-          selector: { boolean: {} },
-        },
-        {
-          name: "show_current_temperature",
-          disabled: !showTemperature,
-          selector: { boolean: {} },
-        },
-        {
-          name: "show_precipitation",
-          selector: { boolean: {} },
-        },
-        {
-          name: "precipitation_type",
-          required: true,
-          disabled: !showPrecipitation,
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: [
-                {
-                  value: "amount",
-                  label: localize(
-                    "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.amount"
-                  ),
-                },
-                {
-                  value: "probability",
-                  label: localize(
-                    "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.probability"
-                  ),
-                },
-              ],
+          name: "temperature",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          iconPath: mdiThermometer,
+          schema: [
+            {
+              name: "show_temperature",
+              selector: { boolean: {} },
             },
-          },
+            {
+              name: "show_current_temperature",
+              disabled: !showTemperature,
+              selector: { boolean: {} },
+            },
+            {
+              name: "color",
+              disabled: !showTemperature,
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
+                },
+              },
+            },
+          ],
+        },
+        {
+          name: "precipitation",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          iconPath: mdiWeatherRainy,
+          schema: [
+            {
+              name: "show_precipitation",
+              selector: { boolean: {} },
+            },
+            {
+              name: "precipitation_type",
+              required: true,
+              disabled: !showPrecipitation,
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: [
+                    {
+                      value: "amount",
+                      label: localize(
+                        "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.amount"
+                      ),
+                    },
+                    {
+                      value: "probability",
+                      label: localize(
+                        "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type_options.probability"
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+          ],
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -191,6 +220,18 @@ export class HuiDailyForecastCardFeatureEditor
       case "precipitation_type":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation_type"
+        );
+      case "color":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.color"
+        );
+      case "temperature":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.temperature"
+        );
+      case "precipitation":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.daily-forecast.precipitation"
         );
       default:
         return "";

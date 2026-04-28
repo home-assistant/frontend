@@ -7,6 +7,7 @@ import type {
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -232,6 +233,9 @@ class HuiDailyForecastCardFeature
       this._config!.show_current_temperature ?? true;
     const showPrecipitation = this._config!.show_precipitation ?? false;
     const precipitationType = this._config!.precipitation_type ?? "amount";
+    const customColor = this._config!.color
+      ? computeCssColor(this._config!.color)
+      : undefined;
 
     const currentTemp = Number(this._stateObj?.attributes?.temperature);
     const hasCurrentTemp = Number.isFinite(currentTemp);
@@ -320,9 +324,11 @@ class HuiDailyForecastCardFeature
             const yLow = yFor(entry.templow!);
             const barHeight = Math.max(1, yLow - yHigh);
             const rx = Math.min(barWidth / 2, barHeight / 2);
-            const fill = entry.condition
-              ? `var(--state-weather-${slugify(entry.condition, "_")}-color, var(--feature-color))`
-              : "var(--feature-color)";
+            const fill =
+              customColor ??
+              (entry.condition
+                ? `var(--state-weather-${slugify(entry.condition, "_")}-color, var(--feature-color))`
+                : "var(--feature-color)");
             return svg`<rect
               x=${x}
               y=${yHigh}
@@ -342,7 +348,7 @@ class HuiDailyForecastCardFeature
             x2=${width}
             y1=${yFor(currentTemp)}
             y2=${yFor(currentTemp)}
-            stroke="var(--feature-color)"
+            stroke=${customColor ?? "var(--feature-color)"}
             stroke-width="1"
             stroke-opacity="0.5"
             vector-effect="non-scaling-stroke"
