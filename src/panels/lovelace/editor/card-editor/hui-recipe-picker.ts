@@ -5,10 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeAreaName } from "../../../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityPickerDisplay } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
@@ -16,14 +13,15 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-ripple";
+import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import { domainToName } from "../../../../data/integration";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CardSuggestion } from "../../card-suggestions/types";
 import { generateCardSuggestions } from "../../common/card-suggestions";
+import "./hui-recipe-entity-tree";
 import "./hui-recipe-suggestion";
 
 declare global {
@@ -44,6 +42,27 @@ export class HuiRecipePicker extends LitElement {
   public prioritizedCardTypes?: string[];
 
   @state() private _entityIds: string[] = [];
+
+  @state() private _narrow = false;
+
+  private _narrowMql?: MediaQueryList;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._narrowMql = matchMedia("(max-width: 700px)");
+    this._narrow = this._narrowMql.matches;
+    this._narrowMql.addEventListener("change", this._handleNarrowChange);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._narrowMql?.removeEventListener("change", this._handleNarrowChange);
+    this._narrowMql = undefined;
+  }
+
+  private _handleNarrowChange = (ev: MediaQueryListEvent) => {
+    this._narrow = ev.matches;
+  };
 
   // Keyed on string args (not hass) so preview elements stay stable across
   // hass updates.
@@ -76,27 +95,55 @@ export class HuiRecipePicker extends LitElement {
     );
 
     return html`
-      <div class="sidebar ha-scrollbar">
-        <h2 class="sidebar-title">
+      <div class="sidebar">
+        <ha-section-title>
           ${this.hass.localize(
-            "ui.panel.lovelace.editor.cardpicker.sidebar_title"
+            "ui.panel.lovelace.editor.cardpicker.selected_section"
           )}
-        </h2>
-        <ha-md-list>
-          ${repeat(
-            this._entityIds,
-            (id: string) => id,
-            (id: string) => this._renderEntityRow(id)
-          )}
-        </ha-md-list>
-        <div class="add-row">
-          <ha-entity-picker
-            .hass=${this.hass}
-            add-button
-            .excludeEntities=${this._entityIds}
-            @value-changed=${this._entityPickerValueChanged}
-          ></ha-entity-picker>
+        </ha-section-title>
+        <div class="selected-list-container">
+          ${this._entityIds.length
+            ? html`
+                <ha-md-list class="selected-list ha-scrollbar">
+                  ${repeat(
+                    this._entityIds,
+                    (id: string) => id,
+                    (id: string) => this._renderEntityRow(id)
+                  )}
+                </ha-md-list>
+              `
+            : html`
+                <div class="selected-empty">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.sidebar_empty"
+                  )}
+                </div>
+              `}
         </div>
+        <ha-section-title>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.cardpicker.browse_section"
+          )}
+        </ha-section-title>
+        ${this._narrow
+          ? html`
+              <div class="add-row">
+                <ha-entity-picker
+                  .hass=${this.hass}
+                  add-button
+                  .excludeEntities=${this._entityIds}
+                  @value-changed=${this._entityPickerValueChanged}
+                ></ha-entity-picker>
+              </div>
+            `
+          : html`
+              <hui-recipe-entity-tree
+                class="tree"
+                .hass=${this.hass}
+                .selectedEntityIds=${this._entityIds}
+                @entity-toggled=${this._handleEntityToggled}
+              ></hui-recipe-entity-tree>
+            `}
       </div>
       <div class="content ha-scrollbar">
         ${this._entityIds.length === 0
@@ -163,18 +210,9 @@ export class HuiRecipePicker extends LitElement {
 
   private _renderEntityRow(entityId: string): TemplateResult {
     const stateObj = this.hass!.states[entityId];
-    const entity = this.hass!.entities[entityId];
-    const device = entity?.device_id
-      ? this.hass!.devices[entity.device_id]
-      : undefined;
-    const areaId = entity?.area_id ?? device?.area_id;
-    const area = areaId ? this.hass!.areas[areaId] : undefined;
-
-    const name = stateObj ? computeStateName(stateObj) : entityId;
-    const supporting =
-      (area ? computeAreaName(area) : undefined) ??
-      (device ? computeDeviceName(device) : undefined) ??
-      domainToName(this.hass!.localize, computeDomain(entityId));
+    const display = stateObj
+      ? computeEntityPickerDisplay(this.hass!, stateObj)
+      : { primary: entityId, secondary: undefined };
 
     return html`
       <ha-md-list-item type="text" class="entity-row">
@@ -185,8 +223,10 @@ export class HuiRecipePicker extends LitElement {
               .stateObj=${stateObj}
             ></state-badge>`
           : nothing}
-        <div slot="headline">${name}</div>
-        <div slot="supporting-text">${supporting}</div>
+        <div slot="headline">${display.primary}</div>
+        ${display.secondary
+          ? html`<div slot="supporting-text">${display.secondary}</div>`
+          : nothing}
         <ha-icon-button
           slot="end"
           .path=${mdiClose}
@@ -200,6 +240,15 @@ export class HuiRecipePicker extends LitElement {
 
   private _browseCards(): void {
     fireEvent(this, "recipe-browse-cards", undefined);
+  }
+
+  private _handleEntityToggled(ev: CustomEvent<{ entityId: string }>): void {
+    const id = ev.detail.entityId;
+    if (this._entityIds.includes(id)) {
+      this._entityIds = this._entityIds.filter((e) => e !== id);
+    } else {
+      this._entityIds = [...this._entityIds, id];
+    }
   }
 
   private _entityPickerValueChanged(ev: CustomEvent<{ value: string }>): void {
@@ -241,25 +290,50 @@ export class HuiRecipePicker extends LitElement {
           min-height: 0;
         }
 
-        ha-entity-picker {
-          --ha-generic-picker-min-width: 420px;
-          --ha-generic-picker-max-width: 480px;
-        }
         .sidebar {
           flex: 0 0 320px;
           display: flex;
           flex-direction: column;
           border-inline-end: 1px solid var(--divider-color);
+          min-height: 0;
+          overflow: hidden;
+        }
+        .selected-list-container {
+          flex: 0 0 30%;
+          min-height: 120px;
+          max-height: 240px;
+          display: flex;
+          flex-direction: column;
+        }
+        .selected-list {
+          padding: var(--ha-space-2) 0;
+          flex: 1;
           overflow: auto;
         }
-        .sidebar-title {
-          margin: 0;
-          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
-          font-size: var(--ha-font-size-l);
-          font-weight: var(--ha-font-weight-medium);
+        .selected-empty {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--ha-space-4);
+          text-align: center;
+          color: var(--ha-color-text-secondary);
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-expanded);
         }
-        ha-md-list {
-          padding: 0 0 var(--ha-space-2);
+        .tree {
+          flex: 1;
+          min-height: 0;
+        }
+        .add-row {
+          display: flex;
+          align-items: center;
+          padding: var(--ha-space-2) var(--ha-space-3);
+        }
+        .add-row ha-entity-picker {
+          flex: 1;
+          --ha-generic-picker-min-width: 0;
+          --ha-generic-picker-max-width: none;
         }
         .entity-row {
           --md-list-item-leading-space: var(--ha-space-3);
@@ -273,15 +347,6 @@ export class HuiRecipePicker extends LitElement {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-        }
-        .add-row {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-2);
-          padding: var(--ha-space-2) var(--ha-space-3);
-        }
-        .add-row ha-entity-picker {
-          flex: 1;
         }
         .content {
           flex: 1;
@@ -363,6 +428,12 @@ export class HuiRecipePicker extends LitElement {
           .sidebar {
             border-inline-end: none;
             border-bottom: 1px solid var(--divider-color);
+          }
+          .selected-list {
+            max-height: none;
+          }
+          .tree {
+            min-height: 320px;
           }
         }
       `,
