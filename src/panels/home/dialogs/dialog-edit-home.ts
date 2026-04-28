@@ -10,24 +10,20 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import type {
-  CustomShortcutItem,
-  HomeFrontendSystemData,
-} from "../../../data/frontend";
+import type { HomeFrontendSystemData } from "../../../data/frontend";
+import type { ShortcutItem } from "../../../data/home_shortcuts";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import "../components/home-custom-shortcuts-editor";
 import "../components/home-favorites-editor";
-import "../components/home-summaries-editor";
+import "../components/home-shortcuts-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
 interface EditorState {
   favorite_entities: string[];
   show_suggested_entities: boolean;
   show_welcome_message: boolean;
-  hidden_summaries: string[];
-  custom_shortcuts: CustomShortcutItem[];
+  shortcuts: ShortcutItem[];
 }
 
 // The common-controls strategy caps the section at 8 (or the favorites count,
@@ -62,12 +58,7 @@ export class DialogEditHome
         : [],
       show_suggested_entities: !params.config.hide_suggested_entities,
       show_welcome_message: !params.config.hide_welcome_message,
-      hidden_summaries: params.config.hidden_summaries
-        ? [...params.config.hidden_summaries]
-        : [],
-      custom_shortcuts: params.config.custom_shortcuts
-        ? [...params.config.custom_shortcuts]
-        : [],
+      shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
     };
     this._open = true;
   }
@@ -168,29 +159,11 @@ export class DialogEditHome
             icon="mdi:view-dashboard-outline"
           ></ha-icon>
           <div class="expansion-content">
-            <home-summaries-editor
+            <home-shortcuts-editor
               .hass=${this.hass}
-              .hiddenSummaries=${this._state.hidden_summaries}
-              @value-changed=${this._hiddenSummariesChanged}
-            ></home-summaries-editor>
-          </div>
-        </ha-expansion-panel>
-
-        <ha-expansion-panel
-          outlined
-          expanded
-          .header=${this.hass.localize("ui.panel.home.editor.custom_shortcuts")}
-          .secondary=${this.hass.localize(
-            "ui.panel.home.editor.custom_shortcuts_description"
-          )}
-        >
-          <ha-icon slot="leading-icon" icon="mdi:link-variant"></ha-icon>
-          <div class="expansion-content">
-            <home-custom-shortcuts-editor
-              .hass=${this.hass}
-              .shortcuts=${this._state.custom_shortcuts}
+              .shortcuts=${this._state.shortcuts}
               @value-changed=${this._shortcutsChanged}
-            ></home-custom-shortcuts-editor>
+            ></home-shortcuts-editor>
           </div>
         </ha-expansion-panel>
 
@@ -270,17 +243,10 @@ export class DialogEditHome
     };
   }
 
-  private _hiddenSummariesChanged(ev: ValueChangedEvent<string[]>): void {
+  private _shortcutsChanged(ev: ValueChangedEvent<ShortcutItem[]>): void {
     this._state = {
       ...this._state!,
-      hidden_summaries: ev.detail.value,
-    };
-  }
-
-  private _shortcutsChanged(ev: ValueChangedEvent<CustomShortcutItem[]>): void {
-    this._state = {
-      ...this._state!,
-      custom_shortcuts: ev.detail.value,
+      shortcuts: ev.detail.value,
     };
   }
 
@@ -300,14 +266,7 @@ export class DialogEditHome
         ? undefined
         : true,
       hide_welcome_message: editor.show_welcome_message ? undefined : true,
-      hidden_summaries:
-        editor.hidden_summaries.length > 0
-          ? editor.hidden_summaries
-          : undefined,
-      custom_shortcuts:
-        editor.custom_shortcuts.length > 0
-          ? editor.custom_shortcuts
-          : undefined,
+      shortcuts: editor.shortcuts.length > 0 ? editor.shortcuts : undefined,
     };
 
     try {
