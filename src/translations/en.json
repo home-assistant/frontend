@@ -2504,10 +2504,8 @@
           "areas_page": "areas page",
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
-          "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "shortcuts": "Shortcuts",
+          "shortcuts_description": "Customize the shortcuts of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
@@ -8343,7 +8341,7 @@
               "persons": "Presence"
             },
             "welcome_user": "Welcome {user}",
-            "summaries": "Summaries",
+            "shortcuts": "Shortcuts",
             "areas": "Areas",
             "other_areas": "Other areas",
             "devices": "Devices",
