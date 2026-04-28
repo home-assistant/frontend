@@ -432,14 +432,10 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
-  private _resolveTargetEntityCount = memoizeOne(
-    (target: PlatformCondition["target"]) => getTargetEntityCount(target)
-  );
-
-  private async _updateResolvedTargetEntityCount(
+  private _updateResolvedTargetEntityCount(
     target: PlatformCondition["target"]
   ) {
-    this._resolvedTargetEntityCount = this._resolveTargetEntityCount(target);
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     if (
       target &&

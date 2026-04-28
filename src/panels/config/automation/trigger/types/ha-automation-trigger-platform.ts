@@ -467,14 +467,8 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
-  private _resolveTargetEntityCount = memoizeOne(
-    (target: PlatformTrigger["target"]) => getTargetEntityCount(target)
-  );
-
-  private async _updateResolvedTargetEntityCount(
-    target: PlatformTrigger["target"]
-  ) {
-    this._resolvedTargetEntityCount = this._resolveTargetEntityCount(target);
+  private _updateResolvedTargetEntityCount(target: PlatformTrigger["target"]) {
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     if (
       target &&
