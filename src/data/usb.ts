@@ -7,6 +7,7 @@ export interface SerialPort {
   description: string | null;
   vid?: string;
   pid?: string;
+  matching_integrations: string[];
 }
 
 export const scanUSBDevices = (hass: HomeAssistant) =>
