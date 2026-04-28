@@ -85,6 +85,8 @@ export class HaSerialPortSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   @state() private _serialPorts?: SerialPort[];
 
   @state() private _manualEntry = false;

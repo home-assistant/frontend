@@ -104,6 +104,7 @@ class StepFlowForm extends LitElement {
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
           .localizeValue=${this._localizeValueCallback}
+          .context=${{ handler: step.handler }}
         ></ha-form>
       </div>
       ${step.preview
