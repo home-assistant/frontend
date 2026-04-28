@@ -9174,7 +9174,9 @@
             "history-graph": {
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
+              "show_names": "Show entity names",
               "logarithmic_scale": "Logarithmic scale",
+              "expand_legend": "Expand legend initially",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
