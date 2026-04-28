@@ -8,6 +8,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-spinner";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
@@ -53,6 +54,8 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
+  @state() private _descriptionExpanded = false;
+
   private _template = "";
 
   private _inited = false;
@@ -87,47 +90,58 @@ class HaPanelDevTemplate extends LitElement {
           ? "list"
           : "dict"
         : type;
+
     return html`
       <div class="content">
-        <div class="description">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.templates.description"
-            )}
-          </p>
-          <ul>
-            <li>
-              <a
-                href="https://jinja.palletsprojects.com/en/latest/templates/"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href=${documentationUrl(
-                  this.hass,
-                  "/docs/configuration/templating/"
-                )}
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.templates.template_extensions"
-                )}</a
-              >
-            </li>
-          </ul>
-        </div>
+        <ha-expansion-panel
+          .header=${this.hass.localize(
+            "ui.panel.config.developer-tools.tabs.templates.about"
+          )}
+          outlined
+          .expanded=${this._descriptionExpanded}
+          @expanded-will-change=${this._expandedWillChange}
+        >
+          <div class="description">
+            <p>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.templates.description"
+              )}
+            </p>
+            <ul>
+              <li>
+                <a
+                  href="https://jinja.palletsprojects.com/en/latest/templates/"
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
+                  )}
+                </a>
+              </li>
+              <li>
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    "/docs/configuration/templating/"
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.templates.template_extensions"
+                  )}</a
+                >
+              </li>
+            </ul>
+          </div>
+        </ha-expansion-panel>
       </div>
       <div
         class="content ${classMap({
           layout: !this.narrow,
           horizontal: !this.narrow,
         })}"
+        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
       >
         <ha-card
           class="edit-pane"
@@ -265,6 +279,10 @@ ${type === "object"
     `;
   }
 
+  private _expandedWillChange(ev) {
+    this._descriptionExpanded = ev.detail.expanded;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -279,13 +297,41 @@ ${type === "object"
           padding: var(--ha-space-4);
         }
 
+        .content:has(ha-expansion-panel) {
+          padding-bottom: 0;
+        }
+
         .content.horizontal {
+          --panel-header-height: calc(
+            var(--header-height) + 1em * 2 + var(--ha-line-height-normal) *
+              var(--ha-font-size-m) + 1px + 2px
+          );
+          --description-pane-height: calc(
+            var(--ha-space-4) + 48px +
+              (
+                var(--ha-line-height-normal) * var(--ha-font-size-m) * 3 +
+                  var(--ha-space-1) * 2
+              ) *
+              var(--description-expanded) + var(--ha-card-border-width, 1px) * 2
+          );
+          --card-header-height: calc(
+            var(--ha-space-3) + var(--ha-space-4) +
+              var(--ha-line-height-expanded) *
+              var(--ha-card-header-font-size, var(--ha-font-size-2xl))
+          );
+          --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
+          --edit-pane-height: calc(
+            100vh - var(--panel-header-height) - var(
+                --description-pane-height
+              ) - var(--ha-space-4) *
+              2
+          );
           --code-mirror-max-height: calc(
-            100vh - var(--header-height) -
-              (var(--ha-line-height-normal) * var(--ha-font-size-m) * 3) -
-              (max(16px, var(--safe-area-inset-top)) * 2) -
-              (max(16px, var(--safe-area-inset-bottom)) * 2) -
-              (var(--ha-card-border-width, 1px) * 3) - (1em * 2) - 192px
+            var(--edit-pane-height) - var(--card-header-height) +
+              var(--ha-space-2) - var(--card-actions-height) - var(
+                --ha-space-4
+              ) - var(--ha-card-border-width, 1px) *
+              2
           );
         }
 
@@ -335,6 +381,13 @@ ${type === "object"
         p,
         ul {
           margin-block-end: 0;
+        }
+        .description > p {
+          margin-block-start: 0;
+        }
+        .description > ul {
+          margin-block-start: var(--ha-space-1);
+          margin-block-end: var(--ha-space-1);
         }
 
         .render-pane .card-content {
