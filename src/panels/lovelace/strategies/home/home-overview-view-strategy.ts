@@ -436,7 +436,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const summaryHeadingCard: LovelaceCardConfig = {
       type: "heading",
-      heading: hass.localize("ui.panel.lovelace.strategy.home.shortcuts"),
+      heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
       heading_style: "title",
     };
 
@@ -545,7 +545,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           sections: [sidebarSection],
           content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
           sidebar_label: hass.localize(
-            "ui.panel.lovelace.strategy.home.shortcuts"
+            "ui.panel.lovelace.strategy.home.summaries"
           ),
           visibility: [LARGE_SCREEN_CONDITION],
         },

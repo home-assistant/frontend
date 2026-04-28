@@ -149,9 +149,9 @@ export class DialogEditHome
         <ha-expansion-panel
           outlined
           expanded
-          .header=${this.hass.localize("ui.panel.home.editor.shortcuts")}
+          .header=${this.hass.localize("ui.panel.home.editor.summaries")}
           .secondary=${this.hass.localize(
-            "ui.panel.home.editor.shortcuts_description"
+            "ui.panel.home.editor.summaries_description"
           )}
         >
           <ha-icon
