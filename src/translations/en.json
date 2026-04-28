@@ -10083,29 +10083,36 @@
               "hourly-forecast": {
                 "label": "Hourly forecast",
                 "no_forecast": "No forecast data available",
+                "temperature": "Temperature",
+                "precipitation": "Precipitation",
                 "show_temperature": "Show temperature",
                 "show_precipitation": "Show precipitation",
                 "precipitation_type": "Precipitation type",
                 "precipitation_type_options": {
                   "amount": "Amount",
                   "probability": "Probability"
-                }
+                },
+                "color": "Color"
               },
               "daily-forecast": {
                 "label": "Daily forecast",
                 "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::temperature%]",
+                "precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation%]",
                 "forecast_type": "Forecast type",
                 "forecast_type_options": {
                   "daily": "Daily",
                   "twice_daily": "Twice daily"
                 },
                 "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_current_temperature": "Show current temperature",
                 "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
                 "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
                 "precipitation_type_options": {
                   "amount": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::amount%]",
                   "probability": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::probability%]"
-                }
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::color%]"
               }
             }
           },
