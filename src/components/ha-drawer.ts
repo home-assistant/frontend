@@ -152,6 +152,10 @@ export class HaDrawer extends DrawerBase {
   static override styles = [
     styles,
     css`
+      :host {
+        min-height: 100%;
+        height: unset;
+      }
       .mdc-drawer {
         position: fixed;
         top: 0;
