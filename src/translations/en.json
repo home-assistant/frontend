@@ -1103,7 +1103,9 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility",
+        "show_more_info": "Show more info"
       },
       "map": {
         "error": "Unable to load map"
