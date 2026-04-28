@@ -28,7 +28,7 @@ This element is based on webawesome `wa-tooltip` it only sets some css tokens an
 
 In your theme settings use this without the prefixed `--`.
 
-- `--ha-tooltip-background-color` (Default: `var(--secondary-background-color)`)
+- `--ha-tooltip-background-color` (Default: `var(--ha-color-surface-lower)`)
 - `--ha-tooltip-text-color` (Default: `var(--primary-text-color)`)
 - `--ha-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
 - `--ha-tooltip-font-size` (Default: `var(--ha-font-size-s)`)

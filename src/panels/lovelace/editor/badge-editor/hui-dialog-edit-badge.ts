@@ -8,8 +8,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -460,7 +460,7 @@ export class HuiDialogEditBadge
         .element-preview {
           position: relative;
           height: max-content;
-          background: var(--primary-background-color);
+          background: var(--ha-color-surface-low);
           padding: 10px;
           border-radius: var(--ha-border-radius-sm);
           position: sticky;

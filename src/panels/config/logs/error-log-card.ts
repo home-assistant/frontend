@@ -783,7 +783,7 @@ class ErrorLogCard extends LitElement {
     }
 
     .error-log > div:hover {
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
     }
 
     .new-logs-indicator {

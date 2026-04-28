@@ -255,7 +255,7 @@ export const haTheme = EditorView.theme({
   },
 
   ".cm-panels": {
-    backgroundColor: "var(--primary-background-color)",
+    backgroundColor: "var(--ha-color-surface-low)",
     color: "var(--primary-text-color)",
   },
   ".cm-panels.top": { borderBottom: "1px solid var(--divider-color)" },
@@ -356,7 +356,7 @@ export const haTheme = EditorView.theme({
 
   ".cm-gutters": {
     backgroundColor:
-      "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
+      "var(--code-editor-gutter-color, var(--ha-color-surface-lower, whitesmoke))",
     color: "var(--secondary-text-color)",
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",

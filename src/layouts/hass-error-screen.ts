@@ -2,11 +2,11 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { goBack } from "../common/navigate";
-import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-alert";
 import "../components/ha-button";
+import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import type { HomeAssistant } from "../types";
-import "../components/ha-alert";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
@@ -60,7 +60,7 @@ class HassErrorScreen extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
         }
         .toolbar {
           display: flex;

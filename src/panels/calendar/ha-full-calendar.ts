@@ -684,11 +684,11 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-popover {
-          background-color: var(--primary-background-color) !important;
+          background-color: var(--ha-color-surface-low) !important;
         }
 
         .fc-popover-header {
-          background-color: var(--secondary-background-color) !important;
+          background-color: var(--ha-color-surface-lower) !important;
         }
 
         .fc-theme-standard .fc-list-day-frame {

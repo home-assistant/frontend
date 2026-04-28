@@ -3,8 +3,8 @@ import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
@@ -174,6 +174,7 @@ export class HaDrawer extends DrawerBase {
       }
       .mdc-drawer-app-content {
         overflow: unset;
+        background: var(--ha-color-surface-lower);
         flex: none;
         padding-left: var(--mdc-drawer-width);
         padding-inline-start: var(--mdc-drawer-width);

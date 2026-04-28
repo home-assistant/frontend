@@ -63,7 +63,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           ha-authorize ha-alert {
             display: block;
             margin: 16px 0;
-            background-color: var(--primary-background-color, #fafafa);
+            background-color: var(--ha-color-surface-low, #fafafa);
           }
         </style>
         <ha-alert alert-type="error"
@@ -93,7 +93,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         ha-alert {
           display: block;
           margin: 16px 0;
-          background-color: var(--primary-background-color, #fafafa);
+          background-color: var(--ha-color-surface-low, #fafafa);
         }
         p {
           font-size: var(--ha-font-size-m);

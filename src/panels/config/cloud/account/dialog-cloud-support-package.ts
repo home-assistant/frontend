@@ -3,9 +3,9 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-markdown-element";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
 import { fetchSupportPackage } from "../../../../data/cloud";
@@ -166,7 +166,7 @@ export class DialogSupportPackage extends LitElement {
       border-radius: var(--ha-border-radius-sm);
     }
     details {
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
       padding: 16px 24px;
       margin: 8px 0;
       border: 1px solid var(--divider-color);

@@ -165,8 +165,7 @@ export class StorageBreakdownChart extends LitElement {
 
       segments.push({
         value: freeSpaceGB,
-        color:
-          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        color: "var(--ha-bar-background-color, var(--ha-color-surface-lower))",
         label: html`${this.hass.localize(
             "ui.panel.config.storage.segments.free"
           )}

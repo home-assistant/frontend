@@ -34,7 +34,7 @@ class PageDescription extends HaMarkdown {
     css`
       .heading {
         padding: 16px;
-        border-bottom: 1px solid var(--secondary-background-color);
+        border-bottom: 1px solid var(--ha-color-surface-lower);
       }
       .title {
         font-size: 42px;

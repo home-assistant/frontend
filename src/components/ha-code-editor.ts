@@ -1702,7 +1702,7 @@ export class HaCodeEditor extends ReactiveElement {
           --icon-button-toolbar-height: var(--code-editor-toolbar-height);
           --icon-button-toolbar-color: var(
             --code-editor-gutter-color,
-            var(--secondary-background-color, whitesmoke)
+            var(--ha-color-surface-lower, whitesmoke)
           );
           border-top-left-radius: var(--ha-border-radius-sm);
           border-top-right-radius: var(--ha-border-radius-sm);

@@ -268,7 +268,7 @@ export class HaConfigAppsAvailable extends LitElement {
     :host {
       display: block;
       height: 100%;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
     }
     supervisor-apps-repository {
       margin-top: 24px;

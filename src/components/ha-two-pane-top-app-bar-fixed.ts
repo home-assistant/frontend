@@ -5,13 +5,13 @@ import {
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
 import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
-// eslint-disable-next-line import-x/no-named-as-default
+
+import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import type { PropertyValues } from "lit";
-import { html, css, nothing } from "lit";
-import { property, query, customElement } from "lit/decorators";
+import { css, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { haStyleScrollbar } from "../resources/styles";
 
 export const passiveEventOptionsIfSupported = supportsPassiveEventListener
@@ -340,6 +340,9 @@ export class TopAppBarBaseBase extends BaseElement {
       .pane .footer {
         border-top: 1px solid var(--divider-color);
         padding-bottom: 8px;
+      }
+      .pane {
+        background-color: var(--ha-color-surface-low);
       }
       .main {
         min-height: 100%;

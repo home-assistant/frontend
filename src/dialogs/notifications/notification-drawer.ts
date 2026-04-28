@@ -1,21 +1,21 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/ha-button";
+import "../../components/ha-drawer";
+import type { HaDrawer } from "../../components/ha-drawer";
+import "../../components/ha-header-bar";
 import "../../components/ha-icon-button-prev";
 import type { PersistentNotification } from "../../data/persistent_notification";
 import { subscribeNotifications } from "../../data/persistent_notification";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./notification-item";
-import "../../components/ha-header-bar";
-import "../../components/ha-button";
-import "../../components/ha-drawer";
-import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HaDrawer } from "../../components/ha-drawer";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
 export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
@@ -173,12 +173,12 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   static styles = css`
     ha-drawer {
-      --mdc-drawer-surface-fill-color: var(--primary-background-color);
+      --mdc-drawer-surface-fill-color: var(--ha-color-surface-low);
     }
 
     ha-header-bar {
       --mdc-theme-on-primary: var(--primary-text-color);
-      --mdc-theme-primary: var(--card-background-color);
+      --mdc-theme-primary: var(--ha-color-surface-default);
       --header-bar-padding: var(--safe-area-inset-top, 0px) 0 0
         var(--safe-area-inset-left, 0px);
       border-bottom: 1px solid var(--divider-color);
@@ -209,7 +209,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
         100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
       );
       box-sizing: border-box;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       color: var(--primary-text-color);
     }
 

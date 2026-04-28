@@ -1,13 +1,13 @@
+import { mdiCog, mdiHelp } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mdiCog, mdiHelp } from "@mdi/js";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-dialog-footer";
 import "../../../../src/components/ha-form/ha-form";
-import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-dialog";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import "../../../../src/components/ha-icon-button";
 
 const SCHEMA: HaFormSchema[] = [
   { type: "string", name: "Name", default: "", autofocus: true },
@@ -500,7 +500,7 @@ export class DemoHaDialog extends LitElement {
       }
 
       code {
-        background-color: var(--secondary-background-color);
+        background-color: var(--ha-color-surface-lower);
         padding: 2px 6px;
         border-radius: 4px;
         font-family: monospace;
@@ -508,7 +508,7 @@ export class DemoHaDialog extends LitElement {
       }
 
       pre {
-        background-color: var(--secondary-background-color);
+        background-color: var(--ha-color-surface-lower);
         padding: var(--ha-space-3);
         border-radius: 8px;
         overflow-x: auto;

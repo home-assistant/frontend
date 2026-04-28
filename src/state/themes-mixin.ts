@@ -3,9 +3,9 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
-import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import { subscribeThemePreferences, saveThemePreferences } from "../data/theme";
+import { fireEvent } from "../common/dom/fire_event";
+import { saveThemePreferences, subscribeThemePreferences } from "../data/theme";
 import { subscribeThemes } from "../data/ws-themes";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
@@ -165,7 +165,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         computedStyles.getPropertyValue("--app-theme-color");
 
       document.documentElement.style.backgroundColor =
-        computedStyles.getPropertyValue("--primary-background-color");
+        computedStyles.getPropertyValue("--ha-color-surface-low");
 
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {

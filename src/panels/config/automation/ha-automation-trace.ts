@@ -8,7 +8,7 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -554,7 +554,7 @@ export class HaAutomationTrace extends LitElement {
           font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 4px;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);

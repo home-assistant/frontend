@@ -30,7 +30,7 @@ Error color gauge
 <ha-gauge value="75" style="--gauge-color: var(--error-color)" label="°C"></ha-gauge>
 
 Gauge with background color
-<ha-gauge value="75" style="--gauge-color: var(--info-color); --primary-background-color: lightgray"></ha-gauge>
+<ha-gauge value="75" style="--gauge-color: var(--info-color); --ha-color-surface-low: lightgray"></ha-gauge>
 
 ## CSS variables
 

@@ -14,6 +14,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
@@ -35,7 +36,6 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
@@ -545,7 +545,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .empty-cover {
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
       font-size: 1.5em;
       color: var(--secondary-text-color);
     }

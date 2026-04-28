@@ -724,7 +724,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           padding: 0 var(--ha-space-4);
           gap: var(--ha-space-4);
           box-sizing: border-box;
-          background: var(--primary-background-color);
+          background: var(--ha-color-surface-low);
           border-bottom: 1px solid var(--divider-color);
         }
         ha-input-search {

@@ -43,7 +43,7 @@ class DemoMoreInfos extends LitElement {
   static styles = css`
     #container {
       min-height: calc(100vh - 128px);
-      background: var(--primary-background-color);
+      background: var(--ha-color-surface-low);
     }
     .cards {
       display: flex;

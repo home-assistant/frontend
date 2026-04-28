@@ -40,7 +40,7 @@ export class HaBar extends LitElement {
     }
     rect:first-child {
       width: 100%;
-      fill: var(--ha-bar-background-color, var(--secondary-background-color));
+      fill: var(--ha-bar-background-color, var(--ha-color-surface-lower));
     }
     rect:last-child {
       fill: var(--ha-bar-primary-color, var(--primary-color));

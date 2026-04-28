@@ -1,10 +1,10 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-button";
+import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-logo-svg";
 
 const alerts: {
@@ -186,7 +186,7 @@ export class DemoHaAlert extends LitElement {
     .dark,
     .light {
       display: block;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       padding: 0 50px;
     }
     ha-card {

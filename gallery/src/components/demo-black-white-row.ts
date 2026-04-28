@@ -1,11 +1,11 @@
-import type { TemplateResult, PropertyValues } from "lit";
-import { html, LitElement, css, nothing } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-card";
 import "../../../src/components/ha-button";
 import type { HaButton } from "../../../src/components/ha-button";
+import "../../../src/components/ha-card";
 
 @customElement("demo-black-white-row")
 class DemoBlackWhiteRow extends LitElement {
@@ -80,7 +80,7 @@ class DemoBlackWhiteRow extends LitElement {
     }
     .content {
       padding: 50px 0;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
     }
     .light {
       flex: 1;

@@ -28,7 +28,7 @@ export const coreColorStyles = css`
     --ha-color-primary-95: #eff9fe;
 
     /* neutral */
-    --ha-color-neutral-025: #0a0a0a;
+    --ha-color-neutral-03: #0a0a0a;
     --ha-color-neutral-05: #141414;
     --ha-color-neutral-10: #202020;
     --ha-color-neutral-20: #363636;
@@ -40,7 +40,7 @@ export const coreColorStyles = css`
     --ha-color-neutral-80: #cccccc;
     --ha-color-neutral-90: #e6e6e6;
     --ha-color-neutral-95: #f3f3f3;
-    --ha-color-neutral-975: #f7f7f7;
+    --ha-color-neutral-97: #f7f7f7;
 
     /* orange */
     --ha-color-orange-05: #280700;

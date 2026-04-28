@@ -102,7 +102,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
           border: 1px solid var(--divider-color);
           background-color: var(
             --code-editor-background-color,
-            var(--secondary-background-color)
+            var(--ha-color-surface-lower)
           );
           padding: var(--ha-space-3);
           overflow: auto;

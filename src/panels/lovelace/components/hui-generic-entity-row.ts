@@ -4,13 +4,13 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
-import { uid } from "../../../common/util/uid";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { getEntityContext } from "../../../common/entity/context/get_entity_context";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { uid } from "../../../common/util/uid";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-tooltip";
@@ -260,7 +260,7 @@ export class HuiGenericEntityRow extends LitElement {
       transition: background-color 180ms ease-in-out;
     }
     .row:focus-visible {
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
     }
     .info {
       padding-left: 16px;

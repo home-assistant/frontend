@@ -441,7 +441,7 @@ class HaPanelApp extends LitElement {
       width: 100%;
       height: 100%;
       border: 0;
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal) ease;
     }

@@ -279,7 +279,7 @@ export class HuiBadgeEditMode extends LitElement {
           position: absolute;
           inset: 0;
           opacity: 0.8;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           border-radius: var(
             --ha-card-border-radius,
             var(--ha-border-radius-lg)
@@ -292,7 +292,7 @@ export class HuiBadgeEditMode extends LitElement {
           color: var(--primary-text-color);
           border-radius: var(--ha-border-radius-circle);
           padding: 4px;
-          background: var(--secondary-background-color);
+          background: var(--ha-color-surface-lower);
           --mdc-icon-size: 16px;
         }
         .more ha-icon-button {
@@ -305,7 +305,7 @@ export class HuiBadgeEditMode extends LitElement {
         .more ha-icon-button {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
-          background: var(--secondary-background-color);
+          background: var(--ha-color-surface-lower);
           --ha-icon-button-size: 24px;
           --mdc-icon-size: 16px;
         }

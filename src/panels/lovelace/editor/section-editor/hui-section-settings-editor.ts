@@ -70,7 +70,7 @@ export class HuiDialogEditSection extends LitElement {
                               "ui.panel.lovelace.editor.edit_section.settings.background_color_default"
                             ),
                             display_color:
-                              "var(--ha-section-background-color, var(--secondary-background-color))",
+                              "var(--ha-section-background-color, var(--ha-color-surface-lower))",
                           },
                         ],
                       },

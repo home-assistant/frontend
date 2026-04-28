@@ -796,7 +796,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
           border-bottom-left-radius: 0px;
           background-color: var(
             --chat-background-color-hass,
-            var(--secondary-background-color)
+            var(--ha-color-surface-lower)
           );
 
           color: var(--primary-text-color);
@@ -892,7 +892,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
         ha-markdown {
           --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);
           --markdown-table-border-color: var(--divider-color);
-          --markdown-code-background-color: var(--primary-background-color);
+          --markdown-code-background-color: var(--ha-color-surface-low);
           --markdown-code-text-color: var(--primary-text-color);
           --markdown-list-indent: 1.15em;
         }

@@ -284,7 +284,7 @@ export class HuiCardEditMode extends LitElement {
           position: absolute;
           inset: 0;
           opacity: 0.8;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           border: 1px solid var(--divider-color);
           border-radius: var(
             --ha-card-border-radius,
@@ -298,7 +298,7 @@ export class HuiCardEditMode extends LitElement {
           color: var(--primary-text-color);
           border-radius: var(--ha-border-radius-circle);
           padding: 8px;
-          background: var(--secondary-background-color);
+          background: var(--ha-color-surface-lower);
           --mdc-icon-size: 20px;
         }
         .more ha-icon-button {
@@ -309,7 +309,7 @@ export class HuiCardEditMode extends LitElement {
           inset-inline-start: initial;
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
-          background: var(--secondary-background-color);
+          background: var(--ha-color-surface-lower);
           --ha-icon-button-size: 32px;
           --mdc-icon-size: 20px;
         }

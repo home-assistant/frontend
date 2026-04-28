@@ -41,7 +41,7 @@ export class HaIconButtonToggle extends HaIconButton {
         opacity: 0;
       }
       :host([selected]) ha-button::part(base) {
-        color: var(--primary-background-color);
+        color: var(--ha-color-surface-low);
         background-color: unset;
       }
       :host([selected]:not([disabled])) ha-button::part(base)::before {

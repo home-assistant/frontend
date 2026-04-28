@@ -44,8 +44,6 @@ export const colorStyles = css`
 
     /* backgrounds */
     --card-background-color: var(--ha-color-surface-default);
-    --primary-background-color: var(--ha-color-surface-low);
-    --secondary-background-color: var(--ha-color-surface-lower);
     --clear-background-color: #ffffff;
 
     /* for label-badge */
@@ -273,16 +271,16 @@ export const colorStyles = css`
     --label-badge-background-color: var(--card-background-color);
     --label-badge-text-color: rgba(var(--rgb-primary-text-color), 0.8);
     --table-header-background-color: var(--input-fill-color);
-    --table-row-background-color: var(--primary-background-color);
-    --table-row-alternative-background-color: var(--secondary-background-color);
+    --table-row-background-color: var(--ha-color-surface-low);
+    --table-row-alternative-background-color: var(--ha-color-surface-lower);
     --data-table-background-color: var(--card-background-color);
-    --markdown-code-background-color: var(--primary-background-color);
+    --markdown-code-background-color: var(--ha-color-surface-low);
     --bar-box-shadow: 0 2px 12px var(--shadow-color);
 
     /* https://github.com/material-components/material-web/blob/master/docs/theming.md */
     --mdc-theme-primary: var(--primary-color);
     --mdc-theme-secondary: var(--accent-color);
-    --mdc-theme-background: var(--primary-background-color);
+    --mdc-theme-background: var(--ha-color-surface-low);
     --mdc-theme-surface: var(--card-background-color);
     --mdc-theme-on-primary: var(--text-primary-color);
     --mdc-theme-on-secondary: var(--text-primary-color);
@@ -342,11 +340,7 @@ export const colorStyles = css`
 export const darkColorStyles = css`
   html {
     --card-background-color: var(--ha-color-surface-default);
-    --primary-background-color: var(--ha-color-surface-low);
-    --secondary-background-color: var(--ha-color-surface-lower);
     --clear-background-color: #ffffff;
-
-    --sidebar-background-color: var(--ha-color-surface-low);
 
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;

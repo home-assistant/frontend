@@ -233,8 +233,7 @@ class HaConfigSectionStorage extends LitElement {
         value: diskLifeTime,
       },
       {
-        color:
-          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        color: "var(--ha-bar-background-color, var(--ha-color-surface-lower))",
         value: 100 - diskLifeTime,
       },
     ];

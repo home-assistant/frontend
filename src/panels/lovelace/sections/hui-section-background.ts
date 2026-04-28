@@ -58,7 +58,7 @@ export class HuiSectionBackground extends LitElement {
       border-radius: inherit;
       background-color: var(
         --section-background-color,
-        var(--ha-section-background-color, var(--secondary-background-color))
+        var(--ha-section-background-color, var(--ha-color-surface-lower))
       );
       opacity: var(
         --section-background-opacity,

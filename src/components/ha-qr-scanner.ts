@@ -402,7 +402,7 @@ class HaQrScanner extends LitElement {
     ha-alert.warning {
       position: absolute;
       z-index: 1;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       top: 0;
       width: calc(100% - 48px);
     }

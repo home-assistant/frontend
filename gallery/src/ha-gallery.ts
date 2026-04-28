@@ -259,7 +259,7 @@ class HaGallery extends LitElement {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        background: var(--primary-background-color);
+        background: var(--ha-color-surface-low);
       }
 
       .content {
@@ -273,7 +273,7 @@ class HaGallery extends LitElement {
       .page-footer {
         display: flex;
         border-radius: var(--ha-border-radius-lg);
-        background-color: var(--primary-background-color);
+        background-color: var(--ha-color-surface-low);
       }
 
       .edit-docs {

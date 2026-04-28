@@ -163,7 +163,7 @@ export const semanticColorStyles = css`
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-white);
     --ha-color-surface-low: var(--ha-color-neutral-95);
-    --ha-color-surface-lower: var(--ha-color-neutral-975);
+    --ha-color-surface-lower: var(--ha-color-neutral-97);
     --ha-color-surface-default-inverted: var(--ha-color-neutral-10);
     --ha-color-surface-low-inverted: var(--ha-color-neutral-05);
     --ha-color-surface-lower-inverted: var(--ha-color-black);
@@ -312,8 +312,8 @@ export const darkSemanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
-    --ha-color-surface-low: var(--ha-color-neutral-05);
-    --ha-color-surface-lower: var(--ha-color-neutral-025);
+    --ha-color-surface-low: var(--primary-background-color, --ha-color-neutral-05);
+    --ha-color-surface-lower: var(--secondary-background-color, --ha-color-neutral-03);
     --ha-color-surface-default-inverted: var(--ha-color-white);
     --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
     --ha-color-surface-lower-inverted: var(--ha-color-90);

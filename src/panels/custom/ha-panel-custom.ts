@@ -92,7 +92,7 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
-    this.style.backgroundColor = "var(--primary-background-color)";
+    this.style.backgroundColor = "var(--ha-color-surface-low)";
 
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
@@ -155,7 +155,7 @@ export class HaPanelCustom extends ReactiveElement {
           height: 100vh;
           height: 100dvh;
           display: block;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           opacity: 0;
           transition: opacity var(--ha-animation-duration-normal) ease;
         }

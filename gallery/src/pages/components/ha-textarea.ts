@@ -1,4 +1,4 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
@@ -115,7 +115,7 @@ export class DemoHaTextarea extends LitElement {
     .dark,
     .light {
       display: block;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       padding: 0 50px;
     }
     ha-card {

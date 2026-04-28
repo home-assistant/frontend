@@ -11,6 +11,7 @@ import {
 } from "../../../common/areas/areas-floor-hierarchy";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon";
@@ -18,7 +19,6 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   reorderAreaRegistryEntries,
@@ -427,7 +427,7 @@ class DialogAreasFloorsOrder extends LitElement {
           display: flex;
           align-items: center;
           padding: 12px 16px;
-          background-color: var(--secondary-background-color);
+          background-color: var(--ha-color-surface-lower);
           gap: 12px;
         }
 

@@ -46,12 +46,12 @@ function initialize(
   style.innerHTML = `
   body {
     margin:0;
-    background-color: var(--primary-background-color, #fafafa);
+    background-color: var(--ha-color-surface-low, #fafafa);
     color: var(--primary-text-color, #212121);
   }
   @media (prefers-color-scheme: dark) {
     body {
-      background-color: var(--primary-background-color, #111111);
+      background-color: var(--ha-color-surface-low, #111111);
       color: var(--primary-text-color, #e1e1e1);
     }
   }`;

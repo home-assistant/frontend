@@ -138,7 +138,7 @@ export class DemoHaControlSwitch extends LitElement {
     .dark,
     .light {
       display: block;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       padding: 16px;
       border-radius: var(--ha-border-radius-md);
     }

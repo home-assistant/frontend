@@ -36,7 +36,7 @@
         animation: fade-out var(--ha-animation-duration-slow, 350ms) ease-out;
       }
       html {
-        background-color: var(--primary-background-color, #fafafa);
+        background-color: var(--ha-color-surface-low, #fafafa);
         color: var(--primary-text-color, #212121);
         height: 100vh;
       }
@@ -53,7 +53,7 @@
         justify-content: center;
         align-items: center;
         view-transition-name: launch-screen;
-        background-color: var(--primary-background-color, #fafafa);
+        background-color: var(--ha-color-surface-low, #fafafa);
         z-index: 100;
       }
       #ha-launch-screen.removing {
@@ -81,12 +81,12 @@
       }
       @media (prefers-color-scheme: dark) {
         html {
-          background-color: var(--primary-background-color, #111111);
+          background-color: var(--ha-color-surface-low, #111111);
           color: var(--primary-text-color, #e1e1e1);
         }
         /* body selector to avoid minification causing bad jinja2 */
         body #ha-launch-screen {
-          background-color: var(--primary-background-color, #111111);
+          background-color: var(--ha-color-surface-low, #111111);
         }
         .ohf-logo {
           filter: invert(1);

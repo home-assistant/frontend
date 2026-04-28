@@ -9,7 +9,7 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -566,7 +566,7 @@ export class HaScriptTrace extends LitElement {
           align-items: center;
           justify-content: center;
           height: var(--header-height);
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;

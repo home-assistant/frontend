@@ -1,17 +1,17 @@
-import type { PropertyValues } from "lit";
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
-import { documentationUrl } from "../../util/documentation-url";
-import "../ha-code-editor";
-import "../ha-input-helper-text";
-import "../ha-alert";
-import type { RenderTemplateResult } from "../../data/ws-templates";
-import { subscribeRenderTemplate } from "../../data/ws-templates";
 import { debounce } from "../../common/util/debounce";
 import type { TemplateSelector } from "../../data/selector";
+import type { RenderTemplateResult } from "../../data/ws-templates";
+import { subscribeRenderTemplate } from "../../data/ws-templates";
+import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
+import "../ha-alert";
+import "../ha-code-editor";
+import "../ha-input-helper-text";
 
 const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
@@ -218,7 +218,7 @@ ${typeof this._templateResult.result === "object"
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       clear: both;
       white-space: pre-wrap;
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
       padding: var(--ha-space-2);
       margin-top: var(--ha-space-3);
       margin-bottom: 0;

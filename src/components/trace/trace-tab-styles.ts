@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const traceTabStyles = css`
   .tabs {
-    background-color: var(--primary-background-color);
+    background-color: var(--ha-color-surface-low);
     border-top: 1px solid var(--divider-color);
     border-bottom: 1px solid var(--divider-color);
     display: flex;
@@ -35,6 +35,6 @@ export const traceTabStyles = css`
 
   .tabs > *:focus,
   .tabs > *:hover {
-    background: var(--secondary-background-color);
+    background: var(--ha-color-surface-lower);
   }
 `;

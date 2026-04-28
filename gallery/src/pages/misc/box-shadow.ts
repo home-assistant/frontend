@@ -59,7 +59,7 @@ export class DemoMiscBoxShadow extends LitElement {
     .light,
     .dark {
       flex: 1;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       border-radius: 16px;
       padding: 32px;
     }

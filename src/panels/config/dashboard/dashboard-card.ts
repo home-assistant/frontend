@@ -57,7 +57,7 @@ export class DashboardCard extends LitElement {
       flex-direction: row;
       justify-content: space-between;
       border-radius: var(--ha-border-radius-lg);
-      background: var(--primary-background-color, #fafafa);
+      background: var(--ha-color-surface-low, #fafafa);
       cursor: pointer;
       position: relative;
       overflow: hidden;

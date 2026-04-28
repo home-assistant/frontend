@@ -222,7 +222,7 @@ export class HaMoreInfoFavorites extends LitElement {
       width: 20px;
       height: 20px;
       outline: none;
-      background-color: var(--secondary-background-color);
+      background-color: var(--ha-color-surface-lower);
       padding: 0;
       border-radius: var(--ha-border-radius-md);
       border: none;

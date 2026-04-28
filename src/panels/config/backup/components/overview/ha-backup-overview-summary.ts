@@ -370,7 +370,7 @@ class HaBackupOverviewBackups extends LitElement {
           background: linear-gradient(
               to right,
               var(--card-background-color) 8%,
-              var(--secondary-background-color) 18%,
+              var(--ha-color-surface-lower) 18%,
               var(--card-background-color) 33%
             )
             0% 0% / 936px 104px;

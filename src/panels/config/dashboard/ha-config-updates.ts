@@ -166,7 +166,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     return [
       css`
         .skipped {
-          background: var(--secondary-background-color);
+          background: var(--ha-color-surface-lower);
         }
         ha-md-list-item {
           --md-list-item-leading-icon-size: 40px;

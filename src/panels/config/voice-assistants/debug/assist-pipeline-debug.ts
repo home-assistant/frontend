@@ -3,27 +3,27 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import type {
-  PipelineRunEvent,
   AssistRunListing,
+  PipelineRunEvent,
 } from "../../../../data/assist_pipeline";
 import {
   getAssistPipelineRun,
   listAssistPipelineRuns,
 } from "../../../../data/assist_pipeline";
+import type { ChatLog } from "../../../../data/chat_log";
+import { subscribeChatLog } from "../../../../data/chat_log";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../types";
 import "./assist-render-pipeline-events";
-import type { ChatLog } from "../../../../data/chat_log";
-import { subscribeChatLog } from "../../../../data/chat_log";
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends LitElement {
@@ -257,7 +257,7 @@ export class AssistPipelineDebug extends LitElement {
         align-items: center;
         justify-content: center;
         height: var(--header-height);
-        background-color: var(--primary-background-color);
+        background-color: var(--ha-color-surface-low);
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;

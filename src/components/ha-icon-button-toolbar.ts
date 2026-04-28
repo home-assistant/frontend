@@ -82,7 +82,7 @@ export class HaIconButtonToolbar extends LitElement {
       flex-direction: row-reverse;
       background-color: var(
         --icon-button-toolbar-color,
-        var(--secondary-background-color, whitesmoke)
+        var(--ha-color-surface-lower, whitesmoke)
       );
       --icon-button-toolbar-height: 32px;
       --icon-button-toolbar-button: calc(

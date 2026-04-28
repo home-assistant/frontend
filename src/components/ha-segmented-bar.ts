@@ -161,7 +161,7 @@ class HaSegmentedBar extends LitElement {
       margin: 2px 0;
       background-color: var(
         --ha-bar-background-color,
-        var(--secondary-background-color)
+        var(--ha-color-surface-lower)
       );
     }
     .bar div {

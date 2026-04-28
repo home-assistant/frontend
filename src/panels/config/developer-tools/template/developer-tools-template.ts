@@ -324,7 +324,7 @@ ${type === "object"
           -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           clear: both;
           white-space: pre-wrap;
-          background-color: var(--secondary-background-color);
+          background-color: var(--ha-color-surface-lower);
           padding: var(--ha-space-2);
           margin-top: 0;
           margin-bottom: 0;

@@ -1,12 +1,12 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import type { HomeAssistant } from "../../../src/types";
+import "../ha-demo-options";
 import "./demo-card";
 import type { DemoCardConfig } from "./demo-card";
-import "../ha-demo-options";
 
 @customElement("demo-cards")
 class DemoCards extends LitElement {
@@ -67,7 +67,7 @@ class DemoCards extends LitElement {
       margin-right: 16px;
     }
     #container {
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
     }
   `;
 }

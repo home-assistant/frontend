@@ -2,9 +2,9 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { goBack } from "../common/navigate";
-import "../components/ha-spinner";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
+import "../components/ha-spinner";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -60,7 +60,7 @@ class HassLoadingScreen extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
         }
         .toolbar {
           display: flex;

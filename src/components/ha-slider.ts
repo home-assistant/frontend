@@ -29,7 +29,7 @@ export class HaSlider extends Slider {
           );
           --wa-tooltip-background-color: var(
             --ha-tooltip-background-color,
-            var(--secondary-background-color)
+            var(--ha-color-surface-lower)
           );
           --wa-tooltip-content-color: var(
             --ha-tooltip-text-color,

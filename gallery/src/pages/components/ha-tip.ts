@@ -1,9 +1,9 @@
-import type { TemplateResult, PropertyValues } from "lit";
-import { html, css, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-tip";
-import "../../../../src/components/ha-card";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-tip";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 
 const tips: (string | TemplateResult)[] = [
@@ -57,7 +57,7 @@ export class DemoHaTip extends LitElement {
     .dark,
     .light {
       display: block;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
       padding: 0 50px;
     }
     ha-tip {

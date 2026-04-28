@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../layouts/hass-error-screen";
@@ -54,7 +54,7 @@ class HaPanelIframe extends LitElement {
       width: 100%;
       position: absolute;
       height: 100%;
-      background-color: var(--primary-background-color);
+      background-color: var(--ha-color-surface-low);
     }
   `;
 }

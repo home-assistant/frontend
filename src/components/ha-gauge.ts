@@ -253,7 +253,7 @@ export class HaGauge extends LitElement {
 
     .levels-base {
       fill: none;
-      stroke: var(--primary-background-color);
+      stroke: var(--ha-color-surface-low);
       stroke-width: 12;
       stroke-linecap: butt;
     }

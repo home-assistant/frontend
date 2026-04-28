@@ -14,5 +14,5 @@ export const demoThemeTeachingbirds = () => ({
   "secondary-text-color": "#389638",
   "disabled-text-color": "#545454",
   "paper-grey-200": "#191919",
-  "label-badge-background-color": "var(--secondary-background-color)",
+  "label-badge-background-color": "var(--ha-color-surface-lower)",
 });

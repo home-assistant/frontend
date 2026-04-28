@@ -5,10 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import { downloadEmergencyKit } from "../../../../data/backup";
@@ -137,7 +137,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
         }
         .encryption-key {
           border: 1px solid var(--divider-color);
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           border-radius: var(--ha-border-radius-md);
           padding: 16px;
           display: flex;

@@ -490,7 +490,7 @@ export class HuiDialogEditCard
         .element-preview {
           position: relative;
           height: max-content;
-          background: var(--primary-background-color);
+          background: var(--ha-color-surface-low);
           padding: 4px;
           border-radius: var(--ha-border-radius-sm);
         }
