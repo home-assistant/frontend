@@ -116,8 +116,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       parts = this.hass.formatEntityStateToParts(stateObj);
     }
     const valueToDisplay = parts.find((part) => part.type === "value")?.value;
+    const value = this._config.attribute
+      ? stateObj.attributes[this._config.attribute]
+      : stateObj.state;
 
-    if (Number.isNaN(valueToDisplay)) {
+    if (isNaN(value)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -131,7 +134,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
-    const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
+    const unit =
+      computeEntityUnitDisplay(this.hass, stateObj, this._config) ?? "";
 
     return html`
       <ha-card
@@ -152,11 +156,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${valueToDisplay}
+          .value=${value}
+          .valueText=${valueToDisplay}
           .locale=${this.hass!.locale}
           .label=${unit}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(Number(valueToDisplay)),
+            "--gauge-color": this._computeSeverity(Number(value)),
           })}
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
