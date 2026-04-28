@@ -1,7 +1,11 @@
 import { mdiPlus, mdiTag } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import type {
+  TemplateResult,
+  html,
+  LitElement,
+  type PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -45,6 +49,19 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   @state() private _categories?: CategoryRegistryEntry[];
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingCategoryId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      this._pendingCategoryId &&
+      changedProperties.has("_categories") &&
+      this._categories?.some((c) => c.category_id === this._pendingCategoryId)
+    ) {
+      this._setValue(this._pendingCategoryId);
+      this._pendingCategoryId = undefined;
+    }
+  }
 
   protected hassSubscribeRequiredHostProps = ["scope"];
 
@@ -222,7 +239,15 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
             this.scope!,
             values
           );
-          this._setValue(category.category_id);
+          if (
+            this._categories?.some(
+              (c) => c.category_id === category.category_id
+            )
+          ) {
+            this._setValue(category.category_id);
+          } else {
+            this._pendingCategoryId = category.category_id;
+          }
           return category;
         },
       });
