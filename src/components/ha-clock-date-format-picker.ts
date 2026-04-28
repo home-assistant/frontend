@@ -1,11 +1,13 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
 import { resolveTimeZone } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
+import { configContext, internationalizationContext } from "../data/context";
 import {
   CLOCK_CARD_DATE_PARTS,
   formatClockCardDate,
@@ -91,6 +93,14 @@ export class HaClockDateFormatPicker extends LitElement {
 
   @property() public helper?: string;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
   @query("ha-generic-picker", true) private _picker?: HaGenericPicker;
 
   private _editIndex?: number;
@@ -98,6 +108,7 @@ export class HaClockDateFormatPicker extends LitElement {
   protected render() {
     const value = this._value;
     const valueItems = this._getValueItems(value);
+    const sections = this._buildSections();
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -106,8 +117,8 @@ export class HaClockDateFormatPicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
-        .sections=${this._getSections(this.hass.locale.language)}
-        .getItems=${this._getItems}
+        .sections=${this._getSectionHeaders(sections)}
+        .getItems=${this._getItems(sections)}
         @value-changed=${this._pickerValueChanged}
       >
         <div slot="field" class="container">
@@ -122,7 +133,7 @@ export class HaClockDateFormatPicker extends LitElement {
               ${repeat(
                 valueItems,
                 (entry: ClockDatePartValueItem) => entry.key,
-                ({ item, idx }) => this._renderValueChip(item, idx)
+                ({ item, idx }) => this._renderValueChip(item, idx, sections)
               )}
               ${this.disabled
                 ? nothing
@@ -130,7 +141,7 @@ export class HaClockDateFormatPicker extends LitElement {
                     <ha-assist-chip
                       @click=${this._addItem}
                       .disabled=${this.disabled}
-                      label=${this.hass.localize("ui.common.add")}
+                      label=${this._i18n.localize("ui.common.add")}
                       class="add"
                     >
                       <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -171,8 +182,12 @@ export class HaClockDateFormatPicker extends LitElement {
     }
   );
 
-  private _renderValueChip(item: string, idx: number) {
-    const label = this._getItemLabel(item, this.hass.locale.language);
+  private _renderValueChip(
+    item: string,
+    idx: number,
+    sections: ClockDatePartSectionData[]
+  ) {
+    const label = this._getItemLabel(item, sections);
     const isValid = !!label;
 
     return html`
@@ -229,129 +244,130 @@ export class HaClockDateFormatPicker extends LitElement {
     value.length === 0 ? undefined : value
   );
 
-  private _buildSections = memoizeOne(
-    (language: string): ClockDatePartSectionData[] => {
-      const itemsBySection: Record<ClockDatePartSection, PickerComboBoxItem[]> =
-        {
-          weekday: [],
-          day: [],
-          month: [],
-          year: [],
-          separator: [],
-        };
+  private _buildSections(): ClockDatePartSectionData[] {
+    const itemsBySection: Record<ClockDatePartSection, PickerComboBoxItem[]> = {
+      weekday: [],
+      day: [],
+      month: [],
+      year: [],
+      separator: [],
+    };
 
-      const previewDate = new Date();
-      const previewTimeZone = resolveTimeZone(
-        this.hass.locale.time_zone,
-        this.hass.config.time_zone
-      );
+    const previewDate = new Date();
+    const previewTimeZone = resolveTimeZone(
+      this._i18n.locale.time_zone,
+      this._hassConfig.config.time_zone
+    );
 
-      CLOCK_CARD_DATE_PARTS.forEach((part) => {
-        const section = getClockDatePartSection(part);
-        const label =
-          this.hass.localize(
-            `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
-          ) ?? part;
+    CLOCK_CARD_DATE_PARTS.forEach((part) => {
+      const section = getClockDatePartSection(part);
+      const label =
+        this._i18n.localize(
+          `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
+        ) ?? part;
 
-        const secondary =
-          section === "separator"
-            ? CLOCK_DATE_SEPARATOR_VALUES[part as ClockDateSeparatorPart]
-            : formatClockCardDate(
-                previewDate,
-                { parts: [part] },
-                language,
-                previewTimeZone
-              );
+      const secondary =
+        section === "separator"
+          ? CLOCK_DATE_SEPARATOR_VALUES[part as ClockDateSeparatorPart]
+          : formatClockCardDate(
+              previewDate,
+              { parts: [part] },
+              this._i18n.locale.language,
+              previewTimeZone
+            );
 
-        itemsBySection[section].push({
-          id: part,
-          primary: label,
-          secondary,
-          sorting_label: label,
-        });
+      itemsBySection[section].push({
+        id: part,
+        primary: label,
+        secondary,
+        sorting_label: label,
       });
-
-      return CLOCK_DATE_PART_SECTION_ORDER.map((section) => ({
-        id: section,
-        title:
-          this.hass.localize(
-            `ui.panel.lovelace.editor.card.clock.date.sections.${section}`
-          ) ?? section,
-        items: itemsBySection[section],
-      })).filter((section) => section.items.length > 0);
-    }
-  );
-
-  private _getSections = memoizeOne(
-    (_language: string): { id: string; label: string }[] =>
-      this._buildSections(_language).map((section) => ({
-        id: section.id,
-        label: section.title,
-      }))
-  );
-
-  private _getItems = (
-    searchString?: string,
-    section?: string
-  ): (PickerComboBoxItem | string)[] => {
-    const normalizedSearch = searchString?.trim().toLowerCase();
-
-    const sections = this._buildSections(this.hass.locale.language)
-      .map((sectionData) => {
-        if (!normalizedSearch) {
-          return sectionData;
-        }
-
-        return {
-          ...sectionData,
-          items: sectionData.items.filter(
-            (item) =>
-              item.primary.toLowerCase().includes(normalizedSearch) ||
-              item.secondary?.toLowerCase().includes(normalizedSearch) ||
-              item.id.toLowerCase().includes(normalizedSearch)
-          ),
-        };
-      })
-      .filter((sectionData) => sectionData.items.length > 0);
-
-    if (section) {
-      return (
-        sections.find((candidate) => candidate.id === section)?.items || []
-      );
-    }
-
-    const groupedItems: (PickerComboBoxItem | string)[] = [];
-
-    sections.forEach((sectionData) => {
-      groupedItems.push(sectionData.title, ...sectionData.items);
     });
 
-    return groupedItems;
-  };
+    return CLOCK_DATE_PART_SECTION_ORDER.map((section) => ({
+      id: section,
+      title:
+        this._i18n.localize(
+          `ui.panel.lovelace.editor.card.clock.date.sections.${section}`
+        ) ?? section,
+      items: itemsBySection[section],
+    })).filter((section) => section.items.length > 0);
+  }
 
-  private _getItemLabel = memoizeOne(
-    (value: string, language: string): string | undefined => {
-      const sections = this._buildSections(language);
+  private _getSectionHeaders(
+    sections: ClockDatePartSectionData[]
+  ): { id: string; label: string }[] {
+    return sections.map((section) => ({
+      id: section.id,
+      label: section.title,
+    }));
+  }
 
-      for (const section of sections) {
-        const item = section.items.find((candidate) => candidate.id === value);
+  private _getItems = memoizeOne(
+    (sections: ClockDatePartSectionData[]) =>
+      (
+        searchString?: string,
+        section?: string
+      ): (PickerComboBoxItem | string)[] => {
+        const normalizedSearch = searchString?.trim().toLowerCase();
 
-        if (item) {
-          if (section.id === "separator") {
-            if (value === "separator-new-line") {
-              return item.primary;
+        const filteredSections = sections
+          .map((sectionData) => {
+            if (!normalizedSearch) {
+              return sectionData;
             }
 
-            return item.secondary ?? item.primary;
+            return {
+              ...sectionData,
+              items: sectionData.items.filter(
+                (item) =>
+                  item.primary.toLowerCase().includes(normalizedSearch) ||
+                  item.secondary?.toLowerCase().includes(normalizedSearch) ||
+                  item.id.toLowerCase().includes(normalizedSearch)
+              ),
+            };
+          })
+          .filter((sectionData) => sectionData.items.length > 0);
+
+        if (section) {
+          return (
+            filteredSections.find((candidate) => candidate.id === section)
+              ?.items || []
+          );
+        }
+
+        const groupedItems: (PickerComboBoxItem | string)[] = [];
+
+        filteredSections.forEach((sectionData) => {
+          groupedItems.push(sectionData.title, ...sectionData.items);
+        });
+
+        return groupedItems;
+      }
+  );
+
+  private _getItemLabel(
+    value: string,
+    sections: ClockDatePartSectionData[]
+  ): string | undefined {
+    for (const section of sections) {
+      const item = section.items.find((candidate) => candidate.id === value);
+
+      if (item) {
+        if (section.id === "separator") {
+          if (value === "separator-new-line") {
+            return item.primary;
           }
 
-          return `${item.secondary} [${item.primary} ${section.title}]`;
+          return item.secondary ?? item.primary;
         }
-      }
 
-      return undefined;
+        return `${item.secondary} [${item.primary} ${section.title}]`;
+      }
     }
-  );
+
+    return undefined;
+  }
 
   private _getPickerValue(): string | undefined {
     if (this._editIndex != null) {
