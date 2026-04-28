@@ -495,12 +495,15 @@
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
