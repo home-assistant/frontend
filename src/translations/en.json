@@ -3822,6 +3822,7 @@
             "templates": {
               "title": "Template",
               "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "about": "About templates...",
               "editor": "Template editor",
               "result": "Result",
               "reset": "Reset to demo template",
