@@ -22,6 +22,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { filterXSS } from "../../common/util/xss";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -311,12 +312,50 @@ export class StateHistoryChartLine extends LitElement {
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
               const stateObj = this.hass.states[item.entityId];
+              let value: string | undefined;
+
+              if (stateObj) {
+                // For climate temperature datasets, show temperature values
+                const datasetId = item.dataset.id as string;
+                if (
+                  datasetId?.endsWith("-current_temperature") ||
+                  datasetId?.endsWith("-target_temperature") ||
+                  datasetId?.endsWith("-target_temperature_mode") ||
+                  datasetId?.endsWith("-target_temperature_mode_low")
+                ) {
+                  let attribute: string | undefined;
+                  if (datasetId.endsWith("-current_temperature")) {
+                    attribute = "current_temperature";
+                  } else if (
+                    datasetId.endsWith("-target_temperature_mode_low")
+                  ) {
+                    attribute = "target_temp_low";
+                  } else if (datasetId.endsWith("-target_temperature_mode")) {
+                    attribute = "target_temp_high";
+                  } else {
+                    attribute = "temperature";
+                  }
+                  // Use the helper to format temperature with proper unit
+                  value = computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    attribute
+                  );
+                }
+
+                // Default for non-temperature datasets / missing attribute
+                if (value === undefined) {
+                  value = this.hass.formatEntityState(stateObj);
+                }
+              }
+
               return {
                 id: item.dataset.id as string,
                 name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
+                value: value,
               };
             }),
         },
