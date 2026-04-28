@@ -342,16 +342,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
       }
 
-      // Add to cache
-      if (integrationsToLoad.length) {
-        alreadyLoaded.integrations.push(...integrationsToLoad);
-      } else {
-        alreadyLoaded.setup = true;
-        if (configFlow) {
-          alreadyLoaded.configFlow = true;
-        }
-      }
-
       const resources = await getHassTranslations(
         this.hass!,
         language,
@@ -363,6 +353,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Ignore the response if user switched languages before we got response
       if (this.hass!.language !== language) {
         return this.hass!.localize;
+      }
+
+      // Add to cache only after successful fetch and language check
+      if (integrationsToLoad.length) {
+        alreadyLoaded.integrations.push(...integrationsToLoad);
+      } else {
+        alreadyLoaded.setup = true;
+        if (configFlow) {
+          alreadyLoaded.configFlow = true;
+        }
       }
 
       return this._updateResources(language, resources);
@@ -447,17 +447,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return (this.hass ?? this._pendingHass).localize!;
       }
 
-      const resources = {
-        [language]: {
-          ...this.__resources[language],
-          ...data,
-        },
-      };
+      // Merge directly into current resources to avoid losing concurrent updates
+      if (!this.__resources[language]) {
+        this.__resources[language] = {};
+      }
+      Object.assign(this.__resources[language], data);
 
-      // Update resources immediately, so when a new update comes in we don't miss values
-      this.__resources = resources;
-
-      const localize = await computeLocalize(this, language, resources);
+      const localize = await computeLocalize(this, language, this.__resources);
 
       if (
         updateResourcesIteration !== i ||

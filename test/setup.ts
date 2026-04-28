@@ -6,4 +6,5 @@ beforeAll(() => {
 
   global.__DEMO__ = false;
   global.__DEV__ = false;
+  global.__BACKWARDS_COMPAT__ = false;
 });
