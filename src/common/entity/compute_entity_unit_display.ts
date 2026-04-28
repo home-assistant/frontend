@@ -9,7 +9,7 @@ interface EntityUnitStubConfig {
 }
 
 /**
- * Computes the display unit for an entity in Frontend elements.
+ * Computes the display unit for an entity.
  *
  * @param hass - Home Assistant instance
  * @param stateObj - Entity state object
