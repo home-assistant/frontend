@@ -280,7 +280,10 @@ export class HaSerialPortSelector extends LitElement {
               : port.description || port.manufacturer;
 
           // Prefer the interface description if one exists
-          if (port.interface_description) {
+          if (
+            port.interface_description &&
+            port.interface_description !== port.description
+          ) {
             primary = port.interface_description;
             description = productManufacturer || undefined;
           } else {
