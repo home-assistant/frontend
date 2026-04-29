@@ -421,21 +421,32 @@ class DialogAddAutomationElement
       getDomain: (key: string) => string
     ): { active: Set<string>; byEntityDomain: Map<string, Set<string>> } => {
       const active = new Set<string>();
-      // Group all entity filters by system domain
+      // Group all entity filters by domain
       const domainFilters: Record<
         string,
         Parameters<typeof filterSelectorEntities>[0][]
       > = {};
-      // Also collect which entity domains each system domain targets
-      const entityDomainsPerSystemDomain: Record<string, Set<string>> = {};
+      // Also collect which entity domains each domain targets
+      const entityDomainsPerDomain: Record<string, Set<string>> = {};
       for (const [key, desc] of Object.entries(descriptions)) {
         const domain = getDomain(key);
-        if (manifests[domain]?.integration_type !== "system") {
+        const integrationType = manifests[domain]?.integration_type;
+        if (integrationType !== "system" && integrationType !== "entity") {
+          continue;
+        }
+        // For entity-type domains that have their own entities, the normal
+        // domainUsed check handles them — only process those without entities.
+        if (
+          integrationType === "entity" &&
+          Object.keys(this.hass.states).some(
+            (id) => computeDomain(id) === domain
+          )
+        ) {
           continue;
         }
         if (!domainFilters[domain]) {
           domainFilters[domain] = [];
-          entityDomainsPerSystemDomain[domain] = new Set();
+          entityDomainsPerDomain[domain] = new Set();
         }
         const entityFilters = ensureArray(desc.target?.entity);
         if (entityFilters) {
@@ -446,7 +457,7 @@ class DialogAddAutomationElement
             domainFilters[domain].push(...filters);
             for (const filter of filters) {
               for (const entityDomain of ensureArray(filter.domain) ?? []) {
-                entityDomainsPerSystemDomain[domain].add(entityDomain);
+                entityDomainsPerDomain[domain].add(entityDomain);
               }
             }
           }
@@ -463,10 +474,10 @@ class DialogAddAutomationElement
           }
         }
       }
-      // Build reverse map: entity domain → set of system domains that cover it
+      // Build reverse map: entity domain → set of domains that cover it
       const byEntityDomain = new Map<string, Set<string>>();
       for (const [systemDomain, entityDomains] of Object.entries(
-        entityDomainsPerSystemDomain
+        entityDomainsPerDomain
       )) {
         for (const entityDomain of entityDomains) {
           if (!byEntityDomain.has(entityDomain)) {
@@ -1358,8 +1369,8 @@ class DialogAddAutomationElement
       return (
         ENTITY_DOMAINS_MAIN.has(domain) ||
         (manifest?.integration_type === "entity" &&
-          domainUsed &&
-          !ENTITY_DOMAINS_OTHER.has(domain)) ||
+          !ENTITY_DOMAINS_OTHER.has(domain) &&
+          (domainUsed || (this._systemDomains?.active.has(domain) ?? false))) ||
         (manifest?.integration_type === "system" &&
           (this._systemDomains?.active.has(domain) ?? false))
       );
@@ -1371,7 +1382,9 @@ class DialogAddAutomationElement
     return (
       !ENTITY_DOMAINS_MAIN.has(domain) &&
       (ENTITY_DOMAINS_OTHER.has(domain) ||
-        (!domainUsed && manifest?.integration_type === "entity") ||
+        (!domainUsed &&
+          manifest?.integration_type === "entity" &&
+          !(this._systemDomains?.active.has(domain) ?? false)) ||
         (manifest?.integration_type === "system" &&
           !(this._systemDomains?.active.has(domain) ?? false)) ||
         !["helper", "entity", "system"].includes(
@@ -1624,7 +1637,9 @@ class DialogAddAutomationElement
     if (
       ENTITY_DOMAINS_MAIN.has(domain) ||
       (this._manifests?.[domain]?.integration_type === "entity" &&
-        !ENTITY_DOMAINS_OTHER.has(domain))
+        !ENTITY_DOMAINS_OTHER.has(domain) &&
+        (this._domains?.has(domain) ||
+          (this._systemDomains?.active.has(domain) ?? false)))
     ) {
       return "dynamicGroups";
     }

@@ -1,7 +1,7 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiShape } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
@@ -128,6 +128,20 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingEntityId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      this._pendingEntityId &&
+      changedProperties.has("hass") &&
+      this.hass.states !== changedProperties.get("hass")?.states &&
+      this.hass.states[this._pendingEntityId]
+    ) {
+      this._setValue(this._pendingEntityId);
+      this._pendingEntityId = undefined;
+    }
+  }
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
@@ -399,7 +413,13 @@ export class HaEntityPicker extends LitElement {
       showHelperDetailDialog(this, {
         domain,
         dialogClosedCallback: (item) => {
-          if (item.entityId) this._setValue(item.entityId);
+          if (item.entityId) {
+            if (this.hass.states[item.entityId]) {
+              this._setValue(item.entityId);
+            } else {
+              this._pendingEntityId = item.entityId;
+            }
+          }
         },
       });
       return;

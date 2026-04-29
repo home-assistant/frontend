@@ -5,7 +5,7 @@ import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";

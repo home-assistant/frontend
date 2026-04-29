@@ -250,6 +250,7 @@ export interface HourlyForecastCardFeatureConfig {
   show_temperature?: boolean;
   show_precipitation?: boolean;
   precipitation_type?: ForecastPrecipitationType;
+  color?: string;
 }
 
 export interface DailyForecastCardFeatureConfig {
@@ -257,8 +258,10 @@ export interface DailyForecastCardFeatureConfig {
   forecast_type?: "daily" | "twice_daily";
   days_to_show?: number;
   show_temperature?: boolean;
+  show_current_temperature?: boolean;
   show_precipitation?: boolean;
   precipitation_type?: ForecastPrecipitationType;
+  color?: string;
 }
 
 export const AREA_CONTROL_DOMAINS = [
