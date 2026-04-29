@@ -3868,7 +3868,7 @@
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
               "domain": "Domain",
-              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, {search} to search, and {fullscreen} to toggle fullscreen."
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",

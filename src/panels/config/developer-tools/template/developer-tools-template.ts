@@ -164,8 +164,6 @@ class HaPanelDevTemplate extends LitElement {
               "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
               {
                 autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
-                search: html`<kbd>Ctrl</kbd>+<kbd>F</kbd>`,
-                fullscreen: html`<kbd>F11</kbd>`,
               }
             )}
           </ha-tip>
