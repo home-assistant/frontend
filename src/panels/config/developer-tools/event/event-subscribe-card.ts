@@ -44,11 +44,10 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _viewedEventId?: number;
-
   // Tracks which event the user is currently viewing. Stored by id rather
   // than buffer index so the view survives the buffer shifting as new events
   // arrive. New events never auto-advance the view; the user must navigate.
+  @state() private _viewedEventId?: number;
 
   private _eventCount = 0;
 
@@ -152,15 +151,11 @@ class EventSubscribeCard extends LitElement {
       `;
     }
     const bufferTotal = this._events.length;
-    // Find the viewed event. If it has aged out of the buffer (or none is
-    // tracked yet), fall back to the oldest available event so the view
-    // stays close to where the user was rather than jumping around.
     const index = this._resolveViewedIndex();
     const event = this._events[index];
     const position = event.id + 1;
-    // Counter shows the viewed event's slot within the buffer (1 = newest
-    // buffered, bufferTotal = oldest). Stays stable as the buffer fills,
-    // even though the absolute event number in the title keeps growing.
+    // Slot within the buffer (1 = newest buffered, bufferTotal = oldest);
+    // stays stable as the buffer fills.
     const bufferPosition = bufferTotal - index;
     const atNewest = index === 0;
     // Buffer has rolled over once the oldest buffered event isn't event 1.
@@ -247,51 +242,49 @@ class EventSubscribeCard extends LitElement {
       return 0;
     }
     const found = this._events.findIndex((e) => e.id === this._viewedEventId);
-    // Viewed event has aged out of the buffer: fall back to the oldest
-    // available event (closest to where the user was viewing).
+    // Fall back to the oldest available event when the viewed one has aged out.
     return found === -1 ? this._events.length - 1 : found;
   }
 
-  private _showOldest(): void {
+  private _showOldest() {
     if (!this._events.length) {
       return;
     }
     this._viewedEventId = this._events[this._events.length - 1].id;
   }
 
-  private _showOlder(): void {
+  private _showOlder() {
     if (!this._events.length) {
       return;
     }
-    const current = this._resolveViewedIndex();
-    const next = Math.min(current + 1, this._events.length - 1);
+    const next = Math.min(
+      this._resolveViewedIndex() + 1,
+      this._events.length - 1
+    );
     this._viewedEventId = this._events[next].id;
   }
 
-  private _showNewest(): void {
+  private _showNewest() {
     if (!this._events.length) {
       return;
     }
-    // Jump to the current newest event. New events arriving after this will
-    // not auto-advance the view; the user must press this button again.
     this._viewedEventId = this._events[0].id;
   }
 
-  private _showNewer(): void {
+  private _showNewer() {
     if (!this._events.length) {
       return;
     }
-    const current = this._resolveViewedIndex();
-    const next = Math.max(current - 1, 0);
+    const next = Math.max(this._resolveViewedIndex() - 1, 0);
     this._viewedEventId = this._events[next].id;
   }
 
-  private _valueChanged(ev: InputEvent): void {
+  private _valueChanged(ev: InputEvent) {
     this._eventType = (ev.target as HaInput).value ?? "";
     this._error = undefined;
   }
 
-  private _filterChanged(ev: InputEvent): void {
+  private _filterChanged(ev: InputEvent) {
     this._eventFilter = (ev.target as HaInput).value ?? "";
   }
 
@@ -356,28 +349,27 @@ class EventSubscribeCard extends LitElement {
               },
               ...tail,
             ];
-            // Land on the very first event (position 1, id 0) and stay
-            // there until the user navigates.
             if (this._viewedEventId === undefined) {
               this._viewedEventId = id;
             }
           }, this._eventType);
-      } catch (error: any) {
+      } catch (error) {
         this._error = this.hass!.localize(
           "ui.panel.config.developer-tools.tabs.events.subscribe_failed",
           {
             error:
-              error.message ??
-              this.hass!.localize(
-                "ui.panel.config.developer-tools.tabs.events.unknown_error"
-              ),
+              error instanceof Error
+                ? error.message
+                : this.hass!.localize(
+                    "ui.panel.config.developer-tools.tabs.events.unknown_error"
+                  ),
           }
         );
       }
     }
   }
 
-  private _clearEvents(): void {
+  private _clearEvents() {
     this._events = [];
     this._eventCount = 0;
     this._ignoredEventsCount = 0;
