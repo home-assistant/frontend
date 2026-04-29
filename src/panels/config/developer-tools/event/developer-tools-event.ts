@@ -158,6 +158,8 @@ class HaPanelDevEvent extends LitElement {
           padding: var(--ha-space-4);
           max-width: 1200px;
           margin: auto;
+          height: 100%;
+          box-sizing: border-box;
         }
 
         :host {
@@ -165,10 +167,14 @@ class HaPanelDevEvent extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
+          height: 100%;
         }
 
         .flex {
           min-width: 0;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
         }
 
         .inputs {
@@ -180,7 +186,10 @@ class HaPanelDevEvent extends LitElement {
         }
 
         event-subscribe-card {
-          display: block;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          flex: 1;
           margin-top: var(--ha-space-4);
           direction: var(--direction);
         }
