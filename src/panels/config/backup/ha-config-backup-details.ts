@@ -17,7 +17,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";

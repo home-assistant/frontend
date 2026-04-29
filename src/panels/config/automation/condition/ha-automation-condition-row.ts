@@ -20,7 +20,7 @@ import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -32,8 +32,9 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import "../../../../components/ha-automation-row";
-import type { HaAutomationRow } from "../../../../components/ha-automation-row";
+import "../../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -144,6 +145,8 @@ export default class HaAutomationConditionRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  private _testingTimeout?: number;
+
   get selected() {
     return this._selected;
   }
@@ -162,7 +165,7 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
-  private _renderRow() {
+  private _renderRow(row = true) {
     const descriptionHasTarget =
       "target" in (this.conditionDescriptions[this.condition.condition] || {});
 
@@ -187,6 +190,19 @@ export default class HaAutomationConditionRow extends LitElement {
           ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
           : nothing}
       </h3>
+      <ha-automation-row-event-chip
+        .show=${this._testing}
+        .variant=${this._testingResult ? "success" : "warning"}
+        .slot=${row ? "event" : ""}
+        class=${row ? "" : "event-chip"}
+        aria-live="polite"
+      >
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.conditions.testing_${
+            this._testingResult ? "pass" : "error"
+          }`
+        )}
+      </ha-automation-row-event-chip>
 
       <slot name="icons" slot="icons"></slot>
 
@@ -450,6 +466,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 this.condition.condition
               )}
               .sortSelected=${this.sortSelected}
+              .dim=${this._testing}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
@@ -459,24 +476,9 @@ export default class HaAutomationConditionRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow()}
+                ${this._renderRow(false)}
               </ha-expansion-panel>
             `}
-        <div
-          class="testing ${classMap({
-            active: this._testing,
-            pass: this._testingResult === true,
-            error: this._testingResult === false,
-          })}"
-        >
-          ${this._testingResult === undefined
-            ? nothing
-            : this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.testing_${
-                  this._testingResult ? "pass" : "error"
-                }`
-              )}
-        </div>
       </ha-card>
 
       ${this.optionsInSidebar &&
@@ -519,6 +521,13 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._testingTimeout !== undefined) {
+      clearTimeout(this._testingTimeout);
     }
   }
 
@@ -578,9 +587,14 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _testCondition = async () => {
-    if (this._testing) {
+    if (this._testing && this._testingTimeout === undefined) {
       return;
     }
+
+    if (this._testingTimeout !== undefined) {
+      clearTimeout(this._testingTimeout);
+    }
+
     this._testingResult = undefined;
     this._testing = true;
     const condition = this.condition;
@@ -637,7 +651,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
       this._testingResult = result.result;
     } finally {
-      setTimeout(() => {
+      this._testingTimeout = window.setTimeout(() => {
         this._testing = false;
       }, 2500);
     }
@@ -920,44 +934,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        .testing {
-          position: absolute;
-          top: 0px;
-          right: 0px;
-          left: 0px;
-          text-transform: uppercase;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-bold);
-          background-color: var(--divider-color, #e0e0e0);
-          color: var(--text-primary-color);
-          max-height: 0px;
-          overflow: hidden;
-          transition: max-height 0.3s;
-          text-align: center;
-          border-top-right-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          border-top-left-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-        }
-        .testing.active {
-          max-height: 100px;
-        }
-        .testing.error {
-          background-color: var(--accent-color);
-        }
-        .testing.pass {
-          background-color: var(--success-color);
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 

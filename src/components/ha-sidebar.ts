@@ -36,7 +36,7 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
-import "./ha-fade-in";
+import "./animation/ha-fade-in";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-md-list";
