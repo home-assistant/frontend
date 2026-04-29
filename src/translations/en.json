@@ -3802,7 +3802,8 @@
               "newer_event": "Newer event",
               "newest_event": "Newest event",
               "waiting_for_events": "Waiting for events…",
-              "subscribe_prompt": "Subscribe to an event type above to see events here."
+              "subscribe_prompt": "Subscribe to an event type above to see events here.",
+              "buffer_disclaimer": "Only the latest {count} events are kept in memory. Older events are discarded as new ones arrive."
             },
             "actions": {
               "title": "Actions",

@@ -3,6 +3,7 @@ import {
   mdiChevronDoubleRight,
   mdiChevronLeft,
   mdiChevronRight,
+  mdiInformationOutline,
 } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
@@ -13,10 +14,14 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
+
+const MAX_BUFFERED_EVENTS = 30;
 
 interface SubscribedEvent {
   id: number;
@@ -189,6 +194,17 @@ class EventSubscribeCard extends LitElement {
               }
             )}
             <span class="counter">(${position} / ${totalFired})</span>
+            <ha-svg-icon
+              id="buffer-info"
+              class="buffer-info"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+            <ha-tooltip for="buffer-info" placement="bottom">
+              ${this.hass!.localize(
+                "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
+                { count: MAX_BUFFERED_EVENTS }
+              )}
+            </ha-tooltip>
           </div>
           <ha-icon-button
             .path=${mdiChevronRight}
@@ -320,8 +336,8 @@ class EventSubscribeCard extends LitElement {
               return;
             }
             const tail =
-              this._events.length >= 30
-                ? this._events.slice(0, 29)
+              this._events.length >= MAX_BUFFERED_EVENTS
+                ? this._events.slice(0, MAX_BUFFERED_EVENTS - 1)
                 : this._events;
             const id = this._eventCount++;
             this._events = [
@@ -409,6 +425,12 @@ class EventSubscribeCard extends LitElement {
     .counter {
       color: var(--secondary-text-color);
       margin-left: var(--ha-space-2);
+    }
+    .buffer-info {
+      color: var(--secondary-text-color);
+      margin-left: var(--ha-space-1);
+      vertical-align: middle;
+      --mdc-icon-size: 16px;
     }
     ha-yaml-editor {
       display: flex;
