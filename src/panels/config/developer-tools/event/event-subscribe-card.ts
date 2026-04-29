@@ -406,8 +406,7 @@ class EventSubscribeCard extends LitElement {
     .events-card {
       display: flex;
       flex-direction: column;
-      min-height: 0;
-      flex: 1;
+      height: 620px;
       padding: var(--ha-space-2);
     }
     .events-toolbar {
@@ -452,6 +451,7 @@ class EventSubscribeCard extends LitElement {
       min-height: 0;
       flex: 1;
       margin-top: var(--ha-space-2);
+      --code-mirror-height: 100%;
     }
   `;
 }
