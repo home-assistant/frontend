@@ -18,7 +18,7 @@ import "./events-list";
 class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _eventType = "";
 
@@ -94,6 +94,7 @@ class HaPanelDevEvent extends LitElement {
 
           <event-subscribe-card
             .hass=${this.hass}
+            .narrow=${this.narrow}
             .selectedEventType=${this._selectedEventType}
           ></event-subscribe-card>
         </div>
@@ -170,11 +171,23 @@ class HaPanelDevEvent extends LitElement {
           height: 100%;
         }
 
+        :host([narrow]) {
+          height: auto;
+        }
+
+        :host([narrow]) .content {
+          height: auto;
+        }
+
         .flex {
           min-width: 0;
           min-height: 0;
           display: flex;
           flex-direction: column;
+        }
+
+        :host([narrow]) .flex {
+          min-height: auto;
         }
 
         .inputs {
@@ -192,6 +205,11 @@ class HaPanelDevEvent extends LitElement {
           flex: 1;
           margin-top: var(--ha-space-4);
           direction: var(--direction);
+        }
+
+        :host([narrow]) event-subscribe-card {
+          flex: none;
+          min-height: auto;
         }
 
         a {

@@ -32,6 +32,8 @@ interface SubscribedEvent {
 class EventSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @property({ attribute: false }) public selectedEventType = "";
 
   @state() private _eventType = "";
@@ -398,6 +400,10 @@ class EventSubscribeCard extends LitElement {
       flex-direction: column;
       height: 620px;
       padding: var(--ha-space-2);
+    }
+    :host([narrow]) .events-card {
+      height: auto;
+      min-height: 360px;
     }
     .events-toolbar {
       display: flex;
