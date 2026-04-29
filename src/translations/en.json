@@ -646,7 +646,7 @@
               },
               "all": {
                 "label": "All",
-                "description": "Is true when all targets matches the desired state"
+                "description": "Is true if all targets match the desired state"
               }
             }
           }
