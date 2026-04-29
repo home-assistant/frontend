@@ -60,7 +60,10 @@ import type {
 } from "../../../../data/automation";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context";
+import {
+  fullEntitiesContext,
+  manifestsContext,
+} from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type {
   Action,
@@ -70,6 +73,7 @@ import type {
   ServiceAction,
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
+import type { DomainManifestLookup } from "../../../../data/integration";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -192,6 +196,10 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: DomainManifestLookup;
+
   @state() private _running = false;
 
   @state() private _runResult?: {
@@ -298,7 +306,14 @@ export default class HaAutomationActionRow extends LitElement {
           `}
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeAction(this.hass, this._entityReg, this.action)
+          describeAction(
+            this.hass,
+            this._entityReg,
+            this.action,
+            undefined,
+            false,
+            this._manifests
+          )
         )}
         ${target !== undefined || (actionHasTarget && !this._isNew)
           ? this._renderTargets(target, actionHasTarget && !this._isNew)
@@ -842,7 +857,14 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(this.hass, this._entityReg, this.action, undefined, true)
+        describeAction(
+          this.hass,
+          this._entityReg,
+          this.action,
+          undefined,
+          true,
+          this._manifests
+        )
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),

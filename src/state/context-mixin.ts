@@ -20,6 +20,7 @@ import {
   labelsContext,
   localeContext,
   localizeContext,
+  manifestsContext,
   panelsContext,
   registriesContext,
   selectedThemeContext,
@@ -32,6 +33,7 @@ import {
 } from "../data/context";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
+import { fetchIntegrationManifestsCollection } from "../data/integration";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -185,6 +187,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
             { type: "config_entries/subscribe" }
           );
         },
+      }),
+      manifests: new LazyContextProvider(this, {
+        context: manifestsContext,
+        subscribeFn: fetchIntegrationManifestsCollection,
       }),
     };
 

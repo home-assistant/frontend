@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
@@ -15,6 +16,8 @@ import {
   type SidebarConfig,
   type TriggerSidebarConfig,
 } from "../../../data/automation";
+import { manifestsContext } from "../../../data/context";
+import type { DomainManifestLookup } from "../../../data/integration";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./sidebar/ha-automation-sidebar-action";
@@ -42,6 +45,10 @@ export default class HaAutomationSidebar extends LitElement {
   @state() private _yamlMode = false;
 
   @state() private _resizing = false;
+
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: DomainManifestLookup;
 
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
@@ -111,6 +118,7 @@ export default class HaAutomationSidebar extends LitElement {
           class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
+          .manifests=${this._manifests}
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
