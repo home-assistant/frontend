@@ -16,6 +16,10 @@ import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import {
+  getConfigEntries,
+  type ConfigEntry,
+} from "../../../data/config_entries";
 import type { EnergyData } from "../../../data/energy";
 import {
   computeConsumptionData,
@@ -34,7 +38,10 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
-import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
+import {
+  collapseBatteryEntities,
+  filterNeedsAttentionEntities,
+} from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -60,9 +67,15 @@ export class HuiHomeSummaryCard
 
   @state() private _energyData?: EnergyData;
 
+  @state() private _configEntryLookup?: Record<string, ConfigEntry>;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
+    if (this._config?.summary === "maintenance") {
+      this._loadConfigEntries();
+    }
+
     if (this._config?.summary !== "energy") {
       return [];
     }
@@ -83,6 +96,13 @@ export class HuiHomeSummaryCard
 
   public setConfig(config: HomeSummaryCard): void {
     this._config = config;
+  }
+
+  private async _loadConfigEntries(): Promise<void> {
+    const entries = await getConfigEntries(this.hass!);
+    this._configEntryLookup = Object.fromEntries(
+      entries.map((entry) => [entry.entry_id, entry])
+    );
   }
 
   public getCardSize(): number {
@@ -262,9 +282,10 @@ export class HuiHomeSummaryCard
           (filter) => generateEntityFilter(this.hass!, filter)
         );
 
-        const maintenanceEntities = findEntities(
-          allEntities,
-          maintenanceFilters
+        const maintenanceEntities = collapseBatteryEntities(
+          this.hass!,
+          findEntities(allEntities, maintenanceFilters),
+          this._configEntryLookup
         );
 
         const needsAttentionEntities = filterNeedsAttentionEntities(

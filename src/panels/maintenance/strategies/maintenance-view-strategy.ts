@@ -7,6 +7,10 @@ import {
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
+import {
+  getConfigEntries,
+  type ConfigEntry,
+} from "../../../data/config_entries";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -39,6 +43,60 @@ export const filterNeedsAttentionEntities = (
     const stateValue = parseFloat(hass.states[entityId]?.state ?? "");
     return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
   });
+
+/**
+ * For devices with battery entities from multiple integrations, keep only
+ * entities from the primary integration. The primary integration is
+ * determined by matching the device's primary config entry to its domain.
+ * Entities without a device pass through.
+ */
+export const collapseBatteryEntities = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  configEntryLookup?: Record<string, ConfigEntry>
+): string[] => {
+  if (!configEntryLookup) {
+    return entityIds;
+  }
+
+  // Group entities by device. Entities without a device pass through.
+  const byDevice: Record<string, string[]> = {};
+  const entitiesWithoutDevice: string[] = [];
+
+  for (const eid of entityIds) {
+    const deviceId = hass.entities[eid]?.device_id;
+    if (!deviceId) {
+      entitiesWithoutDevice.push(eid);
+    } else {
+      if (!byDevice[deviceId]) {
+        byDevice[deviceId] = [];
+      }
+      byDevice[deviceId].push(eid);
+    }
+  }
+
+  // When a device has entities from multiple integrations
+  // (e.g. Battery Notes), keep only the primary integration's entities.
+  const collapsedEntities = Object.entries(byDevice).flatMap(
+    ([deviceId, entities]) => {
+      const primaryConfigEntryId =
+        hass.devices?.[deviceId]?.primary_config_entry;
+      const primaryDomain = primaryConfigEntryId
+        ? configEntryLookup[primaryConfigEntryId]?.domain
+        : undefined;
+
+      if (primaryDomain) {
+        return entities.filter(
+          (eid) => hass.entities[eid]?.platform === primaryDomain
+        );
+      }
+
+      return entities;
+    }
+  );
+
+  return [...entitiesWithoutDevice, ...collapsedEntities];
+};
 
 const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
   type: "tile",
@@ -121,7 +179,16 @@ export class MaintenanceViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, batteryFilters);
+    const configEntries = await getConfigEntries(hass);
+    const configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
+
+    const entities = collapseBatteryEntities(
+      hass,
+      findEntities(allEntities, batteryFilters),
+      configEntryLookup
+    );
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
