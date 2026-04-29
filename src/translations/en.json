@@ -2372,6 +2372,7 @@
         },
         "shortcuts": {
           "double_click": "Double-click",
+          "click": "Click",
           "scroll_wheel": "Scroll",
           "drag": "Drag"
         },
@@ -2403,7 +2404,8 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
-          "double_click": "to zoom in on part of the chart"
+          "double_click": "to zoom in on part of the chart",
+          "click_legend_solo": "on a chart legend item to show only that series"
         },
         "other": {
           "title": "Other",
