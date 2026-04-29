@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTimeWithSeconds } from "../../../../common/datetime/format_time";
 import "../../../../components/ha-alert";
@@ -21,7 +21,7 @@ import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
 
-const MAX_BUFFERED_EVENTS = 30;
+const MAX_BUFFERED_EVENTS = 100;
 
 interface SubscribedEvent {
   id: number;
@@ -162,6 +162,8 @@ class EventSubscribeCard extends LitElement {
     // the events array, even if a new event arrives mid-render.
     const totalFired = this._events[0].id + 1;
     const atNewest = index === 0;
+    // Buffer has rolled over once the oldest buffered event isn't event 1.
+    const hasRolledOver = this._events[bufferTotal - 1].id > 0;
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
@@ -194,17 +196,23 @@ class EventSubscribeCard extends LitElement {
               }
             )}
             <span class="counter">(${position} / ${totalFired})</span>
-            <ha-svg-icon
-              id="buffer-info"
-              class="buffer-info"
-              .path=${mdiInformationOutline}
-            ></ha-svg-icon>
-            <ha-tooltip for="buffer-info" placement="bottom">
-              ${this.hass!.localize(
-                "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
-                { count: MAX_BUFFERED_EVENTS }
-              )}
-            </ha-tooltip>
+            ${hasRolledOver
+              ? html`
+                  <ha-svg-icon
+                    id="buffer-info"
+                    class="buffer-info"
+                    .path=${mdiInformationOutline}
+                  ></ha-svg-icon>
+                  <ha-tooltip for="buffer-info" placement="bottom">
+                    <span class="buffer-tooltip">
+                      ${this.hass!.localize(
+                        "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
+                        { count: MAX_BUFFERED_EVENTS }
+                      )}
+                    </span>
+                  </ha-tooltip>
+                `
+              : nothing}
           </div>
           <ha-icon-button
             .path=${mdiChevronRight}
@@ -431,6 +439,11 @@ class EventSubscribeCard extends LitElement {
       margin-left: var(--ha-space-1);
       vertical-align: middle;
       --mdc-icon-size: 16px;
+    }
+    .buffer-tooltip {
+      white-space: pre-line;
+      display: block;
+      max-width: 320px;
     }
     ha-yaml-editor {
       display: flex;
