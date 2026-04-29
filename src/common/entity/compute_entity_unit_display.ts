@@ -25,7 +25,7 @@ export const computeEntityUnitDisplay = (
   if (
     stateObj &&
     !isUnavailableState(stateObj.state) &&
-    (config.attribute || stateObj?.attributes.device_class !== "duration")
+    (config.attribute || stateObj.attributes.device_class !== "duration")
   ) {
     // check for an explicitly defined unit in config
     unit = config.unit;
@@ -45,7 +45,7 @@ export const computeEntityUnitDisplay = (
       }
     }
 
-    return unit;
+    return unit ?? "";
   }
 
   return "";
