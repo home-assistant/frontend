@@ -6789,7 +6789,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
+            "device_created": "Name and assign",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
