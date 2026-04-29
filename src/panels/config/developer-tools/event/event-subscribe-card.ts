@@ -175,12 +175,14 @@ class EventSubscribeCard extends LitElement {
           <div class="event-info">
             ${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.event_fired",
-              { name: event.id + 1 }
-            )}
-            ${formatTimeWithSeconds(
-              new Date(event.event.time_fired),
-              this.hass!.locale,
-              this.hass!.config
+              {
+                name: event.id + 1,
+                time: formatTimeWithSeconds(
+                  new Date(event.event.time_fired),
+                  this.hass!.locale,
+                  this.hass!.config
+                ),
+              }
             )}
             <span class="counter">(${total - index} / ${total})</span>
           </div>
