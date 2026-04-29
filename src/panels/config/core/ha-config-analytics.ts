@@ -1,3 +1,4 @@
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +10,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import { getSignedPath } from "../../../data/auth";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -128,6 +130,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                 appearance="plain"
                 @click=${this._downloadDeviceInfo}
               >
+                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.analytics.download_device_info"
                 )}
