@@ -5,7 +5,6 @@ import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
-import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
@@ -71,17 +70,14 @@ export abstract class HuiElementEditor<
   // Error: Configuration broken - do not save
   @state() private _errors?: string[];
 
-  // Error from unparseable YAML, but don't show it immediately to prevent showing immediately on every keystroke
-  @state() private _pendingYamlError?: string;
-
-  @state() private _yamlError = false;
-
   // Warning: GUI editor can't handle configuration - ok to save
   @state() private _warnings?: string[];
 
   @state() private _guiSupported?: boolean;
 
   @state() private _loading = false;
+
+  @state() private _yamlError = false;
 
   @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
 
@@ -105,7 +101,7 @@ export abstract class HuiElementEditor<
   }
 
   private _setConfig(): void {
-    if (!this._errors) {
+    if (!this._errors && !this._yamlError) {
       try {
         this._updateConfigElement();
       } catch (err: any) {
@@ -131,7 +127,9 @@ export abstract class HuiElementEditor<
   }
 
   public get hasError(): boolean {
-    return this._errors !== undefined && this._errors.length > 0;
+    return (
+      this._yamlError || (this._errors !== undefined && this._errors.length > 0)
+    );
   }
 
   public get GUImode(): boolean {
@@ -251,7 +249,6 @@ export abstract class HuiElementEditor<
                   .hass=${this.hass}
                   .inDialog=${this.inDialog}
                   @value-changed=${this._handleYAMLChanged}
-                  @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
                 ></ha-yaml-editor>
@@ -273,7 +270,7 @@ export abstract class HuiElementEditor<
               </ha-alert>
             `
           : nothing}
-        ${this.hasError
+        ${this._errors?.length
           ? html`
               <ha-alert
                 alert-type="error"
@@ -282,7 +279,7 @@ export abstract class HuiElementEditor<
                 )}
               >
                 <ul>
-                  ${this._errors!.map((error) => html`<li>${error}</li>`)}
+                  ${this._errors.map((error) => html`<li>${error}</li>`)}
                 </ul>
               </ha-alert>
             `
@@ -338,40 +335,14 @@ export abstract class HuiElementEditor<
 
   private _handleYAMLChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const config = ev.detail.value;
     if (ev.detail.isValid) {
-      this._config = config;
+      this._config = ev.detail.value;
       this._errors = undefined;
-      this._pendingYamlError = undefined;
       this._yamlError = false;
-      this._debounceYamlError.cancel();
-      this._setConfig();
-    } else if (this._yamlError) {
-      // If we're already showing a yaml error, don't bother to debounce, just update immediately.
-      this._errors = [ev.detail.errorMsg];
     } else {
-      this._pendingYamlError = ev.detail.errorMsg;
-      this._debounceYamlError();
-    }
-  }
-
-  private _debounceYamlError = debounce(() => {
-    if (this._pendingYamlError) {
       this._yamlError = true;
-      this._errors = [this._pendingYamlError];
-      this._pendingYamlError = undefined;
-      this._setConfig();
     }
-  }, 2000);
-
-  private _onBlurYaml() {
-    this._debounceYamlError.cancel();
-    if (this._pendingYamlError) {
-      this._yamlError = true;
-      this._errors = [this._pendingYamlError];
-      this._pendingYamlError = undefined;
-      this._setConfig();
-    }
+    this._setConfig();
   }
 
   protected async unloadConfigElement(): Promise<void> {
