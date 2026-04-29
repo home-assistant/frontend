@@ -1,10 +1,4 @@
-import {
-  mdiAccountKey,
-  mdiAccountRemove,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiAccountKey, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -24,15 +18,13 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-dialog";
 import type {
   ZwaveCredentialCapabilities,
-  ZwaveCredentialType,
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
-  clearZwaveAllUsers,
-  clearZwaveUser,
+  deleteZwaveAllUsers,
+  deleteZwaveUser,
   getZwaveCredentialCapabilities,
-  getZwaveCredentialTypeIcon,
   getZwaveUsers,
 } from "../../../../../data/zwave_js-credentials";
 import {
@@ -134,13 +126,9 @@ class DialogZwaveCredentialManage extends LitElement {
                 .path=${mdiDotsVertical}
                 ?disabled=${this._busy}
               ></ha-icon-button>
-              <ha-dropdown-item value="clear_all" variant="danger">
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiAccountRemove}
-                ></ha-svg-icon>
+              <ha-dropdown-item value="delete_all" variant="danger">
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.clear_all"
+                  "ui.panel.config.zwave_js.credentials.users.delete_all"
                 )}
               </ha-dropdown-item>
             </ha-dropdown>`
@@ -179,8 +167,8 @@ class DialogZwaveCredentialManage extends LitElement {
   }
 
   private _handleMenuAction(ev: HaDropdownSelectEvent): void {
-    if (ev.detail.item.value === "clear_all") {
-      this._clearAllUsers();
+    if (ev.detail.item.value === "delete_all") {
+      this._deleteAllUsers();
     }
   }
 
@@ -244,11 +232,6 @@ class DialogZwaveCredentialManage extends LitElement {
                             { count: user.credentials.length }
                           )}
                         </span>
-                        ${user.credentials.length > 0
-                          ? html`<span class="credential-badges">
-                              ${this._renderCredentialBadges(user)}
-                            </span>`
-                          : nothing}
                       </div>
                       <ha-icon-button
                         slot="end"
@@ -267,28 +250,6 @@ class DialogZwaveCredentialManage extends LitElement {
             `}
       </div>
     `;
-  }
-
-  private _renderCredentialBadges(user: ZwaveUser) {
-    // Group credentials by type and count them
-    const typeCounts = new Map<ZwaveCredentialType, number>();
-    for (const cred of user.credentials) {
-      typeCounts.set(cred.type, (typeCounts.get(cred.type) || 0) + 1);
-    }
-
-    return Array.from(typeCounts.entries()).map(
-      ([type, count]) => html`
-        <span
-          class="credential-badge"
-          title=${this.hass.localize(
-            `ui.panel.config.zwave_js.credentials.credential_types.${type}` as any
-          ) || type}
-        >
-          <ha-svg-icon .path=${getZwaveCredentialTypeIcon(type)}></ha-svg-icon>
-          ${count > 1 ? html`<span class="badge-count">${count}</span>` : ""}
-        </span>
-      `
-    );
   }
 
   private _userFromEvent(ev: Event): ZwaveUser | undefined {
@@ -358,7 +319,7 @@ class DialogZwaveCredentialManage extends LitElement {
 
     this._busy = true;
     try {
-      await clearZwaveUser(this.hass, this._entityId!, user.user_id);
+      await deleteZwaveUser(this.hass, this._entityId!, user.user_id);
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -374,13 +335,13 @@ class DialogZwaveCredentialManage extends LitElement {
     }
   }
 
-  private async _clearAllUsers(): Promise<void> {
+  private async _deleteAllUsers(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.zwave_js.credentials.users.clear_all"
+        "ui.panel.config.zwave_js.credentials.users.delete_all"
       ),
       text: this.hass.localize(
-        "ui.panel.config.zwave_js.credentials.confirm_clear_all_users"
+        "ui.panel.config.zwave_js.credentials.confirm_delete_all_users"
       ),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
@@ -390,7 +351,7 @@ class DialogZwaveCredentialManage extends LitElement {
     }
     this._busy = true;
     try {
-      await clearZwaveAllUsers(this.hass, this._entityId!);
+      await deleteZwaveAllUsers(this.hass, this._entityId!);
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -452,24 +413,6 @@ class DialogZwaveCredentialManage extends LitElement {
         }
         .credential-count {
           margin-inline-start: var(--ha-space-2);
-        }
-        .credential-badges {
-          display: inline-flex;
-          gap: var(--ha-space-1);
-          margin-inline-start: var(--ha-space-2);
-          vertical-align: middle;
-        }
-        .credential-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 2px;
-          color: var(--secondary-text-color);
-        }
-        .credential-badge ha-svg-icon {
-          --mdc-icon-size: 16px;
-        }
-        .badge-count {
-          font-size: 12px;
         }
       `,
     ];

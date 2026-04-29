@@ -7801,7 +7801,7 @@
               "add": "Add user",
               "edit": "Edit user",
               "delete": "Delete user",
-              "clear_all": "Clear all users",
+              "delete_all": "Delete all users",
               "name": "Name",
               "type": "Type",
               "no_users": "No users configured",
@@ -7882,7 +7882,7 @@
               "credential_save_failed_user_created": "User was created, but saving the credential failed ({message}). Add a credential below to finish setup."
             },
             "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
-            "confirm_clear_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",
+            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",
             "confirm_delete_credential": "Are you sure you want to delete this credential ({type}, slot {slot})? This cannot be undone."
           }
         },

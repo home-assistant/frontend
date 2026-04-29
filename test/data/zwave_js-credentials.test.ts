@@ -3,10 +3,10 @@ import {
   getZwaveCredentialCapabilities,
   getZwaveUsers,
   setZwaveUser,
-  clearZwaveUser,
-  clearZwaveAllUsers,
+  deleteZwaveUser,
+  deleteZwaveAllUsers,
   setZwaveCredential,
-  clearZwaveCredential,
+  deleteZwaveCredential,
 } from "../../src/data/zwave_js-credentials";
 import type { HomeAssistant } from "../../src/types";
 
@@ -171,15 +171,15 @@ describe("zwave_js-credentials", () => {
     });
   });
 
-  describe("clearZwaveUser", () => {
+  describe("deleteZwaveUser", () => {
     it("calls the correct service with user_id and entity_id target", async () => {
       const hass = mockHass();
 
-      await clearZwaveUser(hass, ENTITY_ID, 2);
+      await deleteZwaveUser(hass, ENTITY_ID, 2);
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
-        "clear_user",
+        "delete_user",
         { user_id: 2 },
         { entity_id: ENTITY_ID },
         false
@@ -187,15 +187,15 @@ describe("zwave_js-credentials", () => {
     });
   });
 
-  describe("clearZwaveAllUsers", () => {
-    it("calls clear_all_users with entity_id target and no params", async () => {
+  describe("deleteZwaveAllUsers", () => {
+    it("calls delete_all_users with entity_id target and no params", async () => {
       const hass = mockHass();
 
-      await clearZwaveAllUsers(hass, ENTITY_ID);
+      await deleteZwaveAllUsers(hass, ENTITY_ID);
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
-        "clear_all_users",
+        "delete_all_users",
         {},
         { entity_id: ENTITY_ID },
         false
@@ -281,11 +281,11 @@ describe("zwave_js-credentials", () => {
     });
   });
 
-  describe("clearZwaveCredential", () => {
+  describe("deleteZwaveCredential", () => {
     it("calls the correct service with params and entity_id target", async () => {
       const hass = mockHass();
 
-      await clearZwaveCredential(hass, ENTITY_ID, {
+      await deleteZwaveCredential(hass, ENTITY_ID, {
         user_id: 2,
         credential_type: "pin_code",
         credential_slot: 1,
@@ -293,7 +293,7 @@ describe("zwave_js-credentials", () => {
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
-        "clear_credential",
+        "delete_credential",
         { user_id: 2, credential_type: "pin_code", credential_slot: 1 },
         { entity_id: ENTITY_ID },
         false

@@ -20,7 +20,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/input/ha-input";
 import {
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
-  clearZwaveCredential,
+  deleteZwaveCredential,
   getZwaveCredentialTypeIcon,
   getZwaveUsers,
   setZwaveCredential,
@@ -637,7 +637,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
     this._saving = true;
     try {
-      await clearZwaveCredential(this.hass, this._params.entity_id, {
+      await deleteZwaveCredential(this.hass, this._params.entity_id, {
         user_id: this._params.user.user_id,
         credential_type: credential.type,
         credential_slot: credential.slot,

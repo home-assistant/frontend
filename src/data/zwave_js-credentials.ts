@@ -120,7 +120,7 @@ export interface SetZwaveCredentialResult {
   user_id: number;
 }
 
-export interface ClearZwaveCredentialParams {
+export interface DeleteZwaveCredentialParams {
   user_id: number;
   credential_type: ZwaveCredentialType;
   credential_slot: number;
@@ -178,15 +178,21 @@ export const setZwaveUser = async (
   return result.response![entity_id];
 };
 
-export const clearZwaveUser = (
+export const deleteZwaveUser = (
   hass: HomeAssistant,
   entity_id: string,
   user_id: number
 ) =>
-  hass.callService("zwave_js", "clear_user", { user_id }, { entity_id }, false);
+  hass.callService(
+    "zwave_js",
+    "delete_user",
+    { user_id },
+    { entity_id },
+    false
+  );
 
-export const clearZwaveAllUsers = (hass: HomeAssistant, entity_id: string) =>
-  hass.callService("zwave_js", "clear_all_users", {}, { entity_id }, false);
+export const deleteZwaveAllUsers = (hass: HomeAssistant, entity_id: string) =>
+  hass.callService("zwave_js", "delete_all_users", {}, { entity_id }, false);
 
 export const setZwaveCredential = async (
   hass: HomeAssistant,
@@ -202,14 +208,14 @@ export const setZwaveCredential = async (
   return result.response![entity_id];
 };
 
-export const clearZwaveCredential = (
+export const deleteZwaveCredential = (
   hass: HomeAssistant,
   entity_id: string,
-  params: ClearZwaveCredentialParams
+  params: DeleteZwaveCredentialParams
 ) =>
   hass.callService(
     "zwave_js",
-    "clear_credential",
+    "delete_credential",
     params,
     { entity_id },
     false

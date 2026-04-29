@@ -13,7 +13,7 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input";
 import {
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
-  clearZwaveCredential,
+  deleteZwaveCredential,
   setZwaveCredential,
 } from "../../../../../data/zwave_js-credentials";
 import type { ZwaveCredentialType } from "../../../../../data/zwave_js-credentials";
@@ -278,7 +278,7 @@ class DialogZwaveCredentialEdit extends LitElement {
       const existing = this._params.credential;
       const typeChanged = !!existing && existing.type !== this._credentialType;
       if (typeChanged) {
-        await clearZwaveCredential(this.hass, this._params.entity_id, {
+        await deleteZwaveCredential(this.hass, this._params.entity_id, {
           user_id: this._params.user_id,
           credential_type: existing!.type,
           credential_slot: existing!.slot,
