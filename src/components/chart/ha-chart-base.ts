@@ -1484,6 +1484,7 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      line-height: 1;
     }
     @media (hover: hover) {
       .chart-legend .label.clickable:hover {
