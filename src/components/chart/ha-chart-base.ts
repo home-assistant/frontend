@@ -421,11 +421,7 @@ export class HaChartBase extends LitElement {
               type="button"
               class="label"
               data-id=${id}
-              title=${this.clickLabelForMoreInfo
-                ? this.hass.localize(
-                    "ui.components.history_charts.show_more_info"
-                  )
-                : nothing}
+              .title=${name}
               @click=${this._labelClick}
             >
               ${name}
@@ -1483,8 +1479,13 @@ export class HaChartBase extends LitElement {
       white-space: nowrap;
       overflow: hidden;
     }
-    .chart-legend.label-clickable .label:hover {
-      text-decoration: underline;
+    @media (hover: hover) {
+      .chart-legend.label-clickable .label:hover {
+        text-decoration: underline;
+      }
+      .chart-legend .legend-toggle:hover {
+        opacity: 0.5;
+      }
     }
     .chart-legend .value {
       color: var(--secondary-text-color);
@@ -1503,9 +1504,6 @@ export class HaChartBase extends LitElement {
       padding: 4px;
       margin: -4px;
       margin-inline-end: 0;
-    }
-    .chart-legend .legend-toggle:hover {
-      opacity: 0.5;
     }
     .chart-legend .legend-toggle:focus-visible,
     .chart-legend .label:focus-visible {
