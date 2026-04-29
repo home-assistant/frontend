@@ -45,6 +45,15 @@ interface AssistMessage {
   error?: boolean;
 }
 
+const HISTORY_STORAGE_KEY = "assistChatHistory";
+const HISTORY_TTL_MS = 5 * 60 * 1000;
+
+interface StoredChatHistory {
+  conversation: AssistMessage[];
+  conversationId: string | null;
+  closedAt: number;
+}
+
 @customElement("ha-assist-chat")
 export class HaAssistChat extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -53,6 +62,9 @@ export class HaAssistChat extends LitElement {
 
   @property({ type: Boolean, attribute: "disable-speech" })
   public disableSpeech = false;
+
+  @property({ type: Boolean, attribute: "persist-history" })
+  public persistHistory = false;
 
   @property({ attribute: false })
   public startListening?: boolean;
@@ -83,6 +95,23 @@ export class HaAssistChat extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!this.hasUpdated || changedProperties.has("pipeline")) {
+      if (this.persistHistory) {
+        const oldPipeline = changedProperties.get("pipeline") as
+          | AssistPipeline
+          | undefined;
+        if (oldPipeline) {
+          this._saveHistory(oldPipeline.id);
+        }
+        const restored = this.pipeline
+          ? this._loadStoredHistory(this.pipeline.id)
+          : null;
+        if (restored) {
+          this._conversation = restored.conversation;
+          this._conversationId = restored.conversationId;
+          return;
+        }
+        this._conversationId = null;
+      }
       this._conversation = [
         {
           who: "hass",
@@ -118,6 +147,9 @@ export class HaAssistChat extends LitElement {
     super.disconnectedCallback();
     this._audioRecorder?.close();
     this._unloadAudio();
+    if (this.persistHistory && this.pipeline) {
+      this._saveHistory(this.pipeline.id);
+    }
   }
 
   protected render(): TemplateResult {
@@ -383,6 +415,68 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
 
   private _addMessage(message: AssistMessage) {
     this._conversation = [...this._conversation!, message];
+  }
+
+  private _readAllStoredHistories(): Record<string, StoredChatHistory> {
+    try {
+      const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  private _writeAllStoredHistories(all: Record<string, StoredChatHistory>) {
+    try {
+      if (Object.keys(all).length === 0) {
+        window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(all));
+      }
+    } catch {
+      // Private mode or quota exceeded — ignore
+    }
+  }
+
+  private _loadStoredHistory(pipelineId: string): StoredChatHistory | null {
+    const all = this._readAllStoredHistories();
+    const entry = all[pipelineId];
+    if (!entry) {
+      return null;
+    }
+    if (Date.now() - entry.closedAt > HISTORY_TTL_MS) {
+      delete all[pipelineId];
+      this._writeAllStoredHistories(all);
+      return null;
+    }
+    return entry;
+  }
+
+  private _saveHistory(pipelineId: string) {
+    const all = this._readAllStoredHistories();
+    const persistable = this._conversation
+      .filter((m) => typeof m.text === "string" && m.text !== "…")
+      .map((m) => ({
+        ...m,
+        text:
+          typeof m.text === "string" && m.text.endsWith("…")
+            ? m.text.slice(0, -1)
+            : m.text,
+      })) as AssistMessage[];
+    const hasUserMessage = persistable.some((m) => m.who === "user");
+    if (!hasUserMessage) {
+      if (all[pipelineId]) {
+        delete all[pipelineId];
+        this._writeAllStoredHistories(all);
+      }
+      return;
+    }
+    all[pipelineId] = {
+      conversation: persistable,
+      conversationId: this._conversationId,
+      closedAt: Date.now(),
+    };
+    this._writeAllStoredHistories(all);
   }
 
   private async _showNotSupportedMessage() {

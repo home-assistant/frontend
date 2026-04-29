@@ -186,6 +186,7 @@ export class HaVoiceCommandDialog extends LitElement {
                   .hass=${this.hass}
                   .pipeline=${this._pipeline}
                   .startListening=${this._startListening}
+                  persist-history
                 >
                 </ha-assist-chat>
               `
