@@ -197,14 +197,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
               )}</b
             >
             ${this.hass.localize(
-              exclusion
-                ? "ui.panel.config.zwave_js.remove_node.trigger_device_exclusion"
-                : "ui.panel.config.zwave_js.remove_node.follow_device_instructions"
+              "ui.panel.config.zwave_js.remove_node.trigger_device_exclusion"
             )}
           </p>
           ${exclusion
             ? html`<ha-markdown breaks .content=${exclusion}></ha-markdown>`
-            : nothing}
+            : html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.remove_node.follow_device_instructions"
+                )}
+              </p>`}
         </div>
       `;
     }
