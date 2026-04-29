@@ -8,15 +8,18 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-markdown";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
+  fetchZwaveNodeMetadata,
   fetchZwaveNodeStatus,
   NodeStatus,
   removeFailedZwaveNode,
 } from "../../../../../data/zwave_js";
+import type { ZwaveJSNodeMetadata } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
@@ -51,6 +54,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
+  @state() private _metadata?: ZwaveJSNodeMetadata;
+
   @state() private _onClose?: () => void;
 
   private _removeNodeTimeoutHandle?: number;
@@ -78,6 +83,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._device = this.hass.devices[this._deviceId];
       this._step =
         nodeStatus.status === NodeStatus.Dead ? "start_removal" : "start";
+      if (nodeStatus.status !== NodeStatus.Dead) {
+        fetchZwaveNodeMetadata(this.hass, this._deviceId!).then(
+          (metadata) => {
+            this._metadata = metadata;
+          },
+          () => {
+            // instructions are supplemental — ignore fetch errors
+          }
+        );
+      }
     } else if (params.skipConfirmation) {
       this._startExclusion();
     } else {
@@ -170,13 +185,37 @@ class DialogZWaveJSRemoveNode extends LitElement {
       `;
     }
 
-    if (["exclusion", "remove"].includes(this._step)) {
+    if (this._step === "exclusion") {
+      const exclusion = this._metadata?.exclusion?.trim();
+      return html`
+        <ha-spinner></ha-spinner>
+        <div>
+          <p>
+            <b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.remove_node.ready_to_remove"
+              )}</b
+            >
+            ${this.hass.localize(
+              exclusion
+                ? "ui.panel.config.zwave_js.remove_node.trigger_device_exclusion"
+                : "ui.panel.config.zwave_js.remove_node.follow_device_instructions"
+            )}
+          </p>
+          ${exclusion
+            ? html`<ha-markdown breaks .content=${exclusion}></ha-markdown>`
+            : nothing}
+        </div>
+      `;
+    }
+
+    if (this._step === "remove") {
       return html`
         <ha-spinner></ha-spinner>
         <div>
           <p>
             ${this.hass.localize(
-              `ui.panel.config.zwave_js.remove_node.${this._step === "exclusion" ? "follow_device_instructions" : "removing_device"}`
+              "ui.panel.config.zwave_js.remove_node.removing_device"
             )}
           </p>
         </div>
@@ -343,6 +382,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
   public handleDialogClosed(): void {
     this._unsubscribe();
     this._entryId = undefined;
+    this._metadata = undefined;
     this._step = "start";
     this._open = false;
     if (this._onClose) {
@@ -369,6 +409,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
         .content p {
           color: var(--secondary-text-color);
+        }
+
+        .content ha-markdown {
+          color: var(--secondary-text-color);
+          text-align: start;
         }
 
         ha-alert {
