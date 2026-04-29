@@ -669,9 +669,6 @@ class HaPanelDevAction extends LitElement {
         }
         .button-row {
           padding: var(--ha-space-2) var(--ha-space-4);
-          border-top: 1px solid var(--divider-color);
-          border-bottom: 1px solid var(--divider-color);
-          background: var(--card-background-color);
           position: sticky;
           bottom: 0;
           box-sizing: border-box;
