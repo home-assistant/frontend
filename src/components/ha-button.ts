@@ -1,5 +1,6 @@
 import Button from "@home-assistant/webawesome/dist/components/button/button";
-import { css, type CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
@@ -36,6 +37,18 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
 @customElement("ha-button")
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
+
+  protected override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // Forward host aria-label to the inner button so it has an accessible
+    // name for assistive tech and accessibility audits (axe button-name).
+    const ariaLabel = this.getAttribute("aria-label");
+    if (ariaLabel) {
+      this.button?.setAttribute("aria-label", ariaLabel);
+    } else {
+      this.button?.removeAttribute("aria-label");
+    }
+  }
 
   static get styles(): CSSResultGroup {
     return [
