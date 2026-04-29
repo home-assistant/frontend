@@ -146,6 +146,7 @@ const TYPES = {
 export interface CollectionGroup {
   collectionIndex: number;
   titleKey?: LocalizeKeys;
+  generic?: boolean;
   groups: AddAutomationElementListItem[];
 }
 
@@ -178,7 +179,9 @@ const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
-const GENERIC_GROUPS = new Set(["device", "entity", `${DYNAMIC_PREFIX}event`]);
+const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
+
+type CollectionGroupType = "helper" | "other" | "dynamic";
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -1086,9 +1089,28 @@ class DialogAddAutomationElement
     ): CollectionGroup[] => {
       const generatedCollections: CollectionGroup[] = [];
 
+      let genericCollectionIndex = -1;
+      let dynamicCollectionIndex = -1;
+
       collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
+
+        if (collection.generic) {
+          genericCollectionIndex = index;
+        }
+
+        const types: CollectionGroupType[] = [];
+        if (collection.groups.dynamicGroups) {
+          dynamicCollectionIndex = index;
+          types.push("dynamic");
+        }
+        if (collection.groups.helpers) {
+          types.push("helper");
+        }
+        if (collection.groups.other) {
+          types.push("other");
+        }
 
         if (
           type === "trigger" &&
@@ -1102,11 +1124,7 @@ class DialogAddAutomationElement
               triggerDescriptions,
               manifests,
               domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
+              types
             )
           );
 
@@ -1125,11 +1143,7 @@ class DialogAddAutomationElement
               conditionDescriptions,
               manifests,
               domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
+              types
             )
           );
 
@@ -1170,52 +1184,33 @@ class DialogAddAutomationElement
         generatedCollections.push({
           collectionIndex: index,
           titleKey: collection.titleKey,
+          generic: collection.generic,
           groups: groups.sort((a, b) => {
-            // make sure device is always on top
-            if (a.key === "device" || a.key === "device_id") {
-              return -1;
-            }
-            if (b.key === "device" || b.key === "device_id") {
-              return 1;
-            }
             return stringCompare(a.name, b.name, this.hass.locale.language);
           }),
         });
       });
 
-      return !["trigger", "condition"].includes(type)
-        ? generatedCollections
-        : generatedCollections.flatMap(
-            (collection: CollectionGroup): CollectionGroup[] => {
-              const genericGroups = collection.groups.filter((group) =>
-                GENERIC_GROUPS.has(group.key)
-              );
+      // move groups from dynamic to generic
+      if (genericCollectionIndex !== -1 && dynamicCollectionIndex !== -1) {
+        const groupsToMove =
+          generatedCollections[dynamicCollectionIndex].groups.filter((group) =>
+            DYNAMIC_TO_GENERIC.has(group.key)
+          ) || [];
+        generatedCollections[dynamicCollectionIndex].groups =
+          generatedCollections[dynamicCollectionIndex].groups.filter(
+            (group) => !DYNAMIC_TO_GENERIC.has(group.key)
+          ) || [];
 
-              const mainGroups = collection.groups.filter(
-                (group) => !GENERIC_GROUPS.has(group.key)
-              );
+        generatedCollections[genericCollectionIndex].groups = [
+          ...(generatedCollections[genericCollectionIndex].groups || []),
+          ...groupsToMove,
+        ].sort((a, b) =>
+          stringCompare(a.name, b.name, this.hass.locale.language)
+        );
+      }
 
-              return [
-                ...(mainGroups.length
-                  ? [
-                      {
-                        ...collection,
-                        groups: mainGroups,
-                      },
-                    ]
-                  : []),
-                ...(genericGroups.length
-                  ? [
-                      {
-                        collectionIndex: collection.collectionIndex,
-                        titleKey: "ui.panel.config.automation.editor.generic",
-                        groups: genericGroups,
-                      } satisfies CollectionGroup,
-                    ]
-                  : []),
-              ];
-            }
-          );
+      return generatedCollections;
     }
   );
 
@@ -1363,34 +1358,29 @@ class DialogAddAutomationElement
     domain: string,
     manifest: DomainManifestLookup[string] | undefined,
     domainUsed: boolean,
-    type: "helper" | "other" | undefined
+    types: CollectionGroupType[]
   ): boolean {
-    if (type === undefined) {
-      return (
-        ENTITY_DOMAINS_MAIN.has(domain) ||
+    const matchDynamic =
+      types.includes("dynamic") &&
+      (ENTITY_DOMAINS_MAIN.has(domain) ||
         (manifest?.integration_type === "entity" &&
           !ENTITY_DOMAINS_OTHER.has(domain) &&
           (domainUsed || (this._systemDomains?.active.has(domain) ?? false))) ||
         (manifest?.integration_type === "system" &&
-          (this._systemDomains?.active.has(domain) ?? false))
-      );
-    }
-    if (type === "helper") {
-      return manifest?.integration_type === "helper";
-    }
-    // type === "other"
-    return (
+          (this._systemDomains?.active.has(domain) ?? false)));
+
+    const matchHelper =
+      types.includes("helper") && manifest?.integration_type === "helper";
+
+    const matchOther =
+      types.includes("other") &&
       !ENTITY_DOMAINS_MAIN.has(domain) &&
       (ENTITY_DOMAINS_OTHER.has(domain) ||
-        (!domainUsed &&
-          manifest?.integration_type === "entity" &&
-          !(this._systemDomains?.active.has(domain) ?? false)) ||
-        (manifest?.integration_type === "system" &&
-          !(this._systemDomains?.active.has(domain) ?? false)) ||
         !["helper", "entity", "system"].includes(
           manifest?.integration_type || ""
-        ))
-    );
+        ));
+
+    return matchDynamic || matchHelper || matchOther;
   }
 
   private _triggerGroups = (
@@ -1398,7 +1388,7 @@ class DialogAddAutomationElement
     triggers: TriggerDescriptions,
     manifests: DomainManifestLookup | undefined,
     domains: Set<string> | undefined,
-    type: "helper" | "other" | undefined
+    types: CollectionGroupType[]
   ): AddAutomationElementListItem[] => {
     if (!triggers || !manifests) {
       return [];
@@ -1416,7 +1406,7 @@ class DialogAddAutomationElement
       const manifest = manifests[domain];
       const domainUsed = !domains ? true : domains.has(domain);
 
-      if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
+      if (this._domainMatchesGroupType(domain, manifest, domainUsed, types)) {
         result.push({
           icon: html`
             <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
@@ -1470,7 +1460,7 @@ class DialogAddAutomationElement
     conditions: ConditionDescriptions,
     manifests: DomainManifestLookup | undefined,
     domains: Set<string> | undefined,
-    type: "helper" | "other" | undefined
+    types: CollectionGroupType[]
   ): AddAutomationElementListItem[] => {
     if (!conditions || !manifests) {
       return [];
@@ -1488,7 +1478,7 @@ class DialogAddAutomationElement
       const manifest = manifests[domain];
       const domainUsed = !domains ? true : domains.has(domain);
 
-      if (this._domainMatchesGroupType(domain, manifest, domainUsed, type)) {
+      if (this._domainMatchesGroupType(domain, manifest, domainUsed, types)) {
         result.push({
           icon: html`
             <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>

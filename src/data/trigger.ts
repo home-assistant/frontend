@@ -13,9 +13,6 @@ import type { Selector, TargetSelector } from "./selector";
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device: {},
-      dynamicGroups: {},
-      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
       time_location: {
         icon: mdiMapClock,
         members: {
@@ -26,17 +23,6 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
           zone: {},
         },
       },
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.triggers.groups.helpers.label",
-    groups: {
-      helpers: {},
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.triggers.groups.other.label",
-    groups: {
       event: {},
       geo_location: {},
       homeassistant: {},
@@ -45,7 +31,23 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
       template: {},
       webhook: {},
       persistent_notification: {},
+      helpers: {},
       other: {},
+    },
+  },
+  {
+    titleKey: "ui.panel.config.automation.editor.triggers.groups.generic.label",
+    generic: true,
+    groups: {
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+    },
+  },
+  {
+    titleKey:
+      "ui.panel.config.automation.editor.triggers.groups.integrations.label",
+    groups: {
+      dynamicGroups: {},
     },
   },
 ] as const;
