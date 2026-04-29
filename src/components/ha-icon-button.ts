@@ -54,7 +54,7 @@ export class HaIconButton extends LitElement {
       >
         ${this.path
           ? html`<ha-svg-icon
-              aria-label=${ifDefined(this.label)}
+              aria-hidden="true"
               .path=${this.path}
             ></ha-svg-icon>`
           : html`<span><slot></slot></span>`}
