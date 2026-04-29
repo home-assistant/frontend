@@ -2,6 +2,8 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-spinner";
@@ -157,6 +159,13 @@ class HuiHourlyForecastCardFeature
       `;
     }
 
+    const customColor = this._config.color
+      ? computeCssColor(this._config.color)
+      : undefined;
+    const graphStyle = customColor
+      ? styleMap({ "--feature-color": customColor })
+      : nothing;
+
     return html`
       <div class="layers">
         ${layer}
@@ -165,6 +174,7 @@ class HuiHourlyForecastCardFeature
               <hui-graph-base
                 .coordinates=${this._coordinates}
                 .yAxisOrigin=${this._yAxisOrigin}
+                style=${graphStyle}
               ></hui-graph-base>
             `
           : nothing}

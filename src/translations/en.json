@@ -495,12 +495,15 @@
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
@@ -1100,7 +1103,9 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility",
+        "show_more_info": "Show more info"
       },
       "map": {
         "error": "Unable to load map"
@@ -2505,9 +2510,7 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "summaries_description": "Customize the summaries of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
@@ -4421,7 +4424,7 @@
           "detail": {
             "logger": "Logger",
             "source": "Source",
-            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
@@ -10083,29 +10086,36 @@
               "hourly-forecast": {
                 "label": "Hourly forecast",
                 "no_forecast": "No forecast data available",
+                "temperature": "Temperature",
+                "precipitation": "Precipitation",
                 "show_temperature": "Show temperature",
                 "show_precipitation": "Show precipitation",
                 "precipitation_type": "Precipitation type",
                 "precipitation_type_options": {
                   "amount": "Amount",
                   "probability": "Probability"
-                }
+                },
+                "color": "Color"
               },
               "daily-forecast": {
                 "label": "Daily forecast",
                 "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::temperature%]",
+                "precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation%]",
                 "forecast_type": "Forecast type",
                 "forecast_type_options": {
                   "daily": "Daily",
                   "twice_daily": "Twice daily"
                 },
                 "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_current_temperature": "Show current temperature",
                 "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
                 "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
                 "precipitation_type_options": {
                   "amount": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::amount%]",
                   "probability": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::probability%]"
-                }
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::color%]"
               }
             }
           },

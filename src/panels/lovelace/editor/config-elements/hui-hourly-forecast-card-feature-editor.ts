@@ -1,3 +1,4 @@
+import { mdiThermometer, mdiWeatherRainy } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -31,7 +32,11 @@ export class HuiHourlyForecastCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (showPrecipitation: boolean, localize: HomeAssistant["localize"]) =>
+    (
+      showTemperature: boolean,
+      showPrecipitation: boolean,
+      localize: HomeAssistant["localize"]
+    ) =>
       [
         {
           name: "hours_to_show",
@@ -39,36 +44,64 @@ export class HuiHourlyForecastCardFeatureEditor
           selector: { number: { min: 1, mode: "box" } },
         },
         {
-          name: "show_temperature",
-          selector: { boolean: {} },
-        },
-        {
-          name: "show_precipitation",
-          selector: { boolean: {} },
-        },
-        {
-          name: "precipitation_type",
-          required: true,
-          disabled: !showPrecipitation,
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: [
-                {
-                  value: "amount",
-                  label: localize(
-                    "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation_type_options.amount"
-                  ),
-                },
-                {
-                  value: "probability",
-                  label: localize(
-                    "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation_type_options.probability"
-                  ),
-                },
-              ],
+          name: "temperature",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          iconPath: mdiThermometer,
+          schema: [
+            {
+              name: "show_temperature",
+              selector: { boolean: {} },
             },
-          },
+            {
+              name: "color",
+              disabled: !showTemperature,
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
+                },
+              },
+            },
+          ],
+        },
+        {
+          name: "precipitation",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          iconPath: mdiWeatherRainy,
+          schema: [
+            {
+              name: "show_precipitation",
+              selector: { boolean: {} },
+            },
+            {
+              name: "precipitation_type",
+              required: true,
+              disabled: !showPrecipitation,
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: [
+                    {
+                      value: "amount",
+                      label: localize(
+                        "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation_type_options.amount"
+                      ),
+                    },
+                    {
+                      value: "probability",
+                      label: localize(
+                        "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation_type_options.probability"
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+          ],
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -78,16 +111,21 @@ export class HuiHourlyForecastCardFeatureEditor
       return nothing;
     }
 
+    const showTemperature = this._config.show_temperature ?? true;
     const showPrecipitation = this._config.show_precipitation ?? false;
 
     const data: HourlyForecastCardFeatureConfig = {
       ...this._config,
       hours_to_show: this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW,
-      show_temperature: this._config.show_temperature ?? true,
+      show_temperature: showTemperature,
       precipitation_type: this._config.precipitation_type ?? "amount",
     };
 
-    const schema = this._schema(showPrecipitation, this.hass.localize);
+    const schema = this._schema(
+      showTemperature,
+      showPrecipitation,
+      this.hass.localize
+    );
 
     return html`
       <ha-form
@@ -123,6 +161,18 @@ export class HuiHourlyForecastCardFeatureEditor
       case "precipitation_type":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation_type"
+        );
+      case "color":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.hourly-forecast.color"
+        );
+      case "temperature":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.hourly-forecast.temperature"
+        );
+      case "precipitation":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.hourly-forecast.precipitation"
         );
       default:
         return "";
