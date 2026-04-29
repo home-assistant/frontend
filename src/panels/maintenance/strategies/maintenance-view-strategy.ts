@@ -85,13 +85,18 @@ export const collapseBatteryEntities = (
         ? configEntryLookup[primaryConfigEntryId]?.domain
         : undefined;
 
-      if (primaryDomain) {
-        return entities.filter(
-          (eid) => hass.entities[eid]?.platform === primaryDomain
-        );
+      const primaryDomainEntities = entities.filter(
+        (eid) => hass.entities[eid]?.platform === primaryDomain
+      );
+
+      // if there are no primary entities it might be due to preferring only the
+      // battery entities from the secondary integration (e.g. battery notes)
+      // so we fall back to showing all entities for the device
+      if (primaryDomainEntities.length === 0) {
+        return entities;
       }
 
-      return entities;
+      return primaryDomainEntities;
     }
   );
 
