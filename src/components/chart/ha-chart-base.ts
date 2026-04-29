@@ -53,6 +53,10 @@ export type CustomLegendOption = ECOption["legend"] & {
     name: string;
     value?: string; // Current value to display next to the name in the legend.
     itemStyle?: Record<string, any>;
+    // If true, label click does not fire `legend-label-click` even when the
+    // chart has `clickLabelForMoreInfo`; falls back to toggle. Used for items
+    // without a corresponding entity (e.g. external statistics).
+    noLabelClick?: boolean;
   }[];
 };
 
@@ -361,7 +365,6 @@ export class HaChartBase extends LitElement {
       class=${classMap({
         "chart-legend": true,
         "multiple-items": items.length > 1,
-        "label-clickable": this.clickLabelForMoreInfo,
       })}
     >
       <ul>
@@ -372,6 +375,7 @@ export class HaChartBase extends LitElement {
           let itemStyle: Record<string, any> = {};
           let id = "";
           let value = "";
+          let noLabelClick = false;
           const name = typeof item === "string" ? item : (item.name ?? "");
           if (typeof item === "string") {
             id = item;
@@ -379,7 +383,9 @@ export class HaChartBase extends LitElement {
             id = item.id ?? name;
             value = item.value ?? "";
             itemStyle = item.itemStyle ?? {};
+            noLabelClick = item.noLabelClick ?? false;
           }
+          const labelClickable = this.clickLabelForMoreInfo && !noLabelClick;
           const dataset =
             datasets.find((d) => d.id === id) ??
             datasets.find((d) => d.name === id);
@@ -419,13 +425,9 @@ export class HaChartBase extends LitElement {
             </button>
             <button
               type="button"
-              class="label"
+              class=${classMap({ label: true, clickable: labelClickable })}
               data-id=${id}
-              title=${this.clickLabelForMoreInfo
-                ? this.hass.localize(
-                    "ui.components.history_charts.show_more_info"
-                  )
-                : nothing}
+              .title=${name}
               @click=${this._labelClick}
             >
               ${name}
@@ -1223,7 +1225,8 @@ export class HaChartBase extends LitElement {
       this._longPressTriggered = false;
       return;
     }
-    const id = (ev.currentTarget as HTMLElement).dataset.id;
+    const target = ev.currentTarget as HTMLElement;
+    const id = target.dataset.id;
     if (!id) {
       return;
     }
@@ -1232,7 +1235,7 @@ export class HaChartBase extends LitElement {
       this._soloLegend(id);
       return;
     }
-    if (this.clickLabelForMoreInfo) {
+    if (target.classList.contains("clickable")) {
       fireEvent(this, "legend-label-click", { id });
     } else {
       this._handleDatasetToggle(id);
@@ -1454,7 +1457,6 @@ export class HaChartBase extends LitElement {
     }
     .chart-legend li {
       height: 24px;
-      cursor: pointer;
       display: inline-flex;
       align-items: center;
       padding: 0 2px;
@@ -1482,9 +1484,15 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      line-height: 1;
     }
-    .chart-legend.label-clickable .label:hover {
-      text-decoration: underline;
+    @media (hover: hover) {
+      .chart-legend .label.clickable:hover {
+        text-decoration: underline;
+      }
+      .chart-legend .legend-toggle:hover {
+        opacity: 0.5;
+      }
     }
     .chart-legend .value {
       color: var(--secondary-text-color);
@@ -1503,9 +1511,6 @@ export class HaChartBase extends LitElement {
       padding: 4px;
       margin: -4px;
       margin-inline-end: 0;
-    }
-    .chart-legend .legend-toggle:hover {
-      opacity: 0.5;
     }
     .chart-legend .legend-toggle:focus-visible,
     .chart-legend .label:focus-visible {

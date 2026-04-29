@@ -195,7 +195,8 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
-        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo &&
+        !this._statisticIds.every(isExternalStatistic)}
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
@@ -433,6 +434,7 @@ export class StatisticsChart extends LitElement {
       name: string;
       color?: ZRColor;
       borderColor?: ZRColor;
+      noLabelClick?: boolean;
     }[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
@@ -636,6 +638,7 @@ export class StatisticsChart extends LitElement {
                 name,
                 color: series.color as ZRColor,
                 borderColor: series.itemStyle?.borderColor,
+                noLabelClick: isExternalStatistic(statistic_id),
               });
             }
             displayedLegend = displayedLegend || showLegend;
@@ -771,7 +774,11 @@ export class StatisticsChart extends LitElement {
       // only update the legend if it has changed or it will trigger options update
       this._legendData =
         legendData.length > 1
-          ? legendData.map(({ id, name }) => ({ id, name }))
+          ? legendData.map(({ id, name, noLabelClick }) => ({
+              id,
+              name,
+              noLabelClick,
+            }))
           : // if there is only one entity, let the base chart handle the legend
             undefined;
     }
