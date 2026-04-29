@@ -32,8 +32,7 @@ export interface LovelaceViewBackgroundConfig {
 }
 
 export type LovelaceDashboardBackgroundConfig =
-  | string
-  | LovelaceViewBackgroundConfig;
+  string | LovelaceViewBackgroundConfig;
 
 export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
