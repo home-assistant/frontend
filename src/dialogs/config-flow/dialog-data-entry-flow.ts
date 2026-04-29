@@ -241,10 +241,7 @@ class DataEntryFlowDialog extends LitElement {
         return this.hass.localize(
           `ui.panel.config.integrations.config_flow.${
             devicesLength ? "device_created" : "success"
-          }`,
-          {
-            number: devicesLength,
-          }
+          }`
         );
       }
       default:
