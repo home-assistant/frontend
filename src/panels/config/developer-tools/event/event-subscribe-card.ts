@@ -41,6 +41,10 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _viewedEventId?: number;
 
+  // Tracks which event the user is currently viewing. Stored by id rather
+  // than buffer index so the view survives the buffer shifting as new events
+  // arrive. New events never auto-advance the view; the user must navigate.
+
   private _eventCount = 0;
 
   @state() _ignoredEventsCount = 0;
@@ -142,23 +146,23 @@ class EventSubscribeCard extends LitElement {
         </ha-card>
       `;
     }
-    const total = this._events.length;
-    // Events are stored newest-first. If the user hasn't navigated, show the
-    // newest (index 0). Once they navigate, pin to the chosen event id.
-    const index =
-      this._viewedEventId === undefined
-        ? 0
-        : Math.max(
-            0,
-            this._events.findIndex((e) => e.id === this._viewedEventId)
-          );
+    const bufferTotal = this._events.length;
+    // Find the viewed event. If it has aged out of the buffer (or none is
+    // tracked yet), fall back to the oldest available event so the view
+    // stays close to where the user was rather than jumping around.
+    const index = this._resolveViewedIndex();
     const event = this._events[index];
+    const position = event.id + 1;
+    // Derive total from the newest event's id so all values stay in sync with
+    // the events array, even if a new event arrives mid-render.
+    const totalFired = this._events[0].id + 1;
+    const atNewest = index === 0;
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
           <ha-icon-button
             .path=${mdiChevronDoubleLeft}
-            .disabled=${index >= total - 1}
+            .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.oldest_event"
             )}
@@ -166,7 +170,7 @@ class EventSubscribeCard extends LitElement {
           ></ha-icon-button>
           <ha-icon-button
             .path=${mdiChevronLeft}
-            .disabled=${index >= total - 1}
+            .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.older_event"
             )}
@@ -176,7 +180,7 @@ class EventSubscribeCard extends LitElement {
             ${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.event_fired",
               {
-                name: event.id + 1,
+                name: position,
                 time: formatTimeWithSeconds(
                   new Date(event.event.time_fired),
                   this.hass!.locale,
@@ -184,11 +188,11 @@ class EventSubscribeCard extends LitElement {
                 ),
               }
             )}
-            <span class="counter">(${total - index} / ${total})</span>
+            <span class="counter">(${position} / ${totalFired})</span>
           </div>
           <ha-icon-button
             .path=${mdiChevronRight}
-            .disabled=${index <= 0}
+            .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.newer_event"
             )}
@@ -196,7 +200,7 @@ class EventSubscribeCard extends LitElement {
           ></ha-icon-button>
           <ha-icon-button
             .path=${mdiChevronDoubleRight}
-            .disabled=${this._viewedEventId === undefined}
+            .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.developer-tools.tabs.events.newest_event"
             )}
@@ -213,6 +217,16 @@ class EventSubscribeCard extends LitElement {
     `;
   }
 
+  private _resolveViewedIndex(): number {
+    if (this._viewedEventId === undefined) {
+      return 0;
+    }
+    const found = this._events.findIndex((e) => e.id === this._viewedEventId);
+    // Viewed event has aged out of the buffer: fall back to the oldest
+    // available event (closest to where the user was viewing).
+    return found === -1 ? this._events.length - 1 : found;
+  }
+
   private _showOldest(): void {
     if (!this._events.length) {
       return;
@@ -221,30 +235,30 @@ class EventSubscribeCard extends LitElement {
   }
 
   private _showOlder(): void {
-    const total = this._events.length;
-    const current =
-      this._viewedEventId === undefined
-        ? 0
-        : this._events.findIndex((e) => e.id === this._viewedEventId);
-    const next = Math.min(current + 1, total - 1);
+    if (!this._events.length) {
+      return;
+    }
+    const current = this._resolveViewedIndex();
+    const next = Math.min(current + 1, this._events.length - 1);
     this._viewedEventId = this._events[next].id;
   }
 
   private _showNewest(): void {
-    // Resume auto-follow on incoming events.
-    this._viewedEventId = undefined;
+    if (!this._events.length) {
+      return;
+    }
+    // Jump to the current newest event. New events arriving after this will
+    // not auto-advance the view; the user must press this button again.
+    this._viewedEventId = this._events[0].id;
   }
 
   private _showNewer(): void {
-    if (this._viewedEventId === undefined) {
+    if (!this._events.length) {
       return;
     }
-
-    const current = this._events.findIndex((e) => e.id === this._viewedEventId);
+    const current = this._resolveViewedIndex();
     const next = Math.max(current - 1, 0);
-
-    // Reaching the newest event resumes auto-follow on incoming events.
-    this._viewedEventId = next === 0 ? undefined : this._events[next].id;
+    this._viewedEventId = this._events[next].id;
   }
 
   private _valueChanged(ev: InputEvent): void {
@@ -306,16 +320,22 @@ class EventSubscribeCard extends LitElement {
               return;
             }
             const tail =
-              this._events.length > 30
+              this._events.length >= 30
                 ? this._events.slice(0, 29)
                 : this._events;
+            const id = this._eventCount++;
             this._events = [
               {
                 event,
-                id: this._eventCount++,
+                id,
               },
               ...tail,
             ];
+            // Land on the very first event (position 1, id 0) and stay
+            // there until the user navigates.
+            if (this._viewedEventId === undefined) {
+              this._viewedEventId = id;
+            }
           }, this._eventType);
       } catch (error: any) {
         this._error = this.hass!.localize(
