@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDotsVertical,
   mdiLocationEnter,
@@ -5,12 +6,15 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -30,10 +34,6 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import "@home-assistant/webawesome/dist/components/divider/divider";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -47,10 +47,10 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._refreshSupervisorInfo();
     }
   }
@@ -122,11 +122,15 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize("ui.panel.config.updates.title", {
+                        count: canInstallUpdates.length,
+                      })}
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
-                      .isInstallable=${true}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -137,11 +141,18 @@ class HaConfigSectionUpdates extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
+                    <div class="title" role="heading" aria-level="2">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.title_not_installable",
+                        {
+                          count: notInstallableUpdates.length,
+                        }
+                      )}
+                    </div>
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
-                      .isInstallable=${false}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -234,6 +245,11 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+
+    .title {
+      padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-updates {

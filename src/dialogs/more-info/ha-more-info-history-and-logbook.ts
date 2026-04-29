@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
@@ -22,7 +23,7 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadNumericDeviceClasses();
   }

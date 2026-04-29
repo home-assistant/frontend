@@ -16,15 +16,14 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiTextBoxOutline,
   mdiWrench,
 } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -34,22 +33,16 @@ import {
   fetchApplicationCredentialsConfigEntry,
 } from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
-import type {
-  ConfigEntry,
-  DisableConfigEntryResult,
-  SubEntry,
-} from "../../../data/config_entries";
+import type { DisableConfigEntryResult } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
   disableConfigEntry,
   enableConfigEntry,
   ERROR_STATES,
-  getSubEntries,
   RECOVERABLE_STATES,
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -74,7 +67,10 @@ import {
   showPromptDialog,
 } from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
-import { renderConfigEntryError } from "./ha-config-integration-page";
+import {
+  renderConfigEntryError,
+  type ConfigEntryData,
+} from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 
 @customElement("ha-config-entry-row")
@@ -89,22 +85,14 @@ export class HaConfigEntryRow extends LitElement {
 
   @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
-  @property({ attribute: false }) public entry!: ConfigEntry;
+  @property({ attribute: false }) public data!: ConfigEntryData;
 
   @state() private _expanded = true;
 
   @state() private _devicesExpanded = true;
 
-  @state() private _subEntries?: SubEntry[];
-
-  protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("entry")) {
-      this._fetchSubEntries();
-    }
-  }
-
   protected render() {
-    const item = this.entry;
+    const item = this.data.entry;
 
     let stateText: Parameters<typeof this.hass.localize> | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
@@ -127,15 +115,17 @@ export class HaConfigEntryRow extends LitElement {
       stateTextExtra = renderConfigEntryError(this.hass, item);
     }
 
-    const devices = this._getDevices();
-    const services = this._getServices();
     const entities = this._getEntities();
+    const ownDevices = [...this.data.devices, ...this.data.services];
 
-    const ownDevices = [...devices, ...services].filter(
-      (device) =>
-        !device.config_entries_subentries[item.entry_id].length ||
-        device.config_entries_subentries[item.entry_id][0] === null
-    );
+    const allDevices = [
+      ...this.data.devices,
+      ...this.data.subEntries.flatMap((s) => s.devices),
+    ];
+    const allServices = [
+      ...this.data.services,
+      ...this.data.subEntries.flatMap((s) => s.services),
+    ];
 
     const statusLine: (TemplateResult | string)[] = [];
 
@@ -157,7 +147,7 @@ export class HaConfigEntryRow extends LitElement {
           "ui.panel.config.integrations.config_entry.disable_restart_confirm"
         )}.`);
       }
-    } else if (!devices.length && !services.length && entities.length) {
+    } else if (!allDevices.length && !allServices.length && entities.length) {
       statusLine.push(
         html`<a
           href=${`/config/entities/?historyBack=1&config_entry=${item.entry_id}`}
@@ -171,7 +161,7 @@ export class HaConfigEntryRow extends LitElement {
 
     const configPanel = this._configPanel(item.domain, this.hass.panels);
 
-    const subEntries = this._subEntries || [];
+    const subEntries = this.data.subEntries;
 
     return html`<ha-md-list>
       <ha-md-list-item
@@ -245,29 +235,29 @@ export class HaConfigEntryRow extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          ${devices.length
+          ${allDevices.length
             ? html`
                 <a
-                  href=${devices.length === 1
-                    ? `/config/devices/device/${devices[0].id}`
+                  href=${allDevices.length === 1
+                    ? `/config/devices/device/${allDevices[0].id}`
                     : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
                 >
                   <ha-dropdown-item value="devices">
                     <ha-svg-icon .path=${mdiDevices} slot="icon"></ha-svg-icon>
                     ${this.hass.localize(
                       `ui.panel.config.integrations.config_entry.devices`,
-                      { count: devices.length }
+                      { count: allDevices.length }
                     )}
                     <ha-icon-next slot="details"></ha-icon-next>
                   </ha-dropdown-item>
                 </a>
               `
             : nothing}
-          ${services.length
+          ${allServices.length
             ? html`
                 <a
-                  href=${services.length === 1
-                    ? `/config/devices/device/${services[0].id}`
+                  href=${allServices.length === 1
+                    ? `/config/devices/device/${allServices[0].id}`
                     : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
                 >
                   <ha-dropdown-item value="services">
@@ -277,7 +267,7 @@ export class HaConfigEntryRow extends LitElement {
                     ></ha-svg-icon>
                     ${this.hass.localize(
                       `ui.panel.config.integrations.config_entry.services`,
-                      { count: services.length }
+                      { count: allServices.length }
                     )}
                     <ha-icon-next slot="details"></ha-icon-next>
                   </ha-dropdown-item>
@@ -298,6 +288,22 @@ export class HaConfigEntryRow extends LitElement {
                       `ui.panel.config.integrations.config_entry.entities`,
                       { count: entities.length }
                     )}
+                    <ha-icon-next slot="details"></ha-icon-next>
+                  </ha-dropdown-item>
+                </a>
+              `
+            : nothing}
+          ${ERROR_STATES.includes(item.state)
+            ? html`
+                <a
+                  href=${`/config/logs?filter=${encodeURIComponent(item.domain)}`}
+                >
+                  <ha-dropdown-item value="logs">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiTextBoxOutline}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.panel.config.logs.caption")}
                     <ha-icon-next slot="details"></ha-icon-next>
                   </ha-dropdown-item>
                 </a>
@@ -449,7 +455,7 @@ export class HaConfigEntryRow extends LitElement {
                 </ha-md-list>`
               : nothing}
             ${subEntries.map(
-              (subEntry) => html`
+              (subEntryData) => html`
                 <ha-config-sub-entry-row
                   .hass=${this.hass}
                   .narrow=${this.narrow}
@@ -457,7 +463,7 @@ export class HaConfigEntryRow extends LitElement {
                   .diagnosticHandler=${this.diagnosticHandler}
                   .entities=${this.entities}
                   .entry=${item}
-                  .subEntry=${subEntry}
+                  .data=${subEntryData}
                   data-entry-id=${item.entry_id}
                 ></ha-config-sub-entry-row>
               `
@@ -478,18 +484,6 @@ export class HaConfigEntryRow extends LitElement {
     </ha-md-list>`;
   }
 
-  private async _fetchSubEntries() {
-    this._subEntries = this.entry.num_subentries
-      ? (await getSubEntries(this.hass, this.entry.entry_id)).sort((a, b) =>
-          caseInsensitiveStringCompare(
-            a.title,
-            b.title,
-            this.hass.locale.language
-          )
-        )
-      : undefined;
-  }
-
   private _configPanel = memoizeOne(
     (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
       Object.values(panels).find(
@@ -499,38 +493,8 @@ export class HaConfigEntryRow extends LitElement {
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities.filter(
-      (entity) => entity.config_entry_id === this.entry.entry_id
+      (entity) => entity.config_entry_id === this.data.entry.entry_id
     );
-
-  private _getDevices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices)
-      .filter(
-        (device) =>
-          device.config_entries.includes(this.entry.entry_id) &&
-          device.entry_type !== "service"
-      )
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          computeDeviceNameDisplay(a, this.hass),
-          computeDeviceNameDisplay(b, this.hass),
-          this.hass.locale.language
-        )
-      );
-
-  private _getServices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices)
-      .filter(
-        (device) =>
-          device.config_entries.includes(this.entry.entry_id) &&
-          device.entry_type === "service"
-      )
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          computeDeviceNameDisplay(a, this.hass),
-          computeDeviceNameDisplay(b, this.hass),
-          this.hass.locale.language
-        )
-      );
 
   private _toggleExpand() {
     this._expanded = !this._expanded;
@@ -583,7 +547,7 @@ export class HaConfigEntryRow extends LitElement {
   };
 
   private _showOptions() {
-    showOptionsFlowDialog(this, this.entry, { manifest: this.manifest });
+    showOptionsFlowDialog(this, this.data.entry, { manifest: this.manifest });
   }
 
   // Return an application credentials id for this config entry to prompt the
@@ -648,7 +612,7 @@ export class HaConfigEntryRow extends LitElement {
   }
 
   private _handleReload = async () => {
-    const result = await reloadConfigEntry(this.hass, this.entry.entry_id);
+    const result = await reloadConfigEntry(this.hass, this.data.entry.entry_id);
     const locale_key = result.require_restart
       ? "reload_restart_confirm"
       : "reload_confirm";
@@ -661,16 +625,19 @@ export class HaConfigEntryRow extends LitElement {
 
   private _handleReconfigure = async () => {
     showConfigFlowDialog(this, {
-      startFlowHandler: this.entry.domain,
+      startFlowHandler: this.data.entry.domain,
       showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: await fetchIntegrationManifest(this.hass, this.entry.domain),
-      entryId: this.entry.entry_id,
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this.data.entry.domain
+      ),
+      entryId: this.data.entry.entry_id,
       navigateToResult: true,
     });
   };
 
   private _handleCopy = async () => {
-    await copyToClipboard(this.entry.entry_id);
+    await copyToClipboard(this.data.entry.entry_id);
     showToast(this, {
       message:
         this.hass?.localize("ui.common.copied_clipboard") ||
@@ -681,7 +648,7 @@ export class HaConfigEntryRow extends LitElement {
   private _handleRename = async () => {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
-      defaultValue: this.entry.title,
+      defaultValue: this.data.entry.title,
       inputLabel: this.hass.localize(
         "ui.panel.config.integrations.rename_input_label"
       ),
@@ -689,7 +656,7 @@ export class HaConfigEntryRow extends LitElement {
     if (newName === null) {
       return;
     }
-    await updateConfigEntry(this.hass, this.entry.entry_id, {
+    await updateConfigEntry(this.hass, this.data.entry.entry_id, {
       title: newName,
     });
   };
@@ -705,12 +672,12 @@ export class HaConfigEntryRow extends LitElement {
   }
 
   private _handleDisable = async () => {
-    const entryId = this.entry.entry_id;
+    const entryId = this.data.entry.entry_id;
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.disable_confirm_title",
-        { title: this.entry.title }
+        { title: this.data.entry.title }
       ),
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.disable_confirm_text"
@@ -745,7 +712,7 @@ export class HaConfigEntryRow extends LitElement {
   };
 
   private _handleEnable = async () => {
-    const entryId = this.entry.entry_id;
+    const entryId = this.data.entry.entry_id;
 
     let result: DisableConfigEntryResult;
     try {
@@ -770,7 +737,7 @@ export class HaConfigEntryRow extends LitElement {
   };
 
   private _handleDelete = async () => {
-    const entryId = this.entry.entry_id;
+    const entryId = this.data.entry.entry_id;
 
     const applicationCredentialsId =
       await this._applicationCredentialForRemove(entryId);
@@ -778,7 +745,7 @@ export class HaConfigEntryRow extends LitElement {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
-        { title: this.entry.title }
+        { title: this.data.entry.title }
       ),
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_text"
@@ -807,14 +774,14 @@ export class HaConfigEntryRow extends LitElement {
 
   private _handleSystemOptions = () => {
     showConfigEntrySystemOptionsDialog(this, {
-      entry: this.entry,
+      entry: this.data.entry,
       manifest: this.manifest,
     });
   };
 
   private _addSubEntry = (flowType: string) => {
-    showSubConfigFlowDialog(this, this.entry, flowType, {
-      startFlowHandler: this.entry.entry_id,
+    showSubConfigFlowDialog(this, this.data.entry, flowType, {
+      startFlowHandler: this.data.entry.entry_id,
     });
   };
 

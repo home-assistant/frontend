@@ -5,6 +5,7 @@ import {
   mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -13,6 +14,7 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
@@ -25,6 +27,7 @@ import "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import { domainToName } from "../../../../data/integration";
+import type { DomainManifestLookup } from "../../../../data/integration";
 import type {
   NonConditionAction,
   RepeatAction,
@@ -44,6 +47,8 @@ export default class HaAutomationSidebarAction extends LitElement {
 
   @property({ attribute: false }) public config!: ActionSidebarConfig;
 
+  @property({ attribute: false }) public manifests?: DomainManifestLookup;
+
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
 
   @property({ type: Boolean }) public disabled = false;
@@ -60,7 +65,7 @@ export default class HaAutomationSidebarAction extends LitElement {
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
       this._warnings = undefined;
       if (this.config) {
@@ -102,14 +107,24 @@ export default class HaAutomationSidebarAction extends LitElement {
         2
       );
 
-      title = `${domainToName(this.hass.localize, domain)}: ${
+      const serviceName =
         this.hass.localize(
           `component.${domain}.services.${service}.name`,
           this.hass.services[domain]?.[service]?.description_placeholders
         ) ||
         this.hass.services[domain]?.[service]?.name ||
-        title
-      }`;
+        title;
+
+      const manifest = this.manifests?.[domain];
+      const showDomainPrefix =
+        !this.manifests ||
+        !manifest ||
+        manifest.integration_type !== "entity" ||
+        !manifest.is_built_in;
+
+      title = showDomainPrefix
+        ? `${domainToName(this.hass.localize, domain)}: ${serviceName}`
+        : serviceName;
     }
 
     const description = isBuildingBlock
@@ -228,6 +243,37 @@ export default class HaAutomationSidebarAction extends LitElement {
             : nothing}
         </div>
       </ha-dropdown-item>
+      ${this.config.pasteAvailable()
+        ? html`
+            <ha-dropdown-item
+              slot="menu-items"
+              value="paste"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.paste"
+                )}
+                ${!this.narrow
+                  ? html`<span class="shortcut">
+                      <span
+                        >${isMac
+                          ? html`<ha-svg-icon
+                              .path=${mdiAppleKeyboardCommand}
+                            ></ha-svg-icon>`
+                          : this.hass.localize(
+                              "ui.panel.config.automation.editor.ctrl"
+                            )}</span
+                      >
+                      <span>+</span>
+                      <span>V</span>
+                    </span>`
+                  : nothing}
+              </div>
+            </ha-dropdown-item>
+          `
+        : nothing}
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -390,6 +436,9 @@ export default class HaAutomationSidebarAction extends LitElement {
         break;
       case "cut":
         this.config.cut();
+        break;
+      case "paste":
+        this.config.paste();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();

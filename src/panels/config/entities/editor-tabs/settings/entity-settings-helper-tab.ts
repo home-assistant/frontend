@@ -44,12 +44,15 @@ export class EntitySettingsHelperTab extends LitElement {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this._componentLoaded = isComponentLoaded(this.hass, this.entry.platform);
+    this._componentLoaded = isComponentLoaded(
+      this.hass.config,
+      this.entry.platform
+    );
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;

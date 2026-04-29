@@ -258,6 +258,7 @@ const computeStateToPartsFromEntityAttributes = (
       "infrared",
       "input_button",
       "notify",
+      "radio_frequency",
       "scene",
       "stt",
       "tag",
@@ -265,7 +266,9 @@ const computeStateToPartsFromEntityAttributes = (
       "wake_word",
       "datetime",
     ].includes(domain) ||
-    (domain === "sensor" && attributes.device_class === "timestamp")
+    (domain === "sensor" &&
+      (attributes.device_class === "timestamp" ||
+        attributes.device_class === "uptime"))
   ) {
     try {
       return [

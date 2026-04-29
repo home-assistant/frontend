@@ -38,7 +38,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._targetTemperature = this.stateObj.attributes.temperature;

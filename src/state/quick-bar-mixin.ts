@@ -81,7 +81,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
     };
 
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
@@ -150,7 +150,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this._registerShortcut();
     }
 
-    protected updated(changedProperties: PropertyValues): void {
+    protected updated(changedProperties: PropertyValues<this>): void {
       super.updated(changedProperties);
 
       if (
@@ -208,7 +208,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _conversation = memoizeOne((_components) =>
-      isComponentLoaded(this.hass!, "conversation")
+      isComponentLoaded(this.hass!.config, "conversation")
     );
 
     private _showVoiceCommandDialog(e: KeyboardEvent) {
@@ -294,41 +294,57 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const myPanel = await import("../panels/my/ha-panel-my");
       const redirects = myPanel.getMyRedirects();
 
-      for (const [slug, redirect] of Object.entries(redirects)) {
-        if (!targetPath.startsWith(redirect.redirect)) {
-          continue;
-        }
-        myParams.append("redirect", slug);
+      const redirectEntry = Object.entries(redirects).find(([_, redirect]) =>
+        targetPath.startsWith(redirect.redirect)
+      );
 
-        if (redirect.params) {
-          const params = extractSearchParamsObject();
-          for (const key of Object.keys(redirect.params)) {
-            if (key in params) {
-              myParams.append(key, params[key]);
+      if (!redirectEntry) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.notification_toast.no_matching_link_found",
+            {
+              path: targetPath,
             }
-          }
-        }
-        if (redirect.redirect === "/config/integrations/integration") {
-          myParams.append("domain", targetPath.split("/")[4]);
-        } else if (redirect.redirect === "/config/app") {
-          myParams.append("app", targetPath.split("/")[3]);
-        } else if (redirect.redirect === "/hassio/addon") {
-          myParams.append("addon", targetPath.split("/")[3]);
-        }
-        window.open(
-          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-          "_blank"
-        );
+          ),
+        });
         return;
       }
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.notification_toast.no_matching_link_found",
-          {
-            path: targetPath,
+
+      const [slug, redirect] = redirectEntry;
+
+      myParams.append("redirect", slug);
+
+      if (redirect.params) {
+        const params = extractSearchParamsObject();
+        for (const key of Object.keys(redirect.params)) {
+          if (key in params) {
+            myParams.append(key, params[key]);
           }
-        ),
-      });
+        }
+      }
+      if (redirect.redirect === "/config/integrations/integration") {
+        myParams.append("domain", targetPath.split("/")[4]);
+      } else if (redirect.redirect === "/config/app") {
+        myParams.append("app", targetPath.split("/")[3]);
+        const [{ fetchHassioAddonInfo }, { fetchStoreRepositories }] =
+          await Promise.all([
+            import("../data/hassio/addon"),
+            import("../data/supervisor/store"),
+          ]);
+        const [info, repos] = await Promise.all([
+          fetchHassioAddonInfo(this.hass!, myParams.get("app")!),
+          fetchStoreRepositories(this.hass!),
+        ]);
+        const repo = repos.find((r) => r.slug === info.repository);
+
+        if (repo && repo.source !== "local") {
+          myParams.append("repository_url", repo.source);
+        }
+      }
+      window.open(
+        `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+        "_blank"
+      );
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {

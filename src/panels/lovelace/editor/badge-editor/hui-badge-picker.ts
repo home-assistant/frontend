@@ -211,7 +211,7 @@ export class HuiBadgePicker extends LitElement {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {
       return true;
@@ -442,11 +442,7 @@ export class HuiBadgePicker extends LitElement {
           .config=${badgeConfig}
         ></div>
         <div class="badge-header">
-          ${customBadge
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.badge_picker.custom_badge"
-              )}: ${customBadge.name || customBadge.type}`
-            : name}
+          ${customBadge ? customBadge.name || customBadge.type : name}
         </div>
         <div
           class="preview ${classMap({

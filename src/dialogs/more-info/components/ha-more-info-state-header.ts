@@ -48,22 +48,27 @@ export class HaMoreInfoStateHeader extends LitElement {
 
     return html`
       <p class="state">${stateDisplay}</p>
-      <p class="last-changed" @click=${this._toggleAbsolute}>
-        ${this._absoluteTime
-          ? html`
-              <ha-absolute-time
-                .hass=${this.hass}
-                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
-              ></ha-absolute-time>
-            `
-          : html`
-              <ha-relative-time
-                .hass=${this.hass}
-                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
-                capitalize
-              ></ha-relative-time>
-            `}
-      </p>
+      <div class="time-row">
+        <p class="last-changed" @click=${this._toggleAbsolute}>
+          ${this._absoluteTime
+            ? html`
+                <ha-absolute-time
+                  .hass=${this.hass}
+                  .datetime=${this.changedOverride ??
+                  this.stateObj.last_changed}
+                ></ha-absolute-time>
+              `
+            : html`
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${this.changedOverride ??
+                  this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+              `}
+        </p>
+        <slot name="after-time"></slot>
+      </div>
     `;
   }
 
@@ -78,6 +83,19 @@ export class HaMoreInfoStateHeader extends LitElement {
       font-size: 36px;
       line-height: var(--ha-line-height-condensed);
     }
+    .time-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--ha-space-5);
+    }
+    ::slotted([slot="after-time"]) {
+      position: absolute;
+      inset-inline-end: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
     .last-changed {
       font-style: normal;
       font-size: var(--ha-font-size-l);
@@ -85,7 +103,6 @@ export class HaMoreInfoStateHeader extends LitElement {
       line-height: var(--ha-line-height-normal);
       letter-spacing: 0.1px;
       padding: var(--ha-space-1) 0;
-      margin-bottom: var(--ha-space-5);
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;

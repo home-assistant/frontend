@@ -1,6 +1,8 @@
+import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
+  formatDurationDigital,
   formatDurationLong,
   formatNumericDuration,
 } from "../common/datetime/format_duration";
@@ -68,8 +70,22 @@ const localizeTimeString = (
     return time;
   }
   try {
-    const dt = new Date("1970-01-01T" + time);
-    if (chunks.length === 2 || Number(chunks[2]) === 0) {
+    const hours = Number(chunks[0]);
+    const minutes = Number(chunks[1]);
+    const seconds = chunks.length > 2 ? Number(chunks[2]) : 0;
+    // Create date in the server timezone so formatTime converts correctly
+    // when the user's browser timezone differs from the HA server timezone.
+    const now = new Date();
+    const dt = new TZDate(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hours,
+      minutes,
+      seconds,
+      config.time_zone
+    );
+    if (chunks.length === 2 || seconds === 0) {
       return formatTime(dt, locale, config);
     }
     return formatTimeWithSeconds(dt, locale, config);
@@ -312,13 +328,12 @@ const describeLegacyTrigger = (
     let fromChoice = "other";
     let fromString = "";
     if (trigger.from !== undefined) {
-      let fromArray: string[] = [];
       if (trigger.from === null) {
         if (!trigger.attribute) {
           fromChoice = "null";
         }
       } else {
-        fromArray = ensureArray(trigger.from);
+        const fromArray = ensureArray(trigger.from);
 
         const from: string[] = [];
         for (const state of fromArray) {
@@ -346,13 +361,12 @@ const describeLegacyTrigger = (
     let toChoice = "other";
     let toString = "";
     if (trigger.to !== undefined) {
-      let toArray: string[] = [];
       if (trigger.to === null) {
         if (!trigger.attribute) {
           toChoice = "null";
         }
       } else {
-        toArray = ensureArray(trigger.to);
+        const toArray = ensureArray(trigger.to);
 
         const to: string[] = [];
         for (const state of toArray) {
@@ -505,7 +519,7 @@ const describeLegacyTrigger = (
       | "every_interval"
       | "on_the_xth"
       | "other"
-      | "has_seconds_or_minutes" = "other";
+      | "has_seconds_or_minutes";
 
     let seconds = 0;
     let minutes = 0;
@@ -826,16 +840,16 @@ const describeLegacyTrigger = (
       : trigger.entity_id;
 
     let offsetChoice = "other";
-    let offset: string | string[] = "";
+    let offset = "";
     if (trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-      offset = trigger.offset.startsWith("-")
+      const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")
         : trigger.offset.split(":");
       const duration = {
-        hours: offset.length > 0 ? +offset[0] : 0,
-        minutes: offset.length > 1 ? +offset[1] : 0,
-        seconds: offset.length > 2 ? +offset[2] : 0,
+        hours: parts.length > 0 ? +parts[0] : 0,
+        minutes: parts.length > 1 ? +parts[1] : 0,
+        seconds: parts.length > 2 ? +parts[2] : 0,
       };
       offset = formatDurationLong(hass.locale, duration);
       if (offset === "") {
@@ -855,6 +869,27 @@ const describeLegacyTrigger = (
     );
   }
   return undefined;
+};
+
+const formatSunOffset = (
+  hass: HomeAssistant,
+  offset?: number | string | ForDict
+): string => {
+  if (!offset) {
+    return "";
+  }
+  if (typeof offset === "number") {
+    return secondsToDuration(offset)!;
+  }
+  if (typeof offset === "string") {
+    return offset;
+  }
+  try {
+    const formatted = formatDurationDigital(hass.locale, offset);
+    return formatted.startsWith("-") ? formatted : `+${formatted}`;
+  } catch (_e) {
+    return JSON.stringify(offset);
+  }
 };
 
 export const describeCondition = (
@@ -1197,7 +1232,17 @@ const describeLegacyCondition = (
 
       let hasTime = "";
       if (after !== undefined && before !== undefined) {
-        hasTime = "after_before";
+        if (
+          typeof condition.after === "string" &&
+          !condition.after.includes(".") &&
+          typeof condition.before === "string" &&
+          !condition.before.includes(".") &&
+          condition.after > condition.before
+        ) {
+          hasTime = "after_before_or";
+        } else {
+          hasTime = "after_before";
+        }
       } else if (after !== undefined) {
         hasTime = "after";
       } else if (before !== undefined) {
@@ -1220,30 +1265,15 @@ const describeLegacyCondition = (
 
   // Sun condition
   if (condition.condition === "sun" && (condition.before || condition.after)) {
-    let afterDuration = "";
-    if (condition.after && condition.after_offset) {
-      if (typeof condition.after_offset === "number") {
-        afterDuration = secondsToDuration(condition.after_offset)!;
-      } else if (typeof condition.after_offset === "string") {
-        afterDuration = condition.after_offset;
-      } else {
-        afterDuration = JSON.stringify(condition.after_offset);
-      }
-    }
-
-    let beforeDuration = "";
-    if (condition.before && condition.before_offset) {
-      if (typeof condition.before_offset === "number") {
-        beforeDuration = secondsToDuration(condition.before_offset)!;
-      } else if (typeof condition.before_offset === "string") {
-        beforeDuration = condition.before_offset;
-      } else {
-        beforeDuration = JSON.stringify(condition.before_offset);
-      }
-    }
+    const afterDuration = condition.after
+      ? formatSunOffset(hass, condition.after_offset)
+      : "";
+    const beforeDuration = condition.before
+      ? formatSunOffset(hass, condition.before_offset)
+      : "";
 
     return hass.localize(
-      `${conditionsTranslationBaseKey}.sun.description.full`,
+      `${conditionsTranslationBaseKey}.sun.description.${condition.before && condition.after ? "between" : condition.before ? "before" : "after"}`,
       {
         afterChoice: condition.after ?? "other",
         afterOffsetChoice: afterDuration !== "" ? "offset" : "other",

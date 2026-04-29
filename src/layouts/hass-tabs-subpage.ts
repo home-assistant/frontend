@@ -1,6 +1,12 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
@@ -77,6 +83,8 @@ export class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
+  @query(".content") private _content?: HTMLDivElement;
+
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
@@ -127,7 +135,7 @@ export class HassTabsSubpage extends LitElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("route")) {
       const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
@@ -211,6 +219,15 @@ export class HassTabsSubpage extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  public focusContentScroller() {
+    if (!this._content) {
+      return;
+    }
+
+    this._content.style.outline = "none";
+    this._content.focus({ preventScroll: true });
   }
 
   private _backTapped(): void {
@@ -405,6 +422,7 @@ export class HassTabsSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow][show-tabs]) #fab {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

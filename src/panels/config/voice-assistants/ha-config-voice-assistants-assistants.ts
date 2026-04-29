@@ -45,7 +45,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
         .tabs=${voiceAssistantTabs}
       >
         <div class="content">
-          ${isComponentLoaded(this.hass, "assist_pipeline")
+          ${isComponentLoaded(this.hass.config, "assist_pipeline")
             ? html`
                 <assist-pref
                   .hass=${this.hass}

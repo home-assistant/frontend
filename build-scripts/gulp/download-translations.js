@@ -124,7 +124,10 @@ async function pollProcess(lokaliseApi, projectId, processId) {
 
     console.log(
       `Lokalise export process for ${project} in progress...`,
-      process.status
+      process.status,
+      process.details?.items_to_process
+        ? `${Math.round(((process.details.items_processed || 0) / process.details.items_to_process) * 100)}% (${process.details.items_processed}/${process.details.items_to_process})`
+        : ""
     );
 
     await new Promise((resolve) => {

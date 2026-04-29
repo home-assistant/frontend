@@ -136,7 +136,9 @@ class HaPanelHistory extends LitElement {
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `}
-        <div slot="title">${this.hass.localize("panel.history")}</div>
+        <h1 class="page-title" slot="title">
+          ${this.hass.localize("panel.history")}
+        </h1>
         ${entitiesSelected
           ? html`
               <ha-icon-button
@@ -274,7 +276,7 @@ class HaPanelHistory extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
@@ -657,6 +659,12 @@ class HaPanelHistory extends LitElement {
           overflow-y: visible;
         }
 
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
+        }
+
         .content {
           height: calc(
             100vh - var(--header-height, 0px) - var(
@@ -698,6 +706,8 @@ class HaPanelHistory extends LitElement {
 
         ha-target-picker {
           flex: 1;
+          max-width: 100%;
+          min-width: 0;
         }
 
         @media all and (max-width: 1025px) {

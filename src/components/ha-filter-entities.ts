@@ -36,7 +36,7 @@ export class HaFilterEntities extends LitElement {
 
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (!this.hasUpdated) {
@@ -88,6 +88,7 @@ export class HaFilterEntities extends LitElement {
                   .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
+                  @keydown=${this._handleItemKeydown}
                 >
                 </lit-virtualizer>
               </ha-list>
@@ -97,7 +98,7 @@ export class HaFilterEntities extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
@@ -116,6 +117,7 @@ export class HaFilterEntities extends LitElement {
     !entity
       ? nothing
       : html`<ha-check-list-item
+          tabindex="0"
           .value=${entity.entity_id}
           .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
@@ -127,6 +129,13 @@ export class HaFilterEntities extends LitElement {
           ></ha-state-icon>
           ${computeStateName(entity)}
         </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");

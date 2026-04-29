@@ -267,8 +267,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn: this._sortColumn
-                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}` ||
-                    ""
+                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
                   : "",
               })}
             >
@@ -451,7 +450,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             `
           : ""}
         <ha-data-table
-          .hass=${this.hass}
           .narrow=${this.narrow}
           .columns=${columns}
           .data=${this._displayData(this._data, this.hass.localize)}

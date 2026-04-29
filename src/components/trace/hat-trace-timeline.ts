@@ -812,7 +812,7 @@ export class HaAutomationTracer extends LitElement {
     return html`${entries}`;
   }
 
-  protected updated(props: PropertyValues) {
+  protected updated(props: PropertyValues<this>) {
     super.updated(props);
 
     // Pick first path when we load a new trace.

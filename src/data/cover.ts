@@ -29,36 +29,6 @@ export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
 export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
   coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
 
-export const normalizeCoverFavoritePositions = (
-  positions?: number[]
-): number[] => {
-  if (!positions) {
-    return [];
-  }
-
-  const unique = new Set<number>();
-  const normalized: number[] = [];
-
-  for (const position of positions) {
-    const value = Number(position);
-
-    if (isNaN(value)) {
-      continue;
-    }
-
-    const clamped = Math.max(0, Math.min(100, Math.round(value)));
-
-    if (unique.has(clamped)) {
-      continue;
-    }
-
-    unique.add(clamped);
-    normalized.push(clamped);
-  }
-
-  return normalized;
-};
-
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
     return stateObj.attributes.current_position === 100;

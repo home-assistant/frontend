@@ -12,6 +12,8 @@ import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type {
   ActionConfig,
   CallServiceActionConfig,
@@ -20,7 +22,6 @@ import type {
 } from "../../../data/lovelace/config/action";
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
-import type { EditorTarget } from "../editor/types";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -86,6 +87,8 @@ export class HuiActionEditor extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @property({ attribute: false })
   public context?: ActionRelatedContext;
 
@@ -138,11 +141,24 @@ export class HuiActionEditor extends LitElement {
 
     const actions = this.actions ?? DEFAULT_ACTIONS;
 
-    let action = this.config?.action || "default";
+    let action = this.config?.action || (this.required ? "" : "default");
 
     if (action === "call-service") {
       action = "perform-action";
     }
+
+    const defaultOption = {
+      value: "default",
+      label: `${this.hass!.localize(
+        "ui.panel.lovelace.editor.action-editor.actions.default_action"
+      )} ${
+        this.defaultAction
+          ? ` (${this.hass!.localize(
+              `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+            ).toLowerCase()})`
+          : ""
+      }`,
+    };
 
     return html`
       <div class="dropdown">
@@ -152,19 +168,7 @@ export class HuiActionEditor extends LitElement {
           @selected=${this._actionPicked}
           .value=${action}
           .options=${[
-            {
-              value: "default",
-              label: `${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.actions.default_action"
-              )}
-            ${
-              this.defaultAction
-                ? ` (${this.hass!.localize(
-                    `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
-                  ).toLowerCase()})`
-                : ""
-            }`,
-            },
+            ...(this.required ? [] : [defaultOption]),
             ...actions.map((actn) => ({
               value: actn,
               label: this.hass!.localize(
@@ -197,14 +201,14 @@ export class HuiActionEditor extends LitElement {
         : nothing}
       ${this.config?.action === "url"
         ? html`
-            <ha-textfield
+            <ha-input
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.url_path"
               )}
               .value=${this._url_path}
               .configValue=${"url_path"}
               @input=${this._valueChanged}
-            ></ha-textfield>
+            ></ha-input>
           `
         : nothing}
       ${this.config?.action === "call-service" ||
@@ -250,7 +254,7 @@ export class HuiActionEditor extends LitElement {
     if (action === value) {
       return;
     }
-    if (value === "default") {
+    if (value === "default" || !value) {
       fireEvent(this, "value-changed", { value: undefined });
       return;
     }
@@ -276,19 +280,20 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev): void {
+  private _valueChanged(ev: InputEvent): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
-    const value = ev.target.value ?? ev.target.checked;
-    if (this[`_${target.configValue}`] === value) {
+    const target = ev.target! as HaInput;
+    const configValue: string | undefined = (target as any).configValue;
+    const value = target.value ?? "";
+    if (this[`_${configValue}`] === value) {
       return;
     }
-    if (target.configValue) {
+    if (configValue) {
       fireEvent(this, "value-changed", {
-        value: { ...this.config!, [target.configValue!]: value },
+        value: { ...this.config!, [configValue]: value },
       });
     }
   }
@@ -344,7 +349,7 @@ export class HuiActionEditor extends LitElement {
       direction: var(--direction);
     }
     ha-select,
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
     ha-service-control,
@@ -352,7 +357,7 @@ export class HuiActionEditor extends LitElement {
     ha-form {
       display: block;
     }
-    ha-textfield,
+    ha-input,
     ha-service-control,
     ha-navigation-picker,
     ha-form {

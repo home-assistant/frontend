@@ -1,16 +1,39 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon";
+import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
+import type { ShortcutItem } from "../../../data/home_shortcuts";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import "../components/home-favorites-editor";
+import "../components/home-shortcuts-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
+
+interface EditorState {
+  favorite_entities: string[];
+  show_suggested_entities: boolean;
+  show_welcome_message: boolean;
+  shortcuts: ShortcutItem[];
+}
+
+// The common-controls strategy caps the section at 8 (or the favorites count,
+// whichever is larger); once favorites reach the cap, predictions never render
+// so the suggested-entities toggle has no effect.
+const SUGGESTED_ENTITIES_CAP = 8;
+
+const WELCOME_SCHEMA: HaFormSchema[] = [
+  { name: "show_welcome_message", selector: { boolean: {} } },
+];
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
@@ -21,7 +44,7 @@ export class DialogEditHome
 
   @state() private _params?: EditHomeDialogParams;
 
-  @state() private _config?: HomeFrontendSystemData;
+  @state() private _state?: EditorState;
 
   @state() private _open = false;
 
@@ -29,7 +52,14 @@ export class DialogEditHome
 
   public showDialog(params: EditHomeDialogParams): void {
     this._params = params;
-    this._config = { ...params.config };
+    this._state = {
+      favorite_entities: params.config.favorite_entities
+        ? [...params.config.favorite_entities]
+        : [],
+      show_suggested_entities: !params.config.hide_suggested_entities,
+      show_welcome_message: !params.config.hide_welcome_message,
+      shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
+    };
     this._open = true;
   }
 
@@ -40,13 +70,13 @@ export class DialogEditHome
 
   private _dialogClosed(): void {
     this._params = undefined;
-    this._config = undefined;
+    this._state = undefined;
     this._submitting = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this._params || !this._state) {
       return nothing;
     }
 
@@ -55,30 +85,12 @@ export class DialogEditHome
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
+        .headerSubtitle=${this.hass.localize(
+          "ui.panel.home.editor.description"
+        )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <p class="description">
-          ${this.hass.localize("ui.panel.home.editor.description")}
-        </p>
-
-        <ha-entities-picker
-          autofocus
-          .hass=${this.hass}
-          .value=${this._config?.favorite_entities || []}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.favorite_entities"
-          )}
-          .placeholder=${this.hass.localize(
-            "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.home.editor.favorite_entities_helper"
-          )}
-          reorder
-          @value-changed=${this._favoriteEntitiesChanged}
-        ></ha-entities-picker>
-
         <ha-alert alert-type="info">
           ${this.hass.localize("ui.panel.home.editor.areas_hint", {
             areas_page: html`<a
@@ -88,6 +100,72 @@ export class DialogEditHome
             >`,
           })}
         </ha-alert>
+
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.personalize")}
+          .secondary=${this.hass.localize(
+            "ui.panel.home.editor.personalize_description"
+          )}
+        >
+          <ha-icon slot="leading-icon" icon="mdi:palette-outline"></ha-icon>
+          <div class="expansion-content">
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_welcome_message: this._state.show_welcome_message,
+              }}
+              .schema=${WELCOME_SCHEMA}
+              .computeLabel=${this._computeWelcomeLabel}
+              .computeHelper=${this._computeWelcomeHelper}
+              @value-changed=${this._welcomeChanged}
+            ></ha-form>
+
+            <home-favorites-editor
+              .hass=${this.hass}
+              .favorites=${this._state.favorite_entities}
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy.home.favorite_entities"
+              )}
+              @value-changed=${this._favoriteEntitiesChanged}
+            ></home-favorites-editor>
+
+            <ha-form
+              .hass=${this.hass}
+              .data=${{
+                show_suggested_entities: this._state.show_suggested_entities,
+              }}
+              .schema=${this._suggestedSchema(
+                this._state.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
+              )}
+              .computeLabel=${this._computeSuggestedLabel}
+              .computeHelper=${this._computeSuggestedHelper}
+              @value-changed=${this._suggestedChanged}
+            ></ha-form>
+          </div>
+        </ha-expansion-panel>
+
+        <ha-expansion-panel
+          outlined
+          expanded
+          .header=${this.hass.localize("ui.panel.home.editor.summaries")}
+          .secondary=${this.hass.localize(
+            "ui.panel.home.editor.summaries_description"
+          )}
+        >
+          <ha-icon
+            slot="leading-icon"
+            icon="mdi:view-dashboard-outline"
+          ></ha-icon>
+          <div class="expansion-content">
+            <home-shortcuts-editor
+              .hass=${this.hass}
+              .shortcuts=${this._state.shortcuts}
+              @value-changed=${this._shortcutsChanged}
+            ></home-shortcuts-editor>
+          </div>
+        </ha-expansion-panel>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -110,27 +188,90 @@ export class DialogEditHome
     `;
   }
 
-  private _favoriteEntitiesChanged(ev: CustomEvent): void {
-    const entities = ev.detail.value as string[];
-    this._config = {
-      ...this._config,
-      favorite_entities: entities.length > 0 ? entities : undefined,
+  private _suggestedSchema = memoizeOne(
+    (disabled: boolean) =>
+      [
+        {
+          name: "show_suggested_entities",
+          selector: { boolean: {} },
+          disabled,
+        },
+      ] as HaFormSchema[]
+  );
+
+  private _computeWelcomeLabel = (): string =>
+    this.hass.localize("ui.panel.home.editor.welcome_message");
+
+  private _computeWelcomeHelper = (): string =>
+    this.hass.localize("ui.panel.home.editor.welcome_message_helper");
+
+  private _computeSuggestedLabel = (): string =>
+    this.hass.localize("ui.panel.home.editor.suggested_entities");
+
+  private _computeSuggestedHelper = (): string => {
+    const favoritesFull =
+      (this._state?.favorite_entities.length ?? 0) >= SUGGESTED_ENTITIES_CAP;
+    return this.hass.localize(
+      favoritesFull
+        ? "ui.panel.home.editor.suggested_entities_disabled_description"
+        : "ui.panel.home.editor.suggested_entities_description"
+    );
+  };
+
+  private _favoriteEntitiesChanged(ev: ValueChangedEvent<string[]>): void {
+    this._state = {
+      ...this._state!,
+      favorite_entities: ev.detail.value,
+    };
+  }
+
+  private _welcomeChanged(
+    ev: ValueChangedEvent<{ show_welcome_message: boolean }>
+  ): void {
+    this._state = {
+      ...this._state!,
+      show_welcome_message: ev.detail.value.show_welcome_message,
+    };
+  }
+
+  private _suggestedChanged(
+    ev: ValueChangedEvent<{ show_suggested_entities: boolean }>
+  ): void {
+    this._state = {
+      ...this._state!,
+      show_suggested_entities: ev.detail.value.show_suggested_entities,
+    };
+  }
+
+  private _shortcutsChanged(ev: ValueChangedEvent<ShortcutItem[]>): void {
+    this._state = {
+      ...this._state!,
+      shortcuts: ev.detail.value,
     };
   }
 
   private async _save(): Promise<void> {
-    if (!this._params || !this._config) {
-      return;
-    }
+    if (!this._params || !this._state) return;
 
     this._submitting = true;
+    const editor = this._state;
+
+    const config: HomeFrontendSystemData = {
+      ...this._params.config,
+      favorite_entities:
+        editor.favorite_entities.length > 0
+          ? editor.favorite_entities
+          : undefined,
+      hide_suggested_entities: editor.show_suggested_entities
+        ? undefined
+        : true,
+      hide_welcome_message: editor.show_welcome_message ? undefined : true,
+      shortcuts: editor.shortcuts.length > 0 ? editor.shortcuts : undefined,
+    };
 
     try {
-      await this._params.saveConfig(this._config);
+      await this._params.saveConfig(config);
       this.closeDialog();
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to save home configuration:", err);
     } finally {
       this._submitting = false;
     }
@@ -143,18 +284,35 @@ export class DialogEditHome
         --dialog-content-padding: var(--ha-space-6);
       }
 
-      .description {
-        margin: 0 0 var(--ha-space-4) 0;
-        color: var(--secondary-text-color);
+      ha-expansion-panel {
+        display: block;
+        --expansion-panel-content-padding: 0;
+        border-radius: var(--ha-border-radius-md);
+        --ha-card-border-radius: var(--ha-border-radius-md);
       }
 
-      ha-entities-picker {
+      ha-expansion-panel + ha-expansion-panel {
+        margin-top: var(--ha-space-2);
+      }
+
+      .expansion-content {
+        padding: var(--ha-space-3);
+      }
+
+      ha-form {
         display: block;
+      }
+
+      home-favorites-editor {
+        display: block;
+        margin-top: var(--ha-space-2);
+        margin-bottom: var(--ha-space-4);
       }
 
       ha-alert {
         display: block;
-        margin-top: var(--ha-space-4);
+        margin: calc(-1 * var(--dialog-content-padding));
+        margin-bottom: var(--ha-space-4);
       }
     `,
   ];

@@ -1,9 +1,9 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import type { TemplateResult, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -103,6 +103,20 @@ export class HaFloorPicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingFloorId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      this._pendingFloorId &&
+      changedProperties.has("hass") &&
+      this.hass.floors !== changedProperties.get("hass")?.floors &&
+      this.hass.floors[this._pendingFloorId]
+    ) {
+      this._setValue(this._pendingFloorId);
+      this._pendingFloorId = undefined;
+    }
+  }
 
   public async open() {
     await this.updateComplete;
@@ -436,7 +450,11 @@ export class HaFloorPicker extends LitElement {
                 floor_id: floor.floor_id,
               });
             });
-            this._setValue(floor.floor_id);
+            if (this.hass.floors[floor.floor_id]) {
+              this._setValue(floor.floor_id);
+            } else {
+              this._pendingFloorId = floor.floor_id;
+            }
           } catch (err: any) {
             showAlertDialog(this, {
               title: this.hass.localize(

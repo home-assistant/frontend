@@ -13,6 +13,7 @@ export interface TargetDetailsDialogParams {
   entityFilter?: HaEntityPickerEntityFilterFunc;
   includeDomains?: string[];
   includeDeviceClasses?: string[];
+  primaryEntitiesOnly?: boolean;
 }
 
 export const loadTargetDetailsDialog = () => import("./dialog-target-details");

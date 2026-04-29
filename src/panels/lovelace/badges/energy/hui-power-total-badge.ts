@@ -106,7 +106,7 @@ export class HuiPowerTotalBadge
 
     const power = this._computeTotalPower(this._data.prefs);
 
-    let displayValue = "";
+    let displayValue: string;
     if (power >= 1000) {
       displayValue = `${formatNumber(power / 1000, this.hass.locale, {
         maximumFractionDigits: 2,

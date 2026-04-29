@@ -39,7 +39,7 @@ export class DialogLabsPreviewFeatureEnable
     this._createBackup = false;
     this._open = true;
     this._fetchBackupConfig();
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchUpdateBackupConfig();
     }
   }

@@ -73,7 +73,6 @@ class DialogBox extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
         ?prevent-scrim-close=${confirmPrompt}
@@ -91,7 +90,7 @@ class DialogBox extends LitElement {
                 ></ha-icon-button
               ></slot>`
             : nothing}
-          <span
+          <h1
             class=${classMap({ title: true, alert: confirmPrompt })}
             slot="title"
             id="dialog-box-title"
@@ -103,7 +102,10 @@ class DialogBox extends LitElement {
                 ></ha-svg-icon> `
               : nothing}
             ${dialogTitle}
-          </span>
+          </h1>
+          ${this._params.subtitle
+            ? html`<span slot="subtitle">${this._params.subtitle}</span>`
+            : nothing}
         </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
@@ -245,6 +247,11 @@ class DialogBox extends LitElement {
     }
     ha-input {
       width: 100%;
+    }
+    .title {
+      font-weight: inherit;
+      font-size: inherit;
+      margin: inherit;
     }
     .title.alert {
       padding: 0 var(--ha-space-2);

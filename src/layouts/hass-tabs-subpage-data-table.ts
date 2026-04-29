@@ -210,7 +210,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
       changedProperties.has("tabs") ||
       (changedProperties.has("hass") &&
@@ -283,8 +283,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn:
                   this._sortColumn && this.columns[this._sortColumn]
-                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}` ||
-                      ""
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
                     : "",
               })}
             >
@@ -505,7 +504,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   `
                 : ""}
               <ha-data-table
-                .hass=${this.hass}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}

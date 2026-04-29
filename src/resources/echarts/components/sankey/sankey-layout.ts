@@ -107,6 +107,7 @@ function layoutSankey(
   const processedNodes = processNodes(
     filteredNodes,
     passThroughNodes,
+    edges,
     depths,
     width,
     height,
@@ -143,6 +144,14 @@ export function getPassThroughSections(
   return depths.slice(sourceDepthIndex + 1, targetDepthIndex);
 }
 
+export function passThroughNodeId(
+  sourceId: string,
+  targetId: string,
+  depth: number
+): string {
+  return `${sourceId}-${targetId}-${depth}`;
+}
+
 export function createPassThroughNode(
   sourceId: string,
   targetId: string,
@@ -151,7 +160,7 @@ export function createPassThroughNode(
 ): PassThroughNode {
   return {
     passThrough: true,
-    id: `${sourceId}-${targetId}-${depth}`,
+    id: passThroughNodeId(sourceId, targetId, depth),
     value,
     depth,
     sourceId,
@@ -241,76 +250,272 @@ export function groupNodesBySection(
   return nodesPerSection;
 }
 
+interface WeightedNeighbor {
+  id: string;
+  weight: number;
+}
+
+type NeighborDirection = "source" | "target";
+
+function getNeighborIds(
+  node: Node,
+  direction: NeighborDirection,
+  referenceDepth: number,
+  depths: number[]
+): WeightedNeighbor[] {
+  // Passthroughs have one real source and target; the matching neighbor at
+  // referenceDepth is either the real node (when referenceDepth is that end's
+  // depth) or another passthrough in the same chain. We return both candidates
+  // and let the id-index map pick whichever exists.
+  if (isPassThroughNode(node)) {
+    const realEnd = direction === "source" ? node.sourceId : node.targetId;
+    return [
+      { id: realEnd, weight: node.value },
+      {
+        id: passThroughNodeId(node.sourceId, node.targetId, referenceDepth),
+        weight: node.value,
+      },
+    ];
+  }
+
+  const edges = direction === "source" ? node.inEdges : node.outEdges;
+  const results: WeightedNeighbor[] = [];
+  edges.forEach((edge) => {
+    const sourceItem = edge.node1.hostGraph.data.getRawDataItem(
+      edge.node1.dataIndex
+    ) as SankeyNodeItemOption;
+    const targetItem = edge.node2.hostGraph.data.getRawDataItem(
+      edge.node2.dataIndex
+    ) as SankeyNodeItemOption;
+    const neighborEnd = direction === "source" ? edge.node1 : edge.node2;
+    const neighborDepth = getNodeDepthInfo(neighborEnd, depths).depth;
+    const edgeValue = getEdgeValue(edge);
+
+    if (neighborDepth === referenceDepth) {
+      const neighborItem = direction === "source" ? sourceItem : targetItem;
+      results.push({ id: neighborItem.id as string, weight: edgeValue });
+      return;
+    }
+    const spansPastReference =
+      direction === "source"
+        ? neighborDepth < referenceDepth
+        : neighborDepth > referenceDepth;
+    if (spansPastReference) {
+      results.push({
+        id: passThroughNodeId(
+          sourceItem.id as string,
+          targetItem.id as string,
+          referenceDepth
+        ),
+        weight: edgeValue,
+      });
+    }
+  });
+  return results;
+}
+
+export function computeBarycenter(
+  neighbors: WeightedNeighbor[],
+  referenceIdIndexMap: Map<string, number>,
+  fallback: number
+): number {
+  let weightedSum = 0;
+  let totalWeight = 0;
+  neighbors.forEach(({ id, weight }) => {
+    const idx = referenceIdIndexMap.get(id);
+    if (idx !== undefined) {
+      weightedSum += idx * weight;
+      totalWeight += weight;
+    }
+  });
+  return totalWeight > 0 ? weightedSum / totalWeight : fallback;
+}
+
+function buildIdIndexMap(section: Node[]): Map<string, number> {
+  const map = new Map<string, number>();
+  section.forEach((node, index) => map.set(node.id, index));
+  return map;
+}
+
+function sortSectionByBarycenter(
+  section: Node[],
+  referenceMap: Map<string, number>,
+  getNeighbors: (node: Node) => WeightedNeighbor[]
+): { sorted: Node[]; changed: boolean } {
+  const decorated = section.map((node, index) => ({
+    node,
+    index,
+    barycenter: computeBarycenter(getNeighbors(node), referenceMap, index),
+  }));
+  decorated.sort((a, b) => a.barycenter - b.barycenter || a.index - b.index);
+  const sorted = decorated.map((d) => d.node);
+  const changed = sorted.some((n, idx) => n !== section[idx]);
+  return { sorted, changed };
+}
+
+interface EdgeSegment {
+  sourceIdx: number;
+  targetIdx: number;
+}
+
+function getEdgeSegmentsBetween(
+  depthL: number,
+  depthR: number,
+  depths: number[],
+  edges: GraphEdge[],
+  lMap: Map<string, number>,
+  rMap: Map<string, number>
+): EdgeSegment[] {
+  const segments: EdgeSegment[] = [];
+  edges.forEach((edge) => {
+    if (edge.getLayout().value === 0) return;
+    const sourceItem = edge.node1.hostGraph.data.getRawDataItem(
+      edge.node1.dataIndex
+    ) as SankeyNodeItemOption;
+    const targetItem = edge.node2.hostGraph.data.getRawDataItem(
+      edge.node2.dataIndex
+    ) as SankeyNodeItemOption;
+    const sourceDepth = getNodeDepthInfo(edge.node1, depths).depth;
+    const targetDepth = getNodeDepthInfo(edge.node2, depths).depth;
+    if (sourceDepth > depthL || targetDepth < depthR) return;
+    const sourceIdInL =
+      sourceDepth === depthL
+        ? (sourceItem.id as string)
+        : passThroughNodeId(
+            sourceItem.id as string,
+            targetItem.id as string,
+            depthL
+          );
+    const targetIdInR =
+      targetDepth === depthR
+        ? (targetItem.id as string)
+        : passThroughNodeId(
+            sourceItem.id as string,
+            targetItem.id as string,
+            depthR
+          );
+    const s = lMap.get(sourceIdInL);
+    const t = rMap.get(targetIdInR);
+    if (s !== undefined && t !== undefined) {
+      segments.push({ sourceIdx: s, targetIdx: t });
+    }
+  });
+  return segments;
+}
+
+function countCrossings(segments: EdgeSegment[]): number {
+  let crossings = 0;
+  for (let i = 0; i < segments.length; i++) {
+    for (let j = i + 1; j < segments.length; j++) {
+      const a = segments[i];
+      const b = segments[j];
+      if ((a.sourceIdx - b.sourceIdx) * (a.targetIdx - b.targetIdx) < 0) {
+        crossings++;
+      }
+    }
+  }
+  return crossings;
+}
+
+function crossingsAdjacentTo(
+  sectionIndex: number,
+  sections: Node[][],
+  sectionMaps: Map<string, number>[],
+  depths: number[],
+  edges: GraphEdge[]
+): number {
+  let total = 0;
+  if (sectionIndex > 0) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[sectionIndex - 1],
+        depths[sectionIndex],
+        depths,
+        edges,
+        sectionMaps[sectionIndex - 1],
+        sectionMaps[sectionIndex]
+      )
+    );
+  }
+  if (sectionIndex < sections.length - 1) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[sectionIndex],
+        depths[sectionIndex + 1],
+        depths,
+        edges,
+        sectionMaps[sectionIndex],
+        sectionMaps[sectionIndex + 1]
+      )
+    );
+  }
+  return total;
+}
+
+const MAX_SORT_ITERATIONS = 4;
+
 export function sortNodesInSections(
   nodesPerSection: Record<number, Node[]>,
-  depths: number[]
+  depths: number[],
+  edges: GraphEdge[]
 ): Record<number, Node[]> {
-  const sortedSections: Record<number, Node[]> = {};
+  const sections: Node[][] = depths.map((d) => [...(nodesPerSection[d] || [])]);
+  // Id→index lookup per section, kept in sync with sections. Rebuilt only when
+  // a section's order actually changes (inside tryReplace).
+  const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
 
-  depths.forEach((depth, depthIndex) => {
-    const sectionNodes = nodesPerSection[depth] || [];
+  // Replace a section with a candidate ordering only when crossings strictly
+  // drop on either side. This keeps user-intended ordering intact when
+  // barycenter would shuffle nodes without improving the layout.
+  const tryReplace = (i: number, candidate: Node[]): boolean => {
+    const before = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
+    const sectionSnapshot = sections[i];
+    const mapSnapshot = sectionMaps[i];
+    sections[i] = candidate;
+    sectionMaps[i] = buildIdIndexMap(candidate);
+    const after = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
+    if (after < before) {
+      return true;
+    }
+    sections[i] = sectionSnapshot;
+    sectionMaps[i] = mapSnapshot;
+    return false;
+  };
 
-    // Sort nodes to minimize crossings
-    const sortedNodes = [...sectionNodes].sort((a, b) => {
-      const aIsPassthrough = isPassThroughNode(a);
-      const bIsPassthrough = isPassThroughNode(b);
+  for (let iter = 0; iter < MAX_SORT_ITERATIONS; iter++) {
+    let changed = false;
 
-      // Both are passthrough nodes - sort by source position
-      if (aIsPassthrough && bIsPassthrough) {
-        // Find positions of source nodes in previous section (use already sorted section)
-        if (depthIndex > 0) {
-          const prevDepth = depths[depthIndex - 1];
-          const prevSection =
-            sortedSections[prevDepth] || nodesPerSection[prevDepth] || [];
-
-          const aSourceIndex = prevSection.findIndex((n) => {
-            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
-            return nodeId === a.sourceId;
-          });
-          const bSourceIndex = prevSection.findIndex((n) => {
-            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
-            return nodeId === b.sourceId;
-          });
-
-          if (
-            aSourceIndex !== bSourceIndex &&
-            aSourceIndex !== -1 &&
-            bSourceIndex !== -1
-          ) {
-            return aSourceIndex - bSourceIndex;
-          }
-        }
-
-        // Fall back to target node positions in next section (not sorted yet, use original)
-        if (depthIndex < depths.length - 1) {
-          const nextDepth = depths[depthIndex + 1];
-          const nextSection = nodesPerSection[nextDepth] || [];
-
-          const aTargetIndex = nextSection.findIndex((n) => {
-            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
-            return nodeId === a.targetId;
-          });
-          const bTargetIndex = nextSection.findIndex((n) => {
-            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
-            return nodeId === b.targetId;
-          });
-
-          if (
-            aTargetIndex !== bTargetIndex &&
-            aTargetIndex !== -1 &&
-            bTargetIndex !== -1
-          ) {
-            return aTargetIndex - bTargetIndex;
-          }
-        }
+    for (let i = 1; i < sections.length; i++) {
+      const prevDepth = depths[i - 1];
+      const result = sortSectionByBarycenter(
+        sections[i],
+        sectionMaps[i - 1],
+        (node) => getNeighborIds(node, "source", prevDepth, depths)
+      );
+      if (result.changed && tryReplace(i, result.sorted)) {
+        changed = true;
       }
+    }
 
-      return 0;
-    });
+    for (let i = sections.length - 2; i >= 0; i--) {
+      const nextDepth = depths[i + 1];
+      const result = sortSectionByBarycenter(
+        sections[i],
+        sectionMaps[i + 1],
+        (node) => getNeighborIds(node, "target", nextDepth, depths)
+      );
+      if (result.changed && tryReplace(i, result.sorted)) {
+        changed = true;
+      }
+    }
 
-    sortedSections[depth] = sortedNodes;
+    if (!changed) break;
+  }
+
+  const sortedSections: Record<number, Node[]> = {};
+  depths.forEach((depth, i) => {
+    sortedSections[depth] = sections[i];
   });
-
   return sortedSections;
 }
 
@@ -399,6 +604,7 @@ function positionNodesInSection(
 function processNodes(
   nodes: GraphNode[],
   passThroughNodes: PassThroughNode[],
+  edges: GraphEdge[],
   depths: number[],
   width: number,
   height: number,
@@ -414,7 +620,11 @@ function processNodes(
   );
 
   const nodesPerSection = groupNodesBySection(nodes, passThroughNodes);
-  const sortedNodesPerSection = sortNodesInSections(nodesPerSection, depths);
+  const sortedNodesPerSection = sortNodesInSections(
+    nodesPerSection,
+    depths,
+    edges
+  );
   let globalValueToSizeRatio = 0;
 
   const sections = depths.map((depth) => {

@@ -7,7 +7,7 @@ import {
   mdiRadar,
   mdiVolumeHigh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -90,7 +90,7 @@ export class HaConfigLogs extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     this._init();
   }
@@ -132,7 +132,7 @@ export class HaConfigLogs extends LitElement {
         .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
-        ${isComponentLoaded(this.hass, "hassio") && this._logProviders
+        ${isComponentLoaded(this.hass.config, "hassio") && this._logProviders
           ? html`
               <ha-generic-picker
                 slot="toolbar-icon"
@@ -213,13 +213,13 @@ export class HaConfigLogs extends LitElement {
   }
 
   private async _init() {
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._getInstalledAddons();
     }
     const providerKey = extractSearchParam("provider");
     if (providerKey) {
       if (
-        isComponentLoaded(this.hass, "hassio") &&
+        isComponentLoaded(this.hass.config, "hassio") &&
         this._logProviders.find((p) => p.key === providerKey)
       ) {
         this._selectedLogProvider = providerKey;

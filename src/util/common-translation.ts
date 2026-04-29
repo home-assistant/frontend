@@ -100,7 +100,7 @@ export async function getUserLocale(
  * Get browser specific language
  */
 export function getLocalLanguage() {
-  let language = null;
+  let language: string | undefined;
   if (STORAGE.selectedLanguage) {
     try {
       const stored = JSON.parse(STORAGE.selectedLanguage);

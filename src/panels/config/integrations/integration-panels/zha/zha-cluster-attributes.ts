@@ -6,7 +6,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
   Attribute,
@@ -45,7 +45,7 @@ export class ZHAClusterAttributes extends LitElement {
   @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = undefined;
       this._selectedAttributeId = undefined;
@@ -86,18 +86,17 @@ export class ZHAClusterAttributes extends LitElement {
   private _renderAttributeInteractions(): TemplateResult {
     return html`
       <div class="input-text">
-        <ha-textfield
+        <ha-input
           .label=${this.hass!.localize("ui.panel.config.zha.common.value")}
-          type="string"
           .value=${this._attributeValue}
           @change=${this._onAttributeValueChanged}
           .placeholder=${this.hass!.localize(
             "ui.panel.config.zha.common.value"
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="input-text">
-        <ha-textfield
+        <ha-input
           .label=${this.hass!.localize(
             "ui.panel.config.zha.common.manufacturer_code_override"
           )}
@@ -107,7 +106,7 @@ export class ZHAClusterAttributes extends LitElement {
           .placeholder=${this.hass!.localize(
             "ui.panel.config.zha.common.value"
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="card-actions">
         <ha-call-service-button
@@ -186,13 +185,13 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  private _onAttributeValueChanged(event): void {
-    this._attributeValue = event.target!.value;
+  private _onAttributeValueChanged(event: InputEvent): void {
+    this._attributeValue = (event.target as HTMLInputElement).value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(event): void {
-    this._manufacturerCodeOverride = event.target!.value;
+  private _onManufacturerCodeOverrideChanged(event: InputEvent): void {
+    this._manufacturerCodeOverride = (event.target as HTMLInputElement).value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
@@ -232,7 +231,7 @@ export class ZHAClusterAttributes extends LitElement {
         }
 
         .menu,
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
 

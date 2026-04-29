@@ -20,9 +20,9 @@ import { getLanguageScores, listAgents } from "../../data/conversation";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { documentationUrl } from "../../util/documentation-url";
 
 const OPTIONS = ["cloud", "focused_local", "full_local"] as const;
 
@@ -251,7 +251,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   }
 
   private async _hasCloud(): Promise<boolean> {
-    if (!isComponentLoaded(this.hass, "cloud")) {
+    if (!isComponentLoaded(this.hass.config, "cloud")) {
       return false;
     }
     const cloudStatus = await fetchCloudStatus(this.hass);
@@ -343,10 +343,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         let pipelineName = "Home Assistant Cloud";
         let i = 1;
         while (
-          pipelines.pipelines.find(
-            // eslint-disable-next-line no-loop-func
-            (pipeline) => pipeline.name === pipelineName
-          )
+          pipelines.pipelines.find((pipeline) => pipeline.name === pipelineName)
         ) {
           pipelineName = `Home Assistant Cloud ${i}`;
           i++;

@@ -1,17 +1,14 @@
+import "@home-assistant/webawesome/dist/components/tag/tag";
 import { consume } from "@lit/context";
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import {
-  mdiClose,
   mdiDevices,
   mdiHome,
   mdiLabel,
   mdiTextureBox,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
-import { css, html, LitElement, nothing, unsafeCSS } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../common/color/compute-color";
 import { hex2rgb } from "../../common/color/convert-color";
@@ -27,6 +24,7 @@ import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import "../ha-domain-icon";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon";
 import "../ha-icon-button";
@@ -56,50 +54,37 @@ export class HaTargetPickerValueChip extends LitElement {
       this._itemData(this.type, this.itemId);
 
     return html`
-      <div
-        class="mdc-chip ${classMap({
-          [this.type]: true,
-        })}"
-        style=${color
-          ? `--color: rgb(${color}); --background-color: rgba(${color}, .5)`
-          : ""}
+      <wa-tag
+        pill
+        with-remove
+        class=${this.type}
+        style=${color ? `--color: rgb(${color});` : ""}
+        @wa-remove=${this._removeItem}
       >
-        ${iconPath
-          ? html`<ha-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .icon=${iconPath}
-            ></ha-icon>`
-          : this._iconImg
-            ? html`<img
-                class="mdc-chip__icon mdc-chip__icon--leading"
-                alt=${this._domainName || ""}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${this._iconImg}
-              />`
-            : fallbackIconPath
-              ? html`<ha-svg-icon
-                  class="mdc-chip__icon mdc-chip__icon--leading"
-                  .path=${fallbackIconPath}
-                ></ha-svg-icon>`
-              : stateObject
-                ? html`<ha-state-icon
-                    class="mdc-chip__icon mdc-chip__icon--leading"
-                    .hass=${this.hass}
-                    .stateObj=${stateObject}
-                  ></ha-state-icon>`
-                : nothing}
-        <span role="gridcell">
-          <span role="button" tabindex="0" class="mdc-chip__primary-action">
-            <span id="title-${this.itemId}" class="mdc-chip__text"
-              >${name}</span
-            >
-          </span>
-        </span>
+        <div class="icon">
+          ${iconPath
+            ? html`<ha-icon .icon=${iconPath}></ha-icon>`
+            : this._iconImg
+              ? html`<img
+                  alt=${this._domainName || ""}
+                  width="24"
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${this._iconImg}
+                />`
+              : fallbackIconPath
+                ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
+                : stateObject
+                  ? html`<ha-state-icon
+                      .hass=${this.hass}
+                      .stateObj=${stateObject}
+                    ></ha-state-icon>`
+                  : nothing}
+        </div>
+        <span class="name"> ${name} </span>
         ${this.type === "entity"
           ? nothing
-          : html`<span role="gridcell">
-              <ha-tooltip .for="expand-${slugify(this.itemId)}"
+          : html`<ha-tooltip .for="expand-${slugify(this.itemId)}"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${this.type}_id`
                 )}
@@ -114,25 +99,8 @@ export class HaTargetPickerValueChip extends LitElement {
                 .id="expand-${slugify(this.itemId)}"
                 .type=${this.type}
                 @click=${this._handleExpand}
-              ></ha-icon-button>
-            </span>`}
-        <span role="gridcell">
-          <ha-tooltip .for="remove-${slugify(this.itemId)}">
-            ${this.hass.localize(
-              `ui.components.target-picker.remove_${this.type}_id`
-            )}
-          </ha-tooltip>
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            .label=${this.hass.localize("ui.components.target-picker.remove")}
-            .path=${mdiClose}
-            hide-title
-            .id="remove-${slugify(this.itemId)}"
-            .type=${this.type}
-            @click=${this._removeItem}
-          ></ha-icon-button>
-        </span>
-      </div>
+              ></ha-icon-button>`}
+      </wa-tag>
     `;
   }
 
@@ -161,7 +129,13 @@ export class HaTargetPickerValueChip extends LitElement {
       }
 
       return {
-        name: device ? computeDeviceNameDisplay(device, this.hass) : itemId,
+        name: device
+          ? computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
+          : itemId,
         fallbackIconPath: mdiDevices,
       };
     }
@@ -235,101 +209,52 @@ export class HaTargetPickerValueChip extends LitElement {
   }
 
   static styles = css`
-    ${unsafeCSS(chipStyles)}
-    .mdc-chip {
+    :host {
+      display: inline-block;
+      max-width: 100%;
+    }
+    wa-tag {
+      background-color: var(--card-background-color);
+      border-width: var(--ha-border-width-md);
+      padding-inline-start: 0;
+      overflow: hidden;
+      max-width: 100%;
       color: var(--primary-text-color);
     }
-    .mdc-chip.add {
-      color: rgba(0, 0, 0, 0.87);
+
+    wa-tag.entity {
+      border-color: var(--ha-color-green-80);
+      --background-color: var(--ha-color-green-80);
     }
-    .add-container {
-      position: relative;
-      display: inline-flex;
+    wa-tag.device {
+      border-color: var(--ha-color-primary-80);
+      --background-color: var(--ha-color-primary-80);
     }
-    .mdc-chip:not(.add) {
-      cursor: default;
+    wa-tag.area {
+      border-color: var(--ha-color-orange-80);
+      --background-color: var(--ha-color-orange-80);
     }
-    .mdc-chip ha-icon-button {
-      --ha-icon-button-size: 24px;
-      display: flex;
-      align-items: center;
-      outline: none;
+    wa-tag.label {
+      border-color: var(--color);
+      --background-color: var(--color);
+      --icon-primary-color: var(--primary-text-color);
     }
-    .mdc-chip ha-icon-button ha-svg-icon {
-      border-radius: 50%;
-      background: var(--secondary-text-color);
+
+    .name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .mdc-chip__icon.mdc-chip__icon--trailing {
-      width: var(--ha-space-4);
-      height: var(--ha-space-4);
-      --mdc-icon-size: 14px;
-      color: var(--secondary-text-color);
-      margin-inline-start: var(--ha-space-1) !important;
-      margin-inline-end: calc(-1 * var(--ha-space-1)) !important;
-      direction: var(--direction);
-    }
-    .mdc-chip__icon--leading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      --mdc-icon-size: 20px;
+
+    .icon {
+      background-color: var(--background-color);
       border-radius: var(--ha-border-radius-circle);
-      padding: 6px;
-      margin-left: -13px !important;
-      margin-inline-start: -13px !important;
-      margin-inline-end: var(--ha-space-1) !important;
-      direction: var(--direction);
+      padding: var(--ha-space-2) var(--ha-space-1);
+      display: flex;
     }
     .expand-btn {
-      margin-right: 0;
-      margin-inline-end: 0;
-      margin-inline-start: initial;
-    }
-    .mdc-chip.area:not(.add),
-    .mdc-chip.floor:not(.add) {
-      border: 1px solid #fed6a4;
-      background: var(--card-background-color);
-    }
-    .mdc-chip.area:not(.add) .mdc-chip__icon--leading,
-    .mdc-chip.area.add,
-    .mdc-chip.floor:not(.add) .mdc-chip__icon--leading,
-    .mdc-chip.floor.add {
-      background: #fed6a4;
-    }
-    .mdc-chip.device:not(.add) {
-      border: 1px solid #a8e1fb;
-      background: var(--card-background-color);
-    }
-    .mdc-chip.device:not(.add) .mdc-chip__icon--leading,
-    .mdc-chip.device.add {
-      background: #a8e1fb;
-    }
-    .mdc-chip.entity:not(.add) {
-      border: 1px solid #d2e7b9;
-      background: var(--card-background-color);
-    }
-    .mdc-chip.entity:not(.add) .mdc-chip__icon--leading,
-    .mdc-chip.entity.add {
-      background: #d2e7b9;
-    }
-    .mdc-chip.label:not(.add) {
-      border: 1px solid var(--color, #e0e0e0);
-      background: var(--card-background-color);
-    }
-    .mdc-chip.label:not(.add) .mdc-chip__icon--leading,
-    .mdc-chip.label.add {
-      background: var(--background-color, #e0e0e0);
-    }
-    .mdc-chip:hover {
-      z-index: 5;
-    }
-    :host([disabled]) .mdc-chip {
-      opacity: var(--light-disabled-opacity);
-      pointer-events: none;
-    }
-    .tooltip-icon-img {
-      width: 24px;
-      height: 24px;
+      --ha-icon-button-size: 16px;
+      --mdc-icon-size: 14px;
     }
   `;
 }

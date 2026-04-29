@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -8,18 +9,16 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
-import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -33,6 +32,7 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
+import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -44,8 +44,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import { fullEntitiesContext } from "../../../data/context";
+import "../../../components/ha-trace-picker";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -182,20 +181,12 @@ export class HaScriptTrace extends LitElement {
                   @click=${this._pickOlderTrace}
                   .path=${mdiRayEndArrow}
                 ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickTrace}>
-                  ${repeat(
-                    this._traces,
-                    (trace) => trace.run_id,
-                    (trace) =>
-                      html`<option value=${trace.run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(trace.timestamp.start),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
-                  )}
-                </select>
+                <ha-trace-picker
+                  .hass=${this.hass}
+                  .traces=${this._traces}
+                  .value=${this._runId}
+                  @value-changed=${this._pickTrace}
+                ></ha-trace-picker>
                 <ha-icon-button
                   .disabled=${this._traces[0].run_id === this._runId}
                   .label=${this.hass!.localize(
@@ -340,7 +331,7 @@ export class HaScriptTrace extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (!this.scriptId) {
@@ -355,7 +346,7 @@ export class HaScriptTrace extends LitElement {
     )?.entity_id;
   }
 
-  public willUpdate(changedProps) {
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     // Only reset if scriptId has changed and we had one before.
@@ -393,7 +384,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.target.value;
+    this._runId = ev.detail.value;
     this._selected = undefined;
   }
 
@@ -453,7 +444,7 @@ export class HaScriptTrace extends LitElement {
       this.scriptId,
       this._runId!
     );
-    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -479,7 +470,6 @@ export class HaScriptTrace extends LitElement {
       url,
       `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
     );
-    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {
@@ -624,6 +614,10 @@ export class HaScriptTrace extends LitElement {
         }
         .trace-link {
           text-decoration: none;
+        }
+        ha-trace-picker {
+          flex-grow: 1;
+          max-width: 500px;
         }
       `,
     ];

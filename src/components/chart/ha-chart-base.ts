@@ -1,6 +1,12 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
-import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
+import {
+  mdiCheckCircle,
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiCircleOutline,
+  mdiRestart,
+} from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
 import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
@@ -18,15 +24,16 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
-import { themesContext } from "../../data/context";
+import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -46,6 +53,10 @@ export type CustomLegendOption = ECOption["legend"] & {
     name: string;
     value?: string; // Current value to display next to the name in the legend.
     itemStyle?: Record<string, any>;
+    // If true, label click does not fire `legend-label-click` even when the
+    // chart has `clickLabelForMoreInfo`; falls back to toggle. Used for items
+    // without a corresponding entity (e.g. external statistics).
+    noLabelClick?: boolean;
   }[];
 };
 
@@ -74,8 +85,14 @@ export class HaChartBase extends LitElement {
   public extraComponents?: any[];
 
   @state()
-  @consume({ context: themesContext, subscribe: true })
-  _themes!: Themes;
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
+
+  @property({ attribute: "click-label-for-more-info", type: Boolean })
+  public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
 
@@ -90,6 +107,10 @@ export class HaChartBase extends LitElement {
   private _isTouchDevice = "ontouchstart" in window;
 
   private _lastTapTime?: number;
+
+  private _longPressTimer?: ReturnType<typeof setTimeout>;
+
+  private _longPressTriggered = false;
 
   private _shouldResizeChart = false;
 
@@ -128,6 +149,7 @@ export class HaChartBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._legendPointerCancel();
     this._pendingSetup = false;
     while (this._listeners.length) {
       this._listeners.pop()!();
@@ -169,6 +191,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           // drag to zoom
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
@@ -187,6 +210,7 @@ export class HaChartBase extends LitElement {
           if (!this.options?.dataZoom) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
+          this._updateSankeyRoam();
           this.chart?.dispatchAction({
             type: "takeGlobalCursor",
             key: "dataZoomSelect",
@@ -262,6 +286,9 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
+      if (chartOptions.series) {
+        this._updateSankeyRoam();
+      }
     }
   }
 
@@ -302,22 +329,31 @@ export class HaChartBase extends LitElement {
     `;
   }
 
-  private _renderLegend() {
+  private _getLegendItems() {
     if (!this.options?.legend || !this.data) {
-      return nothing;
+      return undefined;
     }
     const legend = ensureArray(this.options.legend).find(
       (l) => l.show && l.type === "custom"
     ) as CustomLegendOption | undefined;
     if (!legend) {
-      return nothing;
+      return undefined;
     }
     const datasets = ensureArray(this.data);
-    const items =
+    return (
       legend.data ||
       datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
+        .map((d) => ({ id: d.id, name: d.name }))
+    );
+  }
+
+  private _renderLegend() {
+    const items = this._getLegendItems();
+    if (!items) {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data!);
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -337,18 +373,19 @@ export class HaChartBase extends LitElement {
             return nothing;
           }
           let itemStyle: Record<string, any> = {};
-          let name = "";
           let id = "";
           let value = "";
+          let noLabelClick = false;
+          const name = typeof item === "string" ? item : (item.name ?? "");
           if (typeof item === "string") {
-            name = item;
             id = item;
           } else {
-            name = item.name ?? "";
             id = item.id ?? name;
             value = item.value ?? "";
             itemStyle = item.itemStyle ?? {};
+            noLabelClick = item.noLabelClick ?? false;
           }
+          const labelClickable = this.clickLabelForMoreInfo && !noLabelClick;
           const dataset =
             datasets.find((d) => d.id === id) ??
             datasets.find((d) => d.name === id);
@@ -358,21 +395,43 @@ export class HaChartBase extends LitElement {
             ...itemStyle,
           };
           const color = itemStyle?.color as string;
-          const borderColor = itemStyle?.borderColor as string;
           return html`<li
             .id=${id}
-            @click=${this._legendClick}
+            @pointerdown=${this._legendPointerDown}
+            @pointerup=${this._legendPointerCancel}
+            @pointerleave=${this._legendPointerCancel}
+            @pointercancel=${this._legendPointerCancel}
+            @contextmenu=${this._legendContextMenu}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
-            .title=${name}
           >
-            <div
-              class="bullet"
-              style=${styleMap({
-                backgroundColor: color,
-                borderColor: borderColor || color,
-              })}
-            ></div>
-            <div class="label">${name}</div>
+            <button
+              type="button"
+              class="legend-toggle"
+              data-id=${id}
+              aria-pressed=${!this._hiddenDatasets.has(id)}
+              .title=${this.hass.localize(
+                "ui.components.history_charts.toggle_visibility"
+              )}
+              @click=${this._toggleDataset}
+            >
+              <ha-svg-icon
+                .path=${this._hiddenDatasets.has(id)
+                  ? mdiCircleOutline
+                  : mdiCheckCircle}
+                style=${styleMap({
+                  color: this._hiddenDatasets.has(id) ? undefined : color,
+                })}
+              ></ha-svg-icon>
+            </button>
+            <button
+              type="button"
+              class=${classMap({ label: true, clickable: labelClickable })}
+              data-id=${id}
+              .title=${name}
+              @click=${this._labelClick}
+            >
+              ${name}
+            </button>
             ${value ? html`<div class="value">${value}</div>` : nothing}
           </li>`;
         })}
@@ -431,6 +490,22 @@ export class HaChartBase extends LitElement {
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
+      });
+      this.chart.on("sankeyroam", () => {
+        const option = this.chart!.getOption();
+        const series = option.series as any[];
+        const sankeySeries = series?.find((s: any) => s.type === "sankey");
+        const zoomed = sankeySeries.zoom !== 1;
+        this._isZoomed = zoomed;
+        if (!zoomed) {
+          // Reset center when fully zoomed out
+          this.chart!.setOption({
+            series: [{ id: sankeySeries.id, center: null }],
+          });
+        }
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
+        // Clear cached emphasis states so labels don't revert to pre-zoom sizes
+        this.chart!.dispatchAction({ type: "downplay" });
       });
 
       if (!this.options?.dataZoom) {
@@ -530,6 +605,7 @@ export class HaChartBase extends LitElement {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._updateSankeyRoam();
     } finally {
       this._loading = false;
     }
@@ -969,6 +1045,26 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+    // Handle sankey chart double-click zoom
+    const option = this.chart.getOption();
+    const allSeries = option.series as any[];
+    const sankeySeries = allSeries?.filter((s: any) => s.type === "sankey");
+    if (sankeySeries?.length) {
+      if (this._isZoomed) {
+        this._handleZoomReset();
+      } else {
+        this.chart.setOption({
+          series: sankeySeries.map((s: any) => ({
+            id: s.id,
+            zoom: 2,
+          })),
+        });
+        this._isZoomed = true;
+      }
+      if (sankeySeries.length === allSeries?.length) {
+        return;
+      }
+    }
     const range = this._isZoomed
       ? [0, 100]
       : [
@@ -993,6 +1089,37 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // Reset sankey roam zoom
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          zoom: 1,
+          center: null,
+        })),
+      });
+      this._isZoomed = false;
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+  }
+
+  private _updateSankeyRoam() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    if (sankeySeries?.length) {
+      this.chart?.setOption({
+        series: sankeySeries.map((s: any) => ({
+          id: s.id,
+          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+        })),
+      });
+    }
   }
 
   private _handleDataZoomEvent(e: any) {
@@ -1036,11 +1163,86 @@ export class HaChartBase extends LitElement {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _legendClick(ev: any) {
+  // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
+  private _legendPointerDown(ev: PointerEvent) {
+    // Mouse uses Ctrl/Cmd+click instead
+    if (ev.pointerType === "mouse") {
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement)?.id;
+    if (!id) {
+      return;
+    }
+    this._longPressTriggered = false;
+    this._longPressTimer = setTimeout(() => {
+      this._longPressTriggered = true;
+      this._longPressTimer = undefined;
+      this._soloLegend(id);
+    }, 500);
+  }
+
+  private _legendPointerCancel() {
+    if (this._longPressTimer) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = undefined;
+    }
+  }
+
+  private _legendContextMenu(ev: Event) {
+    if (this._longPressTimer || this._longPressTriggered) {
+      ev.preventDefault();
+    }
+  }
+
+  private _toggleDataset(ev: MouseEvent) {
+    ev.stopPropagation();
     if (!this.chart) {
       return;
     }
-    const id = ev.currentTarget?.id;
+    if (this._longPressTriggered) {
+      this._longPressTriggered = false;
+      return;
+    }
+    const id = (ev.currentTarget as HTMLElement).dataset.id;
+    if (!id) {
+      return;
+    }
+    // Cmd+click on Mac (Ctrl+click is right-click there), Ctrl+click elsewhere
+    const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
+    if (soloModifier) {
+      this._soloLegend(id);
+      return;
+    }
+    this._handleDatasetToggle(id);
+  }
+
+  private _labelClick(ev: MouseEvent) {
+    ev.stopPropagation();
+    if (!this.chart) {
+      return;
+    }
+    if (this._longPressTriggered) {
+      this._longPressTriggered = false;
+      return;
+    }
+    const target = ev.currentTarget as HTMLElement;
+    const id = target.dataset.id;
+    if (!id) {
+      return;
+    }
+    const soloModifier = isMac ? ev.metaKey : ev.ctrlKey;
+    if (soloModifier) {
+      this._soloLegend(id);
+      return;
+    }
+    if (target.classList.contains("clickable")) {
+      fireEvent(this, "legend-label-click", { id });
+    } else {
+      this._handleDatasetToggle(id);
+    }
+  }
+
+  private _handleDatasetToggle(id: string) {
     if (this._hiddenDatasets.has(id)) {
       this._getAllIdsFromLegend(this.options, id).forEach((i) =>
         this._hiddenDatasets.delete(i)
@@ -1053,6 +1255,60 @@ export class HaChartBase extends LitElement {
       fireEvent(this, "dataset-hidden", { id });
     }
     this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _soloLegend(id: string) {
+    const allIds = this._getAllLegendIds();
+    const clickedIds = this._getAllIdsFromLegend(this.options, id);
+    const otherIds = allIds.filter((i) => !clickedIds.includes(i));
+
+    const clickedIsOnlyVisible =
+      clickedIds.every((i) => !this._hiddenDatasets.has(i)) &&
+      otherIds.every((i) => this._hiddenDatasets.has(i));
+
+    if (clickedIsOnlyVisible) {
+      // Already solo'd on this item — restore all series to visible
+      for (const hiddenId of [...this._hiddenDatasets]) {
+        this._hiddenDatasets.delete(hiddenId);
+        fireEvent(this, "dataset-unhidden", { id: hiddenId });
+      }
+    } else {
+      // Solo: hide every other series, unhide clicked if it was hidden
+      for (const otherId of otherIds) {
+        if (!this._hiddenDatasets.has(otherId)) {
+          this._hiddenDatasets.add(otherId);
+          fireEvent(this, "dataset-hidden", { id: otherId });
+        }
+      }
+      for (const clickedId of clickedIds) {
+        if (this._hiddenDatasets.has(clickedId)) {
+          this._hiddenDatasets.delete(clickedId);
+          fireEvent(this, "dataset-unhidden", { id: clickedId });
+        }
+      }
+    }
+    this.requestUpdate("_hiddenDatasets");
+  }
+
+  private _getAllLegendIds(): string[] {
+    const items = this._getLegendItems();
+    if (!items) {
+      return [];
+    }
+    const allIds = new Set<string>();
+    for (const item of items) {
+      const primaryId =
+        typeof item === "string"
+          ? item
+          : ((item.id as string) ?? (item.name as string) ?? "");
+      for (const expandedId of this._getAllIdsFromLegend(
+        this.options,
+        primaryId
+      )) {
+        allIds.add(expandedId);
+      }
+    }
+    return [...allIds];
   }
 
   private _toggleExpandedLegend() {
@@ -1201,7 +1457,6 @@ export class HaChartBase extends LitElement {
     }
     .chart-legend li {
       height: 24px;
-      cursor: pointer;
       display: inline-flex;
       align-items: center;
       padding: 0 2px;
@@ -1218,9 +1473,26 @@ export class HaChartBase extends LitElement {
       color: var(--secondary-text-color);
     }
     .chart-legend .label {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      text-align: start;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      line-height: 1;
+    }
+    @media (hover: hover) {
+      .chart-legend .label.clickable:hover {
+        text-decoration: underline;
+      }
+      .chart-legend .legend-toggle:hover {
+        opacity: 0.5;
+      }
     }
     .chart-legend .value {
       color: var(--secondary-text-color);
@@ -1228,23 +1500,26 @@ export class HaChartBase extends LitElement {
       flex-shrink: 0;
       white-space: nowrap;
     }
-    .chart-legend .bullet {
-      border-width: 1px;
-      border-style: solid;
-      border-radius: var(--ha-border-radius-circle);
-      display: block;
-      height: 16px;
-      width: 16px;
-      margin-right: 4px;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      margin-inline-end: 4px;
-      margin-inline-start: initial;
-      direction: var(--direction);
+    .chart-legend .legend-toggle {
+      background: none;
+      border: none;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 4px;
+      margin: -4px;
+      margin-inline-end: 0;
     }
-    .chart-legend .hidden .bullet {
-      border-color: var(--secondary-text-color) !important;
-      background-color: transparent !important;
+    .chart-legend .legend-toggle:focus-visible,
+    .chart-legend .label:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: var(--ha-border-radius-small, 4px);
+    }
+    .chart-legend .legend-toggle ha-svg-icon {
+      --mdc-icon-size: 18px;
     }
     ha-assist-chip {
       height: 100%;
@@ -1264,9 +1539,11 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "legend-label-click": { id: string };
     "chart-zoom": {
       start: number;
       end: number;
     };
+    "chart-sankeyroam": { zoom: number };
   }
 }

@@ -151,11 +151,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               .value=${this._newIcon}
               @value-changed=${this._iconChanged}
             >
-              <ha-domain-icon
-                slot="start"
-                domain=${this._params.domain}
-                .hass=${this.hass}
-              >
+              <ha-domain-icon slot="start" domain=${this._params.domain}>
               </ha-domain-icon>
             </ha-icon-picker>
           `
@@ -169,10 +165,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               "ui.panel.config.automation.editor.description.placeholder"
             )}
             name="description"
-            autogrow
+            resize="auto"
             .value=${this._newDescription}
-            .helper=${supportsMarkdownHelper(this.hass.localize)}
-            helperPersistent
+            .hint=${supportsMarkdownHelper(this.hass.localize)}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}

@@ -55,6 +55,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
+  "energy-grid-balance": () =>
+    import("../cards/energy/hui-energy-grid-balance-card"),
   "energy-solar-consumed-gauge": () =>
     import("../cards/energy/hui-energy-solar-consumed-gauge-card"),
   "energy-self-sufficiency-gauge": () =>
@@ -75,6 +77,7 @@ const LAZY_LOAD_TYPES = {
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
   "home-summary": () => import("../cards/hui-home-summary-card"),
+  shortcut: () => import("../cards/hui-shortcut-card"),
   "discovered-devices": () => import("../cards/hui-discovered-devices-card"),
   repairs: () => import("../cards/hui-repairs-card"),
   updates: () => import("../cards/hui-updates-card"),

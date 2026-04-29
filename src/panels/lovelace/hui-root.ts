@@ -171,7 +171,7 @@ class HUIRoot extends LitElement {
   });
 
   private _conversation = memoizeOne((_components) =>
-    isComponentLoaded(this.hass, "conversation")
+    isComponentLoaded(this.hass.config, "conversation")
   );
 
   private _renderActionItems(): TemplateResult {
@@ -247,7 +247,7 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
-        visible: this._editMode && this.hass.userData?.showAdvanced,
+        visible: this._editMode,
         overflow: true,
       },
       {
@@ -657,7 +657,7 @@ class HUIRoot extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -718,7 +718,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as
         | Lovelace
@@ -740,7 +740,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     const view = this._viewRoot;

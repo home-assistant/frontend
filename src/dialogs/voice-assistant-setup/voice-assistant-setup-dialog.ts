@@ -1,5 +1,5 @@
 import { mdiChevronLeft, mdiMenuDown } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -82,7 +82,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._open = false;
   }
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("_step") && this._step === STEP.PIPELINE) {
       this._getLanguages();
     }

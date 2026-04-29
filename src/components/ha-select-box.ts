@@ -36,6 +36,9 @@ export class HaSelectBox extends LitElement {
   @property({ type: Number, attribute: "max_columns" })
   public maxColumns?: number;
 
+  @property({ type: Boolean, attribute: "stacked_image" })
+  public stackedImage = false;
+
   render() {
     const maxColumns = this.maxColumns ?? 3;
     const columns = Math.min(maxColumns, this.options.length);
@@ -48,7 +51,8 @@ export class HaSelectBox extends LitElement {
   }
 
   private _renderOption(option: SelectBoxOption) {
-    const horizontal = this.maxColumns === 1;
+    const horizontal = this.maxColumns === 1 && !this.stackedImage;
+    const stacked = this.maxColumns === 1 && this.stackedImage;
     const disabled = option.disabled || this.disabled || false;
     const selected = option.value === this.value;
 
@@ -66,6 +70,7 @@ export class HaSelectBox extends LitElement {
       <label
         class="option ${classMap({
           horizontal: horizontal,
+          stacked: stacked,
           selected: selected,
         })}"
         ?disabled=${disabled}
@@ -184,6 +189,16 @@ export class HaSelectBox extends LitElement {
     }
 
     .option.horizontal img {
+      margin: 0;
+    }
+
+    .option.stacked {
+      align-items: stretch;
+    }
+
+    .option.stacked img {
+      max-width: 100%;
+      max-height: var(--ha-select-box-image-size, 96px);
       margin: 0;
     }
 

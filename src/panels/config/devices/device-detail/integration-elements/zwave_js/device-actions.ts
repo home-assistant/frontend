@@ -189,7 +189,7 @@ export const getZwaveDeviceActions = async (
   }
 
   if (nodeStatus.is_controller_node) {
-    const networkStatus = await fetchZwaveNetworkStatus(hass, {
+    const networkStatus = await fetchZwaveNetworkStatus(hass.connection, {
       entry_id: entryId,
     });
     actions.unshift({

@@ -6,7 +6,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
 import { fetchCommandsForCluster } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -40,7 +40,7 @@ export class ZHAClusterCommands extends LitElement {
   @state()
   private _commandData: Record<string, any> = {};
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._commands = undefined;
       this._selectedCommandId = undefined;
@@ -73,7 +73,7 @@ export class ZHAClusterCommands extends LitElement {
         ${this._selectedCommandId !== undefined
           ? html`
               <div class="input-text">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass!.localize(
                     "ui.panel.config.zha.common.manufacturer_code_override"
                   )}
@@ -83,7 +83,7 @@ export class ZHAClusterCommands extends LitElement {
                   .placeholder=${this.hass!.localize(
                     "ui.panel.config.zha.common.value"
                   )}
-                ></ha-textfield>
+                ></ha-input>
               </div>
               <div class="command-form">
                 <ha-form
@@ -166,8 +166,10 @@ export class ZHAClusterCommands extends LitElement {
       this._computeIssueClusterCommandServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(event): void {
-    this._manufacturerCodeOverride = Number(event.target.value);
+  private _onManufacturerCodeOverrideChanged(event: InputEvent): void {
+    this._manufacturerCodeOverride = Number(
+      (event.target as HTMLInputElement).value
+    );
     this._issueClusterCommandServiceData =
       this._computeIssueClusterCommandServiceData();
   }
@@ -190,7 +192,7 @@ export class ZHAClusterCommands extends LitElement {
           margin-top: 16px;
         }
         .menu,
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
 

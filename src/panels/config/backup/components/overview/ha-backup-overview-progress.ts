@@ -158,7 +158,7 @@ export class HaBackupOverviewProgress extends LitElement {
         : null;
 
     const currentGroupIndex = stage ? this._getStageGroupIndex(stage) : -1;
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     if (isHassio) {
       // Split creation into 3 sub-segments + Upload + Cleaning up
@@ -260,7 +260,7 @@ export class HaBackupOverviewProgress extends LitElement {
     `;
   }
 
-  override willUpdate(changedProps: PropertyValues) {
+  override willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("manager")) {
       const isUpload = this._isUploadStage;
       if (this._wasUploadStage && !isUpload) {

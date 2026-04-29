@@ -223,7 +223,7 @@ export class HaNumericStateTrigger extends LitElement {
       ] as const
   );
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     this._inputAboveIsEntity =
       this._inputAboveIsEntity ??
       (typeof this.trigger.above === "string" &&

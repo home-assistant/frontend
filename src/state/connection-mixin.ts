@@ -30,16 +30,17 @@ import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_displ
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
+import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import {
   addBrandsAuth,
   clearBrandsTokenRefresh,
   fetchAndScheduleBrandsAccessToken,
 } from "../util/brands-url";
-import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
+import { callWS, setDebugConnection } from "../util/websocket";
 import type { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
@@ -79,7 +80,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
-        resources: null as any,
         localize: () => "",
         translationMetadata,
         kioskMode: false,
@@ -88,7 +88,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         debugConnection: __DEV__,
         suspendWhenHidden: true,
         enableShortcuts: true,
-        moreInfoEntityId: null,
         hassUrl: (path = "") =>
           addBrandsAuth(
             new URL(path, auth.data.hassUrl).toString(),
@@ -187,24 +186,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           conn.sendMessage(msg);
         },
         // For messages that expect a response
-        callWS: <R>(msg) => {
-          if (this.hass?.debugConnection) {
-            // eslint-disable-next-line no-console
-            console.log("Sending", msg);
-          }
-
-          const resp = conn.sendMessagePromise<R>(msg);
-
-          if (this.hass?.debugConnection) {
-            resp.then(
-              // eslint-disable-next-line no-console
-              (result) => console.log("Received", result),
-              // eslint-disable-next-line no-console
-              (err) => console.error("Error", err)
-            );
-          }
-          return resp;
-        },
+        callWS: <R>(msg) => callWS<R>(conn, msg),
         loadBackendTranslation: (category, integration?, configFlow?) =>
           // @ts-ignore
           this._loadHassTranslations(
@@ -238,6 +220,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ...getState(),
         ...this._pendingHass,
       };
+
+      setDebugConnection(this.hass.debugConnection);
 
       this.hassConnected();
     }

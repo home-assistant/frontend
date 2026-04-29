@@ -8,6 +8,7 @@ export const rowStyles = css`
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
   ha-expansion-panel {
+    position: relative;
     --expansion-panel-summary-padding: 0 0 0 8px;
     --expansion-panel-content-padding: 0;
   }
@@ -45,6 +46,13 @@ export const rowStyles = css`
   }
   .hidden {
     display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+    inset-inline-end: 96px;
+    top: var(--ha-space-6);
+    box-shadow: var(--ha-box-shadow-s);
   }
 `;
 
@@ -96,13 +104,14 @@ export const saveFabStyles = css`
   :host {
     overflow: hidden;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: absolute;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 `;
@@ -129,14 +138,14 @@ export const manualEditorStyles = css`
     justify-content: flex-end;
   }
 
-  .fab-positioner ha-fab {
+  .fab-positioner ha-button[slot="fab"] {
     position: fixed;
     right: unset;
     left: unset;
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
   }
-  .fab-positioner ha-fab.dirty {
+  .fab-positioner ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 

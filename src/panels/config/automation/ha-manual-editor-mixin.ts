@@ -15,7 +15,7 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { SidebarConfig } from "../../../data/automation";
@@ -112,16 +112,16 @@ export const ManualEditorMixin = <TConfig>(
               ${this.renderContent()}
             </div>
             <div class="fab-positioner">
-              <ha-fab
+              <ha-button
                 slot="fab"
+                size="large"
                 class=${this.dirty ? "dirty" : ""}
-                .label=${this.hass.localize("ui.common.save")}
                 .disabled=${this.saving}
-                extended
                 @click=${this.saveConfig}
               >
-                <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-              </ha-fab>
+                <ha-svg-icon slot="start" .path=${mdiContentSave}></ha-svg-icon>
+                ${this.hass.localize("ui.common.save")}
+              </ha-button>
             </div>
           </div>
           <div class="sidebar-positioner">
@@ -144,7 +144,7 @@ export const ManualEditorMixin = <TConfig>(
       `;
     }
 
-    protected firstUpdated(changedProps: PropertyValues): void {
+    protected firstUpdated(changedProps: PropertyValues<this>): void {
       super.firstUpdated(changedProps);
 
       this.style.setProperty(

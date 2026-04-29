@@ -160,7 +160,7 @@ export class HuiGraphHeaderFooter
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       this._subscribed ||
       !this._config
     ) {

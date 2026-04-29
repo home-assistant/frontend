@@ -46,7 +46,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const error = this._error
       ? this._error
-      : !isComponentLoaded(this.hass, "analytics")
+      : !isComponentLoaded(this.hass.config, "analytics")
         ? "Analytics integration not loaded"
         : undefined;
 
@@ -188,13 +188,13 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const section = extractSearchParam("section");
     if (section) {
       this._highlightedSection = section;
     }
-    if (isComponentLoaded(this.hass, "analytics")) {
+    if (isComponentLoaded(this.hass.config, "analytics")) {
       this._load();
     }
   }
@@ -210,7 +210,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   }
 
   private async _loadZwaveDataCollection() {
-    if (!isComponentLoaded(this.hass, "zwave_js")) {
+    if (!isComponentLoaded(this.hass.config, "zwave_js")) {
       return;
     }
     try {
@@ -322,7 +322,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           0% {
             box-shadow:
               0 0 0 var(--ha-border-width-md) var(--primary-color),
-              0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+              0 0 12px rgba(var(--rgb-primary-color), 0.4);
           }
           100% {
             box-shadow:

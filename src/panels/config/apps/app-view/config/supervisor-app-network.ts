@@ -107,7 +107,7 @@ class SupervisorAppNetwork extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("addon")) {
       this._setNetworkConfig();

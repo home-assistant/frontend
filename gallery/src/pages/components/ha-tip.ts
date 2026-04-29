@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-tip";
@@ -31,7 +31,7 @@ export class DemoHaTip extends LitElement {
     )}`;
   }
 
-  firstUpdated(changedProps) {
+  firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     applyThemesOnElement(
       this.shadowRoot!.querySelector(".dark"),

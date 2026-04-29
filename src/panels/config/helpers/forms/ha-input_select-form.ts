@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -10,8 +10,9 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -33,7 +34,7 @@ class HaInputSelectForm extends LitElement {
 
   @state() private _options: string[] = [];
 
-  @query("#option_input", true) private _optionInput?: HaTextField;
+  @query("#option_input", true) private _optionInput?: HaInput;
 
   private _optionMoved(ev: CustomEvent): void {
     ev.stopPropagation();
@@ -75,9 +76,9 @@ class HaInputSelectForm extends LitElement {
 
     return html`
       <div class="form">
-        <ha-textfield
+        <ha-input
           dialogInitialFocus
-          autoValidate
+          auto-validate
           required
           .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
@@ -89,9 +90,8 @@ class HaInputSelectForm extends LitElement {
           .configValue=${"name"}
           @input=${this._valueChanged}
           .disabled=${this.disabled}
-        ></ha-textfield>
+        ></ha-input>
         <ha-icon-picker
-          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -138,17 +138,11 @@ class HaInputSelectForm extends LitElement {
                     </ha-list-item>
                   `
                 )
-              : html`
-                  <ha-list-item noninteractive>
-                    ${this.hass!.localize(
-                      "ui.dialogs.helper_settings.input_select.no_options"
-                    )}
-                  </ha-list-item>
-                `}
+              : nothing}
           </ha-list>
         </ha-sortable>
         <div class="layout horizontal center">
-          <ha-textfield
+          <ha-input
             class="flex-auto"
             id="option_input"
             .label=${this.hass!.localize(
@@ -156,16 +150,17 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
             .disabled=${this.disabled}
-          ></ha-textfield>
+          ></ha-input>
           <ha-button
             size="small"
-            appearance="plain"
+            appearance="filled"
             @click=${this._addOption}
             .disabled=${this.disabled}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
-            )}</ha-button
-          >
+            )}
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          </ha-button>
         </div>
       </div>
     `;
@@ -244,29 +239,27 @@ class HaInputSelectForm extends LitElement {
         .option {
           border: 1px solid var(--divider-color);
           border-radius: var(--ha-border-radius-sm);
-          margin-top: 4px;
+          margin-top: var(--ha-space-1);
           --ha-icon-button-size: 24px;
           --mdc-ripple-color: transparent;
-          --mdc-list-side-padding: 16px;
+          --mdc-list-side-padding: var(--ha-space-4);
           cursor: default;
           background-color: var(--card-background-color);
         }
-        ha-textfield {
-          display: block;
-          margin-bottom: 8px;
+        ha-input {
+          --ha-input-padding-bottom: 0;
         }
         #option_input {
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
         .header {
-          margin-top: 8px;
-          margin-bottom: 8px;
+          margin-top: var(--ha-space-2);
         }
         .handle {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
-          padding-right: 12px;
-          padding-inline-end: 12px;
+          padding-right: var(--ha-space-3);
+          padding-inline-end: var(--ha-space-3);
           padding-inline-start: initial;
         }
         .handle ha-svg-icon {
@@ -276,6 +269,14 @@ class HaInputSelectForm extends LitElement {
         .optioncontent {
           display: flex;
           align-items: center;
+        }
+        ha-icon-picker {
+          display: block;
+          margin-bottom: var(--ha-space-5);
+        }
+        ha-button {
+          margin-inline-start: var(--ha-space-3);
+          margin-top: var(--ha-space-1);
         }
       `,
     ];

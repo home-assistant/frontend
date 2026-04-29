@@ -11,7 +11,7 @@ import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
+} from "../../lovelace/strategies/helpers/view-columns-conditions";
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
@@ -87,6 +87,21 @@ export class EnergyViewStrategy extends ReactiveElement {
         column_span: 1,
         cards: [distributionCard],
         visibility: [SMALL_SCREEN_CONDITION],
+      });
+    }
+
+    // Only include if we have both grid import and export configured
+    if (hasGrid && hasReturn) {
+      const gridResultCard = {
+        type: "energy-grid-balance",
+        collection_key: collectionKey,
+      };
+      sidebarSection.cards!.push(gridResultCard);
+      view.sections!.push({
+        type: "grid",
+        column_span: 1,
+        visibility: [SMALL_SCREEN_CONDITION],
+        cards: [gridResultCard],
       });
     }
 

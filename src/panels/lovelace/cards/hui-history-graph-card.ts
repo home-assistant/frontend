@@ -110,7 +110,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     });
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("hass")) {
       this._computeNames();
@@ -130,7 +130,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (!isComponentLoaded(this.hass!.config, "history") || this._subscribed) {
       return;
     }
 
@@ -252,7 +252,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Allow update when components list changes so we can retry subscription
     if (
       !this._subscribed &&

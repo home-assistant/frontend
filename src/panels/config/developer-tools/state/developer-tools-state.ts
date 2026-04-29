@@ -24,6 +24,8 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -106,17 +108,14 @@ class HaPanelDevState extends LitElement {
           )}
         </h1>
         ${!this.narrow
-          ? html` <ha-formfield
-              .label=${this.hass.localize(
+          ? html`<ha-checkbox
+              .checked=${this._showAttributes}
+              @change=${this._saveAttributeCheckboxState}
+            >
+              ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.attributes"
               )}
-            >
-              <ha-checkbox
-                .checked=${this._showAttributes}
-                @change=${this._saveAttributeCheckboxState}
-                reducedTouchTarget
-              ></ha-checkbox>
-            </ha-formfield>`
+            </ha-checkbox>`
           : nothing}
       </div>
       <ha-expansion-panel
@@ -161,7 +160,7 @@ class HaPanelDevState extends LitElement {
                   </div>
                 `
               : nothing}
-            <ha-textfield
+            <ha-input
               .label=${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
               )}
@@ -169,11 +168,11 @@ class HaPanelDevState extends LitElement {
               autocapitalize="none"
               autocomplete="off"
               .autocorrect=${false}
-              input-spellcheck="false"
+              .spellcheck=${false}
               .value=${this._state}
               @change=${this._stateChanged}
               class="state-input"
-            ></ha-textfield>
+            ></ha-input>
             <p>
               ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.state_attributes"
@@ -313,8 +312,8 @@ class HaPanelDevState extends LitElement {
     this._expanded = true;
   }
 
-  private _stateChanged(ev) {
-    this._state = ev.target.value;
+  private _stateChanged(ev: InputEvent) {
+    this._state = (ev.target as HaInput).value ?? "";
   }
 
   private _entityFilterChanged(ev: InputEvent) {
@@ -513,19 +512,14 @@ class HaPanelDevState extends LitElement {
           --ha-input-padding-bottom: 0;
         }
 
-        ha-textfield {
-          display: block;
-        }
-
         .heading {
           display: flex;
           justify-content: space-between;
         }
 
-        .heading ha-formfield {
+        .heading ha-checkbox {
           margin-right: var(--ha-space-2);
-          --mdc-typography-body2-font-size: var(--ha-font-size-m);
-          --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
+          justify-content: center;
         }
 
         .entity-id {

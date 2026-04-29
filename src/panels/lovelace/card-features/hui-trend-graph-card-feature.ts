@@ -138,7 +138,7 @@ class HuiHistoryChartCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       !this._subscribed &&
       !this._error &&
@@ -159,7 +159,7 @@ class HuiHistoryChartCardFeature
 
   private async _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       !this.context?.entity_id ||
       !this._config ||
       this._subscribed

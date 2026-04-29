@@ -5,6 +5,7 @@ import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { getConfigEntityId } from "../../common/get-config-entity-id";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
@@ -75,6 +76,7 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
           <hui-card-visibility-editor
             .hass=${this.hass}
             .config=${this.value}
+            .entityId=${this.value ? getConfigEntityId(this.value) : undefined}
             @value-changed=${this._configChanged}
           ></hui-card-visibility-editor>
         `;

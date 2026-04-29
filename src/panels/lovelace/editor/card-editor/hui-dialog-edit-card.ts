@@ -25,6 +25,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
+  haStyleScrollbar,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -180,7 +181,12 @@ export class HuiDialogEditCard
           .label=${this.hass.localize("ui.common.close")}
           .path=${mdiClose}
         ></ha-icon-button>
-        <span slot="headerTitle" @click=${this._enlarge}>${heading}</span>
+        <span
+          slot="headerTitle"
+          class="title-enlargeable"
+          @click=${this._enlarge}
+          >${heading}</span
+        >
         ${this._documentationURL !== undefined
           ? html`
               <ha-icon-button
@@ -195,7 +201,7 @@ export class HuiDialogEditCard
             `
           : nothing}
         <div class="content">
-          <div class="element-editor">
+          <div class="element-editor ha-scrollbar">
             <hui-card-element-editor
               autofocus
               .showVisibilityTab=${this._cardConfig.type !== "conditional"}
@@ -209,7 +215,7 @@ export class HuiDialogEditCard
               @editor-save=${this._save}
             ></hui-card-element-editor>
           </div>
-          <div class="element-preview">
+          <div class="element-preview ha-scrollbar">
             ${this._sectionConfig
               ? html`
                   <hui-section
@@ -387,9 +393,15 @@ export class HuiDialogEditCard
     return [
       haStyleDialog,
       haStyleDialogFixedTop,
+      haStyleScrollbar,
       css`
         :host {
-          --code-mirror-max-height: calc(100vh - 176px);
+          --code-mirror-max-height: calc(100vh - 209px);
+          /* 68px - header
+             69px - footer
+             24px - padding-top for #content
+             40px - margin-top for mdc-dialog__surface
+             8px - spacing under mdc-dialog__surface */
         }
 
         ha-dialog {
@@ -439,18 +451,26 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
-          margin: 0 10px;
+          padding-inline-end: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-1);
+          margin-bottom: 0;
         }
 
         @media (min-width: 1000px) {
           .content {
             flex-direction: row;
+            max-height: var(--code-mirror-max-height);
           }
-          .content > * {
+          .content > .element-editor {
+            padding-inline-end: var(--ha-space-4);
+          }
+          .content > .element-editor,
+          .content > .element-preview {
             flex-basis: 0;
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
+            height: auto;
           }
           .content hui-card {
             padding: 8px 10px;
@@ -478,8 +498,6 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: var(--ha-border-radius-sm);
-          position: sticky;
-          top: 0;
         }
         .element-preview ha-spinner {
           top: calc(50% - 24px);
@@ -501,6 +519,9 @@ export class HuiDialogEditCard
         }
         ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
+        }
+        .title-enlargeable {
+          display: block;
         }
       `,
     ];

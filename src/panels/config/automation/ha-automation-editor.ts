@@ -32,7 +32,6 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -72,7 +71,7 @@ import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showToast } from "../../../util/toast";
+import { showEditorToast } from "./editor-toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
@@ -105,6 +104,9 @@ declare global {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
     "save-automation": undefined;
+    paste: {
+      item: Trigger | Condition | Action;
+    };
   }
 }
 
@@ -140,7 +142,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -547,19 +549,19 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     .showErrors=${false}
                     disable-fullscreen
                   ></ha-yaml-editor>
-                  <ha-fab
+                  <ha-button
                     slot="fab"
+                    size="large"
                     class=${this.dirty ? "dirty" : ""}
-                    .label=${this.hass.localize("ui.common.save")}
                     .disabled=${this.saving}
-                    extended
                     @click=${this._handleSaveAutomation}
                   >
                     <ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiContentSave}
                     ></ha-svg-icon>
-                  </ha-fab>`
+                    ${this.hass.localize("ui.common.save")}
+                  </ha-button>`
               : nothing}
         </div>
       </hass-subpage>
@@ -915,7 +917,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private async _handleSaveAutomation(): Promise<void> {
     if (this.yamlErrors) {
-      showToast(this, {
+      showEditorToast(this, {
         message: this.yamlErrors,
       });
       return;
@@ -998,7 +1000,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.dirty = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
-      showToast(this, {
+      showEditorToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;

@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -108,7 +108,6 @@ export class HaConfigAppsRegistries extends LitElement {
         .header=${this.hass.localize("ui.panel.config.apps.store.registries")}
       >
         <ha-data-table
-          .hass=${this.hass}
           .columns=${this._columns(this.hass.localize)}
           .data=${this._registries}
           .noDataText=${this.hass.localize(
@@ -117,13 +116,10 @@ export class HaConfigAppsRegistries extends LitElement {
           id="registry"
           has-fab
         ></ha-data-table>
-        <ha-fab
-          .label=${this.hass.localize("ui.panel.config.apps.registries.add")}
-          extended
-          @click=${this._showAddRegistryDialog}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button size="large" @click=${this._showAddRegistryDialog}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.registries.add")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -188,13 +184,14 @@ export class HaConfigAppsRegistries extends LitElement {
     ha-icon-button.delete {
       color: var(--error-color);
     }
-    ha-fab {
+    ha-button[size="large"] {
       position: fixed;
       right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
       inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

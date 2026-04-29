@@ -8,7 +8,7 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import "../../../../../components/ha-dialog";
 import type { MatterLockUserType } from "../../../../../data/matter-lock";
 import {
@@ -65,6 +65,9 @@ class DialogMatterLockUserEdit extends LitElement {
     }
 
     const isNew = !this._params.user;
+    const supportsPinCredential =
+      this._params.lockInfo?.supported_credential_types?.includes("pin") ??
+      false;
     const title = isNew
       ? this.hass.localize("ui.panel.config.matter.lock.users.add")
       : this.hass.localize("ui.panel.config.matter.lock.users.edit");
@@ -83,18 +86,18 @@ class DialogMatterLockUserEdit extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
 
-          <ha-textfield
+          <ha-input
             .label=${this.hass.localize(
               "ui.panel.config.matter.lock.users.name"
             )}
             .value=${this._userName}
             @input=${this._handleNameChange}
             maxlength="10"
-          ></ha-textfield>
+          ></ha-input>
 
-          ${isNew
+          ${isNew && supportsPinCredential
             ? html`
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize(
                     "ui.panel.config.matter.lock.credentials.data"
                   )}
@@ -110,8 +113,15 @@ class DialogMatterLockUserEdit extends LitElement {
                   minlength=${minPin}
                   maxlength=${maxPin}
                   required
-                ></ha-textfield>
+                ></ha-input>
               `
+            : nothing}
+          ${isNew && !supportsPinCredential
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
+                )}
+              </ha-alert>`
             : nothing}
 
           <div class="user-type-section">
@@ -140,7 +150,7 @@ class DialogMatterLockUserEdit extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving}
+            .disabled=${this._saving || (isNew && !supportsPinCredential)}
           >
             ${this._saving
               ? html`<ha-spinner size="small"></ha-spinner>`

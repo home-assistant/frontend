@@ -43,7 +43,7 @@ import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog-header";
 import "../../../../../../components/ha-dialog-footer";
-import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
 import "../../../../../../components/ha-dialog";
@@ -508,9 +508,12 @@ class DialogZWaveJSAddNode extends LitElement {
 
     if (this._controllerSupportsLongRange === undefined) {
       try {
-        const zwaveNetwork = await fetchZwaveNetworkStatus(this.hass, {
-          entry_id: this._entryId,
-        });
+        const zwaveNetwork = await fetchZwaveNetworkStatus(
+          this.hass.connection,
+          {
+            entry_id: this._entryId,
+          }
+        );
         this._controllerSupportsLongRange =
           zwaveNetwork?.controller?.supports_long_range;
       } catch (err) {

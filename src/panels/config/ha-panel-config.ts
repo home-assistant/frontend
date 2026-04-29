@@ -86,7 +86,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "apps",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
-      component: "hassio",
+      core: true,
       adminOnly: true,
     },
     {
@@ -784,11 +784,11 @@ class HaPanelConfig extends HassRouterPage {
     entityRegistryById.clear();
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       this._updateCloudStatus();
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {

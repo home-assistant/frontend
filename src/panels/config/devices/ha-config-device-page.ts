@@ -34,6 +34,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -94,7 +95,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -296,12 +296,12 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
@@ -335,7 +335,11 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(device, this.hass);
+    const deviceName = computeDeviceNameDisplay(
+      device,
+      this.hass.localize,
+      this.hass.states
+    );
     const integrations = this._integrations(
       device,
       this.entries,
@@ -444,7 +448,7 @@ export class HaConfigDevicePage extends LitElement {
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
 
-    const automationCard = isComponentLoaded(this.hass, "automation")
+    const automationCard = isComponentLoaded(this.hass.config, "automation")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -522,7 +526,7 @@ export class HaConfigDevicePage extends LitElement {
       : "";
 
     const sceneCard =
-      isComponentLoaded(this.hass, "scene") && entities.length
+      isComponentLoaded(this.hass.config, "scene") && entities.length
         ? html`
             <ha-card outlined>
               <h1 class="card-header">
@@ -618,7 +622,7 @@ export class HaConfigDevicePage extends LitElement {
           `
         : "";
 
-    const scriptCard = isComponentLoaded(this.hass, "script")
+    const scriptCard = isComponentLoaded(this.hass.config, "script")
       ? html`
           <ha-card outlined>
             <h1 class="card-header">
@@ -938,7 +942,7 @@ export class HaConfigDevicePage extends LitElement {
         </div>
         <div class="column">
           ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
-          ${isComponentLoaded(this.hass, "logbook")
+          ${isComponentLoaded(this.hass.config, "logbook")
             ? html`
                 <ha-card outlined>
                   <h1 class="card-header">
@@ -973,7 +977,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private async _getDiagnosticButtons(): Promise<void> {
     const deviceId = this.deviceId;
-    if (!isComponentLoaded(this.hass, "diagnostics")) {
+    if (!isComponentLoaded(this.hass.config, "diagnostics")) {
       return;
     }
 
@@ -1287,7 +1291,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = devices[this.deviceId];
     return (
       computeEntityEntryName(entity, devices) ||
-      computeDeviceNameDisplay(device, this.hass)
+      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
     );
   }
 

@@ -1,5 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -39,7 +39,7 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
       this._fetchUsers();

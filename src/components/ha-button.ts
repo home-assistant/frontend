@@ -27,7 +27,7 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @cssprop --ha-button-height - The height of the button.
  * @cssprop --ha-button-border-radius - The border radius of the button. defaults to `var(--ha-border-radius-pill)`.
  *
- * @attr {("small"|"medium")} size - Sets the button size.
+ * @attr {("small"|"medium"|"large")} size - Sets the button size.
  * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
  * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
@@ -62,6 +62,7 @@ export class HaButton extends Button {
           transition: background-color var(--ha-animation-duration-fast)
             ease-out;
           text-wrap: wrap;
+          box-shadow: var(--ha-button-box-shadow);
         }
 
         :host([size="small"]) .button {
@@ -71,6 +72,14 @@ export class HaButton extends Button {
           );
           font-size: var(--ha-font-size-m);
           --wa-form-control-padding-inline: var(--ha-space-3);
+        }
+
+        :host([size="large"]) .button {
+          --wa-form-control-height: var(
+            --ha-button-height,
+            var(--button-height, 48px)
+          );
+          font-size: var(--ha-font-size-l);
         }
 
         :host([variant="brand"]) {

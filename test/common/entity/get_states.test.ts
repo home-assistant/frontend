@@ -210,13 +210,14 @@ describe("getStates", () => {
           "sulphur_dioxide",
           "temperature",
           "timestamp",
+          "uptime",
           "volatile_organic_compounds",
           "volatile_organic_compounds_parts",
           "voltage",
           "volume_flow_rate",
         ])
       );
-      expect(result.length).toBe(35);
+      expect(result.length).toBe(36);
     });
 
     it("should return empty array for unknown attribute", () => {

@@ -23,6 +23,7 @@ import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -101,14 +102,15 @@ interface ChildView {
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
+  viewHeaderTag?: string;
+  viewHeaderImport?: () => Promise<unknown>;
 }
 
 declare global {
   interface HASSDomEvents {
     "show-child-view": ChildView;
-  }
-  interface HASSDomEvents {
     "toggle-edit-mode": boolean;
+    "close-child-view": undefined;
   }
 }
 
@@ -138,7 +140,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
 
-  @state() private _childView?: ChildView;
+  @state() private _childViewStack: ChildView[] = [];
+
+  private get _childView(): ChildView | undefined {
+    return this._childViewStack[this._childViewStack.length - 1];
+  }
 
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
@@ -168,7 +174,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._data = params.data;
     this._currView = view;
     this._initialView = view;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._infoEditMode = false;
     this._detailsYamlMode = false;
 
@@ -208,7 +214,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._detailsYamlMode = false;
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -279,7 +285,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       if (dialog) {
         fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
       }
-      this._childView = undefined;
+      this._childViewStack = this._childViewStack.slice(0, -1);
       this._detailsYamlMode = false;
       return;
     }
@@ -315,11 +321,17 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _showChildView(ev: CustomEvent): void {
-    const view = ev.detail as ChildView;
+    this._pushChildView(ev.detail as ChildView);
+  }
+
+  private _pushChildView(view: ChildView): void {
     if (view.viewImport) {
       view.viewImport();
     }
-    this._childView = view;
+    if (view.viewHeaderImport) {
+      view.viewHeaderImport();
+    }
+    this._childViewStack = [...this._childViewStack, view];
   }
 
   private _goToDevice(): void {
@@ -483,8 +495,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goToAddEntityTo(ev) {
     // Only check for request-selected events (from menu items), not regular clicks (from icon button)
-    if (ev.type === "request-selected" && !shouldHandleRequestSelectedEvent(ev))
+    if (
+      ev.type === "request-selected" &&
+      !shouldHandleRequestSelectedEvent(ev)
+    ) {
       return;
+    }
     this._setView("add_to");
   }
 
@@ -587,6 +603,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
+        @show-child-view=${this._showChildView}
         .preventScrimClose=${this._currView === "settings" ||
         !this._isEscapeEnabled}
         flexcontent
@@ -789,17 +806,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   @click=${this._toggleDetailsYamlMode}
                 ></ha-icon-button>
               `
-            : this._childView?.viewTag === "ha-more-info-details"
-              ? html`
-                  <ha-icon-button
-                    slot="headerActionItems"
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.toggle_yaml_mode"
-                    )}
-                    .path=${mdiCodeBraces}
-                    @click=${this._toggleDetailsYamlMode}
-                  ></ha-icon-button>
-                `
+            : this._childView?.viewHeaderTag
+              ? dynamicElement(this._childView.viewHeaderTag, {
+                  slot: "headerActionItems",
+                  hass: this.hass,
+                  params: this._childView.viewParams,
+                })
               : nothing}
         <div
           class=${classMap({
@@ -813,7 +825,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
               <div
                 class="content ha-scrollbar"
                 tabindex="-1"
-                @show-child-view=${this._showChildView}
                 @entity-entry-updated=${this._entryUpdated}
                 @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
                 @hass-more-info=${this._handleMoreInfoEvent}
@@ -822,24 +833,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   this._childView
                     ? html`
                         <div class="child-view">
-                          ${this._childView.viewTag ===
-                          "ha-more-info-view-voice-assistants"
-                            ? html`
-                                <ha-more-info-view-voice-assistants
-                                  .hass=${this.hass}
-                                  .entry=${this._entry!}
-                                  .params=${this._childView.viewParams}
-                                ></ha-more-info-view-voice-assistants>
-                              `
-                            : this._childView.viewTag ===
-                                "ha-more-info-view-vacuum-segment-mapping"
-                              ? html`
-                                  <ha-more-info-view-vacuum-segment-mapping
-                                    .hass=${this.hass}
-                                    .params=${this._childView.viewParams}
-                                  ></ha-more-info-view-vacuum-segment-mapping>
-                                `
-                              : nothing}
+                          ${dynamicElement(this._childView.viewTag, {
+                            hass: this.hass,
+                            entry: this._entry,
+                            params: this._childView.viewParams,
+                          })}
                         </div>
                       `
                     : this._currView === "info"
@@ -905,9 +903,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
+    this.addEventListener("close-child-view", () => this._goBack());
     this._loadNumericDeviceClasses();
   }
 
@@ -965,7 +964,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._initialView = view;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
-    this._childView = undefined;
+    this._childViewStack = [];
     this._loadEntityRegistryEntry();
   }
 

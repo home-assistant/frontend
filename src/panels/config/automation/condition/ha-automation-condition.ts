@@ -25,6 +25,7 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -43,6 +44,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   @property({ attribute: false }) public highlightedConditions?: Condition[];
 
   @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
@@ -109,12 +112,12 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("conditions");
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -223,6 +226,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -280,6 +284,9 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 
@@ -287,7 +294,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
-        deepClone(this._clipboard!.condition)
+        deepClone(this._clipboard!.condition!)
       );
     } else if (isDynamic(value)) {
       conditions = this.conditions.concat({

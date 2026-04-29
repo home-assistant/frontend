@@ -1,4 +1,5 @@
 import { mdiCheck, mdiDelete } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -144,7 +145,7 @@ class ZWaveJSProvisioned extends LitElement {
       })
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
   }

@@ -2,7 +2,7 @@ import { mdiHelpCircleOutline } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { dump, JSON_SCHEMA, load } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { until } from "lit/directives/until";
@@ -90,7 +90,7 @@ class HaPanelDevAction extends LitElement {
     }
   }
 
-  protected firstUpdated(params) {
+  protected firstUpdated(params: PropertyValues<this>) {
     super.firstUpdated(params);
     this.hass.loadBackendTranslation("services");
     this.hass.loadBackendTranslation("selector");
@@ -99,19 +99,6 @@ class HaPanelDevAction extends LitElement {
     if (serviceParam) {
       this._serviceData = {
         action: serviceParam,
-        target: {},
-        data: {},
-      };
-      if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
-        );
-      }
-    } else if (!this._serviceData?.action) {
-      const domain = Object.keys(this.hass.services).sort()[0];
-      const service = Object.keys(this.hass.services[domain]).sort()[0];
-      this._serviceData = {
-        action: `${domain}.${service}`,
         target: {},
         data: {},
       };
@@ -650,7 +637,7 @@ class HaPanelDevAction extends LitElement {
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
-        let value: any = "";
+        let value: any;
         try {
           value = load(field.example, { schema: JSON_SCHEMA });
         } catch (_err: any) {

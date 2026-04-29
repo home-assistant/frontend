@@ -1,13 +1,13 @@
-import "@material/mwc-linear-progress";
 import { mdiOpenInNew } from "@mdi/js";
 import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../src/common/url/search-params";
 import "../../src/components/ha-alert";
 import "../../src/components/ha-button";
-import "../../src/components/ha-fade-in";
+import "../../src/components/animation/ha-fade-in";
 import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
+import "../../src/components/progress/ha-progress-bar";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import "../../src/onboarding/onboarding-welcome-links";
 import { onBoardingStyles } from "../../src/onboarding/styles";
@@ -60,7 +60,7 @@ class HaLandingPage extends LandingPageBaseElement {
           ${!networkIssue && !this._supervisorError
             ? html`
                 <p>${this.localize("subheader")}</p>
-                <mwc-linear-progress indeterminate></mwc-linear-progress>
+                <ha-progress-bar indeterminate></ha-progress-bar>
               `
             : nothing}
           ${networkIssue || this._networkInfoError
@@ -115,7 +115,7 @@ class HaLandingPage extends LandingPageBaseElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     makeDialogManager(this);

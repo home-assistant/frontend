@@ -247,7 +247,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   }
 
   private get _noDataSelected() {
-    const hassio = isComponentLoaded(this.hass, "hassio");
+    const hassio = isComponentLoaded(this.hass.config, "hassio");
     if (
       this._formData?.data.include_homeassistant ||
       this._formData?.data.include_database ||
@@ -422,7 +422,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       include_database: data.include_database,
     };
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       params.include_folders = data.include_folders;
       params.include_all_addons = data.include_all_addons;
       params.include_addons = data.include_addons;

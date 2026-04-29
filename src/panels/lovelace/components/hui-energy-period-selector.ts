@@ -57,6 +57,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-ripple";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
 import {
@@ -76,6 +77,7 @@ const RANGE_KEYS: DateRange[] = [
   "this_year",
   "now-7d",
   "now-30d",
+  "now-365d",
   "now-12m",
 ];
 
@@ -123,6 +125,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() private _collapseButtons = false;
 
+  @state() private _loading = false;
+
+  private _loadingTimer?: ReturnType<typeof setTimeout>;
+
   private _resizeObserver?: ResizeObserver;
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -163,7 +169,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._measure();
@@ -345,6 +351,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     : ``}
                 </div>`
               : nothing}
+            <ha-spinner
+              class=${classMap({
+                "loading-indicator": true,
+                "is-loading": this._loading,
+              })}
+              size="small"
+            ></ha-spinner>
           </section>
           <section class="date-actions">
             <div class="overflow">
@@ -495,6 +508,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     });
     energyCollection.setPeriod(this._startDate!, this._endDate!);
     energyCollection.refresh();
+    this._scheduleLoadingIndicator();
   }
 
   private _dateRangeChanged(ev) {
@@ -671,6 +685,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _updateDates(energyData: EnergyData): void {
+    clearTimeout(this._loadingTimer);
+    this._loading = false;
     this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
@@ -689,6 +705,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._compare ? CompareMode.PREVIOUS : CompareMode.NONE
     );
     energyCollection.refresh();
+    this._scheduleLoadingIndicator();
+  }
+
+  private _scheduleLoadingIndicator() {
+    // Add a delay before showing the loading indicator
+    // Basically to ensure there's no "flash loading" when data is loaded quickly
+    clearTimeout(this._loadingTimer);
+    this._loadingTimer = setTimeout(() => {
+      this._loading = true;
+    }, 200);
   }
 
   private _getDatePickerPlacement = memoizeOne(
@@ -738,6 +764,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;
+      position: relative;
     }
     .header-title {
       font-size: var(--ha-font-size-xl);
@@ -762,6 +789,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       height: 100%;
       display: flex;
       flex-direction: row;
+      align-items: center;
+    }
+    .loading-indicator {
+      display: flex;
+      position: absolute;
+      right: var(--ha-space-2);
+      align-items: center;
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-normal) ease-in-out;
+    }
+    .loading-indicator.is-loading {
+      opacity: 1;
     }
     .date-actions .overflow {
       display: flex;

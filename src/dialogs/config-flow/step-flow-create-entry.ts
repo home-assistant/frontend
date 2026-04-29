@@ -63,12 +63,12 @@ class StepFlowCreateEntry extends LitElement {
       )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
       return;
     }
@@ -170,7 +170,8 @@ class StepFlowCreateEntry extends LitElement {
                           )}
                           .placeholder=${computeDeviceNameDisplay(
                             device,
-                            this.hass
+                            this.hass.localize,
+                            this.hass.states
                           )}
                           .value=${this._deviceUpdate[device.id]?.name ??
                           computeDeviceName(device)}

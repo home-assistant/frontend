@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -29,21 +30,15 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
   getSummaryLabel,
+  HOME_SUMMARIES_COLORS,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
+import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
-
-const COLORS: Record<HomeSummary, string> = {
-  light: "amber",
-  climate: "deep-orange",
-  security: "blue-grey",
-  media_players: "blue",
-  energy: "amber",
-};
 
 @customElement("hui-home-summary-card")
 export class HuiHomeSummaryCard
@@ -113,6 +108,11 @@ export class HuiHomeSummaryCard
       hasAction(this._config?.double_tap_action)
     );
   }
+
+  private _computeSecondaryLoading = memoizeOne(
+    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
+      summary === "energy" && !energyData
+  );
 
   private _computeSummaryState(): string {
     if (!this._config || !this.hass) {
@@ -248,6 +248,31 @@ export class HuiHomeSummaryCard
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
+      case "maintenance": {
+        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
+        );
+
+        const maintenanceEntities = findEntities(
+          allEntities,
+          maintenanceFilters
+        );
+
+        const needsAttentionEntities = filterNeedsAttentionEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        if (needsAttentionEntities.length > 0) {
+          return this.hass.localize(
+            "ui.card.home-summary.count_maintenance_issues",
+            {
+              count: needsAttentionEntities.length,
+            }
+          );
+        }
+        return this.hass.localize("ui.card.home-summary.all_maintenance_good");
+      }
       case "energy": {
         if (!this._energyData) {
           return "";
@@ -256,6 +281,21 @@ export class HuiHomeSummaryCard
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
         return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+      }
+      case "persons": {
+        const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+        const personEntities = findEntities(allEntities, personsFilters);
+        const personsHome = personEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "home";
+        });
+        return personsHome.length
+          ? this.hass.localize("ui.card.home-summary.count_persons_home", {
+              count: personsHome.length,
+            })
+          : this.hass.localize("ui.card.home-summary.nobody_home");
       }
     }
     return "";
@@ -266,13 +306,17 @@ export class HuiHomeSummaryCard
       return nothing;
     }
 
-    const color = computeCssColor(COLORS[this._config.summary]);
+    const color = computeCssColor(HOME_SUMMARIES_COLORS[this._config.summary]);
 
     const style = {
       "--tile-color": color,
     };
 
     const secondary = this._computeSummaryState();
+    const secondaryLoading = this._computeSecondaryLoading(
+      this._config.summary,
+      this._energyData
+    );
 
     const label = getSummaryLabel(this.hass.localize, this._config.summary);
     const icon = HOME_SUMMARIES_ICONS[this._config.summary];
@@ -293,6 +337,7 @@ export class HuiHomeSummaryCard
             slot="info"
             .primary=${label}
             .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
           ></ha-tile-info>
         </ha-tile-container>
       </ha-card>

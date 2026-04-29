@@ -6,8 +6,8 @@ import { array, assert, literal, object, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-check-list-item";
-import "../../../../../components/ha-switch";
 import "../../../../../components/ha-list";
+import "../../../../../components/ha-switch";
 import "../../../../../components/user/ha-user-badge";
 import type { User } from "../../../../../data/user";
 import { fetchUsers } from "../../../../../data/user";
@@ -43,7 +43,7 @@ export class HaCardConditionUser extends LitElement {
     )
   );
 
-  protected async firstUpdated(changedProps: PropertyValues) {
+  protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchUsers();
   }
@@ -57,15 +57,13 @@ export class HaCardConditionUser extends LitElement {
     const selectedUsers = this.condition.users ?? [];
 
     return html`
-      <ha-list>
+      <ha-list @selected=${this._handleSelected} multi>
         ${this._sortedUsers(this._users).map(
           (user) => html`
             <ha-check-list-item
               graphic="avatar"
               hasMeta
-              .userId=${user.id}
               .selected=${selectedUsers.includes(user.id)}
-              @request-selected=${this._userChanged}
             >
               <ha-user-badge
                 slot="graphic"
@@ -80,21 +78,18 @@ export class HaCardConditionUser extends LitElement {
     `;
   }
 
-  private _userChanged(ev) {
-    ev.stopPropagation();
-    const selectedUsers = this.condition.users ?? [];
-    const userId = ev.currentTarget.userId as string;
-    const checked = ev.detail.selected as boolean;
+  private _handleSelected(
+    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
+  ) {
+    const sortedUsers = this._sortedUsers(this._users);
+    let users = this.condition.users ?? [];
 
-    if (checked === selectedUsers.includes(userId)) {
-      return;
-    }
-
-    let users = selectedUsers;
-    if (checked) {
-      users = [...users, userId];
-    } else {
-      users = users.filter((user) => user !== userId);
+    if (ev.detail.diff.added.length) {
+      users = [...users, sortedUsers[ev.detail.diff.added[0]].id];
+    } else if (ev.detail.diff.removed.length) {
+      users = users.filter(
+        (user) => user !== sortedUsers[ev.detail.diff.removed[0]].id
+      );
     }
 
     const condition: UserCondition = {

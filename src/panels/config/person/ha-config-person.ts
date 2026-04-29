@@ -1,10 +1,10 @@
 import { mdiPlus } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
@@ -152,19 +152,15 @@ export class HaConfigPerson extends LitElement {
               `
             : nothing}
         </ha-config-section>
-        <ha-fab
-          slot="fab"
-          .label=${hass.localize("ui.panel.config.person.add_person")}
-          extended
-          @click=${this._createPerson}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._createPerson}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${hass.localize("ui.panel.config.person.add_person")}
+        </ha-button>
       </hass-tabs-subpage>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
     loadPersonDetailDialog();

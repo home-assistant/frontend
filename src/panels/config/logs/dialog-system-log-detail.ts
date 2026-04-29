@@ -1,5 +1,5 @@
 import { mdiContentCopy } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -51,7 +51,7 @@ class DialogSystemLogDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (!changedProps.has("_params") || !this._params) {
       return;

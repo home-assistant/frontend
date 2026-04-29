@@ -1,7 +1,7 @@
 import { consume } from "@lit/context";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -18,6 +18,7 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -52,7 +53,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
@@ -128,12 +128,12 @@ class HaConfigAreaPage extends LitElement {
         .concat(memberships.indirectEntities.map((entry) => entry.entity_id))
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("areaId")) {
       this._findRelated();
@@ -166,7 +166,11 @@ class HaConfigAreaPage extends LitElement {
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
       devices.forEach((entry) => {
-        entry.name = computeDeviceNameDisplay(entry, this.hass);
+        entry.name = computeDeviceNameDisplay(
+          entry,
+          this.hass.localize,
+          this.hass.states
+        );
       });
       sortDeviceRegistryByName(devices, this.hass.locale.language);
     }
@@ -190,7 +194,7 @@ class HaConfigAreaPage extends LitElement {
     let relatedScenes: NameAndEntity<SceneEntity>[] = [];
     let relatedScripts: NameAndEntity<ScriptEntity>[] = [];
 
-    if (isComponentLoaded(this.hass, "automation")) {
+    if (isComponentLoaded(this.hass.config, "automation")) {
       ({
         groupedEntities: groupedAutomations,
         relatedEntities: relatedAutomations,
@@ -200,7 +204,7 @@ class HaConfigAreaPage extends LitElement {
       ));
     }
 
-    if (isComponentLoaded(this.hass, "scene")) {
+    if (isComponentLoaded(this.hass.config, "scene")) {
       ({ groupedEntities: groupedScenes, relatedEntities: relatedScenes } =
         this._prepareEntities<SceneEntity>(
           groupedEntities.scene,
@@ -208,7 +212,7 @@ class HaConfigAreaPage extends LitElement {
         ));
     }
 
-    if (isComponentLoaded(this.hass, "script")) {
+    if (isComponentLoaded(this.hass.config, "script")) {
       ({ groupedEntities: groupedScripts, relatedEntities: relatedScripts } =
         this._prepareEntities<ScriptEntity>(
           groupedEntities.script,
@@ -328,7 +332,7 @@ class HaConfigAreaPage extends LitElement {
             </ha-card>
           </div>
           <div class="column">
-            ${isComponentLoaded(this.hass, "automation")
+            ${isComponentLoaded(this.hass.config, "automation")
               ? html`
                   <ha-card
                     outlined
@@ -378,7 +382,7 @@ class HaConfigAreaPage extends LitElement {
                   </ha-card>
                 `
               : ""}
-            ${isComponentLoaded(this.hass, "scene")
+            ${isComponentLoaded(this.hass.config, "scene")
               ? html`
                   <ha-card
                     outlined
@@ -422,7 +426,7 @@ class HaConfigAreaPage extends LitElement {
                   </ha-card>
                 `
               : ""}
-            ${isComponentLoaded(this.hass, "script")
+            ${isComponentLoaded(this.hass.config, "script")
               ? html`
                   <ha-card
                     outlined
@@ -464,7 +468,7 @@ class HaConfigAreaPage extends LitElement {
               : ""}
           </div>
           <div class="column">
-            ${isComponentLoaded(this.hass, "logbook")
+            ${isComponentLoaded(this.hass.config, "logbook")
               ? html`
                   <ha-card
                     outlined

@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDotsVertical, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,7 +8,7 @@ import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import "../../components/ha-fade-in";
+import "../../components/animation/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
 import type {

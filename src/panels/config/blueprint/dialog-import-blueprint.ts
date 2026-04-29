@@ -2,23 +2,23 @@ import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { documentationUrl } from "../../../util/documentation-url";
+import { withViewTransition } from "../../../common/util/view-transition";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { withViewTransition } from "../../../common/util/view-transition";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -42,7 +42,7 @@ class DialogImportBlueprint extends LitElement {
 
   @state() private _sourceUrlWarning = false;
 
-  @query("#input") private _input?: HaTextField;
+  @query("#input") private _input?: HaInput;
 
   public showDialog(params): void {
     this._params = params;
@@ -85,7 +85,9 @@ class DialogImportBlueprint extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" @click=${this._enlarge}> ${heading} </span>
+          <span slot="title" class="title-enlargeable" @click=${this._enlarge}>
+            ${heading}
+          </span>
         </ha-dialog-header>
         <div>
           ${this._error
@@ -131,14 +133,14 @@ class DialogImportBlueprint extends LitElement {
                       </ul>
                     `
                   : html`
-                      <ha-textfield
+                      <ha-input
                         id="input"
                         .value=${this._result.suggested_filename || ""}
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
                         autofocus
-                      ></ha-textfield>
+                      ></ha-input>
                     `}
                 <ha-expansion-panel
                   .header=${this.hass.localize(
@@ -185,14 +187,14 @@ class DialogImportBlueprint extends LitElement {
                   )}
                   <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 </ha-button>
-                <ha-textfield
+                <ha-input
                   id="input"
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
                   .value=${this._url || ""}
                   autofocus
-                ></ha-textfield>
+                ></ha-input>
               `}
         </div>
         <ha-dialog-footer slot="footer">
@@ -328,8 +330,7 @@ class DialogImportBlueprint extends LitElement {
         margin-top: 0;
         margin-bottom: var(--ha-space-2);
       }
-      ha-textfield {
-        display: block;
+      ha-input {
         margin-top: var(--ha-space-6);
       }
       ha-alert {
@@ -344,6 +345,9 @@ class DialogImportBlueprint extends LitElement {
       }
       ha-expansion-panel {
         --expansion-panel-content-padding: 0px;
+      }
+      .title-enlargeable {
+        display: block;
       }
     `,
   ];

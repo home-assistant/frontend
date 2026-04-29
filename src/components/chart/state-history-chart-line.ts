@@ -18,15 +18,39 @@ import {
   formatNumber,
 } from "../../common/number/format_number";
 import { measureTextWidth } from "../../util/text";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { filterXSS } from "../../common/util/xss";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
   return isFinite(parsed) ? parsed : null;
 };
+
+const CLIMATE_MODE_CONFIGS = [
+  { mode: "heat", action: "heating", cssVar: "--state-climate-heat-color" },
+  { mode: "cool", action: "cooling", cssVar: "--state-climate-cool-color" },
+  { mode: "dry", action: "drying", cssVar: "--state-climate-dry-color" },
+  { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
+] as const;
+
+// Used to recover the underlying entity_id from a legend dataset id.
+// Kept in sync with the suffixes appended at dataset construction below
+// for climate / water_heater / humidifier multi-attribute charts.
+const ENTITY_DATASET_SUFFIXES = [
+  "-current_temperature",
+  "-target_temperature",
+  "-target_temperature_mode",
+  "-target_temperature_mode_low",
+  ...CLIMATE_MODE_CONFIGS.map((c) => `-${c.action}`),
+  "-current_humidity",
+  "-target_humidity",
+  "-humidifying",
+  "-on",
+];
 
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
@@ -104,6 +128,8 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -121,8 +147,9 @@ export class StateHistoryChartLine extends LitElement {
       if (
         dataset.tooltip?.show === false ||
         this._hiddenStats.has(dataset.id as string)
-      )
+      ) {
         return;
+      }
       const param = params.find(
         (p: Record<string, any>) => p.seriesIndex === index
       );
@@ -214,6 +241,24 @@ export class StateHistoryChartLine extends LitElement {
     });
   }
 
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const id = ev.detail.id;
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of ENTITY_DATASET_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("data") ||
@@ -303,12 +348,50 @@ export class StateHistoryChartLine extends LitElement {
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
               const stateObj = this.hass.states[item.entityId];
+              let value: string | undefined;
+
+              if (stateObj) {
+                // For climate temperature datasets, show temperature values
+                const datasetId = item.dataset.id as string;
+                if (
+                  datasetId?.endsWith("-current_temperature") ||
+                  datasetId?.endsWith("-target_temperature") ||
+                  datasetId?.endsWith("-target_temperature_mode") ||
+                  datasetId?.endsWith("-target_temperature_mode_low")
+                ) {
+                  let attribute: string | undefined;
+                  if (datasetId.endsWith("-current_temperature")) {
+                    attribute = "current_temperature";
+                  } else if (
+                    datasetId.endsWith("-target_temperature_mode_low")
+                  ) {
+                    attribute = "target_temp_low";
+                  } else if (datasetId.endsWith("-target_temperature_mode")) {
+                    attribute = "target_temp_high";
+                  } else {
+                    attribute = "temperature";
+                  }
+                  // Use the helper to format temperature with proper unit
+                  value = computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    attribute
+                  );
+                }
+
+                // Default for non-temperature datasets / missing attribute
+                if (value === undefined) {
+                  value = this.hass.formatEntityState(stateObj);
+                }
+              }
+
               return {
                 id: item.dataset.id as string,
                 name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
+                value: value,
               };
             }),
         },
@@ -429,23 +512,18 @@ export class StateHistoryChartLine extends LitElement {
           (entityState) => entityState.attributes?.hvac_action
         );
 
-        const isHeating =
-          domain === "climate" && hasHvacAction
-            ? (entityState: LineChartState) =>
-                CLIMATE_HVAC_ACTION_TO_MODE[
-                  entityState.attributes?.hvac_action
-                ] === "heat"
-            : (entityState: LineChartState) => entityState.state === "heat";
-        const isCooling =
-          domain === "climate" && hasHvacAction
-            ? (entityState: LineChartState) =>
-                CLIMATE_HVAC_ACTION_TO_MODE[
-                  entityState.attributes?.hvac_action
-                ] === "cool"
-            : (entityState: LineChartState) => entityState.state === "cool";
-
-        const hasHeat = states.states.some(isHeating);
-        const hasCool = states.states.some(isCooling);
+        const activeModes = CLIMATE_MODE_CONFIGS.map(
+          ({ mode, action, cssVar }) => {
+            const isActive =
+              domain === "climate" && hasHvacAction
+                ? (entityState: LineChartState) =>
+                    CLIMATE_HVAC_ACTION_TO_MODE[
+                      entityState.attributes?.hvac_action
+                    ] === mode
+                : (entityState: LineChartState) => entityState.state === mode;
+            return { action, cssVar, isActive };
+          }
+        ).filter(({ isActive }) => states.states.some(isActive));
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
@@ -466,33 +544,19 @@ export class StateHistoryChartLine extends LitElement {
                 "component.climate.entity_component._.state_attributes.current_temperature.name"
               )
         );
-        if (hasHeat) {
+        for (const { action, cssVar } of activeModes) {
           addDataSet(
-            states.entity_id + "-heating",
+            `${states.entity_id}-${action}`,
             this.showNames
-              ? this.hass.localize("ui.card.climate.heating", { name: name })
+              ? this.hass.localize(`ui.card.climate.${action}`, {
+                  name: name,
+                })
               : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.hvac_action.state.heating"
+                  `component.climate.entity_component._.state_attributes.hvac_action.state.${action}`
                 ),
-            computedStyles.getPropertyValue("--state-climate-heat-color"),
+            computedStyles.getPropertyValue(cssVar),
             true
           );
-          // The "heating" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
-        }
-        if (hasCool) {
-          addDataSet(
-            states.entity_id + "-cooling",
-            this.showNames
-              ? this.hass.localize("ui.card.climate.cooling", { name: name })
-              : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.hvac_action.state.cooling"
-                ),
-            computedStyles.getPropertyValue("--state-climate-cool-color"),
-            true
-          );
-          // The "cooling" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
         }
 
         if (hasTargetRange) {
@@ -540,11 +604,8 @@ export class StateHistoryChartLine extends LitElement {
             entityState.attributes.current_temperature
           );
           const series = [curTemp];
-          if (hasHeat) {
-            series.push(isHeating(entityState) ? curTemp : null);
-          }
-          if (hasCool) {
-            series.push(isCooling(entityState) ? curTemp : null);
+          for (const { isActive } of activeModes) {
+            series.push(isActive(entityState) ? curTemp : null);
           }
           if (hasTargetRange) {
             const targetHigh = safeParseFloat(

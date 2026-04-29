@@ -34,7 +34,7 @@ export class HaFilterDevices extends LitElement {
 
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (!this.hasUpdated) {
@@ -84,6 +84,7 @@ export class HaFilterDevices extends LitElement {
                   .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
+                  @keydown=${this._handleItemKeydown}
                 >
                 </lit-virtualizer>
               </ha-list>`
@@ -98,11 +99,23 @@ export class HaFilterDevices extends LitElement {
     !device
       ? nothing
       : html`<ha-check-list-item
+          tabindex="0"
           .value=${device.id}
           .selected=${this.value?.includes(device.id) ?? false}
         >
-          ${computeDeviceNameDisplay(device, this.hass)}
+          ${computeDeviceNameDisplay(
+            device,
+            this.hass.localize,
+            this.hass.states
+          )}
         </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -118,7 +131,7 @@ export class HaFilterDevices extends LitElement {
     listItem.selected = this.value?.includes(value);
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
@@ -151,14 +164,18 @@ export class HaFilterDevices extends LitElement {
         .filter(
           (device) =>
             !filter ||
-            computeDeviceNameDisplay(device, this.hass)
+            computeDeviceNameDisplay(
+              device,
+              this.hass.localize,
+              this.hass.states
+            )
               .toLowerCase()
               .includes(filter)
         )
         .sort((a, b) =>
           stringCompare(
-            computeDeviceNameDisplay(a, this.hass),
-            computeDeviceNameDisplay(b, this.hass),
+            computeDeviceNameDisplay(a, this.hass.localize, this.hass.states),
+            computeDeviceNameDisplay(b, this.hass.localize, this.hass.states),
             this.hass.locale.language
           )
         );

@@ -50,7 +50,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _deviceName?: string;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("assistConfiguration")) {
@@ -104,7 +104,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.config_flow.device_name"
               )}
-              .placeholder=${computeDeviceNameDisplay(device, this.hass)}
+              .placeholder=${computeDeviceNameDisplay(
+                device,
+                this.hass.localize,
+                this.hass.states
+              )}
               .value=${this._deviceName ?? computeDeviceName(device)}
               @change=${this._deviceNameChanged}
             ></ha-input>

@@ -10,7 +10,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
-import { computeCssVariableName } from "../../../common/color/compute-color";
+import { resolveThemeColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -295,7 +295,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       : hasConfigChanged(this, changedProps);
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (
       this._config?.show_all &&
@@ -327,7 +327,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entity.entity_id)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       });
     } else {
       this._filteredMapEntities = this._mapEntities;
@@ -348,7 +348,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       this._subscribed ||
       !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
     ) {
@@ -441,15 +441,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _resolveColor(color: string): string {
-    const cssColor = computeCssVariableName(color);
-    if (cssColor.startsWith("--")) {
-      const resolved = getComputedStyle(this).getPropertyValue(cssColor).trim();
-      return resolved || color;
-    }
-    return cssColor;
-  }
-
   private _getSourceEntities(states?: HassEntities): GeoEntity[] {
     if (!states || !this._config?.geo_location_sources) {
       return [];
@@ -489,7 +480,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
         color: entityConf.color
-          ? this._resolveColor(entityConf.color)
+          ? resolveThemeColor(entityConf.color)
           : this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
         attribute: entityConf.attribute,
@@ -551,7 +542,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           name,
           fullDatetime: (config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW) > 144,
           color: entityConfig?.color
-            ? this._resolveColor(entityConfig.color)
+            ? resolveThemeColor(entityConfig.color)
             : this._getColor(entityId),
           gradualOpacity: 0.8,
         });

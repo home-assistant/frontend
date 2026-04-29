@@ -72,6 +72,8 @@ export class HaForm extends LitElement implements HaFormElement {
     key: string
   ) => string;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   protected getFormProperties(): Record<string, any> {
     return {};
   }
@@ -136,7 +138,7 @@ export class HaForm extends LitElement implements HaFormElement {
     return isValid;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("schema") && this.schema) {
       this.schema.forEach((item) => {
         if ("selector" in item) {
@@ -218,13 +220,15 @@ export class HaForm extends LitElement implements HaFormElement {
   private _generateContext(
     schema: HaFormSchema
   ): Record<string, any> | undefined {
-    if (!schema.context) {
+    if (!schema.context && !this.context) {
       return undefined;
     }
 
-    const context = {};
-    for (const [context_key, data_key] of Object.entries(schema.context)) {
-      context[context_key] = this.data[data_key];
+    const context = { ...this.context };
+    if (schema.context) {
+      for (const [context_key, data_key] of Object.entries(schema.context)) {
+        context[context_key] = this.data[data_key];
+      }
     }
     return context;
   }

@@ -34,6 +34,7 @@ const COMPONENTS = {
   light: () => import("../panels/light/ha-panel-light"),
   security: () => import("../panels/security/ha-panel-security"),
   climate: () => import("../panels/climate/ha-panel-climate"),
+  maintenance: () => import("../panels/maintenance/ha-panel-maintenance"),
   home: () => import("../panels/home/ha-panel-home"),
   notfound: () => import("../panels/notfound/ha-panel-notfound"),
 };
@@ -52,7 +53,7 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _hiddenTimeout?: number;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     // Attach listeners for visibility
@@ -64,7 +65,7 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
