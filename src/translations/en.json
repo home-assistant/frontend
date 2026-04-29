@@ -642,7 +642,7 @@
             "options": {
               "any": {
                 "label": "Any",
-                "description": "Is true when any target matches the desired state"
+                "description": "Is true if any target matches the desired state"
               },
               "all": {
                 "label": "All",
