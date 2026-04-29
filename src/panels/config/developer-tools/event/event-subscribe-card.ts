@@ -44,9 +44,6 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _error?: string;
 
-  // Tracks which event the user is currently viewing. Stored by id rather
-  // than buffer index so the view survives the buffer shifting as new events
-  // arrive. New events never auto-advance the view; the user must navigate.
   @state() private _viewedEventId?: number;
 
   private _eventCount = 0;
@@ -154,12 +151,12 @@ class EventSubscribeCard extends LitElement {
     const index = this._resolveViewedIndex();
     const event = this._events[index];
     const position = event.id + 1;
-    // Slot within the buffer (1 = newest buffered, bufferTotal = oldest);
-    // stays stable as the buffer fills.
+
     const bufferPosition = bufferTotal - index;
     const atNewest = index === 0;
-    // Buffer has rolled over once the oldest buffered event isn't event 1.
+
     const hasRolledOver = this._events[bufferTotal - 1].id > 0;
+
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
@@ -242,6 +239,7 @@ class EventSubscribeCard extends LitElement {
       return 0;
     }
     const found = this._events.findIndex((e) => e.id === this._viewedEventId);
+
     // Fall back to the oldest available event when the viewed one has aged out.
     return found === -1 ? this._events.length - 1 : found;
   }
@@ -295,7 +293,7 @@ class EventSubscribeCard extends LitElement {
 
     const searchStr = this._eventFilter;
 
-    function visit(node) {
+    function visit(node: unknown) {
       // Handle primitives directly
       if (node === null || typeof node !== "object") {
         return String(node).includes(searchStr);
