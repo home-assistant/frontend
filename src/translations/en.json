@@ -5079,14 +5079,14 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
                 "time_location": {
                   "label": "Time and location"
                 },
-                "other": {
-                  "label": "Other triggers"
+                "generic": {
+                  "label": "Generic"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5354,14 +5354,14 @@
                 "time_location": {
                   "label": "Time and location"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
-                "other": {
-                  "label": "Other conditions"
+                "generic": {
+                  "label": "Generic"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
