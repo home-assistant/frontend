@@ -1,6 +1,6 @@
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatTime } from "../../../../common/datetime/format_time";
@@ -11,6 +11,11 @@ import "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
+
+interface SubscribedEvent {
+  id: number;
+  event: HassEvent;
+}
 
 @customElement("event-subscribe-card")
 class EventSubscribeCard extends LitElement {
@@ -24,10 +29,7 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _eventFilter = "";
 
-  @state() private _events: {
-    id: number;
-    event: HassEvent;
-  }[] = [];
+  @state() private _events: SubscribedEvent[] = [];
 
   @state() private _error?: string;
 
@@ -113,34 +115,35 @@ class EventSubscribeCard extends LitElement {
           </ha-button>
         </div>
       </ha-card>
-      <ha-card>
-        <div class="card-content">
-          <div class="events">
-            ${repeat(
-              this._events,
-              (event) => event.id,
-              (event) => html`
-                <div class="event">
-                  ${this.hass!.localize(
-                    "ui.panel.config.developer-tools.tabs.events.event_fired",
-                    { name: event.id }
-                  )}
-                  ${formatTime(
-                    new Date(event.event.time_fired),
-                    this.hass!.locale,
-                    this.hass!.config
-                  )}:
-                  <ha-yaml-editor
-                    .hass=${this.hass}
-                    .defaultValue=${event.event}
-                    read-only
-                  ></ha-yaml-editor>
-                </div>
-              `
-            )}
-          </div>
-        </div>
-      </ha-card>
+      ${this._events.length
+        ? html`<ha-card>
+            <div class="card-content">
+              <div class="events">
+                ${repeat(
+                  this._events,
+                  (event: SubscribedEvent) => event.id,
+                  (event: SubscribedEvent) =>
+                    html`<div class="event">
+                      ${this.hass!.localize(
+                        "ui.panel.config.developer-tools.tabs.events.event_fired",
+                        { name: event.id }
+                      )}
+                      ${formatTime(
+                        new Date(event.event.time_fired),
+                        this.hass!.locale,
+                        this.hass!.config
+                      )}:
+                      <ha-yaml-editor
+                        .hass=${this.hass}
+                        .defaultValue=${event.event}
+                        read-only
+                      ></ha-yaml-editor>
+                    </div>`
+                )}
+              </div>
+            </div>
+          </ha-card>`
+        : nothing}
     `;
   }
 
@@ -251,7 +254,7 @@ class EventSubscribeCard extends LitElement {
       font-family: var(--ha-font-family-code);
     }
     ha-card {
-      margin-bottom: var(--ha-space-1);
+      margin-bottom: var(--ha-space-2);
     }
   `;
 }
