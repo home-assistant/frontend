@@ -2,12 +2,17 @@ import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LovelaceDashboardBackgroundConfig } from "../../../../data/lovelace/config/view";
+import type {
+  LovelaceDashboardBackgroundConfig,
+  LovelaceViewBackgroundConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 import {
   isMediaSourceContentId,
@@ -22,108 +27,107 @@ export interface BackgroundConfigTarget {
 export class HuiViewBackgroundEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public config!: BackgroundConfigTarget;
+  @property({ attribute: false }) public config?: BackgroundConfigTarget;
 
   @state({ attribute: false }) private _resolvedImage?: string;
 
   private _localizeValueCallback = (key: string) =>
     this.hass.localize(key as any);
 
-  private _schema = memoizeOne(
-    (localize: LocalizeFunc, showSettings: boolean) =>
-      [
-        {
-          name: "image",
-          selector: {
-            media: {
-              accept: ["image/*"] as string[],
-              clearable: true,
-              image_upload: true,
-              hide_content_type: true,
-              content_id_helper: localize(
-                "ui.panel.lovelace.editor.card.picture.content_id_helper"
-              ),
-            },
+  private _schema(showSettings: boolean) {
+    return [
+      {
+        name: "image",
+        selector: {
+          media: {
+            accept: ["image/*"] as string[],
+            clearable: true,
+            image_upload: true,
+            hide_content_type: true,
+            content_id_helper: this.hass.localize(
+              "ui.panel.lovelace.editor.card.picture.content_id_helper"
+            ),
           },
         },
-        ...(showSettings
-          ? ([
-              {
-                name: "settings",
-                flatten: true,
-                expanded: true,
-                type: "expandable" as const,
-                schema: [
-                  {
-                    name: "opacity",
-                    selector: {
-                      number: { min: 0, max: 100, mode: "slider", step: 10 },
+      },
+      ...(showSettings
+        ? ([
+            {
+              name: "settings",
+              flatten: true,
+              expanded: true,
+              type: "expandable" as const,
+              schema: [
+                {
+                  name: "opacity",
+                  selector: {
+                    number: { min: 0, max: 100, mode: "slider", step: 10 },
+                  },
+                },
+                {
+                  name: "attachment",
+                  selector: {
+                    button_toggle: {
+                      translation_key:
+                        "ui.panel.lovelace.editor.edit_view.background.attachment",
+                      options: ["scroll", "fixed"],
                     },
                   },
-                  {
-                    name: "attachment",
-                    selector: {
-                      button_toggle: {
-                        translation_key:
-                          "ui.panel.lovelace.editor.edit_view.background.attachment",
-                        options: ["scroll", "fixed"],
-                      },
+                },
+                {
+                  name: "size",
+                  required: true,
+                  selector: {
+                    select: {
+                      translation_key:
+                        "ui.panel.lovelace.editor.edit_view.background.size",
+                      options: ["auto", "cover", "contain"],
+                      mode: "dropdown",
                     },
                   },
-                  {
-                    name: "size",
-                    required: true,
-                    selector: {
-                      select: {
-                        translation_key:
-                          "ui.panel.lovelace.editor.edit_view.background.size",
-                        options: ["auto", "cover", "contain"],
-                        mode: "dropdown",
-                      },
+                },
+                {
+                  name: "alignment",
+                  required: true,
+                  selector: {
+                    select: {
+                      translation_key:
+                        "ui.panel.lovelace.editor.edit_view.background.alignment",
+                      options: [
+                        "top left",
+                        "top center",
+                        "top right",
+                        "center left",
+                        "center",
+                        "center right",
+                        "bottom left",
+                        "bottom center",
+                        "bottom right",
+                      ],
+                      mode: "dropdown",
                     },
                   },
-                  {
-                    name: "alignment",
-                    required: true,
-                    selector: {
-                      select: {
-                        translation_key:
-                          "ui.panel.lovelace.editor.edit_view.background.alignment",
-                        options: [
-                          "top left",
-                          "top center",
-                          "top right",
-                          "center left",
-                          "center",
-                          "center right",
-                          "bottom left",
-                          "bottom center",
-                          "bottom right",
-                        ],
-                        mode: "dropdown",
-                      },
+                },
+                {
+                  name: "repeat",
+                  required: true,
+                  selector: {
+                    select: {
+                      translation_key:
+                        "ui.panel.lovelace.editor.edit_view.background.repeat",
+                      options: ["repeat", "no-repeat"],
+                      mode: "dropdown",
                     },
                   },
-                  {
-                    name: "repeat",
-                    required: true,
-                    selector: {
-                      select: {
-                        translation_key:
-                          "ui.panel.lovelace.editor.edit_view.background.repeat",
-                        options: ["repeat", "no-repeat"],
-                        mode: "dropdown",
-                      },
-                    },
-                  },
-                ],
-              },
-            ] as const)
-          : []),
-      ] as const
-  );
+                },
+              ],
+            },
+          ] as const)
+        : []),
+    ] as const;
+  }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       this.config &&
       this.hass &&
@@ -172,7 +176,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${background}
-        .schema=${this._schema(this.hass.localize, true)}
+        .schema=${this._schema(true)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
@@ -218,12 +222,15 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   );
 
-  private _valueChanged(ev: CustomEvent): void {
-    const config = {
-      ...this.config,
-      background: ev.detail.value,
-    };
-    fireEvent(this, "background-config-changed", { config });
+  private _valueChanged(
+    ev: HASSDomEvent<{ value: LovelaceViewBackgroundConfig }>
+  ) {
+    fireEvent(this, "background-config-changed", {
+      config: {
+        ...(this.config || {}),
+        background: ev.detail.value,
+      },
+    });
   }
 
   private _computeLabelCallback = (
