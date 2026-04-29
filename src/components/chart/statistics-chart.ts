@@ -10,6 +10,8 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -45,6 +47,13 @@ export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   state: "sum",
   change: "sum",
 };
+
+// When the chart has a single entity, ha-chart-base falls back to raw series
+// ids (`${statistic_id}-${type}`) for the legend (see _legendData branch at
+// the bottom of _generateData). Strip the type suffix to recover statistic_id.
+const STAT_TYPE_SUFFIXES = (
+  Object.keys(supportedStatTypeMap) as StatisticType[]
+).map((t) => `-${t}`);
 
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
@@ -186,6 +195,9 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo &&
+        !this._statisticIds.every(isExternalStatistic)}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -198,6 +210,28 @@ export class StatisticsChart extends LitElement {
   private _datasetUnhidden(ev: CustomEvent) {
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
+  }
+
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const id = ev.detail.id;
+    // External statistics aren't real entities; nothing to open.
+    if (isExternalStatistic(id)) {
+      return;
+    }
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of STAT_TYPE_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
   }
 
   private _renderTooltip = (params: any) => {
@@ -400,6 +434,7 @@ export class StatisticsChart extends LitElement {
       name: string;
       color?: ZRColor;
       borderColor?: ZRColor;
+      noLabelClick?: boolean;
     }[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
@@ -603,6 +638,7 @@ export class StatisticsChart extends LitElement {
                 name,
                 color: series.color as ZRColor,
                 borderColor: series.itemStyle?.borderColor,
+                noLabelClick: isExternalStatistic(statistic_id),
               });
             }
             displayedLegend = displayedLegend || showLegend;
@@ -738,7 +774,11 @@ export class StatisticsChart extends LitElement {
       // only update the legend if it has changed or it will trigger options update
       this._legendData =
         legendData.length > 1
-          ? legendData.map(({ id, name }) => ({ id, name }))
+          ? legendData.map(({ id, name, noLabelClick }) => ({
+              id,
+              name,
+              noLabelClick,
+            }))
           : // if there is only one entity, let the base chart handle the legend
             undefined;
     }

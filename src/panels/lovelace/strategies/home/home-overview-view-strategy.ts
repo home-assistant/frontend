@@ -16,12 +16,14 @@ import type {
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { CustomShortcutItem } from "../../../../data/frontend";
+import type { ShortcutItem } from "../../../../data/home_shortcuts";
+import { resolveShortcutItems } from "../../../../data/home_shortcuts";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
+  HeadingCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   RepairsCardConfig,
@@ -33,7 +35,7 @@ import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
-import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
@@ -41,9 +43,9 @@ export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
   home_panel?: boolean;
-  hidden_summaries?: string[];
   hide_welcome_message?: boolean;
-  custom_shortcuts?: CustomShortcutItem[];
+  hide_suggested_entities?: boolean;
+  shortcuts?: ShortcutItem[];
 }
 
 const computeAreaCard = (
@@ -192,24 +194,46 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const favoritesSection = {
-      strategy: {
-        type: "common-controls",
-        limit: maxCommonControls,
-        include_entities: favoriteEntities,
-        hide_empty: true,
-        heading: {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-          heading_style: "title",
-          visibility: [LARGE_SCREEN_CONDITION],
-          grid_options: {
-            rows: "auto", // Compact style
-          },
-        },
-      } satisfies CommonControlSectionStrategyConfig,
-      column_span: maxColumns,
-    } as LovelaceStrategySectionConfig;
+    const favoritesHeadingCard: HeadingCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+      heading_style: "title",
+      visibility: [LARGE_SCREEN_CONDITION],
+      grid_options: {
+        rows: "auto",
+      },
+    };
+
+    let favoritesSection: LovelaceSectionRawConfig | undefined;
+    if (!config.hide_suggested_entities) {
+      favoritesSection = {
+        strategy: {
+          type: "common-controls",
+          limit: maxCommonControls,
+          include_entities: favoriteEntities,
+          hide_empty: true,
+          heading: favoritesHeadingCard,
+        } satisfies CommonControlsSectionStrategyConfig,
+        column_span: maxColumns,
+      } satisfies LovelaceStrategySectionConfig;
+    } else if (favoriteEntities.length > 0) {
+      favoritesSection = {
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          favoritesHeadingCard,
+          ...favoriteEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                state_content: ["state", "area_name"],
+                show_entity_picture: true,
+              }) satisfies TileCardConfig
+          ),
+        ],
+      };
+    }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
       (filter) => generateEntityFilter(hass, filter)
@@ -266,7 +290,92 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       ) ??
         false);
 
-    const hiddenSummaries = new Set(config.hidden_summaries || []);
+    const summaryCardBuilders: Record<
+      string,
+      () => LovelaceCardConfig | undefined
+    > = {
+      light: () =>
+        hasLights
+          ? ({
+              type: "home-summary",
+              summary: "light",
+              tap_action: {
+                action: "navigate",
+                navigation_path: "/light?historyBack=1",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+      climate: () =>
+        hasClimate
+          ? ({
+              type: "home-summary",
+              summary: "climate",
+              tap_action: {
+                action: "navigate",
+                navigation_path: "/climate?historyBack=1",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+      security: () =>
+        hasSecurity
+          ? ({
+              type: "home-summary",
+              summary: "security",
+              tap_action: {
+                action: "navigate",
+                navigation_path: "/security?historyBack=1",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+      media_players: () =>
+        hasMediaPlayers
+          ? ({
+              type: "home-summary",
+              summary: "media_players",
+              tap_action: {
+                action: "navigate",
+                navigation_path: "media-players",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+      maintenance: () =>
+        hasMaintenance
+          ? ({
+              type: "home-summary",
+              summary: "maintenance",
+              tap_action: {
+                action: "navigate",
+                navigation_path: config.home_panel
+                  ? "/maintenance?historyBack=1&backPath=/home"
+                  : "/maintenance?historyBack=1",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+      weather: () =>
+        weatherEntity
+          ? ({
+              type: "tile",
+              entity: weatherEntity,
+              name: hass.localize(
+                "ui.panel.lovelace.strategy.home.summary_list.weather"
+              ),
+              state_content: ["temperature", "state"],
+            } satisfies TileCardConfig)
+          : undefined,
+      energy: () =>
+        hasEnergy
+          ? ({
+              type: "home-summary",
+              summary: "energy",
+              tap_action: {
+                action: "navigate",
+                navigation_path: config.home_panel
+                  ? "/energy?historyBack=1&backPath=/home"
+                  : "/energy?historyBack=1",
+              },
+            } satisfies HomeSummaryCard)
+          : undefined,
+    };
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
@@ -293,91 +402,22 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "discovered-devices",
         hide_empty: true,
       } satisfies DiscoveredDevicesCardConfig,
-      hasLights &&
-        !hiddenSummaries.has("light") &&
-        ({
-          type: "home-summary",
-          summary: "light",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/light?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-      hasClimate &&
-        !hiddenSummaries.has("climate") &&
-        ({
-          type: "home-summary",
-          summary: "climate",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/climate?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-      hasSecurity &&
-        !hiddenSummaries.has("security") &&
-        ({
-          type: "home-summary",
-          summary: "security",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/security?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-      hasMediaPlayers &&
-        !hiddenSummaries.has("media_players") &&
-        ({
-          type: "home-summary",
-          summary: "media_players",
-          tap_action: {
-            action: "navigate",
-            navigation_path: "media-players",
-          },
-        } satisfies HomeSummaryCard),
-      hasMaintenance &&
-        !hiddenSummaries.has("maintenance") &&
-        ({
-          type: "home-summary",
-          summary: "maintenance",
-          tap_action: {
-            action: "navigate",
-            navigation_path: config.home_panel
-              ? "/maintenance?historyBack=1&backPath=/home"
-              : "/maintenance?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-      weatherEntity &&
-        !hiddenSummaries.has("weather") &&
-        ({
-          type: "tile",
-          entity: weatherEntity,
-          name: hass.localize(
-            "ui.panel.lovelace.strategy.home.summary_list.weather"
-          ),
-          state_content: ["temperature", "state"],
-        } satisfies TileCardConfig),
-      hasEnergy &&
-        !hiddenSummaries.has("energy") &&
-        ({
-          type: "home-summary",
-          summary: "energy",
-          tap_action: {
-            action: "navigate",
-            navigation_path: config.home_panel
-              ? "/energy?historyBack=1&backPath=/home"
-              : "/energy?historyBack=1",
-          },
-        } satisfies HomeSummaryCard),
-    ].filter(Boolean) as LovelaceCardConfig[];
+    ];
 
-    // Append custom shortcut cards
-    for (const shortcut of config.custom_shortcuts || []) {
-      summaryCards.push({
-        type: "shortcut",
-        label: shortcut.label,
-        icon: shortcut.icon,
-        color: shortcut.color,
-        tap_action: { action: "navigate", navigation_path: shortcut.path },
-      } satisfies ShortcutCardConfig);
+    for (const item of resolveShortcutItems(config.shortcuts)) {
+      if (item.type === "summary") {
+        if (item.hidden) continue;
+        const card = summaryCardBuilders[item.key]?.();
+        if (card) summaryCards.push(card);
+      } else {
+        summaryCards.push({
+          type: "shortcut",
+          label: item.label,
+          icon: item.icon,
+          color: item.color,
+          tap_action: { action: "navigate", navigation_path: item.path },
+        } satisfies ShortcutCardConfig);
+      }
     }
 
     // Build summary cards for sidebar (full width: columns 12)

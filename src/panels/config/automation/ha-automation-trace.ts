@@ -12,9 +12,7 @@ import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -47,6 +45,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import "../../../components/ha-trace-picker";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -180,20 +179,12 @@ export class HaAutomationTrace extends LitElement {
                   this._runId}
                   @click=${this._pickOlderTrace}
                 ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickTrace}>
-                  ${repeat(
-                    this._traces,
-                    (trace) => trace.run_id,
-                    (trace) =>
-                      html`<option value=${trace.run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(trace.timestamp.start),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
-                  )}
-                </select>
+                <ha-trace-picker
+                  .hass=${this.hass}
+                  .traces=${this._traces}
+                  .value=${this._runId}
+                  @value-changed=${this._pickTrace}
+                ></ha-trace-picker>
                 <ha-icon-button
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
@@ -378,7 +369,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.target.value;
+    this._runId = ev.detail.value;
     this._selected = undefined;
   }
 
@@ -617,6 +608,10 @@ export class HaAutomationTrace extends LitElement {
 
         ha-trace-logbook {
           direction: var(--direction);
+        }
+        ha-trace-picker {
+          flex-grow: 1;
+          max-width: 500px;
         }
       `,
     ];

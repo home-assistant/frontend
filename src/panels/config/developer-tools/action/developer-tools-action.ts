@@ -637,7 +637,7 @@ class HaPanelDevAction extends LitElement {
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
-        let value: any = "";
+        let value: any;
         try {
           value = load(field.example, { schema: JSON_SCHEMA });
         } catch (_err: any) {

@@ -85,6 +85,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public createDomains?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -154,11 +157,23 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ),
   };
 
+  @state() private _pendingEntityId?: string;
+
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
       this._loadConfigEntries();
+    }
+
+    if (
+      this._pendingEntityId &&
+      changedProps.has("hass") &&
+      this.hass.states !== changedProps.get("hass")?.states &&
+      this.hass.states[this._pendingEntityId]
+    ) {
+      this._addTarget(this._pendingEntityId, "entity");
+      this._pendingEntityId = undefined;
     }
   }
 
@@ -307,6 +322,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -323,6 +339,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -342,6 +359,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -358,6 +376,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -525,10 +544,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       domain,
       dialogClosedCallback: (item) => {
         if (item.entityId) {
-          // prevent error that new entity_id isn't in hass object
-          requestAnimationFrame(() => {
-            this._addTarget(item.entityId!, "entity");
-          });
+          if (this.hass.states[item.entityId]) {
+            this._addTarget(item.entityId, "entity");
+          } else {
+            this._pendingEntityId = item.entityId;
+          }
         }
       },
     });

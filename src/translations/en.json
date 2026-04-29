@@ -495,12 +495,15 @@
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
@@ -1100,7 +1103,8 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility"
       },
       "map": {
         "error": "Unable to load map"
@@ -2368,6 +2372,7 @@
         },
         "shortcuts": {
           "double_click": "Double-click",
+          "click": "Click",
           "scroll_wheel": "Scroll",
           "drag": "Drag"
         },
@@ -2399,7 +2404,8 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
-          "double_click": "to zoom in on part of the chart"
+          "double_click": "to zoom in on part of the chart",
+          "click_legend_solo": "on a chart legend item to show only that series"
         },
         "other": {
           "title": "Other",
@@ -2494,16 +2500,18 @@
         "editor": {
           "title": "Edit Overview page",
           "description": "Configure your Overview page display preferences.",
-          "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
+          "personalize": "Personalize",
+          "personalize_description": "Customize the top of your Overview page.",
+          "suggested_entities": "Suggested entities",
+          "suggested_entities_description": "Show entities you use often alongside your favorites.",
+          "suggested_entities_disabled_description": "Your favorites already fill the section. Remove a favorite to make room for suggestions.",
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "summaries_description": "Customize the summaries of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
@@ -4417,7 +4425,7 @@
           "detail": {
             "logger": "Logger",
             "source": "Source",
-            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
@@ -5772,6 +5780,7 @@
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
+            "select_trace": "Select trace",
             "download_trace": "Download trace",
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
@@ -5827,6 +5836,18 @@
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
               "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
               "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
+            },
+            "picker": {
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished (runtime: {executiontime}s)",
+              "aborted": "Aborted (runtime: {executiontime}s)",
+              "cancelled": "Cancelled (runtime: {executiontime}s)",
+              "stopped_failed_conditions": "Stopped because a condition failed",
+              "stopped_failed_single": "Stopped because only a single execution is allowed",
+              "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
+              "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
             }
           }
         },
@@ -8490,6 +8511,13 @@
               "net_consumed_grid": "Net imported from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
+            "grid_balance": {
+              "title": "Grid energy balance",
+              "imported": "Total energy imported: {value} kWh",
+              "exported": "Total energy exported: {value} kWh",
+              "net_import": "Net energy imported: {value} kWh",
+              "net_export": "Net energy exported: {value} kWh"
+            },
             "energy_distribution": {
               "title_today": "Energy distribution today",
               "grid": "Grid",
@@ -8966,6 +8994,7 @@
               },
               "numeric_state": {
                 "label": "Entity numeric state",
+                "attribute": "[%key:ui::panel::lovelace::editor::condition-editor::condition::state::attribute%]",
                 "above": "Above",
                 "below": "Below"
               },
@@ -8982,6 +9011,8 @@
               },
               "state": {
                 "label": "Entity state",
+                "attribute": "Attribute (optional)",
+                "current_entity": "Current entity",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
@@ -9272,6 +9303,10 @@
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
               "description": "This card shows how self-sufficient from the grid your home is."
+            },
+            "energy-grid-balance": {
+              "name": "Grid energy balance",
+              "description": "This card shows the balance between imported and exported grid energy."
             },
             "energy-grid-neutrality-gauge": {
               "name": "Grid neutrality gauge",
@@ -10051,16 +10086,37 @@
               },
               "hourly-forecast": {
                 "label": "Hourly forecast",
-                "no_forecast": "No forecast data available"
+                "no_forecast": "No forecast data available",
+                "temperature": "Temperature",
+                "precipitation": "Precipitation",
+                "show_temperature": "Show temperature",
+                "show_precipitation": "Show precipitation",
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                },
+                "color": "Color"
               },
               "daily-forecast": {
                 "label": "Daily forecast",
                 "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::temperature%]",
+                "precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation%]",
                 "forecast_type": "Forecast type",
                 "forecast_type_options": {
                   "daily": "Daily",
                   "twice_daily": "Twice daily"
-                }
+                },
+                "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_current_temperature": "Show current temperature",
+                "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
+                "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
+                "precipitation_type_options": {
+                  "amount": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::amount%]",
+                  "probability": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::probability%]"
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::color%]"
               }
             }
           },
@@ -10094,7 +10150,7 @@
             },
             "home": {
               "favorite_entities": "Favorite entities",
-              "add_favorite_entity": "Add favorite entity"
+              "add_favorite_entity": "Add favorite"
             }
           },
           "view": {

@@ -12,7 +12,7 @@ import "../../../../components/ha-spinner";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 
@@ -166,7 +166,7 @@ class HaPanelDevTemplate extends LitElement {
             "ui.panel.config.developer-tools.tabs.templates.result"
           )}
         >
-          <div class="card-content">
+          <div class="card-content ha-scrollbar">
             ${this._rendering
               ? html`<ha-spinner
                   class="render-spinner"
@@ -268,6 +268,7 @@ ${type === "object"
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         :host {
           user-select: none;
@@ -364,6 +365,13 @@ ${type === "object"
           .content ha-card {
             max-width: 100%;
           }
+        }
+
+        .card-actions {
+          display: flex;
+        }
+        .card-actions > ha-button:last-child {
+          margin-inline-start: auto;
         }
       `,
     ];

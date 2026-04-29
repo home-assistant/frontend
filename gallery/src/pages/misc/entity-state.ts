@@ -52,6 +52,7 @@ const SENSOR_DEVICE_CLASSES = [
   "sulphur_dioxide",
   "temperature",
   "timestamp",
+  "uptime",
   "volatile_organic_compounds",
   "volatile_organic_compounds_parts",
   "voltage",

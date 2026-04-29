@@ -42,6 +42,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -75,6 +78,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                   .entityFilter=${this.entityFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
                 ></ha-target-picker-item-row>`
             )
           : nothing
