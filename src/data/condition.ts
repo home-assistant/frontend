@@ -8,6 +8,7 @@ import type { Selector, TargetSelector } from "./selector";
 export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
+      dynamicGroups: {},
       time_location: {
         icon: mdiMapClock,
         members: { sun: {}, time: {}, zone: {} },
@@ -29,9 +30,9 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.conditions.groups.integrations.label",
+      "ui.panel.config.automation.editor.conditions.groups.custom_integrations.label",
     groups: {
-      dynamicGroups: {},
+      customDynamicGroups: {},
     },
   },
 ] as const;

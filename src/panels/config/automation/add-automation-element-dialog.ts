@@ -177,11 +177,16 @@ const ENTITY_DOMAINS_OTHER = new Set([
 
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
-const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+const DYNAMIC_KEYWORDS = [
+  "dynamicGroups",
+  "helpers",
+  "other",
+  "customDynamicGroups",
+];
 
 const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
-type CollectionGroupType = "helper" | "other" | "dynamic";
+type CollectionGroupType = "helper" | "other" | "dynamic" | "customDynamic";
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -1096,13 +1101,8 @@ class DialogAddAutomationElement
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
 
-        if (collection.generic) {
-          genericCollectionIndex = index;
-        }
-
         const types: CollectionGroupType[] = [];
         if (collection.groups.dynamicGroups) {
-          dynamicCollectionIndex = index;
           types.push("dynamic");
         }
         if (collection.groups.helpers) {
@@ -1110,6 +1110,9 @@ class DialogAddAutomationElement
         }
         if (collection.groups.other) {
           types.push("other");
+        }
+        if (collection.groups.customDynamicGroups) {
+          types.push("customDynamic");
         }
 
         if (
@@ -1181,14 +1184,23 @@ class DialogAddAutomationElement
           )
         );
 
-        generatedCollections.push({
-          collectionIndex: index,
-          titleKey: collection.titleKey,
-          generic: collection.generic,
-          groups: groups.sort((a, b) => {
-            return stringCompare(a.name, b.name, this.hass.locale.language);
-          }),
-        });
+        if (groups.length) {
+          if (collection.generic) {
+            genericCollectionIndex = index;
+          }
+          if (collection.groups.dynamicGroups) {
+            dynamicCollectionIndex = index;
+          }
+
+          generatedCollections.push({
+            collectionIndex: index,
+            titleKey: collection.titleKey,
+            generic: collection.generic,
+            groups: groups.sort((a, b) => {
+              return stringCompare(a.name, b.name, this.hass.locale.language);
+            }),
+          });
+        }
       });
 
       // move groups from dynamic to generic
@@ -1361,7 +1373,9 @@ class DialogAddAutomationElement
     types: CollectionGroupType[]
   ): boolean {
     const matchDynamic =
-      types.includes("dynamic") &&
+      ((types.includes("dynamic") && (!manifest || manifest.is_built_in)) ||
+        (types.includes("customDynamic") &&
+          !(manifest?.is_built_in ?? true))) &&
       (ENTITY_DOMAINS_MAIN.has(domain) ||
         (manifest?.integration_type === "entity" &&
           !ENTITY_DOMAINS_OTHER.has(domain) &&

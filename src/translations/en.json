@@ -5084,8 +5084,8 @@
                 "generic": {
                   "label": "Generic"
                 },
-                "integrations": {
-                  "label": "Integrations"
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5359,8 +5359,8 @@
                 "building_blocks": {
                   "label": "Building blocks"
                 },
-                "integrations": {
-                  "label": "Integrations"
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {

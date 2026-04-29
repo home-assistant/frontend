@@ -13,6 +13,7 @@ import type { Selector, TargetSelector } from "./selector";
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
+      dynamicGroups: {},
       time_location: {
         icon: mdiMapClock,
         members: {
@@ -45,9 +46,9 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.triggers.groups.integrations.label",
+      "ui.panel.config.automation.editor.triggers.groups.custom_integrations.label",
     groups: {
-      dynamicGroups: {},
+      customDynamicGroups: {},
     },
   },
 ] as const;
