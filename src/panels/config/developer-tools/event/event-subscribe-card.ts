@@ -158,9 +158,10 @@ class EventSubscribeCard extends LitElement {
     const index = this._resolveViewedIndex();
     const event = this._events[index];
     const position = event.id + 1;
-    // Derive total from the newest event's id so all values stay in sync with
-    // the events array, even if a new event arrives mid-render.
-    const totalFired = this._events[0].id + 1;
+    // Counter shows the viewed event's slot within the buffer (1 = newest
+    // buffered, bufferTotal = oldest). Stays stable as the buffer fills,
+    // even though the absolute event number in the title keeps growing.
+    const bufferPosition = bufferTotal - index;
     const atNewest = index === 0;
     // Buffer has rolled over once the oldest buffered event isn't event 1.
     const hasRolledOver = this._events[bufferTotal - 1].id > 0;
@@ -195,7 +196,7 @@ class EventSubscribeCard extends LitElement {
                 ),
               }
             )}
-            <span class="counter">(${position} / ${totalFired})</span>
+            <span class="counter">(${bufferPosition} / ${bufferTotal})</span>
             ${hasRolledOver
               ? html`
                   <ha-svg-icon
