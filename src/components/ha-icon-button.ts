@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "./ha-button";
@@ -54,9 +54,12 @@ export class HaIconButton extends LitElement {
       >
         ${this.path
           ? html`<ha-svg-icon
-              aria-hidden="true"
-              .path=${this.path}
-            ></ha-svg-icon>`
+                aria-hidden="true"
+                .path=${this.path}
+              ></ha-svg-icon
+              >${this.hideTitle && this.label
+                ? html`<span class="visually-hidden">${this.label}</span>`
+                : nothing}`
           : html`<span><slot></slot></span>`}
       </ha-button>
     `;
@@ -96,6 +99,13 @@ export class HaIconButton extends LitElement {
     }
     ha-button::part(label) {
       display: flex;
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
     }
     :host([selected]) ha-button::after {
       opacity: 0.1;
