@@ -84,7 +84,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._step =
         nodeStatus.status === NodeStatus.Dead ? "start_removal" : "start";
       if (nodeStatus.status !== NodeStatus.Dead) {
-        fetchZwaveNodeMetadata(this.hass, this._deviceId!).then(
+        fetchZwaveNodeMetadata(this.hass, this._deviceId).then(
           (metadata) => {
             this._metadata = metadata;
           },
