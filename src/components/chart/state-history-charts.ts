@@ -52,6 +52,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
+
   @property({ type: Boolean, reflect: true }) public virtualize = false;
 
   @property({ attribute: false }) public endTime?: Date;
@@ -181,6 +186,7 @@ export class StateHistoryCharts extends LitElement {
           .endTime=${this._computedEndTime}
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
+          .colors=${this.colors}
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
           .logarithmicScale=${this.logarithmicScale}
