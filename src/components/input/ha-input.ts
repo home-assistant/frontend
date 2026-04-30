@@ -242,7 +242,7 @@ export class HaInput extends WaInputMixin(LitElement) {
         <slot name="clear-button" slot="clear-button">
           <ha-icon-button
             @click=${this._handleClearClick}
-            .label=${this._i18n?.localize?.("ui.components.input.clear") ||
+            .label=${this.i18n?.localize?.("ui.components.input.clear") ||
             "Clear"}
             .path=${mdiClose}
           ></ha-icon-button>
@@ -251,7 +251,7 @@ export class HaInput extends WaInputMixin(LitElement) {
           <ha-icon-button
             @keydown=${stopPropagation}
             @click=${this._handlePasswordToggle}
-            .label=${this._i18n?.localize?.(
+            .label=${this.i18n?.localize?.(
               `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
             ) || (this.passwordVisible ? "Hide password" : "Show password")}
             .path=${this.passwordVisible ? mdiEyeOff : mdiEye}
