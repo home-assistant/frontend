@@ -35,17 +35,8 @@ import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entityNameStruct } from "../structs/entity-name-struct";
+import { graphEntitiesConfigStruct } from "../structs/entity-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
-
-const graphEntitiesConfigStruct = union([
-  object({
-    entity: string(),
-    name: optional(entityNameStruct),
-    color: optional(string()),
-  }),
-  string(),
-]);
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
