@@ -52,10 +52,18 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       throw new Error("Image required");
     }
 
-    this._config = {
-      tap_action: { action: "more-info" },
-      ...config,
-    };
+    this._config = { ...config };
+    if (config.image_entity) {
+      this._config = {
+        tap_action: { action: "more-info" },
+        ...config,
+      };
+    } else {
+      this._config = {
+        tap_action: { action: "none" },
+        ...config,
+      };
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
