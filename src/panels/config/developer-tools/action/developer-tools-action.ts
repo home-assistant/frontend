@@ -705,6 +705,15 @@ class HaPanelDevAction extends LitElement {
           letter-spacing: normal;
           color: var(--secondary-text-color);
         }
+        .card-content {
+          display: flex;
+          align-items: stretch;
+          justify-items: flex-start;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+          margin: var(--ha-space-2);
+          --service-control-padding: 0;
+        }
         .yaml-mode-toggle {
           flex-shrink: 0;
         }
