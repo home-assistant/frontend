@@ -160,24 +160,26 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
       <div class="content">
         <ha-card>
           <div class="card-header">
-            <div class="header-text">
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.actions.title"
-              )}
-              <p class="secondary">
+            <div class="header-row">
+              <div class="header-title">
                 ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.actions.description"
+                  "ui.panel.config.developer-tools.tabs.actions.title"
                 )}
-              </p>
+              </div>
+              <ha-button-toggle-group
+                size="small"
+                class="yaml-mode-toggle"
+                .buttons=${modeButtons}
+                .active=${this._yamlMode ? "yaml" : "ui"}
+                .disabled=${!this._uiAvailable}
+                @value-changed=${this._modeChanged}
+              ></ha-button-toggle-group>
             </div>
-            <ha-button-toggle-group
-              size="small"
-              class="yaml-mode-toggle"
-              .buttons=${modeButtons}
-              .active=${this._yamlMode ? "yaml" : "ui"}
-              .disabled=${!this._uiAvailable}
-              @value-changed=${this._modeChanged}
-            ></ha-button-toggle-group>
+            <p class="secondary">
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.actions.description"
+              )}
+            </p>
           </div>
           ${this._yamlMode
             ? html`<div
@@ -703,16 +705,21 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
         }
         .card-header {
           display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-1);
+        }
+        .header-row {
+          display: flex;
           align-items: center;
           justify-content: space-between;
           gap: var(--ha-space-2);
         }
-        .header-text {
+        .header-title {
           flex: 1;
           min-width: 0;
         }
         .secondary {
-          margin: var(--ha-space-1) 0 0;
+          margin: 0;
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-normal);
           line-height: normal;
