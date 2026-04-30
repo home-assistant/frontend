@@ -458,8 +458,14 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+export interface GraphEntityConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  color?: string;
+}
+
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
