@@ -99,7 +99,7 @@ class HaPanelDevTemplate extends LitElement {
           )}
           outlined
           .expanded=${this._descriptionExpanded}
-          @expanded-will-change=${this._expandedWillChange}
+          @expanded-changed=${this._expandedChanged}
         >
           <div class="description">
             <p>
@@ -279,7 +279,7 @@ ${type === "object"
     `;
   }
 
-  private _expandedWillChange(ev) {
+  private _expandedChanged(ev) {
     this._descriptionExpanded = ev.detail.expanded;
   }
 
