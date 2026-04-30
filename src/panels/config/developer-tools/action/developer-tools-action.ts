@@ -729,7 +729,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
         .card-content {
           display: flex;
           align-items: stretch;
-          justify-items: flex-start;
+          justify-content: flex-start;
           flex-direction: column;
           gap: var(--ha-space-4);
           margin: var(--ha-space-2);
