@@ -123,6 +123,7 @@ export class HaYamlEditor extends LitElement {
         autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
+        @editor-save=${this._onEditorSave}
         dir="ltr"
       ></ha-code-editor>
       ${this.copyClipboard || this.hasExtraActions
@@ -179,6 +180,19 @@ export class HaYamlEditor extends LitElement {
 
   get yaml() {
     return this._yaml;
+  }
+
+  get codemirror() {
+    return this._codeEditor?.codemirror;
+  }
+
+  get hasComments(): boolean {
+    return this._codeEditor?.hasComments ?? false;
+  }
+
+  private _onEditorSave(ev: CustomEvent): void {
+    fireEvent(this, "editor-save");
+    ev.stopPropagation();
   }
 
   private async _copyYaml(): Promise<void> {
