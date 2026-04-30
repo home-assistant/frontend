@@ -77,6 +77,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._entryId = params.entryId;
     this._deviceId = params.deviceId;
     this._onClose = params.onClose;
+    this._metadata = undefined;
     this._open = true;
     if (this._deviceId) {
       const nodeStatus = await fetchZwaveNodeStatus(this.hass, this._deviceId!);
@@ -84,13 +85,14 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._step =
         nodeStatus.status === NodeStatus.Dead ? "start_removal" : "start";
       if (nodeStatus.status !== NodeStatus.Dead) {
-        fetchZwaveNodeMetadata(this.hass, this._deviceId).then(
+        const requestedDeviceId = this._deviceId;
+        fetchZwaveNodeMetadata(this.hass, requestedDeviceId).then(
           (metadata) => {
-            this._metadata = metadata;
+            if (this._deviceId === requestedDeviceId) {
+              this._metadata = metadata;
+            }
           },
-          () => {
-            // instructions are supplemental — ignore fetch errors
-          }
+          () => {}
         );
       }
     } else if (params.skipConfirmation) {
@@ -415,7 +417,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
         .content ha-markdown {
           color: var(--secondary-text-color);
-          text-align: start;
         }
 
         ha-alert {
