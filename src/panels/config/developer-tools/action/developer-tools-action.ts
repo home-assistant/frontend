@@ -676,7 +676,8 @@ class HaPanelDevAction extends LitElement {
         }
         .card-header {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
+          justify-content: space-between;
           gap: var(--ha-space-2);
         }
         .header-text {
