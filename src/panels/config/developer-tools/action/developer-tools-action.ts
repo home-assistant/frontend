@@ -45,11 +45,11 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ToggleButton } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
-import { MinHeightMirrorMixin } from "../../../../mixins/min-height-mirror-mixin";
+import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
 import { withViewTransition } from "../../../../common/util/view-transition";
 
 @customElement("developer-tools-action")
-class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
+class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -87,7 +87,7 @@ class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
 
   @query(".ui-mode-content") private _uiModeContent?: HTMLElement;
 
-  protected get minHeightMirrorTarget(): HTMLElement | null {
+  protected get matchMinHeightTarget(): HTMLElement | null {
     return this._yamlMode ? null : (this._uiModeContent ?? null);
   }
 
@@ -182,7 +182,7 @@ class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
           ${this._yamlMode
             ? html`<div
                 class="card-content"
-                style=${styleMap(this._minHeightMirrorStyle)}
+                style=${styleMap(this._matchMinHeightStyle)}
               >
                 <ha-service-picker
                   .hass=${this.hass}
