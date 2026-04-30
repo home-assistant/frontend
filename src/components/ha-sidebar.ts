@@ -36,6 +36,7 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
+import { isMobileClient } from "../util/is_mobile";
 import "./animation/ha-fade-in";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -579,6 +580,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   }
 
   private _renderToolTip(id: string, text: string) {
+    if (isMobileClient) {
+      return nothing;
+    }
+
     return html`<ha-tooltip
       for=${id}
       show-delay="0"
