@@ -147,9 +147,9 @@ export class HaYamlEditor extends LitElement {
   private _onChange(ev: CustomEvent): void {
     ev.stopPropagation();
     this._yaml = ev.detail.value;
-    let parsed;
+    let parsed: unknown;
     let isValid = true;
-    let errorMsg;
+    let errorMsg: string | undefined;
     let yamlError: { mark?: { position: number }; message?: string } | null =
       null;
 

@@ -167,7 +167,10 @@ export class HaCodeEditor extends ReactiveElement {
    * already has the error from its own js-yaml load() call.
    */
   public setYamlError(
-    err: { mark?: { position: number }; message?: string } | null
+    err: {
+      mark?: { position: number; line: number; column: number };
+      reason?: string;
+    } | null
   ): void {
     if (!this.codemirror || !this._loadedCodeMirror) return;
     let diagnostics: {
@@ -180,12 +183,11 @@ export class HaCodeEditor extends ReactiveElement {
       const doc = this.codemirror.state.doc;
       const pos = err.mark ? Math.min(err.mark.position, doc.length) : 0;
       const line = doc.lineAt(pos);
-      const message = err.message
-        ? err.message
-            .replace(/^YAMLException:\s*/i, "")
-            .split("\n")[0]
-            .trim()
-        : "YAML syntax error";
+      const message = `${
+        err.reason ||
+        this.hass?.localize("ui.components.yaml-editor.error") ||
+        "YAML syntax error"
+      }${err.mark ? ` (${this.hass?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       diagnostics = [{ from: pos, to: line.to, severity: "error", message }];
     }
     this.codemirror.dispatch(
