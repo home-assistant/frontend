@@ -1,6 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -147,6 +147,18 @@ export class QuickBar extends LitElement {
     }
 
     this._loading = false;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    // When _loading transitions to false while the dialog is already open,
+    // the combo box is just now rendered for the first time. Use
+    // requestAnimationFrame (like _dialogOpened does) so the combo box's
+    // own shadow DOM has time to render before we attempt to focus it.
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
   }
 
   private _dialogOpened = async () => {
