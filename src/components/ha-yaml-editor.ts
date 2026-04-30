@@ -151,8 +151,10 @@ export class HaYamlEditor extends LitElement {
     let parsed: unknown;
     let isValid = true;
     let errorMsg: string | undefined;
-    let yamlError: { mark?: { position: number }; message?: string } | null =
-      null;
+    let yamlError: {
+      mark?: { position: number; line: number; column: number };
+      message?: string;
+    } | null = null;
 
     if (this._yaml) {
       try {
