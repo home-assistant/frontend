@@ -129,7 +129,7 @@ export class HaInput extends WaInputMixin(LitElement) {
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: ContextType<typeof internationalizationContext>;
+  protected i18n?: ContextType<typeof internationalizationContext>;
 
   private readonly _hasSlotController = new HasSlotController(
     this,

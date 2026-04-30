@@ -1,8 +1,6 @@
-import { consume, type ContextType } from "@lit/context";
 import { mdiMagnify } from "@mdi/js";
 import { css, html, type PropertyValues } from "lit";
-import { customElement, state } from "lit/decorators";
-import { internationalizationContext } from "../../data/context";
+import { customElement } from "lit/decorators";
 import { HaInput } from "./ha-input";
 
 /**
@@ -17,10 +15,6 @@ import { HaInput } from "./ha-input";
  */
 @customElement("ha-input-search")
 export class HaInputSearch extends HaInput {
-  @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n!: ContextType<typeof internationalizationContext>;
-
   constructor() {
     super();
     this.withClear = true;
@@ -35,7 +29,7 @@ export class HaInputSearch extends HaInput {
       !this.placeholder &&
       (!this.hasUpdated || changedProps.has("_i18n"))
     ) {
-      this.placeholder = this._i18n.localize("ui.common.search");
+      this.placeholder = this.i18n?.localize?.("ui.common.search") || "Search";
     }
   }
 
