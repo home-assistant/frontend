@@ -1497,6 +1497,9 @@
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
       },
+      "codemirror": {
+        "open_documentation": "Open documentation"
+      },
       "safe_mode": {
         "title": "Safe mode",
         "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."

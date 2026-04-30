@@ -330,6 +330,11 @@ const JINJA_FILTERS: Completion[] = [
     info: "Converts a value to a list. Useful to iterate over strings character by character.",
   },
   {
+    label: "tuple",
+    type: "function",
+    info: "Converts an iterable to a tuple. Similar to list, but the result is immutable.",
+  },
+  {
     label: "lower",
     type: "function",
     info: "Converts a string to lowercase.",
@@ -671,6 +676,12 @@ const JINJA_EXPRESSIONS: Completion[] = [
     type: "function",
     detail: "**kwargs",
     info: "Creates a dictionary from keyword arguments. Useful when key names are not valid identifiers.",
+  },
+  {
+    label: "cycler",
+    type: "function",
+    detail: "*items",
+    info: "Creates an object that cycles through a sequence of values. Call .next() to advance, .current for the current value, .reset() to restart.",
   },
   {
     label: "joiner",
@@ -1484,6 +1495,12 @@ const HA_FILTER_ONLY: Completion[] = [
     info: "Returns true if the value is defined (not undefined or None).",
   },
   {
+    label: "add",
+    type: "function",
+    detail: "amount, default?",
+    info: "Adds the given amount to a numeric value. Returns the default if the value cannot be converted to a number.",
+  },
+  {
     label: "multiply",
     type: "function",
     detail: "factor",
@@ -1685,6 +1702,219 @@ export interface HassArgHoverContext {
   localize(key: string): string;
 }
 
+/**
+ * Set of names that have a dedicated documentation page under
+ * https://www.home-assistant.io/docs/configuration/templating/template-functions/.
+ * Derived from https://github.com/home-assistant/home-assistant.io/tree/next/source/_template_functions
+ *
+ * This is intentionally kept separate from the completion arrays: the
+ * `Completion` type has no custom-data field, and whether a name has a docs
+ * page is orthogonal to its autocomplete metadata.
+ *
+ * Only names present in this set will receive a doc-link icon in the hover tooltip.
+ */
+const DOCUMENTED_NAMES = new Set<string>([
+  "abs",
+  "acos",
+  "add",
+  "add",
+  "apply",
+  "area_devices",
+  "area_entities",
+  "area_id",
+  "area_name",
+  "areas",
+  "as_datetime",
+  "as_function",
+  "as_local",
+  "as_timedelta",
+  "as_timestamp",
+  "asin",
+  "atan",
+  "atan2",
+  "attr",
+  "average",
+  "base64_decode",
+  "base64_encode",
+  "batch",
+  "bitwise_and",
+  "bitwise_or",
+  "bitwise_xor",
+  "bool",
+  "boolean",
+  "callable",
+  "capitalize",
+  "center",
+  "clamp",
+  "closest",
+  "combine",
+  "config_entry_attr",
+  "config_entry_id",
+  "contains",
+  "cos",
+  "cycler",
+  "default",
+  "defined",
+  "device_attr",
+  "device_entities",
+  "device_id",
+  "device_name",
+  "dict",
+  "dictsort",
+  "difference",
+  "distance",
+  "divisibleby",
+  "e",
+  "entity_name",
+  "eq",
+  "escape",
+  "even",
+  "expand",
+  "false",
+  "filesizeformat",
+  "first",
+  "flatten",
+  "float",
+  "floor_areas",
+  "floor_entities",
+  "floor_id",
+  "floor_name",
+  "floors",
+  "forceescape",
+  "format",
+  "from_hex",
+  "from_json",
+  "ge",
+  "groupby",
+  "gt",
+  "has_value",
+  "iif",
+  "in",
+  "indent",
+  "int",
+  "integer",
+  "integration_entities",
+  "intersect",
+  "is_defined",
+  "is_device_attr",
+  "is_hidden_entity",
+  "is_number",
+  "is_state",
+  "is_state_attr",
+  "issue",
+  "issues",
+  "items",
+  "iterable",
+  "join",
+  "joiner",
+  "label_areas",
+  "label_description",
+  "label_devices",
+  "label_entities",
+  "label_id",
+  "label_name",
+  "labels",
+  "last",
+  "le",
+  "length",
+  "lipsum",
+  "list",
+  "log",
+  "lower",
+  "lt",
+  "map",
+  "mapping",
+  "match",
+  "max",
+  "md5",
+  "median",
+  "merge_response",
+  "min",
+  "multiply",
+  "namespace",
+  "ne",
+  "none",
+  "now",
+  "number",
+  "odd",
+  "ord",
+  "ordinal",
+  "pack",
+  "pi",
+  "pprint",
+  "random",
+  "range",
+  "regex_findall",
+  "regex_findall_index",
+  "regex_match",
+  "regex_replace",
+  "regex_search",
+  "reject",
+  "rejectattr",
+  "relative_time",
+  "remap",
+  "replace",
+  "reverse",
+  "round",
+  "safe",
+  "sameas",
+  "search",
+  "select",
+  "selectattr",
+  "sequence",
+  "set",
+  "sha1",
+  "sha256",
+  "sha512",
+  "shuffle",
+  "sin",
+  "slice",
+  "slugify",
+  "sort",
+  "sqrt",
+  "state_attr",
+  "state_attr_translated",
+  "state_translated",
+  "states",
+  "statistical_mode",
+  "string",
+  "striptags",
+  "strptime",
+  "sum",
+  "symmetric_difference",
+  "tan",
+  "tau",
+  "time_since",
+  "time_until",
+  "timedelta",
+  "timestamp_custom",
+  "timestamp_local",
+  "timestamp_utc",
+  "title",
+  "to_json",
+  "today_at",
+  "tojson",
+  "trim",
+  "true",
+  "truncate",
+  "tuple",
+  "typeof",
+  "undefined",
+  "union",
+  "unique",
+  "unpack",
+  "upper",
+  "urlencode",
+  "urlize",
+  "utcnow",
+  "version",
+  "wordcount",
+  "wordwrap",
+  "wrap",
+  "xmlattr",
+  "zip",
+]);
+
 /** Maps filter name → Completion (merged Jinja2 + HA filters). */
 const FILTER_MAP = new Map<string, Completion>(
   ALL_FILTERS.map((c) => [c.label, c])
@@ -1701,7 +1931,8 @@ const EXPRESSION_MAP = new Map<string, Completion>(
 /** Builds a tooltip DOM node for a Completion. Returns null when there is nothing to show. */
 function buildTooltipDom(
   completion: Completion,
-  docUrl?: string
+  docUrl?: string,
+  openDocumentation?: string
 ): HTMLElement | null {
   const info =
     typeof completion.info === "string" ? completion.info : undefined;
@@ -1712,6 +1943,7 @@ function buildTooltipDom(
   ) as HaCodeEditorJinjaHover;
   el.completion = completion;
   if (docUrl) el.docUrl = docUrl;
+  if (openDocumentation) el.openDocumentation = openDocumentation;
   return el;
 }
 
@@ -2039,13 +2271,16 @@ export function haJinjaHoverSource(
 
   if (!completion) return null;
 
-  // Build doc URL for non-tag completions when a base URL is available
+  // Build doc URL only for completions with a dedicated documentation page
   const docUrl =
-    docBaseUrl && !isTag
+    docBaseUrl && !isTag && DOCUMENTED_NAMES.has(completion.label)
       ? `${docBaseUrl}/template-functions/${completion.label}/`
       : undefined;
 
-  const dom = buildTooltipDom(completion, docUrl);
+  const openDocumentation = hassContext?.localize(
+    "ui.components.codemirror.open_documentation"
+  );
+  const dom = buildTooltipDom(completion, docUrl, openDocumentation);
   if (!dom) return null;
 
   return { pos: from, end: to, above: true, create: () => ({ dom }) };

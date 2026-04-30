@@ -10,6 +10,9 @@ export class HaCodeEditorJinjaHover extends LitElement {
 
   @property({ attribute: false }) public docUrl?: string;
 
+  @property({ attribute: false }) public openDocumentation =
+    "Open documentation";
+
   render() {
     const info =
       typeof this.completion.info === "string"
@@ -30,7 +33,7 @@ export class HaCodeEditorJinjaHover extends LitElement {
               href=${this.docUrl}
               target="_blank"
               rel="noreferrer"
-              title="Open documentation"
+              title=${this.openDocumentation}
               ><ha-svg-icon .path=${mdiHelpCircleOutline}></ha-svg-icon
             ></a>`
           : nothing}
