@@ -466,7 +466,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
     }
   );
 
-  private async _callService(ev) {
+  private async _callService(ev: Event) {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
@@ -600,7 +600,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
     });
   }
 
-  private _yamlChanged(ev) {
+  private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {
     if (!ev.detail.isValid) {
       this._yamlValid = false;
       return;
@@ -636,7 +636,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
     }
   }
 
-  private _serviceDataChanged(ev) {
+  private _serviceDataChanged(ev: HASSDomEvent<{ value: any }>) {
     if (this._serviceData?.action !== ev.detail.value.action) {
       this._error = undefined;
     }
@@ -644,7 +644,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
     this._checkUiSupported();
   }
 
-  private _serviceChanged(ev) {
+  private _serviceChanged(ev: HASSDomEvent<{ value: any }>) {
     ev.stopPropagation();
     if (ev.detail.value) {
       this._serviceData = { action: ev.detail.value, data: {} };
