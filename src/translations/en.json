@@ -491,6 +491,11 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
