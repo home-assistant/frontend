@@ -1,4 +1,4 @@
-import { mdiCodeBraces, mdiHelpCircleOutline } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { dump, JSON_SCHEMA, load } from "js-yaml";
@@ -8,6 +8,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import {
@@ -23,13 +24,13 @@ import { showToast } from "../../../../util/toast";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-control";
 import "../../../../components/ha-service-picker";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { forwardHaptic } from "../../../../data/haptics";
@@ -40,7 +41,7 @@ import {
   serviceCallWillDisconnect,
 } from "../../../../data/service";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ToggleButton } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
 
@@ -145,22 +146,14 @@ class HaPanelDevAction extends LitElement {
                 )}
               </p>
             </div>
-            <ha-button
-              appearance="plain"
-              size="medium"
+            <ha-button-toggle-group
+              size="small"
               class="yaml-mode-toggle"
+              .buttons=${this._modeButtons(this.hass.localize)}
+              .active=${this._yamlMode ? "yaml" : "ui"}
               .disabled=${!this._uiAvailable}
-              @click=${this._toggleYaml}
-            >
-              <ha-svg-icon slot="start" .path=${mdiCodeBraces}></ha-svg-icon>
-              ${this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.ui_mode"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
-                  )}
-            </ha-button>
+              @value-changed=${this._modeChanged}
+            ></ha-button-toggle-group>
           </div>
           ${this._yamlMode
             ? html`<div class="card-content">
@@ -567,8 +560,28 @@ class HaPanelDevAction extends LitElement {
     button.actionSuccess();
   }
 
-  private _toggleYaml() {
-    this._yamlMode = !this._yamlMode;
+  private _modeButtons = memoizeOne(
+    (localize: LocalizeFunc): ToggleButton[] => [
+      {
+        label: localize("ui.panel.config.developer-tools.tabs.actions.ui_mode"),
+        value: "ui",
+      },
+      {
+        label: localize(
+          "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
+        ),
+        value: "yaml",
+      },
+    ]
+  );
+
+  private _modeChanged(ev: HASSDomEvent<{ value: string }>) {
+    ev.stopPropagation();
+    const yamlMode = ev.detail.value === "yaml";
+    if (yamlMode === this._yamlMode) {
+      return;
+    }
+    this._yamlMode = yamlMode;
     this._yamlValid = true;
     this._error = undefined;
   }
