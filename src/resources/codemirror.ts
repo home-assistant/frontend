@@ -44,6 +44,7 @@ export {
   drawSelection,
   EditorView,
   highlightActiveLine,
+  hoverTooltip,
   keymap,
   lineNumbers,
   rectangularSelection,
@@ -71,9 +72,10 @@ export const closeBracketsOverride = Prec.highest(
 
 export {
   haJinjaCompletionSource,
+  haJinjaHoverSource,
   JINJA_FUNCTION_ARG_TYPES,
 } from "./jinja_ha_completions";
-export type { JinjaArgType } from "./jinja_ha_completions";
+export type { HassArgHoverContext, JinjaArgType } from "./jinja_ha_completions";
 export { closePercentBrace };
 
 export const langCompartment = new Compartment();
