@@ -27,11 +27,9 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
-import "./components/config/ha-backup-config-addon";
 import "./components/config/ha-backup-config-agents";
 import "./components/config/ha-backup-config-data";
 import type { BackupConfigData } from "./components/config/ha-backup-config-data";
-import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
@@ -79,7 +77,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.app_update_backup.error_load",
+        "ui.panel.config.backup.settings.schedule.error_load",
         {
           error: err?.message || err,
         }
@@ -315,57 +313,6 @@ class HaConfigBackupSettings extends LitElement {
                 : nothing}
             </div>
           </ha-card>
-          ${supervisor
-            ? html`<ha-card>
-                <div class="card-header">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.settings.app_update_backup.title"
-                  )}
-                </div>
-                <div class="card-content">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.backup.settings.app_update_backup.description"
-                    )}
-                  </p>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.backup.settings.app_update_backup.local_only"
-                    )}
-                  </p>
-                  ${this._supervisorUpdateConfigError
-                    ? html`<ha-alert alert-type="error">
-                        ${this._supervisorUpdateConfigError}
-                      </ha-alert>`
-                    : nothing}
-                  <ha-backup-config-addon
-                    .hass=${this.hass}
-                    .supervisorUpdateConfig=${this._supervisorUpdateConfig}
-                    @update-config-changed=${this
-                      ._supervisorUpdateConfigChanged}
-                  ></ha-backup-config-addon>
-                </div>
-              </ha-card>`
-            : nothing}
-          <ha-card>
-            <div class="card-header">
-              ${this.hass.localize(
-                "ui.panel.config.backup.settings.encryption_key.title"
-              )}
-            </div>
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.backup.settings.encryption_key.description"
-                )}
-              </p>
-              <ha-backup-config-encryption-key
-                .hass=${this.hass}
-                .value=${this._config.create_backup.password}
-                @value-changed=${this._encryptionKeyChanged}
-              ></ha-backup-config-encryption-key>
-            </div>
-          </ha-card>
         </div>
       </hass-subpage>
     `;
@@ -438,18 +385,6 @@ class HaConfigBackupSettings extends LitElement {
     this._debounceSave();
   }
 
-  private _encryptionKeyChanged(ev) {
-    const password = ev.detail.value as string;
-    this._config = {
-      ...this._config!,
-      create_backup: {
-        ...this._config!.create_backup,
-        password: password,
-      },
-    };
-    this._debounceSave();
-  }
-
   private _debounceSaveSupervisorUpdateConfig = debounce(
     () => this._saveSupervisorUpdateConfig(),
     500
@@ -468,7 +403,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.app_update_backup.error_save",
+        "ui.panel.config.backup.settings.schedule.error_save",
         {
           error: err?.message || err?.toString(),
         }

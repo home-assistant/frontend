@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
@@ -23,6 +24,7 @@ import {
   computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
+  updateBackupConfig,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
@@ -32,10 +34,12 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/overview/ha-backup-overview-backups";
+import "./components/overview/ha-backup-overview-app-update-backup";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
 import "./components/overview/ha-backup-overview-settings";
 import "./components/overview/ha-backup-overview-summary";
+import "./components/config/ha-backup-config-encryption-key";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
@@ -71,6 +75,46 @@ class HaConfigBackupOverview extends LitElement {
   private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
   };
+
+  private _encryptionKeyChanged(ev) {
+    if (!this.config) {
+      return;
+    }
+
+    const password = ev.detail.value as string;
+    this.config = {
+      ...this.config,
+      create_backup: {
+        ...this.config.create_backup,
+        password,
+      },
+    };
+
+    this._debounceSaveConfig();
+  }
+
+  private _debounceSaveConfig = debounce(() => this._saveConfig(), 500);
+
+  private async _saveConfig() {
+    if (!this.config) {
+      return;
+    }
+
+    await updateBackupConfig(this.hass, {
+      create_backup: {
+        agent_ids: this.config.create_backup.agent_ids,
+        include_folders: this.config.create_backup.include_folders ?? [],
+        include_database: this.config.create_backup.include_database,
+        include_addons: this.config.create_backup.include_addons ?? [],
+        include_all_addons: this.config.create_backup.include_all_addons,
+        password: this.config.create_backup.password,
+      },
+      retention: this.config.retention,
+      schedule: this.config.schedule,
+    });
+
+    fireEvent(this, "ha-refresh-backup-config");
+  }
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
@@ -236,11 +280,39 @@ class HaConfigBackupOverview extends LitElement {
 
           ${!this._needsOnboarding && this.config
             ? html`
+                <ha-card>
+                  <div class="card-header">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.encryption_key.title"
+                    )}
+                  </div>
+                  <div class="card-content">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.settings.encryption_key.description"
+                      )}
+                    </p>
+                    <ha-backup-config-encryption-key
+                      .hass=${this.hass}
+                      .value=${this.config.create_backup.password}
+                      @value-changed=${this._encryptionKeyChanged}
+                    ></ha-backup-config-encryption-key>
+                  </div>
+                </ha-card>
+
                 <ha-backup-overview-settings
                   .hass=${this.hass}
                   .config=${this.config!}
                   .agents=${this.agents}
                 ></ha-backup-overview-settings>
+
+                ${this.hass.config.components.includes("hassio")
+                  ? html`
+                      <ha-backup-overview-app-update-backup
+                        .hass=${this.hass}
+                      ></ha-backup-overview-app-update-backup>
+                    `
+                  : nothing}
               `
             : nothing}
         </div>
@@ -270,6 +342,10 @@ class HaConfigBackupOverview extends LitElement {
     return [
       haStyle,
       css`
+        p {
+          color: var(--secondary-text-color);
+        }
+
         .content {
           padding: 28px 20px 0;
           max-width: 690px;
@@ -282,10 +358,6 @@ class HaConfigBackupOverview extends LitElement {
         .card-actions {
           display: flex;
           justify-content: flex-end;
-        }
-        .card-content {
-          padding-left: 0;
-          padding-right: 0;
         }
         .loading {
           display: flex;
