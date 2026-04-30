@@ -92,7 +92,9 @@ class DialogZWaveJSRemoveNode extends LitElement {
               this._metadata = metadata;
             }
           },
-          () => {}
+          () => {
+            // instructions are supplemental — ignore fetch errors
+          }
         );
       }
     } else if (params.skipConfirmation) {
