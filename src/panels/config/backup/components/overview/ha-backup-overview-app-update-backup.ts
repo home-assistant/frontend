@@ -24,6 +24,13 @@ class HaBackupOverviewAppUpdateBackup extends LitElement {
     this._fetchSupervisorUpdateConfig();
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._fetchSupervisorUpdateConfig();
+    }
+  }
+
   private async _fetchSupervisorUpdateConfig() {
     try {
       this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);

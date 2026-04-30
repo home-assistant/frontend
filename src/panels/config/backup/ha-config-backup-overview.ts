@@ -1,7 +1,7 @@
 import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
@@ -72,20 +72,35 @@ class HaConfigBackupOverview extends LitElement {
     { uploaded_bytes: number; total_bytes: number }
   > = {};
 
+  @state() private _config?: BackupConfig;
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("config") && !this._config) {
+      this._config = this.config;
+    }
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // Update config when the page is displayed (e.g. when coming back from a settings page)
+    this._config = this.config;
+  }
+
   private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
   };
 
   private _encryptionKeyChanged(ev) {
-    if (!this.config) {
+    if (!this._config) {
       return;
     }
 
     const password = ev.detail.value as string;
-    this.config = {
-      ...this.config,
+    this._config = {
+      ...this._config,
       create_backup: {
-        ...this.config.create_backup,
+        ...this._config.create_backup,
         password,
       },
     };
@@ -96,11 +111,11 @@ class HaConfigBackupOverview extends LitElement {
   private _debounceSaveConfig = debounce(() => this._saveConfig(), 500);
 
   private async _saveConfig() {
-    if (!this.config) {
+    if (!this._config) {
       return;
     }
 
-    await saveBackupConfig(this.hass, this.config);
+    await saveBackupConfig(this.hass, this._config);
 
     fireEvent(this, "ha-refresh-backup-config");
   }
@@ -267,7 +282,7 @@ class HaConfigBackupOverview extends LitElement {
             .backups=${this.backups}
           ></ha-backup-overview-backups>
 
-          ${!this._needsOnboarding && this.config
+          ${!this._needsOnboarding && this._config
             ? html`
                 <ha-card>
                   <div class="card-header">
@@ -283,7 +298,7 @@ class HaConfigBackupOverview extends LitElement {
                     </p>
                     <ha-backup-config-encryption-key
                       .hass=${this.hass}
-                      .value=${this.config.create_backup.password}
+                      .value=${this._config.create_backup.password}
                       @value-changed=${this._encryptionKeyChanged}
                     ></ha-backup-config-encryption-key>
                   </div>
@@ -291,7 +306,7 @@ class HaConfigBackupOverview extends LitElement {
 
                 <ha-backup-overview-settings
                   .hass=${this.hass}
-                  .config=${this.config!}
+                  .config=${this._config}
                   .agents=${this.agents}
                 ></ha-backup-overview-settings>
 
