@@ -18,6 +18,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { StateCondition } from "../../../../../data/automation";
+import { STATE_CONDITION_HIDDEN_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
@@ -38,29 +39,7 @@ const SCHEMA = [
     name: "attribute",
     selector: {
       attribute: {
-        hide_attributes: [
-          "access_token",
-          "available_modes",
-          "color_modes",
-          "editable",
-          "effect_list",
-          "entity_picture",
-          "event_types",
-          "fan_modes",
-          "fan_speed_list",
-          "forecast",
-          "friendly_name",
-          "hvac_modes",
-          "icon",
-          "operation_list",
-          "options",
-          "preset_modes",
-          "sound_mode_list",
-          "source_list",
-          "state_class",
-          "swing_modes",
-          "token",
-        ],
+        hide_attributes: STATE_CONDITION_HIDDEN_ATTRIBUTES,
       },
     },
     context: {

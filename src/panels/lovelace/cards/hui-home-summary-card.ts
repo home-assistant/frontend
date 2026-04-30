@@ -30,6 +30,7 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
   getSummaryLabel,
+  HOME_SUMMARIES_COLORS,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
@@ -38,16 +39,6 @@ import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maint
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
-
-const COLORS: Record<HomeSummary, string> = {
-  light: "amber",
-  climate: "deep-orange",
-  security: "blue-grey",
-  media_players: "blue",
-  maintenance: "grey",
-  energy: "amber",
-  persons: "green",
-};
 
 @customElement("hui-home-summary-card")
 export class HuiHomeSummaryCard
@@ -315,7 +306,7 @@ export class HuiHomeSummaryCard
       return nothing;
     }
 
-    const color = computeCssColor(COLORS[this._config.summary]);
+    const color = computeCssColor(HOME_SUMMARIES_COLORS[this._config.summary]);
 
     const style = {
       "--tile-color": color,

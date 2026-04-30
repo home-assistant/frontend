@@ -2,8 +2,8 @@ import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
-import "./ha-icon-button";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-icon-button";
 
 @customElement("ha-automation-row")
 export class HaAutomationRow extends LitElement {
@@ -26,6 +26,9 @@ export class HaAutomationRow extends LitElement {
   public buildingBlock = false;
 
   @property({ type: Boolean, reflect: true }) public highlight?: boolean;
+
+  @property({ type: Boolean, reflect: true })
+  public dim = false;
 
   @query(".row")
   private _rowElement?: HTMLDivElement;
@@ -51,7 +54,11 @@ export class HaAutomationRow extends LitElement {
         <div class="leading-icon-wrapper">
           <slot name="leading-icon"></slot>
         </div>
-        <slot class="header" name="header"></slot>
+        <div class="header">
+          <slot name="header"></slot>
+          <slot name="event"></slot>
+        </div>
+
         <div class="icons">
           <slot name="icons"></slot>
         </div>
@@ -172,11 +179,23 @@ export class HaAutomationRow extends LitElement {
       border-top-right-radius: var(--ha-border-radius-square);
       border-top-left-radius: var(--ha-border-radius-square);
     }
-    ::slotted([slot="header"]) {
+    .header {
+      position: relative;
+      display: flex;
+      align-items: center;
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
       margin: 0 var(--ha-space-3);
+    }
+    ::slotted([slot="header"]) {
+      overflow-wrap: anywhere;
+      margin: 0 var(--ha-space-3);
+    }
+    ::slotted([slot="event"]) {
+      position: absolute;
+      top: 13px;
+      inset-inline-end: 0;
     }
     .icons {
       display: flex;
@@ -198,6 +217,19 @@ export class HaAutomationRow extends LitElement {
     }
     :host([highlight]) .row:hover {
       background-color: rgba(var(--rgb-primary-color), 0.16);
+    }
+
+    .icons,
+    .leading-icon-wrapper,
+    ::slotted([slot="header"]) {
+      transition: opacity var(--ha-animation-duration-normal);
+      opacity: 1;
+    }
+
+    :host([dim]) .icons,
+    :host([dim]) .leading-icon-wrapper,
+    :host([dim]) ::slotted([slot="header"]) {
+      opacity: 0.5;
     }
   `;
 }

@@ -1,12 +1,12 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import "@home-assistant/webawesome/dist/components/popover/popover";
-import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import {
   mdiDelete,
   mdiDotsVertical,
+  mdiFloorPlan,
   mdiHelpCircleOutline,
   mdiPencil,
   mdiPlus,
+  mdiSofa,
   mdiSort,
 } from "@mdi/js";
 import {
@@ -17,7 +17,7 @@ import {
   type PropertyValues,
   type TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import {
@@ -87,8 +87,6 @@ export class HaConfigAreasDashboard extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _hierarchy?: AreasFloorHierarchy;
-
-  @query("wa-popover") private _popover?: WaPopover;
 
   private _searchParms = new URLSearchParams(window.location.search);
 
@@ -322,26 +320,20 @@ export class HaConfigAreasDashboard extends LitElement {
               `
             : nothing}
         </div>
-        <ha-button id="fab" slot="fab" size="large">
-          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-          ${this.hass.localize("ui.common.add")}
-        </ha-button>
-        <wa-popover
-          trap-focus
-          placement="top-start"
-          distance="8"
-          without-arrow
-          for="fab"
-        >
-          <ha-button appearance="filled" @click=${this._createFloor}>
+        <ha-dropdown slot="fab" @wa-select=${this._handleCreateAction}>
+          <ha-button slot="trigger" id="fab" size="large">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.common.add")}
+          </ha-button>
+          <ha-dropdown-item value="create_floor">
+            <ha-svg-icon .path=${mdiFloorPlan} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.areas.picker.create_floor")}
-          </ha-button>
-          <ha-button appearance="filled" @click=${this._createArea}>
-            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="create_area">
+            <ha-svg-icon .path=${mdiSofa} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.areas.picker.create_area")}
-          </ha-button>
-        </wa-popover>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </hass-tabs-subpage>
     `;
   }
@@ -561,8 +553,16 @@ export class HaConfigAreasDashboard extends LitElement {
     }
   }
 
+  private _handleCreateAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    if (action === "create_floor") {
+      this._createFloor();
+    } else if (action === "create_area") {
+      this._createArea();
+    }
+  }
+
   private _createFloor() {
-    this._popover?.hide();
     this._openFloorDialog();
   }
 
@@ -588,7 +588,6 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   private _createArea() {
-    this._popover?.hide();
     this._openAreaDialog();
   }
 
@@ -729,14 +728,6 @@ export class HaConfigAreasDashboard extends LitElement {
       justify-content: space-between;
       align-items: center;
       overflow-wrap: anywhere;
-    }
-
-    wa-popover::part(body) {
-      gap: var(--ha-space-2);
-      background-color: transparent;
-      border-color: transparent;
-      box-shadow: none;
-      padding: 0;
     }
   `;
 }

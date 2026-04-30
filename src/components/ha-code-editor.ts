@@ -36,9 +36,13 @@ import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
-import type { JinjaArgType } from "../resources/jinja_ha_completions";
+import type {
+  JinjaArgType,
+  HassArgHoverContext,
+} from "../resources/jinja_ha_completions";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
+import { documentationUrl } from "../util/documentation-url";
 import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-code-editor-completion-items";
@@ -90,6 +94,8 @@ export class HaCodeEditor extends ReactiveElement {
   public autocompleteIcons = false;
 
   @property({ type: Boolean }) public error = false;
+
+  @property({ type: Boolean }) public lint = false;
 
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
@@ -159,6 +165,40 @@ export class HaCodeEditor extends ReactiveElement {
     return !!this.renderRoot.querySelector(`span.${className}`);
   }
 
+  /**
+   * Push a YAML parse error (or null to clear) into the lint gutter as a
+   * diagnostic. Avoids re-parsing the document — the caller (ha-yaml-editor)
+   * already has the error from its own js-yaml load() call.
+   */
+  public setYamlError(
+    err: {
+      mark?: { position: number; line: number; column: number };
+      reason?: string;
+    } | null
+  ): void {
+    if (!this.codemirror || !this._loadedCodeMirror) return;
+    let diagnostics: {
+      from: number;
+      to: number;
+      severity: "error";
+      message: string;
+    }[] = [];
+    if (err) {
+      const doc = this.codemirror.state.doc;
+      const pos = err.mark ? Math.min(err.mark.position, doc.length) : 0;
+      const line = doc.lineAt(pos);
+      const message = `${
+        err.reason ||
+        this.hass?.localize("ui.components.yaml-editor.error") ||
+        "YAML syntax error"
+      }${err.mark ? ` (${this.hass?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+      diagnostics = [{ from: pos, to: line.to, severity: "error", message }];
+    }
+    this.codemirror.dispatch(
+      this._loadedCodeMirror.setDiagnostics(this.codemirror.state, diagnostics)
+    );
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     this.classList.toggle("in-dialog", this.inDialog);
@@ -216,16 +256,37 @@ export class HaCodeEditor extends ReactiveElement {
       transactions.push({
         effects: [
           this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
+          this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+            this.lint && !this.readOnly
+              ? [this._loadedCodeMirror!.lintGutter()]
+              : []
+          ),
         ],
       });
     }
     if (changedProps.has("readOnly")) {
       transactions.push({
-        effects: this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
-          this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
-        ),
+        effects: [
+          this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
+            this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
+          ),
+          this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+            this.lint && !this.readOnly
+              ? [this._loadedCodeMirror!.lintGutter()]
+              : []
+          ),
+        ],
       });
       this._updateToolbarButtons();
+    }
+    if (changedProps.has("lint")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
+          this.lint && !this.readOnly
+            ? [this._loadedCodeMirror!.lintGutter()]
+            : []
+        ),
+      });
     }
     if (changedProps.has("linewrap")) {
       transactions.push({
@@ -308,6 +369,7 @@ export class HaCodeEditor extends ReactiveElement {
         ...this._loadedCodeMirror.searchKeymap,
         ...this._loadedCodeMirror.historyKeymap,
         ...this._loadedCodeMirror.tabKeyBindings,
+        ...this._loadedCodeMirror.lintKeymap,
         saveKeyBinding,
       ]),
       this._loadedCodeMirror.search({ top: true }),
@@ -322,10 +384,23 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.linewrapCompartment.of(
         this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
       ),
+      this._loadedCodeMirror.yamlLintCompartment.of(
+        this.lint && !this.readOnly ? [this._loadedCodeMirror.lintGutter()] : []
+      ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
       this._loadedCodeMirror.tooltips({
         position: "absolute",
       }),
+      this._loadedCodeMirror.hoverTooltip(
+        (view, pos) =>
+          this._loadedCodeMirror!.haJinjaHoverSource(
+            view,
+            pos,
+            this.hass ? documentationUrl(this.hass, "") : undefined,
+            this.hass ? this._hassArgHoverContext() : undefined
+          ),
+        { hoverTime: 300 }
+      ),
       ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
@@ -574,6 +649,48 @@ export class HaCodeEditor extends ReactiveElement {
       e.stopPropagation();
     }
   };
+
+  /**
+   * Builds a HassArgHoverContext from the current hass object so that
+   * haJinjaHoverSource can resolve entity / device / area friendly names
+   * without importing the full HomeAssistant type into the resource file.
+   */
+  private _hassArgHoverContext(): HassArgHoverContext {
+    const hass = this.hass!;
+    const labelMap: Record<
+      string,
+      { name: string; description?: string | null }
+    > = {};
+    for (const label of this._labels ?? []) {
+      labelMap[label.label_id] = {
+        name: label.name,
+        description: label.description,
+      };
+    }
+    return {
+      states: hass.states as HassArgHoverContext["states"],
+      devices: hass.devices as HassArgHoverContext["devices"],
+      areas: hass.areas as HassArgHoverContext["areas"],
+      floors: hass.floors as HassArgHoverContext["floors"],
+      entities: hass.entities as HassArgHoverContext["entities"],
+      labels: labelMap,
+      formatEntityState: (entityId) =>
+        hass.formatEntityState(hass.states[entityId]),
+      formatEntityName: (entityId) => {
+        const stateObj = hass.states[entityId];
+        return (
+          (stateObj?.attributes.friendly_name as string | undefined) ??
+          hass.entities[entityId]?.name ??
+          undefined
+        );
+      },
+      formatAttributeName: (entityId, attribute) =>
+        hass.formatEntityAttributeName(hass.states[entityId], attribute),
+      formatAttributeValue: (entityId, attribute) =>
+        hass.formatEntityAttributeValue(hass.states[entityId], attribute),
+      localize: (key) => hass.localize(key as never),
+    };
+  }
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
     const key =

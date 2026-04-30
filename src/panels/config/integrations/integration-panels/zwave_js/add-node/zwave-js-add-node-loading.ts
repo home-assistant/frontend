@@ -1,7 +1,7 @@
 import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
 
-import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-spinner";
 import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
 

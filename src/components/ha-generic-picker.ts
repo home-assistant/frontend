@@ -445,10 +445,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         }
 
         wa-popover::part(body) {
-          width: max(var(--body-width), 250px);
+          width: var(--ha-generic-picker-width, max(var(--body-width), 250px));
           max-width: var(
             --ha-generic-picker-max-width,
-            max(var(--body-width), 250px)
+            var(--ha-generic-picker-width, max(var(--body-width), 250px))
           );
           max-height: 500px;
           height: 70vh;

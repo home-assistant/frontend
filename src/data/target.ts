@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
@@ -58,23 +59,26 @@ export const extractFromTarget = async (
     primary_entities_only: primaryEntitiesOnly,
   });
 
-export const getResolvedTargetEntityCount = async (
-  hass: HomeAssistant,
-  target?: HassServiceTarget
-): Promise<number | undefined> => {
-  if (!target) {
-    return undefined;
+export const getTargetEntityCount = (target?: HassServiceTarget): number => {
+  const tempTarget = {
+    entity_id: target?.entity_id ? ensureArray(target?.entity_id) : [],
+    device_id: target?.device_id ? ensureArray(target?.device_id) : [],
+    area_id: target?.area_id ? ensureArray(target?.area_id) : [],
+    floor_id: target?.floor_id ? ensureArray(target?.floor_id) : [],
+    label_id: target?.label_id ? ensureArray(target?.label_id) : [],
+  };
+
+  if (
+    tempTarget?.device_id?.length > 0 ||
+    tempTarget?.area_id?.length > 0 ||
+    tempTarget?.floor_id?.length > 0 ||
+    tempTarget?.label_id?.length > 0
+  ) {
+    // if targeting non entities the number of entities is dynamic
+    return Infinity;
   }
 
-  try {
-    return (await extractFromTarget(hass, target, true)).referenced_entities
-      .length;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("Error resolving target entity count", err);
-  }
-
-  return undefined;
+  return tempTarget?.entity_id?.length;
 };
 
 export const getTriggersForTarget = async (
@@ -118,7 +122,8 @@ export const areaMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const areaDevices = Object.values(devices).filter(
     (device) => device.area_id === area.area_id
@@ -133,7 +138,8 @@ export const areaMeetsFilter = (
         includeDomains,
         includeDeviceClasses,
         states,
-        entityFilter
+        entityFilter,
+        includeSecondary
       )
     )
   ) {
@@ -148,7 +154,7 @@ export const areaMeetsFilter = (
     areaEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
@@ -169,7 +175,8 @@ export const deviceMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
@@ -179,7 +186,7 @@ export const deviceMeetsFilter = (
     !devEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,

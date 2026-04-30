@@ -3,6 +3,8 @@ import {
   mdiPlay,
   mdiPlayPause,
   mdiPower,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
@@ -198,25 +200,32 @@ class HuiMediaPlayerPlaybackCardFeature
     stateObj: MediaPlayerEntity
   ): ControlButton[] {
     const active = stateActive(stateObj);
+    const assumedState = stateObj.attributes.assumed_state === true;
     const buttons: ControlButton[] = [];
 
     for (const control of this._controls) {
       switch (control) {
         case "turn_off":
           if (
-            active &&
+            (active || assumedState) &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)
           ) {
-            buttons.push({ icon: mdiPower, action: "turn_off" });
+            buttons.push({
+              icon: assumedState ? mdiPowerOff : mdiPower,
+              action: "turn_off",
+            });
           }
           break;
         case "turn_on":
           if (
-            !active &&
+            (!active || assumedState) &&
             !isUnavailableState(stateObj.state) &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
           ) {
-            buttons.push({ icon: mdiPower, action: "turn_on" });
+            buttons.push({
+              icon: assumedState ? mdiPowerOn : mdiPower,
+              action: "turn_on",
+            });
           }
           break;
         case "media_play":

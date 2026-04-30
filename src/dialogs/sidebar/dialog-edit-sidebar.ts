@@ -8,7 +8,7 @@ import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import "../../components/ha-fade-in";
+import "../../components/animation/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
 import type {

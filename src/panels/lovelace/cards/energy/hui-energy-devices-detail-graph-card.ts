@@ -25,7 +25,10 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -156,8 +159,10 @@ export class HuiEnergyDevicesDetailGraphCard
               this._compareStart,
               this._compareEnd
             )}
+            click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
+            @legend-label-click=${this._handleLegendLabelClick}
           ></ha-chart-base>
         </div>
       </ha-card>
@@ -183,6 +188,18 @@ export class HuiEnergyDevicesDetailGraphCard
     this._hiddenStats = this._hiddenStats.filter(
       (stat) => stat !== this._getStatIdFromId(ev.detail.id)
     );
+  }
+
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const entityId = this._getStatIdFromId(ev.detail.id);
+    if (isExternalStatistic(entityId)) {
+      return;
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
   }
 
   private _createOptions = memoizeOne(
@@ -349,15 +366,19 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     datasets.push(...processedData);
-    this._legendData = processedData.map((d) => ({
-      id: d.id as string,
-      secondaryIds: [`compare-${d.id}`],
-      name: d.name as string,
-      itemStyle: {
-        color: d.color as string,
-        borderColor: d.itemStyle?.borderColor as string,
-      },
-    }));
+    this._legendData = processedData.map((d) => {
+      const statId = this._getStatIdFromId(d.id as string);
+      return {
+        id: d.id as string,
+        secondaryIds: [`compare-${d.id}`],
+        name: d.name as string,
+        itemStyle: {
+          color: d.color as string,
+          borderColor: d.itemStyle?.borderColor as string,
+        },
+        noLabelClick: isExternalStatistic(statId) || !this.hass.states[statId],
+      };
+    });
 
     if (showUntracked) {
       const untrackedData = this._processUntracked(
@@ -375,6 +396,7 @@ export class HuiEnergyDevicesDetailGraphCard
           color: untrackedData.color as string,
           borderColor: untrackedData.itemStyle?.borderColor as string,
         },
+        noLabelClick: true,
       });
     }
 

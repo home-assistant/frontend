@@ -491,16 +491,24 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
@@ -619,6 +627,36 @@
             "below": "Below",
             "between": "In range",
             "outside": "Outside range"
+          }
+        },
+        "automation_behavior": {
+          "trigger": {
+            "options": {
+              "any": {
+                "label": "Each",
+                "description": "Triggers once for every target that changes"
+              },
+              "first": {
+                "label": "First",
+                "description": "Triggers the first time any target changes"
+              },
+              "last": {
+                "label": "All",
+                "description": "Triggers once all targets have changed"
+              }
+            }
+          },
+          "condition": {
+            "options": {
+              "any": {
+                "label": "Any",
+                "description": "Is true if any target matches the desired state"
+              },
+              "all": {
+                "label": "All",
+                "description": "Is true if all targets match the desired state"
+              }
+            }
           }
         }
       },
@@ -1100,7 +1138,8 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility"
       },
       "map": {
         "error": "Unable to load map"
@@ -1393,6 +1432,7 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
@@ -1462,6 +1502,9 @@
         "no_segments": "No segments available",
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
+      },
+      "codemirror": {
+        "open_documentation": "Open documentation"
       },
       "safe_mode": {
         "title": "Safe mode",
@@ -2368,6 +2411,7 @@
         },
         "shortcuts": {
           "double_click": "Double-click",
+          "click": "Click",
           "scroll_wheel": "Scroll",
           "drag": "Drag"
         },
@@ -2399,7 +2443,8 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
-          "double_click": "to zoom in on part of the chart"
+          "double_click": "to zoom in on part of the chart",
+          "click_legend_solo": "on a chart legend item to show only that series"
         },
         "other": {
           "title": "Other",
@@ -2505,9 +2550,7 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "summaries_description": "Customize the summaries of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
@@ -3747,7 +3790,7 @@
               "type": "Event type",
               "data": "Event data (YAML, optional)",
               "fire_event": "Fire event",
-              "event_fired": "Event {name} fired",
+              "event_fired": "Event {name} fired at {time}",
               "active_listeners": "Active listeners",
               "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
               "listen_to_events": "Listen to events",
@@ -3761,7 +3804,15 @@
               "clear_events": "Clear events",
               "alert_event_type": "Event type is a mandatory field",
               "notification_event_fired": "Event {type} successfully fired!",
-              "subscribe_failed": "Failed to subscribe to event: {error}"
+              "subscribe_failed": "Failed to subscribe to event: {error}",
+              "unknown_error": "Unknown error",
+              "oldest_event": "Oldest event",
+              "older_event": "Older event",
+              "newer_event": "Newer event",
+              "newest_event": "Newest event",
+              "waiting_for_events": "Waiting for events…",
+              "subscribe_prompt": "Subscribe to an event type above to see events here.",
+              "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
             "actions": {
               "title": "Actions",
@@ -3833,7 +3884,8 @@
               "no_listeners": "This template does not listen for any events and will not update automatically.",
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
-              "domain": "Domain"
+              "domain": "Domain",
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",
@@ -4421,7 +4473,7 @@
           "detail": {
             "logger": "Logger",
             "source": "Source",
-            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
@@ -5075,14 +5127,14 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
                 "time_location": {
                   "label": "Time and location"
                 },
-                "other": {
-                  "label": "Other triggers"
+                "generic": {
+                  "label": "Generic"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5350,14 +5402,14 @@
                 "time_location": {
                   "label": "Time and location"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
-                "other": {
-                  "label": "Other conditions"
+                "generic": {
+                  "label": "Generic"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5544,10 +5596,9 @@
                     "picker": "Previously known as call service.",
                     "service_based_on_template": "Perform an action based on a template on {targets}",
                     "service_based_on_name": "Perform action ''{name}'' on {targets}",
-                    "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_name": "{name} on {targets}",
                     "service_based_on_template_no_targets": "Perform an action based on a template",
                     "service_based_on_name_no_targets": "Perform action ''{name}''",
-                    "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
@@ -5776,6 +5827,7 @@
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
+            "select_trace": "Select trace",
             "download_trace": "Download trace",
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
@@ -5831,6 +5883,18 @@
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
               "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
               "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
+            },
+            "picker": {
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished (runtime: {executiontime}s)",
+              "aborted": "Aborted (runtime: {executiontime}s)",
+              "cancelled": "Cancelled (runtime: {executiontime}s)",
+              "stopped_failed_conditions": "Stopped because a condition failed",
+              "stopped_failed_single": "Stopped because only a single execution is allowed",
+              "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
+              "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
             }
           }
         },
@@ -6774,7 +6838,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
+            "device_created": "Name and assign",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
@@ -7656,7 +7720,9 @@
             "menu_remove_device": "Force-remove an unavailable device",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "ready_to_remove": "Ready to remove device.",
+            "follow_device_instructions": "Follow the directions that came with your device.",
+            "trigger_device_exclusion": "To trigger exclusion on the device:",
             "removing_device": "Removing device",
             "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
@@ -8635,7 +8701,6 @@
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
-            "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."
@@ -8977,6 +9042,7 @@
               },
               "numeric_state": {
                 "label": "Entity numeric state",
+                "attribute": "[%key:ui::panel::lovelace::editor::condition-editor::condition::state::attribute%]",
                 "above": "Above",
                 "below": "Below"
               },
@@ -8993,6 +9059,8 @@
               },
               "state": {
                 "label": "Entity state",
+                "attribute": "Attribute (optional)",
+                "current_entity": "Current entity",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
@@ -10066,16 +10134,37 @@
               },
               "hourly-forecast": {
                 "label": "Hourly forecast",
-                "no_forecast": "No forecast data available"
+                "no_forecast": "No forecast data available",
+                "temperature": "Temperature",
+                "precipitation": "Precipitation",
+                "show_temperature": "Show temperature",
+                "show_precipitation": "Show precipitation",
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                },
+                "color": "Color"
               },
               "daily-forecast": {
                 "label": "Daily forecast",
                 "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
+                "temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::temperature%]",
+                "precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation%]",
                 "forecast_type": "Forecast type",
                 "forecast_type_options": {
                   "daily": "Daily",
                   "twice_daily": "Twice daily"
-                }
+                },
+                "show_temperature": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_temperature%]",
+                "show_current_temperature": "Show current temperature",
+                "show_precipitation": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::show_precipitation%]",
+                "precipitation_type": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type%]",
+                "precipitation_type_options": {
+                  "amount": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::amount%]",
+                  "probability": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::precipitation_type_options::probability%]"
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::color%]"
               }
             }
           },
