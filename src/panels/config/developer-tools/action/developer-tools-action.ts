@@ -134,13 +134,11 @@ class HaPanelDevAction extends LitElement {
     return html`
       <div class="content">
         <ha-card>
-          <div class="header">
+          <div class="card-header">
             <div class="header-text">
-              <h1 class="primary">
-                ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.actions.title"
-                )}
-              </h1>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.actions.title"
+              )}
               <p class="secondary">
                 ${this.hass.localize(
                   "ui.panel.config.developer-tools.tabs.actions.description"
@@ -149,7 +147,7 @@ class HaPanelDevAction extends LitElement {
             </div>
             <ha-button
               appearance="plain"
-              size="small"
+              size="medium"
               class="yaml-mode-toggle"
               .disabled=${!this._uiAvailable}
               @click=${this._toggleYaml}
@@ -676,27 +674,21 @@ class HaPanelDevAction extends LitElement {
           max-width: 1200px;
           margin: auto;
         }
-        .header {
+        .card-header {
           display: flex;
           align-items: flex-start;
           gap: var(--ha-space-2);
-          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4);
         }
         .header-text {
           flex: 1;
           min-width: 0;
         }
-        .primary {
-          margin: 0;
-          font-size: var(--ha-font-size-2xl);
-          font-weight: var(--ha-font-weight-normal);
-          line-height: var(--ha-line-height-expanded);
-          letter-spacing: -0.012em;
-          color: var(--primary-text-color);
-        }
         .secondary {
           margin: var(--ha-space-1) 0 0;
           font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: normal;
+          letter-spacing: normal;
           color: var(--secondary-text-color);
         }
         .yaml-mode-toggle {
