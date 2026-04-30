@@ -2,19 +2,21 @@ import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import {
-  LitElement,
-  type PropertyValues,
-  type TemplateResult,
   css,
   html,
+  LitElement,
   nothing,
+  type PropertyValues,
+  type TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { internationalizationContext } from "../../data/context";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-tooltip";
@@ -125,6 +127,10 @@ export class HaInput extends WaInputMixin(LitElement) {
   @query("wa-input")
   private _input?: WaInput;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
   private readonly _hasSlotController = new HasSlotController(
     this,
     "label",
@@ -233,19 +239,22 @@ export class HaInput extends WaInputMixin(LitElement) {
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
-        <slot name="clear-icon" slot="clear-icon">
-          <ha-icon-button .path=${mdiClose}></ha-icon-button>
-        </slot>
-        <slot name="show-password-icon" slot="show-password-icon">
+        <slot name="clear-button" slot="clear-button">
           <ha-icon-button
-            @keydown=${stopPropagation}
-            .path=${mdiEye}
+            @click=${this._handleClearClick}
+            .label=${this._i18n?.localize?.("ui.components.input.clear") ||
+            "Clear"}
+            .path=${mdiClose}
           ></ha-icon-button>
         </slot>
-        <slot name="hide-password-icon" slot="hide-password-icon">
+        <slot name="password-toggle-button" slot="password-toggle-button">
           <ha-icon-button
             @keydown=${stopPropagation}
-            .path=${mdiEyeOff}
+            @click=${this._handlePasswordToggle}
+            .label=${this._i18n?.localize?.(
+              `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
+            ) || (this.passwordVisible ? "Hide password" : "Show password")}
+            .path=${this.passwordVisible ? mdiEyeOff : mdiEye}
           ></ha-icon-button>
         </slot>
         <div
@@ -292,6 +301,14 @@ export class HaInput extends WaInputMixin(LitElement) {
       this.style.removeProperty("--input-padding-inline-start");
     }
   };
+
+  private _handleClearClick() {
+    this._input?.clear();
+  }
+
+  private _handlePasswordToggle() {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
   static styles = [
     waInputStyles,
@@ -411,6 +428,12 @@ export class HaInput extends WaInputMixin(LitElement) {
       }
 
       wa-input::part(end) {
+        color: var(--ha-color-text-secondary);
+      }
+
+      ha-icon-button {
+        display: flex;
+        align-items: center;
         color: var(--ha-color-text-secondary);
       }
 
