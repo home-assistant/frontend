@@ -37,6 +37,7 @@ export {
   search,
   searchKeymap,
 } from "@codemirror/search";
+export { lintGutter, lintKeymap, setDiagnostics } from "@codemirror/lint";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,
@@ -78,6 +79,7 @@ export { closePercentBrace };
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
+export const yamlLintCompartment = new Compartment();
 
 // ---------------------------------------------------------------------------
 // YAML scalar type highlighter
@@ -367,6 +369,20 @@ export const haTheme = EditorView.theme({
     paddingRight: "0",
   },
   ".cm-gutterElement.lineNumber": { color: "inherit" },
+
+  // Lint gutter
+  ".cm-lint-marker-error": { color: "var(--error-color)" },
+  ".cm-lint-marker-warning": { color: "var(--warning-color)" },
+  ".cm-lint-marker-info": { color: "var(--info-color, var(--primary-color))" },
+  ".cm-diagnostic": {
+    fontFamily: "var(--mdc-typography-font-family, var(--ha-font-family-body))",
+  },
+  ".cm-diagnostic.cm-diagnostic-error": {
+    borderLeft: "3px solid var(--error-color)",
+  },
+  ".cm-diagnostic.cm-diagnostic-warning": {
+    borderLeft: "3px solid var(--warning-color)",
+  },
 });
 
 const haHighlightStyle = HighlightStyle.define([
