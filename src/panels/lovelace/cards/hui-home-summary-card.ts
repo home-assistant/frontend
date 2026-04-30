@@ -35,7 +35,10 @@ import {
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
-import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
+import {
+  filterLowBatteryEntities,
+  filterUnavailableBatteryEntities,
+} from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -258,19 +261,48 @@ export class HuiHomeSummaryCard
           maintenanceFilters
         );
 
-        const needsAttentionEntities = filterNeedsAttentionEntities(
+        const lowBatteryEntities = filterLowBatteryEntities(
           this.hass!,
           maintenanceEntities
         );
 
-        if (needsAttentionEntities.length > 0) {
-          return this.hass.localize(
-            "ui.card.home-summary.count_maintenance_issues",
-            {
-              count: needsAttentionEntities.length,
-            }
-          );
+        const unavailableBatteryEntities = filterUnavailableBatteryEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        const lowBatteryText =
+          lowBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_low_battery_issues",
+                {
+                  count: lowBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        const unavailableText =
+          unavailableBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_issues_unavailable_battery_entities",
+                {
+                  count: unavailableBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        if (lowBatteryText && unavailableText) {
+          return `${lowBatteryText}, ${unavailableText}`;
         }
+
+        if (lowBatteryText) {
+          return lowBatteryText;
+        }
+
+        if (unavailableText) {
+          return unavailableText;
+        }
+
         return this.hass.localize("ui.card.home-summary.all_maintenance_good");
       }
       case "energy": {
