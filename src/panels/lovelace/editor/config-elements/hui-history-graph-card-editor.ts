@@ -11,7 +11,6 @@ import {
   object,
   optional,
   string,
-  union,
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
