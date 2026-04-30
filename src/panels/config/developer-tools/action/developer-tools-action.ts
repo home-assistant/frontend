@@ -46,6 +46,7 @@ import type { HomeAssistant, ToggleButton } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
 import { MinHeightMirrorMixin } from "../../../../mixins/min-height-mirror-mixin";
+import { withViewTransition } from "../../../../common/util/view-transition";
 
 @customElement("developer-tools-action")
 class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
@@ -592,9 +593,11 @@ class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
     if (yamlMode === this._yamlMode) {
       return;
     }
-    this._yamlMode = yamlMode;
-    this._yamlValid = true;
-    this._error = undefined;
+    withViewTransition(() => {
+      this._yamlMode = yamlMode;
+      this._yamlValid = true;
+      this._error = undefined;
+    });
   }
 
   private _yamlChanged(ev) {
@@ -724,6 +727,11 @@ class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
           gap: var(--ha-space-4);
           margin: var(--ha-space-2);
           --service-control-padding: 0;
+        }
+        .card-content ha-yaml-editor {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
         .yaml-mode-toggle {
           flex-shrink: 0;
