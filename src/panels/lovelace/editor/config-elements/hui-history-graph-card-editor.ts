@@ -35,7 +35,7 @@ import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { graphEntitiesConfigStruct } from "../structs/entity-struct";
+import { graphEntitiesConfigStruct } from "../structs/entities-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 
 const cardConfigStruct = assign(
