@@ -8,7 +8,7 @@ import {
 } from "@egjs/hammerjs";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
@@ -71,16 +71,13 @@ export class HaControlSwitch extends LitElement {
     this.destroyListeners();
   }
 
-  @query("#switch")
-  private switch!: HTMLDivElement;
-
   setupSwipeListeners() {
     if (this.disabled) {
       return;
     }
 
-    if (this.switch && !this._mc) {
-      this._mc = new Manager(this.switch, {
+    if (!this._mc) {
+      this._mc = new Manager(this, {
         touchAction: this.touchAction ?? (this.vertical ? "pan-x" : "pan-y"),
       });
       this._mc.add(
@@ -191,6 +188,7 @@ export class HaControlSwitch extends LitElement {
   static styles = css`
     :host {
       display: block;
+      position: relative;
       --control-switch-on-color: var(--primary-color);
       --control-switch-off-color: var(--disabled-color);
       --control-switch-background-opacity: 0.2;
@@ -198,6 +196,7 @@ export class HaControlSwitch extends LitElement {
       --control-switch-thickness: 40px;
       --control-switch-border-radius: var(--ha-border-radius-lg);
       --control-switch-padding: 4px;
+      --control-switch-touch-area-size: 0px;
       --mdc-icon-size: 20px;
       height: var(--control-switch-thickness);
       width: 100%;
@@ -205,6 +204,11 @@ export class HaControlSwitch extends LitElement {
       user-select: none;
       transition: box-shadow 180ms ease-in-out;
       -webkit-tap-highlight-color: transparent;
+    }
+    :host::before {
+      content: "";
+      position: absolute;
+      inset: calc(-1 * var(--control-switch-touch-area-size));
     }
     .switch:not([disabled]):focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-off-color);

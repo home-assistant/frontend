@@ -55,6 +55,7 @@ class HuiEntitiesToggle extends LitElement {
     ha-control-switch {
       --control-switch-thickness: 20px;
       --control-switch-off-color: var(--state-inactive-color);
+      --control-switch-touch-area-size: var(--ha-space-2);
     }
   `;
 
