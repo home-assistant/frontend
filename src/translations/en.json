@@ -3566,7 +3566,7 @@
               "show_all": "Show all backups"
             },
             "settings": {
-              "title": "Backup settings",
+              "title": "Automatic backup",
               "configure": "Configure backup settings",
               "schedule": "Automatic backup schedule and retention",
               "schedule_copies_all": "and keep all backups",
@@ -3612,6 +3612,10 @@
                 "sat": "Sa",
                 "sun": "Su"
               }
+            },
+            "app_update_backup": {
+              "title": "App update backup",
+              "description": "Backup behavior for app updates"
             }
           },
           "backups": {
@@ -3623,13 +3627,15 @@
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           },
           "settings": {
-            "header": "Backup settings",
+            "header": "Automatic backups",
             "menu": {
               "change_default_location": "Change default action location"
             },
             "schedule": {
-              "title": "Automatic backups",
-              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              "title": "Backup cycle",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups.",
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             },
             "data": {
               "title": "Backup data"
@@ -3656,6 +3662,9 @@
               "error_load": "Error loading Supervisor update config: {error}",
               "error_save": "Error saving Supervisor update config: {error}"
             }
+          },
+          "app_update_backups": {
+            "header": "App update backups"
           },
           "details": {
             "header": "Backup",
