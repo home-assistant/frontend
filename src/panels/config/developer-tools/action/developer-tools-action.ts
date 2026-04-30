@@ -119,6 +119,21 @@ class HaPanelDevAction extends LitElement {
       this._serviceData?.action
     );
 
+    const modeButtons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.config.developer-tools.tabs.actions.ui_mode"
+        ),
+        value: "ui",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
+        ),
+        value: "yaml",
+      },
+    ];
+
     const domain = this._serviceData?.action
       ? computeDomain(this._serviceData?.action)
       : undefined;
@@ -149,7 +164,7 @@ class HaPanelDevAction extends LitElement {
             <ha-button-toggle-group
               size="small"
               class="yaml-mode-toggle"
-              .buttons=${this._modeButtons(this.hass.localize)}
+              .buttons=${modeButtons}
               .active=${this._yamlMode ? "yaml" : "ui"}
               .disabled=${!this._uiAvailable}
               @value-changed=${this._modeChanged}
@@ -559,21 +574,6 @@ class HaPanelDevAction extends LitElement {
     }
     button.actionSuccess();
   }
-
-  private _modeButtons = memoizeOne(
-    (localize: LocalizeFunc): ToggleButton[] => [
-      {
-        label: localize("ui.panel.config.developer-tools.tabs.actions.ui_mode"),
-        value: "ui",
-      },
-      {
-        label: localize(
-          "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
-        ),
-        value: "yaml",
-      },
-    ]
-  );
 
   private _modeChanged(ev: HASSDomEvent<{ value: string }>) {
     ev.stopPropagation();
