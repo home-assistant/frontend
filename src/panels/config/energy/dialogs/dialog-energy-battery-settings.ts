@@ -285,7 +285,8 @@ export class DialogEnergyBatterySettings
       haStyle,
       haStyleDialog,
       css`
-        ha-statistic-picker {
+        ha-statistic-picker,
+        ha-energy-power-config {
           display: block;
           margin-bottom: var(--ha-space-4);
         }
