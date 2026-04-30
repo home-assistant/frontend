@@ -99,15 +99,20 @@ export const formatSelectorValue = (
   }
 
   if ("object" in selector) {
-    const labelField = selector.object?.label_field;
+    const { fields } = selector.object ?? {};
     const items = ensureArray(value);
     return items
       .map((item) => {
         if (item == null || typeof item !== "object") {
           return String(item);
         }
-        if (labelField && labelField in item) {
-          return String(item[labelField]);
+        if (fields) {
+          return Object.entries(fields)
+            .filter(([key]) => key in item && item[key] != null)
+            .map(([key, field]) =>
+              formatSelectorValue(hass, item[key], field.selector)
+            )
+            .join(" = ");
         }
         return JSON.stringify(item);
       })
