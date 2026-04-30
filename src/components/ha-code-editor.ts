@@ -36,9 +36,13 @@ import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
-import type { JinjaArgType } from "../resources/jinja_ha_completions";
+import type {
+  JinjaArgType,
+  HassArgHoverContext,
+} from "../resources/jinja_ha_completions";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
+import { documentationUrl } from "../util/documentation-url";
 import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-code-editor-completion-items";
@@ -326,6 +330,16 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.tooltips({
         position: "absolute",
       }),
+      this._loadedCodeMirror.hoverTooltip(
+        (view, pos) =>
+          this._loadedCodeMirror!.haJinjaHoverSource(
+            view,
+            pos,
+            this.hass ? documentationUrl(this.hass, "") : undefined,
+            this.hass ? this._hassArgHoverContext() : undefined
+          ),
+        { hoverTime: 300 }
+      ),
       ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
@@ -574,6 +588,48 @@ export class HaCodeEditor extends ReactiveElement {
       e.stopPropagation();
     }
   };
+
+  /**
+   * Builds a HassArgHoverContext from the current hass object so that
+   * haJinjaHoverSource can resolve entity / device / area friendly names
+   * without importing the full HomeAssistant type into the resource file.
+   */
+  private _hassArgHoverContext(): HassArgHoverContext {
+    const hass = this.hass!;
+    const labelMap: Record<
+      string,
+      { name: string; description?: string | null }
+    > = {};
+    for (const label of this._labels ?? []) {
+      labelMap[label.label_id] = {
+        name: label.name,
+        description: label.description,
+      };
+    }
+    return {
+      states: hass.states as HassArgHoverContext["states"],
+      devices: hass.devices as HassArgHoverContext["devices"],
+      areas: hass.areas as HassArgHoverContext["areas"],
+      floors: hass.floors as HassArgHoverContext["floors"],
+      entities: hass.entities as HassArgHoverContext["entities"],
+      labels: labelMap,
+      formatEntityState: (entityId) =>
+        hass.formatEntityState(hass.states[entityId]),
+      formatEntityName: (entityId) => {
+        const stateObj = hass.states[entityId];
+        return (
+          (stateObj?.attributes.friendly_name as string | undefined) ??
+          hass.entities[entityId]?.name ??
+          undefined
+        );
+      },
+      formatAttributeName: (entityId, attribute) =>
+        hass.formatEntityAttributeName(hass.states[entityId], attribute),
+      formatAttributeValue: (entityId, attribute) =>
+        hass.formatEntityAttributeValue(hass.states[entityId], attribute),
+      localize: (key) => hass.localize(key as never),
+    };
+  }
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
     const key =

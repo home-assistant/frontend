@@ -1497,6 +1497,9 @@
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
       },
+      "codemirror": {
+        "open_documentation": "Open documentation"
+      },
       "safe_mode": {
         "title": "Safe mode",
         "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
@@ -3867,7 +3870,8 @@
               "no_listeners": "This template does not listen for any events and will not update automatically.",
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
-              "domain": "Domain"
+              "domain": "Domain",
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",
@@ -7702,7 +7706,9 @@
             "menu_remove_device": "Force-remove an unavailable device",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "ready_to_remove": "Ready to remove device.",
+            "follow_device_instructions": "Follow the directions that came with your device.",
+            "trigger_device_exclusion": "To trigger exclusion on the device:",
             "removing_device": "Removing device",
             "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
