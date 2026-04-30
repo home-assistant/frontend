@@ -12,7 +12,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -174,6 +174,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const clickable = Boolean(
+      (this._config.image_entity && !this._config.tap_action) ||
+      hasAnyAction(this._config)
+    );
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -187,15 +192,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
             : undefined
         )}
         class=${classMap({
-          clickable: Boolean(
-            (this._config.image_entity && !this._config.tap_action) ||
-            (this._config.tap_action &&
-              this._config.tap_action.action !== "none") ||
-            (this._config.hold_action &&
-              this._config.hold_action.action !== "none") ||
-            (this._config.double_tap_action &&
-              this._config.double_tap_action.action !== "none")
-          ),
+          clickable,
         })}
       >
         <img
