@@ -8,6 +8,7 @@ export const rowStyles = css`
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
   ha-expansion-panel {
+    position: relative;
     --expansion-panel-summary-padding: 0 0 0 8px;
     --expansion-panel-content-padding: 0;
   }
@@ -45,6 +46,13 @@ export const rowStyles = css`
   }
   .hidden {
     display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+    inset-inline-end: 96px;
+    top: var(--ha-space-6);
+    box-shadow: var(--ha-box-shadow-s);
   }
 `;
 

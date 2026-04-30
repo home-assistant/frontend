@@ -10,6 +10,7 @@ import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device/device_automation";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
 import { domainToName } from "./integration";
+import type { DomainManifestLookup } from "./integration";
 import type {
   ActionType,
   ActionTypes,
@@ -31,12 +32,23 @@ import { getActionType } from "./script";
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
 
+const shouldShowDomainPrefix = (
+  domain: string,
+  manifests?: DomainManifestLookup
+): boolean => {
+  if (!manifests) return true;
+  const manifest = manifests[domain];
+  if (!manifest) return true;
+  return manifest.integration_type !== "entity" || !manifest.is_built_in;
+};
+
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false
+  ignoreAlias = false,
+  manifests?: DomainManifestLookup
 ): string => {
   try {
     const description = tryDescribeAction(
@@ -44,7 +56,8 @@ export const describeAction = <T extends ActionType>(
       entityRegistry,
       action,
       actionType,
-      ignoreAlias
+      ignoreAlias,
+      manifests
     );
     if (typeof description !== "string") {
       throw new Error(String(description));
@@ -66,7 +79,8 @@ const tryDescribeAction = <T extends ActionType>(
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false
+  ignoreAlias = false,
+  manifests?: DomainManifestLookup
 ): string => {
   if (action.alias && !ignoreAlias) {
     return action.alias;
@@ -114,20 +128,19 @@ const tryDescribeAction = <T extends ActionType>(
         ) || hass.services[domain]?.[serviceName]?.name;
 
       if (config.metadata) {
-        return hass.localize(
-          `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
-          {
-            domain: domainToName(hass.localize, domain),
-            name: service || config.action,
-          }
-        );
+        if (service && shouldShowDomainPrefix(domain, manifests)) {
+          return `${domainToName(hass.localize, domain)}: ${service}`;
+        }
+        return service || config.action;
       }
 
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
         {
           name: service
-            ? `${domainToName(hass.localize, domain)}: ${service}`
+            ? shouldShowDomainPrefix(domain, manifests)
+              ? `${domainToName(hass.localize, domain)}: ${service}`
+              : service
             : config.action,
         }
       );

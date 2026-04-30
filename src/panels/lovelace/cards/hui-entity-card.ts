@@ -7,6 +7,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   stateColorBrightness,
@@ -18,7 +19,6 @@ import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { isUnavailableState } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -119,27 +119,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
     const stateParts = this.hass.formatEntityStateToParts(stateObj);
-
-    let unit;
-    if (
-      !isUnavailableState(stateObj.state) &&
-      (this._config.attribute ||
-        stateObj.attributes.device_class !== "duration")
-    ) {
-      unit = this._config.unit;
-      if (!unit) {
-        if (!this._config.attribute) {
-          unit = stateParts.find((part) => part.type === "unit")?.value;
-        } else {
-          const parts = this.hass.formatEntityAttributeValueToParts(
-            stateObj,
-            this._config.attribute
-          );
-          unit = parts.find((part) => part.type === "unit")?.value;
-        }
-      }
-    }
 
     const indexUnit = stateParts.findIndex((part) => part.type === "unit");
     const indexValue = stateParts.reduceRight(

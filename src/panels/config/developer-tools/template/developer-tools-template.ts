@@ -10,6 +10,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -172,6 +173,14 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
+          <ha-tip .hass=${this.hass}>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
+              {
+                autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+              }
+            )}
+          </ha-tip>
         </ha-card>
 
         <ha-card
@@ -414,10 +423,33 @@ ${type === "object"
           color: var(--warning-color);
         }
 
+        ha-tip {
+          padding: 0 var(--ha-space-4) var(--ha-space-4);
+          display: block;
+        }
+
+        kbd {
+          display: inline-block;
+          font-family: var(--ha-font-family-code);
+          font-size: 0.85em;
+          padding: 1px 5px;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-xs);
+          background-color: var(--secondary-background-color);
+          white-space: nowrap;
+        }
+
         @media all and (max-width: 870px) {
           .content ha-card {
             max-width: 100%;
           }
+        }
+
+        .card-actions {
+          display: flex;
+        }
+        .card-actions > ha-button:last-child {
+          margin-inline-start: auto;
         }
       `,
     ];

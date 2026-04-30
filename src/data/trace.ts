@@ -120,6 +120,7 @@ export interface ScriptTraceExtended extends ScriptTrace, BaseTraceExtended {
   blueprint_inputs?: BlueprintScriptConfig;
 }
 
+export type Trace = AutomationTrace | ScriptTrace;
 export type TraceExtended = AutomationTraceExtended | ScriptTraceExtended;
 
 interface TraceTypes {

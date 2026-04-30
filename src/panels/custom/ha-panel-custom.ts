@@ -34,6 +34,8 @@ export class HaPanelCustom extends ReactiveElement {
 
   private _setProperties?: (props: Record<string, unknown>) => void;
 
+  private _wasDisconnected = false;
+
   protected createRenderRoot() {
     return this;
   }
@@ -56,18 +58,19 @@ export class HaPanelCustom extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // The suspendWhenHidden disconnect timer in partial-panel-resolver
-    // removes this element from the DOM after 5 minutes, which triggers
-    // _cleanupPanel() and destroys our child panel. When the user returns,
-    // the same element is re-appended but `update()` won't call _createPanel
-    // again (the `panel` property reference hasn't changed). Rebuild here.
-    if (!this._setProperties && !this.hasChildNodes() && this.panel) {
+    // Only rebuild when reattached after a real disconnect (the 5-minute
+    // suspendWhenHidden timer in partial-panel-resolver). On first mount,
+    // update() handles creation via the panel-changed branch, so calling
+    // _createPanel here too would start a duplicate loadCustomPanel().
+    if (this._wasDisconnected && this.panel) {
+      this._wasDisconnected = false;
       this._createPanel(this.panel);
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._wasDisconnected = true;
     this._cleanupPanel();
   }
 
@@ -139,6 +142,12 @@ export class HaPanelCustom extends ReactiveElement {
     if (!config.embed_iframe) {
       loadCustomPanel(config).then(
         () => {
+          // loadCustomPanel caches its Promise, so a detach/reattach cycle
+          // during load can fan out multiple .then callbacks onto it. Skip
+          // any that arrive after we've already populated or been removed.
+          if (!this.isConnected || this._setProperties) {
+            return;
+          }
           const element = createCustomPanelElement(config);
           this._setProperties = (props) =>
             setCustomPanelProperties(element, props);

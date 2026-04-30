@@ -13,9 +13,7 @@ import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
@@ -46,6 +44,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import "../../../components/ha-trace-picker";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -182,20 +181,12 @@ export class HaScriptTrace extends LitElement {
                   @click=${this._pickOlderTrace}
                   .path=${mdiRayEndArrow}
                 ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickTrace}>
-                  ${repeat(
-                    this._traces,
-                    (trace) => trace.run_id,
-                    (trace) =>
-                      html`<option value=${trace.run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(trace.timestamp.start),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
-                  )}
-                </select>
+                <ha-trace-picker
+                  .hass=${this.hass}
+                  .traces=${this._traces}
+                  .value=${this._runId}
+                  @value-changed=${this._pickTrace}
+                ></ha-trace-picker>
                 <ha-icon-button
                   .disabled=${this._traces[0].run_id === this._runId}
                   .label=${this.hass!.localize(
@@ -393,7 +384,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.target.value;
+    this._runId = ev.detail.value;
     this._selected = undefined;
   }
 
@@ -623,6 +614,10 @@ export class HaScriptTrace extends LitElement {
         }
         .trace-link {
           text-decoration: none;
+        }
+        ha-trace-picker {
+          flex-grow: 1;
+          max-width: 500px;
         }
       `,
     ];

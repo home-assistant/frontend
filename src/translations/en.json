@@ -491,6 +491,11 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
@@ -622,6 +627,36 @@
             "below": "Below",
             "between": "In range",
             "outside": "Outside range"
+          }
+        },
+        "automation_behavior": {
+          "trigger": {
+            "options": {
+              "any": {
+                "label": "Each",
+                "description": "Triggers once for every target that changes"
+              },
+              "first": {
+                "label": "First",
+                "description": "Triggers the first time any target changes"
+              },
+              "last": {
+                "label": "All",
+                "description": "Triggers once all targets have changed"
+              }
+            }
+          },
+          "condition": {
+            "options": {
+              "any": {
+                "label": "Any",
+                "description": "Is true if any target matches the desired state"
+              },
+              "all": {
+                "label": "All",
+                "description": "Is true if all targets match the desired state"
+              }
+            }
           }
         }
       },
@@ -1104,8 +1139,7 @@
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
         "collapse_legend": "Less",
-        "toggle_visibility": "Toggle visibility",
-        "show_more_info": "Show more info"
+        "toggle_visibility": "Toggle visibility"
       },
       "map": {
         "error": "Unable to load map"
@@ -1398,6 +1432,7 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
@@ -1467,6 +1502,9 @@
         "no_segments": "No segments available",
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
+      },
+      "codemirror": {
+        "open_documentation": "Open documentation"
       },
       "safe_mode": {
         "title": "Safe mode",
@@ -2373,6 +2411,7 @@
         },
         "shortcuts": {
           "double_click": "Double-click",
+          "click": "Click",
           "scroll_wheel": "Scroll",
           "drag": "Drag"
         },
@@ -2404,7 +2443,8 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
-          "double_click": "to zoom in on part of the chart"
+          "double_click": "to zoom in on part of the chart",
+          "click_legend_solo": "on a chart legend item to show only that series"
         },
         "other": {
           "title": "Other",
@@ -3526,7 +3566,7 @@
               "show_all": "Show all backups"
             },
             "settings": {
-              "title": "Backup settings",
+              "title": "Automatic backup",
               "configure": "Configure backup settings",
               "schedule": "Automatic backup schedule and retention",
               "schedule_copies_all": "and keep all backups",
@@ -3572,6 +3612,10 @@
                 "sat": "Sa",
                 "sun": "Su"
               }
+            },
+            "app_update_backup": {
+              "title": "App update backup",
+              "description": "Backup behavior for app updates"
             }
           },
           "backups": {
@@ -3583,13 +3627,15 @@
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           },
           "settings": {
-            "header": "Backup settings",
+            "header": "Automatic backups",
             "menu": {
               "change_default_location": "Change default action location"
             },
             "schedule": {
-              "title": "Automatic backups",
-              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              "title": "Backup cycle",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups.",
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             },
             "data": {
               "title": "Backup data"
@@ -3616,6 +3662,9 @@
               "error_load": "Error loading Supervisor update config: {error}",
               "error_save": "Error saving Supervisor update config: {error}"
             }
+          },
+          "app_update_backups": {
+            "header": "App update backups"
           },
           "details": {
             "header": "Backup",
@@ -3750,7 +3799,7 @@
               "type": "Event type",
               "data": "Event data (YAML, optional)",
               "fire_event": "Fire event",
-              "event_fired": "Event {name} fired",
+              "event_fired": "Event {name} fired at {time}",
               "active_listeners": "Active listeners",
               "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
               "listen_to_events": "Listen to events",
@@ -3764,7 +3813,15 @@
               "clear_events": "Clear events",
               "alert_event_type": "Event type is a mandatory field",
               "notification_event_fired": "Event {type} successfully fired!",
-              "subscribe_failed": "Failed to subscribe to event: {error}"
+              "subscribe_failed": "Failed to subscribe to event: {error}",
+              "unknown_error": "Unknown error",
+              "oldest_event": "Oldest event",
+              "older_event": "Older event",
+              "newer_event": "Newer event",
+              "newest_event": "Newest event",
+              "waiting_for_events": "Waiting for events…",
+              "subscribe_prompt": "Subscribe to an event type above to see events here.",
+              "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
             "actions": {
               "title": "Actions",
@@ -3837,7 +3894,8 @@
               "no_listeners": "This template does not listen for any events and will not update automatically.",
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
-              "domain": "Domain"
+              "domain": "Domain",
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",
@@ -5079,14 +5137,14 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
                 "time_location": {
                   "label": "Time and location"
                 },
-                "other": {
-                  "label": "Other triggers"
+                "generic": {
+                  "label": "Generic"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5354,14 +5412,14 @@
                 "time_location": {
                   "label": "Time and location"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
-                "other": {
-                  "label": "Other conditions"
+                "generic": {
+                  "label": "Generic"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5548,10 +5606,9 @@
                     "picker": "Previously known as call service.",
                     "service_based_on_template": "Perform an action based on a template on {targets}",
                     "service_based_on_name": "Perform action ''{name}'' on {targets}",
-                    "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_name": "{name} on {targets}",
                     "service_based_on_template_no_targets": "Perform an action based on a template",
                     "service_based_on_name_no_targets": "Perform action ''{name}''",
-                    "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
@@ -6791,7 +6848,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
+            "device_created": "Name and assign",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
@@ -7673,7 +7730,9 @@
             "menu_remove_device": "Force-remove an unavailable device",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "ready_to_remove": "Ready to remove device.",
+            "follow_device_instructions": "Follow the directions that came with your device.",
+            "trigger_device_exclusion": "To trigger exclusion on the device:",
             "removing_device": "Removing device",
             "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
@@ -8652,7 +8711,6 @@
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
-            "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."

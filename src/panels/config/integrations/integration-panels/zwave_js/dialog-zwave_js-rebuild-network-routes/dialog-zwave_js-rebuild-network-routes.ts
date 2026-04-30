@@ -16,7 +16,7 @@ import "../../../../../../components/ha-button";
 import type { HaButton } from "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
-import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/progress/ha-progress-bar";
 import {

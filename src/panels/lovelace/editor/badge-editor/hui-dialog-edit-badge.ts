@@ -419,6 +419,7 @@ export class HuiDialogEditBadge
           .content {
             width: 100%;
             max-width: 100%;
+            gap: var(--ha-space-3);
           }
         }
 

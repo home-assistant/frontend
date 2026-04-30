@@ -329,7 +329,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
       @editor-save=${this._saveScene}
-      .showErrors=${false}
       disable-fullscreen
     ></ha-yaml-editor>`;
   }
