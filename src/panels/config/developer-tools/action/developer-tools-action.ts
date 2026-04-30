@@ -5,6 +5,7 @@ import { dump, JSON_SCHEMA, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
@@ -44,9 +45,10 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ToggleButton } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
+import { MinHeightMirrorMixin } from "../../../../mixins/min-height-mirror-mixin";
 
 @customElement("developer-tools-action")
-class HaPanelDevAction extends LitElement {
+class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -81,6 +83,12 @@ class HaPanelDevAction extends LitElement {
   private _yamlMode = false;
 
   @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  @query(".ui-mode-content") private _uiModeContent?: HTMLElement;
+
+  protected get minHeightMirrorTarget(): HTMLElement | null {
+    return this._yamlMode ? null : (this._uiModeContent ?? null);
+  }
 
   protected willUpdate() {
     if (
@@ -171,7 +179,10 @@ class HaPanelDevAction extends LitElement {
             ></ha-button-toggle-group>
           </div>
           ${this._yamlMode
-            ? html`<div class="card-content">
+            ? html`<div
+                class="card-content"
+                style=${styleMap({ ...this._minHeightMirrorStyle })}
+              >
                 <ha-service-picker
                   .hass=${this.hass}
                   .value=${this._serviceData?.action}
@@ -193,7 +204,7 @@ class HaPanelDevAction extends LitElement {
                   show-advanced
                   show-service-id
                   @value-changed=${this._serviceDataChanged}
-                  class="card-content"
+                  class="card-content ui-mode-content"
                 ></ha-service-control>
               `}
           ${this._error !== undefined
