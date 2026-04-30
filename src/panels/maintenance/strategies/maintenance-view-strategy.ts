@@ -31,13 +31,21 @@ export const maintenanceEntityFilters: EntityFilter[] = [
 
 const LOW_BATTERY_THRESHOLD = 20;
 
-export const filterNeedsAttentionEntities = (
+export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
 ): string[] =>
   entityIds.filter((entityId) => {
     const stateValue = parseFloat(hass.states[entityId]?.state ?? "");
     return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
+  });
+
+export const filterUnavailableBatteryEntities = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    return hass.states[entityId]?.state === "unavailable";
   });
 
 const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
