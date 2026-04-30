@@ -472,6 +472,7 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const addDataSet = (
         id: string,
         nameY: string,
