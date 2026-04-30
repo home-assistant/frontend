@@ -16,6 +16,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { batteryLevelIconPath } from "../../../../common/entity/battery_icon";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -100,14 +101,34 @@ class HuiEnergyDistrubutionCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
+    if (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
-      !changedProps.has("hass") ||
-      (!!this._data?.co2SignalEntity &&
-        this.hass.states[this._data.co2SignalEntity] !==
-          changedProps.get("hass").states[this._data.co2SignalEntity])
-    );
+      !changedProps.has("hass")
+    ) {
+      return true;
+    }
+    const oldStates = changedProps.get("hass").states;
+    if (
+      this._data?.co2SignalEntity &&
+      this.hass.states[this._data.co2SignalEntity] !==
+        oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    const batteries = this._data
+      ? energySourcesByType(this._data.prefs).battery
+      : undefined;
+    if (
+      batteries?.some(
+        (source) =>
+          source.stat_soc &&
+          this.hass.states[source.stat_soc] !== oldStates[source.stat_soc]
+      )
+    ) {
+      return true;
+    }
+    return false;
   }
 
   protected willUpdate() {
@@ -174,10 +195,24 @@ class HuiEnergyDistrubutionCard
 
     let totalBatteryIn: number | null = null;
     let totalBatteryOut: number | null = null;
+    let batteryIconPath = mdiBatteryHigh;
 
     if (hasBattery) {
       totalBatteryIn = summedData.total.to_battery ?? 0;
       totalBatteryOut = summedData.total.from_battery ?? 0;
+
+      const socValues = types
+        .battery!.map((source) =>
+          source.stat_soc
+            ? Number(this.hass.states[source.stat_soc]?.state)
+            : NaN
+        )
+        .filter((value) => Number.isFinite(value));
+      if (socValues.length) {
+        const averageSoc =
+          socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
+        batteryIconPath = batteryLevelIconPath(averageSoc);
+      }
     }
 
     let returnedToGrid: number | null = null;
@@ -569,7 +604,7 @@ class HuiEnergyDistrubutionCard
                 ${hasBattery
                   ? html` <div class="circle-container battery">
                       <div class="circle">
-                        <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
+                        <ha-svg-icon .path=${batteryIconPath}></ha-svg-icon>
                         <span class="battery-in">
                           <ha-svg-icon
                             class="small"
