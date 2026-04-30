@@ -472,15 +472,14 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       const addDataSet = (
         id: string,
         nameY: string,
-        color?: string,
+        clr?: string,
         fill = false
       ) => {
-        if (!color) {
-          color = getGraphColorByIndex(colorIndex, computedStyles);
+        if (!clr) {
+          clr = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -489,7 +488,7 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           cursor: "default",
           name: nameY,
-          color,
+          color: clr,
           symbol: "circle",
           symbolSize: 1,
           step: "end",
@@ -500,7 +499,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           areaStyle: fill
             ? {
-                color: color + "7F",
+                color: clr + "7F",
               }
             : undefined,
           tooltip: {
