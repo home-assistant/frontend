@@ -182,7 +182,7 @@ class HaPanelDevAction extends MinHeightMirrorMixin(LitElement) {
           ${this._yamlMode
             ? html`<div
                 class="card-content"
-                style=${styleMap({ ...this._minHeightMirrorStyle })}
+                style=${styleMap(this._minHeightMirrorStyle)}
               >
                 <ha-service-picker
                   .hass=${this.hass}
