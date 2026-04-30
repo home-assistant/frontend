@@ -24,7 +24,7 @@ import {
   computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
-  updateBackupConfig,
+  saveBackupConfig,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
@@ -100,18 +100,7 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    await updateBackupConfig(this.hass, {
-      create_backup: {
-        agent_ids: this.config.create_backup.agent_ids,
-        include_folders: this.config.create_backup.include_folders ?? [],
-        include_database: this.config.create_backup.include_database,
-        include_addons: this.config.create_backup.include_addons ?? [],
-        include_all_addons: this.config.create_backup.include_all_addons,
-        password: this.config.create_backup.password,
-      },
-      retention: this.config.retention,
-      schedule: this.config.schedule,
-    });
+    await saveBackupConfig(this.hass, this.config);
 
     fireEvent(this, "ha-refresh-backup-config");
   }

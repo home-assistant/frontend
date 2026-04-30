@@ -16,7 +16,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
-import { updateBackupConfig } from "../../../data/backup";
+import { saveBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
 import {
   getSupervisorUpdateConfig,
@@ -414,18 +414,7 @@ class HaConfigBackupSettings extends LitElement {
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
-    await updateBackupConfig(this.hass, {
-      create_backup: {
-        agent_ids: this._config!.create_backup.agent_ids,
-        include_folders: this._config!.create_backup.include_folders ?? [],
-        include_database: this._config!.create_backup.include_database,
-        include_addons: this._config!.create_backup.include_addons ?? [],
-        include_all_addons: this._config!.create_backup.include_all_addons,
-        password: this._config!.create_backup.password,
-      },
-      retention: this._config!.retention,
-      schedule: this._config!.schedule,
-    });
+    await saveBackupConfig(this.hass, this._config!);
     fireEvent(this, "ha-refresh-backup-config");
   }
 

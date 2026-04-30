@@ -2,7 +2,6 @@ import { mdiPuzzle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
@@ -26,11 +25,12 @@ class HaBackupOverviewAppUpdateBackup extends LitElement {
   }
 
   private async _fetchSupervisorUpdateConfig() {
-    if (!isComponentLoaded(this.hass.config, "hassio")) {
-      return;
+    try {
+      this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
-
-    this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);
   }
 
   private _appUpdateBackupDescription() {

@@ -1,11 +1,10 @@
 import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import type { CloudStatus } from "../../../data/cloud";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   getSupervisorUpdateConfig,
   updateSupervisorUpdateConfig,
@@ -18,8 +17,6 @@ import "./components/config/ha-backup-config-addon";
 @customElement("ha-config-backup-app-update-backups")
 class HaConfigBackupAppUpdateBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
