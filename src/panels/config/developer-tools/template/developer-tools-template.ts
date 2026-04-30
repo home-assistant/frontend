@@ -289,7 +289,9 @@ ${type === "object"
     `;
   }
 
-  private _expandedChanged(ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>) {
+  private _expandedChanged(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
+  ) {
     this._descriptionExpanded = ev.detail.expanded;
   }
 
