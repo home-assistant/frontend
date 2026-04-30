@@ -241,7 +241,7 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
 
-    const config: LovelaceRawConfig = this._config;
+    const config: LovelaceRawConfig = this._config!;
 
     try {
       if (isStrategyDashboard(config)) {
