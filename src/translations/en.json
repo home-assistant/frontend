@@ -491,6 +491,11 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
@@ -1427,6 +1432,7 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
@@ -1496,6 +1502,9 @@
         "no_segments": "No segments available",
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
+      },
+      "codemirror": {
+        "open_documentation": "Open documentation"
       },
       "safe_mode": {
         "title": "Safe mode",
@@ -3557,7 +3566,7 @@
               "show_all": "Show all backups"
             },
             "settings": {
-              "title": "Backup settings",
+              "title": "Automatic backup",
               "configure": "Configure backup settings",
               "schedule": "Automatic backup schedule and retention",
               "schedule_copies_all": "and keep all backups",
@@ -3603,6 +3612,10 @@
                 "sat": "Sa",
                 "sun": "Su"
               }
+            },
+            "app_update_backup": {
+              "title": "App update backup",
+              "description": "Backup behavior for app updates"
             }
           },
           "backups": {
@@ -3614,13 +3627,15 @@
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           },
           "settings": {
-            "header": "Backup settings",
+            "header": "Automatic backups",
             "menu": {
               "change_default_location": "Change default action location"
             },
             "schedule": {
-              "title": "Automatic backups",
-              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              "title": "Backup cycle",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups.",
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             },
             "data": {
               "title": "Backup data"
@@ -3647,6 +3662,9 @@
               "error_load": "Error loading Supervisor update config: {error}",
               "error_save": "Error saving Supervisor update config: {error}"
             }
+          },
+          "app_update_backups": {
+            "header": "App update backups"
           },
           "details": {
             "header": "Backup",
@@ -3875,7 +3893,8 @@
               "no_listeners": "This template does not listen for any events and will not update automatically.",
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
-              "domain": "Domain"
+              "domain": "Domain",
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",
@@ -8691,7 +8710,6 @@
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
-            "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."

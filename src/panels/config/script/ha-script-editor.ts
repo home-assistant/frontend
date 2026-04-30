@@ -464,7 +464,6 @@ export class HaScriptEditor extends SubscribeMixin(
                     disable-fullscreen
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveScript}
-                    .showErrors=${false}
                   ></ha-yaml-editor>
                   <ha-button
                     slot="fab"
