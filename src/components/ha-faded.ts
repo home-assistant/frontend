@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -46,7 +46,7 @@ class HaFaded extends LitElement {
     this._contentShown = height !== 0 && height <= this.fadedHeight + 50;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setShowContent();
   }

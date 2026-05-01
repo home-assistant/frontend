@@ -11,7 +11,6 @@ import {
   coverSupportsAnyPosition,
   coverSupportsPosition,
   coverSupportsTiltPosition,
-  normalizeCoverFavoritePositions,
 } from "../../data/cover";
 import type {
   ExtEntityRegistryEntry,
@@ -34,9 +33,9 @@ import {
 import type { ValveEntity } from "../../data/valve";
 import {
   DEFAULT_VALVE_FAVORITE_POSITIONS,
-  normalizeValveFavoritePositions,
   valveSupportsPosition,
 } from "../../data/valve";
+import { normalizeFavoritePositions } from "../../data/favorite_positions";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showFormDialog } from "../form/show-form-dialog";
@@ -226,7 +225,7 @@ const coverFavoritesHandler = createNumericFavoritesDialogHandler<CoverEntity>({
       supports: coverSupportsPosition,
       getStoredFavorites: (entry) => entry.options?.cover?.favorite_positions,
       getFavorites: (entry) =>
-        normalizeCoverFavoritePositions(
+        normalizeFavoritePositions(
           entry.options?.cover?.favorite_positions ??
             DEFAULT_COVER_FAVORITE_POSITIONS
         ),
@@ -237,7 +236,7 @@ const coverFavoritesHandler = createNumericFavoritesDialogHandler<CoverEntity>({
       getStoredFavorites: (entry) =>
         entry.options?.cover?.favorite_tilt_positions,
       getFavorites: (entry) =>
-        normalizeCoverFavoritePositions(
+        normalizeFavoritePositions(
           entry.options?.cover?.favorite_tilt_positions ??
             DEFAULT_COVER_FAVORITE_POSITIONS
         ),
@@ -311,7 +310,7 @@ const valveFavoritesHandler = createNumericFavoritesDialogHandler<ValveEntity>({
       supports: valveSupportsPosition,
       getStoredFavorites: (entry) => entry.options?.valve?.favorite_positions,
       getFavorites: (entry) =>
-        normalizeValveFavoritePositions(
+        normalizeFavoritePositions(
           entry.options?.valve?.favorite_positions ??
             DEFAULT_VALVE_FAVORITE_POSITIONS
         ),

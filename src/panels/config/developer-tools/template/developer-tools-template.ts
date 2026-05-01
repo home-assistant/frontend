@@ -9,10 +9,11 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 
@@ -158,6 +159,14 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
+          <ha-tip .hass=${this.hass}>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
+              {
+                autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+              }
+            )}
+          </ha-tip>
         </ha-card>
 
         <ha-card
@@ -166,7 +175,7 @@ class HaPanelDevTemplate extends LitElement {
             "ui.panel.config.developer-tools.tabs.templates.result"
           )}
         >
-          <div class="card-content">
+          <div class="card-content ha-scrollbar">
             ${this._rendering
               ? html`<ha-spinner
                   class="render-spinner"
@@ -268,6 +277,7 @@ ${type === "object"
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         :host {
           user-select: none;
@@ -360,10 +370,33 @@ ${type === "object"
           color: var(--warning-color);
         }
 
+        ha-tip {
+          padding: 0 var(--ha-space-4) var(--ha-space-4);
+          display: block;
+        }
+
+        kbd {
+          display: inline-block;
+          font-family: var(--ha-font-family-code);
+          font-size: 0.85em;
+          padding: 1px 5px;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-xs);
+          background-color: var(--secondary-background-color);
+          white-space: nowrap;
+        }
+
         @media all and (max-width: 870px) {
           .content ha-card {
             max-width: 100%;
           }
+        }
+
+        .card-actions {
+          display: flex;
+        }
+        .card-actions > ha-button:last-child {
+          margin-inline-start: auto;
         }
       `,
     ];

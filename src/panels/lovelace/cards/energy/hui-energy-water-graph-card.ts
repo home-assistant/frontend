@@ -15,6 +15,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
+  getSuggestedPeriod,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
@@ -26,6 +27,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
@@ -94,7 +97,7 @@ export class HuiEnergyWaterGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -265,6 +268,7 @@ export class HuiEnergyWaterGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     waterSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -285,14 +289,16 @@ export class HuiEnergyWaterGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint: (Date | string | number)[] = [
-            point.start,
+          const dataPoint: EnergyDataPoint = [
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              period,
+              compare ? compareTransform : undefined
+            ),
             point.change,
+            point.start,
           ];
-          if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start));
-          }
           waterConsumptionData.push(dataPoint);
           prevStart = point.start;
         }

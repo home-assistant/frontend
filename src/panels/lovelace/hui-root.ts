@@ -409,6 +409,8 @@ class HUIRoot extends LitElement {
               slot="actionItems"
               .id="button-${index}"
               .path=${item.icon}
+              .label=${label}
+              hide-title
               @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">
@@ -657,7 +659,7 @@ class HUIRoot extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -718,7 +720,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as
         | Lovelace
@@ -740,7 +742,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     const view = this._viewRoot;

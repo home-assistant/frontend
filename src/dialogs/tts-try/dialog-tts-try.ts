@@ -76,7 +76,7 @@ export class TTSTryDialog extends LitElement {
         @closed=${this._dialogClosed}
       >
         <ha-textarea
-          autogrow
+          resize="auto"
           id="message"
           .label=${this.hass.localize("ui.dialogs.tts-try.message")}
           .placeholder=${this.hass.localize(

@@ -69,7 +69,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   }
 
   private async _parse() {
-    const sentences = this._sentencesInput.value
+    const sentences = (this._sentencesInput.value || "")
       .split("\n")
       .filter((a) => a !== "");
     const { results } = await debugAgent(this.hass, sentences, this._language!);
@@ -139,7 +139,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 `
               : nothing}
             <ha-textarea
-              autogrow
+              resize="auto"
               .label=${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.assist.sentences"
               )}
@@ -244,9 +244,13 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           max-width: 1040px;
           margin: 0 auto;
         }
+        .card-content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+        }
         .description {
           margin: 0;
-          margin-bottom: var(--ha-space-4);
         }
         ha-textarea {
           width: 100%;

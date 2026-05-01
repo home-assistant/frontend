@@ -77,7 +77,7 @@ export class ZHAGroupPage extends LitElement {
     this._filteredDeviceEndpoints = [];
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchData();

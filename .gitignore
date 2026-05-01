@@ -57,4 +57,4 @@ test/coverage/
 # AI tooling
 .claude
 .cursor
-
+.opencode

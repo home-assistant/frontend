@@ -44,7 +44,7 @@ export class HaEntityStatesPicker extends LitElement {
     return this._keys[index];
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("value")) {
       this.value = ensureArray(this.value);

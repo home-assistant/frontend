@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
@@ -95,9 +96,33 @@ class DialogMatterLockManage extends LitElement {
           ? html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`
-          : html`<div class="content">${this._renderUsers()}</div>`}
+          : this._lockInfo && !this._lockInfo.supports_user_management
+            ? html`<div class="content">
+                <ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.no_user_management"
+                  )}
+                </ha-alert>
+                ${this._renderDocsLink()}
+              </div>`
+            : html`<div class="content">${this._renderUsers()}</div>`}
       </ha-dialog>
     `;
+  }
+
+  private _renderDocsLink() {
+    return html`<a
+      class="docs-link"
+      href="https://www.home-assistant.io/integrations/matter/#lock-user-and-credential-management"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      ${this.hass.localize("ui.panel.config.matter.lock.errors.learn_more")}
+    </a>`;
+  }
+
+  private get _supportsPinCredential(): boolean {
+    return this._lockInfo?.supported_credential_types?.includes("pin") ?? false;
   }
 
   private _renderUsers() {
@@ -105,8 +130,26 @@ class DialogMatterLockManage extends LitElement {
       (u) => u.user_status !== "available"
     );
 
+    const hasNoManageableCredentials =
+      !this._lockInfo?.supported_credential_types?.length;
+
     return html`
       <div class="users-content">
+        ${hasNoManageableCredentials
+          ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
+                )}
+              </ha-alert>
+              ${this._renderDocsLink()}`
+          : !this._supportsPinCredential
+            ? html`<ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.pin_not_supported"
+                  )}
+                </ha-alert>
+                ${this._renderDocsLink()}`
+            : nothing}
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
               ${this.hass.localize(
@@ -147,12 +190,14 @@ class DialogMatterLockManage extends LitElement {
                 )}
               </ha-md-list>
             `}
-        <div class="actions">
-          <ha-button @click=${this._addUser}>
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
-          </ha-button>
-        </div>
+        ${this._supportsPinCredential
+          ? html`<div class="actions">
+              <ha-button @click=${this._addUser}>
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
+              </ha-button>
+            </div>`
+          : nothing}
       </div>
     `;
   }
@@ -249,6 +294,15 @@ class DialogMatterLockManage extends LitElement {
         }
         .content {
           min-height: 300px;
+        }
+        .content > ha-alert {
+          margin: var(--ha-space-4);
+        }
+        .docs-link {
+          display: block;
+          padding: 0 var(--ha-space-4);
+          color: var(--primary-color);
+          font-size: 14px;
         }
         .users-content {
           padding: var(--ha-space-4) 0;

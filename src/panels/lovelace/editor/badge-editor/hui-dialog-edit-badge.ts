@@ -205,7 +205,12 @@ export class HuiDialogEditBadge
           .label=${this.hass.localize("ui.common.close")}
           .path=${mdiClose}
         ></ha-icon-button>
-        <span slot="headerTitle" @click=${this._enlarge}>${heading}</span>
+        <span
+          slot="headerTitle"
+          class="title-enlargeable"
+          @click=${this._enlarge}
+          >${heading}</span
+        >
         ${this._documentationURL !== undefined
           ? html`
               <ha-icon-button
@@ -414,6 +419,7 @@ export class HuiDialogEditBadge
           .content {
             width: 100%;
             max-width: 100%;
+            gap: var(--ha-space-3);
           }
         }
 
@@ -483,6 +489,9 @@ export class HuiDialogEditBadge
         }
         ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
+        }
+        .title-enlargeable {
+          display: block;
         }
       `,
     ];

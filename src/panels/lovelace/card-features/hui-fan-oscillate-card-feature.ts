@@ -66,7 +66,7 @@ class HuiFanOscillateCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     if (
       (changedProp.has("hass") || changedProp.has("context")) &&
       this._stateObj

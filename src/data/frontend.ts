@@ -1,9 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
+import type { ShortcutItem } from "./home_shortcuts";
 
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
   default_panel?: string;
+  apps_info_dismissed?: boolean;
 }
 
 export interface SidebarFrontendUserData {
@@ -20,7 +22,9 @@ export interface CoreFrontendSystemData {
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
   welcome_banner_dismissed?: boolean;
-  hidden_summaries?: string[];
+  hide_welcome_message?: boolean;
+  hide_suggested_entities?: boolean;
+  shortcuts?: ShortcutItem[];
 }
 
 declare global {

@@ -26,7 +26,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // deprecated
       this.addEventListener("register-dialog", (e) =>

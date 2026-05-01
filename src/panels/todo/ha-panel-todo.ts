@@ -26,9 +26,9 @@ import {
 } from "../../common/url/search-params";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
-import "../../components/ha-fab";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
@@ -51,7 +51,6 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
-import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
@@ -278,13 +277,10 @@ class PanelTodo extends LitElement {
         </div>
         ${entityState &&
         supportsFeature(entityState, TodoListEntityFeature.CREATE_TODO_ITEM)
-          ? html`<ha-fab
-              .label=${this.hass.localize("ui.panel.todo.add_item")}
-              extended
-              @click=${this._addItem}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>`
+          ? html`<ha-button class="fab" size="large" @click=${this._addItem}>
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.panel.todo.add_item")}
+            </ha-button>`
           : nothing}
       </ha-two-pane-top-app-bar-fixed>
     `;
@@ -419,12 +415,13 @@ class PanelTodo extends LitElement {
           white-space: nowrap;
           display: block;
         }
-        ha-fab {
+        .fab {
           position: fixed;
           right: calc(16px + var(--safe-area-inset-right, 0px));
           bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
           inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
 
         ha-dropdown.lists ha-dropdown-item {

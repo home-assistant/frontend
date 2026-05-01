@@ -4,7 +4,7 @@ import {
   mdiPencilOutline,
   mdiRoomService,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -61,12 +61,12 @@ export class DialogDeviceAutomation extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("device_automation");
   }
 
-  protected updated(changedProps): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (!changedProps.has("_params")) {

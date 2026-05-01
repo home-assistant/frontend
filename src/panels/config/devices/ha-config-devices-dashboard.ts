@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
   mdiCancel,
@@ -10,7 +11,6 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
@@ -37,10 +37,11 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
@@ -83,18 +84,17 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
+import {
+  getAreaTableColumn,
+  getCreatedAtTableColumn,
+  getFloorTableColumn,
+  getLabelsTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  getAreaTableColumn,
-  getFloorTableColumn,
-  getLabelsTableColumn,
-  getCreatedAtTableColumn,
-  getModifiedAtTableColumn,
-} from "../common/data-table-columns";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -445,9 +445,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         );
 
         const labels = labelReg && device?.labels;
-        const labelsEntries = (labels || []).map(
-          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-        );
+        const labelsEntries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
         let floorName;
         if (
@@ -697,7 +697,6 @@ export class HaConfigDeviceDashboard extends LitElement {
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label
             .color=${label.color}
@@ -779,14 +778,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-          extended
-          @click=${this._addDevice}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._addDevice}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.add_device")}
+        </ha-button>
         ${Array.isArray(this._filters.config_entry?.value) &&
         this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">

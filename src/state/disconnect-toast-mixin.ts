@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   STATE_NOT_RUNNING,
@@ -18,13 +19,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _disconnectedTimeout?: number;
 
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       setTimeout(() => import("../managers/notification-manager"), 5000);
     }
 
-    updated(changedProperties) {
+    updated(changedProperties: PropertyValues<this>) {
       super.updated(changedProperties);
       const oldHass = changedProperties.get("hass");
       if (!changedProperties.has("hass") || !this.hass!.config) {
@@ -73,7 +74,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
                 "Safe mode",
               text:
                 this.hass!.localize("ui.dialogs.safe_mode.text") ||
-                "Home Assistant is running in safe mode, custom integrations and modules are not available. Restart Home Assistant to exit safe mode.",
+                "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode.",
             });
           }
         );

@@ -47,7 +47,7 @@ class HaPanelProfile extends SubscribeMixin(HassRouterPage) {
     el.narrow = this.narrow;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.style.setProperty(
       "--app-header-background-color",

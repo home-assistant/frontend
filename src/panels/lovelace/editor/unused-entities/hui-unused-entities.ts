@@ -3,7 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../components/ha-fab";
+import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
@@ -33,7 +33,7 @@ export class HuiUnusedEntities extends LitElement {
     return this.lovelace.config;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     if (changedProperties.has("lovelace")) {
@@ -86,13 +86,10 @@ export class HuiUnusedEntities extends LitElement {
           selected: this._selectedEntities.length,
         })}"
       >
-        <ha-fab
-          .label=${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
-          extended
-          @click=${this._addToLovelaceView}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button size="large" @click=${this._addToLovelaceView}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
+        </ha-button>
       </div>
     `;
   }
@@ -166,12 +163,13 @@ export class HuiUnusedEntities extends LitElement {
       inset-inline-start: initial;
       z-index: 1;
     }
-    ha-fab {
+    ha-button {
       position: relative;
       bottom: calc(-80px - var(--safe-area-inset-bottom));
       transition: bottom 0.3s;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
-    .fab.selected ha-fab {
+    .fab.selected ha-button {
       bottom: 0;
     }
   `;

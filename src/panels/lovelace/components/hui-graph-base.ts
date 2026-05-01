@@ -19,6 +19,9 @@ export class HuiGraphBase extends LitElement {
     const width = this.clientWidth || 500;
     const height = this.clientHeight || width / 5;
     const yAxisOrigin = this.yAxisOrigin ?? height;
+    const lastX = this.coordinates?.length
+      ? this.coordinates[this.coordinates.length - 1][0]
+      : width;
     return html`
       ${this._path
         ? svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
@@ -27,7 +30,7 @@ export class HuiGraphBase extends LitElement {
               <path
                 class='fill'
                 fill='white'
-                d="${this._path} L ${width}, ${yAxisOrigin} L 0, ${yAxisOrigin} z"
+                d="${this._path} L ${lastX}, ${yAxisOrigin} L 0, ${yAxisOrigin} z"
               />
             </mask>
             <rect height="100%" width="100%" fill="var(--accent-color)" mask="url(#${this._uniqueId}-fill)"></rect>
@@ -50,7 +53,7 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.coordinates) {
       return;
     }

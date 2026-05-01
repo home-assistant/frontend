@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement, render, html } from "lit";
 import { customElement, property } from "lit/decorators";
-// eslint-disable-next-line import/extensions
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";
@@ -54,7 +53,7 @@ class HaMarkdownElement extends ReactiveElement {
 
   private _renderPromise: ReturnType<typeof this._render> = Promise.resolve();
 
-  protected update(changedProps) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (this.content !== undefined) {
       this._renderPromise = this._render();
@@ -67,7 +66,7 @@ class HaMarkdownElement extends ReactiveElement {
     return true;
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (!this.innerHTML && this.cache) {
       const key = this._computeCacheKey();
       if (markdownCache.has(key)) {

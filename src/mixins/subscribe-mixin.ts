@@ -38,7 +38,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       }
     }
 
-    protected updated(changedProps: PropertyValues) {
+    protected updated(changedProps: PropertyValues<this>) {
       super.updated(changedProps);
       if (changedProps.has("hass")) {
         this._checkSubscribed();

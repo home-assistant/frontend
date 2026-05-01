@@ -1,12 +1,12 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-button";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/progress/ha-progress-bar";
 import type { BackupOnboardingInfo } from "../../data/backup_onboarding";
 import { onBoardingStyles } from "../styles";
-import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("onboarding-restore-backup-status")
 class OnboardingRestoreBackupStatus extends LitElement {
@@ -33,7 +33,7 @@ class OnboardingRestoreBackupStatus extends LitElement {
         ${this.backupInfo.state === "restore_backup"
           ? html`
               <div class="loading">
-                <mwc-linear-progress indeterminate></mwc-linear-progress>
+                <ha-progress-bar indeterminate></ha-progress-bar>
               </div>
             `
           : html`
@@ -92,7 +92,7 @@ class OnboardingRestoreBackupStatus extends LitElement {
           padding: 16px 0;
           font-size: var(--ha-font-size-l);
         }
-        mwc-linear-progress {
+        ha-progress-bar {
           width: 100%;
         }
       `,

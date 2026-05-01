@@ -14,7 +14,7 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-action", (ev) => this._handleAction(ev));
     }

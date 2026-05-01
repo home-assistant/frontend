@@ -13,13 +13,13 @@ import "./hass-subpage";
 class SupervisorErrorScreen extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._applyTheme();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {

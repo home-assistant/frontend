@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import type { PropertyValueMap, ReactiveElement } from "lit";
+import type { ReactiveElement, PropertyValues } from "lit";
 import { mainWindow } from "../common/dom/get_main_window";
 import { closeLastDialog } from "../dialogs/make-dialog-manager";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
@@ -35,9 +35,7 @@ export const urlSyncMixin = <
           );
         }
 
-        protected firstUpdated(
-          changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-        ): void {
+        protected firstUpdated(changedProperties: PropertyValues<this>): void {
           super.firstUpdated(changedProperties);
           if (mainWindow.history.state?.dialog) {
             // this is a page refresh with a dialog open

@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -30,7 +31,7 @@ export class HaStateControlFanSpeed extends LitElement {
 
   @state() speedValue?: FanSpeed;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
+  protected updated(changedProp: PropertyValues<this>): void {
     if (changedProp.has("stateObj")) {
       const percentage = stateActive(this.stateObj)
         ? (this.stateObj.attributes.percentage ?? 0)

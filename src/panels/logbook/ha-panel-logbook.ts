@@ -13,8 +13,8 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import "../../components/entity/ha-entity-picker";
 import "../../components/date-picker/ha-date-range-picker";
+import "../../components/entity/ha-entity-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -125,7 +125,7 @@ export class HaPanelLogbook extends LitElement {
   private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
     filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {
@@ -140,7 +140,7 @@ export class HaPanelLogbook extends LitElement {
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this._loadNumericDeviceClasses();
@@ -368,6 +368,8 @@ export class HaPanelLogbook extends LitElement {
 
         ha-target-picker {
           flex: 1;
+          max-width: 100%;
+          min-width: 0;
         }
 
         :host([narrow]) ha-entity-picker {

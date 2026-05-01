@@ -87,6 +87,8 @@ export class HuiActionEditor extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @property({ attribute: false })
   public context?: ActionRelatedContext;
 
@@ -139,11 +141,24 @@ export class HuiActionEditor extends LitElement {
 
     const actions = this.actions ?? DEFAULT_ACTIONS;
 
-    let action = this.config?.action || "default";
+    let action = this.config?.action || (this.required ? "" : "default");
 
     if (action === "call-service") {
       action = "perform-action";
     }
+
+    const defaultOption = {
+      value: "default",
+      label: `${this.hass!.localize(
+        "ui.panel.lovelace.editor.action-editor.actions.default_action"
+      )} ${
+        this.defaultAction
+          ? ` (${this.hass!.localize(
+              `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+            ).toLowerCase()})`
+          : ""
+      }`,
+    };
 
     return html`
       <div class="dropdown">
@@ -153,19 +168,7 @@ export class HuiActionEditor extends LitElement {
           @selected=${this._actionPicked}
           .value=${action}
           .options=${[
-            {
-              value: "default",
-              label: `${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.actions.default_action"
-              )}
-            ${
-              this.defaultAction
-                ? ` (${this.hass!.localize(
-                    `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
-                  ).toLowerCase()})`
-                : ""
-            }`,
-            },
+            ...(this.required ? [] : [defaultOption]),
             ...actions.map((actn) => ({
               value: actn,
               label: this.hass!.localize(
@@ -251,7 +254,7 @@ export class HuiActionEditor extends LitElement {
     if (action === value) {
       return;
     }
-    if (value === "default") {
+    if (value === "default" || !value) {
       fireEvent(this, "value-changed", { value: undefined });
       return;
     }

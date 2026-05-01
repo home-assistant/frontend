@@ -1,9 +1,10 @@
+import type { PropertyValues } from "lit";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // @ts-ignore
       this.registerDialog({

@@ -221,7 +221,7 @@ export class HuiGenericEntityRow extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     toggleAttribute(
       this,

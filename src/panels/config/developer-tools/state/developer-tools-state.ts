@@ -108,17 +108,14 @@ class HaPanelDevState extends LitElement {
           )}
         </h1>
         ${!this.narrow
-          ? html` <ha-formfield
-              .label=${this.hass.localize(
+          ? html`<ha-checkbox
+              .checked=${this._showAttributes}
+              @change=${this._saveAttributeCheckboxState}
+            >
+              ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.states.attributes"
               )}
-            >
-              <ha-checkbox
-                .checked=${this._showAttributes}
-                @change=${this._saveAttributeCheckboxState}
-                reducedTouchTarget
-              ></ha-checkbox>
-            </ha-formfield>`
+            </ha-checkbox>`
           : nothing}
       </div>
       <ha-expansion-panel
@@ -520,10 +517,9 @@ class HaPanelDevState extends LitElement {
           justify-content: space-between;
         }
 
-        .heading ha-formfield {
+        .heading ha-checkbox {
           margin-right: var(--ha-space-2);
-          --mdc-typography-body2-font-size: var(--ha-font-size-m);
-          --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
+          justify-content: center;
         }
 
         .entity-id {

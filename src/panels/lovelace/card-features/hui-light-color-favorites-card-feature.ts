@@ -24,6 +24,7 @@ import {
 } from "../../../data/entity/entity_registry";
 import "../../../dialogs/more-info/components/lights/ha-favorite-color-button";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const PILL_GAP = 8;
 const PILL_MIN_SIZE = 32;
@@ -136,6 +137,8 @@ class HuiLightColorFavoritesCardFeature
       type: "light-color-favorites",
     };
   }
+
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 
   public setConfig(config: LightColorFavoritesCardFeatureConfig): void {
     if (!config) {

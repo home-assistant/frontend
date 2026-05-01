@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
 import type { CloudStatus } from "../../../data/cloud";
@@ -65,7 +66,7 @@ class HaConfigCloud extends HassRouterPage {
     this._resolveCloudStatusLoaded = resolve;
   });
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("cloud-done", (ev) => {
       this._flashMessage = (ev as any).detail.flashMessage;
@@ -73,7 +74,7 @@ class HaConfigCloud extends HassRouterPage {
     });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("cloudStatus")) {

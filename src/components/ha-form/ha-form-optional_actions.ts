@@ -59,7 +59,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     return form ? form.reportValidity() : true;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("data")) {
       const displayActions = this._displayActions ?? NO_ACTIONS;

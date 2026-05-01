@@ -19,7 +19,7 @@ class MoreInfoConversation extends LitElement {
 
   @state() private _errorLoadAssist?: "not_found" | "unknown";
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!changedProperties.has("stateObj") || !this.stateObj) {

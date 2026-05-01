@@ -1,5 +1,6 @@
 /* eslint-disable lit/no-template-arrow */
 
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
@@ -51,7 +52,7 @@ export class DemoAutomationTraceTimeline extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");

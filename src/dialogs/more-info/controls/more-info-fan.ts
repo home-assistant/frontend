@@ -101,7 +101,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("stateObj")) {
       this._presetMode = this.stateObj?.attributes.preset_mode;
     }

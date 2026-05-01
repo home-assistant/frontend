@@ -35,7 +35,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
     });
   });
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._currentMode = this._getCurrentMode(this.stateObj);

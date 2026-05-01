@@ -12,8 +12,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-progress-ring";
 import "../../../components/ha-spinner";
+import "../../../components/progress/ha-progress-ring";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -29,10 +29,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
-
-  @property({ type: Number }) public total?: number;
-
-  @property({ attribute: false }) public isInstallable = true;
 
   @state() private _devices?: DeviceRegistryEntry[];
 
@@ -90,18 +86,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.isInstallable
-          ? this.hass.localize("ui.panel.config.updates.title", {
-              count: this.total || this.updateEntities.length,
-            })
-          : this.hass.localize(
-              "ui.panel.config.updates.title_not_installable",
-              {
-                count: this.total || this.updateEntities.length,
-              }
-            )}
-      </div>
       <ha-md-list>
         ${updates.map((entity) => {
           const entityEntry = this.getEntityEntry(entity.entity_id);
@@ -181,11 +165,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        .title {
-          font-size: var(--ha-font-size-l);
-          padding: 16px;
-          padding-bottom: 0;
-        }
         .skipped {
           background: var(--secondary-background-color);
         }

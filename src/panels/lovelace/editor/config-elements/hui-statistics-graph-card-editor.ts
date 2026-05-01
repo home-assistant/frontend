@@ -66,7 +66,14 @@ const cardConfigStruct = assign(
         literal("auto"),
       ])
     ),
-    chart_type: optional(union([literal("bar"), literal("line")])),
+    chart_type: optional(
+      union([
+        literal("line"),
+        literal("line-stack"),
+        literal("bar"),
+        literal("bar-stack"),
+      ])
+    ),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
@@ -80,6 +87,7 @@ const cardConfigStruct = assign(
   })
 );
 
+const chartTypes = ["line", "line-stack", "bar", "bar-stack"] as const;
 const periods = ["5minute", "hour", "day", "week", "month", "year"] as const;
 const energyPeriods = [...periods, "auto"] as const;
 
@@ -166,20 +174,12 @@ export class HuiStatisticsGraphCardEditor
                   name: "chart_type",
                   required: true,
                   type: "select",
-                  options: [
-                    [
-                      "line",
-                      localize(
-                        `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
-                      ),
-                    ],
-                    [
-                      "bar",
-                      localize(
-                        `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
-                      ),
-                    ],
-                  ],
+                  options: chartTypes.map((type) => [
+                    type,
+                    localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.${type}`
+                    ),
+                  ]),
                 },
                 ...(!enableDateSelect
                   ? ([

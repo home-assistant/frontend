@@ -13,8 +13,16 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-spinner";
-import type { Calendar, CalendarEvent } from "../../../data/calendar";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventSubscription,
+  CalendarEventApiData,
+} from "../../../data/calendar";
+import {
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../../data/calendar";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -77,6 +85,8 @@ export class HuiCalendarCard
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
   @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state() private _eventsLoaded = false;
@@ -86,6 +96,8 @@ export class HuiCalendarCard
   private _endDate?: Date;
 
   private _resizeObserver?: ResizeObserver;
+
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
@@ -97,7 +109,8 @@ export class HuiCalendarCard
     }
 
     if (this._config?.entities !== config.entities) {
-      this._fetchCalendarEvents();
+      this._unsubscribeAll();
+      // Subscription will happen when view-changed event fires
     }
 
     this._config = { initial_view: "dayGridMonth", ...config };
@@ -179,6 +192,7 @@ export class HuiCalendarCard
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._unsubscribeAll();
   }
 
   protected render() {
@@ -231,9 +245,11 @@ export class HuiCalendarCard
       return;
     }
 
-    // Refetch events when entity registry changes (to update colors)
+    // Resubscribe when entity registry changes (to update colors)
     if (changedProps.has("_entityRegistry") && this._entityRegistry) {
-      this._fetchCalendarEvents();
+      this._unsubscribeAll().then(() => {
+        this._subscribeCalendarEvents();
+      });
     }
 
     // If no calendars configured, mark events as loaded to hide spinner
@@ -260,38 +276,94 @@ export class HuiCalendarCard
     }
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+  private async _handleViewChanged(
+    ev: HASSDomEvent<CalendarViewChanged>
+  ): Promise<void> {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._eventsLoaded = false;
-    this._fetchCalendarEvents();
+    await this._unsubscribeAll();
+    this._subscribeCalendarEvents();
   }
 
-  private async _fetchCalendarEvents(): Promise<void> {
-    if (!this._startDate || !this._endDate) {
+  private _subscribeCalendarEvents(): void {
+    if (!this.hass || !this._startDate || !this._endDate) {
       return;
     }
 
     this._error = undefined;
-    const result = await fetchCalendarEvents(
-      this.hass!,
-      this._startDate,
-      this._endDate,
-      this._calendars
-    );
-    this._events = result.events;
-    // Wait for component update and one animation frame for FullCalendar to render
-    this.updateComplete.then(() => {
-      requestAnimationFrame(() => {
-        this._eventsLoaded = true;
-      });
-    });
 
-    if (result.errors.length > 0) {
+    this._calendars.forEach((calendar) => {
+      const unsub = subscribeCalendarEvents(
+        this.hass!,
+        calendar.entity_id,
+        this._startDate!,
+        this._endDate!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
+  }
+
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
+      }
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
       )}`;
+      return;
     }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    if (this._errorCalendars.length === 0) {
+      this._error = undefined;
+    }
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventApiData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
+      )
+      .filter((event): event is CalendarEvent => event !== null);
+
+    this._events = [...this._events, ...newEvents];
+
+    if (!this._eventsLoaded) {
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          this._eventsLoaded = true;
+        });
+      });
+    }
+  }
+
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
+    this._unsubs = {};
   }
 
   private _measureCard() {

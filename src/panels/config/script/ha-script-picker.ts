@@ -41,9 +41,10 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -106,9 +107,9 @@ import { showNewAutomationDialog } from "../automation/show-dialog-new-automatio
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
-  getEntityIdHiddenTableColumn,
   getAreaTableColumn,
   getCategoryTableColumn,
+  getEntityIdHiddenTableColumn,
   getLabelsTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
@@ -119,7 +120,6 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -127,6 +127,7 @@ type ScriptItem = ScriptEntity & {
   last_triggered: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -245,6 +246,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           script.entity_id
@@ -259,9 +263,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -676,18 +679,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               </ha-button>
             </div>`
           : nothing}
-        <ha-fab
-          slot="fab"
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          .label=${this.hass.localize(
-            "ui.panel.config.script.picker.add_script"
-          )}
-          extended
-          @click=${this._createNew}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._createNew}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.script.picker.add_script")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -1191,7 +1186,6 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon

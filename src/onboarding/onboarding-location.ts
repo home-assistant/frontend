@@ -4,7 +4,7 @@ import {
   mdiMapMarker,
   mdiMapSearchOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -200,7 +200,7 @@ class OnboardingLocation extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     setTimeout(() => this.renderRoot.querySelector("ha-input")!.focus(), 100);
     this.addEventListener("keyup", (ev) => {
@@ -210,7 +210,7 @@ class OnboardingLocation extends LitElement {
     });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     if (changedProps.has("_highlightedMarker") && this._highlightedMarker) {
       const place = this._places?.find(
         (plc) => plc.place_id === this._highlightedMarker

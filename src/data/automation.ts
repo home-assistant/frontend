@@ -322,6 +322,7 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
 
 export interface AutomationElementGroupCollection {
   titleKey?: LocalizeKeys;
+  generic?: boolean;
   groups: AutomationElementGroup;
 }
 
@@ -607,6 +608,8 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   description?: TriggerDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
@@ -623,6 +626,8 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   description?: ConditionDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
@@ -641,6 +646,8 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   };
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {

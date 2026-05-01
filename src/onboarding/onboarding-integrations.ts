@@ -185,7 +185,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this._scanUSBDevices();

@@ -35,7 +35,7 @@ class ZHAOptionsPage extends LitElement {
 
   @state() private _customBattery = false;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchConfiguration();

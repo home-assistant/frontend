@@ -22,7 +22,7 @@ class ZWaveJSConfigEntryPicker extends LitElement {
 
   @state() private _configEntries?: ConfigEntry[];
 
-  protected async firstUpdated(changedProps: PropertyValues) {
+  protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     await this._fetchConfigEntries();
   }

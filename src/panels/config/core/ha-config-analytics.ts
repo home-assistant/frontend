@@ -1,14 +1,18 @@
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-analytics";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
+import { getSignedPath } from "../../../data/auth";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { Analytics } from "../../../data/analytics";
 import {
@@ -26,6 +30,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends SubscribeMixin(LitElement) {
@@ -119,6 +124,18 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                 </ha-md-list-item>
               </ha-md-list>
             </div>
+            <div class="card-actions">
+              <ha-button
+                size="small"
+                appearance="plain"
+                @click=${this._downloadDeviceInfo}
+              >
+                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.analytics.download_device_info"
+                )}
+              </ha-button>
+            </div>
           </ha-card>`
         : nothing}
       ${this._zwaveEntryId !== undefined
@@ -188,7 +205,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const section = extractSearchParam("section");
     if (section) {
@@ -290,6 +307,11 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     this._save();
   }
 
+  private async _downloadDeviceInfo(): Promise<void> {
+    const signedPath = await getSignedPath(this.hass, "/api/analytics/devices");
+    fileDownload(signedPath.path);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -322,7 +344,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           0% {
             box-shadow:
               0 0 0 var(--ha-border-width-md) var(--primary-color),
-              0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+              0 0 12px rgba(var(--rgb-primary-color), 0.4);
           }
           100% {
             box-shadow:

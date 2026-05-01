@@ -299,7 +299,9 @@ export class HuiImage extends LitElement {
               id="brokenImage"
               style=${styleMap({
                 height: !useRatio
-                  ? `${this._lastImageHeight}px` || "100%"
+                  ? this._lastImageHeight
+                    ? `${this._lastImageHeight}px`
+                    : "100%"
                   : undefined,
               })}
             ></div>`
@@ -309,7 +311,9 @@ export class HuiImage extends LitElement {
                 class="progress-container"
                 style=${styleMap({
                   height: !useRatio
-                    ? `${this._lastImageHeight}px` || "100%"
+                    ? this._lastImageHeight
+                      ? `${this._lastImageHeight}px`
+                      : "100%"
                     : undefined,
                 })}
               >

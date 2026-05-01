@@ -18,7 +18,7 @@ class StepFlowMenu extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepMenu;
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       changedProps.size > 1 ||
       !changedProps.has("hass") ||

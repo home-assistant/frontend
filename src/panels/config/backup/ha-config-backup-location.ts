@@ -5,7 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
@@ -46,7 +46,7 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     if (changedProps.has("agentId")) {
       if (this.agentId) {
         this._fetchAgent();

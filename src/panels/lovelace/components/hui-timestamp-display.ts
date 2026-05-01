@@ -75,7 +75,7 @@ class HuiTimestampDisplay extends LitElement {
     )}`;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (!changedProperties.has("format") || !this._connected) {
       return;

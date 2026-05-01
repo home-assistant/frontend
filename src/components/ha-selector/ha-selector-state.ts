@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -53,7 +54,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
     }
   );
 
-  willUpdate(changedProps) {
+  willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("selector") || changedProps.has("context")) {
       this._resolveEntityIds(
         this.selector.state?.entity_id,

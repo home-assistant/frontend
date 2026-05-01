@@ -11,7 +11,7 @@ class HuiMarquee extends LitElement {
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ reflect: true, type: Boolean }) public animating = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this.addEventListener("mouseover", () => this.classList.add("hovering"), {
@@ -23,7 +23,7 @@ class HuiMarquee extends LitElement {
     this.addEventListener("mouseout", () => this.classList.remove("hovering"));
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     if (changedProperties.has("text") && this.animating) {

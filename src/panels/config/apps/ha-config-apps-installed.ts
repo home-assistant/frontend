@@ -10,8 +10,8 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
@@ -157,16 +157,10 @@ export class HaConfigAppsInstalled extends LitElement {
           </div>
         </div>
 
-        <a href="/config/apps/available">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.add_app"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiStorePlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button size="large" href="/config/apps/available">
+          <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -270,7 +264,7 @@ export class HaConfigAppsInstalled extends LitElement {
         cursor: pointer;
       }
 
-      ha-fab {
+      ha-button[size="large"] {
         position: fixed;
         right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
         bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
@@ -279,6 +273,7 @@ export class HaConfigAppsInstalled extends LitElement {
         );
         inset-inline-start: initial;
         z-index: 1;
+        --ha-button-box-shadow: var(--ha-box-shadow-l);
       }
     `,
   ];

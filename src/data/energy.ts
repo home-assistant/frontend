@@ -1235,13 +1235,7 @@ export const computeConsumptionSingle = (data: {
     (to_grid || 0) -
     (to_battery || 0);
 
-  let used_solar = 0;
   let grid_to_battery = 0;
-  let battery_to_grid = 0;
-  let solar_to_battery = 0;
-  let solar_to_grid = 0;
-  let used_battery = 0;
-  let used_grid = 0;
 
   let used_total_remaining = Math.max(used_total, 0);
   // Consumption Priority
@@ -1266,40 +1260,34 @@ export const computeConsumptionSingle = (data: {
 
   // Fill the remainder of the battery input from solar
   // Solar -> Battery_In
-  solar_to_battery = Math.min(solar, to_battery);
+  const solar_to_battery = Math.min(solar, to_battery);
   to_battery -= solar_to_battery;
   solar -= solar_to_battery;
 
   // Solar -> Grid_Out
-  solar_to_grid = Math.min(solar, to_grid);
+  const solar_to_grid = Math.min(solar, to_grid);
   to_grid -= solar_to_grid;
   solar -= solar_to_grid;
 
   // Battery_Out -> Grid_Out
-  battery_to_grid = Math.min(from_battery, to_grid);
+  const battery_to_grid = Math.min(from_battery, to_grid);
   from_battery -= battery_to_grid;
-  to_grid -= battery_to_grid;
 
   // Grid_In -> Battery_In (second pass)
   const grid_to_battery_2 = Math.min(from_grid, to_battery);
   grid_to_battery += grid_to_battery_2;
   from_grid -= grid_to_battery_2;
-  to_battery -= grid_to_battery_2;
 
   // Solar -> Consumption
-  used_solar = Math.min(used_total_remaining, solar);
+  const used_solar = Math.min(used_total_remaining, solar);
   used_total_remaining -= used_solar;
-  solar -= used_solar;
 
   // Battery_Out -> Consumption
-  used_battery = Math.min(from_battery, used_total_remaining);
-  from_battery -= used_battery;
+  const used_battery = Math.min(from_battery, used_total_remaining);
   used_total_remaining -= used_battery;
 
   // Grid_In -> Consumption
-  used_grid = Math.min(used_total_remaining, from_grid);
-  from_grid -= used_grid;
-  used_total_remaining -= from_grid;
+  const used_grid = Math.min(used_total_remaining, from_grid);
 
   return {
     used_solar,

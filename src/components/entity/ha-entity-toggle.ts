@@ -13,9 +13,9 @@ import {
 } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
+import "../ha-control-switch";
 import "../ha-formfield";
 import "../ha-icon-button";
-import "../ha-switch";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -35,7 +35,7 @@ export class HaEntityToggle extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
-      return html` <ha-switch disabled></ha-switch> `;
+      return html`<ha-control-switch disabled></ha-control-switch> `;
     }
 
     if (
@@ -62,14 +62,14 @@ export class HaEntityToggle extends LitElement {
       `;
     }
 
-    const switchTemplate = html`<ha-switch
+    const switchTemplate = html`<ha-control-switch
       aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
         this._isOn ? "off" : "on"
       }`}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
-    ></ha-switch>`;
+    ></ha-control-switch>`;
 
     if (!this.label) {
       return switchTemplate;
@@ -80,12 +80,12 @@ export class HaEntityToggle extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("click", (ev) => ev.stopPropagation());
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._isOn = isOn(this.stateObj);
@@ -163,6 +163,10 @@ export class HaEntityToggle extends LitElement {
       white-space: nowrap;
       min-width: 38px;
     }
+    ha-control-switch {
+      --control-switch-thickness: 20px;
+      --control-switch-off-color: var(--state-inactive-color);
+    }
     ha-icon-button {
       --ha-icon-button-size: 40px;
       color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
@@ -170,9 +174,6 @@ export class HaEntityToggle extends LitElement {
     }
     ha-icon-button.state-active {
       color: var(--ha-icon-button-active-color, var(--primary-color));
-    }
-    ha-switch {
-      padding: 13px 5px;
     }
   `;
 }

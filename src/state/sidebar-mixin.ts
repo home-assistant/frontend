@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
@@ -22,7 +23,7 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-dock-sidebar", (ev) => {
         this._updateHass({ dockedSidebar: ev.detail.dock });

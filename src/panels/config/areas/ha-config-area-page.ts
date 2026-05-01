@@ -1,7 +1,7 @@
 import { consume } from "@lit/context";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -128,12 +128,12 @@ class HaConfigAreaPage extends LitElement {
         .concat(memberships.indirectEntities.map((entry) => entry.entity_id))
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("areaId")) {
       this._findRelated();

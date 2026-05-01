@@ -111,7 +111,7 @@ class LightColorTempPicker extends LitElement {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this._isInteracting || !changedProps.has("stateObj")) {

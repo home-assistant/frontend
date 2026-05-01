@@ -1,5 +1,8 @@
 import type { LitElement } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HaAdaptiveDialog } from "../components/ha-adaptive-dialog";
+import type { HaAdaptivePopover } from "../components/ha-adaptive-popover";
+import type { HaBottomSheet } from "../components/ha-bottom-sheet";
 import type { HaDialog } from "../components/ha-dialog";
 import type { Constructor } from "../types";
 import type { HassDialogNext } from "./make-dialog-manager";
@@ -15,6 +18,10 @@ export const DialogMixin = <
 
     declare public params?: P;
 
+    public dialogAnchor?: Element;
+
+    private _dialogClosedFired = false;
+
     private _closePromise?: Promise<boolean>;
 
     private _closeResolve?: (value: boolean) => void;
@@ -25,8 +32,14 @@ export const DialogMixin = <
       }
 
       const dialogElement = this.shadowRoot?.querySelector(
-        "ha-dialog"
-      ) as HaDialog | null;
+        "ha-adaptive-popover, ha-adaptive-dialog, ha-dialog, ha-bottom-sheet"
+      ) as
+        | HaAdaptivePopover
+        | HaAdaptiveDialog
+        | HaDialog
+        | HaBottomSheet
+        | null;
+
       if (dialogElement) {
         this._closePromise = new Promise<boolean>((resolve) => {
           this._closeResolve = resolve;
@@ -41,6 +54,8 @@ export const DialogMixin = <
       this._closeResolve?.(true);
       this._closePromise = undefined;
       this._closeResolve = undefined;
+      this._dialogClosedFired = true;
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this.remove();
     };
 
@@ -50,7 +65,9 @@ export const DialogMixin = <
     }
 
     disconnectedCallback() {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
+      if (!this._dialogClosedFired) {
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
+      }
       this.removeEventListener("closed", this._removeDialog);
       super.disconnectedCallback();
     }

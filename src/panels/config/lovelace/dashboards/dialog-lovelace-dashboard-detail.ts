@@ -17,6 +17,7 @@ import type {
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { pickAvailableDashboardUrlPath } from "./pick-available-dashboard-url-path";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -42,13 +43,17 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
     } else {
+      const suggestions = this._params.suggestions;
       this._data = {
         show_in_sidebar: true,
-        icon: undefined,
-        title: "",
+        icon: suggestions?.icon,
+        title: suggestions?.title ?? "",
         require_admin: false,
         mode: "storage",
       };
+      if (suggestions?.title) {
+        this._fillUrlPath(suggestions.title);
+      }
     }
   }
 
@@ -255,11 +260,16 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
 
     const slugifyTitle = slugify(title, "-");
+    const baseSlug = slugifyTitle.includes("-")
+      ? slugifyTitle
+      : `dashboard-${slugifyTitle}`;
+    const taken = this._params?.takenUrlPaths;
     this._data = {
       ...this._data,
-      url_path: slugifyTitle.includes("-")
-        ? slugifyTitle
-        : `dashboard-${slugifyTitle}`,
+      url_path:
+        taken !== undefined
+          ? pickAvailableDashboardUrlPath(baseSlug, taken)
+          : baseSlug,
     };
   }
 

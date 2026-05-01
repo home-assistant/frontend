@@ -7,7 +7,7 @@ import {
   mdiRadar,
   mdiVolumeHigh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -90,7 +90,7 @@ export class HaConfigLogs extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     this._init();
   }

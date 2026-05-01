@@ -197,7 +197,7 @@ class DialogCalendarEventEditor extends LitElement {
             )}
             .value=${this._description}
             @change=${this._handleDescriptionChanged}
-            autogrow
+            resize="auto"
           ></ha-textarea>
           <ha-entity-picker
             name="calendar"

@@ -11,6 +11,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
@@ -37,9 +38,9 @@ export class HaControlSwitch extends LitElement {
 
   private _mc?: HammerManager;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
-    this.setupListeners();
+    this.setupSwipeListeners();
   }
 
   private _toggle() {
@@ -50,7 +51,19 @@ export class HaControlSwitch extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.setupListeners();
+    this.setupSwipeListeners();
+  }
+
+  updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (
+      changedProperties.has("disabled") ||
+      changedProperties.has("vertical") ||
+      changedProperties.has("reversed")
+    ) {
+      this.destroyListeners();
+      this.setupSwipeListeners();
+    }
   }
 
   disconnectedCallback(): void {
@@ -61,7 +74,11 @@ export class HaControlSwitch extends LitElement {
   @query("#switch")
   private switch!: HTMLDivElement;
 
-  setupListeners() {
+  setupSwipeListeners() {
+    if (this.disabled) {
+      return;
+    }
+
     if (this.switch && !this._mc) {
       this._mc = new Manager(this.switch, {
         touchAction: this.touchAction ?? (this.vertical ? "pan-x" : "pan-y"),
@@ -90,13 +107,15 @@ export class HaControlSwitch extends LitElement {
       } else {
         this._mc.on("swiperight", () => {
           if (this.disabled) return;
-          this.checked = !this.reversed;
+          const isRTL = mainWindow.document.dir === "rtl";
+          this.checked = (!this.reversed && !isRTL) || (this.reversed && isRTL);
           fireEvent(this, "change");
         });
 
         this._mc.on("swipeleft", () => {
           if (this.disabled) return;
-          this.checked = !!this.reversed;
+          const isRTL = mainWindow.document.dir === "rtl";
+          this.checked = (this.reversed && !isRTL) || (!this.reversed && isRTL);
           fireEvent(this, "change");
         });
       }
@@ -116,11 +135,30 @@ export class HaControlSwitch extends LitElement {
   }
 
   private _keydown(ev: any) {
-    if (ev.key !== "Enter" && ev.key !== " ") {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._toggle();
       return;
     }
+
+    const rtl = !this.vertical && mainWindow.document.dir === "rtl";
+    const flip = this.reversed !== rtl;
+    const [forward, backward] = this.vertical
+      ? ["ArrowDown", "ArrowUp"]
+      : ["ArrowRight", "ArrowLeft"];
+    const onKey = flip ? backward : forward;
+    const offKey = flip ? forward : backward;
+
+    if (ev.key !== onKey && ev.key !== offKey) {
+      return;
+    }
+
     ev.preventDefault();
-    this._toggle();
+
+    const wantOn = ev.key === onKey;
+    if (wantOn !== this.checked) {
+      this._toggle();
+    }
   }
 
   protected render(): TemplateResult {
@@ -132,7 +170,7 @@ export class HaControlSwitch extends LitElement {
         aria-checked=${this.checked ? "true" : "false"}
         aria-label=${ifDefined(this.label)}
         role="switch"
-        tabindex="0"
+        tabindex=${ifDefined(this.disabled ? undefined : "0")}
         ?checked=${this.checked}
         ?disabled=${this.disabled}
       >
@@ -156,6 +194,7 @@ export class HaControlSwitch extends LitElement {
       --control-switch-on-color: var(--primary-color);
       --control-switch-off-color: var(--disabled-color);
       --control-switch-background-opacity: 0.2;
+      --control-switch-hover-background-opacity: 0.4;
       --control-switch-thickness: 40px;
       --control-switch-border-radius: var(--ha-border-radius-lg);
       --control-switch-padding: 4px;
@@ -167,10 +206,10 @@ export class HaControlSwitch extends LitElement {
       transition: box-shadow 180ms ease-in-out;
       -webkit-tap-highlight-color: transparent;
     }
-    .switch:focus-visible {
+    .switch:not([disabled]):focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-off-color);
     }
-    .switch[checked]:focus-visible {
+    .switch[checked]:not([disabled]):focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-on-color);
     }
     .switch {
@@ -199,6 +238,10 @@ export class HaControlSwitch extends LitElement {
       transition: background-color 180ms ease-in-out;
       opacity: var(--control-switch-background-opacity);
     }
+    .switch:not([disabled]):focus-visible .background,
+    .switch:not([disabled]):hover .background {
+      opacity: var(--control-switch-hover-background-opacity);
+    }
     .switch .button {
       width: 50%;
       height: 100%;
@@ -222,11 +265,18 @@ export class HaControlSwitch extends LitElement {
       transform: translateX(100%);
       background-color: var(--control-switch-on-color);
     }
+    .switch[checked] .button:dir(rtl) {
+      transform: translateX(-100%);
+      background-color: var(--control-switch-on-color);
+    }
     :host([reversed]) .switch {
       flex-direction: row-reverse;
     }
     :host([reversed]) .switch[checked] .button {
       transform: translateX(-100%);
+    }
+    :host([reversed]) .switch[checked] .button:dir(rtl) {
+      transform: translateX(100%);
     }
     :host([vertical]) {
       width: var(--control-switch-thickness);

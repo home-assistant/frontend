@@ -42,7 +42,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @state() private _searchFilter = "";
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
     if (this.hass) {

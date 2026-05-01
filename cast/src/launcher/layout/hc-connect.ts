@@ -12,7 +12,7 @@ import {
   ERR_INVALID_HTTPS_TO_HTTP,
   getAuth,
 } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { CastManager } from "../../../../src/cast/cast_manager";
@@ -158,7 +158,7 @@ export class HcConnect extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     import("./hc-cast");
 

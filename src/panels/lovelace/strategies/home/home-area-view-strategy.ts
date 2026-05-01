@@ -323,7 +323,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];
-      let heading = "";
+      let heading: string;
       if (device) {
         heading =
           computeDeviceName(device) ||

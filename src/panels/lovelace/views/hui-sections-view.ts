@@ -147,7 +147,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }
@@ -425,7 +425,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       >
         ${hasBackground
           ? html`<hui-section-background
+              .hass=${this.hass}
               .background=${section.config.background}
+              .theme=${section.config.theme}
             ></hui-section-background>`
           : nothing}
         ${section}

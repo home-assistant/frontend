@@ -42,19 +42,6 @@ export const coreStyles = css`
     --ha-space-19: 76px;
     --ha-space-20: 80px;
 
-    --ha-shadow-offset-x-sm: 0;
-    --ha-shadow-offset-x-md: 0;
-    --ha-shadow-offset-x-lg: 0;
-    --ha-shadow-offset-y-sm: 2px;
-    --ha-shadow-offset-y-md: 4px;
-    --ha-shadow-offset-y-lg: 8px;
-    --ha-shadow-blur-sm: 4px;
-    --ha-shadow-blur-md: 8px;
-    --ha-shadow-blur-lg: 12px;
-    --ha-shadow-spread-sm: 0;
-    --ha-shadow-spread-md: 0;
-    --ha-shadow-spread-lg: 0;
-
     --ha-animation-duration-none: 1ms;
     --ha-animation-duration-instant: 75ms;
     --ha-animation-duration-fast: 150ms;

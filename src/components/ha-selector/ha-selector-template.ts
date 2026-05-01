@@ -68,7 +68,7 @@ export class HaTemplateSelector extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("value") && this._test) {
       this._subscribeTemplate();
     }

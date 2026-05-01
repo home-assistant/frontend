@@ -13,12 +13,12 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
+import type { SubEntryData } from "./ha-config-integration-page";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -41,16 +41,16 @@ class HaConfigSubEntryRow extends LitElement {
 
   @property({ attribute: false }) public entry!: ConfigEntry;
 
-  @property({ attribute: false }) public subEntry!: SubEntry;
+  @property({ attribute: false }) public data!: SubEntryData;
 
   @state() private _expanded = true;
 
   protected render() {
-    const subEntry = this.subEntry;
+    const subEntry = this.data.subEntry;
     const configEntry = this.entry;
 
-    const devices = this._getDevices();
-    const services = this._getServices();
+    const devices = this.data.devices;
+    const services = this.data.services;
     const entities = this._getEntities();
 
     return html`<ha-md-list>
@@ -202,30 +202,19 @@ class HaConfigSubEntryRow extends LitElement {
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities.filter(
-      (entity) => entity.config_subentry_id === this.subEntry.subentry_id
-    );
-
-  private _getDevices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries_subentries[this.entry.entry_id]?.includes(
-          this.subEntry.subentry_id
-        ) && device.entry_type !== "service"
-    );
-
-  private _getServices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries_subentries[this.entry.entry_id]?.includes(
-          this.subEntry.subentry_id
-        ) && device.entry_type === "service"
+      (entity) => entity.config_subentry_id === this.data.subEntry.subentry_id
     );
 
   private async _handleReconfigureSub(): Promise<void> {
-    showSubConfigFlowDialog(this, this.entry, this.subEntry.subentry_type, {
-      startFlowHandler: this.entry.entry_id,
-      subEntryId: this.subEntry.subentry_id,
-    });
+    showSubConfigFlowDialog(
+      this,
+      this.entry,
+      this.data.subEntry.subentry_type,
+      {
+        startFlowHandler: this.entry.entry_id,
+        subEntryId: this.data.subEntry.subentry_id,
+      }
+    );
   }
 
   private _handleMenuAction = (ev: CustomEvent) => {
@@ -244,7 +233,7 @@ class HaConfigSubEntryRow extends LitElement {
   private _handleRenameSub = async (): Promise<void> => {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.common.rename"),
-      defaultValue: this.subEntry.title,
+      defaultValue: this.data.subEntry.title,
       inputLabel: this.hass.localize(
         "ui.panel.config.integrations.rename_input_label"
       ),
@@ -255,7 +244,7 @@ class HaConfigSubEntryRow extends LitElement {
     await updateSubEntry(
       this.hass,
       this.entry.entry_id,
-      this.subEntry.subentry_id,
+      this.data.subEntry.subentry_id,
       { title: newName }
     );
   };
@@ -264,7 +253,7 @@ class HaConfigSubEntryRow extends LitElement {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
-        { title: this.subEntry.title }
+        { title: this.data.subEntry.title }
       ),
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_text"
@@ -280,7 +269,7 @@ class HaConfigSubEntryRow extends LitElement {
     await deleteSubEntry(
       this.hass,
       this.entry.entry_id,
-      this.subEntry.subentry_id
+      this.data.subEntry.subentry_id
     );
   };
 

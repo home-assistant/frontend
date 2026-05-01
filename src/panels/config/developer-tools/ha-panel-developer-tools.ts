@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -24,7 +24,7 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
   }

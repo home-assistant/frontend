@@ -18,7 +18,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
 
   @state() private _showLoader = false;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (!this.hasUpdated) {
       this._testConnection();

@@ -66,7 +66,7 @@ class MoreInfoLight extends LitElement {
       .attributeValue=${value}
     ></ha-attribute-icon>`;
 
-  protected updated(changedProps: PropertyValues<typeof this>): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("stateObj")) {
       this._effect = this.stateObj?.attributes.effect;
     }

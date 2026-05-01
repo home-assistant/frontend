@@ -58,7 +58,7 @@ export class HaCameraStream extends LitElement {
 
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     const entityChanged =
       changedProps.has("stateObj") &&
       this.stateObj &&

@@ -16,6 +16,7 @@ const NON_STANDARD_CARD_URLS = {
   "energy-water-graph": "energy/#water-consumption-graph",
   "energy-distribution": "energy/#energy-distribution",
   "energy-sources-table": "energy/#energy-sources-table",
+  "energy-grid-balance": "energy/#grid-energy-balance",
   "energy-grid-neutrality-gauge": "energy/#grid-neutrality-gauge",
   "energy-solar-consumed-gauge": "energy/#solar-consumed-gauge",
   "energy-carbon-consumed-gauge": "energy/#carbon-consumed-gauge",

@@ -2,7 +2,7 @@ import { mdiContentSave } from "@mdi/js";
 import { css, html, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
 import type { BlueprintScriptConfig } from "../../../data/script";
@@ -32,16 +32,16 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
         : nothing}
       ${this.renderCard()}
 
-      <ha-fab
+      <ha-button
         slot="fab"
+        size="large"
         class=${this.dirty ? "dirty" : ""}
-        .label=${this.hass.localize("ui.common.save")}
         .disabled=${this.saving}
-        extended
         @click=${this._saveScript}
       >
-        <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-      </ha-fab>
+        <ha-svg-icon slot="start" .path=${mdiContentSave}></ha-svg-icon>
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
     `;
   }
 
@@ -64,8 +64,9 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
           min-height: calc(100vh - 85px);
           min-height: calc(100dvh - 85px);
         }
-        ha-fab {
+        ha-button[slot="fab"] {
           position: fixed;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
       `,
     ];

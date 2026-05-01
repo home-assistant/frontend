@@ -16,6 +16,7 @@ export const SCENE_IGNORED_DOMAINS = [
   "input_button",
   "persistent_notification",
   "person",
+  "radio_frequency",
   "scene",
   "schedule",
   "script",

@@ -130,7 +130,7 @@ export class HaStatisticPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && !this.statisticIds) ||
       changedProps.has("statisticTypes")

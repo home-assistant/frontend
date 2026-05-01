@@ -54,7 +54,7 @@ export class HaSuggestWithAIButton extends LitElement {
 
   private _intervalId?: number;
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
     if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;

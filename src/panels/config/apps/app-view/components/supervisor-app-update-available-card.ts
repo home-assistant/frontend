@@ -158,7 +158,7 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadAddonData();
   }

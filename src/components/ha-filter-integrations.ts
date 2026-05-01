@@ -1,5 +1,5 @@
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -61,7 +61,7 @@ export class HaFilterIntegrations extends LitElement {
               </ha-input-search>
               <ha-list
                 class="ha-scrollbar"
-                @click=${this._handleItemClick}
+                @selected=${this._itemSelected}
                 multi
               >
                 ${repeat(
@@ -94,7 +94,7 @@ export class HaFilterIntegrations extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
@@ -147,18 +147,25 @@ export class HaFilterIntegrations extends LitElement {
         )
   );
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
-      return;
+  private _itemSelected(
+    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
+  ) {
+    const integrations = this._integrations(
+      this.hass.localize,
+      this._manifests!,
+      this._filter,
+      this.value
+    );
+
+    if (ev.detail.diff.added.length) {
+      this.value = [
+        ...(this.value || []),
+        integrations[ev.detail.diff.added[0]].domain,
+      ];
+    } else if (ev.detail.diff.removed.length) {
+      const removedDomain = integrations[ev.detail.diff.removed[0]].domain;
+      this.value = this.value?.filter((val) => val !== removedDomain);
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-    listItem.selected = this.value?.includes(value);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

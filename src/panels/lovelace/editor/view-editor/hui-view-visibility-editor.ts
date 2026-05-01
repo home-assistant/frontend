@@ -46,7 +46,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     fetchUsers(this.hass).then((users) => {

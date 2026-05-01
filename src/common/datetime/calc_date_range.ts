@@ -27,6 +27,7 @@ export type DateRange =
   | "this_year"
   | "now-7d"
   | "now-30d"
+  | "now-365d"
   | "now-12m"
   | "now-1h"
   | "now-12h"
@@ -101,6 +102,11 @@ export const calcDateRange = (
           hassConfig
         ),
         calcDate(today, endOfMonth, locale, hassConfig),
+      ];
+    case "now-365d":
+      return [
+        calcDate(today, subDays, locale, hassConfig, 365),
+        calcDate(today, subDays, locale, hassConfig, 0),
       ];
     case "now-1h":
       return [

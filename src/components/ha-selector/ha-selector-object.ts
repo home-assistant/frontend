@@ -289,7 +289,7 @@ export class HaObjectSelector extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (
       changedProps.has("value") &&

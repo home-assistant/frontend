@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { subscribeUser, userCollection } from "../data/ws-user";
 import type { Constructor } from "../types";
 import { clearState } from "../util/ha-pref-storage";
@@ -12,7 +13,7 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-logout", () => this._handleLogout());
       this.addEventListener("hass-refresh-current-user", () => {

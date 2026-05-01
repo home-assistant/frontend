@@ -32,7 +32,7 @@ export class HaFilterBlueprints extends LitElement {
 
   @state() private _blueprints?: Blueprints;
 
-  public willUpdate(properties: PropertyValues) {
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (
@@ -92,7 +92,7 @@ export class HaFilterBlueprints extends LitElement {
     this._blueprints = await fetchBlueprints(this.hass, this.type);
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (this.narrow || !this.expanded) return;

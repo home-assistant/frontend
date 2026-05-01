@@ -22,6 +22,7 @@ interface SettingsData {
   background_enabled?: boolean;
   background_color?: string;
   background_opacity?: number;
+  theme?: string;
 }
 
 @customElement("hui-section-settings-editor")
@@ -91,6 +92,12 @@ export class HuiDialogEditSection extends LitElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
+        {
+          name: "theme",
+          selector: {
+            theme: {},
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -104,6 +111,7 @@ export class HuiDialogEditSection extends LitElement {
       background_color: background?.color ?? "default",
       background_opacity:
         background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
+      theme: this.config.theme,
     };
 
     const schema = this._schema(
@@ -158,6 +166,13 @@ export class HuiDialogEditSection extends LitElement {
       };
     } else {
       delete newConfig.background;
+    }
+
+    // Only include theme if it's set.
+    if (newData.theme) {
+      newConfig.theme = newData.theme;
+    } else {
+      delete newConfig.theme;
     }
 
     fireEvent(this, "value-changed", { value: newConfig });

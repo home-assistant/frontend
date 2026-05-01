@@ -31,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -77,6 +78,7 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
+  | SerialPortSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
@@ -121,6 +123,21 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    mode: "trigger" | "condition";
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {
@@ -248,6 +265,16 @@ interface EntitySelectorFilter {
   unit_of_measurement?: string | readonly string[];
 }
 
+export interface EntitySelectorExtraOption {
+  id: string;
+  primary: string;
+  secondary?: string;
+  icon?: string;
+  icon_path?: string;
+  entity_id?: string;
+  hide_clear?: boolean;
+}
+
 export interface EntitySelector {
   entity: {
     multiple?: boolean;
@@ -255,6 +282,7 @@ export interface EntitySelector {
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     reorder?: boolean;
+    extra_options?: EntitySelectorExtraOption[];
   } | null;
 }
 
@@ -451,6 +479,12 @@ export interface SelectorSelector {
   selector: {} | null;
 }
 
+export interface SerialPortSelector {
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
+}
+
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
@@ -493,6 +527,7 @@ export interface StringSelector {
       | "color";
     prefix?: string;
     suffix?: string;
+    placeholder?: string;
     autocomplete?: string;
     multiple?: true;
   } | null;
@@ -506,6 +541,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    primary_entities_only?: boolean;
   } | null;
 }
 

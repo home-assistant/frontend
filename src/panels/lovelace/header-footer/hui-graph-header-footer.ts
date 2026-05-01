@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
 import type { HistoryStates } from "../../../data/history";
 import {
@@ -68,7 +69,7 @@ export class HuiGraphHeaderFooter
 
   @state() private _coordinates?: [number, number][];
 
-  private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   private _history?: HistoryStates;
 
@@ -109,7 +110,12 @@ export class HuiGraphHeaderFooter
     }
 
     if (this._error) {
-      return html`<div class="errors">${this._error}</div>`;
+      return html`
+        <ha-alert alert-type="error">
+          ${this.hass.localize("ui.components.history_charts.error")}:
+          ${this._error.message || this._error.code}
+        </ha-alert>
+      `;
     }
 
     if (!this._coordinates) {
@@ -264,24 +270,29 @@ export class HuiGraphHeaderFooter
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
     this._history = undefined;
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass || !changedProps.has("_config")) {
+    if (!this._config || !this.hass) {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
-    if (
-      !oldConfig ||
-      !this._subscribed ||
-      oldConfig.entity !== this._config.entity
-    ) {
-      this._unsubscribeHistory();
+    if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
+      if (
+        !oldConfig ||
+        !this._subscribed ||
+        oldConfig.entity !== this._config.entity
+      ) {
+        this._unsubscribeHistory();
+        this._subscribeHistory();
+      }
+    } else if (!this._subscribed && !this._error && changedProps.has("hass")) {
+      // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
   }

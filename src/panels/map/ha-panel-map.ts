@@ -50,7 +50,7 @@ class HaPanelMap extends LitElement {
     navigate("/config/zone?historyBack=1");
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!changedProps.has("hass")) {
       return;

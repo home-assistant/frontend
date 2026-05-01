@@ -4,8 +4,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { ActionConfig } from "../../data/lovelace/config/action";
 import type { UiActionSelector } from "../../data/selector";
 import "../../panels/lovelace/components/hui-action-editor";
-import type { HomeAssistant } from "../../types";
 import type { ActionRelatedContext } from "../../panels/lovelace/components/hui-action-editor";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_action")
 export class HaSelectorUiAction extends LitElement {
@@ -21,10 +21,13 @@ export class HaSelectorUiAction extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   protected render() {
     return html`
       <hui-action-editor
         .label=${this.label}
+        .required=${this.required}
         .hass=${this.hass}
         .config=${this.value}
         .context=${this.context}

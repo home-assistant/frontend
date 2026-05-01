@@ -12,10 +12,15 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant, PanelInfo } from "../types";
 
+export const APP_PANEL = "app";
 export const HOME_PANEL = "home";
+export const MY_REDIRECT_PANEL = "_my_redirect";
 export const NOT_FOUND_PANEL = "notfound";
 export const PROFILE_PANEL = "profile";
 export const LOVELACE_PANEL = "lovelace";
+
+/** Panels that are internal/system-level and should not appear in user-facing navigation UIs. */
+export const SYSTEM_PANELS = [MY_REDIRECT_PANEL, NOT_FOUND_PANEL, APP_PANEL];
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = HOME_PANEL;

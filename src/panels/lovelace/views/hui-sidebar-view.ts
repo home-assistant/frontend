@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -96,15 +97,10 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       ></div>
       ${this.lovelace?.editMode
         ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
-              @click=${this._addCard}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
+            <ha-button size="large" @click=${this._addCard}>
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+            </ha-button>
           `
         : ""}
     `;
@@ -241,13 +237,14 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       }
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

@@ -26,7 +26,7 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
 
   @state() private _node?: ZWaveJSNodeStatus;
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();

@@ -1,6 +1,5 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../../components/ha-textarea";
 import type { TemplateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";

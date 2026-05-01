@@ -32,12 +32,12 @@ class HaRelativeTime extends ReactiveElement {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._updateRelative();
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     this._updateRelative();
   }

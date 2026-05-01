@@ -6,7 +6,6 @@ updates:
       interval: weekly
       time: "06:00"
     cooldown:
-      default-days-before-reopen: 30
       default-days: 7
     open-pull-requests-limit: 10
     labels:

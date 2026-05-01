@@ -4,6 +4,7 @@ import { customElement, state } from "lit/decorators";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import { getConfigEntityId } from "../../common/get-config-entity-id";
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
@@ -62,6 +63,7 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
           <hui-badge-visibility-editor
             .hass=${this.hass}
             .config=${this.value}
+            .entityId=${this.value ? getConfigEntityId(this.value) : undefined}
             @value-changed=${this._configChanged}
           ></hui-badge-visibility-editor>
         `;

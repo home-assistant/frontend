@@ -5,6 +5,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import type { Trigger } from "../../data/automation";
+import { migrateAutomationTrigger } from "../../data/automation";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
 import { fullEntitiesContext, labelsContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
@@ -24,8 +26,6 @@ import "../ha-icon-button";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
 import { traceTabStyles } from "./trace-tab-styles";
-import type { Trigger } from "../../data/automation";
-import { migrateAutomationTrigger } from "../../data/automation";
 
 const TRACE_PATH_TABS = [
   "step_config",

@@ -120,13 +120,13 @@ export class HomeAssistantMain extends LitElement {
     });
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("route") && this._sidebarNarrow) {
       this._drawerOpen = false;
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     toggleAttribute(this, "expanded", this.hass.dockedSidebar === "docked");

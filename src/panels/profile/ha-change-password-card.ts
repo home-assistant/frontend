@@ -119,7 +119,7 @@ class HaChangePasswordCard extends LitElement {
     this._passwordConfirm = ev.target.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keypress", (ev) => {
       this._statusMsg = undefined;

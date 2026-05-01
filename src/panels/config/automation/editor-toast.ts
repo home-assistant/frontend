@@ -1,0 +1,32 @@
+import { closestWithProperty } from "../../../common/dom/ancestors-with-property";
+import type { ShowToastParams } from "../../../managers/notification-manager";
+import { showToast } from "../../../util/toast";
+
+export const EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET = 60;
+
+function editorSaveFabVisibleFrom(el: HTMLElement): boolean {
+  if (
+    el.localName === "ha-automation-editor" ||
+    el.localName === "ha-script-editor"
+  ) {
+    return Boolean((el as { dirty?: boolean }).dirty);
+  }
+  const holder = closestWithProperty(el, "dirty", false) as
+    | (HTMLElement & { dirty?: boolean })
+    | null;
+  return Boolean(holder?.dirty);
+}
+
+export function showEditorToast(
+  el: HTMLElement,
+  params: ShowToastParams
+): void {
+  const offset = editorSaveFabVisibleFrom(el)
+    ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+    : undefined;
+  showToast(el, {
+    ...params,
+    ...(offset !== undefined ? { bottomOffset: offset } : {}),
+    dismissable: true,
+  });
+}

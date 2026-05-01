@@ -18,7 +18,7 @@ import type {
   WebhookTrigger,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { showToast } from "../../../../../util/toast";
+import { showEditorToast } from "../../editor-toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
@@ -79,7 +79,7 @@ export class HaWebhookTrigger extends LitElement {
     return `${urlSafeAlias}-${urlSafeId}`;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
       if (this.trigger.allowed_methods === undefined) {
@@ -202,7 +202,7 @@ export class HaWebhookTrigger extends LitElement {
     const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
     await copyToClipboard(url);
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }

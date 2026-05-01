@@ -73,7 +73,7 @@ export class HuiViewHeader extends LitElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("badges") ||
       changedProperties.has("lovelace") ||

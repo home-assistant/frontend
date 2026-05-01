@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -7,12 +6,13 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/progress/ha-progress-bar";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
@@ -269,11 +269,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
-                <mwc-linear-progress
-                  determinate
-                  .progress=${this._updateProgressMessage.sent_fragments /
-                  this._updateProgressMessage.total_fragments}
-                ></mwc-linear-progress>
+                <ha-progress-bar
+                  loading
+                  .value=${(this._updateProgressMessage.sent_fragments /
+                    this._updateProgressMessage.total_fragments) *
+                  100}
+                ></ha-progress-bar>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.update_firmware.close",

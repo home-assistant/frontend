@@ -72,7 +72,7 @@ class HaConfigAppDashboard extends LitElement {
     this._loading = false;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("route") && this.route) {
       const oldRoute = changedProperties.get("route") as Route | undefined;
       const oldSlug = oldRoute?.path.split("/")[1];

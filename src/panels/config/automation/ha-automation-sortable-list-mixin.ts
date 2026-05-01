@@ -165,6 +165,21 @@ export const AutomationSortableListMixin = <T extends object>(
       });
     }
 
+    protected pasteItem(ev: CustomEvent) {
+      ev.stopPropagation();
+      if (!ev.detail.item) return;
+
+      const index = (ev.target as any).index;
+      const clonedItem = deepClone(ev.detail.item);
+
+      this.setHighlightedItems(ensureArray(clonedItem));
+
+      fireEvent(this, "value-changed", {
+        // @ts-expect-error Requires library bump to ES2023
+        value: this.items.toSpliced(index + 1, 0, clonedItem),
+      });
+    }
+
     protected insertAfter(ev: CustomEvent) {
       ev.stopPropagation();
       const index = (ev.target as any).index;

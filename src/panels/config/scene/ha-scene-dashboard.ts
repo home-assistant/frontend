@@ -41,8 +41,8 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -101,28 +101,28 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { configSections } from "../ha-panel-config";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
-  getLabelsTableColumn,
   getEditableTableColumn,
+  getLabelsTableColumn,
   renderRelativeTimeColumn,
 } from "../common/data-table-columns";
+import { configSections } from "../ha-panel-config";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type SceneItem = SceneEntity & {
   name: string;
   area: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   editable: boolean;
@@ -240,6 +240,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.scene;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           scene.entity_id
@@ -253,9 +256,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -680,16 +682,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               </ha-button>
             </div>`
           : nothing}
-        <a href="/config/scene/edit/new" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.scene.picker.add_scene"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button href="/config/scene/edit/new" size="large" slot="fab">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -1132,7 +1128,6 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon

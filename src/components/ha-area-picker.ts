@@ -1,8 +1,8 @@
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import type { TemplateResult, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
@@ -84,6 +84,20 @@ export class HaAreaPicker extends LitElement {
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingAreaId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      this._pendingAreaId &&
+      changedProperties.has("hass") &&
+      this.hass.areas !== changedProperties.get("hass")?.areas &&
+      this.hass.areas[this._pendingAreaId]
+    ) {
+      this._setValue(this._pendingAreaId);
+      this._pendingAreaId = undefined;
+    }
+  }
 
   public async open() {
     await this.updateComplete;
@@ -243,7 +257,11 @@ export class HaAreaPicker extends LitElement {
         createEntry: async (values) => {
           try {
             const area = await createAreaRegistryEntry(this.hass, values);
-            this._setValue(area.area_id);
+            if (this.hass.areas[area.area_id]) {
+              this._setValue(area.area_id);
+            } else {
+              this._pendingAreaId = area.area_id;
+            }
           } catch (err: any) {
             showAlertDialog(this, {
               title: this.hass.localize(

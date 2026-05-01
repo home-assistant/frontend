@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -18,7 +18,7 @@ export class HaStateControlCoverPosition extends LitElement {
 
   @state() value?: number;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
+  protected updated(changedProp: PropertyValues<this>): void {
     if (changedProp.has("stateObj")) {
       const currentPosition = this.stateObj?.attributes.current_position;
       this.value =

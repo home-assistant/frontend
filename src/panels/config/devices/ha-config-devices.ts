@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
@@ -36,7 +37,7 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _manifests: IntegrationManifest[] = [];
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadData();
   }

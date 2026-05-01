@@ -42,9 +42,10 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -112,15 +113,15 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import {
-  getEntityIdTableColumn,
-  getAreaTableColumn,
-  getCategoryTableColumn,
-  getLabelsTableColumn,
-  getEditableTableColumn,
-} from "../common/data-table-columns";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getEditableTableColumn,
+  getEntityIdTableColumn,
+  getLabelsTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import "../integrations/ha-integration-overflow-menu";
@@ -132,7 +133,6 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface HelperItem {
   id: string;
@@ -146,6 +146,7 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   disabled?: boolean;
@@ -552,6 +553,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
+          const label_entries = (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+          );
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -572,9 +576,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
               ) ||
               item.type,
-            label_entries: (labels || []).map(
-              (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-            ),
+            label_entries,
+            labels: label_entries.map((lbl) => lbl.name),
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
@@ -798,16 +801,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.helpers.picker.create_helper"
-          )}
-          extended
-          @click=${this._createHelper}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="large" @click=${this._createHelper}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -1096,7 +1093,7 @@ ${rejected
     this._selected = ev.detail.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setFiltersFromUrl();
     this._fetchEntitySources();
@@ -1445,7 +1442,6 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon

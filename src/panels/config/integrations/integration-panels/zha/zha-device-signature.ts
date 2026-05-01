@@ -13,7 +13,7 @@ class ZHADeviceZigbeeInfo extends LitElement {
 
   @state() private _signature: any;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("device") && this.hass && this.device) {
       this._signature = JSON.stringify(
         {

@@ -7,7 +7,6 @@ import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type {
@@ -168,16 +167,11 @@ export class AssistPipelineRunDebug extends LitElement {
                         )}
                       </ha-button>`
                   : html`
-                      <ha-formfield
-                        .label=${this.hass.localize(
+                      <ha-checkbox id="continue-conversation" checked>
+                        ${this.hass.localize(
                           "ui.panel.config.voice_assistants.debug.pipeline.continue_conversation"
                         )}
-                      >
-                        <ha-checkbox
-                          id="continue-conversation"
-                          checked
-                        ></ha-checkbox>
-                      </ha-formfield>
+                      </ha-checkbox>
                     `}
           </div>
 

@@ -36,7 +36,7 @@ const handleHaptic = (hapticTypeEvent: HASSDomEvent<HapticType>) => {
 
 export const hapticMixin = <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-vibrate", (ev) => {
         const vibrate = ev.detail.vibrate;

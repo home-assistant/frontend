@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { SystemLogLevel } from "../data/system_log";
 import type { Constructor } from "../types";
@@ -82,7 +83,7 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
       });
     }
 
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("write_log", (ev) => {
         this._writeLog(ev.detail);

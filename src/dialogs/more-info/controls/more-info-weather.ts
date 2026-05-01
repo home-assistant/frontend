@@ -2,6 +2,7 @@ import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
@@ -46,9 +47,9 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  // @ts-ignore
   private _dragScrollController = new DragScrollController(this, {
     selector: ".forecast",
+    enabled: false,
   });
 
   private _unsubscribeForecastEvents() {
@@ -71,7 +72,7 @@ class MoreInfoWeather extends LitElement {
     }
 
     this._subscribed = subscribeForecast(
-      this.hass!,
+      this.hass!.connection,
       this.stateObj!.entity_id,
       this._forecastType,
       (event) => {
@@ -92,7 +93,7 @@ class MoreInfoWeather extends LitElement {
     this._unsubscribeForecastEvents();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.has("stateObj")) {
       return true;
     }
@@ -126,6 +127,20 @@ class MoreInfoWeather extends LitElement {
     } else if (changedProps.has("_forecastType")) {
       this._subscribeForecastEvents();
     }
+  }
+
+  protected updated(_changedProps: PropertyValues<this>): void {
+    super.updated(_changedProps);
+
+    if (!this.stateObj) {
+      this._dragScrollController.enabled = false;
+      return;
+    }
+
+    this._dragScrollController.enabled = Boolean(
+      getForecast(this.stateObj.attributes, this._forecastEvent)?.forecast
+        ?.length
+    );
   }
 
   private _supportedForecasts = memoizeOne((stateObj: WeatherEntity) =>
@@ -336,7 +351,12 @@ class MoreInfoWeather extends LitElement {
                   )}
                 </ha-tab-group>`
               : nothing}
-            <div class="forecast">
+            <div
+              class=${classMap({
+                forecast: true,
+                dragging: this._dragScrollController.scrolling,
+              })}
+            >
               ${forecast?.length
                 ? this._groupForecastByDay(forecast).map((dayForecast) => {
                     const showDayHeader = hourly || dayNight;
@@ -591,6 +611,15 @@ class MoreInfoWeather extends LitElement {
             transparent 100%
           );
           user-select: none;
+          cursor: grab;
+        }
+
+        .forecast.dragging {
+          cursor: grabbing;
+        }
+
+        .forecast.dragging * {
+          pointer-events: none;
         }
 
         .forecast-day {

@@ -44,7 +44,7 @@ export class ZHAManageClusters extends LitElement {
 
   @state() private _clustersLoaded = false;
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.device) {
       return;
@@ -54,7 +54,7 @@ export class ZHAManageClusters extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("device")) {
       this._clusters = [];
       this._selectedClusterIndex = -1;

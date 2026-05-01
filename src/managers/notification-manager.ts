@@ -18,6 +18,7 @@ export interface ShowToastParams {
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
+  bottomOffset?: number;
 }
 
 export interface ToastActionParams {
@@ -36,9 +37,17 @@ class NotificationManager extends LitElement {
   @query("ha-toast")
   private _toast!: HTMLElementTagNameMap["ha-toast"] | undefined;
 
+  private _showDialogId = 0;
+
   public async showDialog(parameters: ShowToastParams) {
+    const showId = ++this._showDialogId;
+
     if (!parameters.id || this._parameters?.id !== parameters.id) {
       await this._toast?.hide();
+    }
+
+    if (showId !== this._showDialogId) {
+      return;
     }
 
     if (parameters.duration === 0) {
@@ -56,6 +65,11 @@ class NotificationManager extends LitElement {
     }
 
     await this.updateComplete;
+
+    if (showId !== this._showDialogId) {
+      return;
+    }
+
     this._toast?.show();
   }
 
@@ -76,6 +90,7 @@ class NotificationManager extends LitElement {
             )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
+        .bottomOffset=${this._parameters.bottomOffset ?? 0}
         @toast-closed=${this._toastClosed}
       >
         ${this._parameters?.action

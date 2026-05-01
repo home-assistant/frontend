@@ -1,4 +1,3 @@
-import type { DurationInput } from "@formatjs/intl-durationformat/src/types";
 import memoizeOne from "memoize-one";
 import type { HaDurationData } from "../../components/ha-duration-input";
 import type { FrontendLocaleData } from "../../data/translation";
@@ -114,7 +113,7 @@ export const formatDuration = (
     case "d": {
       const days = Math.floor(value);
       const hours = Math.floor((value - days) * 24);
-      const input: DurationInput = {
+      const input = {
         days,
         hours,
       };
@@ -123,7 +122,7 @@ export const formatDuration = (
     case "h": {
       const hours = Math.floor(value);
       const minutes = Math.floor((value - hours) * 60);
-      const input: DurationInput = {
+      const input = {
         hours,
         minutes,
       };
@@ -132,7 +131,7 @@ export const formatDuration = (
     case "min": {
       const minutes = Math.floor(value);
       const seconds = Math.floor((value - minutes) * 60);
-      const input: DurationInput = {
+      const input = {
         minutes,
         seconds,
       };

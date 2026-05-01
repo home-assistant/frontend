@@ -203,7 +203,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     );
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("open")) {
       this._drawerOpen = this.open;

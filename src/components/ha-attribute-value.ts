@@ -26,7 +26,7 @@ class HaAttributeValue extends LitElement {
         try {
           // If invalid URL, exception will be raised
           const url = new URL(attributeValue);
-          if (url.protocol === "http:" || url.protocol === "https:")
+          if (url.protocol === "http:" || url.protocol === "https:") {
             return html`
               <a
                 target="_blank"
@@ -36,6 +36,7 @@ class HaAttributeValue extends LitElement {
                 ${attributeValue}
               </a>
             `;
+          }
         } catch {
           // Nothing to do here
         }

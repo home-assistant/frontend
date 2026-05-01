@@ -5,7 +5,9 @@ import {
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
 import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
+// eslint-disable-next-line import-x/no-named-as-default
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
+import type { PropertyValues } from "lit";
 import { html, css, nothing } from "lit";
 import { property, query, customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -152,7 +154,7 @@ export class TopAppBarBaseBase extends BaseElement {
     `;
   }
 
-  protected updated(changedProperties) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (
       changedProperties.has("pane") &&

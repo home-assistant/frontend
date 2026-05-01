@@ -1,4 +1,8 @@
-import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Collection,
+  Connection,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 
 export const subscribeOne = async <T>(
   conn: Connection,
@@ -11,5 +15,13 @@ export const subscribeOne = async <T>(
     const unsub = subscribe(conn, (items) => {
       unsub();
       resolve(items);
+    });
+  });
+
+export const subscribeOneCollection = async <T>(collection: Collection<T>) =>
+  new Promise<T>((resolve) => {
+    const unsub = collection.subscribe((data) => {
+      unsub();
+      resolve(data);
     });
   });

@@ -101,7 +101,7 @@ export class DialogTryTts extends LitElement {
       >
         <div>
           <ha-textarea
-            autogrow
+            resize="auto"
             id="message"
             autofocus
             .label=${this.hass.localize(

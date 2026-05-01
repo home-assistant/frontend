@@ -25,7 +25,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     return { trigger: "tag", tag_id: "" };
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchTags();
   }

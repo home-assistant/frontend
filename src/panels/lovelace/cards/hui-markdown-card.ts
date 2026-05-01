@@ -100,7 +100,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     super.willUpdate(_changedProperties);
     if (!this._config) {
       return;

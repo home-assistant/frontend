@@ -213,7 +213,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (!this.redirectUri) {
@@ -275,7 +275,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     import("../components/ha-language-picker");
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("language")) {
       document.querySelector("html")!.setAttribute("lang", this.language!);

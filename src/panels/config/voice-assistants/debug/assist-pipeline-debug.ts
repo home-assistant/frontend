@@ -3,6 +3,7 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -118,7 +119,7 @@ export class AssistPipelineDebug extends LitElement {
     </hass-subpage>`;
   }
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues) {
     let clearRefresh = false;
 
     if (changedProperties.has("pipelineId")) {

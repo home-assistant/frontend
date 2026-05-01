@@ -69,7 +69,7 @@ class HaConfigAutomation extends HassRouterPage {
       ) as AutomationEntity[]
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("device_automation");
   }

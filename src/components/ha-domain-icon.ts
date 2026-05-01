@@ -2,12 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
-import {
-  authContext,
-  configContext,
-  connectionContext,
-  themesContext,
-} from "../data/context";
+import { configContext, connectionContext, uiContext } from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
   domainIcon,
@@ -38,12 +33,8 @@ export class HaDomainIcon extends LitElement {
   private _connection?: ContextType<typeof connectionContext>;
 
   @state()
-  @consume({ context: themesContext, subscribe: true })
-  private _themes?: ContextType<typeof themesContext>;
-
-  @state()
-  @consume({ context: authContext, subscribe: true })
-  private _auth?: ContextType<typeof authContext>;
+  @consume({ context: uiContext, subscribe: true })
+  private _hassUi?: ContextType<typeof uiContext>;
 
   protected render() {
     if (this.icon) {
@@ -59,8 +50,8 @@ export class HaDomainIcon extends LitElement {
     }
 
     const icon = domainIcon(
-      this._connection,
-      this._hassConfig,
+      this._connection.connection,
+      this._hassConfig.config,
       this.domain,
       this.deviceClass,
       this.state
@@ -86,9 +77,9 @@ export class HaDomainIcon extends LitElement {
         {
           domain: this.domain!,
           type: "icon",
-          darkOptimized: this._themes?.darkMode,
+          darkOptimized: this._hassUi?.themes.darkMode,
         },
-        this._auth?.data.hassUrl
+        this._hassConfig?.auth.data.hassUrl
       );
       return html`
         <img

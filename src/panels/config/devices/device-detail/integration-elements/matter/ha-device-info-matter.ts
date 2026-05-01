@@ -18,7 +18,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
 
   @state() private _nodeDiagnostics?: MatterNodeDiagnostics;
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();

@@ -45,13 +45,14 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-button";
+import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type {
   HaDropdown,
   HaDropdownSelectEvent,
 } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -133,6 +134,7 @@ type AutomationItem = AutomationEntity & {
   formatted_state: string;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -255,6 +257,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
+          .filter(Boolean);
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           automation.entity_id
@@ -270,9 +275,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || [])
-            .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
-            .filter(Boolean),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -691,16 +695,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               </ha-button>
             </div>`
           : nothing}
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="large" @click=${this._createNew}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.automation.picker.add_automation"
           )}
-          extended
-          @click=${this._createNew}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"
@@ -1338,7 +1338,6 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon

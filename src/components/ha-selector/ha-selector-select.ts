@@ -136,14 +136,14 @@ export class HaSelectSelector extends LitElement {
           ${this.label}
           ${options.map(
             (item: SelectOption) => html`
-              <ha-formfield .label=${item.label}>
-                <ha-checkbox
-                  .checked=${value.includes(item.value)}
-                  .value=${item.value}
-                  .disabled=${item.disabled || this.disabled}
-                  @change=${this._checkboxChanged}
-                ></ha-checkbox>
-              </ha-formfield>
+              <ha-checkbox
+                .checked=${value.includes(item.value)}
+                .value=${item.value}
+                .disabled=${item.disabled || this.disabled}
+                @change=${this._checkboxChanged}
+              >
+                ${item.label}
+              </ha-checkbox>
             `
           )}
         </div>
@@ -231,7 +231,9 @@ export class HaSelectSelector extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${typeof this.value === "string" ? this.value : ""}
+        .value=${["string", "number"].includes(typeof this.value)
+          ? (this.value as string | number)
+          : ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -256,7 +258,7 @@ export class HaSelectSelector extends LitElement {
       selector.select?.options?.map((option) =>
         typeof option === "object"
           ? (option as SelectOption)
-          : ({ value: option, label: option } as SelectOption)
+          : ({ value: String(option), label: option } as SelectOption)
       ) || []
   );
 
@@ -300,7 +302,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private _valueChanged(ev) {
-    const value = ev.detail?.value || ev.target.value;
+    const value = ev.detail?.value ?? ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
     }
@@ -382,6 +384,12 @@ export class HaSelectSelector extends LitElement {
     ha-select,
     ha-formfield {
       display: block;
+    }
+
+    ha-checkbox {
+      display: flex;
+      min-height: 40px;
+      justify-content: center;
     }
     ha-dropdown-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);

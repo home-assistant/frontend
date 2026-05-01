@@ -31,7 +31,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     return this._segments;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId") && this.entityId) {

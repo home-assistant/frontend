@@ -1,7 +1,9 @@
 import { mdiClose } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../common/dom/media_query";
+import { internationalizationContext } from "../data/context";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
@@ -10,6 +12,9 @@ import "./ha-dialog";
 import type { DialogWidth } from "./ha-dialog";
 
 type DialogSheetMode = "dialog" | "bottom-sheet";
+
+export const ADAPTIVE_DIALOG_MEDIA_QUERY =
+  "(max-width: 870px), (max-height: 500px)";
 
 /**
  * Home Assistant adaptive dialog component
@@ -53,6 +58,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the content body a flex container.
  * @attr {boolean} without-header - Hides the default header.
+ * @attr {boolean} hide-close-button - Hides the default close button.
  * @attr {boolean} allow-mode-change - When set, the component can switch between dialog and bottom-sheet modes as the viewport changes.
  *
  * @event opened - Fired when the dialog/sheet is shown.
@@ -111,10 +117,17 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: Boolean, attribute: "without-header" })
   public withoutHeader = false;
 
+  @property({ type: Boolean, attribute: "hide-close-button" })
+  public hideCloseButton = false;
+
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
-  @state() private _mode: DialogSheetMode = "dialog";
+  @state() public mode: DialogSheetMode = "dialog";
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n?: ContextType<typeof internationalizationContext>;
 
   private _unsubMediaQuery?: () => void;
 
@@ -123,14 +136,56 @@ export class HaAdaptiveDialog extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._unsubMediaQuery = listenMediaQuery(
-      "(max-width: 870px), (max-height: 500px)",
+      ADAPTIVE_DIALOG_MEDIA_QUERY,
       (matches) => {
         if (!this._modeSet || this.allowModeChange) {
-          this._mode = matches ? "bottom-sheet" : "dialog";
+          this.mode = matches ? "bottom-sheet" : "dialog";
           this._modeSet = true;
         }
       }
     );
+  }
+
+  protected get _defaultAriaLabelledBy() {
+    return (
+      this.ariaLabelledBy ||
+      (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)
+    );
+  }
+
+  protected _renderCloseButton(
+    slotName: "navigationIcon" | "headerNavigationIcon"
+  ) {
+    if (this.hideCloseButton) {
+      return html`<span slot=${slotName}></span>`;
+    }
+
+    return html`
+      <slot name="headerNavigationIcon" slot=${slotName}>
+        <ha-icon-button
+          data-dialog="close"
+          .label=${this._i18n?.localize?.("ui.common.close") ?? "Close"}
+          .path=${mdiClose}
+        ></ha-icon-button>
+      </slot>
+    `;
+  }
+
+  protected _renderHeaderContent() {
+    return html`
+      <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
+        ${this._renderCloseButton("navigationIcon")}
+        ${this.headerTitle !== undefined
+          ? html`<span slot="title" class="title" id="ha-dialog-title">
+              ${this.headerTitle}
+            </span>`
+          : html`<slot name="headerTitle" slot="title"></slot>`}
+        ${this.headerSubtitle !== undefined
+          ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+          : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+        <slot name="headerActionItems" slot="actionItems"></slot>
+      </ha-dialog-header>
+    `;
   }
 
   disconnectedCallback() {
@@ -141,11 +196,10 @@ export class HaAdaptiveDialog extends LitElement {
   }
 
   render() {
-    if (this._mode === "bottom-sheet") {
+    if (this.mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet
-          .ariaLabelledBy=${this.ariaLabelledBy ||
-          (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)}
+          .ariaLabelledBy=${this._defaultAriaLabelledBy}
           .ariaDescribedBy=${this.ariaDescribedBy}
           .flexContent=${this.flexContent}
           .hass=${this.hass}
@@ -154,38 +208,9 @@ export class HaAdaptiveDialog extends LitElement {
         >
           ${!this.withoutHeader
             ? html`
-                <slot name="header" slot="header">
-                  <ha-dialog-header
-                    .subtitlePosition=${this.headerSubtitlePosition}
-                  >
-                    <slot name="headerNavigationIcon" slot="navigationIcon">
-                      <ha-icon-button
-                        data-dialog="close"
-                        .label=${this.hass?.localize("ui.common.close") ??
-                        "Close"}
-                        .path=${mdiClose}
-                      ></ha-icon-button>
-                    </slot>
-                    ${this.headerTitle !== undefined
-                      ? html`<span
-                          slot="title"
-                          class="title"
-                          id="ha-dialog-title"
-                        >
-                          ${this.headerTitle}
-                        </span>`
-                      : html`<slot name="headerTitle" slot="title"></slot>`}
-                    ${this.headerSubtitle !== undefined
-                      ? html`<span slot="subtitle"
-                          >${this.headerSubtitle}</span
-                        >`
-                      : html`<slot
-                          name="headerSubtitle"
-                          slot="subtitle"
-                        ></slot>`}
-                    <slot name="headerActionItems" slot="actionItems"></slot>
-                  </ha-dialog-header>
-                </slot>
+                <slot name="header" slot="header"
+                  >${this._renderHeaderContent()}</slot
+                >
               `
             : nothing}
           <slot></slot>
@@ -209,13 +234,7 @@ export class HaAdaptiveDialog extends LitElement {
         .flexContent=${this.flexContent}
         .withoutHeader=${this.withoutHeader}
       >
-        <slot name="headerNavigationIcon" slot="headerNavigationIcon">
-          <ha-icon-button
-            data-dialog="close"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-        </slot>
+        ${this._renderCloseButton("headerNavigationIcon")}
         <slot name="headerTitle" slot="headerTitle"></slot>
         <slot name="headerSubtitle" slot="headerSubtitle"></slot>
         <slot name="headerActionItems" slot="headerActionItems"></slot>

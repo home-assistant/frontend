@@ -220,7 +220,6 @@ export const computeCards = (
       if (
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix
@@ -234,7 +233,6 @@ export const computeCards = (
       const entityConf =
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix

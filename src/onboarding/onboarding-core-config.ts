@@ -88,7 +88,7 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keyup", (ev) => {
       if (this._location && ev.key === "Enter") {

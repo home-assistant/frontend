@@ -69,7 +69,6 @@
 - [ ] I understand the code I am submitting and can explain how it works.
 - [ ] The code change is tested and works locally.
 - [ ] There is no commented out code in this PR.
-- [ ] I have followed the [development checklist][dev-checklist]
 - [ ] I have followed the [perfect PR recommendations][perfect-pr]
 - [ ] Any generated code has been carefully reviewed for correctness and compliance with project standards.
 
@@ -105,6 +104,5 @@ To help with the load of incoming pull requests:
 
   Below, some useful links you could explore:
 -->
-[dev-checklist]: https://developers.home-assistant.io/docs/development_checklist/
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
 [perfect-pr]: https://developers.home-assistant.io/docs/review-process/#creating-the-perfect-pr

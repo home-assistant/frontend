@@ -31,7 +31,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     };
   }
 
-  protected shouldUpdate(changedProperties: PropertyValues) {
+  protected shouldUpdate(changedProperties: PropertyValues<this>) {
     return !(changedProperties.size === 1 && changedProperties.has("hass"));
   }
 
@@ -76,7 +76,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (location.protocol === "http:" && location.hostname !== "localhost") {
       this._noHTTPS = true;
@@ -99,7 +99,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     );
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (this._config && this._config.hide_if_unavailable) {
       this.style.display =
