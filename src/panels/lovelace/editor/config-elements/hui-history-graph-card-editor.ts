@@ -17,7 +17,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -36,6 +35,7 @@ import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { graphEntitiesConfigStruct } from "../structs/entities-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import { orderPropertiesGraphCard } from "./order-properties/order-properties-graph";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -263,25 +263,10 @@ export class HuiHistoryGraphCardEditor
   private _orderProperties(
     config: HistoryGraphCardConfig
   ): HistoryGraphCardConfig {
-    const fieldOrderCard = Object.keys(cardConfigStruct.schema);
-    const fieldOrderEntity = [
-      // ideally should be taken from a schema
-      "entity",
-      "name",
-      "color",
-    ];
-    // normalize card's options
-    let orderedConfig = { ...orderProperties(config, fieldOrderCard) };
-    // normalize entities' options
-    const entitiesOrderedCfg = config.entities.map(
-      (entry: GraphEntityConfig | string) =>
-        typeof entry !== "string"
-          ? orderProperties(entry, fieldOrderEntity)
-          : entry
-    );
-    // merge normalized config
-    orderedConfig = { ...orderedConfig, ...{ entities: entitiesOrderedCfg } };
-    return orderedConfig;
+    return orderPropertiesGraphCard(
+      config,
+      cardConfigStruct
+    ) as HistoryGraphCardConfig;
   }
 
   private _computeLabelCallback = (
