@@ -85,7 +85,8 @@ export class FlowPreviewGeneric extends LitElement {
     if (
       this.flowType !== "config_flow" &&
       this.flowType !== "options_flow" &&
-      this.flowType !== "config_subentries_flow"
+      this.flowType !== "config_subentries_flow" &&
+      this.flowType !== "repairs_flow"
     ) {
       return;
     }

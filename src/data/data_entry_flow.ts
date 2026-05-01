@@ -6,7 +6,7 @@ export type FlowType =
   | "config_flow"
   | "config_subentries_flow"
   | "options_flow"
-  | "repair_flow";
+  | "repairs_flow";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
