@@ -160,6 +160,8 @@ export class HaEntityToggle extends LitElement {
 
   static styles = css`
     :host {
+      display: flex;
+      align-items: center;
       white-space: nowrap;
       min-width: 38px;
     }
