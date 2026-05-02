@@ -1693,12 +1693,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-durationformat@npm:0.10.6":
-  version: 0.10.6
-  resolution: "@formatjs/intl-durationformat@npm:0.10.6"
+"@formatjs/intl-durationformat@npm:0.10.7":
+  version: 0.10.7
+  resolution: "@formatjs/intl-durationformat@npm:0.10.7"
   dependencies:
+    "@formatjs/bigdecimal": "npm:0.2.2"
     "@formatjs/intl-localematcher": "npm:0.8.5"
-  checksum: 10/f04a0277bfb937609656f7d46116559ed50153a219c593bb7f7981d14814fd37521dd997ffd44b928fb9174459afc4e92e81286f17db22c7b958b1b7b486cd10
+  checksum: 10/95d515d75279204b7a6fe1710d956f0396bd24a1df5d03db3f071e565a2610b44a11fec35bc13cf1d0f697abd370e6ff58cdc30f67a62c7f8f1857f2801a12ee
   languageName: node
   linkType: hard
 
@@ -8131,7 +8132,7 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@formatjs/intl-datetimeformat": "npm:7.4.1"
     "@formatjs/intl-displaynames": "npm:7.3.4"
-    "@formatjs/intl-durationformat": "npm:0.10.6"
+    "@formatjs/intl-durationformat": "npm:0.10.7"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.5"
     "@formatjs/intl-listformat": "npm:8.3.4"
     "@formatjs/intl-locale": "npm:5.3.4"
