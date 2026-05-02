@@ -5,7 +5,7 @@ import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
 
@@ -23,7 +23,9 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   private _localizeState(): TemplateResult | string {
     if (
-      this.stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
+      SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+        this.stateObj.attributes.device_class
+      ) &&
       !isUnavailableState(this.stateObj.state)
     ) {
       return html`
