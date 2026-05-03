@@ -95,7 +95,13 @@ export class HaObjectSelector extends LitElement {
           .filter(Boolean)
           .join(" · ");
 
+    const labelHeader = this._computeLabel({
+      name: labelField,
+      selector: labelSelector,
+    });
+
     let description = "";
+    let descriptionHeader = "";
 
     const descriptionField = this.selector.object!.description_field;
     if (descriptionField && descriptionField in fields) {
@@ -108,31 +114,31 @@ export class HaObjectSelector extends LitElement {
             descriptionSelector
           )
         : "";
+      descriptionHeader = this._computeLabel({
+        name: descriptionField,
+        selector: descriptionSelector,
+      });
     }
 
     const reorderable = this.selector.object!.multiple || false;
     const multiple = this.selector.object!.multiple || false;
     return html`
       <ha-md-list-item class="item">
-        ${
-          reorderable
-            ? html`
-                <ha-svg-icon
-                  class="handle"
-                  .path=${mdiDragHorizontalVariant}
-                  slot="start"
-                ></ha-svg-icon>
-              `
-            : nothing
-        }
+        ${reorderable
+          ? html`
+              <ha-svg-icon
+                class="handle"
+                .path=${mdiDragHorizontalVariant}
+                slot="start"
+              ></ha-svg-icon>
+            `
+          : nothing}
         <div slot="headline" class="label">${label}</div>
-        ${
-          description
-            ? html`<div slot="supporting-text" class="description">
-                ${description}
-              </div>`
-            : nothing
-        }
+        ${description
+          ? html`<div slot="supporting-text" class="description">
+              ${descriptionHeader}: ${description}
+            </div>`
+          : nothing}
         <ha-icon-button
           slot="end"
           .item=${item}
@@ -178,17 +184,15 @@ export class HaObjectSelector extends LitElement {
       return html`
         ${this.label ? html`<label>${this.label}</label>` : nothing}
         <div class="items-container">
-          ${
-            this.value
-              ? html`<ha-md-list>
-                  ${this._renderItem(this.value, 0)}
-                </ha-md-list>`
-              : html`
-                  <ha-button appearance="filled" @click=${this._addItem}>
-                    ${this.hass.localize("ui.common.add")}
-                  </ha-button>
-                `
-          }
+          ${this.value
+            ? html`<ha-md-list>
+                ${this._renderItem(this.value, 0)}
+              </ha-md-list>`
+            : html`
+                <ha-button appearance="filled" @click=${this._addItem}>
+                  ${this.hass.localize("ui.common.add")}
+                </ha-button>
+              `}
         </div>
       `;
     }
@@ -201,13 +205,11 @@ export class HaObjectSelector extends LitElement {
         .defaultValue=${this.value}
         @value-changed=${this._handleChange}
       ></ha-yaml-editor>
-      ${
-        this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
-          : ""
-      } `;
+      ${this.helper
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
+        : ""} `;
   }
 
   private _schema = memoizeOne((selector: ObjectSelector) => {
