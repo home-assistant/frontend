@@ -2,9 +2,14 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../common/entity/entity_filter";
 import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/chips/ha-filter-chip";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
@@ -15,12 +20,10 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-background";
 import "../lovelace/views/hui-view-container";
-
-const MAINTENANCE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
-  strategy: {
-    type: "maintenance",
-  },
-};
+import {
+  filterProblematicBatteryEntities,
+  maintenanceEntityFilters,
+} from "./strategies/maintenance-view-strategy";
 
 @customElement("ha-panel-maintenance")
 class PanelMaintenance extends LitElement {
@@ -33,6 +36,19 @@ class PanelMaintenance extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
+
+  private get _issuesOnly(): boolean {
+    return this._searchParams.has("issues");
+  }
+
+  private get _issueCount(): number {
+    const allEntities = Object.keys(this.hass.states);
+    const batteryFilters = maintenanceEntityFilters.map((filter) =>
+      generateEntityFilter(this.hass, filter)
+    );
+    const batteryEntities = findEntities(allEntities, batteryFilters);
+    return filterProblematicBatteryEntities(this.hass, batteryEntities).length;
+  }
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -95,6 +111,19 @@ class PanelMaintenance extends LitElement {
     goBack();
   }
 
+  private _toggleIssuesOnly() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("issues")) {
+      params.delete("issues");
+    } else {
+      params.set("issues", "");
+    }
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    history.replaceState(null, "", newUrl);
+    this._searchParams = params;
+    this._setLovelace();
+  }
+
   protected render() {
     return html`
       <div class="header ${classMap({ narrow: this.narrow })}">
@@ -116,6 +145,20 @@ class PanelMaintenance extends LitElement {
           <div class="main-title">
             ${this.hass.localize("panel.maintenance")}
           </div>
+          <div class="relative">
+            <ha-filter-chip
+              no-leading-icon
+              .selected=${this._issuesOnly}
+              @click=${this._toggleIssuesOnly}
+            >
+              ${this.hass.localize(
+                "ui.panel.lovelace.strategy.maintenance.issues_only"
+              )}
+            </ha-filter-chip>
+            ${this._issueCount > 0
+              ? html`<div class="badge">${this._issueCount}</div>`
+              : nothing}
+          </div>
         </div>
       </div>
       ${this._lovelace
@@ -135,13 +178,20 @@ class PanelMaintenance extends LitElement {
   }
 
   private async _setLovelace() {
+    const strategyConfig: LovelaceStrategyViewConfig = {
+      strategy: {
+        type: "maintenance",
+        issues_only: this._issuesOnly,
+      },
+    };
+
     const viewConfig = await generateLovelaceViewStrategy(
-      MAINTENANCE_LOVELACE_VIEW_CONFIG,
+      strategyConfig,
       this.hass
     );
 
     const config = { views: [viewConfig] };
-    const rawConfig = { views: [MAINTENANCE_LOVELACE_VIEW_CONFIG] };
+    const rawConfig = { views: [strategyConfig] };
 
     if (deepEqual(config, this._lovelace?.config)) {
       return;
@@ -228,6 +278,26 @@ class PanelMaintenance extends LitElement {
         }
         .narrow .main-title {
           margin-inline-start: var(--ha-space-2);
+        }
+        .relative {
+          position: relative;
+        }
+        .badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          inset-inline-end: -4px;
+          inset-inline-start: initial;
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          background-color: var(--primary-color);
+          line-height: var(--ha-line-height-normal);
+          text-align: center;
+          padding: 0px 2px;
+          color: var(--text-primary-color);
         }
         hui-view-container {
           position: relative;

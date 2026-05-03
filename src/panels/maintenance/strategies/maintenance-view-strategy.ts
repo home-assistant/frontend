@@ -17,6 +17,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
+  issues_only?: boolean;
 }
 
 export const maintenanceEntityFilters: EntityFilter[] = [
@@ -53,6 +54,15 @@ export const filterUnavailableBatteryEntities = (
   entityIds.filter((entityId) => {
     return hass.states[entityId]?.state === "unavailable";
   });
+
+export const filterProblematicBatteryEntities = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): string[] => {
+  const low = filterLowBatteryEntities(hass, entityIds);
+  const unavailable = filterUnavailableBatteryEntities(hass, entityIds);
+  return [...new Set([...low, ...unavailable])];
+};
 
 const computeBatteryTileCard = (
   entities: HomeAssistant["entities"],
@@ -127,7 +137,7 @@ const processUnassignedEntities = (
 @customElement("maintenance-view-strategy")
 export class MaintenanceViewStrategy extends ReactiveElement {
   static async generate(
-    _config: MaintenanceViewStrategyConfig,
+    config: MaintenanceViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -143,6 +153,10 @@ export class MaintenanceViewStrategy extends ReactiveElement {
     );
 
     const entities = findEntities(allEntities, batteryFilters);
+
+    const filteredEntities = config.issues_only
+      ? filterProblematicBatteryEntities(hass, entities)
+      : entities;
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
@@ -168,7 +182,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForBattery(areaIds, hass, entities);
+      const areaCards = processAreasForBattery(areaIds, hass, filteredEntities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -194,7 +208,11 @@ export class MaintenanceViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForBattery(hierarchy.areas, hass, entities);
+      const areaCards = processAreasForBattery(
+        hierarchy.areas,
+        hass,
+        filteredEntities
+      );
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -203,7 +221,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned entities
-    const unassignedCards = processUnassignedEntities(hass, entities);
+    const unassignedCards = processUnassignedEntities(hass, filteredEntities);
 
     if (unassignedCards.length > 0) {
       const section: LovelaceSectionRawConfig = {

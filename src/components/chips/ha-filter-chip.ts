@@ -32,6 +32,9 @@ export class HaFilterChip extends FilterChip {
         );
         --_label-text-font: var(--ha-font-family-body);
       }
+      :host([no-leading-icon]) {
+        --_with-leading-icon-leading-space: var(--_leading-space);
+      }
     `,
   ];
 
