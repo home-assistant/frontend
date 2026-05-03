@@ -24,7 +24,7 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
   {
     domain: "binary_sensor",
-    device_class: ["battery", "battery_charging"],
+    device_class: ["battery"],
     entity_category: "none",
   },
 ];
