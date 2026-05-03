@@ -346,8 +346,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
               tap_action: {
                 action: "navigate",
                 navigation_path: config.home_panel
-                  ? "/maintenance?historyBack=1&backPath=/home"
-                  : "/maintenance?historyBack=1",
+                  ? "/maintenance?historyBack=1&backPath=/home&issues"
+                  : "/maintenance?historyBack=1&issues",
               },
             } satisfies HomeSummaryCard)
           : undefined,

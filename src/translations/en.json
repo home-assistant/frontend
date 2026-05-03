@@ -8444,7 +8444,8 @@
           },
           "maintenance": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "issues_only": "Issues"
           },
           "home_media_players": {
             "media_players": "Media players",
