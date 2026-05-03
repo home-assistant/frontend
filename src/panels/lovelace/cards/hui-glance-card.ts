@@ -15,7 +15,10 @@ import type {
   CallServiceActionConfig,
   MoreInfoActionConfig,
 } from "../../../data/lovelace/config/action";
-import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../data/sensor";
+import {
+  SENSOR_DEVICE_CLASS_UPTIME,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -295,7 +298,11 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                       <hui-timestamp-display
                         .hass=${this.hass}
                         .ts=${new Date(stateObj.state)}
-                        .format=${entityConf.format}
+                        .format=${entityConf.format ??
+                        (stateObj.attributes.device_class ===
+                        SENSOR_DEVICE_CLASS_UPTIME
+                          ? "total"
+                          : undefined)}
                         capitalize
                       ></hui-timestamp-display>
                     `

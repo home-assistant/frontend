@@ -23,7 +23,10 @@ import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
-import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../data/sensor";
+import {
+  SENSOR_DEVICE_CLASS_UPTIME,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../../data/sensor";
 
 @customElement("entity-preview-row")
 class EntityPreviewRow extends LitElement {
@@ -321,6 +324,10 @@ class EntityPreviewRow extends LitElement {
               <hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(stateObj.state)}
+                .format=${stateObj.attributes.device_class ===
+                SENSOR_DEVICE_CLASS_UPTIME
+                  ? "total"
+                  : undefined}
                 capitalize
               ></hui-timestamp-display>
             `
