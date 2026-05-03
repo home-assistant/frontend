@@ -97,7 +97,13 @@ export class HaObjectSelector extends LitElement {
           .filter(Boolean)
           .join(" · ");
 
+    const labelHeader = this._computeLabel({
+      name: labelField,
+      selector: labelSelector,
+    });
+
     let description = "";
+    let descriptionHeader = "";
 
     const descriptionField = this.selector.object!.description_field;
     if (descriptionField && descriptionField in fields) {
@@ -110,6 +116,10 @@ export class HaObjectSelector extends LitElement {
             descriptionSelector
           )
         : "";
+      descriptionHeader = this._computeLabel({
+        name: descriptionField,
+        selector: descriptionSelector,
+      });
     }
 
     const reorderable = this.selector.object!.multiple || false;
@@ -131,7 +141,7 @@ export class HaObjectSelector extends LitElement {
         ${
           description
             ? html`<div slot="supporting-text" class="description">
-                ${description}
+                ${descriptionHeader}: ${description}
               </div>`
             : nothing
         }
