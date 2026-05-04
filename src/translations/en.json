@@ -1739,7 +1739,8 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "other_areas": "Other areas"
         },
         "person": {
           "create_zone": "Create zone from current location"
