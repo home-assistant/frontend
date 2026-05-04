@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import deepClone from "deep-clone-simple";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -45,16 +46,6 @@ export class DialogForm
     return true;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener("show-dialog", this._handleNestedShowDialog);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener("show-dialog", this._handleNestedShowDialog);
-  }
-
   private _handleNestedShowDialog = (
     ev: HASSDomEvent<ShowDialogParams<unknown>>
   ) => {
@@ -73,15 +64,15 @@ export class DialogForm
     this._data = nested?.data || {};
   };
 
-  private _popStack(): { hadStack: boolean; nestedField?: string } {
+  private _popStack(): string | undefined {
     if (!this._stack.length) {
-      return { hadStack: false };
+      return undefined;
     }
     const prev = this._stack[this._stack.length - 1];
     this._stack = this._stack.slice(0, -1);
     this._params = prev.params;
     this._data = prev.data;
-    return { hadStack: true, nestedField: prev.nestedField };
+    return prev.nestedField;
   }
 
   private _dialogClosed(): void {
@@ -100,11 +91,11 @@ export class DialogForm
     this._closeState = "submitted";
     const submit = this._params?.submit;
     const data = this._data;
-    const { hadStack, nestedField } = this._popStack();
+    const nestedField = this._popStack();
 
     submit?.(data);
 
-    if (!hadStack) {
+    if (!nestedField) {
       this.closeDialog();
       return;
     }
@@ -124,25 +115,22 @@ export class DialogForm
         ? [...(Array.isArray(current) ? current : []), data]
         : data;
 
-      this._data = structuredClone({ ...this._data, [nestedField]: newValue });
+      this._data = deepClone({ ...this._data, [nestedField]: newValue });
     } else {
-      this._data = structuredClone({ ...this._data, ...data });
+      this._data = deepClone({ ...this._data, ...data });
     }
   }
 
   private _cancel(): void {
     this._closeState = "canceled";
     const cancel = this._params?.cancel;
-    const { hadStack } = this._popStack();
+    const nestedField = this._popStack();
 
     cancel?.();
 
-    if (!hadStack) {
+    if (!nestedField) {
       this.closeDialog();
-      return;
     }
-
-    this._data = structuredClone(this._data);
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -170,6 +158,7 @@ export class DialogForm
           .data=${this._data}
           .schema=${this._params.schema}
           @value-changed=${this._valueChanged}
+          @show-dialog=${this._handleNestedShowDialog}
         >
         </ha-form>
         <ha-dialog-footer slot="footer">
