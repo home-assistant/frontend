@@ -29,6 +29,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -44,7 +45,6 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
@@ -63,6 +63,8 @@ import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
@@ -339,10 +341,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           type: "overflow",
           title: this.hass.localize("ui.panel.config.automation.picker.state"),
           template: (automation) => html`
-            <ha-entity-toggle
-              .stateObj=${automation}
-              .hass=${this.hass}
-            ></ha-entity-toggle>
+            <ha-switch
+              @click=${stopPropagation}
+              @change=${this._handleSwitchToggle}
+              .automation=${automation}
+              .checked=${automation.state === "on"}
+            ></ha-switch>
           `,
         },
         actions: {
@@ -975,6 +979,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     navigate(
       `/config/automation/trace/${encodeURIComponent(automation.attributes.id)}`
     );
+  };
+
+  private _handleSwitchToggle = (ev: Event) => {
+    const automation = (
+      ev.currentTarget as HaSwitch & { automation: AutomationItem }
+    ).automation;
+    this._toggle(automation);
   };
 
   private _toggle = async (automation: AutomationItem): Promise<void> => {
