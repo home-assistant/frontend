@@ -213,6 +213,7 @@ export class HaAutomationRowTargets extends LitElement {
       display: inline-flex;
       align-items: flex-end;
       gap: var(--ha-space-1);
+      max-width: 100%;
     }
     .target {
       display: inline-flex;

@@ -327,14 +327,14 @@ class DialogAddAutomationElement
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
-      getServiceIcons(this.hass);
+      getServiceIcons(this.hass.connection, this.hass.config);
     } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
-      getTriggerIcons(this.hass);
+      getTriggerIcons(this.hass.connection, this.hass.config);
       this._subscribeDescriptions();
     } else if (this._params?.type === "condition") {
       this.hass.loadBackendTranslation("conditions");
-      getConditionIcons(this.hass);
+      getConditionIcons(this.hass.connection, this.hass.config);
       this._subscribeDescriptions();
     }
 
