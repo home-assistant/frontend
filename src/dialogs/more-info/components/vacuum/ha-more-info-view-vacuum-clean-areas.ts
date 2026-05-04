@@ -7,6 +7,8 @@ import {
   type AreasFloorHierarchy,
 } from "../../../../common/areas/areas-floor-hierarchy";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeFloorName } from "../../../../common/entity/compute_floor_name";
 
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -125,7 +127,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     const floor = section.floorId ? this.hass.floors[section.floorId] : null;
     const label = showLabel
       ? floor
-        ? floor.name
+        ? computeFloorName(floor)
         : this.hass.localize("ui.dialogs.more_info_control.vacuum.other_areas")
       : null;
 
@@ -167,7 +169,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
             ? html`<ha-icon .icon=${area.icon}></ha-icon>`
             : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
         </div>
-        <div class="area-name">${area.name}</div>
+        <div class="area-name">${computeAreaName(area)}</div>
       </div>
     `;
   }
