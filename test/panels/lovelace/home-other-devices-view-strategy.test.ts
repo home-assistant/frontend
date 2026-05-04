@@ -1,11 +1,59 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
+import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../../../src/data/entity/entity_registry";
 import { HomeOtherDevicesViewStrategy } from "../../../src/panels/lovelace/strategies/home/home-other-devices-view-strategy";
 import type { HomeAssistant } from "../../../src/types";
-import {
-  mockDevice,
-  mockEntity,
-  mockStateObj,
-} from "../../common/entity/context/context-mock.ts";
+
+const mockStateObj = (partial: Partial<HassEntity>): HassEntity => ({
+  entity_id: "",
+  attributes: {},
+  state: "on",
+  last_changed: "",
+  last_updated: "",
+  context: {
+    id: "",
+    user_id: null,
+    parent_id: null,
+  },
+  ...partial,
+});
+
+const mockEntity = (
+  partial: Partial<EntityRegistryDisplayEntry>
+): EntityRegistryDisplayEntry => ({
+  entity_id: "",
+  labels: [],
+  ...partial,
+});
+
+const mockDevice = (
+  partial: Partial<DeviceRegistryEntry>
+): DeviceRegistryEntry => ({
+  id: "",
+  config_entries: [],
+  config_entries_subentries: {},
+  connections: [],
+  identifiers: [],
+  manufacturer: null,
+  model: null,
+  model_id: null,
+  name: null,
+  labels: [],
+  sw_version: null,
+  hw_version: null,
+  serial_number: null,
+  via_device_id: null,
+  area_id: null,
+  name_by_user: null,
+  entry_type: null,
+  disabled_by: null,
+  configuration_url: null,
+  primary_config_entry: null,
+  created_at: 0,
+  modified_at: 0,
+  ...partial,
+});
 
 const createHass = (overrides: Partial<HomeAssistant> = {}): HomeAssistant =>
   ({
@@ -15,7 +63,6 @@ const createHass = (overrides: Partial<HomeAssistant> = {}): HomeAssistant =>
     devices: {},
     areas: {},
     floors: {},
-    user: null,
     ...overrides,
   }) as unknown as HomeAssistant;
 
