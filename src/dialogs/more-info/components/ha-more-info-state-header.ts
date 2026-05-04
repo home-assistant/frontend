@@ -3,7 +3,9 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
 
@@ -20,6 +22,20 @@ export class HaMoreInfoStateHeader extends LitElement {
   @state() private _absoluteTime = false;
 
   private _localizeState(): TemplateResult | string {
+    if (
+      this.stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
+      !isUnavailableState(this.stateObj.state)
+    ) {
+      return html`
+        <hui-timestamp-display
+          .hass=${this.hass}
+          .ts=${new Date(this.stateObj.state)}
+          format="relative"
+          capitalize
+        ></hui-timestamp-display>
+      `;
+    }
+
     return this.hass.formatEntityState(this.stateObj);
   }
 

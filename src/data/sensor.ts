@@ -1,6 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export const SENSOR_DEVICE_CLASS_BATTERY = "battery";
+export const SENSOR_DEVICE_CLASS_TIMESTAMP = "timestamp";
 export const SENSOR_DEVICE_CLASS_TEMPERATURE = "temperature";
 export const SENSOR_DEVICE_CLASS_HUMIDITY = "humidity";
 export const SENSOR_DEVICE_CLASS_UPTIME = "uptime";
