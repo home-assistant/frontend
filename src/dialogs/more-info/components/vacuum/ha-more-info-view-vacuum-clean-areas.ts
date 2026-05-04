@@ -2,10 +2,17 @@ import { mdiCogOutline, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  getAreasFloorHierarchy,
+  type AreasFloorHierarchy,
+} from "../../../../common/areas/areas-floor-hierarchy";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeFloorName } from "../../../../common/entity/compute_floor_name";
 
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
@@ -17,13 +24,18 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showVacuumSegmentMappingView } from "./show-view-vacuum-segment-mapping";
 
+interface MappedSection {
+  floorId: string | null;
+  areaIds: string[];
+}
+
 @customElement("ha-more-info-view-vacuum-clean-areas")
 export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public params!: { entityId: string };
 
-  @state() private _mappedAreaIds?: string[];
+  @state() private _mappedHierarchy?: AreasFloorHierarchy;
 
   @state() private _selectedAreaIds: string[] = [];
 
@@ -47,8 +59,13 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         await getExtendedEntityRegistryEntry(this.hass, this.params.entityId);
 
       const areaMapping = entry?.options?.vacuum?.area_mapping || {};
-      this._mappedAreaIds = Object.keys(areaMapping).filter(
-        (areaId) => this.hass.areas[areaId]
+      const mappedAreaIds = new Set(Object.keys(areaMapping));
+      const mappedAreas = Object.values(this.hass.areas).filter((area) =>
+        mappedAreaIds.has(area.area_id)
+      );
+      this._mappedHierarchy = getAreasFloorHierarchy(
+        Object.values(this.hass.floors),
+        mappedAreas
       );
     } catch (err: any) {
       this._error = err.message || "Failed to load areas";
@@ -95,6 +112,42 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     );
   }
 
+  private _getMappedSections(): MappedSection[] {
+    if (!this._mappedHierarchy) return [];
+    const sections: MappedSection[] = this._mappedHierarchy.floors
+      .filter((floor) => floor.areas.length > 0)
+      .map((floor) => ({ floorId: floor.id, areaIds: floor.areas }));
+    if (this._mappedHierarchy.areas.length > 0) {
+      sections.push({ floorId: null, areaIds: this._mappedHierarchy.areas });
+    }
+    return sections;
+  }
+
+  private _renderSection(section: MappedSection, showLabel: boolean) {
+    const floor = section.floorId ? this.hass.floors[section.floorId] : null;
+    const label = showLabel
+      ? floor
+        ? computeFloorName(floor)
+        : this.hass.localize("ui.dialogs.more_info_control.vacuum.other_areas")
+      : null;
+
+    return html`
+      <div class="section">
+        ${label
+          ? html`<div class="section-header">
+              ${floor
+                ? html`<ha-floor-icon .floor=${floor}></ha-floor-icon>`
+                : nothing}
+              <span class="section-name">${label}</span>
+            </div>`
+          : nothing}
+        <div class="area-grid">
+          ${section.areaIds.map((areaId) => this._renderAreaCard(areaId))}
+        </div>
+      </div>
+    `;
+  }
+
   private _renderAreaCard(areaId: string) {
     const area: AreaRegistryEntry | undefined = this.hass.areas[areaId];
     if (!area) return nothing;
@@ -116,7 +169,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
             ? html`<ha-icon .icon=${area.icon}></ha-icon>`
             : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
         </div>
-        <div class="area-name">${area.name}</div>
+        <div class="area-name">${computeAreaName(area)}</div>
       </div>
     `;
   }
@@ -138,7 +191,9 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       `;
     }
 
-    if (!this._mappedAreaIds || this._mappedAreaIds.length === 0) {
+    const sections = this._getMappedSections();
+
+    if (sections.length === 0) {
       return html`
         <div class="content empty-content">
           <div class="empty">
@@ -177,11 +232,13 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       `;
     }
 
+    const showFloorLabels = sections.length > 1;
+
     return html`
       <div class="content">
-        <div class="area-grid">
-          ${this._mappedAreaIds.map((areaId) => this._renderAreaCard(areaId))}
-        </div>
+        ${sections.map((section) =>
+          this._renderSection(section, showFloorLabels)
+        )}
         <p class="hint">
           ${this.hass.localize(
             "ui.dialogs.more_info_control.vacuum.clean_areas_order_hint"
@@ -223,6 +280,9 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       flex: 1;
       overflow-y: auto;
       padding: var(--ha-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-4);
     }
 
     .empty-content {
@@ -255,6 +315,20 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     .empty p {
       margin: 0 0 var(--ha-space-4);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
+      color: var(--secondary-text-color);
+      --mdc-icon-size: 20px;
+    }
+
+    .section-name {
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
     }
 
     .area-grid {
@@ -343,7 +417,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
     }
 
     .hint {
-      margin: var(--ha-space-3) 0 0;
+      margin: 0;
       text-align: center;
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);

@@ -218,7 +218,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
-        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "count_maintenance_low_battery_issues": "{count} {count, plural,\n one {low battery}\n other {low batteries}\n}",
+        "count_maintenance_issues_unavailable_battery_entities": "{count} {count, plural,\n one {unavailable device}\n other {unavailable devices}\n}",
         "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
@@ -1738,7 +1739,8 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "other_areas": "Other areas"
         },
         "person": {
           "create_zone": "Create zone from current location"
@@ -3832,8 +3834,8 @@
               "column_description": "Description",
               "column_example": "Example",
               "fill_example_data": "Fill example data",
-              "yaml_mode": "Go to YAML mode",
-              "ui_mode": "Go to UI mode",
+              "yaml_mode": "YAML mode",
+              "ui_mode": "UI mode",
               "yaml_parameters": "Parameters only available in YAML mode",
               "all_parameters": "All available parameters",
               "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
@@ -3879,6 +3881,7 @@
             "templates": {
               "title": "Template",
               "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
               "reset": "Reset to demo template",
