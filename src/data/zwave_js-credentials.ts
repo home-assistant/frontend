@@ -57,7 +57,7 @@ export const enterableCredentialTypes = (
   );
 };
 
-export const selectableUserTypes = (
+export const compatibleUserTypes = (
   capabilities: ZwaveCredentialCapabilities
 ): string[] => {
   const supported = capabilities.supported_user_types ?? [];
@@ -68,7 +68,7 @@ export const canAddZwaveUser = (
   capabilities: ZwaveCredentialCapabilities
 ): boolean =>
   enterableCredentialTypes(capabilities).length > 0 &&
-  selectableUserTypes(capabilities).length > 0;
+  compatibleUserTypes(capabilities).length > 0;
 
 export const getCredentialError = (
   data: string,
@@ -186,6 +186,27 @@ export interface DeleteZwaveCredentialParams {
   credential_slot: number;
 }
 
+// The Z-Wave services key their response by entity_id to support multi-target
+// calls. The frontend only ever calls them with a single lock entity, so we
+// expect exactly that key. Anything else (no response, mismatched key) is a
+// backend contract violation — surface it as a localized error rather than
+// letting `cannot read property of undefined` bubble up.
+const unwrapEntityResponse = <T>(
+  hass: HomeAssistant,
+  response: Record<string, T> | undefined,
+  entity_id: string
+): T => {
+  const value = response?.[entity_id];
+  if (value === undefined) {
+    throw new Error(
+      hass.localize(
+        "ui.panel.config.zwave_js.credentials.errors.empty_response"
+      )
+    );
+  }
+  return value;
+};
+
 const callCredentialService = async <T>(
   hass: HomeAssistant,
   service: string,
@@ -201,7 +222,7 @@ const callCredentialService = async <T>(
     false,
     true
   );
-  return result.response![entity_id];
+  return unwrapEntityResponse(hass, result.response, entity_id);
 };
 
 export const getZwaveCredentialCapabilities = (
@@ -225,7 +246,6 @@ export const setZwaveUser = async (
   entity_id: string,
   params: SetZwaveUserParams
 ): Promise<SetZwaveUserResult> => {
-  // Response is keyed by entity_id for multi-target support.
   // notifyOnError=false — caller surfaces errors in-dialog instead.
   const result = await hass.callService<Record<string, SetZwaveUserResult>>(
     "zwave_js",
@@ -235,7 +255,7 @@ export const setZwaveUser = async (
     false,
     true
   );
-  return result.response![entity_id];
+  return unwrapEntityResponse(hass, result.response, entity_id);
 };
 
 export const deleteZwaveUser = (
@@ -259,13 +279,11 @@ export const setZwaveCredential = async (
   entity_id: string,
   params: SetZwaveCredentialParams
 ): Promise<SetZwaveCredentialResult> => {
-  // set_credential supports multi-target; response is keyed by entity_id.
-  // Frontend always passes a single lock entity, so unwrap.
   // notifyOnError=false — caller surfaces errors in-dialog instead.
   const result = await hass.callService<
     Record<string, SetZwaveCredentialResult>
   >("zwave_js", "set_credential", params, { entity_id }, false, true);
-  return result.response![entity_id];
+  return unwrapEntityResponse(hass, result.response, entity_id);
 };
 
 export const deleteZwaveCredential = (

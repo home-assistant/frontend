@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
@@ -21,12 +22,12 @@ import type {
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
+  canAddZwaveUser,
   deleteZwaveAllUsers,
   deleteZwaveUser,
-  enterableCredentialTypes,
   getZwaveCredentialCapabilities,
   getZwaveUsers,
-  selectableUserTypes,
+  compatibleUserTypes,
 } from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
@@ -96,11 +97,17 @@ class DialogZwaveCredentialManage extends LitElement {
     }
 
     const activeUsers = this._users.filter((u) => u.active);
+    // Show the "Add user" button in the footer only when the lock supports
+    // at least one of the user types and one of the credential types that
+    // are exposed in HA.
     const showFooter =
       !this._loading &&
-      this._capabilities?.supports_user_management &&
-      this._supportsEnterableCredential &&
-      this._hasSelectableUserType;
+      this._capabilities !== undefined &&
+      this._capabilities.supports_user_management &&
+      canAddZwaveUser(this._capabilities);
+    // Overflow menu currently only contains "Delete all" — hide when there
+    // is nothing to delete (no active users) or when user management is
+    // unsupported (then there are no users to begin with).
     const showOverflowMenu =
       !this._loading &&
       this._capabilities?.supports_user_management &&
@@ -174,23 +181,13 @@ class DialogZwaveCredentialManage extends LitElement {
     }
   }
 
-  private get _supportsEnterableCredential(): boolean {
-    return this._capabilities
-      ? enterableCredentialTypes(this._capabilities).length > 0
-      : false;
-  }
-
-  private get _hasSelectableUserType(): boolean {
-    return this._capabilities
-      ? selectableUserTypes(this._capabilities).length > 0
-      : false;
-  }
-
   private _renderUsers(activeUsers: ZwaveUser[]) {
     const hasNoCredentialTypes =
       !this._capabilities?.supported_credential_types ||
       Object.keys(this._capabilities.supported_credential_types).length === 0;
-    const hasNoSelectableUserType = !this._hasSelectableUserType;
+    const hasNoSelectableUserType = this._capabilities
+      ? compatibleUserTypes(this._capabilities).length === 0
+      : true;
 
     return html`
       <div class="users-content">
@@ -200,14 +197,13 @@ class DialogZwaveCredentialManage extends LitElement {
                 "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
               )}
             </ha-alert>`
-          : nothing}
-        ${!hasNoCredentialTypes && hasNoSelectableUserType
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.credentials.errors.no_compatible_user_types"
-              )}
-            </ha-alert>`
-          : nothing}
+          : hasNoSelectableUserType
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.errors.no_compatible_user_types"
+                )}
+              </ha-alert>`
+            : nothing}
         ${activeUsers.length === 0
           ? html`<p class="empty">
               ${this.hass.localize(
@@ -236,7 +232,7 @@ class DialogZwaveCredentialManage extends LitElement {
                       <div slot="supporting-text">
                         <span>
                           ${this.hass.localize(
-                            `ui.panel.config.zwave_js.credentials.users.user_types.${user.user_type}.label` as any
+                            `ui.panel.config.zwave_js.credentials.users.user_types.${user.user_type}.label` as LocalizeKeys
                           ) || user.user_type}
                         </span>
                         <span class="credential-count">

@@ -3,7 +3,7 @@ import {
   canAddZwaveUser,
   enterableCredentialTypes,
   getCredentialError,
-  selectableUserTypes,
+  compatibleUserTypes,
 } from "../../../../../src/data/zwave_js-credentials";
 import type {
   ZwaveCredentialCapabilities,
@@ -110,10 +110,10 @@ describe("enterableCredentialTypes", () => {
   });
 });
 
-describe("selectableUserTypes", () => {
+describe("compatibleUserTypes", () => {
   it("filters simple user types against capability-supported list", () => {
     expect(
-      selectableUserTypes(
+      compatibleUserTypes(
         buildCapabilities({ supported_user_types: ["general", "disposable"] })
       )
     ).toEqual(["general", "disposable"]);
@@ -121,7 +121,7 @@ describe("selectableUserTypes", () => {
 
   it("drops types the lock does not support", () => {
     expect(
-      selectableUserTypes(
+      compatibleUserTypes(
         buildCapabilities({ supported_user_types: ["general"] })
       )
     ).toEqual(["general"]);
@@ -129,7 +129,7 @@ describe("selectableUserTypes", () => {
 
   it("excludes non-simple types even if the lock lists them", () => {
     expect(
-      selectableUserTypes(
+      compatibleUserTypes(
         buildCapabilities({
           supported_user_types: ["programming", "duress", "general"],
         })
@@ -139,7 +139,7 @@ describe("selectableUserTypes", () => {
 
   it("returns an empty list when no overlap exists", () => {
     expect(
-      selectableUserTypes(
+      compatibleUserTypes(
         buildCapabilities({ supported_user_types: ["programming"] })
       )
     ).toEqual([]);
