@@ -69,7 +69,11 @@ export class HaTriggerIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = triggerIcon(this.hass, this.trigger).then((icn) => {
+    const icon = triggerIcon(
+      this.hass.connection,
+      this.hass.config,
+      this.trigger
+    ).then((icn) => {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }

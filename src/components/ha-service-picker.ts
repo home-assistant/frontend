@@ -54,7 +54,7 @@ class HaServicePicker extends LitElement {
   protected firstUpdated(props: PropertyValues<this>) {
     super.firstUpdated(props);
     this.hass.loadBackendTranslation("services");
-    getServiceIcons(this.hass);
+    getServiceIcons(this.hass.connection, this.hass.config);
   }
 
   private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (

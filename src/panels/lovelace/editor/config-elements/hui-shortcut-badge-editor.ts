@@ -65,8 +65,7 @@ export class HuiShortcutBadgeEditor
         this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
       );
-      this._serviceInfo.update(
-        this.hass,
+      this._serviceInfo.updateService(
         action?.action === "perform-action" || action?.action === "call-service"
           ? action.perform_action || action.service
           : undefined
