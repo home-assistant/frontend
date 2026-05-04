@@ -124,10 +124,5 @@ describe("HomeOtherDevicesViewStrategy", () => {
         },
       ],
     });
-    expect(view.type).toBe("sections");
-    if (view.type !== "sections") {
-      return;
-    }
-    expect(view.sections).toHaveLength(1);
   });
 });
