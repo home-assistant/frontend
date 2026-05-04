@@ -5,7 +5,7 @@ import type { EntityRegistryDisplayEntry } from "../../../src/data/entity/entity
 import { HomeOtherDevicesViewStrategy } from "../../../src/panels/lovelace/strategies/home/home-other-devices-view-strategy";
 import type { HomeAssistant } from "../../../src/types";
 
-const mockStateObj = (partial: Partial<HassEntity>): HassEntity => ({
+const mockState = (partial: Partial<HassEntity>): HassEntity => ({
   entity_id: "",
   attributes: {},
   state: "on",
@@ -72,25 +72,21 @@ describe("HomeOtherDevicesViewStrategy", () => {
       { type: "home-other-devices" },
       createHass({
         states: {
-          "input_boolean.helper": mockStateObj({
+          "input_boolean.helper": mockState({
             entity_id: "input_boolean.helper",
             state: "on",
-            attributes: {},
           }),
-          "sensor.orphan": mockStateObj({
+          "sensor.orphan": mockState({
             entity_id: "sensor.orphan",
             state: "23",
-            attributes: {},
           }),
         },
         entities: {
           "input_boolean.helper": mockEntity({
             entity_id: "input_boolean.helper",
-            labels: [],
           }),
           "sensor.orphan": mockEntity({
             entity_id: "sensor.orphan",
-            labels: [],
           }),
         },
       })
@@ -113,35 +109,29 @@ describe("HomeOtherDevicesViewStrategy", () => {
       { type: "home-other-devices" },
       createHass({
         states: {
-          "light.desk_lamp": mockStateObj({
+          "light.desk_lamp": mockState({
             entity_id: "light.desk_lamp",
             state: "on",
-            attributes: {},
           }),
-          "input_boolean.helper": mockStateObj({
+          "input_boolean.helper": mockState({
             entity_id: "input_boolean.helper",
             state: "on",
-            attributes: {},
           }),
-          "sensor.orphan": mockStateObj({
+          "sensor.orphan": mockState({
             entity_id: "sensor.orphan",
             state: "23",
-            attributes: {},
           }),
         },
         entities: {
           "light.desk_lamp": mockEntity({
             entity_id: "light.desk_lamp",
             device_id: "device_1",
-            labels: [],
           }),
           "input_boolean.helper": mockEntity({
             entity_id: "input_boolean.helper",
-            labels: [],
           }),
           "sensor.orphan": mockEntity({
             entity_id: "sensor.orphan",
-            labels: [],
           }),
         },
         devices: {
