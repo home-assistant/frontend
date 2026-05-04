@@ -48,11 +48,11 @@ class HuiEntitiesToggle extends LitElement {
 
   static styles = css`
     :host {
-      width: 38px;
       display: flex;
       align-items: center;
     }
     ha-control-switch {
+      width: 38px;
       --control-switch-thickness: 20px;
       --control-switch-off-color: var(--state-inactive-color);
     }
