@@ -163,9 +163,9 @@ export class HaEntityToggle extends LitElement {
       display: flex;
       align-items: center;
       white-space: nowrap;
-      min-width: 38px;
     }
     ha-control-switch {
+      width: 38px;
       --control-switch-thickness: 20px;
       --control-switch-off-color: var(--state-inactive-color);
     }
