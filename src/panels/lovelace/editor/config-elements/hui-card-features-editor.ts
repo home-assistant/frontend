@@ -42,6 +42,8 @@ import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-co
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsPrecipitationForecastCardFeature } from "../../card-features/hui-precipitation-forecast-card-feature";
+import { supportsTemperatureForecastCardFeature } from "../../card-features/hui-temperature-forecast-card-feature";
 import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -119,10 +121,12 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
+  "precipitation-forecast",
   "select-options",
   "trend-graph",
   "target-humidity",
   "target-temperature",
+  "temperature-forecast",
   "toggle",
   "update-actions",
   "vacuum-commands",
@@ -149,6 +153,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "cover-tilt-favorite",
   "fan-preset-modes",
   "humidifier-modes",
+  "precipitation-forecast",
+  "temperature-forecast",
   "lawn-mower-commands",
   "media-player-playback",
   "light-color-favorites",
@@ -202,10 +208,12 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  "temperature-forecast": supportsTemperatureForecastCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,

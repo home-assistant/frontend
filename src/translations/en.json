@@ -10168,6 +10168,33 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "temperature-forecast": {
+                "label": "Temperature forecast",
+                "no_forecast": "No forecast data available",
+                "forecast_type": "Forecast type",
+                "forecast_type_options": {
+                  "daily": "Daily",
+                  "twice_daily": "Twice daily",
+                  "hourly": "Hourly"
+                },
+                "color": "Color"
+              },
+              "precipitation-forecast": {
+                "label": "Precipitation forecast",
+                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::no_forecast%]",
+                "forecast_type": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type%]",
+                "forecast_type_options": {
+                  "daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::daily%]",
+                  "twice_daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::twice_daily%]",
+                  "hourly": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::hourly%]"
+                },
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::color%]"
               }
             }
           },
