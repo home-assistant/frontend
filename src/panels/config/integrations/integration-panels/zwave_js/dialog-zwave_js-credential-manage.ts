@@ -21,11 +21,12 @@ import type {
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
-  ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   deleteZwaveAllUsers,
   deleteZwaveUser,
+  enterableCredentialTypes,
   getZwaveCredentialCapabilities,
   getZwaveUsers,
+  selectableUserTypes,
 } from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
@@ -98,7 +99,8 @@ class DialogZwaveCredentialManage extends LitElement {
     const showFooter =
       !this._loading &&
       this._capabilities?.supports_user_management &&
-      this._supportsEnterableCredential;
+      this._supportsEnterableCredential &&
+      this._hasSelectableUserType;
     const showOverflowMenu =
       !this._loading &&
       this._capabilities?.supports_user_management &&
@@ -173,25 +175,36 @@ class DialogZwaveCredentialManage extends LitElement {
   }
 
   private get _supportsEnterableCredential(): boolean {
-    if (!this._capabilities?.supported_credential_types) {
-      return false;
-    }
-    return ENTERABLE_ZWAVE_CREDENTIAL_TYPES.some(
-      (type) => type in this._capabilities!.supported_credential_types
-    );
+    return this._capabilities
+      ? enterableCredentialTypes(this._capabilities).length > 0
+      : false;
+  }
+
+  private get _hasSelectableUserType(): boolean {
+    return this._capabilities
+      ? selectableUserTypes(this._capabilities).length > 0
+      : false;
   }
 
   private _renderUsers(activeUsers: ZwaveUser[]) {
     const hasNoCredentialTypes =
       !this._capabilities?.supported_credential_types ||
       Object.keys(this._capabilities.supported_credential_types).length === 0;
+    const hasNoSelectableUserType = !this._hasSelectableUserType;
 
     return html`
       <div class="users-content">
         ${hasNoCredentialTypes
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
-                "ui.panel.config.zwave_js.credentials.errors.no_credential_types_supported"
+                "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
+              )}
+            </ha-alert>`
+          : nothing}
+        ${!hasNoCredentialTypes && hasNoSelectableUserType
+          ? html`<ha-alert alert-type="warning">
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.credentials.errors.no_compatible_user_types"
               )}
             </ha-alert>`
           : nothing}

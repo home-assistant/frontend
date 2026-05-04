@@ -7806,7 +7806,6 @@
               "type": "Type",
               "no_users": "No users configured",
               "unnamed_user": "User {index}",
-              "credentials": "Credentials",
               "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
               "user_types": {
                 "general": {
@@ -7857,33 +7856,22 @@
               "type": "Credential type",
               "pin_code": "PIN code",
               "password": "Password",
-              "placeholder": "{min}-{max} characters",
-              "add": "Add credential",
-              "add_title": "Add credential for {user}",
-              "edit_title": "Edit credential for {user}"
-            },
-            "credentials": {
-              "title": "Credentials",
-              "slot": "Slot {slot}",
-              "add": "Add credential",
-              "edit": "Edit credential",
-              "delete": "Delete credential",
-              "none": "No credentials for this user."
+              "placeholder": "{min}-{max} characters"
             },
             "errors": {
               "load_failed": "Failed to load credential information",
               "save_failed": "Failed to save changes",
               "no_user_management": "This device does not support user management. Users and credentials cannot be managed here.",
-              "no_credential_types_supported": "This device does not support any credential types that can be managed here.",
+              "no_compatible_credential_types": "This device does not support any credential types that can be managed here.",
+              "no_compatible_user_types": "This device has no user types that can be managed here. New users cannot be added.",
               "name_required": "Please enter a name for this user.",
               "credential_required": "Please enter a credential value.",
               "credential_length": "Credential must be {min}-{max} characters.",
               "pin_digits_only": "PIN code must contain only numbers.",
-              "credential_save_failed_user_created": "User was created, but saving the credential failed ({message}). Add a credential below to finish setup."
+              "add_user_failed": "Could not add user. {message}."
             },
             "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
-            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone.",
-            "confirm_delete_credential": "Are you sure you want to delete this credential ({type}, slot {slot})? This cannot be undone."
+            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone."
           }
         },
         "matter": {

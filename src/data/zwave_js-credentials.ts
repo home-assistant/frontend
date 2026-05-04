@@ -29,6 +29,66 @@ export type ZwaveCredentialType =
 export const ENTERABLE_ZWAVE_CREDENTIAL_TYPES: readonly ZwaveCredentialType[] =
   ["pin_code", "password"];
 
+// UI surfaces only general + disposable to stay aligned with Matter lock UX.
+// Other types (programming, duress, non_access, remote_only, expiring) are
+// defined in translations for display in existing-user rows, but are not
+// selectable here.
+export const SIMPLE_USER_TYPES: readonly string[] = ["general", "disposable"];
+
+// Fallback bounds when a lock advertises an enterable type without
+// per-type min/max — values mirror Z-Wave spec defaults.
+export const DEFAULT_CREDENTIAL_MIN_LENGTH = 4;
+export const DEFAULT_CREDENTIAL_MAX_LENGTH = 10;
+
+export type CredentialErrorCode =
+  | "required"
+  | "length"
+  | "pin_digits_only"
+  | "";
+
+export const enterableCredentialTypes = (
+  capabilities: ZwaveCredentialCapabilities
+): ZwaveCredentialType[] => {
+  if (!capabilities.supported_credential_types) {
+    return [];
+  }
+  return ENTERABLE_ZWAVE_CREDENTIAL_TYPES.filter(
+    (type) => type in capabilities.supported_credential_types
+  );
+};
+
+export const selectableUserTypes = (
+  capabilities: ZwaveCredentialCapabilities
+): string[] => {
+  const supported = capabilities.supported_user_types ?? [];
+  return SIMPLE_USER_TYPES.filter((t) => supported.includes(t));
+};
+
+export const canAddZwaveUser = (
+  capabilities: ZwaveCredentialCapabilities
+): boolean =>
+  enterableCredentialTypes(capabilities).length > 0 &&
+  selectableUserTypes(capabilities).length > 0;
+
+export const getCredentialError = (
+  data: string,
+  type: ZwaveCredentialType | "",
+  capability: ZwaveCredentialTypeCapability | undefined
+): CredentialErrorCode => {
+  if (!data) {
+    return "required";
+  }
+  const minLength = capability?.min_length ?? DEFAULT_CREDENTIAL_MIN_LENGTH;
+  const maxLength = capability?.max_length ?? DEFAULT_CREDENTIAL_MAX_LENGTH;
+  if (data.length < minLength || data.length > maxLength) {
+    return "length";
+  }
+  if (type === "pin_code" && !/^\d+$/.test(data)) {
+    return "pin_digits_only";
+  }
+  return "";
+};
+
 export const getZwaveCredentialTypeIcon = (
   type: ZwaveCredentialType
 ): string => {
