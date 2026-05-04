@@ -167,7 +167,7 @@
     "babel-plugin-template-html-minifier": "4.1.0",
     "browserslist-useragent-regexp": "4.1.4",
     "del": "8.0.1",
-    "eslint": "10.2.1",
+    "eslint": "10.3.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-webpack": "0.13.11",
     "eslint-plugin-import-x": "4.16.2",
