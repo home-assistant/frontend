@@ -8,6 +8,7 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
+import { ServiceInfoController } from "../../../data/service-info-controller";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -42,6 +43,8 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   @state() private _config?: ShortcutCardConfig;
 
   private _navInfo = new NavigationPathInfoController(this);
+
+  private _serviceInfo = new ServiceInfoController(this);
 
   public setConfig(config: ShortcutCardConfig): void {
     this._config = {
@@ -83,6 +86,12 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
         this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
       );
+      this._serviceInfo.update(
+        this.hass,
+        action?.action === "perform-action" || action?.action === "call-service"
+          ? action.perform_action || action.service
+          : undefined
+      );
     }
   }
 
@@ -106,7 +115,8 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
     const defaults = getShortcutCardDefaults(
       this.hass,
       this._config.tap_action,
-      this._navInfo.info
+      this._navInfo.info,
+      this._serviceInfo.info
     );
     const label = this._config.label || defaults.label;
     const description = this._config.description;

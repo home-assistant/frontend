@@ -8,6 +8,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { NavigationPathInfoController } from "../../../../data/navigation-path-controller";
+import { ServiceInfoController } from "../../../../data/service-info-controller";
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
 import type { ShortcutCardConfig } from "../../cards/types";
@@ -50,6 +51,8 @@ export class HuiShortcutCardEditor
 
   private _navInfo = new NavigationPathInfoController(this);
 
+  private _serviceInfo = new ServiceInfoController(this);
+
   public setConfig(config: ShortcutCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
@@ -64,6 +67,12 @@ export class HuiShortcutCardEditor
       this._navInfo.update(
         this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
+      );
+      this._serviceInfo.update(
+        this.hass,
+        action?.action === "perform-action" || action?.action === "call-service"
+          ? action.perform_action || action.service
+          : undefined
       );
     }
   }
@@ -182,7 +191,8 @@ export class HuiShortcutCardEditor
     const defaults = getShortcutCardDefaults(
       this.hass,
       this._config.tap_action,
-      this._navInfo.info
+      this._navInfo.info,
+      this._serviceInfo.info
     );
 
     const data = {

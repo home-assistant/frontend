@@ -7,6 +7,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
+import { ServiceInfoController } from "../../../data/service-info-controller";
 import type { HomeAssistant } from "../../../types";
 import { getShortcutCardDefaults } from "../cards/hui-shortcut-card-defaults";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -38,6 +39,8 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
 
   private _navInfo = new NavigationPathInfoController(this);
 
+  private _serviceInfo = new ServiceInfoController(this);
+
   public setConfig(config: ShortcutBadgeConfig): void {
     this._config = {
       tap_action: {
@@ -56,6 +59,12 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
       this._navInfo.update(
         this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
+      );
+      this._serviceInfo.update(
+        this.hass,
+        action?.action === "perform-action" || action?.action === "call-service"
+          ? action.perform_action || action.service
+          : undefined
       );
     }
   }
@@ -80,7 +89,8 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
     const defaults = getShortcutCardDefaults(
       this.hass,
       this._config.tap_action,
-      this._navInfo.info
+      this._navInfo.info,
+      this._serviceInfo.info
     );
     const text = (this._config.text || defaults.label).trim();
     const icon = this._config.icon || defaults.icon;
