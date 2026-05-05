@@ -12,6 +12,7 @@ import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import {
+  DEFAULT_ACTION_DEFS,
   defaultActionHandler,
   getDefaultAddToActions,
   type EntityAddToAction,
@@ -100,7 +101,22 @@ export class HaMoreInfoAddTo extends LitElement {
       return;
     }
 
-    defaultActionHandler();
+    const key = DEFAULT_ACTION_DEFS.find(
+      (def) => def.icon === action.mdi_icon
+    )?.translation_key;
+    if (!key) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.add_to.action_failed",
+          {
+            error: "Unknown action",
+          }
+        ),
+      });
+      return;
+    }
+
+    defaultActionHandler(key);
   }
 
   protected async firstUpdated() {

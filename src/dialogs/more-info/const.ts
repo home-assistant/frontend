@@ -187,7 +187,7 @@ interface ActionDefinition {
   icon: string;
 }
 
-const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
+export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
   {
     translation_key: "automation",
     icon: "mdi:robot-outline",
