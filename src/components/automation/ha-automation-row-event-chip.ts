@@ -53,12 +53,7 @@ export class HaAutomationRowEventChip extends LitElement {
       return keyed(
         this._highlight,
         html`
-          <wa-animation
-            fill="both"
-            .iterations=${1}
-            playbackRate="1"
-            name="headShake"
-            play
+          <wa-animation fill="both" .iterations=${1} name="headShake" play
             >${base}</wa-animation
           >
         `
