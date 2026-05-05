@@ -21,9 +21,12 @@ import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
+import {
+  SENSOR_DEVICE_CLASS_UPTIME,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../../data/sensor";
 
 @customElement("entity-preview-row")
 class EntityPreviewRow extends LitElement {
@@ -312,14 +315,19 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "sensor") {
       const showSensor =
-        stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
-        !isUnavailableState(stateObj.state);
+        SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+          stateObj.attributes.device_class
+        ) && !isUnavailableState(stateObj.state);
       return html`
         ${showSensor
           ? html`
               <hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(stateObj.state)}
+                .format=${stateObj.attributes.device_class ===
+                SENSOR_DEVICE_CLASS_UPTIME
+                  ? "total"
+                  : undefined}
                 capitalize
               ></hui-timestamp-display>
             `
