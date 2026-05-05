@@ -133,12 +133,8 @@ export class HuiCreateDialogCard
             ? html`
                 <hui-recipe-picker
                   .hass=${this.hass}
-                  .sectionConfig=${this._params!.path.length === 2
-                    ? (this._containerConfig as LovelaceSectionConfig)
-                    : undefined}
                   .prioritizedCardTypes=${this._params.suggestedCards}
-                  @config-changed=${this._handleCardPicked}
-                  @recipe-cards-picked=${this._handleRecipeCardsPicked}
+                  @recipe-picked=${this._handleRecipePicked}
                   @recipe-browse-cards=${this._handleBrowseCards}
                 ></hui-recipe-picker>
               `
@@ -215,22 +211,21 @@ export class HuiCreateDialogCard
     this._currTab = "card";
   }
 
-  private async _handleRecipeCardsPicked(
-    ev: CustomEvent<{ cards: LovelaceCardConfig[] }>
+  private async _handleRecipePicked(
+    ev: CustomEvent<{ config: LovelaceCardConfig }>
   ): Promise<void> {
-    const cards = ev.detail.cards;
-    if (!cards.length || this._params!.saveCard) {
+    const config = ev.detail.config;
+    if (this._params!.saveCard) {
+      await this._params!.saveCard(config);
+      this.closeDialog();
       return;
     }
+
+    const lovelaceConfig = this._params!.lovelaceConfig;
     const containerPath = this._params!.path;
     const saveConfig = this._params!.saveConfig;
-
-    let newConfig = this._params!.lovelaceConfig;
-    for (const card of cards) {
-      newConfig = addCard(newConfig, containerPath, card);
-    }
+    const newConfig = addCard(lovelaceConfig, containerPath, config);
     await saveConfig(newConfig);
-
     this.closeDialog();
   }
 

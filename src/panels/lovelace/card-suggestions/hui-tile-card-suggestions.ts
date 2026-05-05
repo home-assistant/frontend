@@ -110,10 +110,6 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     TILE_VARIANT,
     { id: "tile_operation_modes", features: ["water-heater-operation-modes"] },
   ],
-  weather: [
-    TILE_VARIANT,
-    { id: "tile_hourly_forecast", features: ["hourly-forecast"] },
-  ],
 };
 
 const DEFAULT_VARIANT: TileVariant = TILE_VARIANT;
@@ -186,23 +182,6 @@ const allFeaturesSupported = (
       return false;
     }
   });
-
-export const pickBestTileFeatures = (
-  hass: HomeAssistant,
-  entityId: string
-): UiFeatureType[] => {
-  const variants = getVariants(hass, entityId);
-  if (!variants) return [];
-  for (const variant of variants) {
-    if (
-      variant.features.length &&
-      allFeaturesSupported(hass, entityId, variant.features)
-    ) {
-      return variant.features;
-    }
-  }
-  return [];
-};
 
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
   getEntitySuggestion(hass, entityId) {

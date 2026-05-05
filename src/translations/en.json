@@ -10218,9 +10218,6 @@
             "empty_title": "What do you want to control?",
             "empty_description": "Pick an entity to see suggested cards, or browse all card types.",
             "sidebar_title": "What do you want to add?",
-            "selected_section": "Selected",
-            "sidebar_empty": "Pick entities to build your card.",
-            "browse_section": "Add entities",
             "search_entities": "Search entities",
             "no_floor": "Without a floor",
             "no_area": "Without an area",
@@ -10256,10 +10253,6 @@
               "tile_counter_actions": "Tile (counter actions)",
               "tile_update_actions": "Tile (update actions)",
               "tile_operation_modes": "Tile (operation modes)",
-              "tile_hourly_forecast": "Tile (hourly forecast)",
-              "tile_cards": "Tile cards",
-              "featured_tile_cards": "Featured tile cards",
-              "entities_card": "Entities card",
               "calendar": "Calendar",
               "todo_list": "To-do list"
             }
