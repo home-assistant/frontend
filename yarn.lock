@@ -2674,7 +2674,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-radio@npm:0.27.0, @material/mwc-radio@npm:^0.27.0":
+"@material/mwc-radio@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-radio@npm:0.27.0"
   dependencies:
@@ -8158,7 +8158,6 @@ __metadata:
     "@material/mwc-drawer": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
-    "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
