@@ -83,6 +83,7 @@ export class HaMoreInfoAddTo extends LitElement {
             app_payload: action.app_payload,
           },
         });
+        fireEvent(this, "add-to-action-selected");
       } catch (err: unknown) {
         showToast(this, {
           message: this.hass.localize(
@@ -95,8 +96,6 @@ export class HaMoreInfoAddTo extends LitElement {
       }
       return;
     }
-
-    fireEvent(this, "add-to-action-selected");
 
     if (action.type !== "default") {
       return;
