@@ -1684,6 +1684,7 @@
         "add_to": {
           "actions": {
             "automation": "Create new automation using {entity} as a trigger",
+            "condition": "Create new automation using {entity} as a condition",
             "script": "Create new script using {entity} in an action"
           },
           "app_actions": "App actions",

@@ -1,3 +1,9 @@
+import { navigate } from "../../common/navigate";
+import { createSearchParam } from "../../common/url/search-params";
+import {
+  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
+  ADD_AUTOMATION_ELEMENT_TARGET_PARAM,
+} from "../../panels/config/automation/show-add-automation-element-dialog";
 import type { HomeAssistant, TranslationDict } from "../../types";
 
 export interface EntityAddToAction {
@@ -28,6 +34,10 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
     icon: "mdi:robot-outline",
   },
   {
+    translation_key: "condition",
+    icon: "mdi:playlist-check",
+  },
+  {
     translation_key: "script",
     icon: "mdi:script-text-outline",
   },
@@ -55,12 +65,24 @@ export const getDefaultAddToActions = (
   );
 
 export function defaultActionHandler(
-  key: (typeof DEFAULT_ACTION_DEFS)[number]["translation_key"]
+  key: (typeof DEFAULT_ACTION_DEFS)[number]["translation_key"],
+  entityId: string
 ) {
+  const params = (addElement: string) =>
+    `?${createSearchParam({
+      [ADD_AUTOMATION_ELEMENT_QUERY_PARAM]: addElement,
+      [ADD_AUTOMATION_ELEMENT_TARGET_PARAM]: entityId,
+    })}`;
+
   switch (key) {
     case "automation":
+      navigate(`/config/automation/edit/new${params("trigger")}`);
+      break;
+    case "condition":
+      navigate(`/config/automation/edit/new${params("condition")}`);
       break;
     case "script":
+      navigate(`/config/script/edit/new${params("action")}`);
       break;
   }
 }
