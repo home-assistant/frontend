@@ -116,6 +116,27 @@ export class HaMoreInfoAddTo extends LitElement {
     defaultActionHandler(key);
   }
 
+  private _renderActionItems(
+    actions: (EntityAddToAction | ExternalEntityAddToAction)[]
+  ) {
+    return actions.map(
+      (action) => html`
+        <ha-md-list-item
+          type="button"
+          .disabled=${!action.enabled}
+          .action=${action}
+          @click=${this._actionSelected}
+        >
+          <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
+          <span>${action.name}</span>
+          ${action.details
+            ? html`<span slot="supporting-text">${action.details}</span>`
+            : nothing}
+        </ha-md-list-item>
+      `
+    );
+  }
+
   protected async firstUpdated() {
     await this._loadActions();
     this._loading = false;
@@ -142,22 +163,7 @@ export class HaMoreInfoAddTo extends LitElement {
 
     return html`
       <div class="actions-list">
-        ${this._defaultActions.map(
-          (action) => html`
-            <ha-md-list-item
-              type="button"
-              .disabled=${!action.enabled}
-              .action=${action}
-              @click=${this._actionSelected}
-            >
-              <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
-              <span>${action.name}</span>
-              ${action.details
-                ? html`<span slot="supporting-text">${action.details}</span>`
-                : nothing}
-            </ha-md-list-item>
-          `
-        )}
+        ${this._renderActionItems(this._defaultActions)}
         ${this._externalActions.length
           ? html`
               <h2 class="section-title">
@@ -165,22 +171,7 @@ export class HaMoreInfoAddTo extends LitElement {
                   "ui.dialogs.more_info_control.add_to.app_actions"
                 )}
               </h2>
-              ${this._externalActions.map(
-                (action) => html`
-                  <ha-md-list-item
-                    type="button"
-                    .disabled=${!action.enabled}
-                    .action=${action}
-                    @click=${this._actionSelected}
-                  >
-                    <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
-                    <span>${action.name}</span>
-                    ${action.details
-                      ? html`<span slot="supporting-text">${action.details}</span>`
-                      : nothing}
-                  </ha-md-list-item>
-                `
-              )}
+              ${this._renderActionItems(this._externalActions)}
             `
           : nothing}
       </div>
