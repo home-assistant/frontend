@@ -1,4 +1,14 @@
-import { mdiChevronDown, mdiChevronRight, mdiTextureBox } from "@mdi/js";
+import {
+  mdiChevronDown,
+  mdiChevronRight,
+  mdiHomeAssistant,
+  mdiPuzzle,
+  mdiShape,
+  mdiTextureBox,
+  mdiToggleSwitch,
+} from "@mdi/js";
+import type { FuseIndex } from "fuse.js";
+import Fuse from "fuse.js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +20,10 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../common/string/compare";
+import { debounce } from "../../../../common/util/debounce";
+import type { FuseWeightedKey } from "../../../../resources/fuseMultiTerm";
+import { multiTermSortedSearch } from "../../../../resources/fuseMultiTerm";
+import { isHelperDomain } from "../../../config/helpers/const";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
@@ -61,18 +75,47 @@ interface DomainGroup {
   entityIds: string[];
 }
 
-interface TreeData {
-  floors: FloorNode[];
-  unassignedAreas: AreaNode[];
-  otherDevices: DeviceNode[];
-  otherDomains: DomainGroup[];
+interface SearchableEntity {
+  id: string;
+  name: string;
+  area: string;
+  device: string;
+  floor: string;
+  domain: string;
 }
 
-const NO_FLOOR_ID = "__no_floor__";
-const OTHER_GROUP_ID = "__other__";
+interface UnassignedSection {
+  id: "entities" | "helpers" | "devices" | "services";
+  iconPath: string;
+  label: string;
+  domains?: DomainGroup[];
+  devices?: DeviceNode[];
+}
+
+interface TreeData {
+  floors: FloorNode[];
+  otherAreas: AreaNode[];
+  unassignedSections: UnassignedSection[];
+  searchableEntities: SearchableEntity[];
+  fuseIndex: FuseIndex<SearchableEntity>;
+}
+
+const SEARCH_KEYS: FuseWeightedKey[] = [
+  { name: "name", weight: 4 },
+  { name: "id", weight: 2 },
+  { name: "area", weight: 2 },
+  { name: "device", weight: 2 },
+  { name: "floor", weight: 1 },
+  { name: "domain", weight: 1 },
+];
+
+const FUSE_KEY_NAMES = SEARCH_KEYS.map((k) => k.name as string);
+
+const OTHER_AREAS_ID = "__other_areas__";
 const SEP = "~";
 
 const floorKey = (id: string) => `f|${id}`;
+const unassignedKey = (id: string) => `u|${id}`;
 const areaKey = (parent: string, id: string) => `${parent}${SEP}a|${id}`;
 const deviceKey = (parent: string, id: string) => `${parent}${SEP}d|${id}`;
 const domainKey = (parent: string, domain: string) =>
@@ -134,8 +177,11 @@ export class HuiRecipeEntityTree extends LitElement {
     ): TreeData => {
       const areaDirectEntities = new Map<string, string[]>();
       const areaDeviceEntities = new Map<string, Map<string, string[]>>();
-      const orphanDeviceEntities = new Map<string, string[]>();
-      const orphanByDomain = new Map<string, string[]>();
+      const unassignedDeviceEntities = new Map<string, string[]>();
+      const unassignedServiceEntities = new Map<string, string[]>();
+      const unassignedHelperByDomain = new Map<string, string[]>();
+      const unassignedEntityByDomain = new Map<string, string[]>();
+      const searchableEntities: SearchableEntity[] = [];
 
       for (const entityId of Object.keys(states)) {
         const stateObj = states[entityId];
@@ -148,17 +194,36 @@ export class HuiRecipeEntityTree extends LitElement {
           ? deviceReg[entry.device_id]
           : undefined;
         const areaId = entry?.area_id ?? device?.area_id;
+        const area = areaId ? areaReg[areaId] : undefined;
+        const floor = area?.floor_id ? floorReg[area.floor_id] : undefined;
+        const domain = computeDomain(entityId);
+
+        searchableEntities.push({
+          id: entityId,
+          name: computeStateName(stateObj) || entityId,
+          area: area ? (computeAreaName(area) ?? "") : "",
+          device: device ? (computeDeviceName(device) ?? "") : "",
+          floor: floor?.name ?? "",
+          domain: domainToName(this.hass.localize, domain),
+        });
 
         if (!areaId || !areaReg[areaId]) {
           if (device) {
-            const list = orphanDeviceEntities.get(device.id) ?? [];
+            const isService = device.entry_type === "service";
+            const target = isService
+              ? unassignedServiceEntities
+              : unassignedDeviceEntities;
+            const list = target.get(device.id) ?? [];
             list.push(entityId);
-            orphanDeviceEntities.set(device.id, list);
+            target.set(device.id, list);
+          } else if (isHelperDomain(domain)) {
+            const list = unassignedHelperByDomain.get(domain) ?? [];
+            list.push(entityId);
+            unassignedHelperByDomain.set(domain, list);
           } else {
-            const domain = computeDomain(entityId);
-            const list = orphanByDomain.get(domain) ?? [];
+            const list = unassignedEntityByDomain.get(domain) ?? [];
             list.push(entityId);
-            orphanByDomain.set(domain, list);
+            unassignedEntityByDomain.set(domain, list);
           }
           continue;
         }
@@ -234,53 +299,99 @@ export class HuiRecipeEntityTree extends LitElement {
         .filter((f): f is FloorNode => !!f)
         .sort((a, b) => stringCompare(a.name, b.name, language));
 
-      const unassignedAreas = areas
+      const otherAreas = areas
         .filter((a) => !a.floor_id || !floorReg[a.floor_id])
         .map((a) => buildAreaNode(a.area_id))
         .filter((a): a is AreaNode => !!a)
         .sort((a, b) => stringCompare(a.name, b.name, language));
 
-      const otherDevices: DeviceNode[] = [...orphanDeviceEntities.entries()]
-        .map(([id, ids]) => {
-          const device = deviceReg[id];
-          return {
-            id,
-            name: (device ? computeDeviceName(device) : undefined) ?? id,
-            entityIds: ids.sort(sortByName),
-          };
-        })
-        .sort((a, b) => stringCompare(a.name, b.name, language));
+      const buildDeviceNodes = (
+        source: Map<string, string[]>
+      ): DeviceNode[] =>
+        [...source.entries()]
+          .map(([id, ids]) => {
+            const device = deviceReg[id];
+            return {
+              id,
+              name: (device ? computeDeviceName(device) : undefined) ?? id,
+              entityIds: ids.sort(sortByName),
+            };
+          })
+          .sort((a, b) => stringCompare(a.name, b.name, language));
 
-      const otherDomains: DomainGroup[] = [...orphanByDomain.entries()]
-        .map(([domain, ids]) => ({
-          domain,
-          name: domainToName(this.hass.localize, domain),
-          entityIds: ids.sort(sortByName),
-        }))
-        .sort((a, b) => stringCompare(a.name, b.name, language));
+      const buildDomainGroups = (
+        source: Map<string, string[]>
+      ): DomainGroup[] =>
+        [...source.entries()]
+          .map(([domain, ids]) => ({
+            domain,
+            name: domainToName(this.hass.localize, domain),
+            entityIds: ids.sort(sortByName),
+          }))
+          .sort((a, b) => stringCompare(a.name, b.name, language));
+
+      const localize = this.hass.localize;
+      const unassignedSections: UnassignedSection[] = [];
+      const entityDomains = buildDomainGroups(unassignedEntityByDomain);
+      if (entityDomains.length) {
+        unassignedSections.push({
+          id: "entities",
+          iconPath: mdiShape,
+          label: localize("ui.panel.lovelace.editor.cardpicker.entities"),
+          domains: entityDomains,
+        });
+      }
+      const helperDomains = buildDomainGroups(unassignedHelperByDomain);
+      if (helperDomains.length) {
+        unassignedSections.push({
+          id: "helpers",
+          iconPath: mdiToggleSwitch,
+          label: localize("ui.panel.lovelace.editor.cardpicker.helpers"),
+          domains: helperDomains,
+        });
+      }
+      const orphanDevices = buildDeviceNodes(unassignedDeviceEntities);
+      if (orphanDevices.length) {
+        unassignedSections.push({
+          id: "devices",
+          iconPath: mdiPuzzle,
+          label: localize("ui.panel.lovelace.editor.cardpicker.devices"),
+          devices: orphanDevices,
+        });
+      }
+      const orphanServices = buildDeviceNodes(unassignedServiceEntities);
+      if (orphanServices.length) {
+        unassignedSections.push({
+          id: "services",
+          iconPath: mdiHomeAssistant,
+          label: localize("ui.panel.lovelace.editor.cardpicker.services"),
+          devices: orphanServices,
+        });
+      }
 
       return {
         floors: floorNodes,
-        unassignedAreas,
-        otherDevices,
-        otherDomains,
+        otherAreas,
+        unassignedSections,
+        searchableEntities,
+        fuseIndex: Fuse.createIndex(FUSE_KEY_NAMES, searchableEntities),
       };
     }
   );
 
-  private _filteredTree = memoizeOne(
-    (tree: TreeData, filter: string, states: HomeAssistant["states"]) => {
-      if (!filter) return { tree, autoExpand: new Set<string>() };
+  private _filteredTree = memoizeOne((tree: TreeData, filter: string) => {
+    if (!filter) return { tree, autoExpand: new Set<string>() };
 
-      const lower = filter.toLowerCase();
-      const matches = (entityId: string) => {
-        const stateObj = states[entityId];
-        const name = stateObj ? computeStateName(stateObj) : "";
-        return (
-          entityId.toLowerCase().includes(lower) ||
-          name.toLowerCase().includes(lower)
-        );
-      };
+    const matchedIds = new Set(
+      multiTermSortedSearch(
+        tree.searchableEntities,
+        filter,
+        SEARCH_KEYS,
+        (item) => item.id,
+        tree.fuseIndex
+      ).map((item) => item.id)
+    );
+    const matches = (entityId: string) => matchedIds.has(entityId);
 
       const autoExpand = new Set<string>();
 
@@ -315,38 +426,50 @@ export class HuiRecipeEntityTree extends LitElement {
         })
         .filter((f): f is FloorNode => !!f);
 
-      const noFloorKey = floorKey(NO_FLOOR_ID);
-      const unassignedAreas = tree.unassignedAreas
-        .map((a) => filterArea(a, noFloorKey))
+      const otherAreasKey = floorKey(OTHER_AREAS_ID);
+      const otherAreas = tree.otherAreas
+        .map((a) => filterArea(a, otherAreasKey))
         .filter((a): a is AreaNode => !!a);
-      if (unassignedAreas.length) {
-        autoExpand.add(noFloorKey);
+      if (otherAreas.length) {
+        autoExpand.add(otherAreasKey);
       }
 
-      const otherKey = floorKey(OTHER_GROUP_ID);
-      const otherDevices = tree.otherDevices
-        .map((device) => {
-          const ids = device.entityIds.filter(matches);
-          if (!ids.length) return undefined;
-          autoExpand.add(deviceKey(otherKey, device.id));
-          return { ...device, entityIds: ids };
-        })
-        .filter((d): d is DeviceNode => !!d);
+      const filterDeviceList = (sectionKey: string, list: DeviceNode[]) =>
+        list
+          .map((device) => {
+            const ids = device.entityIds.filter(matches);
+            if (!ids.length) return undefined;
+            autoExpand.add(deviceKey(sectionKey, device.id));
+            return { ...device, entityIds: ids };
+          })
+          .filter((d): d is DeviceNode => !!d);
 
-      const otherDomains = tree.otherDomains
-        .map((group) => {
-          const ids = group.entityIds.filter(matches);
-          if (!ids.length) return undefined;
-          autoExpand.add(domainKey(otherKey, group.domain));
-          return { ...group, entityIds: ids };
-        })
-        .filter((g): g is DomainGroup => !!g);
-      if (otherDevices.length || otherDomains.length) {
-        autoExpand.add(otherKey);
+      const filterDomainList = (sectionKey: string, list: DomainGroup[]) =>
+        list
+          .map((group) => {
+            const ids = group.entityIds.filter(matches);
+            if (!ids.length) return undefined;
+            autoExpand.add(domainKey(sectionKey, group.domain));
+            return { ...group, entityIds: ids };
+          })
+          .filter((g): g is DomainGroup => !!g);
+
+      const unassignedSections: UnassignedSection[] = [];
+      for (const section of tree.unassignedSections) {
+        const sKey = unassignedKey(section.id);
+        const devices = section.devices
+          ? filterDeviceList(sKey, section.devices)
+          : undefined;
+        const domains = section.domains
+          ? filterDomainList(sKey, section.domains)
+          : undefined;
+        if (!devices?.length && !domains?.length) continue;
+        autoExpand.add(sKey);
+        unassignedSections.push({ ...section, devices, domains });
       }
 
       return {
-        tree: { floors, unassignedAreas, otherDevices, otherDomains },
+        tree: { ...tree, floors, otherAreas, unassignedSections },
         autoExpand,
       };
     }
@@ -364,20 +487,15 @@ export class HuiRecipeEntityTree extends LitElement {
       this.hass.locale?.language
     );
 
-    const { tree, autoExpand } = this._filteredTree(
-      fullTree,
-      this._filter,
-      this.hass.states
-    );
+    const { tree, autoExpand } = this._filteredTree(fullTree, this._filter);
 
     const isExpanded = (key: string) =>
       this._filter ? autoExpand.has(key) : (this._expanded[key] ?? false);
 
     const noResults =
       !tree.floors.length &&
-      !tree.unassignedAreas.length &&
-      !tree.otherDevices.length &&
-      !tree.otherDomains.length;
+      !tree.otherAreas.length &&
+      !tree.unassignedSections.length;
 
     return html`
       <ha-input-search
@@ -394,26 +512,44 @@ export class HuiRecipeEntityTree extends LitElement {
               ${this.hass.localize("ui.common.no_results")}
             </div>`
           : nothing}
-        ${tree.floors.map((floor) =>
-          this._renderFloor(floor, false, isExpanded)
-        )}
-        ${tree.unassignedAreas.length
-          ? this._renderFloor(
-              {
-                id: NO_FLOOR_ID,
-                name: this.hass.localize(
-                  "ui.panel.lovelace.editor.cardpicker.no_floor"
-                ),
-                icon: null,
-                level: null,
-                areas: tree.unassignedAreas,
-              },
-              true,
-              isExpanded
-            )
+        ${tree.floors.length || tree.otherAreas.length
+          ? html`
+              <ha-section-title>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.cardpicker.home"
+                )}
+              </ha-section-title>
+              ${tree.floors.map((floor) =>
+                this._renderFloor(floor, false, isExpanded)
+              )}
+              ${tree.otherAreas.length
+                ? this._renderFloor(
+                    {
+                      id: OTHER_AREAS_ID,
+                      name: this.hass.localize(
+                        "ui.panel.lovelace.editor.cardpicker.other_areas"
+                      ),
+                      icon: null,
+                      level: null,
+                      areas: tree.otherAreas,
+                    },
+                    true,
+                    isExpanded
+                  )
+                : nothing}
+            `
           : nothing}
-        ${tree.otherDevices.length || tree.otherDomains.length
-          ? this._renderOther(tree.otherDevices, tree.otherDomains, isExpanded)
+        ${tree.unassignedSections.length
+          ? html`
+              <ha-section-title>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.cardpicker.unassigned"
+                )}
+              </ha-section-title>
+              ${tree.unassignedSections.map((section) =>
+                this._renderUnassignedSection(section, isExpanded)
+              )}
+            `
           : nothing}
       </div>
     `;
@@ -528,12 +664,11 @@ export class HuiRecipeEntityTree extends LitElement {
     `;
   }
 
-  private _renderOther(
-    devices: DeviceNode[],
-    domains: DomainGroup[],
+  private _renderUnassignedSection(
+    section: UnassignedSection,
     isExpanded: (k: string) => boolean
   ): TemplateResult {
-    const key = floorKey(OTHER_GROUP_ID);
+    const key = unassignedKey(section.id);
     const expanded = isExpanded(key);
     return html`
       <ha-combo-box-item
@@ -544,18 +679,16 @@ export class HuiRecipeEntityTree extends LitElement {
       >
         <div slot="start" class="leading">
           ${this._renderChevron(expanded)}
-          <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
+          <ha-svg-icon .path=${section.iconPath}></ha-svg-icon>
         </div>
-        <span slot="headline">
-          ${this.hass.localize("ui.panel.lovelace.editor.cardpicker.no_area")}
-        </span>
+        <span slot="headline">${section.label}</span>
       </ha-combo-box-item>
       ${expanded
         ? html`
-            ${devices.map((device) =>
+            ${section.devices?.map((device) =>
               this._renderDevice(device, key, isExpanded)
             )}
-            ${domains.map((g) => {
+            ${section.domains?.map((g) => {
               const dKey = domainKey(key, g.domain);
               const dExpanded = isExpanded(dKey);
               return html`
@@ -645,7 +778,16 @@ export class HuiRecipeEntityTree extends LitElement {
   }
 
   private _handleFilterChange(ev: Event) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+    this._setFilter((ev.target as HaInputSearch).value ?? "");
+  }
+
+  private _setFilter = debounce((value: string) => {
+    this._filter = value;
+  }, 150);
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._setFilter.cancel();
   }
 
   static get styles(): CSSResultGroup {
