@@ -146,6 +146,7 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   disabled?: boolean;
@@ -552,6 +553,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
+          const label_entries = (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+          );
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -572,9 +576,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
               ) ||
               item.type,
-            label_entries: (labels || []).map(
-              (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-            ),
+            label_entries,
+            labels: label_entries.map((lbl) => lbl.name),
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,

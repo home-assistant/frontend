@@ -21,6 +21,7 @@ export const rowStyles = css`
     gap: var(--ha-space-2);
     padding: var(--ha-space-2) 0;
     min-height: 32px;
+    max-width: 100%;
   }
 
   ha-card {

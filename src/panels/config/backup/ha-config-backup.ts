@@ -125,6 +125,11 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
         load: () => import("./ha-config-backup-settings"),
         cache: true,
       },
+      "app-update-backups": {
+        tag: "ha-config-backup-app-update-backups",
+        load: () => import("./ha-config-backup-app-update-backups"),
+        cache: true,
+      },
       location: {
         tag: "ha-config-backup-location",
         load: () => import("./ha-config-backup-location"),

@@ -4,6 +4,12 @@ export const SENSOR_DEVICE_CLASS_BATTERY = "battery";
 export const SENSOR_DEVICE_CLASS_TIMESTAMP = "timestamp";
 export const SENSOR_DEVICE_CLASS_TEMPERATURE = "temperature";
 export const SENSOR_DEVICE_CLASS_HUMIDITY = "humidity";
+export const SENSOR_DEVICE_CLASS_UPTIME = "uptime";
+
+export const SENSOR_TIMESTAMP_DEVICE_CLASSES: (string | undefined)[] = [
+  "timestamp",
+  "uptime",
+];
 
 export interface SensorDeviceClassUnits {
   units: string[];
