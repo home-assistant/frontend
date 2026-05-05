@@ -5,19 +5,18 @@ import "../../components/ha-icon";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
 import type { HaMdListItem } from "../../components/ha-md-list-item";
-import type { ExternalEntityAddToAction } from "../../external_app/external_messaging";
 import { showToast } from "../../util/toast";
 
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import {
+  type EntityAddToAction,
+  type EntityAddToActions,
   DEFAULT_ACTION_DEFS,
   defaultActionHandler,
   getDefaultAddToActions,
-  type EntityAddToAction,
-  type EntityAddToActions,
-} from "./const";
+} from "./add-to";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -27,7 +26,7 @@ export class HaMoreInfoAddTo extends LitElement {
 
   @state() private _defaultActions: EntityAddToActions = [];
 
-  @state() private _externalActions: ExternalEntityAddToAction[] = [];
+  @state() private _externalActions: EntityAddToActions = [];
 
   @state() private _loading = true;
 
@@ -45,12 +44,14 @@ export class HaMoreInfoAddTo extends LitElement {
             }
           );
         if (response?.actions) {
-          this._externalActions = response.actions.map(
-            (action: ExternalEntityAddToAction) => ({
-              ...action,
-              type: "external",
-            })
-          );
+          this._externalActions = response.actions.map((action) => ({
+            type: "external",
+            enabled: action.enabled,
+            name: action.name,
+            description: action.details,
+            icon: action.mdi_icon,
+            payload: action.app_payload,
+          }));
         }
       } catch (err: unknown) {
         // eslint-disable-next-line no-console
@@ -62,7 +63,7 @@ export class HaMoreInfoAddTo extends LitElement {
   private async _actionSelected(
     ev: HASSDomCurrentTargetEvent<
       HaMdListItem & {
-        action: EntityAddToAction | ExternalEntityAddToAction;
+        action: EntityAddToAction;
       }
     >
   ) {
@@ -71,13 +72,16 @@ export class HaMoreInfoAddTo extends LitElement {
       return;
     }
 
-    if (action.type === "external" && "app_payload" in action) {
+    if (action.type === "external") {
       try {
+        if (!action.payload) {
+          throw new Error("Missing external action payload");
+        }
         this.hass.auth.external!.fireMessage({
           type: "entity/add_to",
           payload: {
             entity_id: this.entityId,
-            app_payload: action.app_payload,
+            app_payload: action.payload,
           },
         });
         fireEvent(this, "add-to-action-selected");
@@ -99,7 +103,7 @@ export class HaMoreInfoAddTo extends LitElement {
     }
 
     const key = DEFAULT_ACTION_DEFS.find(
-      (def) => def.icon === action.mdi_icon
+      (def) => def.icon === action.icon
     )?.translation_key;
     if (!key) {
       showToast(this, {
@@ -116,21 +120,19 @@ export class HaMoreInfoAddTo extends LitElement {
     defaultActionHandler(key);
   }
 
-  private _renderActionItems(
-    actions: (EntityAddToAction | ExternalEntityAddToAction)[]
-  ) {
+  private _renderActionItems(actions: EntityAddToActions) {
     return actions.map(
-      (action) => html`
+      (action: EntityAddToAction) => html`
         <ha-md-list-item
           type="button"
           .disabled=${!action.enabled}
           .action=${action}
           @click=${this._actionSelected}
         >
-          <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
+          <ha-icon slot="start" .icon=${action.icon}></ha-icon>
           <span>${action.name}</span>
-          ${action.details
-            ? html`<span slot="supporting-text">${action.details}</span>`
+          ${action.description
+            ? html`<span slot="supporting-text">${action.description}</span>`
             : nothing}
         </ha-md-list-item>
       `

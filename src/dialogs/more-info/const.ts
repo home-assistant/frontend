@@ -5,8 +5,7 @@ import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { isNumericEntity } from "../../data/history";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
-import type { HomeAssistant, TranslationDict } from "../../types";
-import type { ExternalEntityAddToAction } from "../../external_app/external_messaging";
+import type { HomeAssistant } from "../../types";
 
 export const MORE_INFO_VIEWS = [
   "info",
@@ -163,69 +162,3 @@ export const computeShowNewMoreInfo = (stateObj: HassEntity): boolean => {
   }
   return DOMAINS_WITH_NEW_MORE_INFO.includes(domain);
 };
-
-export interface EntityAddToAction {
-  /** Type of action. External is handled by external apps instead of in the frontend */
-  type: "default" | "external";
-  /** Whether the action is enabled and can be selected. */
-  enabled: boolean;
-  /** Translated name of the action to be displayed in the UI */
-  name: string;
-  /** Optional translated details of the action to be displayed in the UI */
-  details?: string;
-  /** MDI icon name to be displayed in the UI (e.g., "mdi:car") */
-  mdi_icon: string;
-}
-
-export type EntityAddToActions = (
-  | EntityAddToAction
-  | ExternalEntityAddToAction
-)[];
-
-interface ActionDefinition {
-  translation_key: keyof TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"];
-  icon: string;
-}
-
-export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
-  {
-    translation_key: "automation",
-    icon: "mdi:robot-outline",
-  },
-  {
-    translation_key: "script",
-    icon: "mdi:script-text-outline",
-  },
-];
-
-export const getDefaultAddToActions = (
-  hass: HomeAssistant,
-  entityId: string
-): EntityAddToActions =>
-  DEFAULT_ACTION_DEFS.map(
-    (def: ActionDefinition): EntityAddToAction => ({
-      type: "default",
-      enabled: true,
-      name: hass.localize(
-        `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
-        {
-          entity:
-            hass.states[entityId] !== undefined
-              ? hass.formatEntityName(hass.states[entityId], undefined)
-              : entityId,
-        }
-      ),
-      mdi_icon: def.icon,
-    })
-  );
-
-export function defaultActionHandler(
-  key: (typeof DEFAULT_ACTION_DEFS)[number]["translation_key"]
-) {
-  switch (key) {
-    case "automation":
-      break;
-    case "script":
-      break;
-  }
-}
