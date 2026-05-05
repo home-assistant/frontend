@@ -674,6 +674,18 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                         .path=${mdiDotsVertical}
                       ></ha-icon-button>
 
+                      <ha-dropdown-item value="add_to">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiPlusBoxMultipleOutline}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.add_entity_to"
+                        )}
+                      </ha-dropdown-item>
+
+                      <wa-divider></wa-divider>
+
                       ${supportsFavorites
                         ? html`
                             <ha-dropdown-item value="toggle_edit">
@@ -709,19 +721,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                             <wa-divider></wa-divider>
                           `
                         : nothing}
-
-                      <ha-dropdown-item value="add_to">
-                        <ha-svg-icon
-                          slot="icon"
-                          .path=${mdiPlusBoxMultipleOutline}
-                        ></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.dialogs.more_info_control.add_entity_to"
-                        )}
-                      </ha-dropdown-item>
-
-                      <wa-divider></wa-divider>
-
                       ${deviceId
                         ? html`
                             <ha-dropdown-item value="device">
