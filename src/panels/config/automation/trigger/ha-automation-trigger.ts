@@ -25,6 +25,7 @@ import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -51,6 +52,8 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Trigger[] {
     return this.triggers;
@@ -234,6 +237,18 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.hass &&
+      this.triggers.length === 0 &&
+      getAddAutomationElementTargetFromQuery(this.hass, "trigger")
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addTriggerDialog());
+    }
 
     if (
       changedProps.has("triggers") &&

@@ -27,6 +27,7 @@ import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -56,6 +57,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Condition[] {
     return this.conditions;
@@ -118,6 +121,18 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   }
 
   protected updated(changedProperties: PropertyValues<this>) {
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.hass &&
+      this.conditions.length === 0 &&
+      getAddAutomationElementTargetFromQuery(this.hass, "condition")
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addConditionDialog());
+    }
+
     if (!changedProperties.has("conditions")) {
       return;
     }
