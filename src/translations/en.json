@@ -1682,6 +1682,10 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
+          "actions": {
+            "automation": "Create new automation using {entity} as a trigger",
+            "script": "Create new script using {entity} in an action"
+          },
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
         },

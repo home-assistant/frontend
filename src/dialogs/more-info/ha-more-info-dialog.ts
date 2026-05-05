@@ -253,10 +253,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     );
   }
 
-  private _shouldShowAddEntityTo(): boolean {
-    return !!this.hass.auth.external?.config.hasEntityAddTo;
-  }
-
   private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
@@ -713,6 +709,17 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                             <wa-divider></wa-divider>
                           `
                         : nothing}
+
+                      <ha-dropdown-item value="add_to">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiPlusBoxMultipleOutline}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.add_entity_to"
+                        )}
+                      </ha-dropdown-item>
+
                       ${deviceId
                         ? html`
                             <ha-dropdown-item value="device">
@@ -767,22 +774,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.details"
                         )}
                       </ha-dropdown-item>
-                      ${this._shouldShowAddEntityTo()
-                        ? html`
-                            <ha-dropdown-item value="add_to">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiPlusBoxMultipleOutline}
-                              ></ha-svg-icon>
-                              ${this.hass.localize(
-                                "ui.dialogs.more_info_control.add_entity_to"
-                              )}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
                     </ha-dropdown>
                   `
-                : !__DEMO__ && this._shouldShowAddEntityTo()
+                : !__DEMO__
                   ? html`
                       <ha-icon-button
                         slot="headerActionItems"

@@ -4,14 +4,19 @@ import "../../components/ha-alert";
 import "../../components/ha-icon";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
-import type {
-  ExternalEntityAddToAction,
-  ExternalEntityAddToActions,
-} from "../../external_app/external_messaging";
+import type { HaMdListItem } from "../../components/ha-md-list-item";
+import type { ExternalEntityAddToAction } from "../../external_app/external_messaging";
 import { showToast } from "../../util/toast";
 
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
+import {
+  defaultActionHandler,
+  getDefaultAddToActions,
+  type EntityAddToAction,
+  type EntityAddToActions,
+} from "./const";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -19,54 +24,87 @@ export class HaMoreInfoAddTo extends LitElement {
 
   @property({ attribute: false }) public entityId!: string;
 
-  @state() private _externalActions?: ExternalEntityAddToActions = {
-    actions: [],
-  };
+  @state() private _actions?: EntityAddToActions = [];
 
   @state() private _loading = true;
 
-  private async _loadExternalActions() {
+  private async _loadActions() {
+    const actions: EntityAddToActions = getDefaultAddToActions(
+      this.hass,
+      this.entityId
+    );
+
     if (this.hass.auth.external?.config.hasEntityAddTo) {
-      this._externalActions =
-        await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
-          {
-            type: "entity/add_to/get_actions",
-            payload: { entity_id: this.entityId },
-          }
-        );
+      try {
+        const response =
+          await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
+            {
+              type: "entity/add_to/get_actions",
+              payload: { entity_id: this.entityId },
+            }
+          );
+        if (response?.actions) {
+          actions.concat(
+            response.actions.map((action: ExternalEntityAddToAction) => ({
+              ...action,
+              type: "external",
+            }))
+          );
+        }
+      } catch (err: unknown) {
+        // eslint-disable-next-line no-console
+        console.warn("Failed to fetch add to actions", err);
+      }
     }
+
+    this._actions = actions;
   }
 
-  private async _actionSelected(ev: CustomEvent) {
-    const action = (ev.currentTarget as any)
-      .action as ExternalEntityAddToAction;
+  private async _actionSelected(
+    ev: HASSDomCurrentTargetEvent<
+      HaMdListItem & {
+        action: EntityAddToAction | ExternalEntityAddToAction;
+      }
+    >
+  ) {
+    const action = ev.currentTarget.action;
     if (!action.enabled) {
       return;
     }
 
-    try {
-      await this.hass.auth.external!.fireMessage({
-        type: "entity/add_to",
-        payload: {
-          entity_id: this.entityId,
-          app_payload: action.app_payload,
-        },
-      });
-      fireEvent(this, "add-to-action-selected");
-    } catch (err: any) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.dialogs.more_info_control.add_to.action_failed",
-          {
-            error: err.message || err,
-          }
-        ),
-      });
+    if (action.type === "external" && "app_payload" in action) {
+      try {
+        this.hass.auth.external!.fireMessage({
+          type: "entity/add_to",
+          payload: {
+            entity_id: this.entityId,
+            app_payload: action.app_payload,
+          },
+        });
+      } catch (err: unknown) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.dialogs.more_info_control.add_to.action_failed",
+            {
+              error: err instanceof Error ? err.message : String(err),
+            }
+          ),
+        });
+      }
+      return;
     }
+
+    fireEvent(this, "add-to-action-selected");
+
+    if (action.type !== "default") {
+      return;
+    }
+
+    defaultActionHandler();
   }
 
   protected async firstUpdated() {
-    await this._loadExternalActions();
+    await this._loadActions();
     this._loading = false;
   }
 
@@ -79,7 +117,7 @@ export class HaMoreInfoAddTo extends LitElement {
       `;
     }
 
-    if (!this._externalActions?.actions.length) {
+    if (!this._actions?.length) {
       return html`
         <ha-alert alert-type="info">
           ${this.hass.localize(
@@ -91,7 +129,7 @@ export class HaMoreInfoAddTo extends LitElement {
 
     return html`
       <div class="actions-list">
-        ${this._externalActions.actions.map(
+        ${this._actions.map(
           (action) => html`
             <ha-md-list-item
               type="button"
