@@ -118,7 +118,7 @@ export class HaMoreInfoAddTo extends LitElement {
       return;
     }
 
-    defaultActionHandler(key);
+    defaultActionHandler(key, this.entityId);
   }
 
   private _renderActionItems(actions: EntityAddToActions) {
