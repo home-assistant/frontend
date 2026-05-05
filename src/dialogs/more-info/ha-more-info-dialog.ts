@@ -722,6 +722,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                         )}
                       </ha-dropdown-item>
 
+                      <wa-divider></wa-divider>
+
                       ${deviceId
                         ? html`
                             <ha-dropdown-item value="device">
