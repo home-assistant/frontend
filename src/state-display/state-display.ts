@@ -8,7 +8,10 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { STRINGS_SEPARATOR_DOT } from "../common/const";
 import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity/entity";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
+import {
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+  SENSOR_DEVICE_CLASS_UPTIME,
+} from "../data/sensor";
 import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
@@ -90,7 +93,9 @@ class StateDisplay extends LitElement {
         return "—";
       }
       if (
-        (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
+        (SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+          this.stateObj.attributes.device_class
+        ) ||
           TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
         !isUnavailableState(stateObj.state)
       ) {
@@ -98,7 +103,10 @@ class StateDisplay extends LitElement {
           <hui-timestamp-display
             .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
-            format="relative"
+            .format=${this.stateObj.attributes.device_class ===
+            SENSOR_DEVICE_CLASS_UPTIME
+              ? "total"
+              : "relative"}
             capitalize
           ></hui-timestamp-display>
         `;
