@@ -1,22 +1,15 @@
-import { mdiClose, mdiViewGridPlus } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import { mdiViewGridPlus } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeEntityPickerDisplay } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-ripple";
-import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CardSuggestion } from "../../card-suggestions/types";
@@ -26,8 +19,8 @@ import "./hui-recipe-suggestion";
 
 declare global {
   interface HASSDomEvents {
-    "recipe-cards-picked": { cards: LovelaceCardConfig[] };
     "recipe-browse-cards": undefined;
+    "recipe-picked": { config: LovelaceCardConfig };
   }
 }
 
@@ -35,13 +28,10 @@ declare global {
 export class HuiRecipePicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false })
-  public sectionConfig?: LovelaceSectionConfig;
-
   @property({ type: Array, attribute: false })
   public prioritizedCardTypes?: string[];
 
-  @state() private _entityIds: string[] = [];
+  @state() private _entityId?: string;
 
   @state() private _narrow = false;
 
@@ -64,16 +54,18 @@ export class HuiRecipePicker extends LitElement {
     this._narrow = ev.matches;
   };
 
-  // Keyed on string args (not hass) so preview elements stay stable across
-  // hass updates.
+  // Args are scalars so memoization survives hass updates (preview elements
+  // stay stable when only hass changes).
   private _computeSuggestions = memoizeOne(
-    (entityIdsKey: string, priorityTypesKey: string): CardSuggestion[] => {
-      const entityIds = entityIdsKey ? entityIdsKey.split("|") : [];
+    (
+      entityId: string | undefined,
+      priorityTypesKey: string
+    ): CardSuggestion[] => {
+      if (!this.hass) return [];
+      const suggestions = generateCardSuggestions(this.hass, entityId);
       const priorityTypes = priorityTypesKey
         ? priorityTypesKey.split("|")
         : undefined;
-      if (!this.hass) return [];
-      const suggestions = generateCardSuggestions(this.hass, entityIds);
       if (!priorityTypes?.length) return suggestions;
       const isPrioritized = (s: CardSuggestion) =>
         priorityTypes.includes(s.config.type);
@@ -90,48 +82,20 @@ export class HuiRecipePicker extends LitElement {
     }
 
     const suggestions = this._computeSuggestions(
-      this._entityIds.join("|"),
+      this._entityId,
       (this.prioritizedCardTypes ?? []).join("|")
     );
+    const excludeEntities = this._entityId ? [this._entityId] : undefined;
 
     return html`
       <div class="sidebar">
-        <ha-section-title>
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.cardpicker.selected_section"
-          )}
-        </ha-section-title>
-        <div class="selected-list-container">
-          ${this._entityIds.length
-            ? html`
-                <ha-md-list class="selected-list ha-scrollbar">
-                  ${repeat(
-                    this._entityIds,
-                    (id: string) => id,
-                    (id: string) => this._renderEntityRow(id)
-                  )}
-                </ha-md-list>
-              `
-            : html`
-                <div class="selected-empty">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.sidebar_empty"
-                  )}
-                </div>
-              `}
-        </div>
-        <ha-section-title>
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.cardpicker.browse_section"
-          )}
-        </ha-section-title>
         ${this._narrow
           ? html`
               <div class="add-row">
                 <ha-entity-picker
                   .hass=${this.hass}
                   add-button
-                  .excludeEntities=${this._entityIds}
+                  .excludeEntities=${excludeEntities}
                   @value-changed=${this._entityPickerValueChanged}
                 ></ha-entity-picker>
               </div>
@@ -140,13 +104,13 @@ export class HuiRecipePicker extends LitElement {
               <hui-recipe-entity-tree
                 class="tree"
                 .hass=${this.hass}
-                .selectedEntityIds=${this._entityIds}
-                @entity-toggled=${this._handleEntityToggled}
+                .selectedEntityIds=${this._entityId ? [this._entityId] : []}
+                @entity-picked=${this._handleEntityPicked}
               ></hui-recipe-entity-tree>
             `}
       </div>
       <div class="content ha-scrollbar">
-        ${this._entityIds.length === 0
+        ${!this._entityId
           ? html`
               <div class="content-empty">
                 <h2>
@@ -179,7 +143,6 @@ export class HuiRecipePicker extends LitElement {
                     <hui-recipe-suggestion
                       .hass=${this.hass}
                       .suggestion=${s}
-                      .sectionConfig=${this.sectionConfig}
                     ></hui-recipe-suggestion>
                   `
                 )}
@@ -208,76 +171,26 @@ export class HuiRecipePicker extends LitElement {
     `;
   }
 
-  private _renderEntityRow(entityId: string): TemplateResult {
-    const stateObj = this.hass!.states[entityId];
-    const display = stateObj
-      ? computeEntityPickerDisplay(this.hass!, stateObj)
-      : { primary: entityId, secondary: undefined };
-
-    return html`
-      <ha-md-list-item type="text" class="entity-row">
-        ${stateObj
-          ? html`<state-badge
-              slot="start"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></state-badge>`
-          : nothing}
-        <div slot="headline">${display.primary}</div>
-        ${display.secondary
-          ? html`<div slot="supporting-text">${display.secondary}</div>`
-          : nothing}
-        <ha-icon-button
-          slot="end"
-          .path=${mdiClose}
-          .label=${this.hass!.localize("ui.common.remove")}
-          .entityId=${entityId}
-          @click=${this._removeEntity}
-        ></ha-icon-button>
-      </ha-md-list-item>
-    `;
-  }
-
   private _browseCards(): void {
     fireEvent(this, "recipe-browse-cards", undefined);
   }
 
-  private _handleEntityToggled(ev: CustomEvent<{ entityId: string }>): void {
-    const id = ev.detail.entityId;
-    if (this._entityIds.includes(id)) {
-      this._entityIds = this._entityIds.filter((e) => e !== id);
-    } else {
-      this._entityIds = [...this._entityIds, id];
-    }
+  private _handleEntityPicked(ev: CustomEvent<{ entityId: string }>): void {
+    this._entityId = ev.detail.entityId;
   }
 
   private _entityPickerValueChanged(ev: CustomEvent<{ value: string }>): void {
     const value = ev.detail.value;
-    if (!value || this._entityIds.includes(value)) {
+    if (!value) {
       return;
     }
-    this._entityIds = [...this._entityIds, value];
-  }
-
-  private _removeEntity(ev: MouseEvent): void {
-    ev.stopPropagation();
-    const target = ev.currentTarget as HTMLElement & { entityId: string };
-    this._entityIds = this._entityIds.filter((id) => id !== target.entityId);
+    this._entityId = value;
   }
 
   private _suggestionPicked(
     ev: CustomEvent<{ suggestion: CardSuggestion }>
   ): void {
-    const { suggestion } = ev.detail;
-    const config = suggestion.config;
-    if (this.sectionConfig && suggestion.flattenInSection) {
-      const cards = config.cards as LovelaceCardConfig[] | undefined;
-      if (cards?.length) {
-        fireEvent(this, "recipe-cards-picked", { cards });
-        return;
-      }
-    }
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "recipe-picked", { config: ev.detail.suggestion.config });
   }
 
   static get styles(): CSSResultGroup {
@@ -298,29 +211,6 @@ export class HuiRecipePicker extends LitElement {
           min-height: 0;
           overflow: hidden;
         }
-        .selected-list-container {
-          flex: 0 0 30%;
-          min-height: 120px;
-          max-height: 240px;
-          display: flex;
-          flex-direction: column;
-        }
-        .selected-list {
-          padding: var(--ha-space-2) 0;
-          flex: 1;
-          overflow: auto;
-        }
-        .selected-empty {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: var(--ha-space-4);
-          text-align: center;
-          color: var(--ha-color-text-secondary);
-          font-size: var(--ha-font-size-s);
-          line-height: var(--ha-line-height-expanded);
-        }
         .tree {
           flex: 1;
           min-height: 0;
@@ -334,19 +224,6 @@ export class HuiRecipePicker extends LitElement {
           flex: 1;
           --ha-generic-picker-min-width: 0;
           --ha-generic-picker-max-width: none;
-        }
-        .entity-row {
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--ha-space-1);
-          --md-list-item-two-line-container-height: 48px;
-          --md-list-item-top-space: var(--ha-space-1);
-          --md-list-item-bottom-space: var(--ha-space-1);
-        }
-        .entity-row [slot="headline"],
-        .entity-row [slot="supporting-text"] {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
         .content {
           flex: 1;
@@ -428,9 +305,6 @@ export class HuiRecipePicker extends LitElement {
           .sidebar {
             border-inline-end: none;
             border-bottom: 1px solid var(--divider-color);
-          }
-          .selected-list {
-            max-height: none;
           }
           .tree {
             min-height: 320px;

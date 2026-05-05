@@ -1,9 +1,4 @@
-import {
-  mdiCheck,
-  mdiChevronDown,
-  mdiChevronRight,
-  mdiTextureBox,
-} from "@mdi/js";
+import { mdiChevronDown, mdiChevronRight, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -34,7 +29,7 @@ import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {
-    "entity-toggled": { entityId: string };
+    "entity-picked": { entityId: string };
   }
 }
 
@@ -612,7 +607,7 @@ export class HuiRecipeEntityTree extends LitElement {
         class="leaf entity-item ${selected ? "selected" : ""}"
         style="--md-list-item-leading-space: ${leadingSpace};"
         .entityId=${entityId}
-        @click=${this._toggleEntity}
+        @click=${this._pickEntity}
       >
         <div slot="start" class="leading">
           <span class="chevron-spacer"></span>
@@ -624,13 +619,6 @@ export class HuiRecipeEntityTree extends LitElement {
             : nothing}
         </div>
         <span slot="headline">${name}</span>
-        ${selected
-          ? html`<ha-svg-icon
-              slot="end"
-              class="check"
-              .path=${mdiCheck}
-            ></ha-svg-icon>`
-          : nothing}
       </ha-combo-box-item>
     `;
   }
@@ -651,9 +639,9 @@ export class HuiRecipeEntityTree extends LitElement {
     }
   }
 
-  private _toggleEntity(ev: Event) {
+  private _pickEntity(ev: Event) {
     const target = ev.currentTarget as HTMLElement & { entityId: string };
-    fireEvent(this, "entity-toggled", { entityId: target.entityId });
+    fireEvent(this, "entity-picked", { entityId: target.entityId });
   }
 
   private _handleFilterChange(ev: Event) {
@@ -714,10 +702,6 @@ export class HuiRecipeEntityTree extends LitElement {
         }
         .floor-item {
           --md-list-item-label-text-weight: var(--ha-font-weight-medium);
-        }
-        .check {
-          color: var(--primary-color);
-          --mdc-icon-size: 20px;
         }
         .entity-item.selected {
           background-color: var(

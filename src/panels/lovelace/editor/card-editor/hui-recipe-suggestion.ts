@@ -4,11 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-ripple";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
 import type { CardSuggestion } from "../../card-suggestions/types";
-import "../../sections/hui-section";
 
 declare global {
   interface HASSDomEvents {
@@ -34,64 +32,28 @@ const cappedCardConfig = (config: LovelaceCardConfig): LovelaceCardConfig => {
   return config;
 };
 
-type PreviewConfig =
-  | { section: LovelaceSectionConfig }
-  | { card: LovelaceCardConfig };
-
 @customElement("hui-recipe-suggestion")
 export class HuiRecipeSuggestion extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public suggestion!: CardSuggestion;
 
-  @property({ attribute: false }) public sectionConfig?: LovelaceSectionConfig;
-
-  @state() private _preview?: PreviewConfig;
+  @state() private _preview?: LovelaceCardConfig;
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (!changedProps.has("suggestion") && !changedProps.has("sectionConfig")) {
+    if (!changedProps.has("suggestion")) {
       return;
     }
-    this._preview = this._computePreview();
-  }
-
-  private _computePreview(): PreviewConfig | undefined {
-    const { suggestion, sectionConfig } = this;
-    if (!suggestion?.config) return undefined;
-    if (suggestion.flattenInSection && sectionConfig) {
-      const cards = suggestion.config.cards as LovelaceCardConfig[] | undefined;
-      if (cards?.length) {
-        return {
-          section: {
-            ...sectionConfig,
-            cards: cards.slice(0, PREVIEW_ITEM_CAP),
-          },
-        };
-      }
-    }
-    return { card: cappedCardConfig(suggestion.config) };
+    this._preview = this.suggestion?.config
+      ? cappedCardConfig(this.suggestion.config)
+      : undefined;
   }
 
   private _renderPreview(): TemplateResult | typeof nothing {
     if (!this._preview) return nothing;
-    if ("section" in this._preview) {
-      return html`
-        <hui-section
-          .hass=${this.hass}
-          .config=${this._preview.section}
-          .viewIndex=${0}
-          .index=${0}
-          preview
-        ></hui-section>
-      `;
-    }
     return html`
-      <hui-card
-        .hass=${this.hass}
-        .config=${this._preview.card}
-        preview
-      ></hui-card>
+      <hui-card .hass=${this.hass} .config=${this._preview} preview></hui-card>
     `;
   }
 

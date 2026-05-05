@@ -46,50 +46,20 @@ describe("generateCardSuggestions", () => {
     cleanupProviders = undefined;
   });
 
-  it("suggests nothing when no entities are picked", () => {
-    expect(generateCardSuggestions(makeHass([]), [])).toEqual([]);
+  it("suggests nothing when no entity is picked", () => {
+    expect(generateCardSuggestions(makeHass([]), undefined)).toEqual([]);
   });
 
   it("suggests nothing when the picked entity doesn't exist", () => {
-    expect(generateCardSuggestions(makeHass([]), ["light.ghost"])).toEqual([]);
+    expect(generateCardSuggestions(makeHass([]), "light.ghost")).toEqual([]);
   });
 
-  it("ignores unknown entities when picking multiple", () => {
+  it("returns the entity-specific suggestions for a known entity", () => {
     const hass = makeHass([
       makeState("light.a", "on", { supported_color_modes: ["onoff"] }),
     ]);
-    // "light.ghost" has no state — only light.a remains, single-entity path.
-    const suggestions = generateCardSuggestions(hass, [
-      "light.a",
-      "light.ghost",
-    ]);
+    const suggestions = generateCardSuggestions(hass, "light.a");
     expect(suggestions.some((s) => s.id === "tile")).toBe(true);
-    expect(suggestions.every((s) => s.id !== "tile-cards")).toBe(true);
-  });
-
-  it("suggests a grid and an entities card when picking multiple entities", () => {
-    const hass = makeHass([
-      makeState("light.a", "on"),
-      makeState("light.b", "on"),
-      makeState("light.c", "on"),
-    ]);
-
-    const suggestions = generateCardSuggestions(hass, [
-      "light.a",
-      "light.b",
-      "light.c",
-    ]);
-
-    expect(suggestions.map((s) => s.id)).toEqual([
-      "tile-cards",
-      "tile-cards-with-features",
-      "entities-card",
-    ]);
-    expect(suggestions[0].config.type).toBe("grid");
-    expect(suggestions[suggestions.length - 1].config).toEqual({
-      type: "entities",
-      entities: ["light.a", "light.b", "light.c"],
-    });
   });
 
   it("accepts null, a single suggestion, or a list from each provider", () => {
@@ -119,7 +89,7 @@ describe("generateCardSuggestions", () => {
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const ids = generateCardSuggestions(hass, ["sensor.a"]).map((s) => s.id);
+    const ids = generateCardSuggestions(hass, "sensor.a").map((s) => s.id);
 
     expect(ids).toContain("single");
     expect(ids).toContain("array-a");
@@ -136,8 +106,7 @@ describe("generateCardSuggestions", () => {
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const ids = generateCardSuggestions(hass, ["sensor.a"]).map((s) => s.id);
-    // Tile still provides its default suggestion for sensor.
+    const ids = generateCardSuggestions(hass, "sensor.a").map((s) => s.id);
     expect(ids).toContain("tile");
   });
 });
