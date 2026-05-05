@@ -18,6 +18,7 @@ import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -40,6 +41,8 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
   @queryAll("ha-automation-action-row")
   private _actionRowElements?: HaAutomationActionRow[];
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Action[] {
     return this.actions;
@@ -132,6 +135,18 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.hass &&
+      this.actions.length === 0 &&
+      getAddAutomationElementTargetFromQuery(this.hass, "action")
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addActionDialog());
+    }
 
     if (
       changedProps.has("actions") &&

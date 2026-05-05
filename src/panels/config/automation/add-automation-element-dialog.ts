@@ -33,6 +33,7 @@ import type {
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-bottom-sheet";
 import "../../../components/ha-button";
@@ -128,7 +129,12 @@ import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
-import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import {
+  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
+  ADD_AUTOMATION_ELEMENT_TARGET_PARAM,
+  getAddAutomationElementTargetFromQuery,
+  PASTE_VALUE,
+} from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
 
 const TYPES = {
@@ -295,9 +301,24 @@ class DialogAddAutomationElement
     }
   }
 
-  public showDialog(params): void {
+  public showDialog(params: AddAutomationElementDialogParams): void {
     this._params = params;
     this._resetVariables();
+
+    const queryEntityId = getAddAutomationElementTargetFromQuery(
+      this.hass,
+      params.type
+    );
+    if (queryEntityId) {
+      const searchParams = new URLSearchParams(mainWindow.location.search);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_TARGET_PARAM);
+      mainWindow.history.replaceState(
+        mainWindow.history.state,
+        "",
+        constructUrlCurrentPath(searchParams.toString())
+      );
+    }
 
     this.addKeyboardShortcuts();
 
@@ -314,16 +335,26 @@ class DialogAddAutomationElement
       (feature) => {
         this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+        if (
+          queryEntityId &&
+          this._newTriggersAndConditions &&
+          !this._selectedTarget
+        ) {
+          this._selectedTarget = { entity_id: queryEntityId };
+          this._getItemsByTarget();
+        }
       }
     );
 
-    // add initial dialog view state to history
-    mainWindow.history.pushState(
-      {
-        dialogData: {},
-      },
-      ""
-    );
+    if (!queryEntityId) {
+      // add initial dialog view state to history
+      mainWindow.history.pushState(
+        {
+          dialogData: {},
+        },
+        ""
+      );
+    }
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
@@ -343,6 +374,16 @@ class DialogAddAutomationElement
 
     // prevent view mode switch when resizing window
     this._bottomSheetMode = this._narrow;
+
+    if (
+      queryEntityId &&
+      this._newTriggersAndConditions &&
+      !this._selectedTarget
+    ) {
+      this._selectedTarget = { entity_id: queryEntityId };
+      this._tab = "targets";
+      this._getItemsByTarget();
+    }
   }
 
   public closeDialog(historyState?: any) {
