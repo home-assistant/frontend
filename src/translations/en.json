@@ -1686,6 +1686,7 @@
             "automation": "Create new automation using {entity} as a trigger",
             "script": "Create new script using {entity} in an action"
           },
+          "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
         },
