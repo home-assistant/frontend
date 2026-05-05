@@ -181,7 +181,7 @@ export class HaMoreInfoAddTo extends LitElement {
   static styles = css`
     :host {
       display: block;
-      padding: 0;
+      padding: var(--ha-space-3) 0 var(--ha-space-4);
     }
 
     .loading {
