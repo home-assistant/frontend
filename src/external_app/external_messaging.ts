@@ -1,6 +1,5 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
-import type { EntityAddToAction } from "../dialogs/more-info/const";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -357,11 +356,16 @@ export interface ExternalConfig {
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
 }
 
-export interface ExternalEntityAddToAction extends EntityAddToAction {
-  /** Type of action. External is handled by external apps instead of in the frontend */
-  type: "external";
-  /** Opaque string to be sent back when the action is selected */
-  app_payload: string;
+export interface ExternalEntityAddToAction {
+  enabled: boolean;
+  name: string; // Translated name of the action to be displayed in the UI
+  details?: string; // Optional translated details of the action to be displayed in the UI
+  mdi_icon: string; // MDI icon name to be displayed in the UI (e.g., "mdi:car")
+  app_payload: string; // Opaque string to be sent back when the action is selected
+}
+
+export interface ExternalEntityAddToActions {
+  actions: ExternalEntityAddToAction[];
 }
 
 export class ExternalMessaging {
