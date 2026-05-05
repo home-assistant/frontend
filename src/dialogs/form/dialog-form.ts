@@ -100,25 +100,21 @@ export class DialogForm
       return;
     }
 
-    if (nestedField) {
-      const schemaField = this._params?.schema.find(
-        (f) => "selector" in f && f.name === nestedField
-      );
-      const isMultiple =
-        schemaField &&
-        "selector" in schemaField &&
-        "object" in schemaField.selector &&
-        schemaField.selector.object?.multiple === true;
+    const schemaField = this._params?.schema.find(
+      (f) => "selector" in f && f.name === nestedField
+    );
+    const isMultiple =
+      schemaField &&
+      "selector" in schemaField &&
+      "object" in schemaField.selector &&
+      schemaField.selector.object?.multiple === true;
 
-      const current = this._data[nestedField];
-      const newValue = isMultiple
-        ? [...(Array.isArray(current) ? current : []), data]
-        : data;
+    const current = this._data[nestedField];
+    const newValue = isMultiple
+      ? [...(Array.isArray(current) ? current : []), data]
+      : data;
 
-      this._data = deepClone({ ...this._data, [nestedField]: newValue });
-    } else {
-      this._data = deepClone({ ...this._data, ...data });
-    }
+    this._data = deepClone({ ...this._data, [nestedField]: newValue });
   }
 
   private _cancel(): void {
