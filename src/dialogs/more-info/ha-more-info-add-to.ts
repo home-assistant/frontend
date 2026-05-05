@@ -5,8 +5,8 @@ import "../../components/ha-icon";
 import "../../components/ha-spinner";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import type { ExternalEntityAddToAction } from "../../external_app/external_messaging";
-import type { HaMdListItem } from "../../components/ha-md-list-item";
 import { showToast } from "../../util/toast";
 
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
@@ -26,15 +26,15 @@ export class HaMoreInfoAddTo extends LitElement {
 
   @property({ attribute: false }) public entityId!: string;
 
-  @state() private _actions?: EntityAddToActions = [];
+  @state() private _defaultActions: EntityAddToActions = [];
+
+  @state() private _externalActions: ExternalEntityAddToAction[] = [];
 
   @state() private _loading = true;
 
   private async _loadActions() {
-    const actions: EntityAddToActions = getDefaultAddToActions(
-      this.hass,
-      this.entityId
-    );
+    this._defaultActions = getDefaultAddToActions(this.hass, this.entityId);
+    this._externalActions = [];
 
     if (this.hass.auth.external?.config.hasEntityAddTo) {
       try {
@@ -46,11 +46,11 @@ export class HaMoreInfoAddTo extends LitElement {
             }
           );
         if (response?.actions) {
-          actions.concat(
-            response.actions.map((action: ExternalEntityAddToAction) => ({
+          this._externalActions = response.actions.map(
+            (action: ExternalEntityAddToAction) => ({
               ...action,
               type: "external",
-            }))
+            })
           );
         }
       } catch (err: unknown) {
@@ -58,13 +58,11 @@ export class HaMoreInfoAddTo extends LitElement {
         console.warn("Failed to fetch add to actions", err);
       }
     }
-
-    this._actions = actions;
   }
 
   private async _actionSelected(
     ev: HASSDomCurrentTargetEvent<
-      HaMdListItem & {
+      HaListItemButton & {
         action: EntityAddToAction | ExternalEntityAddToAction;
       }
     >
@@ -119,6 +117,26 @@ export class HaMoreInfoAddTo extends LitElement {
     defaultActionHandler(key);
   }
 
+  private _renderActionItems(
+    actions: (EntityAddToAction | ExternalEntityAddToAction)[]
+  ) {
+    return actions.map(
+      (action) => html`
+        <ha-list-item-button
+          .disabled=${!action.enabled}
+          .action=${action}
+          @click=${this._actionSelected}
+        >
+          <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
+          <span slot="headline">${action.name}</span>
+          ${action.details
+            ? html`<span slot="supporting-text">${action.details}</span>`
+            : nothing}
+        </ha-list-item-button>
+      `
+    );
+  }
+
   protected async firstUpdated() {
     await this._loadActions();
     this._loading = false;
@@ -133,7 +151,7 @@ export class HaMoreInfoAddTo extends LitElement {
       `;
     }
 
-    if (!this._actions?.length) {
+    if (!this._defaultActions.length && !this._externalActions.length) {
       return html`
         <ha-alert alert-type="info">
           ${this.hass.localize(
@@ -143,30 +161,29 @@ export class HaMoreInfoAddTo extends LitElement {
       `;
     }
 
-    return html`<ha-list-base>
-      ${this._actions.map(
-        (action) => html`
-          <ha-list-item-button
-            .disabled=${!action.enabled}
-            .action=${action}
-            @click=${this._actionSelected}
-          >
-            <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
-            <span slot="headline">${action.name}</span>
-            ${action.details
-              ? html`<span slot="supporting-text">${action.details}</span>`
-              : nothing}
-          </ha-list-item-button>
-        `
-      )}
-    </ha-list-base>`;
+    return html`
+      <ha-list-base>
+        ${this._renderActionItems(this._defaultActions)}
+      </ha-list-base>
+      ${this._externalActions.length
+        ? html`
+            <h2 class="section-title">
+              ${this.hass.localize(
+                "ui.dialogs.more_info_control.add_to.app_actions"
+              )}
+            </h2>
+            <ha-list-base>
+              ${this._renderActionItems(this._externalActions)}
+            </ha-list-base>
+          `
+        : nothing}
+    `;
   }
 
   static styles = css`
     :host {
       display: block;
-      padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
-        var(--ha-space-6);
+      padding: 0;
     }
 
     .loading {
@@ -174,6 +191,15 @@ export class HaMoreInfoAddTo extends LitElement {
       justify-content: center;
       align-items: center;
       padding: var(--ha-space-8);
+    }
+
+    .section-title {
+      padding: 0 var(--ha-space-6);
+      margin: var(--ha-space-4) 0 var(--ha-space-1);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-normal);
+      color: var(--secondary-text-color);
     }
 
     ha-icon {
