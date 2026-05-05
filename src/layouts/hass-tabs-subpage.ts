@@ -374,6 +374,7 @@ export class HassTabsSubpage extends LitElement {
         }
 
         .main-title {
+          min-width: 0;
           flex: 1;
           max-height: var(--header-height);
           line-height: var(--ha-line-height-normal);
