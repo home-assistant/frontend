@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-radio";
 import "../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-settings-row";
