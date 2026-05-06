@@ -57,8 +57,8 @@ export class HuiGraphBase extends LitElement {
         <g>
           <mask id="${this._uniqueId}-fill">
             <path
-              class='fill'
-              fill='white'
+              class="fill"
+              fill="white"
               d="${path} L ${lastX}, ${yAxisOrigin} L 0, ${yAxisOrigin} z"
             />
           </mask>
@@ -66,7 +66,7 @@ export class HuiGraphBase extends LitElement {
           <mask id="${this._uniqueId}-line">
             <path
               vector-effect="non-scaling-stroke"
-              class='line'
+              class="line"
               fill="none"
               stroke="white"
               stroke-width="${strokeWidth}"
