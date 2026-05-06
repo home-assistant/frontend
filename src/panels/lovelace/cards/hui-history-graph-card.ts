@@ -402,6 +402,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       flex: 1;
       overflow: hidden;
     }
+    .content:has(state-history-charts) {
+      overflow: visible;
+    }
+    .content.has-height:has(state-history-charts) {
+      overflow: hidden;
+    }
     .has-header {
       padding-top: 0;
     }
