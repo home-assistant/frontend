@@ -161,7 +161,6 @@ export const semanticColorStyles = css`
     --ha-color-on-success-loud: var(--white-color);
 
     /* Surfaces */
-    --ha-color-surface-default: var(--ha-color-neutral-95);
     --ha-color-on-surface-default: var(--ha-color-neutral-05);
 
     /* forms */
