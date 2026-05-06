@@ -469,6 +469,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
+          --ha-bottom-sheet-content-padding: 0 var(--safe-area-inset-right)
+            var(--safe-area-inset-bottom) var(--safe-area-inset-left);
         }
 
         ha-picker-field.opened {
