@@ -6,8 +6,10 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-formfield";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
@@ -28,6 +30,8 @@ class DialogTagDetail
 
   @state() private _name!: string;
 
+  @state() private _useCustomId = false;
+
   @state() private _error?: string;
 
   @state() private _params?: TagDetailDialogParams;
@@ -42,6 +46,7 @@ class DialogTagDetail
     this._params = params;
     this._error = undefined;
     this._open = true;
+    this._useCustomId = false;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
     } else {
@@ -97,18 +102,56 @@ class DialogTagDetail
               )}
               required
             ></ha-input>
-            <ha-input
-              .value=${this._params.entry
-                ? this._params.entry.id
-                : this._id || ""}
-              .readonly=${!!this._params.entry}
-              .configValue=${"id"}
-              @input=${this._valueChanged}
-              .label=${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}
-              .placeholder=${this.hass!.localize(
-                "ui.panel.config.tag.detail.tag_id_placeholder"
-              )}
-            ></ha-input>
+            ${this._params.entry
+              ? html`
+                  <ha-input
+                    .value=${this._params.entry
+                      ? this._params.entry.id
+                      : this._id || ""}
+                    .readonly=${!!this._params.entry}
+                    .configValue=${"id"}
+                    @input=${this._valueChanged}
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.tag.detail.tag_id"
+                    )}
+                    .placeholder=${this.hass!.localize(
+                      "ui.panel.config.tag.detail.tag_id_placeholder"
+                    )}
+                  ></ha-input>
+                `
+              : html`
+                  <ha-formfield
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.tag.detail.use_custom_id"
+                    )}
+                  >
+                    <ha-switch
+                      .checked=${this._useCustomId}
+                      @change=${this._useCustomIdChanged}
+                    ></ha-switch>
+                  </ha-formfield>
+                  ${this._useCustomId
+                    ? html`
+                        <ha-input
+                          .value=${this._id || ""}
+                          .readonly=${!!this._params.entry}
+                          .configValue=${"id"}
+                          @input=${this._valueChanged}
+                          .label=${this.hass!.localize(
+                            "ui.panel.config.tag.detail.tag_id"
+                          )}
+                          .placeholder=${this.hass!.localize(
+                            "ui.panel.config.tag.detail.tag_id_placeholder"
+                          )}
+                        ></ha-input>
+                        <ha-alert alert-type="info">
+                          ${this.hass!.localize(
+                            "ui.panel.config.tag.detail.custom_id_warning"
+                          )}
+                        </ha-alert>
+                      `
+                    : nothing}
+                `}
           </div>
           ${this._params.entry
             ? html`
@@ -189,6 +232,13 @@ class DialogTagDetail
     this[`_${configValue}`] = target.value;
   }
 
+  private _useCustomIdChanged(ev: Event) {
+    this._useCustomId = (ev.target as HaSwitch).checked;
+    if (!this._useCustomId) {
+      this._id = "";
+    }
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     let newValue: Tag | undefined;
@@ -199,7 +249,10 @@ class DialogTagDetail
       if (this._params!.entry) {
         newValue = await this._params!.updateEntry!(values);
       } else {
-        newValue = await this._params!.createEntry(values, this._id);
+        newValue = await this._params!.createEntry(
+          values,
+          this._useCustomId ? this._id : ""
+        );
       }
       this.closeDialog();
     } catch (err: any) {
@@ -244,6 +297,14 @@ class DialogTagDetail
           --ha-input-padding-bottom: 0;
         }
         ha-input:not([required]) {
+          margin-bottom: var(--ha-space-5);
+        }
+        ha-formfield {
+          display: block;
+          margin-bottom: var(--ha-space-2);
+        }
+        ha-alert {
+          display: block;
           margin-bottom: var(--ha-space-5);
         }
         ::slotted(img) {
