@@ -166,9 +166,7 @@ class DialogTagDetail
                 </div>
                 <div class="tag-id">
                   <span class="tag-id-label">
-                    ${this.hass!.localize(
-                      "ui.panel.config.tag.detail.tag_id"
-                    )}:
+                    ${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}:
                   </span>
                   <span class="tag-id-value">${this._params.entry.id}</span>
                   <ha-icon-button
