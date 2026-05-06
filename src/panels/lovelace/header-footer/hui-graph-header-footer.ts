@@ -6,7 +6,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
 import type { HistoryStates } from "../../../data/history";
 import {
   limitedHistoryFromStateObj,
@@ -300,10 +299,6 @@ export class HuiGraphHeaderFooter
     :host {
       display: block;
       cursor: pointer;
-    }
-    ha-spinner {
-      position: absolute;
-      top: calc(50% - 14px);
     }
     .container {
       display: flex;

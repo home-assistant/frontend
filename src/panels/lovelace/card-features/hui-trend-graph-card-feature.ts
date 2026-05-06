@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
-import "../../../components/ha-spinner";
 import {
   limitedHistoryFromStateObj,
   subscribeHistoryStatesTimeWindow,
