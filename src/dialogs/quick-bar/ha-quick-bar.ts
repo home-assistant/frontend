@@ -1,6 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -147,6 +147,14 @@ export class QuickBar extends LitElement {
     }
 
     this._loading = false;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
   }
 
   private _dialogOpened = async () => {
