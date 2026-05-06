@@ -1,6 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 
@@ -109,9 +110,9 @@ export class HuiGraphBase extends LitElement {
       return;
     }
 
-    const duration = matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? 1
-      : 250;
+    const duration = parseAnimationDuration(
+      getComputedStyle(this).getPropertyValue("--ha-animation-duration-normal")
+    );
 
     if (duration <= 1) {
       this._displayCoordinates = coordinates;
