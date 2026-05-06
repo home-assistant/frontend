@@ -18,8 +18,8 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
 import type {
+  FlattenObjectKeys,
   LocalizeFunc,
-  LocalizeKeys,
 } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -52,7 +52,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route, TranslationDict } from "../../../types";
 import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
@@ -60,35 +60,39 @@ import {
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 
+type ConfigTranslationKey = FlattenObjectKeys<
+  TranslationDict["ui"]["panel"]["config"]
+>;
+
 const NAVIGATION_ACTIONS: {
   value: string;
   icon: string;
-  translationKey: LocalizeKeys;
+  translationKey: ConfigTranslationKey;
 }[] = [
   {
     value: "navigate-entities",
     icon: mdiShape,
-    translationKey: "ui.panel.config.entities.caption",
+    translationKey: "entities.caption",
   },
   {
     value: "navigate-devices",
     icon: mdiDevices,
-    translationKey: "ui.panel.config.devices.caption",
+    translationKey: "devices.caption",
   },
   {
     value: "navigate-automations",
     icon: mdiRobot,
-    translationKey: "ui.panel.config.automation.caption",
+    translationKey: "automation.caption",
   },
   {
     value: "navigate-scenes",
     icon: mdiPalette,
-    translationKey: "ui.panel.config.scene.caption",
+    translationKey: "scene.caption",
   },
   {
     value: "navigate-scripts",
     icon: mdiScriptText,
-    translationKey: "ui.panel.config.script.caption",
+    translationKey: "script.caption",
   },
 ] as const;
 
@@ -286,7 +290,7 @@ export class HaConfigLabels extends LitElement {
           (action) => html`
             <ha-dropdown-item value=${action.value}>
               <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
-              ${this.hass.localize(action.translationKey)}
+              ${this.hass.localize(`ui.panel.config.${action.translationKey}`)}
             </ha-dropdown-item>
           `
         )}
