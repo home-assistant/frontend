@@ -39,6 +39,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -65,6 +66,7 @@ import {
   manifestsContext,
 } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { DomainManifestLookup } from "../../../../data/integration";
 import type {
   Action,
   DeviceAction,
@@ -73,7 +75,6 @@ import type {
   ServiceAction,
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
-import type { DomainManifestLookup } from "../../../../data/integration";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -203,7 +204,7 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _running = false;
 
   @state() private _runResult?: {
-    variant: "success" | "danger" | "info";
+    variant: "success" | "danger" | "neutral";
     title: string;
     details?: string;
   };
@@ -755,13 +756,8 @@ export default class HaAutomationActionRow extends LitElement {
       this.scrollIntoView();
     });
 
-    this._runResult = {
-      variant: "info",
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.run"
-      ),
-    };
-    this._running = true;
+    this._running = false;
+    this._runResult = undefined;
 
     const validated = await validateConfig(this.hass, {
       actions: this.action,
@@ -776,9 +772,22 @@ export default class HaAutomationActionRow extends LitElement {
         details: validated.actions.error,
       };
     } else {
+      const runTimeout = setTimeout(() => {
+        this._runResult = {
+          variant: "neutral",
+          title: `${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.running_action"
+          )}...`,
+        };
+
+        this._running = true;
+      }, 500);
+
       try {
         await callExecuteScript(this.hass, this.action);
+        clearTimeout(runTimeout);
       } catch (err: any) {
+        clearTimeout(runTimeout);
         this._runResult = {
           variant: "danger",
           title: this.hass.localize(
@@ -789,7 +798,7 @@ export default class HaAutomationActionRow extends LitElement {
       }
     }
 
-    if (this._runResult.variant === "info") {
+    if (!this._runResult || this._runResult.variant === "neutral") {
       this._runResult = {
         variant: "success",
         title: this.hass.localize(
@@ -797,6 +806,8 @@ export default class HaAutomationActionRow extends LitElement {
         ),
       };
     }
+
+    this._running = true;
 
     this._runResultTimeout = window.setTimeout(() => {
       this._running = false;
