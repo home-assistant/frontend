@@ -20,7 +20,6 @@ import type {
   LovelaceHeaderFooterEditor,
 } from "../types";
 import type { GraphHeaderFooterConfig } from "./types";
-import { withViewTransition } from "../../../common/util/view-transition";
 
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;
@@ -244,10 +243,8 @@ export class HuiGraphHeaderFooter
       },
       useMean
     );
-    withViewTransition(() => {
-      this._coordinates = points;
-      this._loading = false;
-    });
+    this._coordinates = points;
+    this._loading = false;
   }
 
   private _redrawGraph() {
