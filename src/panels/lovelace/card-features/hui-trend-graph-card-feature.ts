@@ -110,11 +110,7 @@ class HuiHistoryChartCardFeature
       `;
     }
     if (!this._coordinates) {
-      return html`
-        <div class="container loading">
-          <ha-spinner size="small"></ha-spinner>
-        </div>
-      `;
+      return html`<hui-graph-base preview></hui-graph-base>`;
     }
     if (!this._coordinates.length) {
       return html`
@@ -216,13 +212,6 @@ class HuiHistoryChartCardFeature
       justify-content: flex-end;
       align-items: flex-end;
       pointer-events: none !important;
-    }
-
-    .container.loading {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     hui-graph-base {
