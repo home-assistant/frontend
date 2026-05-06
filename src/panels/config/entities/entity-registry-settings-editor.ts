@@ -217,7 +217,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._name = this.entry.name || "";
+    this._name = this.entry.name ?? this.entry.original_name ?? "";
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -1065,7 +1065,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const params: Partial<EntityRegistryEntryUpdateParams> = {
-      name: this._name.trim() || null,
+      name:
+        this.entry.name === null &&
+        this._name.trim() === (this.entry.original_name?.trim() ?? "")
+          ? null
+          : this._name.trim() || null,
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
       labels: this._labels || [],
