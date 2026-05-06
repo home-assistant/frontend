@@ -127,7 +127,7 @@ export class HaAutomationRow extends LitElement {
     }
     .row {
       display: flex;
-      padding: 0 var(--ha-space-3);
+      padding: 0 0 0 var(--ha-space-3);
       min-height: 48px;
       align-items: flex-start;
       cursor: pointer;
