@@ -49,10 +49,10 @@ export const filterUnavailableBatteryEntities = (
   });
 
 const computeBatteryTileCard = (
-  hass: HomeAssistant,
+  entities: HomeAssistant["entities"],
   entityId: string
 ): TileCardConfig => {
-  const entity = hass.entities[entityId];
+  const entity = entities[entityId];
   const deviceId = entity?.device_id;
   return {
     type: "tile",
@@ -79,7 +79,7 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(hass, entityId));
+      areaCards.push(computeBatteryTileCard(hass.entities, entityId));
     }
 
     if (areaCards.length > 0) {
@@ -112,7 +112,7 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(hass, entityId));
+    cards.push(computeBatteryTileCard(hass.entities, entityId));
   }
 
   return cards;
