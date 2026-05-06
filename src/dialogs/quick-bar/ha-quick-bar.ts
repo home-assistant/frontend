@@ -150,10 +150,7 @@ export class QuickBar extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    // When _loading transitions to false while the dialog is already open,
-    // the combo box is just now rendered for the first time. Use
-    // requestAnimationFrame (like _dialogOpened does) so the combo box's
-    // own shadow DOM has time to render before we attempt to focus it.
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
       requestAnimationFrame(() => {
         this._comboBox?.focus();
       });
