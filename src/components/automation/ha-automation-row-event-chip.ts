@@ -11,7 +11,8 @@ import "../ha-icon-button";
 @customElement("ha-automation-row-event-chip")
 export class HaAutomationRowEventChip extends LitElement {
   @property({ reflect: true })
-  public variant: "info" | "warning" | "success" | "danger" = "info";
+  public variant: "info" | "warning" | "success" | "danger" | "neutral" =
+    "info";
 
   @property({ type: Boolean })
   public interactive = false;
@@ -89,6 +90,12 @@ export class HaAutomationRowEventChip extends LitElement {
       --background-color: var(--ha-color-fill-warning-normal-resting);
       --background-color-hover: var(--ha-color-fill-warning-normal-hover);
       --text-color: var(--ha-color-on-warning-normal);
+    }
+
+    :host([variant="neutral"]) {
+      --background-color: var(--ha-color-fill-neutral-normal-resting);
+      --background-color-hover: var(--ha-color-fill-neutral-normal-hover);
+      --text-color: var(--ha-color-on-neutral-normal);
     }
 
     :host([variant="success"]) {
