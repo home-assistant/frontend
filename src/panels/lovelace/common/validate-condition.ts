@@ -470,8 +470,8 @@ export function addEntityToCondition(
     condition.condition === "numeric_state"
   ) {
     return {
-      ...condition,
       entity: entityId,
+      ...condition,
     };
   }
   return condition;
