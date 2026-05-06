@@ -18,6 +18,7 @@ import type {
   TrendGraphCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+import { withViewTransition } from "../../../common/util/view-transition";
 
 export const supportsTrendGraphCardFeature = (
   hass: HomeAssistant,
@@ -191,8 +192,10 @@ class HuiHistoryChartCardFeature
             undefined,
             useMean
           );
-        this._coordinates = points;
-        this._yAxisOrigin = yAxisOrigin;
+        withViewTransition(() => {
+          this._coordinates = points;
+          this._yAxisOrigin = yAxisOrigin;
+        });
       },
       hourToShow,
       [this.context!.entity_id!]
