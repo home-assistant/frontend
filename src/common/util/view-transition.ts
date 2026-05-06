@@ -10,6 +10,17 @@ export const setViewTransitionDisabled = (disabled: boolean): void => {
   isViewTransitionDisabled = disabled;
 };
 
+const isAbortError = (err: unknown): boolean =>
+  err instanceof DOMException
+    ? err.name === "AbortError"
+    : err instanceof Error && err.name === "AbortError";
+
+const ignoreAbortError = (err: unknown): void => {
+  if (!isAbortError(err)) {
+    throw err;
+  }
+};
+
 /**
  * Executes a synchronous callback within a View Transition if supported, otherwise runs it directly.
  *
@@ -40,7 +51,8 @@ export const withViewTransition = (
       callbackInvoked = true;
       callback(true);
     });
-    return transition.finished;
+    transition.ready.catch(ignoreAbortError);
+    return transition.finished.catch(ignoreAbortError);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn(
