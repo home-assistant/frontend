@@ -100,28 +100,16 @@ export class HaConfigLogs extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const search = this.narrow
-      ? html`
-          <div slot="header">
-            <ha-input-search
-              appearance="outlined"
-              class="header"
-              @input=${this._filterChanged}
-              .value=${this._filter}
-              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
-            ></ha-input-search>
-          </div>
-        `
-      : html`
-          <div class="search">
-            <ha-input-search
-              appearance="outlined"
-              @input=${this._filterChanged}
-              .value=${this._filter}
-              .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
-            ></ha-input-search>
-          </div>
-        `;
+    const search = html`
+      <div class="search">
+        <ha-input-search
+          appearance="outlined"
+          @input=${this._filterChanged}
+          .value=${this._filter}
+          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+        ></ha-input-search>
+      </div>
+    `;
 
     const selectedProvider = this._getActiveProvider(this._selectedLogProvider);
 
@@ -348,22 +336,17 @@ export class HaConfigLogs extends LitElement {
           top: 0;
           z-index: 2;
         }
-        ha-input-search {
+        .search ha-input-search {
           padding: var(--ha-space-3);
           background: var(--sidebar-background-color);
           border-bottom: 1px solid var(--divider-color);
-        }
-        ha-input-search.header {
-          padding-inline-start: 0;
-          background: transparent;
-          border: none;
         }
         .content {
           direction: ltr;
         }
         ha-generic-picker {
           --md-list-item-leading-icon-color: var(--ha-color-primary-50);
-          --mdc-icon-size: 32px;
+          --mdc-icon-size: var(--ha-space-6);
         }
 
         img {
@@ -372,7 +355,7 @@ export class HaConfigLogs extends LitElement {
 
         @media all and (max-width: 870px) {
           ha-generic-picker {
-            max-width: max(30%, 160px);
+            max-width: max(30%, 180px);
           }
           ha-button {
             max-width: 100%;
