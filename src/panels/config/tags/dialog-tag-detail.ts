@@ -1,13 +1,16 @@
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { generateUuidV4 } from "../../../common/util/uuid";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-qr-code";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
@@ -16,6 +19,7 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
 @customElement("dialog-tag-detail")
@@ -80,7 +84,7 @@ class DialogTagDetail
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.entry
-          ? this._params.entry.name || this._params.entry.id
+          ? this.hass!.localize("ui.panel.config.tag.detail.tag_details")
           : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
         prevent-scrim-close
         @closed=${this._dialogClosed}
@@ -102,22 +106,7 @@ class DialogTagDetail
               required
             ></ha-input>
             ${this._params.entry
-              ? html`
-                  <ha-input
-                    .value=${this._params.entry
-                      ? this._params.entry.id
-                      : this._id || ""}
-                    .readonly=${!!this._params.entry}
-                    .configValue=${"id"}
-                    @input=${this._valueChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.tag.detail.tag_id"
-                    )}
-                    .placeholder=${this.hass!.localize(
-                      "ui.panel.config.tag.detail.tag_id_placeholder"
-                    )}
-                  ></ha-input>
-                `
+              ? nothing
               : html`
                   <ha-expansion-panel
                     outlined
@@ -174,6 +163,19 @@ class DialogTagDetail
                         </ha-qr-code>
                       `
                     : nothing}
+                </div>
+                <div class="tag-id">
+                  <span class="tag-id-label">
+                    ${this.hass!.localize(
+                      "ui.panel.config.tag.detail.tag_id"
+                    )}:
+                  </span>
+                  <span class="tag-id-value">${this._params.entry.id}</span>
+                  <ha-icon-button
+                    .path=${mdiContentCopy}
+                    .label=${this.hass!.localize("ui.common.copy")}
+                    @click=${this._copyId}
+                  ></ha-icon-button>
                 </div>
               `
             : ``}
@@ -234,6 +236,16 @@ class DialogTagDetail
     } else {
       this._id = "";
     }
+  }
+
+  private async _copyId() {
+    if (!this._params?.entry) {
+      return;
+    }
+    await copyToClipboard(this._params.entry.id);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private async _updateEntry() {
@@ -306,6 +318,18 @@ class DialogTagDetail
         ha-alert {
           display: block;
           margin-top: var(--ha-space-2);
+        }
+        .tag-id {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--ha-space-1);
+          margin-top: var(--ha-space-3);
+          color: var(--secondary-text-color);
+        }
+        .tag-id-value {
+          font-family: var(--ha-font-family-code);
+          color: var(--primary-text-color);
         }
         ::slotted(img) {
           height: 100%;

@@ -3750,6 +3750,7 @@
           },
           "detail": {
             "new_tag": "New tag",
+            "tag_details": "Tag details",
             "name": "Name",
             "description": "Description",
             "tag_id": "Tag ID",
