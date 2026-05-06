@@ -21,6 +21,7 @@ import type {
   LovelaceHeaderFooterEditor,
 } from "../types";
 import type { GraphHeaderFooterConfig } from "./types";
+import { withViewTransition } from "../../../common/util/view-transition";
 
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;
@@ -119,11 +120,7 @@ export class HuiGraphHeaderFooter
     }
 
     if (!this._coordinates) {
-      return html`
-        <div class="container">
-          <ha-spinner size="small"></ha-spinner>
-        </div>
-      `;
+      return html`<hui-graph-base preview></hui-graph-base>`;
     }
 
     if (!this._coordinates.length) {
@@ -224,7 +221,9 @@ export class HuiGraphHeaderFooter
       },
       useMean
     );
-    this._coordinates = points;
+    withViewTransition(() => {
+      this._coordinates = points;
+    });
   }
 
   private _redrawGraph() {
