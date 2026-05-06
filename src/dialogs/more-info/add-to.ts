@@ -38,6 +38,10 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
     icon: "mdi:playlist-check",
   },
   {
+    translation_key: "action",
+    icon: "mdi:play-circle-outline",
+  },
+  {
     translation_key: "script",
     icon: "mdi:script-text-outline",
   },
@@ -67,7 +71,7 @@ export const getDefaultAddToActions = (
 export function defaultActionHandler(
   key: (typeof DEFAULT_ACTION_DEFS)[number]["translation_key"],
   entityId: string
-) {
+): Promise<boolean> {
   const params = (addElement: string) =>
     `?${createSearchParam({
       [ADD_AUTOMATION_ELEMENT_QUERY_PARAM]: addElement,
@@ -76,13 +80,14 @@ export function defaultActionHandler(
 
   switch (key) {
     case "automation":
-      navigate(`/config/automation/edit/new${params("trigger")}`);
-      break;
+      return navigate(`/config/automation/edit/new${params("trigger")}`);
     case "condition":
-      navigate(`/config/automation/edit/new${params("condition")}`);
-      break;
+      return navigate(`/config/automation/edit/new${params("condition")}`);
+    case "action":
+      return navigate(`/config/automation/edit/new${params("action")}`);
     case "script":
-      navigate(`/config/script/edit/new${params("action")}`);
-      break;
+      return navigate(`/config/script/edit/new${params("action")}`);
+    default:
+      return Promise.reject(new Error(`Unknown action key ${key}`));
   }
 }
