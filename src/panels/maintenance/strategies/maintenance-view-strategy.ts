@@ -48,11 +48,18 @@ export const filterUnavailableBatteryEntities = (
     return hass.states[entityId]?.state === "unavailable";
   });
 
-const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
-  type: "tile",
-  entity: entityId,
-  name: { type: "device" },
-});
+const computeBatteryTileCard = (
+  hass: HomeAssistant,
+  entityId: string
+): TileCardConfig => {
+  const entity = hass.entities[entityId];
+  const deviceId = entity?.device_id;
+  return {
+    type: "tile",
+    entity: entityId,
+    name: { type: deviceId ? "device" : "entity" },
+  };
+};
 
 const processAreasForBattery = (
   areaIds: string[],
@@ -72,7 +79,7 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(entityId));
+      areaCards.push(computeBatteryTileCard(hass, entityId));
     }
 
     if (areaCards.length > 0) {
@@ -105,7 +112,7 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(entityId));
+    cards.push(computeBatteryTileCard(hass, entityId));
   }
 
   return cards;
