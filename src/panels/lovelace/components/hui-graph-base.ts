@@ -111,7 +111,7 @@ export class HuiGraphBase extends LitElement {
     }
 
     const duration = parseAnimationDuration(
-      getComputedStyle(this).getPropertyValue("--ha-animation-duration-normal")
+      getComputedStyle(this).getPropertyValue("--ha-animation-duration-slow")
     );
 
     if (duration <= 1) {
