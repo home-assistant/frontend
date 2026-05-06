@@ -5,8 +5,10 @@ import {
   mdiDotsVertical,
   mdiHelpCircleOutline,
   mdiLabelOutline,
+  mdiPalette,
   mdiPlus,
   mdiRobot,
+  mdiScriptText,
   mdiShape,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
@@ -15,7 +17,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -54,6 +59,38 @@ import {
 } from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+
+const NAVIGATION_ACTIONS: {
+  value: string;
+  icon: string;
+  translationKey: LocalizeKeys;
+}[] = [
+  {
+    value: "navigate-entities",
+    icon: mdiShape,
+    translationKey: "ui.panel.config.entities.caption",
+  },
+  {
+    value: "navigate-devices",
+    icon: mdiDevices,
+    translationKey: "ui.panel.config.devices.caption",
+  },
+  {
+    value: "navigate-automations",
+    icon: mdiRobot,
+    translationKey: "ui.panel.config.automation.caption",
+  },
+  {
+    value: "navigate-scenes",
+    icon: mdiPalette,
+    translationKey: "ui.panel.config.scene.caption",
+  },
+  {
+    value: "navigate-scripts",
+    icon: mdiScriptText,
+    translationKey: "ui.panel.config.script.caption",
+  },
+] as const;
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -245,18 +282,14 @@ export class HaConfigLabels extends LitElement {
         @wa-after-show=${this._overflowMenuOpened}
         @wa-after-hide=${this._overflowMenuClosed}
       >
-        <ha-dropdown-item value="navigate-entities">
-          <ha-svg-icon slot="icon" .path=${mdiShape}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.entities.caption")}
-        </ha-dropdown-item>
-        <ha-dropdown-item value="navigate-devices">
-          <ha-svg-icon slot="icon" .path=${mdiDevices}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.devices.caption")}
-        </ha-dropdown-item>
-        <ha-dropdown-item value="navigate-automations">
-          <ha-svg-icon slot="icon" .path=${mdiRobot}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.automation.caption")}
-        </ha-dropdown-item>
+        ${NAVIGATION_ACTIONS.map(
+          (action) => html`
+            <ha-dropdown-item value=${action.value}>
+              <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
+              ${this.hass.localize(action.translationKey)}
+            </ha-dropdown-item>
+          `
+        )}
         <wa-divider></wa-divider>
         <ha-dropdown-item variant="danger" value="remove">
           <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
@@ -362,13 +395,19 @@ export class HaConfigLabels extends LitElement {
     }
     switch (action) {
       case "navigate-entities":
-        this._navigateEntities();
+        this._navigateConfig("/config/entities");
         break;
       case "navigate-devices":
-        this._navigateDevices();
+        this._navigateConfig("/config/devices/dashboard");
         break;
       case "navigate-automations":
-        this._navigateAutomations();
+        this._navigateConfig("/config/automation/dashboard");
+        break;
+      case "navigate-scenes":
+        this._navigateConfig("/config/scene/dashboard");
+        break;
+      case "navigate-scripts":
+        this._navigateConfig("/config/script/dashboard");
         break;
       case "remove":
         this._handleRemoveLabelClick();
@@ -376,22 +415,8 @@ export class HaConfigLabels extends LitElement {
     }
   };
 
-  private _navigateEntities = () => {
-    navigate(
-      `/config/entities?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
-  };
-
-  private _navigateDevices = () => {
-    navigate(
-      `/config/devices/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
-  };
-
-  private _navigateAutomations = () => {
-    navigate(
-      `/config/automation/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
+  private _navigateConfig = (path: string) => {
+    navigate(`${path}?historyBack=1&label=${this._overflowLabel.label_id}`);
   };
 
   private _handleSortingChanged(ev: CustomEvent) {
