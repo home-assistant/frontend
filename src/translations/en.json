@@ -3755,7 +3755,7 @@
             "tag_id": "Tag ID",
             "tag_id_placeholder": "Auto-generated if left empty",
             "use_custom_id": "Use a custom tag ID",
-            "custom_id_warning": "Scanning with the companion apps requires an extra confirmation step compared to auto-generated IDs.",
+            "custom_id_warning": "Tag IDs are baked into the physical tag and can't be changed later. A random UUID is usually safer because the ID stays decoupled from what the tag does. You can rename the tag any time, and reuse the same physical tag in another Home Assistant instance for something completely different, without the ID carrying meaning that no longer fits.",
             "delete": "Delete",
             "update": "Update",
             "create": "Create",

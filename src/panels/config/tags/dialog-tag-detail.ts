@@ -2,14 +2,13 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { generateUuidV4 } from "../../../common/util/uuid";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-formfield";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-qr-code";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
@@ -120,37 +119,31 @@ class DialogTagDetail
                   ></ha-input>
                 `
               : html`
-                  <ha-formfield
-                    .label=${this.hass!.localize(
+                  <ha-expansion-panel
+                    outlined
+                    .header=${this.hass!.localize(
                       "ui.panel.config.tag.detail.use_custom_id"
                     )}
+                    .expanded=${this._useCustomId}
+                    @expanded-changed=${this._useCustomIdChanged}
                   >
-                    <ha-switch
-                      .checked=${this._useCustomId}
-                      @change=${this._useCustomIdChanged}
-                    ></ha-switch>
-                  </ha-formfield>
-                  ${this._useCustomId
-                    ? html`
-                        <ha-input
-                          .value=${this._id || ""}
-                          .readonly=${!!this._params.entry}
-                          .configValue=${"id"}
-                          @input=${this._valueChanged}
-                          .label=${this.hass!.localize(
-                            "ui.panel.config.tag.detail.tag_id"
-                          )}
-                          .placeholder=${this.hass!.localize(
-                            "ui.panel.config.tag.detail.tag_id_placeholder"
-                          )}
-                        ></ha-input>
-                        <ha-alert alert-type="info">
-                          ${this.hass!.localize(
-                            "ui.panel.config.tag.detail.custom_id_warning"
-                          )}
-                        </ha-alert>
-                      `
-                    : nothing}
+                    <ha-input
+                      .value=${this._id || ""}
+                      .configValue=${"id"}
+                      @input=${this._valueChanged}
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.tag.detail.tag_id"
+                      )}
+                      .placeholder=${this.hass!.localize(
+                        "ui.panel.config.tag.detail.tag_id_placeholder"
+                      )}
+                    ></ha-input>
+                    <ha-alert alert-type="info">
+                      ${this.hass!.localize(
+                        "ui.panel.config.tag.detail.custom_id_warning"
+                      )}
+                    </ha-alert>
+                  </ha-expansion-panel>
                 `}
           </div>
           ${this._params.entry
@@ -232,9 +225,13 @@ class DialogTagDetail
     this[`_${configValue}`] = target.value;
   }
 
-  private _useCustomIdChanged(ev: Event) {
-    this._useCustomId = (ev.target as HaSwitch).checked;
-    if (!this._useCustomId) {
+  private _useCustomIdChanged(ev: CustomEvent) {
+    this._useCustomId = ev.detail.expanded;
+    if (this._useCustomId) {
+      if (!this._id) {
+        this._id = generateUuidV4();
+      }
+    } else {
       this._id = "";
     }
   }
@@ -299,13 +296,16 @@ class DialogTagDetail
         ha-input:not([required]) {
           margin-bottom: var(--ha-space-5);
         }
-        ha-formfield {
+        ha-expansion-panel {
           display: block;
           margin-bottom: var(--ha-space-2);
         }
+        ha-expansion-panel[expanded] {
+          --expansion-panel-content-padding: var(--ha-space-3) var(--ha-space-2);
+        }
         ha-alert {
           display: block;
-          margin-bottom: var(--ha-space-5);
+          margin-top: var(--ha-space-2);
         }
         ::slotted(img) {
           height: 100%;
