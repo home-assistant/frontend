@@ -7,9 +7,9 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
 import type {
   GridSourceTypeEnergyPreference,
@@ -234,56 +234,32 @@ export class DialogEnergyGridSettings
           )}
         </p>
 
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.grid.dialog.no_cost_tracking"
-          )}
+        <ha-radio-group
+          .value=${this._importCostType}
+          name="importCostType"
+          @change=${this._handleImportCostTypeChanged}
         >
-          <ha-radio
-            value="no_cost"
-            name="importCostType"
-            .checked=${this._importCostType === "no_cost"}
-            @change=${this._handleImportCostTypeChanged}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.grid.dialog.cost_stat"
-          )}
-        >
-          <ha-radio
-            value="stat"
-            name="importCostType"
-            .checked=${this._importCostType === "stat"}
-            @change=${this._handleImportCostTypeChanged}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.grid.dialog.cost_entity"
-          )}
-        >
-          <ha-radio
-            value="entity"
-            name="importCostType"
-            .checked=${this._importCostType === "entity"}
-            .disabled=${externalImportSource}
-            @change=${this._handleImportCostTypeChanged}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.grid.dialog.cost_number"
-          )}
-        >
-          <ha-radio
-            value="number"
-            name="importCostType"
-            .checked=${this._importCostType === "number"}
-            .disabled=${externalImportSource}
-            @change=${this._handleImportCostTypeChanged}
-          ></ha-radio>
-        </ha-formfield>
+          <ha-radio-option value="no_cost">
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.no_cost_tracking"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="stat">
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_stat"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="entity" .disabled=${externalImportSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_entity"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="number" .disabled=${externalImportSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_number"
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
 
         ${this._importCostType === "stat"
           ? html`
@@ -340,56 +316,38 @@ export class DialogEnergyGridSettings
                 )}
               </p>
 
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.no_compensation_tracking"
-                )}
+              <ha-radio-group
+                .value=${this._exportCostType}
+                name="exportCostType"
+                @change=${this._handleExportCostTypeChanged}
               >
-                <ha-radio
-                  value="no_cost"
-                  name="exportCostType"
-                  .checked=${this._exportCostType === "no_cost"}
-                  @change=${this._handleExportCostTypeChanged}
-                ></ha-radio>
-              </ha-formfield>
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.compensation_stat"
-                )}
-              >
-                <ha-radio
-                  value="stat"
-                  name="exportCostType"
-                  .checked=${this._exportCostType === "stat"}
-                  @change=${this._handleExportCostTypeChanged}
-                ></ha-radio>
-              </ha-formfield>
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.compensation_entity"
-                )}
-              >
-                <ha-radio
+                <ha-radio-option value="no_cost">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.no_compensation_tracking"
+                  )}
+                </ha-radio-option>
+                <ha-radio-option value="stat">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.compensation_stat"
+                  )}
+                </ha-radio-option>
+                <ha-radio-option
                   value="entity"
-                  name="exportCostType"
-                  .checked=${this._exportCostType === "entity"}
                   .disabled=${externalExportSource}
-                  @change=${this._handleExportCostTypeChanged}
-                ></ha-radio>
-              </ha-formfield>
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.compensation_number"
-                )}
-              >
-                <ha-radio
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.compensation_entity"
+                  )}
+                </ha-radio-option>
+                <ha-radio-option
                   value="number"
-                  name="exportCostType"
-                  .checked=${this._exportCostType === "number"}
                   .disabled=${externalExportSource}
-                  @change=${this._handleExportCostTypeChanged}
-                ></ha-radio>
-              </ha-formfield>
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.compensation_number"
+                  )}
+                </ha-radio-option>
+              </ha-radio-group>
 
               ${this._exportCostType === "stat"
                 ? html`
@@ -534,8 +492,7 @@ export class DialogEnergyGridSettings
   }
 
   private _handleImportCostTypeChanged(ev: Event) {
-    const input = ev.currentTarget as HaRadio;
-    this._importCostType = input.value as CostType;
+    this._importCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
       ...this._source!,
@@ -546,8 +503,7 @@ export class DialogEnergyGridSettings
   }
 
   private _handleExportCostTypeChanged(ev: Event) {
-    const input = ev.currentTarget as HaRadio;
-    this._exportCostType = input.value as CostType;
+    this._exportCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
       ...this._source!,
@@ -647,8 +603,8 @@ export class DialogEnergyGridSettings
         ha-input:last-of-type {
           margin-bottom: 0;
         }
-        ha-formfield {
-          display: block;
+        ha-radio-group {
+          margin-bottom: var(--ha-space-4);
         }
         .section-label {
           margin-top: var(--ha-space-4);

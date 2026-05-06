@@ -2,11 +2,11 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/input/ha-input";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import type { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -87,55 +87,37 @@ class HaInputDateTimeForm extends LitElement {
           )}
           .disabled=${this.disabled}
         ></ha-icon-picker>
-        <br />
-        ${this.hass.localize("ui.dialogs.helper_settings.input_datetime.mode")}:
-        <br />
-
-        <ha-formfield
+        <ha-radio-group
           .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.input_datetime.date"
+            "ui.dialogs.helper_settings.input_datetime.mode"
           )}
+          .value=${this._mode}
+          .disabled=${this.disabled}
+          name="mode"
+          @change=${this._modeChanged}
         >
-          <ha-radio
-            name="mode"
-            value="date"
-            .checked=${this._mode === "date"}
-            @change=${this._modeChanged}
-            .disabled=${this.disabled}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.input_datetime.time"
-          )}
-        >
-          <ha-radio
-            name="mode"
-            value="time"
-            .checked=${this._mode === "time"}
-            @change=${this._modeChanged}
-            .disabled=${this.disabled}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.input_datetime.datetime"
-          )}
-        >
-          <ha-radio
-            name="mode"
-            value="datetime"
-            .checked=${this._mode === "datetime"}
-            @change=${this._modeChanged}
-            .disabled=${this.disabled}
-          ></ha-radio>
-        </ha-formfield>
+          <ha-radio-option value="date">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.date"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="time">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.time"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="datetime">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.datetime"
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
       </div>
     `;
   }
 
-  private _modeChanged(ev: CustomEvent) {
-    const mode = (ev.target as HaRadio).value;
+  private _modeChanged(ev: Event) {
+    const mode = String((ev.currentTarget as HaRadioGroup).value);
     fireEvent(this, "value-changed", {
       value: {
         ...this._item,
@@ -178,6 +160,9 @@ class HaInputDateTimeForm extends LitElement {
         }
         ha-input {
           margin: var(--ha-space-2) 0;
+        }
+        ha-radio-group {
+          margin-top: var(--ha-space-5);
         }
       `,
     ];
