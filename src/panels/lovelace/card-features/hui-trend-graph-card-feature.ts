@@ -49,6 +49,8 @@ class HuiHistoryChartCardFeature
 
   @state() private _yAxisOrigin?: number;
 
+  @state() private _loading = true;
+
   @state() private _error?: { code: string; message: string };
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
@@ -90,7 +92,27 @@ class HuiHistoryChartCardFeature
   }
 
   protected firstUpdated() {
+    this._setLoadingCoordinates();
     this._subscribeHistory();
+  }
+
+  private _setLoadingCoordinates() {
+    const entityId = this.context?.entity_id;
+    if (!entityId || !this.hass) {
+      return;
+    }
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj) {
+      return;
+    }
+    const { points, yAxisOrigin } = coordinatesMinimalResponseCompressedState(
+      limitedHistoryFromStateObj(stateObj),
+      this.clientWidth,
+      this.clientHeight,
+      10
+    );
+    this._coordinates = points;
+    this._yAxisOrigin = yAxisOrigin;
   }
 
   protected render() {
@@ -109,10 +131,7 @@ class HuiHistoryChartCardFeature
         </div>
       `;
     }
-    if (!this._coordinates) {
-      return html`<hui-graph-base preview></hui-graph-base>`;
-    }
-    if (!this._coordinates.length) {
+    if (this._coordinates && !this._coordinates.length) {
       return html`
         <div class="container">
           <div class="info">No state history found.</div>
@@ -121,6 +140,7 @@ class HuiHistoryChartCardFeature
     }
     return html`
       <hui-graph-base
+        ?loading=${this._loading}
         .coordinates=${this._coordinates}
         .yAxisOrigin=${this._yAxisOrigin}
       ></hui-graph-base>
@@ -194,6 +214,7 @@ class HuiHistoryChartCardFeature
         withViewTransition(() => {
           this._coordinates = points;
           this._yAxisOrigin = yAxisOrigin;
+          this._loading = false;
         });
       },
       hourToShow,

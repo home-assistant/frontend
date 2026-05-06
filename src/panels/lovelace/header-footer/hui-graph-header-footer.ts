@@ -69,6 +69,8 @@ export class HuiGraphHeaderFooter
 
   @state() private _coordinates?: [number, number][];
 
+  @state() private _loading = true;
+
   @state() private _error?: { code: string; message: string };
 
   private _history?: HistoryStates;
@@ -118,11 +120,7 @@ export class HuiGraphHeaderFooter
       `;
     }
 
-    if (!this._coordinates) {
-      return html`<hui-graph-base preview></hui-graph-base>`;
-    }
-
-    if (!this._coordinates.length) {
+    if (this._coordinates && !this._coordinates.length) {
       return html`
         <div class="container">
           <div class="info">No state history found.</div>
@@ -131,7 +129,10 @@ export class HuiGraphHeaderFooter
     }
 
     return html`
-      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      <hui-graph-base
+        ?loading=${this._loading}
+        .coordinates=${this._coordinates}
+      ></hui-graph-base>
     `;
   }
 
@@ -162,6 +163,7 @@ export class HuiGraphHeaderFooter
     ) {
       return;
     }
+    this._setLoadingCoordinates();
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -187,6 +189,28 @@ export class HuiGraphHeaderFooter
       return undefined;
     });
     this._setRedrawTimer();
+  }
+
+  private _setLoadingCoordinates() {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+    const width = this.clientWidth || this.offsetWidth;
+    const { points } = coordinatesMinimalResponseCompressedState(
+      limitedHistoryFromStateObj(stateObj),
+      width,
+      width / 5,
+      10,
+      {
+        minY: this._config.limits?.min,
+        maxY: this._config.limits?.max,
+      }
+    );
+    this._coordinates = points;
   }
 
   private _computeCoordinates() {
@@ -222,6 +246,7 @@ export class HuiGraphHeaderFooter
     );
     withViewTransition(() => {
       this._coordinates = points;
+      this._loading = false;
     });
   }
 
