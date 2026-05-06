@@ -13,19 +13,22 @@ export class HuiGraphBase extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public loading = false;
 
-  @state() private _path?: string;
-
   private _uniqueId = `graph-${Math.random().toString(36).substring(2, 9)}`;
+
+  @state()
+  private _displayCoordinates?: number[][];
+
+  private _animationFrame?: number;
 
   protected render(): TemplateResult {
     const width = this.clientWidth || 500;
     const height = this.clientHeight || width / 5;
     const yAxisOrigin = this.yAxisOrigin ?? height;
     const path =
-      this._path ??
+      (this._displayCoordinates && getPath(this._displayCoordinates)) ??
       (this.loading ? `M 0,${height / 2} L ${width},${height / 2}` : undefined);
-    const lastX = this.coordinates?.length
-      ? this.coordinates[this.coordinates.length - 1][0]
+    const lastX = this._displayCoordinates?.length
+      ? this._displayCoordinates[this._displayCoordinates.length - 1][0]
       : width;
 
     if (!path) {
@@ -87,8 +90,98 @@ export class HuiGraphBase extends LitElement {
     }
 
     if (changedProps.has("coordinates")) {
-      this._path = getPath(this.coordinates);
+      this._setCoordinates(this.coordinates);
     }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._cancelAnimation();
+  }
+
+  private _setCoordinates(coordinates: number[][]) {
+    this._cancelAnimation();
+
+    const displayCoordinates = this._displayCoordinates;
+
+    if (!displayCoordinates || coordinates.length < 2) {
+      this._displayCoordinates = coordinates;
+      return;
+    }
+
+    const duration = matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? 1
+      : 250;
+
+    if (duration <= 1) {
+      this._displayCoordinates = coordinates;
+      return;
+    }
+
+    const fromCoordinates = coordinates.map((coord) => [
+      coord[0],
+      this._interpolateY(displayCoordinates, coord[0]),
+    ]);
+    const start = performance.now();
+
+    const animate = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+
+      this._displayCoordinates = coordinates.map((coord, index) => [
+        coord[0],
+        fromCoordinates[index][1] +
+          (coord[1] - fromCoordinates[index][1]) * easedProgress,
+      ]);
+
+      if (progress < 1) {
+        this._animationFrame = requestAnimationFrame(animate);
+      } else {
+        this._animationFrame = undefined;
+      }
+    };
+
+    this._animationFrame = requestAnimationFrame(animate);
+  }
+
+  private _interpolateY(coordinates: number[][], x: number): number {
+    if (!coordinates.length) {
+      return 0;
+    }
+
+    if (x <= coordinates[0][0]) {
+      return coordinates[0][1];
+    }
+
+    for (let i = 1; i < coordinates.length; i++) {
+      const current = coordinates[i];
+
+      if (x > current[0]) {
+        continue;
+      }
+
+      const previous = coordinates[i - 1];
+      const xDelta = current[0] - previous[0];
+
+      if (!xDelta) {
+        return current[1];
+      }
+
+      const progress = (x - previous[0]) / xDelta;
+
+      return previous[1] + (current[1] - previous[1]) * progress;
+    }
+
+    return coordinates[coordinates.length - 1][1];
+  }
+
+  private _cancelAnimation() {
+    if (this._animationFrame === undefined) {
+      return;
+    }
+
+    cancelAnimationFrame(this._animationFrame);
+    this._animationFrame = undefined;
   }
 
   static styles = css`
