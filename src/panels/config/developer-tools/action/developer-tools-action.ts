@@ -5,9 +5,11 @@ import { dump, JSON_SCHEMA, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import {
@@ -23,6 +25,7 @@ import { showToast } from "../../../../util/toast";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-expansion-panel";
@@ -39,12 +42,14 @@ import {
   serviceCallWillDisconnect,
 } from "../../../../data/service";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ToggleButton } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
+import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
+import { withViewTransition } from "../../../../common/util/view-transition";
 
 @customElement("developer-tools-action")
-class HaPanelDevAction extends LitElement {
+class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -79,6 +84,12 @@ class HaPanelDevAction extends LitElement {
   private _yamlMode = false;
 
   @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  @query(".ui-mode-content") private _uiModeContent?: HTMLElement;
+
+  protected get matchMinHeightTarget(): HTMLElement | null {
+    return this._yamlMode ? null : (this._uiModeContent ?? null);
+  }
 
   protected willUpdate() {
     if (
@@ -117,6 +128,21 @@ class HaPanelDevAction extends LitElement {
       this._serviceData?.action
     );
 
+    const modeButtons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.config.developer-tools.tabs.actions.ui_mode"
+        ),
+        value: "ui",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
+        ),
+        value: "yaml",
+      },
+    ];
+
     const domain = this._serviceData?.action
       ? computeDomain(this._serviceData?.action)
       : undefined;
@@ -132,14 +158,34 @@ class HaPanelDevAction extends LitElement {
 
     return html`
       <div class="content">
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.actions.description"
-          )}
-        </p>
         <ha-card>
+          <div class="card-header">
+            <div class="header-row">
+              <div class="header-title">
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.actions.title"
+                )}
+              </div>
+              <ha-button-toggle-group
+                size="small"
+                class="yaml-mode-toggle"
+                .buttons=${modeButtons}
+                .active=${this._yamlMode ? "yaml" : "ui"}
+                .disabled=${!this._uiAvailable}
+                @value-changed=${this._modeChanged}
+              ></ha-button-toggle-group>
+            </div>
+            <p class="secondary">
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.actions.description"
+              )}
+            </p>
+          </div>
           ${this._yamlMode
-            ? html`<div class="card-content">
+            ? html`<div
+                class="card-content"
+                style=${styleMap(this._matchMinHeightStyle)}
+              >
                 <ha-service-picker
                   .hass=${this.hass}
                   .value=${this._serviceData?.action}
@@ -161,44 +207,27 @@ class HaPanelDevAction extends LitElement {
                   show-advanced
                   show-service-id
                   @value-changed=${this._serviceDataChanged}
-                  class="card-content"
+                  class="card-content ui-mode-content"
                 ></ha-service-control>
               `}
           ${this._error !== undefined
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
-        </ha-card>
-      </div>
-      <div class="button-row">
-        <div class="buttons">
-          <div class="switch-mode-container">
-            <ha-button
-              appearance="plain"
-              @click=${this._toggleYaml}
-              .disabled=${!this._uiAvailable}
-            >
-              ${this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.ui_mode"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
-                  )}
-            </ha-button>
+          <div class="card-actions">
             ${!this._uiAvailable
               ? html`<span class="error"
                   >${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.actions.no_template_ui_support"
                   )}</span
                 >`
-              : ""}
+              : nothing}
+            <ha-progress-button raised @click=${this._callService}>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.actions.call_service"
+              )}
+            </ha-progress-button>
           </div>
-          <ha-progress-button raised @click=${this._callService}>
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.actions.call_service"
-            )}
-          </ha-progress-button>
-        </div>
+        </ha-card>
       </div>
       ${this._response?.result
         ? html`<div class="content response">
@@ -439,7 +468,7 @@ class HaPanelDevAction extends LitElement {
     }
   );
 
-  private async _callService(ev) {
+  private async _callService(ev: Event) {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
@@ -560,13 +589,20 @@ class HaPanelDevAction extends LitElement {
     button.actionSuccess();
   }
 
-  private _toggleYaml() {
-    this._yamlMode = !this._yamlMode;
-    this._yamlValid = true;
-    this._error = undefined;
+  private _modeChanged(ev: HASSDomEvent<{ value: string }>) {
+    ev.stopPropagation();
+    const yamlMode = ev.detail.value === "yaml";
+    if (yamlMode === this._yamlMode) {
+      return;
+    }
+    withViewTransition(() => {
+      this._yamlMode = yamlMode;
+      this._yamlValid = true;
+      this._error = undefined;
+    });
   }
 
-  private _yamlChanged(ev) {
+  private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {
     if (!ev.detail.isValid) {
       this._yamlValid = false;
       return;
@@ -602,7 +638,7 @@ class HaPanelDevAction extends LitElement {
     }
   }
 
-  private _serviceDataChanged(ev) {
+  private _serviceDataChanged(ev: HASSDomEvent<{ value: any }>) {
     if (this._serviceData?.action !== ev.detail.value.action) {
       this._error = undefined;
     }
@@ -610,7 +646,7 @@ class HaPanelDevAction extends LitElement {
     this._checkUiSupported();
   }
 
-  private _serviceChanged(ev) {
+  private _serviceChanged(ev: HASSDomEvent<{ value: any }>) {
     ev.stopPropagation();
     if (ev.detail.value) {
       this._serviceData = { action: ev.detail.value, data: {} };
@@ -667,30 +703,55 @@ class HaPanelDevAction extends LitElement {
           max-width: 1200px;
           margin: auto;
         }
-        .button-row {
-          padding: var(--ha-space-2) var(--ha-space-4);
-          border-top: 1px solid var(--divider-color);
-          border-bottom: 1px solid var(--divider-color);
-          background: var(--card-background-color);
-          position: sticky;
-          bottom: 0;
-          box-sizing: border-box;
-          width: 100%;
-        }
-        .button-row .buttons {
+        .card-header {
           display: flex;
-          justify-content: space-between;
-          max-width: 1200px;
-          margin: auto;
+          flex-direction: column;
+          gap: var(--ha-space-1);
         }
-        .switch-mode-container {
+        .header-row {
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          gap: var(--ha-space-2);
         }
-        .switch-mode-container .error {
-          margin-left: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-2);
-          margin-inline-end: initial;
+        .header-title {
+          flex: 1;
+          min-width: 0;
+        }
+        .secondary {
+          margin: 0;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: normal;
+          letter-spacing: normal;
+          color: var(--secondary-text-color);
+        }
+        .card-content {
+          display: flex;
+          align-items: stretch;
+          justify-content: flex-start;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+          margin: var(--ha-space-2);
+          --service-control-padding: 0;
+        }
+        .card-content ha-yaml-editor {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        .yaml-mode-toggle {
+          flex-shrink: 0;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+        .card-actions .error {
+          flex: 1;
+          color: var(--error-color);
         }
         .attributes {
           width: 100%;
