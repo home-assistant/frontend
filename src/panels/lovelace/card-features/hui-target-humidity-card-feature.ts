@@ -60,7 +60,7 @@ class HuiTargetHumidityCardFeature
     await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
     const el = document.createElement(
       "hui-numeric-input-card-feature-editor"
-    ) as any;
+    ) as HuiNumericInputCardFeatureEditor;
     el.defaultInputMode = "slider";
     return el;
   }
