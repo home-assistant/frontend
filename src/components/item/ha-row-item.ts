@@ -62,26 +62,20 @@ export class HaRowItem extends LitElement {
   }
 
   protected _renderInner(): TemplateResult {
-    const hasStart = this._slotController.test("start");
-    const hasEnd = this._slotController.test("end");
     const hasContent = this._slotController.test("content");
 
     return html`
-      ${hasStart
-        ? html`<div part="start" class="start">
-            <slot name="start"></slot>
-          </div>`
-        : nothing}
+      <div part="start" class="start">
+        <slot name="start"></slot>
+      </div>
       <div part="content" class="content">
         ${hasContent
           ? html`<slot name="content"></slot>`
           : this._renderDefaultContent()}
       </div>
-      ${hasEnd
-        ? html`<div part="end" class="end">
-            <slot name="end"></slot>
-          </div>`
-        : nothing}
+      <div part="end" class="end">
+        <slot name="end"></slot>
+      </div>
     `;
   }
 
@@ -147,6 +141,10 @@ export class HaRowItem extends LitElement {
       display: flex;
       align-items: center;
       flex: 0 0 auto;
+    }
+    :host(:not(:has([slot="start"]))) .start,
+    :host(:not(:has([slot="end"]))) .end {
+      display: none;
     }
     .headline {
       overflow: hidden;
