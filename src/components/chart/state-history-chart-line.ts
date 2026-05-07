@@ -60,6 +60,11 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
+
   @property() public unit?: string;
 
   @property() public identifier?: string;
@@ -435,9 +440,11 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
+    const colors = this.colors || {};
     entityStates.forEach((states, dataIdx) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
+      const color = colors[states.entity_id];
       // array containing [value1, value2, etc]
       let prevValues: any[] | null = null;
 
@@ -468,11 +475,11 @@ export class StateHistoryChartLine extends LitElement {
       const addDataSet = (
         id: string,
         nameY: string,
-        color?: string,
+        clr?: string,
         fill = false
       ) => {
-        if (!color) {
-          color = getGraphColorByIndex(colorIndex, computedStyles);
+        if (!clr) {
+          clr = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -481,7 +488,7 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           cursor: "default",
           name: nameY,
-          color,
+          color: clr,
           symbol: "circle",
           symbolSize: 1,
           step: "end",
@@ -492,7 +499,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           areaStyle: fill
             ? {
-                color: color + "7F",
+                color: clr + "7F",
               }
             : undefined,
           tooltip: {
@@ -740,7 +747,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(states.entity_id, name);
+        addDataSet(states.entity_id, name, color);
 
         let lastValue: number;
         let lastDate: Date;
