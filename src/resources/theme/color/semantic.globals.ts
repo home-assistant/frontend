@@ -7,7 +7,7 @@ import { css } from "lit";
  */
 export const semanticColorStyles = css`
   html {
-    --ha-color-focus: var(--ha-color-orange-60);
+    --ha-color-focus: var(--ha-color-neutral-60);
 
     /* text */
     --ha-color-text-primary: var(--ha-color-neutral-05);

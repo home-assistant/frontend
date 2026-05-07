@@ -1,5 +1,5 @@
 import { mdiPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -8,7 +8,6 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-navigation-list";
 import type { BackupContent } from "../../../data/backup";
 import { fetchBackupInfo } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
@@ -29,6 +28,7 @@ import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart"
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-config-navigation-list";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
@@ -146,7 +146,7 @@ class HaConfigSystemNavigation extends LitElement {
           full-width
         >
           <ha-card outlined>
-            <ha-navigation-list
+            <ha-config-navigation-list
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
@@ -154,7 +154,7 @@ class HaConfigSystemNavigation extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.dashboard.system.main"
               )}
-            ></ha-navigation-list>
+            ></ha-config-navigation-list>
           </ha-card>
         </ha-config-section>
       </hass-subpage>
@@ -285,10 +285,6 @@ class HaConfigSystemNavigation extends LitElement {
           ha-config-section {
             margin-top: -42px;
           }
-        }
-
-        ha-navigation-list {
-          --navigation-list-item-title-font-size: var(--ha-font-size-l);
         }
       `,
     ];
