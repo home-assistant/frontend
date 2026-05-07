@@ -244,9 +244,13 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           max-width: 1040px;
           margin: 0 auto;
         }
+        .card-content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+        }
         .description {
           margin: 0;
-          margin-bottom: var(--ha-space-4);
         }
         ha-textarea {
           width: 100%;

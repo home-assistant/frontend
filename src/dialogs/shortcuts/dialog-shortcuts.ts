@@ -148,6 +148,16 @@ const _SHORTCUTS: Section[] = [
         ],
         descriptionTranslationKey: "ui.dialogs.shortcuts.charts.double_click",
       },
+      {
+        shortcut: [
+          CTRL_CMD,
+          {
+            shortcutTranslationKey: "ui.dialogs.shortcuts.shortcuts.click",
+          },
+        ],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.charts.click_legend_solo",
+      },
     ],
   },
   {

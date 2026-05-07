@@ -106,16 +106,16 @@ export class HuiHeadingEntityEditor
           iconPath: mdiTextShort,
           schema: [
             {
+              name: "name",
+              selector: {
+                entity_name: {},
+              },
+              context: { entity: "entity" },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                {
-                  name: "name",
-                  selector: {
-                    entity_name: {},
-                  },
-                  context: { entity: "entity" },
-                },
                 {
                   name: "icon",
                   selector: { icon: {} },

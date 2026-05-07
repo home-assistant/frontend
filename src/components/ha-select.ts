@@ -59,7 +59,7 @@ export class HaSelect extends LitElement {
       value: string | number | undefined
     ) => {
       // just in case value is a number, convert it to string to avoid falsy value
-      const valueStr = String(value);
+      const valueStr = value !== undefined ? String(value) : undefined;
       if (!options || !valueStr) {
         return valueStr;
       }

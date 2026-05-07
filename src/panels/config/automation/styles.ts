@@ -8,6 +8,7 @@ export const rowStyles = css`
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
   ha-expansion-panel {
+    position: relative;
     --expansion-panel-summary-padding: 0 0 0 8px;
     --expansion-panel-content-padding: 0;
   }
@@ -20,6 +21,7 @@ export const rowStyles = css`
     gap: var(--ha-space-2);
     padding: var(--ha-space-2) 0;
     min-height: 32px;
+    max-width: 100%;
   }
 
   ha-card {
@@ -45,6 +47,13 @@ export const rowStyles = css`
   }
   .hidden {
     display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+    inset-inline-end: 96px;
+    top: var(--ha-space-6);
+    box-shadow: var(--ha-box-shadow-s);
   }
 `;
 

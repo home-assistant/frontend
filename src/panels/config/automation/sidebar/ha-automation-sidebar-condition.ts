@@ -19,26 +19,23 @@ import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type {
   ConditionSidebarConfig,
   LegacyCondition,
 } from "../../../../data/automation";
-import { testCondition } from "../../../../data/automation";
 import {
   CONDITION_BUILDING_BLOCKS,
   getConditionDomain,
   getConditionObjectId,
 } from "../../../../data/condition";
-import { validateConfig } from "../../../../data/config";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-condition")
 export default class HaAutomationSidebarCondition extends LitElement {
@@ -356,64 +353,6 @@ export default class HaAutomationSidebarCondition extends LitElement {
     </ha-automation-sidebar-card>`;
   }
 
-  private _testCondition = async () => {
-    if (this._testing) {
-      return;
-    }
-    this._testingResult = undefined;
-    this._testing = true;
-    const condition = this.config.config;
-
-    try {
-      const validateResult = await validateConfig(this.hass, {
-        conditions: condition,
-      });
-
-      // Abort if condition changed.
-      if (this.config.config !== condition) {
-        this._testing = false;
-        return;
-      }
-
-      if (!validateResult.conditions.valid) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.invalid_condition"
-          ),
-          text: validateResult.conditions.error,
-        });
-        this._testing = false;
-        return;
-      }
-
-      let result: { result: boolean };
-      try {
-        result = await testCondition(this.hass, condition);
-      } catch (err: any) {
-        if (this.config.config !== condition) {
-          this._testing = false;
-          return;
-        }
-
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.test_failed"
-          ),
-          text: err.message,
-        });
-        this._testing = false;
-        return;
-      }
-
-      this._testingResult = result.result;
-    } finally {
-      setTimeout(() => {
-        this._testing = false;
-        this._testingResult = undefined;
-      }, 2500);
-    }
-  };
-
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this.yamlMode) {
@@ -458,7 +397,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         this.config.rename();
         break;
       case "test":
-        this._testCondition();
+        this.config.test();
         break;
       case "duplicate":
         this.config.duplicate();

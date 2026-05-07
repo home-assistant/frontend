@@ -31,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -122,6 +123,21 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    mode: "trigger" | "condition";
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {
@@ -464,7 +480,9 @@ export interface SelectorSelector {
 }
 
 export interface SerialPortSelector {
-  serial_port: {} | null;
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
 }
 
 export interface StateSelector {

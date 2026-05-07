@@ -13,7 +13,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
-import "../../components/ha-fade-in";
+import "../../components/animation/ha-fade-in";
 import "../../components/ha-icon-next";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";

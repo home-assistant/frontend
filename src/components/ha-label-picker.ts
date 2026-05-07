@@ -2,8 +2,8 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import {
   customElement,
   property,
@@ -116,6 +116,19 @@ export class HaLabelPicker extends LitElement {
   private _slotNodes?: NodeListOf<HTMLElement>;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingLabelId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      this._pendingLabelId &&
+      changedProperties.has("_labels") &&
+      this._labels?.some((l) => l.label_id === this._pendingLabelId)
+    ) {
+      this._setValue(this._pendingLabelId);
+      this._pendingLabelId = undefined;
+    }
+  }
 
   public async open() {
     await this.updateComplete;
@@ -248,7 +261,11 @@ export class HaLabelPicker extends LitElement {
         createEntry: async (values) => {
           try {
             const label = await createLabelRegistryEntry(this.hass, values);
-            this._setValue(label.label_id);
+            if (this._labels?.some((l) => l.label_id === label.label_id)) {
+              this._setValue(label.label_id);
+            } else {
+              this._pendingLabelId = label.label_id;
+            }
           } catch (err: any) {
             showAlertDialog(this, {
               title: this.hass.localize(

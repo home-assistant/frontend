@@ -53,7 +53,10 @@ export class HaIconButton extends LitElement {
         .download=${this.download}
       >
         ${this.path
-          ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
+          ? html`<ha-svg-icon
+              aria-hidden="true"
+              .path=${this.path}
+            ></ha-svg-icon>`
           : html`<span><slot></slot></span>`}
       </ha-button>
     `;

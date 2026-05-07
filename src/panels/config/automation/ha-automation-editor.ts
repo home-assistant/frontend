@@ -546,7 +546,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     .readOnly=${this.readOnly}
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveAutomation}
-                    .showErrors=${false}
                     disable-fullscreen
                   ></ha-yaml-editor>
                   <ha-button

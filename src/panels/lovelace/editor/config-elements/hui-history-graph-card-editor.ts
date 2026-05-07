@@ -12,26 +12,35 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { HistoryGraphCardConfig } from "../../cards/types";
-import "../../components/hui-entity-editor";
-import "../hui-sub-element-editor";
-import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import type { EntityConfig } from "../../entity-rows/types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { isNumericFromAttributes } from "../../../../common/number/format_number";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
+import type {
+  GraphEntityConfig,
+  HistoryGraphCardConfig,
+} from "../../cards/types";
+import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
+import { graphEntitiesConfigStruct } from "../structs/entities-struct";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import { orderPropertiesGraphCard } from "./order-properties/order-properties-graph";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entities: array(entitiesConfigStruct),
+    entities: array(graphEntitiesConfigStruct),
     title: optional(string()),
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
@@ -44,19 +53,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SUB_FORM = {
-  schema: [
-    { name: "entity", selector: { entity: {} }, required: true },
-    {
-      name: "name",
-      selector: { entity_name: {} },
-      context: {
-        entity: "entity",
-      },
-    },
-  ] as const,
-};
-
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
@@ -68,12 +64,9 @@ export class HuiHistoryGraphCardEditor
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  @state() private _configEntities?: EntityConfig[];
-
   public setConfig(config: HistoryGraphCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
   }
 
   private _schema = memoizeOne(
@@ -135,17 +128,46 @@ export class HuiHistoryGraphCardEditor
       ] as const
   );
 
+  private _subForm = memoizeOne((localize: LocalizeFunc, entityId: string) => ({
+    schema: [
+      { name: "entity", selector: { entity: {} }, required: true },
+      {
+        name: "name",
+        selector: { entity_name: {} },
+        context: {
+          entity: "entity",
+        },
+      },
+      {
+        name: "color",
+        disabled: this._shouldDisableColorOption(entityId),
+        selector: { ui_color: {} },
+      },
+    ] as const,
+    computeLabel: (item: HaFormSchema) => {
+      switch (item.name) {
+        case "color":
+          return localize(`ui.panel.lovelace.editor.card.generic.${item.name}`);
+        default:
+          return undefined;
+      }
+    },
+  }));
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
     if (this._subElementEditorConfig) {
+      const entityId = (
+        this._subElementEditorConfig.elementConfig! as { entity: string }
+      ).entity;
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .form=${SUB_FORM}
+          .form=${this._subForm(this.hass.localize, entityId)}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >
@@ -158,6 +180,9 @@ export class HuiHistoryGraphCardEditor
         this._config!.max_y_axis !== undefined
     );
 
+    const configEntities = this._config.entities
+      ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
+      : [];
     return html`
       <ha-form
         .hass=${this.hass}
@@ -168,7 +193,7 @@ export class HuiHistoryGraphCardEditor
       ></ha-form>
       <hui-entity-editor
         .hass=${this.hass}
-        .entities=${this._configEntities}
+        .entities=${configEntities}
         can-edit
         @entities-changed=${this._entitiesChanged}
         @edit-detail-element=${this._editDetailElement}
@@ -187,34 +212,73 @@ export class HuiHistoryGraphCardEditor
   private _handleSubEntityChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
-    const index = this._subElementEditorConfig!.index!;
+    // get updated entity config
+    let newEntityConfig = ev.detail.config as GraphEntityConfig;
+    const entityId = newEntityConfig.entity;
+    if (this._shouldDisableColorOption(entityId)) {
+      // remove unused "color" option
+      newEntityConfig = this._deleteColorOption(newEntityConfig);
+    }
 
-    const newEntities = this._configEntities!.concat();
-    const newConfig = ev.detail.config as EntityConfig;
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: newConfig,
-    };
-    newEntities[index] = newConfig;
+    // update card config with updated entity config
+    const index = this._subElementEditorConfig!.index!;
+    const newEntities = [...this._config!.entities];
+    newEntities[index] = newEntityConfig;
     let config = this._config!;
     config = { ...config, entities: newEntities };
+    config = this._orderProperties(config);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+
+    // update sub-element editor config
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: {
+        ...(this._config!.entities[index] as GraphEntityConfig),
+      },
+    };
 
     fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = this._orderProperties(ev.detail.value);
+    fireEvent(this, "config-changed", { config });
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
     let config = this._config!;
-
     config = { ...config, entities: ev.detail.entities };
-    this._configEntities = processEditorEntities(config.entities);
 
+    config = this._orderProperties(config);
     fireEvent(this, "config-changed", { config });
+  }
+
+  // a rough assumption about a numerical entity
+  // which may use state-history-chart-line
+  // where "color" option may be used
+  private _shouldDisableColorOption = (entityId: string) => {
+    const domain = computeDomain(entityId);
+    const isNumberDomain =
+      domain === "counter" || domain === "number" || domain === "input_number";
+    const stateObj = this.hass!.states[entityId];
+    const attributes = stateObj?.attributes;
+    return !isNumericFromAttributes(attributes) && !isNumberDomain;
+  };
+
+  // remove "color" option when needed
+  private _deleteColorOption(config: GraphEntityConfig): GraphEntityConfig {
+    const { color, ...rest } = config;
+    return rest as GraphEntityConfig;
+  }
+
+  // normalize a generated yaml code by placing lines in a consistent order
+  private _orderProperties(
+    config: HistoryGraphCardConfig
+  ): HistoryGraphCardConfig {
+    return orderPropertiesGraphCard(
+      config,
+      cardConfigStruct
+    ) as HistoryGraphCardConfig;
   }
 
   private _computeLabelCallback = (

@@ -409,6 +409,8 @@ class HUIRoot extends LitElement {
               slot="actionItems"
               .id="button-${index}"
               .path=${item.icon}
+              .label=${label}
+              hide-title
               @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">

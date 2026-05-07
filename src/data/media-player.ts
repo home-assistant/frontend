@@ -16,6 +16,8 @@ import {
   mdiPlayPause,
   mdiPodcast,
   mdiPower,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiRepeat,
   mdiRepeatOff,
   mdiRepeatOnce,
@@ -286,7 +288,9 @@ export const computeMediaControls = (
     return undefined;
   }
 
-  if (!stateActive(stateObj)) {
+  const assumedState = stateObj.attributes.assumed_state === true;
+
+  if (!stateActive(stateObj) && !assumedState) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
@@ -299,14 +303,23 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
+  ) {
+    buttons.push({
+      icon: mdiPowerOn,
+      action: "turn_on",
+    });
+  }
+
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPower,
       action: "turn_off",
     });
   }
 
-  const assumedState = stateObj.attributes.assumed_state === true;
   const stateAttr = stateObj.attributes;
 
   if (

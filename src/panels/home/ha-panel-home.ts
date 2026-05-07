@@ -48,6 +48,8 @@ class PanelHome extends LitElement {
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
+  private _loadConfigPromise?: Promise<void>;
+
   private get _showBanner(): boolean {
     // Don't show if already dismissed
     if (this._config.welcome_banner_dismissed) {
@@ -121,6 +123,12 @@ class PanelHome extends LitElement {
 
   private async _setup() {
     this._updateExtraActionItems();
+    this._loadConfigPromise = this._loadConfig();
+    await this._loadConfigPromise;
+    this._setLovelace();
+  }
+
+  private async _loadConfig() {
     try {
       const [_, data] = await Promise.all([
         this.hass.loadFragmentTranslation("lovelace"),
@@ -132,7 +140,6 @@ class PanelHome extends LitElement {
       console.error("Failed to load favorites:", err);
       this._config = {};
     }
-    this._setLovelace();
   }
 
   private _debounceRegistriesChanged = debounce(
@@ -313,15 +320,17 @@ class PanelHome extends LitElement {
   }
 
   private async _setLovelace() {
+    if (this._loadConfigPromise) {
+      await this._loadConfigPromise;
+    }
     const strategyConfig: LovelaceDashboardStrategyConfig = {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
-        hidden_summaries: this._config.hidden_summaries,
         hide_welcome_message: this._config.hide_welcome_message,
         hide_suggested_entities: this._config.hide_suggested_entities,
-        custom_shortcuts: this._config.custom_shortcuts,
+        shortcuts: this._config.shortcuts,
       },
     };
 

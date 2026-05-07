@@ -43,12 +43,22 @@ const fullOptions: SelectBoxOption[] = [
   },
 ];
 
+const manyOptions: SelectBoxOption[] = [
+  { value: "opt1", label: "Option 1" },
+  { value: "opt2", label: "Option 2" },
+  { value: "opt3", label: "Option 3" },
+  { value: "opt4", label: "Option 4" },
+  { value: "opt5", label: "Option 5" },
+  { value: "opt6", label: "Option 6" },
+];
+
 const selects: {
   id: string;
   label: string;
   class?: string;
   options: SelectBoxOption[];
   disabled?: boolean;
+  maxColumns?: number;
 }[] = [
   {
     id: "basic",
@@ -60,6 +70,12 @@ const selects: {
     label: "With description and image",
     options: fullOptions,
   },
+  {
+    id: "two-columns",
+    label: "2 columns (maxColumns=2)",
+    options: manyOptions,
+    maxColumns: 2,
+  },
 ];
 
 @customElement("demo-components-ha-select-box")
@@ -67,13 +83,14 @@ export class DemoHaSelectBox extends LitElement {
   @state() private value?: string = "off";
 
   handleValueChanged(e: CustomEvent) {
+    console.log(e.detail.value);
     this.value = e.detail.value as string;
   }
 
   protected render(): TemplateResult {
     return html`
       ${repeat(selects, (select) => {
-        const { id, label, options } = select;
+        const { id, label, options, maxColumns } = select;
         return html`
           <ha-card>
             <div class="card-content">
@@ -81,6 +98,7 @@ export class DemoHaSelectBox extends LitElement {
               <ha-select-box
                 .value=${this.value}
                 .options=${options}
+                .maxColumns=${maxColumns}
                 @value-changed=${this.handleValueChanged}
               >
               </ha-select-box>

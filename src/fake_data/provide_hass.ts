@@ -68,17 +68,19 @@ export interface MockHomeAssistant extends HomeAssistant {
 
 export const provideHass = (
   elements,
-  overrideData: Partial<HomeAssistant> = {}
+  overrideData: Partial<HomeAssistant> = {},
+  setHassProperty = false
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.
-  const hass = (): MockHomeAssistant => elements[0].hass;
+  const baseEl = () => elements[0];
+  const hass = (): MockHomeAssistant => baseEl().hass;
 
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
   const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
-  let resources: Resources = {};
+  let localResources: Resources = {};
 
   async function updateTranslations(
     fragment: null | string,
@@ -95,12 +97,29 @@ export const provideHass = (
     language?: string
   ) {
     const lang = language || getLocalLanguage();
+    const base = baseEl();
+    const baseHasResources = Object.prototype.hasOwnProperty.call(
+      base,
+      "__resources"
+    );
+    let resources: Resources;
+    if (baseHasResources) {
+      resources = base.__resources as Resources;
+    } else {
+      resources = localResources;
+    }
     resources = {
       [lang]: {
         ...resources[lang],
         ...translations,
       },
     };
+    if (baseHasResources) {
+      base.__resources = resources;
+    } else {
+      localResources = resources;
+    }
+
     hass().updateHass({
       localize: await computeLocalize(elements[0], lang, resources),
     });
@@ -395,6 +414,13 @@ export const provideHass = (
     ],
     ...overrideData,
   };
+
+  // Set hass if required
+  if (setHassProperty) {
+    elements.forEach((el) => {
+      el.hass = hassObj;
+    });
+  }
 
   // Update the elements. Note, we call it on hassObj so that if it was
   // overridden (like in the demo), it will still work.

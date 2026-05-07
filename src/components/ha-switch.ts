@@ -33,6 +33,7 @@ import { forwardHaptic } from "../data/haptics";
  * @cssprop --ha-switch-checked-thumb-border-color-hover - Border color of the checked thumb on hover.
  * @cssprop --ha-switch-thumb-box-shadow - The box shadow of the thumb. Defaults to `var(--ha-box-shadow-s)`.
  * @cssprop --ha-switch-disabled-opacity - Opacity of the switch when disabled. Defaults to `0.2`.
+ * @cssprop --ha-switch-min-touch-size - Minimum touch target size around the switch. Defaults to `40px`.
  * @cssprop --ha-switch-required-marker - The marker shown after the label for required fields. Defaults to `"*"`.
  * @cssprop --ha-switch-required-marker-offset - Offset of the required marker. Defaults to `0.1rem`.
  *
@@ -89,7 +90,22 @@ export class HaSwitch extends Switch {
         }
 
         label {
+          position: relative;
           height: max(var(--thumb-size), var(--wa-form-control-toggle-size));
+        }
+        label::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          height: 100%;
+          min-width: var(--ha-switch-min-touch-size, 40px);
+          min-height: var(--ha-switch-min-touch-size, 40px);
+        }
+        label.disabled::before {
+          pointer-events: none;
         }
 
         .switch {

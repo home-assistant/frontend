@@ -18,10 +18,12 @@ import {
   formatNumber,
 } from "../../common/number/format_number";
 import { measureTextWidth } from "../../util/text";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { filterXSS } from "../../common/util/xss";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -35,6 +37,21 @@ const CLIMATE_MODE_CONFIGS = [
   { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
 ] as const;
 
+// Used to recover the underlying entity_id from a legend dataset id.
+// Kept in sync with the suffixes appended at dataset construction below
+// for climate / water_heater / humidifier multi-attribute charts.
+const ENTITY_DATASET_SUFFIXES = [
+  "-current_temperature",
+  "-target_temperature",
+  "-target_temperature_mode",
+  "-target_temperature_mode_low",
+  ...CLIMATE_MODE_CONFIGS.map((c) => `-${c.action}`),
+  "-current_humidity",
+  "-target_humidity",
+  "-humidifying",
+  "-on",
+];
+
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,6 +59,11 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
   @property({ attribute: false }) public names?: Record<string, string>;
+
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
 
   @property() public unit?: string;
 
@@ -111,6 +133,8 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -222,6 +246,24 @@ export class StateHistoryChartLine extends LitElement {
     });
   }
 
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const id = ev.detail.id;
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of ENTITY_DATASET_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("data") ||
@@ -311,12 +353,50 @@ export class StateHistoryChartLine extends LitElement {
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
               const stateObj = this.hass.states[item.entityId];
+              let value: string | undefined;
+
+              if (stateObj) {
+                // For climate temperature datasets, show temperature values
+                const datasetId = item.dataset.id as string;
+                if (
+                  datasetId?.endsWith("-current_temperature") ||
+                  datasetId?.endsWith("-target_temperature") ||
+                  datasetId?.endsWith("-target_temperature_mode") ||
+                  datasetId?.endsWith("-target_temperature_mode_low")
+                ) {
+                  let attribute: string | undefined;
+                  if (datasetId.endsWith("-current_temperature")) {
+                    attribute = "current_temperature";
+                  } else if (
+                    datasetId.endsWith("-target_temperature_mode_low")
+                  ) {
+                    attribute = "target_temp_low";
+                  } else if (datasetId.endsWith("-target_temperature_mode")) {
+                    attribute = "target_temp_high";
+                  } else {
+                    attribute = "temperature";
+                  }
+                  // Use the helper to format temperature with proper unit
+                  value = computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    attribute
+                  );
+                }
+
+                // Default for non-temperature datasets / missing attribute
+                if (value === undefined) {
+                  value = this.hass.formatEntityState(stateObj);
+                }
+              }
+
               return {
                 id: item.dataset.id as string,
                 name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
+                value: value,
               };
             }),
         },
@@ -360,9 +440,11 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
+    const colors = this.colors || {};
     entityStates.forEach((states, dataIdx) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
+      const color = colors[states.entity_id];
       // array containing [value1, value2, etc]
       let prevValues: any[] | null = null;
 
@@ -393,11 +475,11 @@ export class StateHistoryChartLine extends LitElement {
       const addDataSet = (
         id: string,
         nameY: string,
-        color?: string,
+        clr?: string,
         fill = false
       ) => {
-        if (!color) {
-          color = getGraphColorByIndex(colorIndex, computedStyles);
+        if (!clr) {
+          clr = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -406,7 +488,7 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           cursor: "default",
           name: nameY,
-          color,
+          color: clr,
           symbol: "circle",
           symbolSize: 1,
           step: "end",
@@ -417,7 +499,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           areaStyle: fill
             ? {
-                color: color + "7F",
+                color: clr + "7F",
               }
             : undefined,
           tooltip: {
@@ -665,7 +747,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(states.entity_id, name);
+        addDataSet(states.entity_id, name, color);
 
         let lastValue: number;
         let lastDate: Date;

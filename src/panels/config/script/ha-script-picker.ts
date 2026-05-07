@@ -127,6 +127,7 @@ type ScriptItem = ScriptEntity & {
   last_triggered: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -245,6 +246,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           script.entity_id
@@ -259,9 +263,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,

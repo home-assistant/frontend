@@ -24,3 +24,12 @@ export const entitiesConfigStruct = union([
   }),
   string(),
 ]);
+
+export const graphEntitiesConfigStruct = union([
+  object({
+    entity: string(),
+    name: optional(entityNameStruct),
+    color: optional(string()),
+  }),
+  string(),
+]);
