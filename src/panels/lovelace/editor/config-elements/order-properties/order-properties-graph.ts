@@ -1,3 +1,4 @@
+import type { Struct } from "superstruct";
 import { orderProperties } from "../../../../../common/util/order-properties";
 import type { GraphEntityConfig } from "../../../cards/types";
 
