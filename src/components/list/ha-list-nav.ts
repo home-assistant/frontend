@@ -31,7 +31,7 @@ export class HaListNav extends HaListBase {
       aria-label=${ifDefined(this.ariaLabel ?? undefined)}
     >
       <div part="base" class="base" role="list">
-        <slot @slotchange=${this.handleSlotChange}></slot>
+        <slot></slot>
       </div>
     </nav>`;
   }

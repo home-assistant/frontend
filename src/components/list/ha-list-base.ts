@@ -1,10 +1,11 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { tinykeys } from "tinykeys";
-import { fireEvent } from "../../common/dom/fire_event";
-import { HaListItemBase } from "../item/ha-list-item-base";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import type { HaListItemBase } from "../item/ha-list-item-base";
 import "./types";
+import type { HaListItemRegistrationDetail } from "./types";
 
 /**
  * @element ha-list-base
@@ -12,9 +13,11 @@ import "./types";
  *
  * @summary
  * Base list container with roving-tabindex keyboard navigation (ArrowUp/Down,
- * Home/End, optional Enter/Space activation, optional wrap-focus). Discovers
- * slotted `HaListItemBase` descendants. Subclasses override `hostRole` and/or
- * `render()` to specialize.
+ * Home/End, optional Enter/Space activation, optional wrap-focus). Tracks
+ * `HaListItemBase` descendants via the `ha-list-item-register` /
+ * `ha-list-item-unregister` events they fire on connect/disconnect — works
+ * across any nesting depth and shadow boundaries. Subclasses override
+ * `hostRole` and/or `render()` to specialize.
  *
  * @slot - List items (`<ha-list-item-*>`).
  *
@@ -68,6 +71,14 @@ export class HaListBase extends LitElement {
       Space: this._onActivate,
     });
     this.addEventListener("focusin", this._onFocusIn);
+    this.addEventListener(
+      "ha-list-item-register",
+      this._onItemRegister as EventListener
+    );
+    this.addEventListener(
+      "ha-list-item-unregister",
+      this._onItemUnregister as EventListener
+    );
   }
 
   public disconnectedCallback() {
@@ -75,11 +86,14 @@ export class HaListBase extends LitElement {
     this._unbindKeys?.();
     this._unbindKeys = undefined;
     this.removeEventListener("focusin", this._onFocusIn);
-  }
-
-  public firstUpdated(changed: PropertyValues) {
-    super.firstUpdated(changed);
-    this.updateListItems();
+    this.removeEventListener(
+      "ha-list-item-register",
+      this._onItemRegister as EventListener
+    );
+    this.removeEventListener(
+      "ha-list-item-unregister",
+      this._onItemUnregister as EventListener
+    );
   }
 
   public focus(options?: FocusOptions) {
@@ -115,18 +129,14 @@ export class HaListBase extends LitElement {
     this._applyActive(focusItem);
   }
 
+  /**
+   * Hook called whenever the items array has changed. Subclasses can override
+   * to layer in extra bookkeeping (e.g. selection state sync).
+   */
   public updateListItems() {
-    const next = this._discoverListItems();
-    const changed =
-      next.length !== this.items.length ||
-      next.some((it, i) => it !== this.items[i]);
-    if (!changed) {
-      return;
-    }
-    this.items = next;
     this._recomputeFocusableIndexes();
     if (
-      this._activeItemIndex >= next.length ||
+      this._activeItemIndex >= this.items.length ||
       !this._hasFocusableItem ||
       this._activeItemIndex < 0
     ) {
@@ -134,6 +144,35 @@ export class HaListBase extends LitElement {
     }
     this._applyActive(false);
   }
+
+  private _onItemRegister = (
+    ev: HASSDomEvent<HaListItemRegistrationDetail>
+  ) => {
+    ev.stopPropagation();
+    const item = ev.detail.item;
+    if (this.items.includes(item)) {
+      return;
+    }
+    const next = [...this.items, item];
+    next.sort((a, b) =>
+      // eslint-disable-next-line no-bitwise
+      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+    );
+    this.items = next;
+    this.updateListItems();
+  };
+
+  private _onItemUnregister = (
+    ev: HASSDomEvent<HaListItemRegistrationDetail>
+  ) => {
+    ev.stopPropagation();
+    const item = ev.detail.item;
+    if (!this.items.includes(item)) {
+      return;
+    }
+    this.items = this.items.filter((it) => it !== item);
+    this.updateListItems();
+  };
 
   private _recomputeFocusableIndexes() {
     let first = -1;
@@ -151,25 +190,10 @@ export class HaListBase extends LitElement {
     this._hasFocusableItem = first !== -1;
   }
 
-  public handleSlotChange = () => {
-    this.updateListItems();
-  };
-
   protected render(): TemplateResult {
     return html`<div part="base" class="base">
-      <slot @slotchange=${this.handleSlotChange}></slot>
+      <slot></slot>
     </div>`;
-  }
-
-  private _discoverListItems(): HaListItemBase[] {
-    const slot =
-      this.renderRoot?.querySelector<HTMLSlotElement>("slot:not([name])");
-    if (!slot) {
-      return [];
-    }
-    return slot
-      .assignedElements({ flatten: true })
-      .filter((el): el is HaListItemBase => el instanceof HaListItemBase);
   }
 
   private _isFocusable(index: number): boolean {

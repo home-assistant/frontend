@@ -11,9 +11,15 @@ export interface HaListActivatedDetail {
   item: HaListItemBase;
 }
 
+export interface HaListItemRegistrationDetail {
+  item: HaListItemBase;
+}
+
 declare global {
   interface HASSDomEvents {
     "ha-list-selected": HaListSelectedDetail;
     "ha-list-activated": HaListActivatedDetail;
+    "ha-list-item-register": HaListItemRegistrationDetail;
+    "ha-list-item-unregister": HaListItemRegistrationDetail;
   }
 }
