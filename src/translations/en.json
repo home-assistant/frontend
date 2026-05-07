@@ -256,6 +256,8 @@
         "media_stop": "Stop",
         "media_next_track": "Next track",
         "media_previous_track": "Previous track",
+        "volume_up": "Volume up",
+        "volume_down": "Volume down",
         "media_volume_up": "Volume up",
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
