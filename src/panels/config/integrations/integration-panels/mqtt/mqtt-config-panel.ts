@@ -2,21 +2,21 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../../../common/decorators/storage";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-list-item";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-switch";
-import "../../../../../components/ha-button";
 import { getConfigEntries } from "../../../../../data/config_entries";
+import type { Action } from "../../../../../data/script";
+import { callExecuteScript } from "../../../../../data/service";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import "./mqtt-subscribe-card";
-import type { Action } from "../../../../../data/script";
-import { callExecuteScript } from "../../../../../data/service";
 import { showToast } from "../../../../../util/toast";
+import "./mqtt-subscribe-card";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -89,10 +89,8 @@ export class MQTTConfigPanel extends LitElement {
                   .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
                   .value=${this._qos}
                   @selected=${this._handleQos}
-                  >${qosLevel.map(
-                    (qos) =>
-                      html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
-                  )}
+                  .options=${qosLevel}
+                >
                 </ha-select>
                 <ha-formfield
                   label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
@@ -137,9 +135,9 @@ export class MQTTConfigPanel extends LitElement {
     this._payload = ev.detail.value;
   }
 
-  private _handleQos(ev: CustomEvent) {
-    const newValue = (ev.target! as any).value;
-    if (newValue >= 0 && newValue !== this._qos) {
+  private _handleQos(ev: HaSelectSelectEvent) {
+    const newValue = ev.detail.value;
+    if (Number(newValue) >= 0 && newValue !== this._qos) {
       this._qos = newValue;
     }
   }

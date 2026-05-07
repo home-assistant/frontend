@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
@@ -12,17 +12,13 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
-import {
-  getAutomaticEntityIds,
-  subscribeEntityRegistry,
-  updateEntityRegistryEntry,
-} from "../../../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../../../data/entity/entity_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
+import type { EntityRegistryEntryWithDisplayName } from "../../../devices/ha-config-device-page";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -38,17 +34,17 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryStateEntry[] =>
+    ): EntityRegistryEntryWithDisplayName[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          display_name: computeEntityEntryName(entity),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
+            ent1.display_name || "",
+            ent2.display_name || "",
             this.hass.locale.language
           )
         )
@@ -89,7 +85,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 ? html`
                     <state-badge
                       @click=${this._openMoreInfo}
-                      .title=${entity.stateName!}
+                      .title=${entity.display_name || ""}
                       .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
@@ -120,65 +116,17 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     if (!this.hass || !this.device) {
       return;
     }
-    const device = this.device;
-
-    const oldDeviceName = device.user_given_name || device.name;
     const newDeviceName = event.target.value;
     this.device.user_given_name = newDeviceName;
-    await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
+    await updateDeviceRegistryEntry(this.hass, this.device.device_reg_id, {
       name_by_user: newDeviceName,
     });
-
-    if (!oldDeviceName || !newDeviceName || oldDeviceName === newDeviceName) {
-      return;
-    }
-    const entities = this._deviceEntities(device.device_reg_id, this._entities);
-
-    const entityIdsMapping = await getAutomaticEntityIds(
-      this.hass,
-      entities.map((entity) => entity.entity_id)
-    );
-
-    const updateProms = entities.map((entity) => {
-      const name = entity.name;
-      const newEntityId = entityIdsMapping[entity.entity_id];
-      let newName: string | null | undefined;
-
-      if (entity.has_entity_name && !entity.name) {
-        newName = undefined;
-      } else if (
-        entity.has_entity_name &&
-        (entity.name === oldDeviceName || entity.name === newDeviceName)
-      ) {
-        // clear name if it matches the device name and it uses the device name (entity naming)
-        newName = null;
-      } else if (name && name.includes(oldDeviceName)) {
-        newName = name.replace(oldDeviceName, newDeviceName);
-      }
-
-      if (newName !== undefined && !newEntityId) {
-        return undefined;
-      }
-
-      return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        name: newName,
-        new_entity_id: newEntityId || undefined,
-      });
-    });
-    await Promise.all(updateProms);
   }
 
   private _openMoreInfo(ev: MouseEvent): void {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).stateObj.entity_id,
     });
-  }
-
-  private _computeEntityName(entity: EntityRegistryEntry): string | null {
-    if (this.hass.states[entity.entity_id]) {
-      return computeStateName(this.hass.states[entity.entity_id]);
-    }
-    return entity.name;
   }
 
   private async _areaPicked(ev: CustomEvent) {

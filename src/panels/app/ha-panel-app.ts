@@ -1,12 +1,13 @@
 import { mdiMenu } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { createRef, ref } from "lit/directives/ref";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
+import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
 import type { HassioAddonDetails } from "../../data/hassio/addon";
@@ -24,7 +25,6 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-loading-screen";
-import { computeRouteTail } from "../../common/url/route";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 
 interface AppPanelConfig {
@@ -43,13 +43,15 @@ class HaPanelApp extends LitElement {
 
   @property({ attribute: false }) public panel!: PanelInfo<AppPanelConfig>;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _addon?: HassioAddonDetails;
 
   @state() private _loadingMessage?: string;
 
   @state() private _kioskMode = false;
+
+  @state() private _iframeLoaded = false;
 
   private _enabledKioskMode = false;
 
@@ -117,7 +119,7 @@ class HaPanelApp extends LitElement {
       ${!this._kioskMode &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden")
         ? html`
-            <div class="header ${classMap({ narrow: this.narrow })}">
+            <div class="header">
               <ha-icon-button
                 .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
                 .path=${mdiMenu}
@@ -128,6 +130,10 @@ class HaPanelApp extends LitElement {
           `
         : nothing}
       <iframe
+        class=${classMap({
+          loaded: this._iframeLoaded,
+          "kiosk-mode": this._kioskMode,
+        })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
         @load=${this._checkLoaded}
@@ -156,6 +162,7 @@ class HaPanelApp extends LitElement {
 
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
+      this._iframeLoaded = false;
       // Reset state when switching apps
       if (this._enabledKioskMode) {
         fireEvent(window, "hass-kiosk-mode", { enable: false });
@@ -320,6 +327,8 @@ class HaPanelApp extends LitElement {
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;
+    this._iframeLoaded = true;
+
     if (
       !this._addon ||
       iframe.contentDocument?.body.textContent !== "502: Bad Gateway"
@@ -352,6 +361,7 @@ class HaPanelApp extends LitElement {
 
   private async _reloadIframe(): Promise<void> {
     const addonSlug = this._addon!.slug;
+    this._iframeLoaded = false;
     this._addon = undefined;
     await Promise.all([
       this.updateComplete,
@@ -431,10 +441,27 @@ class HaPanelApp extends LitElement {
       width: 100%;
       height: 100%;
       border: 0;
+      background-color: var(--primary-background-color);
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-normal) ease;
+    }
+
+    iframe.loaded {
+      opacity: 1;
     }
 
     .header + iframe {
       height: calc(100% - 40px);
+    }
+
+    :host([narrow]) iframe {
+      padding-top: var(--safe-area-inset-top);
+      height: calc(100% - var(--safe-area-inset-top, 0px));
+    }
+
+    :host([narrow]) .header + iframe {
+      padding-top: 0;
+      height: calc(100% - 40px - var(--safe-area-inset-top, 0px));
     }
 
     .header {
@@ -450,6 +477,11 @@ class HaPanelApp extends LitElement {
       border-bottom: var(--app-header-border-bottom, none);
       box-sizing: border-box;
       --mdc-icon-size: 20px;
+    }
+
+    :host([narrow]) .header {
+      height: calc(40px + var(--safe-area-inset-top, 0px));
+      padding-top: var(--safe-area-inset-top, 0);
     }
 
     .main-title {

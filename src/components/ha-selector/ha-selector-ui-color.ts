@@ -17,6 +17,8 @@ export class HaSelectorUiColor extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     return html`
       <ha-color-picker
@@ -24,9 +26,11 @@ export class HaSelectorUiColor extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
+        .disabled=${this.disabled}
         .includeNone=${this.selector.ui_color?.include_none}
         .includeState=${this.selector.ui_color?.include_state}
         .defaultColor=${this.selector.ui_color?.default_color}
+        .extraOptions=${this.selector.ui_color?.extra_options}
         @value-changed=${this._valueChanged}
       ></ha-color-picker>
     `;

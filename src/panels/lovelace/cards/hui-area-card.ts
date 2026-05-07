@@ -13,7 +13,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { BINARY_STATE_ON } from "../../../common/const";
+import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -522,7 +522,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
-      .join(" · ");
+      .join(STRINGS_SEPARATOR_DOT);
 
     return sensorStates;
   }

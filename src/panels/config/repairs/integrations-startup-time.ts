@@ -55,11 +55,14 @@ class IntegrationsStartupTime extends LitElement {
               <img
                 alt=""
                 loading="lazy"
-                src=${brandsUrl({
-                  domain: setup.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
+                src=${brandsUrl(
+                  {
+                    domain: setup.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 slot="start"

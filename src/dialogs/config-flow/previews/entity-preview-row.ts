@@ -13,7 +13,6 @@ import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
@@ -296,17 +295,11 @@ class EntityPreviewRow extends LitElement {
           .label=${computeStateName(stateObj)}
           .value=${stateObj.state}
           .disabled=${isUnavailableState(stateObj.state)}
-          naturalMenuWidth
+          .options=${stateObj.attributes.options?.map((option) => ({
+            value: option,
+            label: this.hass!.formatEntityState(stateObj, option),
+          })) || []}
         >
-          ${stateObj.attributes.options
-            ? stateObj.attributes.options.map(
-                (option) => html`
-                  <ha-list-item .value=${option}>
-                    ${this.hass!.formatEntityState(stateObj, option)}
-                  </ha-list-item>
-                `
-              )
-            : ""}
         </ha-select>
       `;
     }

@@ -653,7 +653,7 @@ export class HaAutomationTracer extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   protected render() {
     if (!this.trace) {

@@ -35,7 +35,7 @@ export class EntitySettingsHelperTab extends LitElement {
 
   @state() private _item?: Helper | null;
 
-  @state() private _submitting?: boolean;
+  @state() private _submitting = false;
 
   @state() private _componentLoaded?: boolean;
 
@@ -97,7 +97,7 @@ export class EntitySettingsHelperTab extends LitElement {
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
-          .disabled=${this._submitting}
+          .disabled=${!!this._submitting}
           @change=${this._entityRegistryChanged}
           hide-name
           hide-icon
@@ -115,7 +115,7 @@ export class EntitySettingsHelperTab extends LitElement {
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${this._submitting || (this._item && !this._item.name)}
+          .disabled=${!!this._submitting || !!(this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>

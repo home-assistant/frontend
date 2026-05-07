@@ -69,6 +69,7 @@ export interface Card {
   showElement?: boolean;
   isCustom?: boolean;
   isSuggested?: boolean;
+  isEnergy?: boolean;
 }
 
 export interface Badge {

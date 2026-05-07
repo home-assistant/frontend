@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -17,7 +17,6 @@ import {
   mdiTextureBox,
   mdiTransitConnection,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -26,14 +25,11 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -58,9 +54,6 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -71,7 +64,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -87,10 +80,7 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
   deleteScript,
@@ -116,6 +106,13 @@ import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getEntityIdHiddenTableColumn,
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getLabelsTableColumn,
+  getTriggeredAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
@@ -130,7 +127,7 @@ type ScriptItem = ScriptEntity & {
   area: string | undefined;
   last_triggered: string | undefined;
   category: string | undefined;
-  labels: LabelRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -148,8 +145,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
-
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -184,12 +179,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "script-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -264,7 +260,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          labels: (labels || []).map(
+          label_entries: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           assistants,
@@ -297,6 +293,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               })}
             ></ha-state-icon>`,
         },
+        entity_id: getEntityIdHiddenTableColumn(),
         name: {
           title: localize("ui.panel.config.script.picker.headers.name"),
           main: true,
@@ -305,67 +302,23 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           direction: "asc",
           flex: 2,
           extraTemplate: (script) =>
-            script.labels.length
+            script.label_entries.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
-                  .labels=${script.labels}
+                  .labels=${script.label_entries}
                 ></ha-data-table-labels>`
               : nothing,
         },
-        area: {
-          title: localize("ui.panel.config.script.picker.headers.area"),
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        category: {
-          title: localize("ui.panel.config.script.picker.headers.category"),
-          defaultHidden: true,
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        labels: {
-          title: "",
-          hidden: true,
-          filterable: true,
-          template: (script) => script.labels.map((lbl) => lbl.name).join(" "),
-        },
-        last_triggered: {
-          sortable: true,
-          title: localize("ui.card.automation.last_triggered"),
-          template: (script) => {
-            if (!script.last_triggered) {
-              return this.hass.localize("ui.components.relative_time.never");
-            }
-            const date = new Date(script.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            const formattedTime = formatShortDateTimeWithConditionalYear(
-              date,
-              this.hass.locale,
-              this.hass.config
-            );
-            const elementId = "last-triggered-" + slugify(script.entity_id);
-            return html`
-              ${dayDifference > 3
-                ? formattedTime
-                : html`
-                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-                    <span id=${elementId}
-                      >${relativeTime(date, this.hass.locale)}</span
-                    >
-                  `}
-            `;
-          },
-        },
+        area: getAreaTableColumn(localize),
+        category: getCategoryTableColumn(localize),
+        labels: getLabelsTableColumn(),
+        last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (script) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -449,9 +402,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           this._categories = categories;
         }
       ),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
     ];
   }
 
@@ -523,7 +473,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas
@@ -981,7 +931,7 @@ ${rejected
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this.entityRegistry.find((e) => e.entity_id === ev.detail.id);
+    const entry = this._entityReg.find((e) => e.entity_id === ev.detail.id);
     if (entry) {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
@@ -998,9 +948,7 @@ ${rejected
   }
 
   private _runScript = async (script: any) => {
-    const entry = this.entityRegistry.find(
-      (e) => e.entity_id === script.entity_id
-    );
+    const entry = this._entityReg.find((e) => e.entity_id === script.entity_id);
     if (!entry) {
       return;
     }
@@ -1029,9 +977,7 @@ ${rejected
   }
 
   private _showTrace(script: any) {
-    const entry = this.entityRegistry.find(
-      (e) => e.entity_id === script.entity_id
-    );
+    const entry = this._entityReg.find((e) => e.entity_id === script.entity_id);
     if (entry) {
       navigate(`/config/script/trace/${entry.unique_id}`);
     }
@@ -1057,7 +1003,7 @@ ${rejected
 
   private async _duplicate(script: any) {
     try {
-      const entry = this.entityRegistry.find(
+      const entry = this._entityReg.find(
         (e) => e.entity_id === script.entity_id
       );
       if (!entry) {
@@ -1106,7 +1052,7 @@ ${rejected
 
   private async _delete(script: any) {
     try {
-      const entry = this.entityRegistry.find(
+      const entry = this._entityReg.find(
         (e) => e.entity_id === script.entity_id
       );
       if (entry) {

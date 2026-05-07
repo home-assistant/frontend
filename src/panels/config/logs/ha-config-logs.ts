@@ -27,7 +27,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route, ValueChangedEvent } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
@@ -201,7 +201,7 @@ export class HaConfigLogs extends LitElement {
     this.providerPicker?.open();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ value: string }>) {
+  private _handleDropdownSelect(ev: ValueChangedEvent<string>) {
     const provider = ev.detail?.value;
     if (!provider) {
       return;

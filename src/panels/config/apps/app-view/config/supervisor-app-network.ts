@@ -68,11 +68,7 @@ class SupervisorAppNetwork extends LitElement {
             @value-changed=${this._configChanged}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
-            .schema=${this._createSchema(
-              this._config,
-              this._showOptional,
-              this.hass.userData?.showAdvanced || false
-            )}
+            .schema=${this._createSchema(this._config, this._showOptional)}
           ></ha-form>
         </div>
         ${hasHiddenOptions
@@ -119,11 +115,7 @@ class SupervisorAppNetwork extends LitElement {
   }
 
   private _createSchema = memoizeOne(
-    (
-      config: Record<string, number>,
-      showOptional: boolean,
-      advanced: boolean
-    ): HaFormSchema[] =>
+    (config: Record<string, number>, showOptional: boolean): HaFormSchema[] =>
       (showOptional
         ? Object.keys(config)
         : Object.keys(config).filter((entry) => config[entry] !== null)
@@ -134,7 +126,7 @@ class SupervisorAppNetwork extends LitElement {
             mode: "box",
             min: 0,
             max: 65535,
-            unit_of_measurement: advanced ? entry : undefined,
+            unit_of_measurement: entry,
           },
         },
       }))

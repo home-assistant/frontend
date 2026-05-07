@@ -2,6 +2,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type {
   LovelaceCard,
@@ -48,7 +49,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
@@ -117,31 +117,38 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
-      <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
+      <div
+        id="root"
+        class="ha-scrollbar"
+        dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}
+      >
         ${this._cards}
         ${this.preview && this._errorCard ? this._errorCard : nothing}
       </div>
     `;
   }
 
-  static sharedStyles = css`
-    .card-header {
-      color: var(--ha-card-header-color, var(--primary-text-color));
-      text-align: var(--ha-stack-title-text-align, start);
-      font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
-      font-weight: var(--ha-font-weight-normal);
-      margin-block-start: 0px;
-      margin-block-end: 0px;
-      letter-spacing: -0.012em;
-      line-height: var(--ha-line-height-condensed);
-      display: block;
-      padding: 24px 16px 16px;
-    }
-    :host([ispanel]) #root {
-      --ha-card-border-radius: var(--restore-card-border-radius);
-      --ha-card-border-width: var(--restore-card-border-width);
-      --ha-card-box-shadow: var(--restore-card-box-shadow);
-    }
-  `;
+  static sharedStyles = [
+    haStyleScrollbar,
+    css`
+      .card-header {
+        color: var(--ha-card-header-color, var(--primary-text-color));
+        text-align: var(--ha-stack-title-text-align, start);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+        font-weight: var(--ha-font-weight-normal);
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        letter-spacing: -0.012em;
+        line-height: var(--ha-line-height-condensed);
+        display: block;
+        padding: 24px 16px 16px;
+      }
+      :host([ispanel]) #root {
+        --ha-card-border-radius: var(--restore-card-border-radius);
+        --ha-card-border-width: var(--restore-card-border-width);
+        --ha-card-box-shadow: var(--restore-card-box-shadow);
+      }
+    `,
+  ];
 }

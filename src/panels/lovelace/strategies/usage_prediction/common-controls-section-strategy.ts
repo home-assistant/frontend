@@ -58,9 +58,17 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     }
 
     const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities.filter(
-      (entity) => entity in hass.states
-    );
+    let predictedEntities = predictedCommonControl.entities.filter((entity) => {
+      if (!(entity in hass.states)) {
+        return false;
+      }
+      const entityEntry = hass.entities[entity];
+      // Filter out hidden entities (respects user/integration/device hidden_by)
+      if (entityEntry?.hidden) {
+        return false;
+      }
+      return true;
+    });
 
     if (config.exclude_entities?.length) {
       predictedEntities = predictedEntities.filter(
@@ -89,14 +97,6 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
             ({
               type: "tile",
               entity: entityId,
-              name: [
-                {
-                  type: "device",
-                },
-                {
-                  type: "entity",
-                },
-              ],
               state_content: ["state", "area_name"],
               show_entity_picture: true,
             }) satisfies TileCardConfig

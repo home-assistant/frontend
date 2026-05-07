@@ -1,15 +1,15 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HaTextField } from "../ha-textfield";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-textfield";
+import type { HaTextField } from "../ha-textfield";
 import type {
   HaFormElement,
   HaFormFloatData,
   HaFormFloatSchema,
 } from "./types";
-import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {
@@ -25,12 +25,15 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-textfield") private _input?: HaTextField;
+  @query("ha-textfield", true) private _input?: HaTextField;
 
-  public focus() {
-    if (this._input) {
-      this._input.focus();
-    }
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
   }
 
   protected render(): TemplateResult {
@@ -73,6 +76,11 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
     // Allow user to start typing a negative value
     if (rawValue === "-") {
+      return;
+    }
+
+    // Allow user to start typing a negative zero
+    if (rawValue === "-0") {
       return;
     }
 

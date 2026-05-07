@@ -29,6 +29,8 @@ export class HuiDiscoveredDevicesCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public connectedWhileHidden = true;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: DiscoveredDevicesCardConfig;
@@ -36,6 +38,11 @@ export class HuiDiscoveredDevicesCard
   @state() private _discoveredFlows: DataEntryFlowProgress[] = [];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    if (!this.hass!.user?.is_admin) {
+      this._discoveredFlows = [];
+      return [];
+    }
+
     return [
       subscribeConfigFlowInProgress(
         this.hass!,
@@ -129,9 +136,10 @@ export class HuiDiscoveredDevicesCard
     }
 
     // Update visibility based on admin status and discovered devices count
-    const shouldBeHidden =
+    const shouldBeHidden = Boolean(
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._discoveredFlows.length === 0);
+      (this._config.hide_empty && this._discoveredFlows.length === 0)
+    );
 
     if (shouldBeHidden !== this.hidden) {
       this.style.display = shouldBeHidden ? "none" : "";
@@ -181,7 +189,7 @@ export class HuiDiscoveredDevicesCard
     tileCardStyle,
     css`
       :host {
-        --tile-color: var(--primary-color);
+        --tile-color: var(--info-color);
       }
     `,
   ];

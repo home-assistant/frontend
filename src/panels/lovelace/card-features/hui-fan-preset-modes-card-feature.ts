@@ -47,6 +47,14 @@ class HuiFanPresetModesCardFeature
 
   @state() _currentPresetMode?: string;
 
+  private _renderPresetModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this._stateObj}
+      attribute="preset_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -173,14 +181,8 @@ class HuiFanPresetModesCardFeature
         .value=${this._currentPresetMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
-        .options=${options.map((option) => ({
-          ...option,
-          attributeIcon: {
-            stateObj: stateObj,
-            attribute: "preset_mode",
-            attributeValue: option.value,
-          },
-        }))}
+        .options=${options}
+        .renderIcon=${this._renderPresetModeIcon}
       >
         <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
       </ha-control-select-menu>

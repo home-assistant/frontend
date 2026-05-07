@@ -4,7 +4,10 @@ import {
   mdiAlertCircleCheck,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
+  mdiArrowRightThin,
   mdiArrowUp,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -20,7 +23,7 @@ import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../common/array/ensure-array";
@@ -35,6 +38,7 @@ import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -91,7 +95,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -172,7 +175,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _uiModeAvailable = true;
 
@@ -263,23 +266,25 @@ export default class HaAutomationActionRow extends LitElement {
           describeAction(this.hass, this._entityReg, this.action)
         )}
         ${target ? this._renderTargets(target) : nothing}
+        ${type !== "condition" &&
+        (this.action as NonConditionAction).continue_on_error === true
+          ? html`<ha-svg-icon
+                class="arrow-right"
+                .path=${mdiArrowRightThin}
+              ></ha-svg-icon
+              ><ha-svg-icon
+                id="svg-icon"
+                .path=${mdiAlertCircleCheck}
+              ></ha-svg-icon>
+              <ha-tooltip for="svg-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                )}
+              </ha-tooltip>`
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
-
-      ${type !== "condition" &&
-      (this.action as NonConditionAction).continue_on_error === true
-        ? html`<ha-svg-icon
-              id="svg-icon"
-              slot="icons"
-              .path=${mdiAlertCircleCheck}
-            ></ha-svg-icon>
-            <ha-tooltip for="svg-icon">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.continue_on_error"
-              )}
-            </ha-tooltip>`
-        : nothing}
 
       <ha-dropdown
         slot="icons"
@@ -417,6 +422,27 @@ export default class HaAutomationActionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
+
+        ${type !== "condition"
+          ? html`<ha-dropdown-item
+                value="continue_on_error"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${(this.action as NonConditionAction).continue_on_error
+                    ? mdiCheckboxOutline
+                    : mdiCheckboxBlankOutline}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    `ui.panel.config.automation.editor.actions.continue_on_error`
+                  )
+                )}
+              </ha-dropdown-item>
+              <wa-divider></wa-divider>`
+          : nothing}
+
         <ha-dropdown-item
           value="delete"
           variant="danger"
@@ -584,6 +610,25 @@ export default class HaAutomationActionRow extends LitElement {
       this.openSidebar(value); // refresh sidebar
     }
 
+    if (this._yamlMode && !this.optionsInSidebar) {
+      this._actionEditor?.yamlEditor?.setValue(value);
+    }
+  };
+
+  private _continueOnError = () => {
+    const value = { ...this.action };
+
+    if ((value as NonConditionAction).continue_on_error) {
+      delete (value as NonConditionAction).continue_on_error;
+    } else {
+      (value as NonConditionAction).continue_on_error = true;
+    }
+
+    fireEvent(this, "value-changed", { value });
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    }
     if (this._yamlMode && !this.optionsInSidebar) {
       this._actionEditor?.yamlEditor?.setValue(value);
     }
@@ -790,6 +835,7 @@ export default class HaAutomationActionRow extends LitElement {
         this.openSidebar();
       },
       disable: this._onDisable,
+      continueOnError: this._continueOnError,
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
@@ -898,13 +944,30 @@ export default class HaAutomationActionRow extends LitElement {
       case "disable":
         this._onDisable();
         break;
+      case "continue_on_error":
+        this._continueOnError();
+        break;
       case "delete":
         this._onDelete();
         break;
     }
   }
 
-  static styles = [rowStyles, overflowStyles];
+  static styles = [
+    rowStyles,
+    overflowStyles,
+    css`
+      ha-svg-icon.arrow-right {
+        --icon-primary-color: var(--ha-color-fill-neutral-normal-resting);
+      }
+      ha-svg-icon#svg-icon {
+        --icon-primary-color: var(--ha-color-fill-neutral-loud-active);
+      }
+      ha-svg-icon#svg-icon:hover {
+        --icon-primary-color: var(--ha-color-fill-neutral-loud-hover);
+      }
+    `,
+  ];
 }
 
 declare global {

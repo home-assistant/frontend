@@ -28,8 +28,11 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
+import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
+import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 import { generateDefaultSection } from "./default-section";
+import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 
@@ -155,10 +158,18 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    const columnCount = Math.min(maxColumnCount, totalSectionCount);
+    const columnCount = Math.max(
+      Math.min(maxColumnCount, totalSectionCount),
+      1
+    );
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
+
+    const sectionNeedsMargin = computeSectionsBackgroundAlignment(
+      sections,
+      contentColumnCount
+    );
 
     return html`
       <div
@@ -226,15 +237,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   const rowSpan = section.config.row_span || 1;
 
                   return html`
-                <div
-                  class="section"
-                  style=${styleMap({
-                    "--column-span": columnSpan,
-                    "--row-span": rowSpan,
-                  })}
-                >
-                    ${
-                      editMode
+                    <div
+                      class="section"
+                      style=${styleMap({
+                        "--column-span": columnSpan,
+                        "--row-span": rowSpan,
+                      })}
+                    >
+                      ${editMode
                         ? html`
                             <hui-section-edit-mode
                               .hass=${this.hass}
@@ -242,14 +252,18 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                               .index=${idx}
                               .viewIndex=${this.index}
                             >
-                              ${section}
+                              ${this._renderSection(
+                                section,
+                                sectionNeedsMargin.has(idx)
+                              )}
                             </hui-section-edit-mode>
                           `
-                        : section
-                    }
-                  </div>
-                </div>
-              `;
+                        : this._renderSection(
+                            section,
+                            sectionNeedsMargin.has(idx)
+                          )}
+                    </div>
+                  `;
                 }
               )}
               ${editMode
@@ -305,6 +319,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               `
             : nothing}
         </div>
+        <hui-view-footer
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .viewIndex=${this.index}
+          .config=${this._config?.footer}
+        ></hui-view-footer>
         <div class="imported-cards-section">
           ${editMode && this._config?.cards?.length
             ? html`
@@ -376,6 +396,26 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       cards,
     })
   );
+
+  private _renderSection(section: HuiSection, alignBackground: boolean) {
+    const hasBackground = section.config.background !== undefined;
+
+    return html`
+      <div
+        class="section-container ${classMap({
+          "has-background": hasBackground,
+          "align-background": alignBackground,
+        })}"
+      >
+        ${hasBackground
+          ? html`<hui-section-background
+              .background=${section.config.background}
+            ></hui-section-background>`
+          : nothing}
+        ${section}
+      </div>
+    `;
+  }
 
   private _createSection(): void {
     const newConfig = addSection(
@@ -451,6 +491,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
+      flex: 1;
     }
 
     @media (max-width: 600px) {
@@ -460,7 +501,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .wrapper {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100% - 2 * var(--row-gap));
       padding: var(--row-gap) var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
@@ -475,13 +518,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .section {
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       grid-column: span var(--column-span);
       grid-row: span var(--row-span);
     }
 
     .section:has(hui-section[hidden]) {
       display: none;
+    }
+
+    .section-container {
+      position: relative;
+    }
+
+    .section-container.has-background {
+      padding: var(--ha-space-2);
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
+    }
+
+    .section-container.align-background {
+      margin-top: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
     }
 
     .container {
@@ -493,6 +556,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
       padding: var(--row-gap) 0;
       align-items: flex-start;
+      flex: 1 0 auto;
     }
 
     .wrapper.has-sidebar .container {
@@ -599,7 +663,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--primary-color);
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
       padding: 8px;
@@ -624,7 +691,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--primary-color);
       order: 1;
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
@@ -641,12 +711,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .sortable-ghost {
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
     }
 
     hui-view-header {
       display: block;
       padding-top: var(--row-gap);
+    }
+
+    hui-view-footer {
+      display: block;
     }
 
     .imported-cards {

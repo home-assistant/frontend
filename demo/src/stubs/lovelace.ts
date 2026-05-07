@@ -29,6 +29,7 @@ export const mockLovelace = (
 
   hass.mockWS("lovelace/config/save", () => Promise.resolve());
   hass.mockWS("lovelace/resources", () => Promise.resolve([]));
+  hass.mockWS("lovelace/dashboards/list", () => Promise.resolve([]));
 };
 
 customElements.whenDefined("hui-root").then(() => {

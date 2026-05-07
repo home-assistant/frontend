@@ -30,22 +30,22 @@ export const supervisorAppsStyle = css`
   }
   .card-group {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     grid-gap: var(--ha-space-2);
   }
   @media screen and (min-width: 640px) {
     .card-group {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 0.5fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 0.5fr));
     }
   }
   @media screen and (min-width: 1020px) {
     .card-group {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 0.333fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 0.333fr));
     }
   }
   @media screen and (min-width: 1300px) {
     .card-group {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 0.25fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 0.25fr));
     }
   }
   .error {

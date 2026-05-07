@@ -163,7 +163,7 @@ export class HaAreaPicker extends LitElement {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.area-picker.add_new_sugestion",
+            "ui.components.area-picker.add_new_suggestion",
             {
               name: searchString,
             }

@@ -3,12 +3,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-dialog";
 import "../../../components/ha-button";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-spinner";
+import "../../../components/ha-dialog";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -50,10 +50,13 @@ class MoveDatadiskDialog extends LitElement {
 
   @state() private _moving = false;
 
+  @state() private _open = false;
+
   public async showDialog(
     dialogParams: MoveDatadiskDialogParams
   ): Promise<Promise<void>> {
     this._hostInfo = dialogParams.hostInfo;
+    this._open = true;
 
     try {
       this._osInfo = await fetchHassioHassOsInfo(this.hass);
@@ -84,6 +87,13 @@ class MoveDatadiskDialog extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+    if (!this._hostInfo || !this._osInfo || !this._disks) {
+      this._dialogClosed();
+    }
+  }
+
+  private _dialogClosed(): void {
     this._selectedDevice = undefined;
     this._disks = undefined;
     this._moving = false;
@@ -99,14 +109,12 @@ class MoveDatadiskDialog extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        .heading=${this._moving
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._moving
           ? this.hass.localize("ui.panel.config.storage.datadisk.moving")
           : this.hass.localize("ui.panel.config.storage.datadisk.title")}
-        @closed=${this.closeDialog}
-        ?hideActions=${this._moving}
+        @closed=${this._dialogClosed}
       >
         ${this._moving
           ? html`
@@ -128,54 +136,52 @@ class MoveDatadiskDialog extends LitElement {
               <br /><br />
 
               <ha-select
+                autofocus
                 .label=${this.hass.localize(
                   "ui.panel.config.storage.datadisk.select_device"
                 )}
                 @selected=${this._selectDevice}
-                @closed=${stopPropagation}
-                dialogInitialFocus
-                fixedMenuPosition
-              >
-                ${this._disks.map(
-                  (disk) =>
-                    html`<ha-list-item twoline .value=${disk.id}>
-                      <span>${disk.vendor} ${disk.model}</span>
-                      <span slot="secondary">
-                        ${this.hass.localize(
-                          "ui.panel.config.storage.datadisk.extra_information",
-                          {
-                            size: bytesToString(disk.size),
-                            serial: disk.serial,
-                          }
-                        )}
-                      </span>
-                    </ha-list-item>`
-                )}
-              </ha-select>
-
-              <ha-button
-                slot="primaryAction"
-                appearance="plain"
-                @click=${this.closeDialog}
-                dialogInitialFocus
-              >
-                ${this.hass.localize("ui.panel.config.storage.datadisk.cancel")}
-              </ha-button>
-
-              <ha-button
-                .disabled=${!this._selectedDevice}
-                slot="primaryAction"
-                @click=${this._moveDatadisk}
-              >
-                ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
-              </ha-button>
+                .options=${this._disks.map((disk) => ({
+                  value: disk.id,
+                  label: `${disk.vendor} ${disk.model}`,
+                  secondary: this.hass.localize(
+                    "ui.panel.config.storage.datadisk.extra_information",
+                    {
+                      size: bytesToString(disk.size),
+                      serial: disk.serial,
+                    }
+                  ),
+                }))}
+              ></ha-select>
+            `}
+        ${this._moving
+          ? nothing
+          : html`
+              <ha-dialog-footer slot="footer">
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.storage.datadisk.cancel"
+                  )}
+                </ha-button>
+                <ha-button
+                  .disabled=${!this._selectedDevice}
+                  slot="primaryAction"
+                  @click=${this._moveDatadisk}
+                >
+                  ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
+                </ha-button>
+              </ha-dialog-footer>
             `}
       </ha-dialog>
     `;
   }
 
-  private _selectDevice(ev) {
-    this._selectedDevice = ev.target.value;
+  private _selectDevice(ev: HaSelectSelectEvent): void {
+    this._selectedDevice = ev.detail.value;
   }
 
   private async _moveDatadisk() {

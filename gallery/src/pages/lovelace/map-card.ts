@@ -1,59 +1,86 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 
 const ENTITIES = [
-  getEntity("device_tracker", "demo_paulus", "not_home", {
-    source_type: "gps",
-    latitude: 32.877105,
-    longitude: 117.232185,
-    gps_accuracy: 91,
-    battery: 71,
-    friendly_name: "Paulus",
-  }),
-  getEntity("device_tracker", "demo_home_boy", "home", {
-    source_type: "gps",
-    latitude: 32.87334,
-    longitude: 117.22745,
-    gps_accuracy: 20,
-    battery: 53,
-    friendly_name: "Home Boy",
-  }),
-  getEntity("zone", "home", "zoning", {
-    latitude: 32.87354,
-    longitude: 117.22765,
-    radius: 100,
-    friendly_name: "Home",
-    icon: "mdi:home",
-  }),
-  getEntity("zone", "bushfire", "zoning", {
-    latitude: -33.8611,
-    longitude: 151.203,
-    radius: 35000,
-    friendly_name: "Bushfire Zone",
-    icon: "mdi:home",
-  }),
-  getEntity("geo_location", "nelsons_creek", "15", {
-    source: "bushfire_demo",
-    latitude: -34.07792,
-    longitude: 151.03219,
-    friendly_name: "Nelsons Creek",
-  }),
-  getEntity("geo_location", "forest_rd_nowra_hill", "8", {
-    source: "bushfire_demo",
-    latitude: -33.69452,
-    longitude: 151.19577,
-    friendly_name: "Forest Rd, Nowra Hill",
-  }),
-  getEntity("geo_location", "stoney_ridge_rd_kremnos", "20", {
-    source: "bushfire_demo",
-    latitude: -33.66584,
-    longitude: 150.97209,
-    friendly_name: "Stoney Ridge Rd, Kremnos",
-  }),
+  {
+    entity_id: "device_tracker.demo_paulus",
+    state: "not_home",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.877105,
+      longitude: 117.232185,
+      gps_accuracy: 91,
+      battery: 71,
+      friendly_name: "Paulus",
+    },
+  },
+  {
+    entity_id: "device_tracker.demo_home_boy",
+    state: "home",
+    attributes: {
+      source_type: "gps",
+      latitude: 32.87334,
+      longitude: 117.22745,
+      gps_accuracy: 20,
+      battery: 53,
+      friendly_name: "Home Boy",
+    },
+  },
+  {
+    entity_id: "zone.home",
+    state: "zoning",
+    attributes: {
+      latitude: 32.87354,
+      longitude: 117.22765,
+      radius: 100,
+      friendly_name: "Home",
+      icon: "mdi:home",
+    },
+  },
+  {
+    entity_id: "zone.bushfire",
+    state: "zoning",
+    attributes: {
+      latitude: -33.8611,
+      longitude: 151.203,
+      radius: 35000,
+      friendly_name: "Bushfire Zone",
+      icon: "mdi:home",
+    },
+  },
+  {
+    entity_id: "geo_location.nelsons_creek",
+    state: "15",
+    attributes: {
+      source: "bushfire_demo",
+      latitude: -34.07792,
+      longitude: 151.03219,
+      friendly_name: "Nelsons Creek",
+    },
+  },
+  {
+    entity_id: "geo_location.forest_rd_nowra_hill",
+    state: "8",
+    attributes: {
+      source: "bushfire_demo",
+      latitude: -33.69452,
+      longitude: 151.19577,
+      friendly_name: "Forest Rd, Nowra Hill",
+    },
+  },
+  {
+    entity_id: "geo_location.stoney_ridge_rd_kremnos",
+    state: "20",
+    attributes: {
+      source: "bushfire_demo",
+      latitude: -33.66584,
+      longitude: 150.97209,
+      friendly_name: "Stoney Ridge Rd, Kremnos",
+    },
+  },
 ];
 
 const CONFIGS = [

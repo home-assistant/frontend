@@ -13,6 +13,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -44,6 +45,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { fullEntitiesContext } from "../../../data/context";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -59,7 +61,9 @@ export class HaScriptTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -103,7 +107,12 @@ export class HaScriptTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
         ${!this.narrow && this.scriptId
           ? html`
               <ha-button
@@ -341,7 +350,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = this.entityRegistry.find(
+    this._entityId = this._entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -358,7 +367,7 @@ export class HaScriptTrace extends LitElement {
       if (this.scriptId) {
         this._loadTraces();
 
-        this._entityId = this.entityRegistry.find(
+        this._entityId = this._entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         )?.entity_id;
       }
@@ -565,14 +574,18 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          min-height: calc(100% - var(--header-height));
+          flex: 1;
+          min-height: 0;
           display: flex;
+          overflow: hidden;
           background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
+          flex: none;
           height: auto;
           flex-direction: column;
+          overflow: visible;
         }
 
         .container {
@@ -581,15 +594,33 @@ export class HaScriptTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
-          overflow-x: auto;
           max-width: 50%;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        hat-script-graph {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
+          overflow: visible;
+          height: auto;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
         }
         .info {
           flex: 1;
+          overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        :host([narrow]) .info {
+          overflow: visible;
         }
         .trace-link {
           text-decoration: none;

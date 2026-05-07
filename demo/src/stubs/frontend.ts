@@ -1,14 +1,12 @@
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
-let changeFunction;
+let sidebarChangeCallback;
 
 export const mockFrontend = (hass: MockHomeAssistant) => {
-  hass.mockWS("frontend/get_user_data", () => ({
-    value: null,
-  }));
+  hass.mockWS("frontend/get_user_data", () => ({ value: null }));
   hass.mockWS("frontend/set_user_data", ({ key, value }) => {
     if (key === "sidebar") {
-      changeFunction?.({
+      sidebarChangeCallback?.({
         value: {
           panelOrder: value.panelOrder || [],
           hiddenPanels: value.hiddenPanels || [],
@@ -16,14 +14,11 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
       });
     }
   });
-  hass.mockWS("frontend/subscribe_user_data", (_msg, _hass, onChange) => {
-    changeFunction = onChange;
-    onChange?.({
-      value: {
-        panelOrder: [],
-        hiddenPanels: [],
-      },
-    });
+  hass.mockWS("frontend/subscribe_user_data", (msg, _hass, onChange) => {
+    if (msg.key === "sidebar") {
+      sidebarChangeCallback = onChange;
+    }
+    onChange?.({ value: null });
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   });
@@ -48,4 +43,5 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
     return () => {};
   });
   hass.mockWS("repairs/list_issues", () => ({ issues: [] }));
+  hass.mockWS("frontend/get_themes", (_msg, currentHass) => currentHass.themes);
 };

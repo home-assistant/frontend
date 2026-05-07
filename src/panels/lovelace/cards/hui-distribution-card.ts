@@ -7,7 +7,9 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { getGraphColorByIndex } from "../../../common/color/colors";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { normalizeValueBySIPrefix } from "../../../common/number/normalize-by-si-prefix";
 import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
@@ -33,6 +35,7 @@ const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 interface ProcessedEntity {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
+  color?: string;
 }
 
 interface LegendItem {
@@ -65,9 +68,9 @@ export class HuiDistributionCard
 
     // Strategy 1: Try to find power sensors (W, kW) - most common use case
     const powerFilter = (stateObj: HassEntity): boolean => {
-      const unit = stateObj.attributes.unit_of_measurement;
       const stateValue = Number(stateObj.state);
-      return (unit === "W" || unit === "kW") && !isNaN(stateValue);
+      const deviceClass = stateObj.attributes.device_class;
+      return deviceClass === "power" && !isNaN(stateValue);
     };
 
     let foundEntities = findEntities(
@@ -147,6 +150,7 @@ export class HuiDistributionCard
     this._configEntities = entities.map((entity) => ({
       entity: entity.entity,
       name: entity.name,
+      color: entity.color,
     }));
   }
 
@@ -159,7 +163,6 @@ export class HuiDistributionCard
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
@@ -227,10 +230,16 @@ export class HuiDistributionCard
       const stateObj = this.hass!.states[entity.entity];
       if (!stateObj) return;
 
-      const value = Number(stateObj.state);
-      if (value <= 0 || isNaN(value)) return;
+      const rawValue = Number(stateObj.state);
+      if (rawValue <= 0 || isNaN(rawValue)) return;
+      const value = normalizeValueBySIPrefix(
+        rawValue,
+        stateObj.attributes.unit_of_measurement
+      );
 
-      const color = getGraphColorByIndex(entity.originalIndex, computedStyles);
+      const color = entity.color
+        ? computeCssColor(entity.color)
+        : getGraphColorByIndex(entity.originalIndex, computedStyles);
       const name = computeLovelaceEntityName(this.hass!, stateObj, entity.name);
       const formattedValue = this.hass!.formatEntityState(stateObj);
 
@@ -279,7 +288,9 @@ export class HuiDistributionCard
         name: name,
         value: value,
         formattedValue: formattedValue,
-        color: getGraphColorByIndex(index, computedStyles),
+        color: entity.color
+          ? computeCssColor(entity.color)
+          : getGraphColorByIndex(index, computedStyles),
         isHidden: isHidden,
         isDisabled: isZeroOrNegative,
       };
@@ -478,8 +489,8 @@ export class HuiDistributionCard
   }
 
   static styles = css`
-    :host {
-      display: block;
+    ha-card {
+      height: 100%;
     }
 
     ha-alert {

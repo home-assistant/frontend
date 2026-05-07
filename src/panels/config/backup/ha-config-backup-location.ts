@@ -25,7 +25,7 @@ import {
   updateBackupConfig,
 } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/config/ha-backup-config-retention";
 import "./components/ha-backup-data-picker";
@@ -284,7 +284,7 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _retentionChanged(ev: CustomEvent<{ value: Retention }>) {
+  private _retentionChanged(ev: ValueChangedEvent<Retention>) {
     const retention = ev.detail.value;
     this._updateAgentConfig({
       retention,

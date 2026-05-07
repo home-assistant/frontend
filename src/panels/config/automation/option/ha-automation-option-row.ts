@@ -81,7 +81,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @query("ha-automation-condition")
   private _conditionElement?: HaAutomationCondition;

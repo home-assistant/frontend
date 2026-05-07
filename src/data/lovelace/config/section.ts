@@ -2,11 +2,19 @@ import type { Condition } from "../../../panels/lovelace/common/validate-conditi
 import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
+export const DEFAULT_SECTION_BACKGROUND_OPACITY = 50;
+
+export interface LovelaceSectionBackgroundConfig {
+  color?: string;
+  opacity?: number;
+}
+
 export interface LovelaceBaseSectionConfig {
   visibility?: Condition[];
   disabled?: boolean;
   column_span?: number;
   row_span?: number;
+  background?: LovelaceSectionBackgroundConfig;
   /**
    * @deprecated Use heading card instead.
    */

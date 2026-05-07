@@ -8,16 +8,17 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-svg-icon";
 import "./ha-form";
+import type { HaForm } from "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
   HaFormOptionalActionsSchema,
   HaFormSchema,
 } from "./types";
-import type { HaDropdownSelectEvent } from "../ha-dropdown";
 
 const NO_ACTIONS = [];
 
@@ -51,6 +52,11 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
   public async focus() {
     await this.updateComplete;
     this.renderRoot.querySelector("ha-form")?.focus();
+  }
+
+  public reportValidity(): boolean {
+    const form = this.renderRoot.querySelector<HaForm>("ha-form");
+    return form ? form.reportValidity() : true;
   }
 
   protected updated(changedProps: PropertyValues): void {

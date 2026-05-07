@@ -3,7 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -21,16 +22,23 @@ export class HuiCreateDialogHeaderFooter
 
   @state() private _params?: CreateHeaderFooterDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: CreateHeaderFooterDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): boolean {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -40,21 +48,18 @@ export class HuiCreateDialogHeaderFooter
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass!.localize(
-            `ui.panel.lovelace.editor.header-footer.choose_header_footer`,
-            {
-              type: this.hass!.localize(
-                `ui.panel.lovelace.editor.header-footer.${this._params.type}`
-              ),
-            }
-          )
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass!.localize(
+          `ui.panel.lovelace.editor.header-footer.choose_header_footer`,
+          {
+            type: this.hass!.localize(
+              `ui.panel.lovelace.editor.header-footer.${this._params.type}`
+            ),
+          }
         )}
         @keydown=${this._ignoreKeydown}
-        @closed=${this._cancel}
+        @closed=${this._dialogClosed}
       >
         <div class="elements">
           ${headerFooterElements.map(
@@ -67,7 +72,7 @@ export class HuiCreateDialogHeaderFooter
                 .type=${headerFooter.type}
                 @click=${this._handleHeaderFooterPicked}
                 @keyDown=${this._handleHeaderFooterPicked}
-                dialogInitialFocus
+                ?autofocus=${index === 0}
               >
                 <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
                 <div .id=${"card-name-" + index} role="none presentation">
@@ -79,11 +84,15 @@ export class HuiCreateDialogHeaderFooter
             `
           )}
         </div>
-        <div slot="primaryAction">
-          <ha-button @click=${this._cancel}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._cancel}
+          >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
-        </div>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -129,22 +138,7 @@ export class HuiCreateDialogHeaderFooter
     return [
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-dialog {
-            --mdc-dialog-max-height: 100%;
-            height: 100%;
-          }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 550px;
-          }
-        }
-
         ha-dialog {
-          --mdc-dialog-max-width: 550px;
           --dialog-content-padding: 2px 24px 20px 24px;
           --dialog-z-index: 6;
         }

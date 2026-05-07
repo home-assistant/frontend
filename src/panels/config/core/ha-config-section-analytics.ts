@@ -71,6 +71,7 @@ class HaConfigSectionAnalytics extends LitElement {
       display: block;
       max-width: 600px;
       margin: 0 auto;
+      margin-bottom: 24px;
     }
   `;
 }

@@ -6,6 +6,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import type {
+  QuickBarContextItem,
   QuickBarParams,
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
@@ -13,6 +14,7 @@ import {
   closeQuickBar,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { findRelated, type RelatedResult } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Constructor, HomeAssistant } from "../types";
@@ -25,12 +27,59 @@ declare global {
     "hass-quick-bar": QuickBarParams;
     "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
+    "hass-quick-bar-context": QuickBarContextItem | undefined;
   }
 }
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     private _quickBarOpen = false;
+
+    private _quickBarContext?: QuickBarContextItem;
+
+    private _quickBarContextRelated?: RelatedResult;
+
+    private _fetchRelatedMemoized = memoizeOne(
+      (itemType: QuickBarContextItem["itemType"], itemId: string) =>
+        findRelated(this.hass!, itemType, itemId)
+    );
+
+    private _clearQuickBarContext = () => {
+      this._quickBarContext = undefined;
+      this._quickBarContextRelated = undefined;
+    };
+
+    private _contextMatches = (context?: QuickBarContextItem) =>
+      context?.itemType === this._quickBarContext?.itemType &&
+      context?.itemId === this._quickBarContext?.itemId;
+
+    private _prefetchQuickBarContext = async (
+      context?: QuickBarContextItem
+    ) => {
+      this._quickBarContextRelated = undefined;
+
+      if (!context) {
+        return;
+      }
+
+      try {
+        const related = await this._fetchRelatedMemoized(
+          context.itemType,
+          context.itemId
+        );
+
+        if (this._contextMatches(context)) {
+          this._quickBarContextRelated = related;
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn("Error prefetching quick bar related items", err);
+
+        if (this._contextMatches(context)) {
+          this._quickBarContextRelated = undefined;
+        }
+      }
+    };
 
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
@@ -62,6 +111,20 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         }
       });
 
+      this.addEventListener("hass-quick-bar-context", (ev) => {
+        this._quickBarContext =
+          ev.detail && "itemType" in ev.detail && "itemId" in ev.detail
+            ? ev.detail
+            : undefined;
+        this._prefetchQuickBarContext(this._quickBarContext);
+      });
+
+      mainWindow.addEventListener(
+        "location-changed",
+        this._clearQuickBarContext
+      );
+      mainWindow.addEventListener("popstate", this._clearQuickBarContext);
+
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
         switch (ev.detail.key) {
           case "e":
@@ -85,6 +148,15 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
 
       this._registerShortcut();
+    }
+
+    public disconnectedCallback() {
+      super.disconnectedCallback();
+      mainWindow.removeEventListener(
+        "location-changed",
+        this._clearQuickBarContext
+      );
+      mainWindow.removeEventListener("popstate", this._clearQuickBarContext);
     }
 
     private _registerShortcut() {
@@ -148,7 +220,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
       e.preventDefault();
 
-      showQuickBar(this, { mode });
+      showQuickBar(this, {
+        mode,
+        contextItem: this._quickBarContext,
+        related: this._quickBarContextRelated,
+      });
     }
 
     private _toggleQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {

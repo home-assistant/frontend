@@ -3,7 +3,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
 import type { ConfigEntry, SubEntry } from "../data/config_entries";
 import { getConfigEntry, getSubEntries } from "../data/config_entries";
@@ -14,9 +13,8 @@ import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
@@ -45,65 +43,39 @@ export class HaConversationAgentPicker extends LitElement {
       return nothing;
     }
     let value = this.value;
-    if (!value && this.required) {
-      // Select Home Assistant conversation agent if it supports the language
-      for (const agent of this._agents) {
-        if (
-          agent.id === "conversation.home_assistant" &&
-          agent.supported_languages.includes(this.language!)
-        ) {
-          value = agent.id;
-          break;
-        }
-      }
-      if (!value) {
-        // Select the first agent that supports the language
-        for (const agent of this._agents) {
-          if (
-            agent.supported_languages === "*" &&
-            agent.supported_languages.includes(this.language!)
-          ) {
-            value = agent.id;
-            break;
-          }
-        }
-      }
-    }
     if (!value) {
       value = NONE;
+    }
+
+    const options: HaSelectOption[] = this._agents.map((agent) => ({
+      value: agent.id,
+      label: agent.name,
+      disabled:
+        agent.supported_languages !== "*" &&
+        agent.supported_languages.length === 0,
+    }));
+
+    if (!this.required) {
+      options.unshift({
+        value: NONE,
+        label: this.hass.localize(
+          "ui.components.conversation-agent-picker.none"
+        ),
+      });
     }
 
     return html`
       <ha-select
         .label=${this.label ||
         this.hass!.localize(
-          "ui.components.coversation-agent-picker.conversation_agent"
+          "ui.components.conversation-agent-picker.conversation_agent"
         )}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
-      >
-        ${!this.required
-          ? html`<ha-list-item .value=${NONE}>
-              ${this.hass!.localize(
-                "ui.components.coversation-agent-picker.none"
-              )}
-            </ha-list-item>`
-          : nothing}
-        ${this._agents.map(
-          (agent) =>
-            html`<ha-list-item
-              .value=${agent.id}
-              .disabled=${agent.supported_languages !== "*" &&
-              agent.supported_languages.length === 0}
-            >
-              ${agent.name}
-            </ha-list-item>`
-        )}</ha-select
+        .options=${options}
+      ></ha-select
       >${(this._subConfigEntry &&
         this._configEntry?.supported_subentry_types[
           this._subConfigEntry.subentry_type
@@ -174,6 +146,39 @@ export class HaConversationAgentPicker extends LitElement {
 
     this._agents = agents;
 
+    if (!this.value && this.required) {
+      let defaultValue: string | undefined;
+      // Select Home Assistant conversation agent if it supports the language
+      for (const agent of this._agents) {
+        if (
+          agent.id === "conversation.home_assistant" &&
+          (!this.language ||
+            agent.supported_languages === "*" ||
+            agent.supported_languages.includes(this.language))
+        ) {
+          defaultValue = agent.id;
+          break;
+        }
+      }
+      if (!defaultValue) {
+        // Select the first agent that supports the language
+        for (const agent of this._agents) {
+          if (
+            agent.supported_languages === "*" ||
+            !this.language ||
+            agent.supported_languages.includes(this.language)
+          ) {
+            defaultValue = agent.id;
+            break;
+          }
+        }
+      }
+      if (defaultValue) {
+        this.value = defaultValue;
+        fireEvent(this, "value-changed", { value: this.value });
+      }
+    }
+
     if (!this.value) {
       return;
     }
@@ -238,17 +243,17 @@ export class HaConversationAgentPicker extends LitElement {
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
+  private _changed(ev: HaSelectSelectEvent): void {
+    const value = ev.detail.value;
     if (
       !this.hass ||
-      target.value === "" ||
-      target.value === this.value ||
-      (this.value === undefined && target.value === NONE)
+      value === "" ||
+      value === this.value ||
+      (this.value === undefined && value === NONE)
     ) {
       return;
     }
-    this.value = target.value === NONE ? undefined : target.value;
+    this.value = value === NONE ? undefined : value;
     fireEvent(this, "value-changed", { value: this.value });
     fireEvent(this, "supported-languages-changed", {
       value: this._agents!.find((agent) => agent.id === this.value)

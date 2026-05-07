@@ -15,7 +15,7 @@ import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../category/ha-category-picker";
@@ -192,7 +192,7 @@ class DialogSceneSave extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title || title}
@@ -246,7 +246,7 @@ class DialogSceneSave extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

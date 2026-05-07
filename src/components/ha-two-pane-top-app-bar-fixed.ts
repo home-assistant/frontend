@@ -298,7 +298,7 @@ export class TopAppBarBaseBase extends BaseElement {
       }
       @media (prefers-reduced-motion: reduce) {
         .mdc-top-app-bar {
-          transition: none;
+          transition: 1ms;
         }
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {

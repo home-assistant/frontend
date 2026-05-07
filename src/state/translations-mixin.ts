@@ -37,21 +37,11 @@ declare global {
     "hass-language-select": {
       language: string;
     };
-    "hass-number-format-select": {
-      number_format: NumberFormat;
-    };
-    "hass-time-format-select": {
-      time_format: TimeFormat;
-    };
-    "hass-date-format-select": {
-      date_format: DateFormat;
-    };
-    "hass-time-zone-select": {
-      time_zone: TimeZone;
-    };
-    "hass-first-weekday-select": {
-      first_weekday: FirstWeekday;
-    };
+    "hass-number-format-select": NumberFormat;
+    "hass-time-format-select": TimeFormat;
+    "hass-date-format-select": DateFormat;
+    "hass-time-zone-select": TimeZone;
+    "hass-first-weekday-select": FirstWeekday;
     "translations-updated": undefined;
   }
 }

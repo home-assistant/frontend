@@ -5,7 +5,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-settings-row";
+import "./ha-md-list-item";
 import "./ha-switch";
 import "./ha-tooltip";
 import type { HaSwitch } from "./ha-switch";
@@ -33,103 +33,78 @@ export class HaAnalytics extends LitElement {
     const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <ha-settings-row>
-        <span slot="heading" data-for="base">
-          ${this.localize(
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
-          )}
-        </span>
-        <span slot="description" data-for="base">
-          ${this.localize(
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
-          )}
-        </span>
+          )}</span
+        >
         <ha-switch
+          slot="end"
           @change=${this._handleRowClick}
           .checked=${!!baseEnabled}
           .preference=${"base"}
           .disabled=${loading}
           name="base"
-        >
-        </ha-switch>
-      </ha-settings-row>
+        ></ha-switch>
+      </ha-md-list-item>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
-          <ha-settings-row>
-            <span slot="heading" data-for=${preference}>
-              ${this.localize(
+          <ha-md-list-item>
+            <span slot="headline"
+              >${this.localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
-              )}
-            </span>
-            <span slot="description" data-for=${preference}>
-              ${this.localize(
+              )}</span
+            >
+            <span slot="supporting-text"
+              >${this.localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
-              )}
-            </span>
-            <span>
-              <ha-switch
-                .id="switch-${preference}"
-                @change=${this._handleRowClick}
-                .checked=${!!this.analytics?.preferences[preference]}
-                .preference=${preference}
-                name=${preference}
-              >
-              </ha-switch>
-              ${baseEnabled
-                ? nothing
-                : html`<ha-tooltip
-                    .for="switch-${preference}"
-                    placement="right"
-                  >
-                    ${this.localize(
-                      `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                    )}
-                  </ha-tooltip>`}
-            </span>
-          </ha-settings-row>
+              )}</span
+            >
+            <ha-switch
+              slot="end"
+              .id="switch-${preference}"
+              @change=${this._handleRowClick}
+              .checked=${!!this.analytics?.preferences[preference]}
+              .preference=${preference}
+              name=${preference}
+            ></ha-switch>
+            ${baseEnabled
+              ? nothing
+              : html`<ha-tooltip .for="switch-${preference}" placement="right">
+                  ${this.localize(
+                    `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                  )}
+                </ha-tooltip>`}
+          </ha-md-list-item>
         `
       )}
-      <ha-settings-row>
-        <span slot="heading" data-for="diagnostics">
-          ${this.localize(
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
-          )}
-        </span>
-        <span slot="description" data-for="diagnostics">
-          ${this.localize(
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
-          )}
-        </span>
+          )}</span
+        >
         <ha-switch
+          slot="end"
           @change=${this._handleRowClick}
           .checked=${!!this.analytics?.preferences.diagnostics}
           .preference=${"diagnostics"}
           .disabled=${loading}
           name="diagnostics"
-        >
-        </ha-switch>
-      </ha-settings-row>
+        ></ha-switch>
+      </ha-md-list-item>
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-
-    this.shadowRoot!.querySelectorAll("*[data-for]").forEach((el) => {
-      const forEl = (el as HTMLElement).dataset.for;
-      delete (el as HTMLElement).dataset.for;
-
-      el.addEventListener("click", () => {
-        const toFocus = this.shadowRoot!.querySelector(
-          `*[name=${forEl}]`
-        ) as HTMLElement | null;
-
-        if (toFocus) {
-          toFocus.focus();
-          toFocus.click();
-        }
-      });
-    });
   }
 
   private _handleRowClick(ev: Event) {
@@ -164,13 +139,10 @@ export class HaAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        ha-settings-row {
-          padding: 0;
-        }
-
-        span[slot="heading"],
-        span[slot="description"] {
-          cursor: pointer;
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-item-overflow: visible;
         }
       `,
     ];

@@ -33,7 +33,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       rows: this.preview ? "auto" : 1,
       min_rows: 1,
       min_columns: 6,
-      fixed_rows: this.preview,
     };
   }
 

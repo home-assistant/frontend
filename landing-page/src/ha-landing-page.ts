@@ -100,7 +100,6 @@ class HaLandingPage extends LandingPageBaseElement {
           button-style
           native-name
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
         <ha-button
           appearance="plain"
@@ -119,7 +118,7 @@ class HaLandingPage extends LandingPageBaseElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    makeDialogManager(this, this.shadowRoot!);
+    makeDialogManager(this);
 
     if (window.innerWidth > 450) {
       import("../../src/resources/particles");
@@ -222,6 +221,9 @@ class HaLandingPage extends LandingPageBaseElement {
         display: flex;
         flex-direction: column;
         gap: var(--ha-space-4);
+      }
+      ha-language-picker {
+        min-width: 200px;
       }
       ha-alert p {
         text-align: unset;

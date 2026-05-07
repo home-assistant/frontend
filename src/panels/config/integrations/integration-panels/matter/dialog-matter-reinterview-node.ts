@@ -5,7 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import { interviewMatterNode } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -19,10 +20,13 @@ class DialogMatterReinterviewNode extends LitElement {
 
   @state() private _status?: string;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterReinterviewNodeDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
+    this._open = true;
   }
 
   protected render() {
@@ -32,12 +36,12 @@ class DialogMatterReinterviewNode extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.matter.reinterview_node.title")
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.matter.reinterview_node.title"
         )}
+        @closed=${this._dialogClosed}
       >
         ${!this._status
           ? html`
@@ -53,11 +57,6 @@ class DialogMatterReinterviewNode extends LitElement {
                   )}
                 </em>
               </p>
-              <ha-button slot="primaryAction" @click=${this._startReinterview}>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.reinterview_node.start_reinterview"
-                )}
-              </ha-button>
             `
           : this._status === "started"
             ? html`
@@ -78,9 +77,6 @@ class DialogMatterReinterviewNode extends LitElement {
                     </p>
                   </div>
                 </div>
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
               `
             : this._status === "failed"
               ? html`
@@ -97,9 +93,6 @@ class DialogMatterReinterviewNode extends LitElement {
                       </p>
                     </div>
                   </div>
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
-                  </ha-button>
                 `
               : this._status === "finished"
                 ? html`
@@ -116,11 +109,26 @@ class DialogMatterReinterviewNode extends LitElement {
                         </p>
                       </div>
                     </div>
-                    <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                      ${this.hass.localize("ui.common.close")}
-                    </ha-button>
                   `
                 : nothing}
+        <ha-dialog-footer slot="footer">
+          ${!this._status
+            ? html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._startReinterview}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.reinterview_node.start_reinterview"
+                  )}
+                </ha-button>
+              `
+            : html`
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
+              `}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -139,6 +147,10 @@ class DialogMatterReinterviewNode extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this.device_id = undefined;
     this._status = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });

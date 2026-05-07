@@ -57,6 +57,12 @@ const runDevServer = async ({
         directory: contentBase,
         watch: true,
       },
+      client: {
+        overlay: {
+          runtimeErrors: (error) =>
+            !error?.message?.includes("ResizeObserver loop"),
+        },
+      },
       proxy,
     },
     compiler

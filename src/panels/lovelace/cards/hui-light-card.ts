@@ -314,7 +314,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      --mdc-icon-button-size: 100%;
+      --ha-icon-button-size: 100%;
       --mdc-icon-size: 100%;
     }
 

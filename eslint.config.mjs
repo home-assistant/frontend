@@ -12,6 +12,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import { configs as litConfigs } from "eslint-plugin-lit";
 import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
+import html from "@html-eslint/eslint-plugin";
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
@@ -191,6 +192,14 @@ export default tseslint.config(
     files: ["src/util/recorder-worklet.js"],
     languageOptions: {
       globals: globals.audioWorklet,
+    },
+  },
+  {
+    plugins: {
+      html,
+    },
+    rules: {
+      "html/no-invalid-attr-value": "error",
     },
   }
 );

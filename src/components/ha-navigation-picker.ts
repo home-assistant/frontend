@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { mdiDevices, mdiTextureBox } from "@mdi/js";
+import { mdiDevices, mdiPlus, mdiTextureBox } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -237,6 +237,22 @@ export class HaNavigationPicker extends LitElement {
     addGroup("views", views);
     addGroup("other_routes", otherRoutes);
 
+    if (
+      searchString &&
+      !this._navigationItems.some((navItem) => navItem.id === searchString)
+    ) {
+      items.push({
+        id: searchString,
+        primary: this.hass.localize(
+          "ui.components.navigation-picker.add_custom_path"
+        ),
+        secondary: `"${searchString}"`,
+        icon_path: mdiPlus,
+        sorting_label: searchString,
+        group: "other_routes",
+      });
+    }
+
     return items;
   };
 
@@ -262,12 +278,7 @@ export class HaNavigationPicker extends LitElement {
 
     const viewConfigs = await Promise.all(
       lovelacePanels.map((panel) =>
-        fetchConfig(
-          this.hass!.connection,
-          // path should be null to fetch default lovelace panel
-          panel.url_path === "lovelace" ? null : panel.url_path,
-          true
-        )
+        fetchConfig(this.hass!.connection, panel.url_path, true)
           .then((config) => [panel.id, config] as [string, typeof config])
           .catch((_) => [panel.id, undefined] as [string, undefined])
       )

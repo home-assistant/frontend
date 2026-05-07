@@ -1,10 +1,16 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "./dialog-registries";
 
-export const showRegistriesDialog = (element: HTMLElement): void => {
+export interface RegistryDialogParams {
+  registryAdded?: () => void;
+}
+
+export const showAddRegistryDialog = (
+  element: HTMLElement,
+  dialogParams: RegistryDialogParams
+): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-apps-registries",
     dialogImport: () => import("./dialog-registries"),
-    dialogParams: {},
+    dialogParams,
   });
 };

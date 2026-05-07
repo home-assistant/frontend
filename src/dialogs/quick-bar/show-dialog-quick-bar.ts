@@ -1,4 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import type { ItemType, RelatedResult } from "../../data/search";
 import { closeDialog } from "../make-dialog-manager";
 
 export type QuickBarSection =
@@ -8,10 +9,17 @@ export type QuickBarSection =
   | "navigate"
   | "command";
 
+export interface QuickBarContextItem {
+  itemType: ItemType;
+  itemId: string;
+}
+
 export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
   showHint?: boolean;
+  contextItem?: QuickBarContextItem;
+  related?: RelatedResult;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");

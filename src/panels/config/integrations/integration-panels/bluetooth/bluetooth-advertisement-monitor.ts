@@ -24,9 +24,9 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { bluetoothTabs } from "./bluetooth-config-dashboard";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
 @customElement("bluetooth-advertisement-monitor")
@@ -40,6 +40,13 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  private _tabs: PageNavigation[] = [
+    {
+      translationKey: "ui.panel.config.bluetooth.navigation.advertisements",
+      path: "/config/bluetooth/advertisement-monitor",
+    },
+  ];
 
   @state() private _data: BluetoothDeviceData[] = [];
 
@@ -188,15 +195,19 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
       const device = this._sourceDevices[row.address];
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
+      const sourceName =
+        scannerDevice?.name_by_user ||
+        scannerDevice?.name ||
+        scanner?.name ||
+        row.source;
+      const areaName = scannerDevice?.area_id
+        ? this.hass.areas[scannerDevice.area_id]?.name
+        : undefined;
       return {
         ...row,
         id: row.address,
         source_address: row.source,
-        source:
-          scannerDevice?.name_by_user ||
-          scannerDevice?.name ||
-          scanner?.name ||
-          row.source,
+        source: areaName ? `${sourceName} (${areaName})` : sourceName,
         device: device?.name_by_user || device?.name || undefined,
         datetime: new Date(row.time * 1000),
       };
@@ -221,7 +232,8 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         filter=${this.address || ""}
         clickable
-        .tabs=${bluetoothTabs}
+        .tabs=${this._tabs}
+        back-path="/config/bluetooth/dashboard"
       ></hass-tabs-subpage-data-table>
     `;
   }

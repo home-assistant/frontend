@@ -1,19 +1,15 @@
-import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
-import "../../../components/ha-md-select";
-import "../../../components/ha-md-select-option";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-select";
+import "../../../components/ha-dialog";
 import { getSignedPath } from "../../../data/auth";
 import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 
@@ -25,17 +21,19 @@ class DownloadLogsDialog extends LitElement {
 
   @state() private _dialogParams?: DownloadLogsDialogParams;
 
-  @state() private _lineCount = DEFAULT_LINE_COUNT;
+  @state() private _open = false;
 
-  @query("ha-md-dialog") private _dialogElement!: HaMdDialog;
+  @state() private _lineCount = DEFAULT_LINE_COUNT;
 
   public showDialog(dialogParams: DownloadLogsDialogParams) {
     this._dialogParams = dialogParams;
-    this._lineCount = this._dialogParams?.defaultLineCount || 500;
+    this._lineCount =
+      this._dialogParams?.defaultLineCount || DEFAULT_LINE_COUNT;
+    this._open = true;
   }
 
   public closeDialog() {
-    this._dialogElement.close();
+    this._open = false;
   }
 
   private _dialogClosed() {
@@ -55,53 +53,53 @@ class DownloadLogsDialog extends LitElement {
       numberOfLinesOptions.sort((a, b) => a - b);
     }
 
+    const headerSubtitle = `${this._dialogParams.header}${
+      this._dialogParams.boot === 0
+        ? ""
+        : ` · ${
+            this._dialogParams.boot === -1
+              ? this.hass.localize("ui.panel.config.logs.previous")
+              : this.hass.localize("ui.panel.config.logs.startups_ago", {
+                  boot: this._dialogParams.boot * -1,
+                })
+          }`
+    }`;
+
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" id="dialog-light-color-favorite-title">
-            ${this.hass.localize("ui.panel.config.logs.download_logs")}
-          </span>
-          <span slot="subtitle">
-            ${this._dialogParams.header}${this._dialogParams.boot === 0
-              ? ""
-              : ` · ${this._dialogParams.boot === -1 ? this.hass.localize("ui.panel.config.logs.previous") : this.hass.localize("ui.panel.config.logs.startups_ago", { boot: this._dialogParams.boot * -1 })}`}
-          </span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize("ui.panel.config.logs.download_logs")}
+        header-subtitle=${headerSubtitle}
+        width="small"
+        @closed=${this._dialogClosed}
+      >
+        <div class="content">
           <div>
             ${this.hass.localize(
               "ui.panel.config.logs.select_number_of_lines"
             )}:
           </div>
-          <ha-md-select
+          <ha-select
             .label=${this.hass.localize("ui.panel.config.logs.lines")}
-            @change=${this._setNumberOfLogs}
+            @selected=${this._setNumberOfLogs}
             .value=${String(this._lineCount)}
-          >
-            ${numberOfLinesOptions.map(
-              (option) => html`
-                <ha-md-select-option .value=${String(option)}>
-                  ${option}
-                </ha-md-select-option>
-              `
-            )}
-          </ha-md-select>
+            .options=${numberOfLinesOptions.map((option) => String(option))}
+          ></ha-select>
         </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this.closeDialog}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._downloadLogs}>
+          <ha-button slot="primaryAction" @click=${this._downloadLogs}>
             ${this.hass.localize("ui.common.download")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -124,8 +122,8 @@ class DownloadLogsDialog extends LitElement {
     this.closeDialog();
   }
 
-  private _setNumberOfLogs(ev) {
-    this._lineCount = Number(ev.target.value);
+  private _setNumberOfLogs(ev: ValueChangedEvent<string>) {
+    this._lineCount = Number(ev.detail.value);
   }
 
   static get styles(): CSSResultGroup {
@@ -135,13 +133,15 @@ class DownloadLogsDialog extends LitElement {
       css`
         :host {
           direction: var(--direction);
-          --dialog-content-overflow: visible;
         }
         .content {
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: var(--ha-space-2);
+        }
+        ha-select {
+          width: 100%;
         }
       `,
     ];

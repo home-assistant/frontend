@@ -35,6 +35,7 @@ const COMPONENTS = {
   security: () => import("../panels/security/ha-panel-security"),
   climate: () => import("../panels/climate/ha-panel-climate"),
   home: () => import("../panels/home/ha-panel-home"),
+  notfound: () => import("../panels/notfound/ha-panel-notfound"),
 };
 
 @customElement("partial-panel-resolver")

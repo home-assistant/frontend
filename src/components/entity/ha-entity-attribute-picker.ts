@@ -6,6 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type { PickerValueRenderer } from "../ha-picker-field";
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -94,11 +95,18 @@ class HaEntityAttributePicker extends LitElement {
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
         .getItems=${this._getItems}
+        .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;
   }
+
+  private _valueRenderer: PickerValueRenderer = (value: string) => {
+    const items = this._getItems();
+    const item = items.find((option) => option.id === value);
+    return html`<span slot="headline">${item?.primary ?? value}</span>`;
+  };
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();

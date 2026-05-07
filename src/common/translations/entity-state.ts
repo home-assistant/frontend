@@ -12,6 +12,10 @@ export type FormatEntityStateFunc = (
   stateObj: HassEntity,
   state?: string
 ) => string;
+export type FormatEntityStateToPartsFunc = (
+  stateObj: HassEntity,
+  state?: string
+) => ValuePart[];
 export type FormatEntityAttributeValueFunc = (
   stateObj: HassEntity,
   attribute: string,
@@ -46,12 +50,13 @@ export const computeFormatFunctions = async (
   sensorNumericDeviceClasses: string[]
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
+  formatEntityStateToParts: FormatEntityStateToPartsFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
   formatEntityAttributeValueToParts: FormatEntityAttributeValueToPartsFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
-  const { computeStateDisplay } =
+  const { computeStateDisplay, computeStateToParts } =
     await import("../entity/compute_state_display");
   const {
     computeAttributeValueDisplay,
@@ -62,6 +67,16 @@ export const computeFormatFunctions = async (
   return {
     formatEntityState: (stateObj, state) =>
       computeStateDisplay(
+        localize,
+        stateObj,
+        locale,
+        sensorNumericDeviceClasses,
+        config,
+        entities,
+        state
+      ),
+    formatEntityStateToParts: (stateObj, state) =>
+      computeStateToParts(
         localize,
         stateObj,
         locale,

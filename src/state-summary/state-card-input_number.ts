@@ -109,6 +109,11 @@ class StateCardInputNumber extends LitElement {
       width: 100%;
       max-width: 200px;
     }
+    @media (max-width: 450px) {
+      state-info {
+        flex-basis: 60%;
+      }
+    }
   `;
 
   private async _initialLoad(): Promise<void> {

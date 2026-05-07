@@ -35,7 +35,7 @@ export class HaDeviceAction extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origAction?: DeviceAction;
 

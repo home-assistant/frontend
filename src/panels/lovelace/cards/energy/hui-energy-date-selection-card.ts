@@ -6,16 +6,34 @@ import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
-import type { EnergyCardBaseConfig } from "../types";
+import type { EnergyDateSelectorCardConfig } from "../types";
+import { validateEnergyCollectionKey } from "../../../../data/energy";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
   extends LitElement
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-date-selection-card-editor");
+    return document.createElement("hui-energy-date-selection-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config?: EnergyCardBaseConfig;
+  @state() private _config?: EnergyDateSelectorCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDateSelectorCardConfig {
+    return {
+      type: "energy-date-selection",
+      vertical_opening_direction: "auto",
+      opening_direction: "auto",
+    };
+  }
 
   public getCardSize(): Promise<number> | number {
     return 1;
@@ -28,7 +46,10 @@ export class HuiEnergyDateSelectionCard
     };
   }
 
-  public setConfig(config: EnergyCardBaseConfig): void {
+  public setConfig(config: EnergyDateSelectorCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -45,12 +66,25 @@ export class HuiEnergyDateSelectionCard
       return nothing;
     }
 
+    const verticalOpeningDirection =
+      this._config.vertical_opening_direction === "auto"
+        ? undefined
+        : this._config.vertical_opening_direction;
+
+    const openingDirection =
+      this._config.opening_direction === "auto"
+        ? undefined
+        : this._config.opening_direction;
+
     return html`
       <ha-card>
         <div class="card-content">
           <hui-energy-period-selector
             .hass=${this.hass}
             .collectionKey=${this._config.collection_key}
+            .verticalOpeningDirection=${verticalOpeningDirection}
+            .openingDirection=${openingDirection}
+            .allowCompare=${!this._config.disable_compare}
           ></hui-energy-period-selector>
         </div>
       </ha-card>

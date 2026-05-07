@@ -3,16 +3,19 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
-import { getEntity } from "../../../../src/fake_data/entity";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
 
 const ENTITIES = [
-  getEntity("input_text", "text", "Inspiration", {
-    friendly_name: "Text",
-    mode: "text",
-  }),
+  {
+    entity_id: "input_text.text",
+    state: "Inspiration",
+    attributes: {
+      friendly_name: "Text",
+      mode: "text",
+    },
+  },
 ];
 
 @customElement("demo-more-info-input-text")
@@ -25,7 +28,7 @@ class DemoMoreInfoInputText extends LitElement {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${ENTITIES.map((ent) => ent.entityId)}
+        .entities=${ENTITIES.map((ent) => ent.entity_id)}
       ></demo-more-infos>
     `;
   }

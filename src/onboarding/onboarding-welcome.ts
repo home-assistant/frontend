@@ -1,15 +1,15 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import { onBoardingStyles } from "./styles";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
-import "../components/ha-divider";
+import "../components/ha-icon-button-next";
 import "../components/ha-md-list";
 import "../components/ha-md-list-item";
-import "../components/ha-icon-button-next";
+import type { HomeAssistant } from "../types";
+import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-welcome")
 class OnboardingWelcome extends LitElement {
@@ -26,9 +26,16 @@ class OnboardingWelcome extends LitElement {
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
-      <ha-divider
-        .label=${this.localize("ui.panel.page-onboarding.welcome.or_restore")}
-      ></ha-divider>
+      <div class="divider">
+        <wa-divider></wa-divider>
+        <div>
+          <span
+            >${this.localize(
+              "ui.panel.page-onboarding.welcome.or_restore"
+            )}</span
+          >
+        </div>
+      </div>
 
       <ha-md-list>
         <ha-md-list-item type="button" @click=${this._restoreBackupUpload}>
@@ -83,24 +90,39 @@ class OnboardingWelcome extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin-bottom: -16px;
+          margin-bottom: calc(var(--ha-space-4) * -1);
         }
         h1 {
-          margin-top: 16px;
-          margin-bottom: 8px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-2);
         }
         p {
           margin: 0;
         }
         .start {
-          margin: 32px 0;
+          margin: var(--ha-space-8) 0;
           width: 100%;
         }
-        ha-divider {
-          --ha-divider-width: calc(100% + 64px);
-          margin-left: -32px;
-          margin-right: -32px;
+        .divider {
+          width: calc(100% + var(--ha-space-16));
+          position: relative;
+          margin-left: calc(var(--ha-space-8) * -1);
+          margin-right: calc(var(--ha-space-8) * -1);
         }
+        .divider div {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          top: 0;
+          bottom: 0;
+          width: 100%;
+        }
+        .divider div span {
+          background-color: var(--card-background-color);
+          padding: 0 var(--ha-space-4);
+        }
+
         ha-md-list {
           width: 100%;
           padding-bottom: 0;

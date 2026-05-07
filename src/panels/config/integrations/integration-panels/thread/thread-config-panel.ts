@@ -15,6 +15,7 @@ import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
@@ -49,7 +50,6 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
-import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 export interface ThreadNetwork {
   name: string;
@@ -75,7 +75,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
 
     return html`
-      <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
+      <hass-subpage
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        header="Thread"
+        back-path="/config"
+      >
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             .path=${mdiDotsVertical}
@@ -107,7 +112,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           >
         </ha-dropdown>
         <div class="content">
-          <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
+          <h2>${this.hass.localize("ui.panel.config.thread.my_network")}</h2>
           ${networks.preferred
             ? this._renderNetwork(networks.preferred)
             : html`<ha-card>
@@ -138,18 +143,31 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   this._renderNetwork(network)
                 )}`
             : ""}
+          ${this.hass.auth.external?.config.canImportThreadCredentials
+            ? html`<h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.thread_network_send_credentials_ha"
+                  )}
+                </h3>
+                <ha-card>
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.thread.thread_network_send_credentials_ha_description"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <ha-button
+                      size="small"
+                      @click=${this._importExternalThreadCredentials}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.thread.thread_network_send_credentials_ha"
+                      )}
+                    </ha-button>
+                  </div>
+                </ha-card>`
+            : nothing}
         </div>
-        ${this.hass.auth.external?.config.canImportThreadCredentials
-          ? html`<ha-fab
-              slot="fab"
-              @click=${this._importExternalThreadCredentials}
-              extended
-              .label=${this.hass.localize(
-                "ui.panel.config.thread.thread_network_send_credentials_ha"
-              )}
-              ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
-            ></ha-fab>`
-          : nothing}
       </hass-subpage>
     `;
   }
@@ -217,12 +235,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               >
                 <img
                   slot="graphic"
-                  .src=${brandsUrl({
-                    domain: router.brand,
-                    brand: true,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  .src=${brandsUrl(
+                    {
+                      domain: router.brand,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   alt=${router.brand}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
@@ -314,6 +334,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ${network.dataset && !network.dataset.preferred
         ? html`<div class="card-actions">
             <ha-button
+              size="small"
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
               >${this.hass.localize(
@@ -326,6 +347,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       network.dataset?.preferred &&
       network.routers?.length
         ? html`<div class="card-actions">
+            <p class="send-to-phone-description">
+              ${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_phone_description"
+              )}
+            </p>
             <ha-button
               size="small"
               .networkDataset=${network.dataset}
@@ -737,12 +763,20 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ha-card {
         margin-bottom: 16px;
       }
+      h3 {
+        margin-top: var(--ha-space-8);
+      }
       h4 {
         margin: 0;
       }
       .card-header {
         display: flex;
         justify-content: space-between;
+      }
+
+      .send-to-phone-description {
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
       }
     `,
   ];

@@ -186,9 +186,11 @@ export class HaDrawer extends DrawerBase {
           padding-inline-start var(--ha-animation-duration-normal) ease;
       }
       @media (prefers-reduced-motion: reduce) {
+        /* Use 1ms instead of "none" so the transitionend event still fires.
+           The MDC drawer foundation relies on it to complete the close cycle. */
         .mdc-drawer,
         .mdc-drawer-app-content {
-          transition: none;
+          transition: 1ms;
         }
       }
     `,

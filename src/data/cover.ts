@@ -18,6 +18,47 @@ export const enum CoverEntityFeature {
   SET_TILT_POSITION = 128,
 }
 
+export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
+
+export const coverSupportsPosition = (stateObj: CoverEntity) =>
+  supportsFeature(stateObj, CoverEntityFeature.SET_POSITION);
+
+export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
+  supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION);
+
+export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
+  coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
+
+export const normalizeCoverFavoritePositions = (
+  positions?: number[]
+): number[] => {
+  if (!positions) {
+    return [];
+  }
+
+  const unique = new Set<number>();
+  const normalized: number[] = [];
+
+  for (const position of positions) {
+    const value = Number(position);
+
+    if (isNaN(value)) {
+      continue;
+    }
+
+    const clamped = Math.max(0, Math.min(100, Math.round(value)));
+
+    if (unique.has(clamped)) {
+      continue;
+    }
+
+    unique.add(clamped);
+    normalized.push(clamped);
+  }
+
+  return normalized;
+};
+
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
     return stateObj.attributes.current_position === 100;

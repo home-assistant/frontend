@@ -5,7 +5,6 @@ import type {
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { NumberFormat } from "../../data/translation";
-import { round } from "./round";
 
 /**
  * Returns true if the entity is considered numeric based on the attributes it has
@@ -52,7 +51,22 @@ export const formatNumber = (
   num: string | number,
   localeOptions?: FrontendLocaleData,
   options?: Intl.NumberFormatOptions
-): string => {
+): string =>
+  formatNumberToParts(num, localeOptions, options)
+    .map((part) => part.value)
+    .join("");
+
+/**
+ * Returns an array of objects containing the formatted number in parts
+ * Similar to Intl.NumberFormat.prototype.formatToParts()
+ *
+ * Input params - same as for formatNumber()
+ */
+export const formatNumberToParts = (
+  num: string | number,
+  localeOptions?: FrontendLocaleData,
+  options?: Intl.NumberFormatOptions
+): any[] => {
   const locale = localeOptions
     ? numberFormatToLocale(localeOptions)
     : undefined;
@@ -71,7 +85,7 @@ export const formatNumber = (
     return new Intl.NumberFormat(
       locale,
       getDefaultFormatOptions(num, options)
-    ).format(Number(num));
+    ).formatToParts(Number(num));
   }
 
   if (
@@ -86,15 +100,10 @@ export const formatNumber = (
         ...options,
         useGrouping: false,
       })
-    ).format(Number(num));
+    ).formatToParts(Number(num));
   }
 
-  if (typeof num === "string") {
-    return num;
-  }
-  return `${round(num, options?.maximumFractionDigits).toString()}${
-    options?.style === "currency" ? ` ${options.currency}` : ""
-  }`;
+  return [{ type: "literal", value: num }];
 };
 
 /**

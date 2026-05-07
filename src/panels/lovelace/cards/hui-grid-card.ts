@@ -75,7 +75,14 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     return [
       super.sharedStyles,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
         #root {
+          flex: 1;
+          min-height: 0;
           display: grid;
           grid-template-columns: repeat(
             var(--grid-card-column-count, ${DEFAULT_COLUMNS}),

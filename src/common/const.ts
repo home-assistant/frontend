@@ -116,3 +116,6 @@ export const UNIT_F = "°F";
 
 /** Entity ID of the default view. */
 export const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
+
+/** String to visually separate labels on UI */
+export const STRINGS_SEPARATOR_DOT = " · ";

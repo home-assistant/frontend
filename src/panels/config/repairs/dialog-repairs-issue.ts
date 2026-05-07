@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import "../../../components/ha-alert";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-dialog-footer";
@@ -62,7 +62,7 @@ class DialogRepairsIssue extends LitElement {
       ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
@@ -142,7 +142,7 @@ class DialogRepairsIssue extends LitElement {
               `
             : ""}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

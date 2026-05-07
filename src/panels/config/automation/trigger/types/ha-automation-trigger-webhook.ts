@@ -8,6 +8,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
@@ -19,7 +20,6 @@ import type {
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
-import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
 const DEFAULT_METHODS = ["POST", "PUT"];
@@ -234,7 +234,7 @@ export class HaWebhookTrigger extends LitElement {
     }
 
     ha-textfield > ha-icon-button {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       --mdc-icon-size: 18px;
       color: var(--secondary-text-color);
     }

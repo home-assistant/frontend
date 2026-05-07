@@ -3,48 +3,63 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
-import { getEntity } from "../../../../src/fake_data/entity";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
 
 const ENTITIES = [
-  getEntity("number", "box1", 0, {
-    friendly_name: "Box1",
-    min: 0,
-    max: 100,
-    step: 1,
-    initial: 0,
-    mode: "box",
-    unit_of_measurement: "items",
-  }),
-  getEntity("number", "slider1", 0, {
-    friendly_name: "Slider1",
-    min: 0,
-    max: 100,
-    step: 1,
-    initial: 0,
-    mode: "slider",
-    unit_of_measurement: "items",
-  }),
-  getEntity("number", "auto1", 0, {
-    friendly_name: "Auto1",
-    min: 0,
-    max: 1000,
-    step: 1,
-    initial: 0,
-    mode: "auto",
-    unit_of_measurement: "items",
-  }),
-  getEntity("number", "auto2", 0, {
-    friendly_name: "Auto2",
-    min: 0,
-    max: 100,
-    step: 1,
-    initial: 0,
-    mode: "auto",
-    unit_of_measurement: "items",
-  }),
+  {
+    entity_id: "number.box1",
+    state: "0",
+    attributes: {
+      friendly_name: "Box1",
+      min: 0,
+      max: 100,
+      step: 1,
+      initial: 0,
+      mode: "box",
+      unit_of_measurement: "items",
+    },
+  },
+  {
+    entity_id: "number.slider1",
+    state: "0",
+    attributes: {
+      friendly_name: "Slider1",
+      min: 0,
+      max: 100,
+      step: 1,
+      initial: 0,
+      mode: "slider",
+      unit_of_measurement: "items",
+    },
+  },
+  {
+    entity_id: "number.auto1",
+    state: "0",
+    attributes: {
+      friendly_name: "Auto1",
+      min: 0,
+      max: 1000,
+      step: 1,
+      initial: 0,
+      mode: "auto",
+      unit_of_measurement: "items",
+    },
+  },
+  {
+    entity_id: "number.auto2",
+    state: "0",
+    attributes: {
+      friendly_name: "Auto2",
+      min: 0,
+      max: 100,
+      step: 1,
+      initial: 0,
+      mode: "auto",
+      unit_of_measurement: "items",
+    },
+  },
 ];
 
 @customElement("demo-more-info-number")
@@ -57,7 +72,7 @@ class DemoMoreInfoNumber extends LitElement {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${ENTITIES.map((ent) => ent.entityId)}
+        .entities=${ENTITIES.map((ent) => ent.entity_id)}
       ></demo-more-infos>
     `;
   }

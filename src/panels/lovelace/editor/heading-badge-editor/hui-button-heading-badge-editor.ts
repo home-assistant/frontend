@@ -17,15 +17,25 @@ import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
+import type { UiAction } from "../../components/hui-action-editor";
+import { supportedActions } from "../../components/hui-action-editor";
+
+const ACTIONS: UiAction[] = [
+  "navigate",
+  "url",
+  "perform-action",
+  "assist",
+  "none",
+];
 
 const buttonConfigStruct = object({
   type: optional(string()),
   text: optional(string()),
   icon: optional(string()),
   color: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
+  tap_action: optional(supportedActions(actionConfigStruct, ACTIONS)),
+  hold_action: optional(supportedActions(actionConfigStruct, ACTIONS)),
+  double_tap_action: optional(supportedActions(actionConfigStruct, ACTIONS)),
   visibility: optional(array(any())),
 });
 
@@ -78,6 +88,7 @@ export class HuiButtonHeadingBadgeEditor
               name: "tap_action",
               selector: {
                 ui_action: {
+                  actions: ACTIONS,
                   default_action: "none",
                 },
               },
@@ -91,6 +102,7 @@ export class HuiButtonHeadingBadgeEditor
                   name: action,
                   selector: {
                     ui_action: {
+                      actions: ACTIONS,
                       default_action: "none" as const,
                     },
                   },

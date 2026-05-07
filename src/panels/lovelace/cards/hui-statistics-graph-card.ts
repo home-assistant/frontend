@@ -11,6 +11,7 @@ import "../../../components/ha-tooltip";
 import {
   getEnergyDataCollection,
   getSuggestedPeriod,
+  validateEnergyCollectionKey,
 } from "../../../data/energy";
 import type {
   Statistics,
@@ -157,6 +158,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
+    if (config.energy_date_selection && config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
+
     this._entities = config.entities
       ? processConfigEntities(config.entities, false)
       : [];
@@ -265,12 +270,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private get _period() {
-    return (
-      this._config?.period ??
-      (this._energyStart && this._energyEnd
-        ? getSuggestedPeriod(this._energyStart, this._energyEnd)
-        : undefined)
-    );
+    const period = this._config?.period;
+    const autoMode = period === "auto";
+    return this._energyStart && this._energyEnd && (!period || autoMode)
+      ? getSuggestedPeriod(this._energyStart, this._energyEnd)
+      : autoMode
+        ? undefined
+        : period;
   }
 
   protected render() {
@@ -332,7 +338,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .maxYAxis=${this._config.max_y_axis}
             .startTime=${this._energyStart}
             .endTime=${this._energyEnd && this._energyStart
-              ? getSuggestedMax(this._period!, this._energyEnd)
+              ? getSuggestedMax(
+                  this._period!,
+                  this._energyEnd,
+                  (this._config.chart_type ?? "line") === "line"
+                )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
@@ -426,7 +436,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       padding-bottom: 0;
     }
     .card-header ha-icon-next {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       line-height: 24px;
       color: var(--primary-text-color);
     }

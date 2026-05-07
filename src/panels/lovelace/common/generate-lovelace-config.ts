@@ -644,7 +644,7 @@ export const generateDefaultViewConfig = (
       (source) => source.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
 
-    if (grid && grid.flow_from.length > 0) {
+    if (grid && grid.stat_energy_from) {
       energyCard = {
         title: localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.title_today"

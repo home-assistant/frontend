@@ -166,6 +166,21 @@ const formatDateMonthMem = memoizeOne(
     })
 );
 
+// Aug
+export const formatDateMonthShort = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateMonthShortMem(locale, config.time_zone).format(dateObj);
+
+const formatDateMonthShortMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      month: "short",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
 // 2021
 export const formatDateYear = (
   dateObj: Date,
@@ -210,3 +225,72 @@ const formatDateWeekdayShortMem = memoizeOne(
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
+
+// Mon, Aug 10
+export const formatDateWeekdayVeryShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  formatDateWeekdayVeryShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayVeryShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+// Mon, Aug 10, 2021
+export const formatDateWeekdayShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateWeekdayShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+/**
+ * Format a date as YYYY-MM-DD. Uses "en-CA" because it's the only
+ * Intl locale that natively outputs ISO 8601 date format.
+ * Locale/config are only used to resolve the time zone.
+ */
+export const formatISODateOnly = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
+  const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone,
+  });
+  return formatter.format(dateObj);
+};
+
+// 2026-08-10/2026-08-15
+export const formatCallyDateRange = (
+  start: Date,
+  end: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
+  const startDate = formatISODateOnly(start, locale, config);
+  const endDate = formatISODateOnly(end, locale, config);
+
+  return `${startDate}/${endDate}`;
+};

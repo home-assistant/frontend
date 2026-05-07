@@ -157,11 +157,14 @@ class HaLogbookRenderer extends LitElement {
       !item.state &&
       domain &&
       isComponentLoaded(this.hass, domain)
-        ? brandsUrl({
-            domain: domain!,
-            type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
-          })
+        ? brandsUrl(
+            {
+              domain: domain!,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )
         : undefined;
 
     const traceContext =

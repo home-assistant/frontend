@@ -1,14 +1,15 @@
-import "./ha-form";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
+import type { HomeAssistant } from "../../types";
+import "./ha-form";
+import type { HaForm } from "./ha-form";
 import type {
-  HaFormGridSchema,
   HaFormDataContainer,
   HaFormElement,
+  HaFormGridSchema,
   HaFormSchema,
 } from "./types";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-form-grid")
 export class HaFormGrid extends LitElement implements HaFormElement {
@@ -33,9 +34,22 @@ export class HaFormGrid extends LitElement implements HaFormElement {
     key: string
   ) => string;
 
-  public async focus() {
-    await this.updateComplete;
-    this.renderRoot.querySelector("ha-form")?.focus();
+  @queryAll("ha-form", true) private _forms?: HaForm[];
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    const forms = this._forms ?? [];
+    let valid = true;
+    for (const form of forms) {
+      if (!form.reportValidity()) {
+        valid = false;
+      }
+    }
+    return valid;
   }
 
   protected updated(changedProps: PropertyValues): void {

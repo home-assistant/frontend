@@ -12,7 +12,7 @@ import { endOfDay, isSameDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -32,8 +32,8 @@ import "../../../components/ha-relative-time";
 import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { TodoItem } from "../../../data/todo";
 import {
@@ -91,6 +91,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   @state() private _items?: TodoItem[];
 
   @state() private _reordering = false;
+
+  @query("ha-input", true) private _input!: HaInput;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
@@ -284,24 +286,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         this._todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
           ? html`
               <div class="addRow">
-                <ha-textfield
-                  class="addBox"
+                <ha-input
                   .placeholder=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
                   .disabled=${unavailable}
-                ></ha-textfield>
-                <ha-icon-button
-                  class="addButton"
-                  .path=${mdiPlus}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.add_item"
-                  )}
-                  .disabled=${unavailable}
-                  @click=${this._addItem}
                 >
-                </ha-icon-button>
+                  <ha-icon-button
+                    slot="end"
+                    class="addButton"
+                    .path=${mdiPlus}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.add_item"
+                    )}
+                    .disabled=${unavailable}
+                    @click=${this._addItem}
+                  >
+                  </ha-icon-button>
+                </ha-input>
               </div>
             `
           : nothing}
@@ -664,8 +667,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private get _newItem(): HaTextField {
-    return this.shadowRoot!.querySelector(".addBox") as HaTextField;
+  private get _newItem(): HaInput {
+    return this._input;
   }
 
   private _addItem(ev): void {
@@ -779,10 +782,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     .addRow ha-icon-button {
-      position: absolute;
-      right: 16px;
-      inset-inline-start: initial;
-      inset-inline-end: 16px;
+      --ha-icon-button-size: 32px;
     }
 
     .addRow,
@@ -901,7 +901,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       inset-inline-end: initial;
     }
 
-    ha-textfield {
+    ha-input {
       flex-grow: 1;
     }
 

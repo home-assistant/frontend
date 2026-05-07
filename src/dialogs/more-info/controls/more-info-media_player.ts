@@ -35,6 +35,7 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
@@ -169,10 +170,12 @@ class MoreInfoMediaPlayer extends LitElement {
                     : nothing}
                   <div
                     class="volume-slider-container"
-                    @touchstart=${this._volumeController.handleTouchStart}
+                    @touchstart=${this._handleVolumePointerDown}
                     @touchmove=${this._volumeController.handleTouchMove}
-                    @touchend=${this._volumeController.handleTouchEnd}
-                    @touchcancel=${this._volumeController.handleTouchCancel}
+                    @touchend=${this._handleVolumePointerUp}
+                    @touchcancel=${this._handleVolumePointerUp}
+                    @pointerdown=${this._handleVolumePointerDown}
+                    @pointerup=${this._handleVolumePointerUp}
                     @wheel=${this._volumeController.handleWheel}
                   >
                     <ha-slider
@@ -182,8 +185,8 @@ class MoreInfoMediaPlayer extends LitElement {
                       .value=${Number(this.stateObj.attributes.volume_level) *
                       100}
                       .step=${this._volumeStep}
-                      @input=${this._volumeController.handleInput}
-                      @change=${this._volumeController.handleChange}
+                      @input=${this._handleVolumeInput}
+                      @change=${this._handleVolumeChange}
                     ></ha-slider>
                   </div>
                 `
@@ -202,21 +205,18 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    return html`<ha-dropdown>
+    return html`<ha-dropdown @wa-select=${this._handleSourceChange}>
       <ha-icon-button
         slot="trigger"
         .label=${this.hass.localize(`ui.card.media_player.source`)}
         .path=${mdiLoginVariant}
-        @wa-select=${this._handleSourceChange}
       >
       </ha-icon-button>
       ${this.stateObj.attributes.source_list!.map(
         (source) =>
           html`<ha-dropdown-item
             .value=${source}
-            class=${source === this.stateObj?.attributes.source
-              ? "selected"
-              : ""}
+            .selected=${source === this.stateObj?.attributes.source}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
@@ -251,9 +251,7 @@ class MoreInfoMediaPlayer extends LitElement {
         (soundMode) =>
           html`<ha-dropdown-item
             .value=${soundMode}
-            class=${soundMode === this.stateObj?.attributes.sound_mode
-              ? "selected"
-              : ""}
+            .selected=${soundMode === this.stateObj?.attributes.sound_mode}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
@@ -588,12 +586,6 @@ class MoreInfoMediaPlayer extends LitElement {
       width: 100%;
     }
 
-    @media (pointer: coarse) {
-      .volume-slider {
-        pointer-events: none;
-      }
-    }
-
     .volume ha-svg-icon {
       padding: var(--ha-space-1);
       height: 16px;
@@ -601,7 +593,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .volume ha-icon-button {
-      --mdc-icon-button-size: 32px;
+      --ha-icon-button-size: 32px;
       --mdc-icon-size: 16px;
     }
 
@@ -678,13 +670,6 @@ class MoreInfoMediaPlayer extends LitElement {
       gap: var(--ha-space-6);
       align-self: center;
       width: 320px;
-    }
-
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--primary-color);
-      background-color: var(--ha-color-fill-primary-quiet-resting);
-      --icon-primary-color: var(--primary-color);
     }
   `;
 
@@ -798,6 +783,36 @@ class MoreInfoMediaPlayer extends LitElement {
       seek_position: newValue,
     });
   }
+
+  private _handleVolumePointerDown = (
+    ev: TouchEvent | PointerEvent | MouseEvent
+  ) => {
+    if (ev.type === "touchstart") {
+      this._volumeController.handleTouchStart(ev as TouchEvent);
+    }
+    if (!this._volumeController.isInteracting) {
+      fireEvent(this, "slider-interaction-start");
+    }
+  };
+
+  private _handleVolumePointerUp = (
+    ev: TouchEvent | PointerEvent | MouseEvent
+  ) => {
+    if (ev.type === "touchend" || ev.type === "touchcancel") {
+      this._volumeController.handleTouchEnd(ev as TouchEvent);
+    }
+    setTimeout(() => {
+      fireEvent(this, "slider-interaction-stop");
+    }, 100);
+  };
+
+  private _handleVolumeInput = (ev: Event) => {
+    this._volumeController.handleInput(ev);
+  };
+
+  private _handleVolumeChange = (ev: Event) => {
+    this._volumeController.handleChange(ev);
+  };
 }
 
 declare global {

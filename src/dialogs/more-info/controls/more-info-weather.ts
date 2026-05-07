@@ -313,113 +313,119 @@ class MoreInfoWeather extends LitElement {
             </div>
           `
         : nothing}
-
-      <div class="section">
-        ${this.hass.localize("ui.card.weather.forecast")}:
-      </div>
-      ${supportedForecasts?.length > 1
-        ? html`<ha-tab-group @wa-tab-show=${this._handleForecastTypeChanged}>
-            ${supportedForecasts.map(
-              (forecastType) =>
-                html`<ha-tab-group-tab
-                  slot="nav"
-                  .panel=${forecastType}
-                  .active=${this._forecastType === forecastType}
+      ${supportedForecasts?.length
+        ? html`
+            <div class="section">
+              ${this.hass.localize("ui.card.weather.forecast")}:
+            </div>
+            ${supportedForecasts?.length > 1
+              ? html`<ha-tab-group
+                  @wa-tab-show=${this._handleForecastTypeChanged}
                 >
-                  ${this.hass!.localize(`ui.card.weather.${forecastType}`)}
-                </ha-tab-group-tab>`
-            )}
-          </ha-tab-group>`
-        : nothing}
-      <div class="forecast">
-        ${forecast?.length
-          ? this._groupForecastByDay(forecast).map((dayForecast) => {
-              const showDayHeader = hourly || dayNight;
-              return html`
-                <div class="forecast-day">
-                  ${showDayHeader
-                    ? html`<div class="forecast-day-header">
-                        ${formatDateWeekdayShort(
-                          new Date(dayForecast[0].datetime),
-                          this.hass!.locale,
-                          this.hass!.config
+                  ${supportedForecasts.map(
+                    (forecastType) =>
+                      html`<ha-tab-group-tab
+                        slot="nav"
+                        .panel=${forecastType}
+                        .active=${this._forecastType === forecastType}
+                      >
+                        ${this.hass!.localize(
+                          `ui.card.weather.${forecastType}`
                         )}
-                      </div>`
-                    : nothing}
-                  <div class="forecast-day-content">
-                    ${dayForecast.map((item) =>
-                      this._showValue(item.templow) ||
-                      this._showValue(item.temperature)
-                        ? html`
-                            <div class="forecast-item">
-                              <div
-                                class="forecast-item-label ${showDayHeader
-                                  ? ""
-                                  : "no-header"}"
-                              >
-                                ${hourly
-                                  ? formatTime(
-                                      new Date(item.datetime),
-                                      this.hass!.locale,
-                                      this.hass!.config
-                                    )
-                                  : dayNight
-                                    ? html`<div class="daynight">
-                                        ${item.is_daytime !== false
-                                          ? this.hass!.localize(
-                                              "ui.card.weather.day"
-                                            )
-                                          : this.hass!.localize(
-                                              "ui.card.weather.night"
+                      </ha-tab-group-tab>`
+                  )}
+                </ha-tab-group>`
+              : nothing}
+            <div class="forecast">
+              ${forecast?.length
+                ? this._groupForecastByDay(forecast).map((dayForecast) => {
+                    const showDayHeader = hourly || dayNight;
+                    return html`
+                      <div class="forecast-day">
+                        ${showDayHeader
+                          ? html`<div class="forecast-day-header">
+                              ${formatDateWeekdayShort(
+                                new Date(dayForecast[0].datetime),
+                                this.hass!.locale,
+                                this.hass!.config
+                              )}
+                            </div>`
+                          : nothing}
+                        <div class="forecast-day-content">
+                          ${dayForecast.map((item) =>
+                            this._showValue(item.templow) ||
+                            this._showValue(item.temperature)
+                              ? html`
+                                  <div class="forecast-item">
+                                    <div
+                                      class="forecast-item-label ${showDayHeader
+                                        ? ""
+                                        : "no-header"}"
+                                    >
+                                      ${hourly
+                                        ? formatTime(
+                                            new Date(item.datetime),
+                                            this.hass!.locale,
+                                            this.hass!.config
+                                          )
+                                        : dayNight
+                                          ? html`<div class="daynight">
+                                              ${item.is_daytime !== false
+                                                ? this.hass!.localize(
+                                                    "ui.card.weather.day"
+                                                  )
+                                                : this.hass!.localize(
+                                                    "ui.card.weather.night"
+                                                  )}
+                                            </div>`
+                                          : formatDateWeekdayShort(
+                                              new Date(item.datetime),
+                                              this.hass!.locale,
+                                              this.hass!.config
                                             )}
-                                      </div>`
-                                    : formatDateWeekdayShort(
-                                        new Date(item.datetime),
-                                        this.hass!.locale,
-                                        this.hass!.config
-                                      )}
-                              </div>
-                              ${this._showValue(item.condition)
-                                ? html`
-                                    <div class="forecast-image-icon">
-                                      ${getWeatherStateIcon(
-                                        item.condition!,
-                                        this,
-                                        !(
-                                          item.is_daytime ||
-                                          item.is_daytime === undefined
-                                        )
-                                      )}
                                     </div>
-                                  `
-                                : nothing}
-                              <div class="temp">
-                                ${this._showValue(item.temperature)
-                                  ? html`${formatNumber(
-                                      item.temperature,
-                                      this.hass!.locale
-                                    )}°`
-                                  : "—"}
-                              </div>
-                              <div class="templow">
-                                ${this._showValue(item.templow)
-                                  ? html`${formatNumber(
-                                      item.templow!,
-                                      this.hass!.locale
-                                    )}°`
-                                  : nothing}
-                              </div>
-                            </div>
-                          `
-                        : nothing
-                    )}
-                  </div>
-                </div>
-              `;
-            })
-          : html`<ha-spinner size="medium"></ha-spinner>`}
-      </div>
-
+                                    ${this._showValue(item.condition)
+                                      ? html`
+                                          <div class="forecast-image-icon">
+                                            ${getWeatherStateIcon(
+                                              item.condition!,
+                                              this,
+                                              !(
+                                                item.is_daytime ||
+                                                item.is_daytime === undefined
+                                              )
+                                            )}
+                                          </div>
+                                        `
+                                      : nothing}
+                                    <div class="temp">
+                                      ${this._showValue(item.temperature)
+                                        ? html`${formatNumber(
+                                            item.temperature,
+                                            this.hass!.locale
+                                          )}°`
+                                        : "—"}
+                                    </div>
+                                    <div class="templow">
+                                      ${this._showValue(item.templow)
+                                        ? html`${formatNumber(
+                                            item.templow!,
+                                            this.hass!.locale
+                                          )}°`
+                                        : nothing}
+                                    </div>
+                                  </div>
+                                `
+                              : nothing
+                          )}
+                        </div>
+                      </div>
+                    `;
+                  })
+                : html`<ha-spinner size="medium"></ha-spinner>`}
+            </div>
+          `
+        : nothing}
       ${this.stateObj.attributes.attribution
         ? html`
             <div class="attribution">

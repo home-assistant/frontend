@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-spinner";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
@@ -39,7 +39,7 @@ export class DialogLabsProgress
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -63,12 +63,12 @@ export class DialogLabsProgress
             </p>
           </div>
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
   static readonly styles = css`
-    ha-wa-dialog {
+    ha-dialog {
       --dialog-content-padding: var(--ha-space-6);
     }
 

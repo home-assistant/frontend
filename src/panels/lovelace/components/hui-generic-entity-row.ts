@@ -8,6 +8,8 @@ import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
+import { getEntityContext } from "../../../common/entity/context/get_entity_context";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -199,7 +201,9 @@ export class HuiGenericEntityRow extends LitElement {
                                       ? html`${this.hass.formatEntityState(
                                           stateObj
                                         )}`
-                                      : nothing)}
+                                      : this.config.secondary_info === "area"
+                                        ? (this._getArea(stateObj) ?? nothing)
+                                        : nothing)}
                     </div>
                   `
                 : nothing}
@@ -233,6 +237,17 @@ export class HuiGenericEntityRow extends LitElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
+  }
+
+  private _getArea(stateObj) {
+    const context = getEntityContext(
+      stateObj,
+      this.hass!.entities,
+      this.hass!.devices,
+      this.hass!.areas,
+      this.hass!.floors
+    );
+    return context.area ? computeAreaName(context.area) : undefined;
   }
 
   static styles = css`

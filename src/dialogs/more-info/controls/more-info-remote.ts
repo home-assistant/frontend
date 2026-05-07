@@ -1,12 +1,11 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
+import "../../../components/ha-select";
 import type { RemoteEntity } from "../../../data/remote";
 import { REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-select";
-import "../../../components/ha-list-item";
 
 @customElement("more-info-remote")
 class MoreInfoRemote extends LitElement {
@@ -30,30 +29,24 @@ class MoreInfoRemote extends LitElement {
               )}
               .value=${stateObj.attributes.current_activity || ""}
               @selected=${this._handleActivityChanged}
-              fixedMenuPosition
-              naturalMenuWidth
-              @closed=${stopPropagation}
+              .options=${stateObj.attributes.activity_list?.map((activity) => ({
+                value: activity,
+                label: this.hass!.formatEntityAttributeValue(
+                  stateObj,
+                  "activity",
+                  activity
+                ),
+              }))}
             >
-              ${stateObj.attributes.activity_list?.map(
-                (activity) => html`
-                  <ha-list-item .value=${activity}>
-                    ${this.hass.formatEntityAttributeValue(
-                      stateObj,
-                      "activity",
-                      activity
-                    )}
-                  </ha-list-item>
-                `
-              )}
             </ha-select>
           `
         : nothing}
     `;
   }
 
-  private _handleActivityChanged(ev) {
+  private _handleActivityChanged(ev: HaSelectSelectEvent) {
     const oldVal = this.stateObj!.attributes.current_activity;
-    const newVal = ev.target.value;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) {
       return;

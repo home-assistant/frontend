@@ -87,7 +87,9 @@ class HaConfigSystemNavigation extends LitElement {
             description = this._storageInfo
               ? this.hass.localize("ui.panel.config.storage.description", {
                   percent_used: `${Math.round(
-                    (this._storageInfo.used / this._storageInfo.total) * 100
+                    ((this._storageInfo.total - this._storageInfo.free) /
+                      this._storageInfo.total) *
+                      100
                   )}${blankBeforePercent(this.hass.locale)}%`,
                   free_space: `${this._storageInfo.free} GB`,
                 })

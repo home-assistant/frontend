@@ -4,13 +4,12 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-select";
-import type { HaMdSelect } from "../../../../../components/ha-md-select";
-import "../../../../../components/ha-md-select-option";
-import "../../../../../components/ha-md-textfield";
-import type { HaMdTextfield } from "../../../../../components/ha-md-textfield";
+import "../../../../../components/ha-select";
+import type { HaSelect } from "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { BackupConfig, Retention } from "../../../../../data/backup";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -55,9 +54,9 @@ class HaBackupConfigRetention extends LitElement {
 
   @state() private _value = 3;
 
-  @query("#value") private _customValueField?: HaMdTextfield;
+  @query("#value") private _customValueField?: HaInput;
 
-  @query("#type") private _customTypeField?: HaMdSelect;
+  @query("#type") private _customTypeField?: HaSelect;
 
   private _configLoaded = false;
 
@@ -115,23 +114,17 @@ class HaBackupConfigRetention extends LitElement {
             `ui.panel.config.backup.schedule.retention_description`
           )}
         </span>
-        <ha-md-select
+        <ha-select
           slot="end"
-          @change=${this._retentionPresetChanged}
+          @selected=${this._retentionPresetChanged}
           .value=${this._preset}
-        >
-          ${this.presetOptions.map(
-            (option) => html`
-              <ha-md-select-option .value=${option}>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    `ui.panel.config.backup.schedule.retention_presets.${option}`
-                  )}
-                </div>
-              </ha-md-select-option>
-            `
-          )}
-        </ha-md-select>
+          .options=${this.presetOptions.map((option) => ({
+            value: option,
+            label: this.hass.localize(
+              `ui.panel.config.backup.schedule.retention_presets.${option}`
+            ),
+          }))}
+        ></ha-select>
       </ha-md-list-item>
 
       ${this._preset === RetentionPreset.CUSTOM
@@ -148,7 +141,7 @@ class HaBackupConfigRetention extends LitElement {
                   "ui.panel.config.backup.schedule.custom_retention_label"
                 )}
               </span>
-              <ha-md-textfield
+              <ha-input
                 slot="end"
                 @change=${this._retentionValueChanged}
                 .value=${this._value.toString()}
@@ -158,36 +151,40 @@ class HaBackupConfigRetention extends LitElement {
                 .max=${MAX_VALUE.toString()}
                 step="1"
               >
-              </ha-md-textfield>
-              <ha-md-select
+              </ha-input>
+              <ha-select
                 slot="end"
-                @change=${this._retentionTypeChanged}
+                @selected=${this._retentionTypeChanged}
                 .value=${this._type}
                 id="type"
-              >
-                <ha-md-select-option value="days">
-                  <div slot="headline">
-                    ${this.hass.localize(
+                .options=${[
+                  {
+                    value: "days",
+                    label: this.hass.localize(
                       "ui.panel.config.backup.schedule.retention_units.days"
-                    )}
-                  </div>
-                </ha-md-select-option>
-                <ha-md-select-option value="copies">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.retention_units.copies"
-                  )}
-                </ha-md-select-option>
-              </ha-md-select>
-            </ha-md-list-item></ha-expansion-panel
-          > `
+                    ),
+                  },
+                  {
+                    value: "copies",
+                    label: this.hass.localize(
+                      "ui.panel.config.backup.schedule.retention_units.copies"
+                    ),
+                  },
+                ]}
+              ></ha-select> </ha-md-list-item
+          ></ha-expansion-panel> `
         : nothing}
     `;
   }
 
-  private _retentionPresetChanged(ev) {
-    ev.stopPropagation();
-    const target = ev.currentTarget as HaMdSelect;
-    let value = target.value as RetentionPreset;
+  private _retentionPresetChanged(
+    ev: ValueChangedEvent<RetentionPreset | undefined>
+  ) {
+    let value = ev.detail.value;
+
+    if (!value) {
+      return;
+    }
 
     if (
       value === RetentionPreset.CUSTOM &&
@@ -211,8 +208,8 @@ class HaBackupConfigRetention extends LitElement {
 
   private _retentionValueChanged(ev) {
     ev.stopPropagation();
-    const target = ev.currentTarget as HaMdSelect;
-    const value = parseInt(target.value);
+    const target = ev.currentTarget as HaInput;
+    const value = parseInt(target.value ?? "");
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     target.value = clamped.toString();
 
@@ -226,10 +223,15 @@ class HaBackupConfigRetention extends LitElement {
     });
   }
 
-  private _retentionTypeChanged(ev) {
-    ev.stopPropagation();
-    const target = ev.currentTarget as HaMdSelect;
-    const type = target.value as "copies" | "days";
+  private _retentionTypeChanged(
+    ev: ValueChangedEvent<"copies" | "days" | undefined>
+  ) {
+    const type = ev.detail.value;
+    if (!type) {
+      return;
+    }
+
+    this._type = type;
 
     const value = this._customValueField?.value;
 
@@ -247,25 +249,27 @@ class HaBackupConfigRetention extends LitElement {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
     }
+    ha-select {
+      min-width: 210px;
+    }
     @media all and (max-width: 450px) {
-      ha-md-select {
+      ha-select {
         min-width: 160px;
         width: 160px;
-        --md-filled-field-content-space: 0;
       }
     }
-    ha-md-textfield#value {
+    ha-input#value {
       min-width: 70px;
     }
-    ha-md-select#type {
+    ha-select#type {
       min-width: 100px;
     }
     @media all and (max-width: 450px) {
-      ha-md-textfield#value {
+      ha-input#value {
         min-width: 60px;
         margin: 0 -8px;
       }
-      ha-md-select#type {
+      ha-select#type {
         min-width: 120px;
         width: 120px;
       }

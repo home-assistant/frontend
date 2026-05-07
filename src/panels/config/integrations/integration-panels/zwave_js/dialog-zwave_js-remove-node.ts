@@ -1,10 +1,4 @@
-import {
-  mdiCheckCircle,
-  mdiClose,
-  mdiCloseCircle,
-  mdiRobotDead,
-  mdiVectorSquareRemove,
-} from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,11 +6,11 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeStatus,
@@ -65,6 +59,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _open = false;
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribe();
@@ -76,6 +72,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._entryId = params.entryId;
     this._deviceId = params.deviceId;
     this._onClose = params.onClose;
+    this._open = true;
     if (this._deviceId) {
       const nodeStatus = await fetchZwaveNodeStatus(this.hass, this._deviceId!);
       this._device = this.hass.devices[this._deviceId];
@@ -94,27 +91,31 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
 
     const dialogTitle = this.hass.localize(
-      "ui.panel.config.zwave_js.remove_node.title"
+      this._deviceId
+        ? "ui.panel.config.zwave_js.remove_node.title"
+        : "ui.panel.config.zwave_js.common.remove_node"
     );
 
     return html`
       <ha-dialog
-        open
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${dialogTitle}
+        prevent-scrim-close
         @closed=${this.handleDialogClosed}
-        .heading=${dialogTitle}
-        .hideActions=${this._step === "start"}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-          ></ha-icon-button>
-          <span slot="title">${dialogTitle}</span>
-        </ha-dialog-header>
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .path=${mdiClose}
+          @click=${this.closeDialog}
+          .label=${this.hass.localize("ui.common.close")}
+        ></ha-icon-button>
         <div class="content">${this._renderStepContent()}</div>
-        ${this._renderAction()}
+        ${this._step === "start"
+          ? nothing
+          : html`<ha-dialog-footer slot="footer">
+              ${this._renderAction()}
+            </ha-dialog-footer>`}
       </ha-dialog>
     `;
   }
@@ -122,7 +123,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
   private _renderStepContent(): TemplateResult {
     if (this._step === "start") {
       return html`
-        <ha-svg-icon .path=${mdiVectorSquareRemove}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.introduction"
@@ -151,7 +151,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-svg-icon .path=${mdiRobotDead}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.failed_node_intro",
@@ -163,7 +162,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-svg-icon .path=${mdiVectorSquareRemove}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.exclusion_intro"
@@ -186,21 +184,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
 
     if (this._step === "finished") {
-      return html` <ha-svg-icon
-          .path=${mdiCheckCircle}
-          class="success"
-        ></ha-svg-icon>
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.remove_node.exclusion_finished",
-            { id: html`<b>${this._node!.node_id}</b>` }
-          )}
-        </p>`;
+      return html`<p>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.remove_node.exclusion_finished",
+          { id: html`<b>${this._node!.node_id}</b>` }
+        )}
+      </p>`;
     }
 
     // failed
     return html`
-      <ha-svg-icon .path=${mdiCloseCircle} class="failed"></ha-svg-icon>
       <p>
         ${this.hass.localize(
           "ui.panel.config.zwave_js.remove_node.exclusion_failed"
@@ -340,14 +333,18 @@ class DialogZWaveJSRemoveNode extends LitElement {
   };
 
   public closeDialog(): void {
-    this._unsubscribe();
-    this._entryId = undefined;
+    if (this._open) {
+      this._open = false;
+      return;
+    }
+    this.handleDialogClosed();
   }
 
   public handleDialogClosed(): void {
     this._unsubscribe();
     this._entryId = undefined;
     this._step = "start";
+    this._open = false;
     if (this._onClose) {
       this._onClose();
     }
@@ -360,10 +357,10 @@ class DialogZWaveJSRemoveNode extends LitElement {
       css`
         .content {
           display: flex;
-          align-items: center;
+          align-items: stretch;
           flex-direction: column;
           gap: var(--ha-space-4);
-          text-align: center;
+          text-align: start;
         }
 
         .content ha-spinner {
@@ -374,18 +371,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-svg-icon {
-          padding: 32px 0;
-          width: 48px;
-          height: 48px;
-        }
-        ha-svg-icon.success {
-          color: var(--success-color);
-        }
-
-        ha-svg-icon.failed {
-          color: var(--error-color);
-        }
         ha-alert {
           width: 100%;
         }
@@ -395,7 +380,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         }
 
         ha-list-item {
-          --mdc-list-side-padding: 24px;
+          --mdc-list-side-padding: var(--ha-space-2);
         }
       `,
     ];

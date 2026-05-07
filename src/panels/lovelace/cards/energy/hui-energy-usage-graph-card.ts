@@ -19,11 +19,13 @@ import type {
   EnergyData,
   EnergySumData,
   EnergyConsumptionData,
+  GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -54,9 +56,24 @@ export class HuiEnergyUsageGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyUsageGraphCardConfig {
+    return {
+      type: "energy-usage-graph",
+    };
+  }
 
   @state() private _chartData: BarSeriesOption[] = [];
 
@@ -85,6 +102,9 @@ export class HuiEnergyUsageGraphCard
   }
 
   public setConfig(config: EnergyUsageGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -248,19 +268,19 @@ export class HuiEnergyUsageGraphCard
         continue;
       }
 
-      // grid source
-      for (const flowFrom of source.flow_from) {
+      const gridSource = source as GridSourceTypeEnergyPreference;
+      if (gridSource.stat_energy_from) {
         if (statIds.from_grid) {
-          statIds.from_grid.push(flowFrom.stat_energy_from);
+          statIds.from_grid.push(gridSource.stat_energy_from);
         } else {
-          statIds.from_grid = [flowFrom.stat_energy_from];
+          statIds.from_grid = [gridSource.stat_energy_from];
         }
       }
-      for (const flowTo of source.flow_to) {
+      if (gridSource.stat_energy_to) {
         if (statIds.to_grid) {
-          statIds.to_grid.push(flowTo.stat_energy_to);
+          statIds.to_grid.push(gridSource.stat_energy_to);
         } else {
-          statIds.to_grid = [flowTo.stat_energy_to];
+          statIds.to_grid = [gridSource.stat_energy_to];
         }
       }
     }

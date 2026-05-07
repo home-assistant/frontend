@@ -16,6 +16,11 @@ export const TARGET_SEPARATOR = "________";
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 
+export interface TargetItem {
+  type: TargetType;
+  id: string;
+}
+
 export interface SingleHassServiceTarget {
   entity_id?: string;
   device_id?: string;
@@ -42,12 +47,33 @@ export interface ExtractFromTargetResultReferenced {
 
 export const extractFromTarget = async (
   hass: HomeAssistant,
-  target: HassServiceTarget
+  target: HassServiceTarget,
+  expandGroup = false
 ) =>
   hass.callWS<ExtractFromTargetResult>({
     type: "extract_from_target",
     target,
+    expand_group: expandGroup,
   });
+
+export const getResolvedTargetEntityCount = async (
+  hass: HomeAssistant,
+  target?: HassServiceTarget
+): Promise<number | undefined> => {
+  if (!target) {
+    return undefined;
+  }
+
+  try {
+    return (await extractFromTarget(hass, target, true)).referenced_entities
+      .length;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("Error resolving target entity count", err);
+  }
+
+  return undefined;
+};
 
 export const getTriggersForTarget = async (
   callWS: HomeAssistant["callWS"],

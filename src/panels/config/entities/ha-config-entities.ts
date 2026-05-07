@@ -16,7 +16,7 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -24,7 +24,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -33,7 +32,10 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import {
+  computeEntityEntryName,
+  computeEntityName,
+} from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   deleteEntity,
@@ -75,7 +77,7 @@ import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
@@ -98,10 +100,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
@@ -111,7 +110,6 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
@@ -120,6 +118,14 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  getEntityIdTableColumn,
+  getDomainTableColumn,
+  getAreaTableColumn,
+  getLabelsTableColumn,
+  getCreatedAtTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
@@ -156,7 +162,7 @@ export interface EntityRow extends StateEntity {
 }
 
 @customElement("ha-config-entities")
-export class HaConfigEntities extends SubscribeMixin(LitElement) {
+export class HaConfigEntities extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -210,8 +216,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _expandedFilter?: string;
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state() private _entitySources?: EntitySources;
 
@@ -376,32 +383,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      area: {
-        title: localize("ui.panel.config.entities.picker.headers.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        template: (entry) => entry.area || "—",
-      },
-      entity_id: {
-        title: localize("ui.panel.config.entities.picker.headers.entity_id"),
-        sortable: true,
-        filterable: true,
-        defaultHidden: true,
-      },
+      area: getAreaTableColumn(localize),
+      entity_id: getEntityIdTableColumn(localize, true),
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         sortable: true,
         groupable: true,
         filterable: true,
       },
-      domain: {
-        title: localize("ui.panel.config.entities.picker.headers.domain"),
-        sortable: false,
-        hidden: true,
-        filterable: true,
-        groupable: true,
-      },
+      domain: getDomainTableColumn(localize),
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -475,34 +465,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               `
             : "—",
       },
-      created_at: {
-        title: localize("ui.panel.config.generic.headers.created_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.created_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.created_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
-      modified_at: {
-        title: localize("ui.panel.config.generic.headers.modified_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.modified_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.modified_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
+      created_at: getCreatedAtTableColumn(localize, this.hass),
+      modified_at: getModifiedAtTableColumn(localize, this.hass),
       available: {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
         sortable: true,
@@ -521,13 +485,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      labels: {
-        title: "",
-        hidden: true,
-        filterable: true,
-        template: (entry) =>
-          entry.label_entries.map((lbl) => lbl.name).join(" "),
-      },
+      labels: getLabelsTableColumn(),
       assistants: getAssistantsTableColumn(
         localize,
         this.hass,
@@ -735,11 +693,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
-        const entityName = computeEntityEntryName(
-          entry as EntityRegistryEntry,
-          this.hass.devices,
-          entity
-        );
+        const entityName = entity
+          ? computeEntityName(entity, this.hass.entities)
+          : computeEntityEntryName(entry as EntityRegistryEntry);
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -796,14 +752,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       return { filteredEntities: result, filteredConfigEntry, filteredDomains };
     }
   );
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
-  }
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {

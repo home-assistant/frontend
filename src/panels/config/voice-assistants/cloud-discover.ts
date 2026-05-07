@@ -152,11 +152,12 @@ export class CloudDiscover extends LitElement {
     }
     .feature .logos {
       margin-bottom: 16px;
+      display: flex;
+      gap: var(--ha-space-4);
     }
     .feature .logos > * {
       width: 40px;
       height: 40px;
-      margin: 0 4px;
     }
     .round-icon {
       border-radius: var(--ha-border-radius-circle);

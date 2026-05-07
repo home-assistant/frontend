@@ -19,7 +19,7 @@ import type {
 import { computePanels } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import {
   fetchFrontendUserData,
   saveFrontendUserData,
@@ -30,7 +30,7 @@ import {
   getPanelIconPath,
   getPanelTitle,
 } from "../../data/panel";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 @customElement("dialog-edit-sidebar")
@@ -165,7 +165,7 @@ class DialogEditSidebar extends LitElement {
     const dialogTitle = this.hass.localize("ui.sidebar.edit_sidebar");
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
@@ -202,11 +202,11 @@ class DialogEditSidebar extends LitElement {
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
-  private _changed(ev: CustomEvent<{ value: DisplayValue }>): void {
+  private _changed(ev: ValueChangedEvent<DisplayValue>): void {
     const { order = [], hidden = [] } = ev.detail.value;
     this._order = [...order];
     this._hidden = [...hidden];
@@ -257,13 +257,13 @@ class DialogEditSidebar extends LitElement {
   }
 
   static styles = css`
-    ha-wa-dialog {
+    ha-dialog {
       max-height: 90%;
       --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
     }
 
     @media all and (max-width: 580px), all and (max-height: 500px) {
-      ha-wa-dialog {
+      ha-dialog {
         min-width: 100%;
         min-height: 100%;
       }

@@ -12,9 +12,15 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 
-type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
+type SummaryStatus =
+  | "success"
+  | "error"
+  | "info"
+  | "warning"
+  | "loading"
+  | "none";
 
-const ICONS: Record<SummaryStatus, string> = {
+const ICONS: Partial<Record<SummaryStatus, string>> = {
   success: mdiCheck,
   error: mdiAlertCircleOutline,
   warning: mdiAlertOutline,
@@ -42,11 +48,13 @@ class HaBackupSummaryCard extends LitElement {
         <div class="summary">
           ${this.status === "loading"
             ? html`<ha-spinner></ha-spinner>`
-            : html`
-                <div class="icon ${this.status}">
-                  <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
-                </div>
-              `}
+            : this.status === "none"
+              ? nothing
+              : html`
+                  <div class="icon ${this.status}">
+                    <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
+                  </div>
+                `}
 
           <div class="content">
             <p class="heading">${this.heading}</p>
@@ -92,6 +100,7 @@ class HaBackupSummaryCard extends LitElement {
       justify-content: center;
       overflow: hidden;
       --icon-color: var(--primary-color);
+      animation: pop-in var(--ha-animation-duration-normal, 250ms) ease-out;
     }
     .icon.success {
       --icon-color: var(--success-color);
@@ -153,6 +162,16 @@ class HaBackupSummaryCard extends LitElement {
         width: 100%;
         display: flex;
         justify-content: flex-end;
+      }
+    }
+    @keyframes pop-in {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
       }
     }
   `;

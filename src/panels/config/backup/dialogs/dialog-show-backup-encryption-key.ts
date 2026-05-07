@@ -8,10 +8,9 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-password-field";
 import { downloadEmergencyKit } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -47,7 +46,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -99,7 +98,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -128,7 +127,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
         ha-md-list {

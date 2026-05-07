@@ -141,6 +141,8 @@ export interface PanelInfo<T = Record<string, any> | null> {
   url_path: string;
   config_panel_domain?: string;
   default_visible?: boolean;
+  require_admin?: boolean;
+  show_in_sidebar?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
@@ -157,7 +159,8 @@ export type FullCalendarView =
   | "dayGridDay"
   | "listWeek";
 
-export type ThemeMode = "auto" | "light" | "dark";
+export const THEME_MODES = ["auto", "light", "dark"] as const;
+export type ThemeMode = (typeof THEME_MODES)[number];
 
 export interface ToggleButton {
   label: string;
@@ -292,6 +295,7 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,

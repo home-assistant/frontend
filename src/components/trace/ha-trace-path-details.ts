@@ -24,6 +24,8 @@ import "../ha-icon-button";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
 import { traceTabStyles } from "./trace-tab-styles";
+import type { Trigger } from "../../data/automation";
+import { migrateAutomationTrigger } from "../../data/automation";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -52,7 +54,7 @@ export class HaTracePathDetails extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -166,7 +168,9 @@ export class HaTracePathDetails extends LitElement {
                 : selectedType === "trigger"
                   ? html`<h2>
                       ${describeTrigger(
-                        currentDetail,
+                        migrateAutomationTrigger({
+                          ...currentDetail,
+                        }) as Trigger,
                         this.hass,
                         this._entityReg
                       )}

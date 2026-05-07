@@ -135,9 +135,7 @@ class HaQrScanner extends LitElement {
                     (camera) => html`
                       <ha-dropdown-item
                         .value=${camera.id}
-                        class=${this._selectedCamera === camera.id
-                          ? "selected"
-                          : ""}
+                        .selected=${this._selectedCamera === camera.id}
                       >
                         ${camera.label}
                       </ha-dropdown-item>
@@ -379,9 +377,6 @@ class HaQrScanner extends LitElement {
       background: #727272b2;
       color: white;
       border-radius: var(--ha-border-radius-circle);
-    }
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-bold);
     }
     .row {
       display: flex;

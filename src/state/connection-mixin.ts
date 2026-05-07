@@ -30,6 +30,11 @@ import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_displ
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
+import {
+  addBrandsAuth,
+  clearBrandsTokenRefresh,
+  fetchAndScheduleBrandsAccessToken,
+} from "../util/brands-url";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
@@ -84,7 +89,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
-        hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
+        hassUrl: (path = "") =>
+          addBrandsAuth(
+            new URL(path, auth.data.hassUrl).toString(),
+            auth.data.hassUrl
+          ),
         callService: async (
           domain,
           service,
@@ -209,6 +218,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           this._loadFragmentTranslations(this.hass?.language, fragment),
         formatEntityState: (stateObj, state) =>
           (state != null ? state : stateObj.state) ?? "",
+        formatEntityStateToParts: (stateObj, state) => [
+          {
+            type: "value",
+            value: (state != null ? state : stateObj.state) ?? "",
+          },
+        ],
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
@@ -313,6 +328,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         this._updateHass({ systemData: {} });
       });
       clearInterval(this.__backendPingInterval);
+
+      // Fetch the brands access token on initial connect and schedule refresh
+      fetchAndScheduleBrandsAccessToken(this.hass!);
+
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
           // If the backend is busy, or the connection is latent,
@@ -337,6 +356,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
+      // Refresh the brands access token on reconnect and restart refresh schedule
+      fetchAndScheduleBrandsAccessToken(this.hass!);
+
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
@@ -354,5 +376,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: false });
       broadcastConnectionStatus("disconnected");
       clearInterval(this.__backendPingInterval);
+      clearBrandsTokenRefresh();
     }
   };

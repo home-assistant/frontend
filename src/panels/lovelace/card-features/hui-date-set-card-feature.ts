@@ -1,22 +1,22 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-slider";
+import type { DatePickerDialogParams } from "../../../components/ha-date-input";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  LovelaceCardFeatureContext,
   DateSetCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { DatePickerDialogParams } from "../../../components/ha-date-input";
-import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 
 const loadDatePickerDialog = () =>
-  import("../../../components/ha-dialog-date-picker");
+  import("../../../components/date-picker/ha-dialog-date-picker");
 
 export const supportsDateSetCardFeature = (
   hass: HomeAssistant,

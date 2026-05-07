@@ -359,7 +359,7 @@ export class HaFloorPicker extends LitElement {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
+            "ui.components.floor-picker.add_new_suggestion",
             {
               name: searchString,
             }

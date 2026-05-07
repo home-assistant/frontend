@@ -8,12 +8,17 @@ import {
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
 } from "@mdi/js";
-import type { HomeAssistant, PanelInfo } from "../types";
-import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { LocalizeKeys } from "../common/translations/localize";
+import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { HomeAssistant, PanelInfo } from "../types";
+
+export const HOME_PANEL = "home";
+export const NOT_FOUND_PANEL = "notfound";
+export const PROFILE_PANEL = "profile";
+export const LOVELACE_PANEL = "lovelace";
 
 /** Panel to show when no panel is picked. */
-export const DEFAULT_PANEL = "home";
+export const DEFAULT_PANEL = HOME_PANEL;
 
 export const hasLegacyOverviewPanel = (hass: HomeAssistant): boolean =>
   Boolean(hass.panels.lovelace?.config);
@@ -30,7 +35,7 @@ export const getDefaultPanelUrlPath = (hass: HomeAssistant): string => {
     getLegacyDefaultPanelUrlPath() ||
     DEFAULT_PANEL;
   // If default panel is lovelace and no old overview exists, fall back to home
-  if (defaultPanel === "lovelace" && !hasLegacyOverviewPanel(hass)) {
+  if (defaultPanel === LOVELACE_PANEL && !hasLegacyOverviewPanel(hass)) {
     return DEFAULT_PANEL;
   }
   return defaultPanel;
@@ -39,12 +44,16 @@ export const getDefaultPanelUrlPath = (hass: HomeAssistant): string => {
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
   const panel = getDefaultPanelUrlPath(hass);
 
-  return (panel ? hass.panels[panel] : undefined) ?? hass.panels[DEFAULT_PANEL];
+  return (
+    (panel ? hass.panels[panel] : undefined) ??
+    hass.panels[DEFAULT_PANEL] ??
+    hass.panels[NOT_FOUND_PANEL]
+  );
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
-  if (panel.url_path === "profile") {
-    return "panel.profile" as const;
+  if ([PROFILE_PANEL, NOT_FOUND_PANEL].includes(panel.url_path)) {
+    return `panel.${panel.url_path}` as const;
   }
 
   return `panel.${panel.title}` as const;
@@ -137,4 +146,22 @@ export const PANEL_ICON_PATHS = {
 export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
   PANEL_ICON_PATHS[panel.url_path];
 
-export const FIXED_PANELS = ["profile", "config"];
+export const FIXED_PANELS = [PROFILE_PANEL, "config", NOT_FOUND_PANEL];
+
+export interface PanelMutableParams {
+  title?: string | null;
+  icon?: string | null;
+  require_admin?: boolean | null;
+  show_in_sidebar?: boolean | null;
+}
+
+export const updatePanel = (
+  hass: HomeAssistant,
+  urlPath: string,
+  updates: PanelMutableParams
+) =>
+  hass.callWS({
+    type: "frontend/update_panel",
+    url_path: urlPath,
+    ...updates,
+  });

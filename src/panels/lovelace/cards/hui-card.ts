@@ -71,23 +71,6 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
       ...elementOptions,
       ...configOptions,
     };
-
-    // If the element has fixed rows or columns, we use the values from the element
-    // unless the user has already configured their own
-    if (elementOptions.fixed_rows) {
-      if (configOptions.rows === undefined) {
-        mergedConfig.rows = elementOptions.rows;
-      }
-      delete mergedConfig.min_rows;
-      delete mergedConfig.max_rows;
-    }
-    if (elementOptions.fixed_columns) {
-      if (configOptions.columns === undefined) {
-        mergedConfig.columns = elementOptions.columns;
-      }
-      delete mergedConfig.min_columns;
-      delete mergedConfig.max_columns;
-    }
     return mergedConfig;
   }
 
