@@ -8,6 +8,7 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { HuiNumericInputCardFeatureEditor } from "../editor/config-elements/hui-numeric-input-card-feature-editor";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
