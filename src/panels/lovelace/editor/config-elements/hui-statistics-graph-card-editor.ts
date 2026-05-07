@@ -33,12 +33,13 @@ import {
   statisticsMetaHasType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
 import { processConfigEntities } from "../../common/process-config-entities";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
-import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
+import { graphEntitiesConfigStruct } from "../structs/entities-struct";
+import { orderPropertiesGraphCard } from "./order-properties/order-properties-graph";
 
 const statTypeStruct = union([
   literal("state"),
@@ -52,7 +53,7 @@ const statTypeStruct = union([
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entities: array(entitiesConfigStruct),
+    entities: array(graphEntitiesConfigStruct),
     title: optional(string()),
     days_to_show: optional(number()),
     period: optional(
@@ -394,7 +395,8 @@ export class HuiStatisticsGraphCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = this._orderProperties(ev.detail.value);
+    fireEvent(this, "config-changed", { config });
   }
 
   private async _entitiesChanged(ev: CustomEvent): Promise<void> {
@@ -408,7 +410,7 @@ export class HuiStatisticsGraphCardEditor
       return matchEntity ?? newEnt;
     });
 
-    const config = { ...this._config!, entities: newEntities };
+    let config = { ...this._config!, entities: newEntities };
     if (
       newEntityIds?.some((statistic_id) => isExternalStatistic(statistic_id)) &&
       config.period === "5minute"
@@ -437,9 +439,20 @@ export class HuiStatisticsGraphCardEditor
     ) {
       delete config.unit;
     }
+    config = this._orderProperties(config);
     fireEvent(this, "config-changed", {
       config,
     });
+  }
+
+  // normalize a generated yaml code by placing lines in a consistent order
+  private _orderProperties(
+    config: StatisticsGraphCardConfig
+  ): StatisticsGraphCardConfig {
+    return orderPropertiesGraphCard(
+      config,
+      cardConfigStruct
+    ) as StatisticsGraphCardConfig;
   }
 
   private _computeHelperCallback = (schema) => {
