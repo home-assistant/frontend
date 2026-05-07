@@ -465,7 +465,7 @@ export interface GraphEntityConfig {
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;

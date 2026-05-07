@@ -78,22 +78,28 @@ export class HaObjectSelector extends LitElement {
   };
 
   private _renderItem(item: any, index: number) {
-    const labelField =
-      this.selector.object!.label_field ||
-      Object.keys(this.selector.object!.fields!)[0];
+    const fields = this.selector.object!.fields!;
+    const preferredLabel = this.selector.object!.label_field;
+    const hasValidLabelField = preferredLabel && preferredLabel in fields;
 
-    const labelSelector = this.selector.object!.fields![labelField].selector;
-
-    const label = labelSelector
-      ? formatSelectorValue(this.hass, item[labelField], labelSelector)
-      : "";
+    const label = hasValidLabelField
+      ? formatSelectorValue(
+          this.hass,
+          item[preferredLabel!],
+          fields[preferredLabel!]?.selector
+        )
+      : Object.entries(fields)
+          .map(([key, field]) =>
+            formatSelectorValue(this.hass, item[key], field.selector)
+          )
+          .filter(Boolean)
+          .join(" · ");
 
     let description = "";
 
     const descriptionField = this.selector.object!.description_field;
-    if (descriptionField) {
-      const descriptionSelector =
-        this.selector.object!.fields![descriptionField].selector;
+    if (descriptionField && descriptionField in fields) {
+      const descriptionSelector = fields[descriptionField]?.selector;
 
       description = descriptionSelector
         ? formatSelectorValue(

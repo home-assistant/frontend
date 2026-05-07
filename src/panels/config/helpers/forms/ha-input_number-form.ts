@@ -2,10 +2,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/input/ha-input";
 import type { InputNumber } from "../../../../data/input_number";
@@ -137,35 +137,26 @@ class HaInputNumberForm extends LitElement {
           .disabled=${this.disabled}
         ></ha-input>
 
-        <div class="layout horizontal center justified mode">
-          ${this.hass.localize("ui.dialogs.helper_settings.input_number.mode")}
-          <ha-formfield
-            .label=${this.hass.localize(
+        <ha-radio-group
+          orientation="horizontal"
+          class="mode"
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.input_number.mode"
+          )}
+          .value=${this._mode}
+          .disabled=${this.disabled}
+          name="mode"
+          @change=${this._modeChanged}
+        >
+          <ha-radio-option value="slider">
+            ${this.hass.localize(
               "ui.dialogs.helper_settings.input_number.slider"
             )}
-          >
-            <ha-radio
-              name="mode"
-              value="slider"
-              .checked=${this._mode === "slider"}
-              @change=${this._modeChanged}
-              .disabled=${this.disabled}
-            ></ha-radio>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.dialogs.helper_settings.input_number.box"
-            )}
-          >
-            <ha-radio
-              name="mode"
-              value="box"
-              .checked=${this._mode === "box"}
-              @change=${this._modeChanged}
-              .disabled=${this.disabled}
-            ></ha-radio>
-          </ha-formfield>
-        </div>
+          </ha-radio-option>
+          <ha-radio-option value="box">
+            ${this.hass.localize("ui.dialogs.helper_settings.input_number.box")}
+          </ha-radio-option>
+        </ha-radio-group>
         <ha-input
           .value=${this._step !== undefined ? String(this._step) : ""}
           .configValue=${"step"}
@@ -194,9 +185,12 @@ class HaInputNumberForm extends LitElement {
     `;
   }
 
-  private _modeChanged(ev: CustomEvent) {
+  private _modeChanged(ev: Event) {
     fireEvent(this, "value-changed", {
-      value: { ...this._item, mode: (ev.target as HaRadio).value },
+      value: {
+        ...this._item,
+        mode: (ev.currentTarget as HaRadioGroup).value,
+      },
     });
   }
 

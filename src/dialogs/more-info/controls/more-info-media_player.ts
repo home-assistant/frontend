@@ -29,7 +29,6 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-marquee-text";
 import "../../../components/ha-select";
@@ -507,7 +506,7 @@ class MoreInfoMediaPlayer extends LitElement {
       <ha-icon-button
         .id=${`media-control-row-button-${idSuffix}`}
         hide-title
-        .action=${action}
+        action=${ifDefined(action)}
         @click=${clickHandler}
         .label=${title}
         .path=${icon}
@@ -709,7 +708,7 @@ class MoreInfoMediaPlayer extends LitElement {
     handleMediaControlClick(
       this.hass!,
       this.stateObj!,
-      (e.currentTarget as HaIconButton & { action: string }).action!
+      (e.currentTarget as HTMLElement).getAttribute("action")!
     );
   }
 

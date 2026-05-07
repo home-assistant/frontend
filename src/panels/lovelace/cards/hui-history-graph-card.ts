@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { theme2hex } from "../../../common/color/convert-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/chart/state-history-charts";
@@ -21,9 +22,8 @@ import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { HistoryGraphCardConfig } from "./types";
+import type { GraphEntityConfig, HistoryGraphCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -51,9 +51,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _names: Record<string, string> = {};
 
+  private _colors: Record<string, string | undefined> = {};
+
   private _entityIds: string[] = [];
 
-  private _entities: EntityConfig[] = [];
+  private _entities: GraphEntityConfig[] = [];
 
   private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
@@ -95,6 +97,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._computeNames();
+    this._computeColors();
   }
 
   private _computeNames() {
@@ -107,6 +110,19 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this._names[entity.entity] = stateObj
         ? this.hass!.formatEntityName(stateObj, entity.name)
         : entity.entity;
+    });
+  }
+
+  private _computeColors() {
+    if (!this._config) {
+      return;
+    }
+    this._colors = {};
+    this._entities.forEach((entity) => {
+      // if color = undefined, it is automatically defined inside a chart component
+      this._colors[entity.entity] = entity.color
+        ? theme2hex(entity.color)
+        : undefined;
     });
   }
 
@@ -371,6 +387,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
+                  .colors=${this._colors}
                   .height=${hasFixedHeight ? "100%" : undefined}
                   .narrow=${narrow}
                   .expandLegend=${this._config.expand_legend}
@@ -400,6 +417,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .content {
       padding: 0 16px 8px;
       flex: 1;
+      overflow: hidden;
+    }
+    .content:has(state-history-charts) {
+      overflow: visible;
+    }
+    .content.has-height:has(state-history-charts) {
       overflow: hidden;
     }
     .has-header {

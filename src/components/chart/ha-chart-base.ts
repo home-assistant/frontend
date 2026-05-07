@@ -1499,6 +1499,7 @@ export class HaChartBase extends LitElement {
       margin-inline-start: var(--ha-space-1);
       flex-shrink: 0;
       white-space: nowrap;
+      line-height: 1;
     }
     .chart-legend .legend-toggle {
       background: none;
