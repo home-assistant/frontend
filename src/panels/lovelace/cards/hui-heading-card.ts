@@ -97,10 +97,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
       if (this._observedBadges) {
         this._resizeObserver.observe(this._observedBadges);
+      } else {
+        this._badgesOverflowing = false;
       }
     }
-
-    this._measureBadgesOverflow();
   }
 
   public disconnectedCallback(): void {
