@@ -87,7 +87,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
   protected updated(): void {
     if (!this._resizeObserver) {
       this._resizeObserver = new ResizeObserver(() => {
-        this._measureBadgesOverflow();
+        requestAnimationFrame(() => this._measureBadgesOverflow());
       });
     }
 
