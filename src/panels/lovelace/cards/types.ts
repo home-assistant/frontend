@@ -478,7 +478,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
