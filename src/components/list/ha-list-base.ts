@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { tinykeys } from "tinykeys";
+import { compareNodeOrder } from "../../common/dom/compare-node-order";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type { HaListItemBase } from "../item/ha-list-item-base";
 import "./types";
@@ -154,10 +155,7 @@ export class HaListBase extends LitElement {
       return;
     }
     const next = [...this.items, item];
-    next.sort((a, b) =>
-      // eslint-disable-next-line no-bitwise
-      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
-    );
+    next.sort(compareNodeOrder);
     this.items = next;
     this.updateListItems();
   };
