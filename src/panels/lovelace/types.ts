@@ -175,7 +175,7 @@ export interface LovelaceCardFeature extends HTMLElement {
   /** @deprecated Use `context` instead */
   stateObj?: HassEntity;
   context?: LovelaceCardFeatureContext;
-  setConfig(config: LovelaceCardFeatureConfig | NumericInputConfig);
+  setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
   position?: LovelaceCardFeaturePosition;
 }

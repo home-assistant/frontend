@@ -22,7 +22,6 @@ import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
-  NumericInputConfig,
   TargetTemperatureCardFeatureConfig,
 } from "./types";
 
@@ -86,9 +85,7 @@ class HuiTargetTemperatureCardFeature
     return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
-  public setConfig(
-    config: TargetTemperatureCardFeatureConfig | NumericInputConfig
-  ): void {
+  public setConfig(config: TargetTemperatureCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }

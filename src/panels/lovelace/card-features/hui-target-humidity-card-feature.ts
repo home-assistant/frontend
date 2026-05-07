@@ -13,7 +13,6 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   TargetHumidityCardFeatureConfig,
-  NumericInputConfig,
 } from "./types";
 
 export const supportsTargetHumidityCardFeature = (
@@ -66,7 +65,7 @@ class HuiTargetHumidityCardFeature
     return el;
   }
 
-  public setConfig(config: NumericInputConfig): void {
+  public setConfig(config: TargetHumidityCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }

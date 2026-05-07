@@ -5,6 +5,7 @@ import type { OperationMode } from "../../../data/water_heater";
 export type ButtonCardData = Record<string, any>;
 
 export interface NumericInputConfig {
+  type: string;
   style?: "buttons" | "slider";
 }
 
