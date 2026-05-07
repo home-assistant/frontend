@@ -1,6 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
@@ -18,6 +20,11 @@ export class HuiGraphBase extends LitElement {
 
   @state()
   private _displayCoordinates?: number[][];
+
+  @state()
+  private _reducedMotion = false;
+
+  private _unsubMediaQuery?: MediaQueriesListener;
 
   private _animationFrame?: number;
 
@@ -38,15 +45,14 @@ export class HuiGraphBase extends LitElement {
       `;
     }
 
+    const showShimmer = this.loading && !this._reducedMotion;
     const shimmerId = `${this._uniqueId}-shimmer`;
-    const fillRect = this.loading
-      ? `url(#${shimmerId})`
-      : "var(--accent-color)";
+    const fillRect = showShimmer ? `url(#${shimmerId})` : "var(--accent-color)";
 
     return html`
       ${svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
         ${
-          this.loading
+          showShimmer
             ? svg`<defs>
                 <linearGradient id=${shimmerId} x1="-50%" x2="-30%" y1="0" y2="0">
                   <stop offset="0%" stop-color="var(--accent-color)" />
@@ -85,6 +91,18 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMediaQuery = listenMediaQuery(
+      "(prefers-reduced-motion: reduce)",
+      (matches) => {
+        if (this._reducedMotion !== matches) {
+          this._reducedMotion = matches;
+        }
+      }
+    );
+  }
+
   public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.coordinates) {
       return;
@@ -97,6 +115,8 @@ export class HuiGraphBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubMediaQuery?.();
+    this._unsubMediaQuery = undefined;
     this._cancelAnimation();
   }
 
