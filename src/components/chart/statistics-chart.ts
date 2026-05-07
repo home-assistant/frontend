@@ -37,6 +37,7 @@ import type { HomeAssistant } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
+import { sideTooltipPosition } from "./chart-tooltip-position";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -398,8 +399,7 @@ export class StatisticsChart extends LitElement {
       tooltip: {
         trigger: "axis",
         renderMode: "html",
-        position: "bottom",
-        align: "center",
+        position: sideTooltipPosition,
         confine: true,
         formatter: this._renderTooltip,
       },
