@@ -169,7 +169,7 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
-  private _renderRow(row = true) {
+  private _renderRow() {
     const descriptionHasTarget =
       "target" in (this.conditionDescriptions[this.condition.condition] || {});
 
@@ -197,8 +197,8 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-row-event-chip
         .show=${this._testing}
         .variant=${this._testingResult ? "success" : "warning"}
-        .slot=${row ? "event" : ""}
-        class=${row ? "" : "event-chip"}
+        slot="event"
+        class="event-chip"
         aria-live="polite"
       >
         ${this.hass.localize(
@@ -480,7 +480,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow(false)}
+                ${this._renderRow()}
               </ha-expansion-panel>
             `}
       </ha-card>
