@@ -5101,7 +5101,14 @@
               "invalid": "Invalid target",
               "all_entities": "All entities",
               "none_entities": "No entities",
-              "template": "Template"
+              "template": "Template",
+              "types": {
+                "entity": "[%key:ui::components::target-picker::type::entities%]",
+                "device": "[%key:ui::components::target-picker::type::devices%]",
+                "area": "[%key:ui::components::target-picker::type::areas%]",
+                "floor": "Floors",
+                "label": "[%key:ui::components::target-picker::type::labels%]"
+              }
             },
             "generic": "Generic",
             "triggers": {

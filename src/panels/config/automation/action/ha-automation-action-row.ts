@@ -76,6 +76,7 @@ import type {
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
+import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
 import {
   showAlertDialog,
@@ -288,6 +289,12 @@ export default class HaAutomationActionRow extends LitElement {
         ? { device_id: (this.action as DeviceAction).device_id }
         : undefined;
 
+    const serviceTargetSpec =
+      type === "service" && action
+        ? this.hass.services?.[computeDomain(action)]?.[computeObjectId(action)]
+            ?.target
+        : undefined;
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -317,7 +324,11 @@ export default class HaAutomationActionRow extends LitElement {
           )
         )}
         ${target !== undefined || (actionHasTarget && !this._isNew)
-          ? this._renderTargets(target, actionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              actionHasTarget && !this._isNew,
+              serviceTargetSpec
+            )
           : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
@@ -681,11 +692,16 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
 
