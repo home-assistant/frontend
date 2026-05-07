@@ -4,7 +4,7 @@ import type { GraphEntityConfig } from "../../../cards/types";
 // normalize a generated yaml code by placing lines in a consistent order
 export const orderPropertiesGraphCard = (
   config: Record<string, any>,
-  cardConfigStruct: any
+  cardConfigStruct: Struct<any, any>
 ): Record<string, any> => {
   const fieldOrderCard = Object.keys(cardConfigStruct.schema);
   const fieldOrderEntity = [

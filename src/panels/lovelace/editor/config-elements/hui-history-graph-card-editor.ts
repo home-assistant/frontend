@@ -246,11 +246,11 @@ export class HuiHistoryGraphCardEditor
   // where "color" option may be used
   private _shouldDisableColorOption = (entityId: string) => {
     const domain = computeDomain(entityId);
-    const is_number_domain =
+    const isNumberDomain =
       domain === "counter" || domain === "number" || domain === "input_number";
     const stateObj = this.hass!.states[entityId];
     const attributes = stateObj?.attributes;
-    return !isNumericFromAttributes(attributes) && !is_number_domain;
+    return !isNumericFromAttributes(attributes) && ! isNumberDomain;
   };
 
   // remove "color" option when needed
