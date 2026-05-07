@@ -13,10 +13,8 @@ import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-country-picker";
 import "../../../components/ha-currency-picker";
-import "../../../components/ha-formfield";
 import "../../../components/ha-language-picker";
-import "../../../components/ha-radio";
-import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/ha-select-box";
 import "../../../components/ha-timezone-picker";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
@@ -210,75 +208,61 @@ class HaConfigSectionGeneral extends LitElement {
                 "ui.panel.config.core.section.core.core_config.unit_system"
               )}
             </div>
-            <ha-formfield
-              .label=${html`
-                <span style="font-size: 14px">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.metric_example"
-                  )}
-                </span>
-                <div style="color: var(--secondary-text-color)">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.unit_system_metric"
-                  )}
-                </div>
-              `}
-            >
-              <ha-radio
+            <div class="unit-system-options">
+              <ha-select-box
                 name="unit_system"
-                value="metric"
-                .checked=${this._unitSystem === "metric"}
-                @change=${this._unitSystemChanged}
+                .hass=${this.hass}
+                .value=${this._unitSystem}
                 .disabled=${disabled}
-              ></ha-radio>
-            </ha-formfield>
-            <ha-formfield
-              .label=${html`
-                <span style="font-size: 14px">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.us_customary_example"
-                  )}
-                </span>
-                <div style="color: var(--secondary-text-color)">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
-                  )}
-                </div>
-              `}
-            >
-              <ha-radio
-                name="unit_system"
-                value="us_customary"
-                .checked=${this._unitSystem === "us_customary"}
-                @change=${this._unitSystemChanged}
-                .disabled=${disabled}
-              ></ha-radio>
-            </ha-formfield>
-            ${this._unitSystem !== this._configuredUnitSystem()
-              ? html`
-                  <ha-checkbox
-                    .checked=${this._updateUnits}
-                    .disabled=${this._submittingRegional}
-                    @change=${this._updateUnitsChanged}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.core.section.core.core_config.update_units_label"
-                    )}
-                    <div slot="hint">
+                @value-changed=${this._unitSystemChanged}
+                .options=${[
+                  {
+                    value: "metric",
+                    label: this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.metric_example"
+                    ),
+                    description: this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.unit_system_metric"
+                    ),
+                  },
+                  {
+                    value: "us_customary",
+                    label: this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.us_customary_example"
+                    ),
+                    description: this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
+                    ),
+                  },
+                ]}
+              >
+              </ha-select-box>
+              ${this._unitSystem !== this._configuredUnitSystem()
+                ? html`
+                    <ha-checkbox
+                      .checked=${this._updateUnits}
+                      .disabled=${this._submittingRegional}
+                      @change=${this._updateUnitsChanged}
+                    >
                       ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                        "ui.panel.config.core.section.core.core_config.update_units_label"
                       )}
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.update_units_text_2"
-                      )}
-                      <br /><br />
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.update_units_text_3"
-                      )}
-                    </div>
-                  </ha-checkbox>
-                `
-              : ""}
+                      <div slot="hint">
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                        )}
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_2"
+                        )}
+                        <br /><br />
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_3"
+                        )}
+                      </div>
+                    </ha-checkbox>
+                  `
+                : nothing}
+            </div>
           </div>
           <div>
             <ha-currency-picker
@@ -365,10 +349,8 @@ class HaConfigSectionGeneral extends LitElement {
     this[`_${target.name}`] = target.value;
   }
 
-  private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value as
-      | "metric"
-      | "us_customary";
+  private _unitSystemChanged(ev: ValueChangedEvent<string>) {
+    this._unitSystem = ev.detail.value as "metric" | "us_customary";
   }
 
   private _updateUnitsChanged(ev: CustomEvent) {
@@ -504,6 +486,15 @@ class HaConfigSectionGeneral extends LitElement {
         display: flex;
         margin-top: var(--ha-space-2);
         margin-bottom: var(--ha-space-3);
+      }
+      .unit-system-options {
+        padding-top: var(--ha-space-2);
+      }
+
+      .unit-system-options ha-checkbox {
+        display: block;
+        margin-top: var(--ha-space-3);
+        margin-inline-start: var(--ha-space-3);
       }
     `,
   ];

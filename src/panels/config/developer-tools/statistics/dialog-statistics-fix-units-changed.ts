@@ -1,12 +1,13 @@
 import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import {
   clearStatistics,
   getStatisticLabel,
@@ -79,37 +80,26 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
           )}
         </p>
 
-        <h3>
-          ${this.hass.localize(
+        <ha-radio-group
+          .label=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
           )}
-        </h3>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.update",
-            this._params.issue.data
-          )}
+          .value=${this._action}
+          name="action"
+          @change=${this._handleActionChanged}
         >
-          <ha-radio
-            value="update"
-            name="action"
-            .checked=${this._action === "update"}
-            @change=${this._handleActionChanged}
-            autofocus
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            `ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.clear`
-          )}
-        >
-          <ha-radio
-            value="clear"
-            name="action"
-            .checked=${this._action === "clear"}
-            @change=${this._handleActionChanged}
-          ></ha-radio>
-        </ha-formfield>
+          <ha-radio-option value="update" autofocus>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.update",
+              this._params.issue.data
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="clear">
+            ${this.hass.localize(
+              `ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.clear`
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -129,8 +119,10 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     `;
   }
 
-  private _handleActionChanged(ev): void {
-    this._action = ev.target.value;
+  private _handleActionChanged(ev: Event): void {
+    this._action = (ev.currentTarget as HaRadioGroup).value as
+      | "update"
+      | "clear";
   }
 
   private _cancel(): void {
@@ -154,7 +146,15 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, haStyleDialog];
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-radio-group::part(form-control-label) {
+          font-weight: var(--ha-font-weight-medium);
+        }
+      `,
+    ];
   }
 }
 

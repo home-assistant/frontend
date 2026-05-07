@@ -7,7 +7,6 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
 import type {
   HaSelectOption,

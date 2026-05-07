@@ -1871,9 +1871,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.3.1-ha.2":
-  version: 3.3.1-ha.2
-  resolution: "@home-assistant/webawesome@npm:3.3.1-ha.2"
+"@home-assistant/webawesome@npm:3.3.1-ha.3":
+  version: 3.3.1-ha.3
+  resolution: "@home-assistant/webawesome@npm:3.3.1-ha.3"
   dependencies:
     "@ctrl/tinycolor": "npm:4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1884,7 +1884,7 @@ __metadata:
     lit: "npm:^3.2.1"
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
-  checksum: 10/c66965544bb34eb9d6d131579c31e4c6d21c8c231bdf565db61195da03a995d17e25d6d997875c902d7d2f3020c70434088efb7299b2626d4a7d1343cb33d726
+  checksum: 10/9ee0f8eb2b350fdc5ba44096f9b304f5c6764b6c0108c68406c14c575a2fd86fa2d713560f9817a8a3c7f0969dce3b680c7d04eec23e4d71e5c69fcbdbcd1774
   languageName: node
   linkType: hard
 
@@ -2688,7 +2688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-radio@npm:0.27.0, @material/mwc-radio@npm:^0.27.0":
+"@material/mwc-radio@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-radio@npm:0.27.0"
   dependencies:
@@ -8158,7 +8158,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.20"
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
-    "@home-assistant/webawesome": "npm:3.3.1-ha.2"
+    "@home-assistant/webawesome": "npm:3.3.1-ha.3"
     "@html-eslint/eslint-plugin": "npm:0.60.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
@@ -8172,7 +8172,6 @@ __metadata:
     "@material/mwc-drawer": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
-    "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
@@ -8554,9 +8553,9 @@ __metadata:
   linkType: hard
 
 "ip-address@npm:^10.0.1":
-  version: 10.1.0
-  resolution: "ip-address@npm:10.1.0"
-  checksum: 10/a6979629d1ad9c1fb424bc25182203fad739b40225aebc55ec6243bbff5035faf7b9ed6efab3a097de6e713acbbfde944baacfa73e11852bb43989c45a68d79e
+  version: 10.2.0
+  resolution: "ip-address@npm:10.2.0"
+  checksum: 10/12fec399e1af5753ac322e47a6d81a50d3a528b3abb17c09525b2a2edcaedcca628c40520706f7037bc4d8e951b0296c47e7b86d0a8e6e2335c8f0ba4afcfac1
   languageName: node
   linkType: hard
 

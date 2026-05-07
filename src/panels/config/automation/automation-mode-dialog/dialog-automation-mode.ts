@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -9,7 +10,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-radio";
+import "../../../../components/ha-select-box";
 import "../../../../components/input/ha-input";
 
 import type { HaInput } from "../../../../components/input/ha-input";
@@ -83,56 +84,26 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           target="_blank"
           rel="noopener noreferrer"
         ></ha-icon-button>
-        <ha-md-list
-          role="listbox"
-          tabindex="0"
-          aria-activedescendant="option-${this._newMode}"
-          aria-label=${this.hass.localize(
-            "ui.panel.config.automation.editor.modes.label"
-          )}
-        >
-          ${MODES.map((mode) => {
-            const label = this.hass.localize(
+        <ha-select-box
+          .options=${MODES.map((mode) => ({
+            label: this.hass.localize(
               `ui.panel.config.automation.editor.modes.${mode}`
-            );
-            return html`
-              <ha-md-list-item
-                class="option"
-                type="button"
-                @click=${this._modeChanged}
-                .value=${mode}
-                id="option-${mode}"
-                role="option"
-                aria-label=${label}
-                aria-selected=${this._newMode === mode}
-              >
-                <div slot="start">
-                  <ha-radio
-                    inert
-                    .checked=${this._newMode === mode}
-                    value=${mode}
-                    @change=${this._modeChanged}
-                    name="mode"
-                  ></ha-radio>
-                </div>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.modes.${mode}`
-                  )}
-                </div>
-                <div slot="supporting-text">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.modes.${mode}_description`
-                  )}
-                </div>
-              </ha-md-list-item>
-            `;
-          })}
-        </ha-md-list>
+            ),
+            description: this.hass.localize(
+              `ui.panel.config.automation.editor.modes.${mode}_description`
+            ),
+            value: mode,
+          }))}
+          .value=${this._newMode}
+          @value-changed=${this._modeChanged}
+          .maxColumns=${1}
+          .hass=${this.hass}
+        ></ha-select-box>
 
         ${isMaxMode(this._newMode)
           ? html`
-              <div class="options">
+              <div class="max-value">
+                <wa-divider></wa-divider>
                 <ha-input
                   .label=${this.hass.localize(
                     `ui.panel.config.automation.editor.max.${this._newMode}`
@@ -166,7 +137,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
   }
 
   private _modeChanged(ev) {
-    const mode = ev.currentTarget.value;
+    const mode = ev.detail.value;
     this._newMode = mode;
     if (!isMaxMode(mode)) {
       this._newMax = undefined;
@@ -200,11 +171,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --dialog-content-padding: 0;
-        }
-        .options {
-          padding: 0 24px 24px 24px;
+        .max-value {
+          margin-top: var(--ha-space-3);
         }
         ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
