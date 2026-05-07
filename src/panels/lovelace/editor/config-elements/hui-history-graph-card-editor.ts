@@ -250,7 +250,7 @@ export class HuiHistoryGraphCardEditor
       domain === "counter" || domain === "number" || domain === "input_number";
     const stateObj = this.hass!.states[entityId];
     const attributes = stateObj?.attributes;
-    return !isNumericFromAttributes(attributes) && ! isNumberDomain;
+    return !isNumericFromAttributes(attributes) && !isNumberDomain;
   };
 
   // remove "color" option when needed
