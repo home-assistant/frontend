@@ -399,12 +399,12 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container {
       width: 100%;
+      overflow: visible;
     }
 
     .entry-container.line {
       flex: 1;
       padding-top: 8px;
-      overflow: hidden;
     }
 
     .entry-container:hover {
