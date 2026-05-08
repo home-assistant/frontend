@@ -117,9 +117,6 @@ export const generateEntityFilter = (
       }
     }
     if (entityCategories) {
-      if (!entity) {
-        return false;
-      }
       const category = entity?.entity_category || "none";
       if (!entityCategories.has(category)) {
         return false;
