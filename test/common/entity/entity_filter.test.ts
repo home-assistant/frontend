@@ -55,6 +55,11 @@ const mockHass: HomeAssistant = {
       state: "off",
       attributes: { device_class: "light" },
     },
+    "binary_sensor.unregistered_battery": {
+      entity_id: "binary_sensor.unregistered_battery",
+      state: "off",
+      attributes: { device_class: "battery" },
+    },
   } as any,
   entities: {
     "light.living_room": {
@@ -301,6 +306,20 @@ describe("generateEntityFilter", () => {
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("sensor.humidity")).toBe(false);
+    });
+
+    it("should treat entities without a registry entry as having no category", () => {
+      const noneFilter = generateEntityFilter(mockHass, {
+        entity_category: "none",
+      });
+      const diagnosticFilter = generateEntityFilter(mockHass, {
+        entity_category: "diagnostic",
+      });
+
+      expect(noneFilter("binary_sensor.unregistered_battery")).toBe(true);
+      expect(diagnosticFilter("binary_sensor.unregistered_battery")).toBe(
+        false
+      );
     });
   });
 
