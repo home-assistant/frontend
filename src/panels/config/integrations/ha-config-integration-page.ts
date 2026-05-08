@@ -298,25 +298,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const attentionFlows = this._attentionFlows(configEntriesInProgress);
 
-    const attentionEntries = configEntries.filter((entry) =>
-      ERROR_STATES.includes(entry.state)
-    );
+    const attentionEntries = this._attentionEntries(configEntries);
 
-    const normalEntries = configEntries
-      .filter(
-        (entry) =>
-          entry.source !== "ignore" && !ERROR_STATES.includes(entry.state)
-      )
-      .sort((a, b) => {
-        if (Boolean(a.disabled_by) !== Boolean(b.disabled_by)) {
-          return a.disabled_by ? 1 : -1;
-        }
-        return caseInsensitiveStringCompare(
-          a.title,
-          b.title,
-          this.hass.locale.language
-        );
-      });
+    const normalEntries = this._normalEntries(
+      configEntries,
+      this.hass.locale.language
+    );
 
     const normalData = this._buildNormalEntryData(
       normalEntries,
@@ -994,6 +981,28 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _buildNormalEntryData = memoizeOne(this._buildEntryData);
 
   private _buildAttentionEntryData = memoizeOne(this._buildEntryData);
+
+  private _normalEntries = memoizeOne(
+    (
+      data: ConfigEntry[],
+      language: HomeAssistant["locale"]["language"]
+    ): ConfigEntry[] =>
+      data
+        .filter(
+          (entry) =>
+            entry.source !== "ignore" && !ERROR_STATES.includes(entry.state)
+        )
+        .sort((a, b) => {
+          if (Boolean(a.disabled_by) !== Boolean(b.disabled_by)) {
+            return a.disabled_by ? 1 : -1;
+          }
+          return caseInsensitiveStringCompare(a.title, b.title, language);
+        })
+  );
+
+  private _attentionEntries = memoizeOne((data: ConfigEntry[]): ConfigEntry[] =>
+    data.filter((entry) => ERROR_STATES.includes(entry.state))
+  );
 
   private _discoveryFlows = memoizeOne(
     (
