@@ -344,6 +344,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._filter,
       this.hass.areas
     );
+    const filteredDiscoveryData = this._filterDiscoveryTree(
+      discoveryFlows,
+      this._filter
+    );
+    const filteredAttentionFlows = this._filterDiscoveryTree(
+      attentionFlows,
+      this._filter
+    );
     const filteredAttentionData = this._filterAttentionTree(
       attentionData,
       this._filter,
@@ -692,7 +700,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </ha-alert>
               </div>`
             : nothing}
-          ${discoveryFlows.length
+          ${filteredDiscoveryData.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -701,7 +709,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-md-list class="discovered">
-                    ${discoveryFlows.map(
+                    ${filteredDiscoveryData.map(
                       (flow) =>
                         html`<ha-md-list-item class="discovered">
                           ${flow.localized_title}
@@ -720,7 +728,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </div>
               `
             : nothing}
-          ${attentionFlows.length || filteredAttentionData.length
+          ${filteredAttentionFlows.length || filteredAttentionData.length
             ? html`
                 <div class="section">
                   <h3 class="section-header">
@@ -728,9 +736,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `ui.panel.config.integrations.integration_page.attention_entries`
                     )}
                   </h3>
-                  ${attentionFlows.length
+                  ${filteredAttentionFlows.length
                     ? html`<ha-md-list class="attention">
-                        ${attentionFlows.map((flow) => {
+                        ${filteredAttentionFlows.map((flow) => {
                           const attention = ATTENTION_SOURCES.includes(
                             flow.context.source
                           );
@@ -1087,6 +1095,28 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _filterNormalTree = memoizeOne(
     (data: ConfigEntryData[], filter: string, areas: HomeAssistant["areas"]) =>
       this._filterTree(data, filter, areas)
+  );
+
+  private _filterDiscoveryTree = memoizeOne(
+    (
+      data: DataEntryFlowProgressExtended[],
+      filter: string
+    ): DataEntryFlowProgressExtended[] => {
+      if (!filter) {
+        return data;
+      }
+
+      const TITLE_KEYS = ["localized_title"];
+
+      const titleMatches = (localized_title: string) =>
+        multiTermSearch([{ localized_title }], filter, TITLE_KEYS, undefined, {
+          keys: TITLE_KEYS,
+        }).length > 0;
+
+      return data.filter(
+        (item) => item.localized_title && titleMatches(item.localized_title)
+      );
+    }
   );
 
   private _filterAttentionTree = memoizeOne(
