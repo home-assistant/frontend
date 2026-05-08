@@ -1,11 +1,11 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
@@ -19,7 +19,7 @@ import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
@@ -46,6 +46,8 @@ class StepFlowForm extends LitElement {
   @state() private _errorMsg?: string;
 
   private _errors?: Record<string, string>;
+
+  private _formRef = createRef<HTMLElementTagNameMap["ha-form"]>();
 
   static shadowRootOptions: ShadowRootInit = {
     ...LitElement.shadowRootOptions,
@@ -88,24 +90,27 @@ class StepFlowForm extends LitElement {
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-          : ""}
-        <ha-form
-          ?autofocus=${this.autoFocus}
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .data=${stepData}
-          .disabled=${this._loading}
-          @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(
-            this.handleReadOnlyFields(step.data_schema)
-          )}
-          .error=${this._errors}
-          .computeLabel=${this._labelCallback}
-          .computeHelper=${this._helperCallback}
-          .computeError=${this._errorCallback}
-          .localizeValue=${this._localizeValueCallback}
-          .context=${{ handler: step.handler }}
-        ></ha-form>
+          : nothing}
+        ${step.data_schema.length
+          ? html`<ha-form
+              ${ref(this._formRef)}
+              ?autofocus=${this.autoFocus}
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .data=${stepData}
+              .disabled=${this._loading}
+              @value-changed=${this._stepDataChanged}
+              .schema=${autocompleteLoginFields(
+                this.handleReadOnlyFields(step.data_schema)
+              )}
+              .error=${this._errors}
+              .computeLabel=${this._labelCallback}
+              .computeHelper=${this._helperCallback}
+              .computeError=${this._errorCallback}
+              .localizeValue=${this._localizeValueCallback}
+              .context=${{ handler: step.handler }}
+            ></ha-form>`
+          : nothing}
       </div>
       ${step.preview
         ? html`<div class="preview" @set-flow-errors=${this._setError}>
@@ -125,14 +130,6 @@ class StepFlowForm extends LitElement {
             })}
           </div>`
         : nothing}
-      <div class="buttons">
-        <ha-button @click=${this._submitStep} .loading=${this._loading}>
-          ${this.flowConfig.renderShowFormStepSubmitButton(
-            this.hass,
-            this.step
-          )}
-        </ha-button>
-      </div>
     `;
   }
 
@@ -145,8 +142,17 @@ class StepFlowForm extends LitElement {
     this.addEventListener("keydown", this._handleKeyDown);
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_loading")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        loading: this._loading,
+      });
+    }
+  }
+
   public override focus(_options?: FocusOptions): void {
-    this.renderRoot.querySelector("ha-form")?.focus();
+    this._formRef.value?.focus();
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -229,13 +235,15 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
-    const toSendData = {};
+    const toSendData: Record<string, unknown> = {};
     Object.keys(stepData).forEach((key) => {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
       const selector = (field as HaFormSelector)?.selector ?? {};
-      const read_only = (Object.values(selector)[0] as any)?.read_only;
+      const read_only = (
+        Object.values(selector)[0] as { read_only?: boolean } | null | undefined
+      )?.read_only;
       if (!isEmpty && !read_only) {
         toSendData[key] = value;
       }
@@ -277,7 +285,13 @@ class StepFlowForm extends LitElement {
     }
   }
 
-  private _stepDataChanged(ev: CustomEvent): void {
+  public submit(): Promise<void> {
+    return this._submitStep();
+  }
+
+  private _stepDataChanged(
+    ev: ValueChangedEvent<Record<string, unknown>>
+  ): void {
     this._stepData = ev.detail.value;
   }
 
@@ -321,12 +335,8 @@ class StepFlowForm extends LitElement {
 
         ha-alert,
         ha-form {
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
           display: block;
-        }
-
-        .buttons {
-          padding: 16px;
         }
       `,
     ];
