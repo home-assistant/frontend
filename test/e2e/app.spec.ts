@@ -208,10 +208,12 @@ test.describe("Theming", () => {
 
     await expect(page.locator("ha-test")).toBeAttached();
 
-    // The dark-theme scenario calls updateHass({ themes: { darkMode: true } });
-    // updateHass is reactive/async, so poll until the flag is reflected.
+    // The dark-theme scenario sets selectedTheme.dark = true, which causes
+    // _applyTheme() to set themes.darkMode = true on the element.
     await page.waitForFunction(
-      () => (window.__mockHass as any)?.themes?.darkMode === true,
+      () =>
+        (document.querySelector("ha-test") as any)?.hass?.themes?.darkMode ===
+        true,
       { timeout: 10_000 }
     );
   });

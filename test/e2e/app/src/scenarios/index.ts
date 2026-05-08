@@ -20,11 +20,13 @@ const nonAdminScenario: Scenario = async (hass) => {
 };
 
 const darkThemeScenario: Scenario = async (hass) => {
-  // mockTheme hardcodes dark:false, so set darkMode directly via updateHass
+  // Force dark mode by setting selectedTheme.dark = true.
+  // _applyTheme() reads selectedTheme.dark to determine darkMode; setting
+  // themes.darkMode directly gets overwritten when hassConnected() fires.
   hass.updateHass({
-    themes: {
-      ...hass.themes,
-      darkMode: true,
+    selectedTheme: {
+      theme: hass.selectedTheme?.theme ?? "default",
+      dark: true,
     },
   });
 };
