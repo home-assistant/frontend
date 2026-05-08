@@ -291,19 +291,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.configEntriesInProgress
     );
 
-    const discoveryFlows = configEntriesInProgress
-      .filter((flow) => !ATTENTION_SOURCES.includes(flow.context.source))
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.localized_title || "zzz",
-          b.localized_title || "zzz",
-          this.hass.locale.language
-        )
-      );
-
-    const attentionFlows = configEntriesInProgress.filter((flow) =>
-      ATTENTION_SOURCES.includes(flow.context.source)
+    const discoveryFlows = this._discoveryFlows(
+      configEntriesInProgress,
+      this.hass.locale.language
     );
+
+    const attentionFlows = this._attentionFlows(configEntriesInProgress);
 
     const attentionEntries = configEntries.filter((entry) =>
       ERROR_STATES.includes(entry.state)
@@ -1001,6 +994,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _buildNormalEntryData = memoizeOne(this._buildEntryData);
 
   private _buildAttentionEntryData = memoizeOne(this._buildEntryData);
+
+  private _discoveryFlows = memoizeOne(
+    (
+      data: DataEntryFlowProgressExtended[],
+      language: HomeAssistant["locale"]["language"]
+    ): DataEntryFlowProgressExtended[] =>
+      data
+        .filter((flow) => !ATTENTION_SOURCES.includes(flow.context.source))
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.localized_title || "zzz",
+            b.localized_title || "zzz",
+            language
+          )
+        )
+  );
+
+  private _attentionFlows = memoizeOne(
+    (data: DataEntryFlowProgressExtended[]): DataEntryFlowProgressExtended[] =>
+      data.filter((flow) => ATTENTION_SOURCES.includes(flow.context.source))
+  );
 
   private _filterTree = memoizeOne(
     (
