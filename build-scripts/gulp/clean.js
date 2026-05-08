@@ -45,3 +45,10 @@ gulp.task(
     ])
   )
 );
+
+gulp.task(
+  "clean-e2e-test-app",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.e2eTestApp_output_root, paths.build_dir])
+  )
+);

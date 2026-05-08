@@ -201,3 +201,23 @@ gulp.task("copy-static-landing-page", async () => {
   copyFonts(paths.landingPage_output_static);
   copyTranslations(paths.landingPage_output_static);
 });
+
+gulp.task("copy-static-e2e-test-app", async () => {
+  // Copy app static files (icons, polyfills, etc.)
+  fs.copySync(
+    polyPath("public/static"),
+    path.resolve(paths.e2eTestApp_output_root, "static")
+  );
+  // Copy e2e test app public files (manifest, sw stubs)
+  const e2ePublic = path.resolve(paths.e2eTestApp_dir, "public");
+  if (fs.existsSync(e2ePublic)) {
+    fs.copySync(e2ePublic, paths.e2eTestApp_output_root);
+  }
+
+  copyPolyfills(paths.e2eTestApp_output_static);
+  copyMapPanel(paths.e2eTestApp_output_static);
+  copyFonts(paths.e2eTestApp_output_static);
+  copyTranslations(paths.e2eTestApp_output_static);
+  copyLocaleData(paths.e2eTestApp_output_static);
+  copyMdiIcons(paths.e2eTestApp_output_static);
+});

@@ -14,6 +14,7 @@ import {
   createDemoConfig,
   createGalleryConfig,
   createLandingPageConfig,
+  createE2eTestAppConfig,
 } from "../rspack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
@@ -207,6 +208,25 @@ gulp.task("rspack-prod-landing-page", () =>
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
       isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
+gulp.task("rspack-dev-server-e2e-test-app", () =>
+  runDevServer({
+    compiler: rspack(
+      createE2eTestAppConfig({ isProdBuild: false, latestBuild: true })
+    ),
+    contentBase: paths.e2eTestApp_output_root,
+    port: 8095,
+  })
+);
+
+gulp.task("rspack-prod-e2e-test-app", () =>
+  prodBuild(
+    bothBuilds(createE2eTestAppConfig, {
+      isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
     })
   )
 );

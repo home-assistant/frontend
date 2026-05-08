@@ -54,7 +54,14 @@ src/cast/dev_const.ts
 # test coverage
 test/coverage/
 
+# Playwright e2e output
+test/e2e/reports/
+test/e2e/test-results/
+# E2E test app build output
+test/e2e/app/dist/
+
 # AI tooling
 .claude
 .cursor
 .opencode
+.serena

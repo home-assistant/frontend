@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // e2e tests run via Playwright's Node.js runner, not the browser bundler
+    "lib": ["ES2021"],
+    // Playwright's types use modern module resolution
+    "moduleResolution": "bundler",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["./**/*.ts"],
+  // Clear the exclude from the root tsconfig so we include our own files
+  "exclude": []
+}

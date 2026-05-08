@@ -3181,6 +3181,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@playwright/test@npm:1.59.1":
+  version: 1.59.1
+  resolution: "@playwright/test@npm:1.59.1"
+  dependencies:
+    playwright: "npm:1.59.1"
+  bin:
+    playwright: cli.js
+  checksum: 10/27a894c4d4216b51cddc96e18fd0638a9e2e0a3f0b7ee32a56121fb61df395ec43529f5dcdca32578af8a34a04722ee3767f99f0ae4d39fa8edceda89a96014c
+  languageName: node
+  linkType: hard
+
 "@replit/codemirror-indentation-markers@npm:6.5.3":
   version: 6.5.3
   resolution: "@replit/codemirror-indentation-markers@npm:6.5.3"
@@ -7625,12 +7636,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.2":
+  version: 2.3.2
+  resolution: "fsevents@npm:2.3.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10/6b5b6f5692372446ff81cf9501c76e3e0459a4852b3b5f1fc72c103198c125a6b8c72f5f166bdd76ffb2fca261e7f6ee5565daf80dca6e571e55bcc589cc1256
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10/4c1ade961ded57cdbfbb5cac5106ec17bc8bccd62e16343c569a0ceeca83b9dfef87550b4dc5cbb89642da412b20c5071f304c8c464b80415446e8e155a038c0
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>":
+  version: 2.3.2
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  dependencies:
+    node-gyp: "npm:latest"
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -8181,6 +8211,7 @@ __metadata:
     "@octokit/auth-oauth-device": "npm:8.0.3"
     "@octokit/plugin-retry": "npm:8.1.0"
     "@octokit/rest": "npm:22.0.1"
+    "@playwright/test": "npm:1.59.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.5.9"
     "@rspack/core": "npm:2.0.1"
@@ -10621,6 +10652,30 @@ __metadata:
   bin:
     pixelmatch: bin/pixelmatch
   checksum: 10/3dfb1c0bc6d333a5ad34e78737c3ea33ac3743b52db73b5e8bebbbfd87376afacfec5d3c268d9fdb6e77b07c5ecd6b01f98657087457107f9e03ad1a872545e1
+  languageName: node
+  linkType: hard
+
+"playwright-core@npm:1.59.1":
+  version: 1.59.1
+  resolution: "playwright-core@npm:1.59.1"
+  bin:
+    playwright-core: cli.js
+  checksum: 10/d27857a6701587c2a9bfa26fed9a5d8c617a392299b99b187f2ddc198d012a1e296449806bc907220debea938152677e8b4d91d304ed00645f762f778de3abec
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.59.1":
+  version: 1.59.1
+  resolution: "playwright@npm:1.59.1"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.59.1"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 10/17b2df42effa362adc6aa3192b625bd80f26b91a0c253a2375ac89ace68407b746dd87b4081629c50c58c3cb031c5b837a32fef43a3c98c60ea504e0b001e5fa
   languageName: node
   linkType: hard
 

@@ -157,5 +157,7 @@
       "lit/directives/join": ["./node_modules/lit/directives/join.js"],
       "lit/directives/ref": ["./node_modules/lit/directives/ref.js"]
     }
-  }
+  },
+  // Exclude e2e tests — they have their own tsconfig that adds node types.
+  "exclude": ["test/e2e"]
 }

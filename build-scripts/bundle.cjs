@@ -1,4 +1,3 @@
-/* global require, module, __dirname, process */
 const path = require("path");
 const env = require("./env.cjs");
 const paths = require("./paths.cjs");
@@ -319,6 +318,24 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isLandingPageBuild: true,
+    };
+  },
+
+  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild }) {
+    return {
+      name: "e2e-test-app" + nameSuffix(latestBuild),
+      entry: {
+        main: path.resolve(paths.e2eTestApp_dir, "src/entrypoint.ts"),
+      },
+      outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      defineOverlay: {
+        __VERSION__: JSON.stringify(`E2E-TEST-${env.version()}`),
+        __DEMO__: true,
+      },
+      isProdBuild,
+      latestBuild,
+      isStatsBuild,
     };
   },
 };
