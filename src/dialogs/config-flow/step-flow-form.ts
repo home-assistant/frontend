@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -46,6 +47,8 @@ class StepFlowForm extends LitElement {
 
   private _errors?: Record<string, string>;
 
+  private _formRef = createRef<HTMLElementTagNameMap["ha-form"]>();
+
   static shadowRootOptions: ShadowRootInit = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -90,6 +93,7 @@ class StepFlowForm extends LitElement {
           : nothing}
         ${step.data_schema.length
           ? html`<ha-form
+              ${ref(this._formRef)}
               ?autofocus=${this.autoFocus}
               .hass=${this.hass}
               .narrow=${this.narrow}
@@ -148,7 +152,7 @@ class StepFlowForm extends LitElement {
   }
 
   public override focus(_options?: FocusOptions): void {
-    this.renderRoot.querySelector("ha-form")?.focus();
+    this._formRef.value?.focus();
   }
 
   protected willUpdate(changedProps: PropertyValues): void {

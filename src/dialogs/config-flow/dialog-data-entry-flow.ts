@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -97,6 +98,12 @@ class DataEntryFlowDialog extends LitElement {
   @state() private _formStepLoading = false;
 
   @state() private _createEntryHasPendingUpdates = false;
+
+  private _formStepRef = createRef<FormStepElement>();
+
+  private _abortStepRef = createRef<AbortStepElement>();
+
+  private _createEntryStepRef = createRef<CreateEntryStepElement>();
 
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
@@ -391,6 +398,7 @@ class DataEntryFlowDialog extends LitElement {
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          ${ref(this._formStepRef)}
                           autofocus
                           narrow
                           .flowConfig=${this._params.flowConfig}
@@ -411,6 +419,7 @@ class DataEntryFlowDialog extends LitElement {
                       : this._step.type === "abort"
                         ? html`
                             <step-flow-abort
+                              ${ref(this._abortStepRef)}
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
@@ -438,6 +447,7 @@ class DataEntryFlowDialog extends LitElement {
                               `
                             : html`
                                 <step-flow-create-entry
+                                  ${ref(this._createEntryStepRef)}
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
@@ -678,11 +688,7 @@ class DataEntryFlowDialog extends LitElement {
     }
 
     await this.updateComplete;
-    (
-      this.renderRoot.querySelector(
-        "step-flow-form[autofocus]"
-      ) as HTMLElement | null
-    )?.focus();
+    this._formStepRef.value?.focus();
   };
 
   private _handleFooterStateChanged = (
@@ -697,25 +703,15 @@ class DataEntryFlowDialog extends LitElement {
   };
 
   private _submitFormStep = () => {
-    (
-      this.renderRoot.querySelector("step-flow-form") as FormStepElement | null
-    )?.submit();
+    this._formStepRef.value?.submit();
   };
 
   private _closeAbortStep = () => {
-    (
-      this.renderRoot.querySelector(
-        "step-flow-abort"
-      ) as AbortStepElement | null
-    )?.close();
+    this._abortStepRef.value?.close();
   };
 
   private _finishCreateEntryStep = () => {
-    (
-      this.renderRoot.querySelector(
-        "step-flow-create-entry"
-      ) as CreateEntryStepElement | null
-    )?.finish();
+    this._createEntryStepRef.value?.finish();
   };
 
   static get styles(): CSSResultGroup {
