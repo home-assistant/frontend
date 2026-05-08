@@ -31,16 +31,6 @@ export const configFlowContentStyles = css`
     margin-top: 20px;
     padding: 0 24px;
   }
-
-  .buttons {
-    position: relative;
-    padding: 16px;
-    margin: 8px 0 0;
-    color: var(--primary-color);
-    display: flex;
-    justify-content: flex-end;
-  }
-
   ha-markdown {
     overflow-wrap: break-word;
   }

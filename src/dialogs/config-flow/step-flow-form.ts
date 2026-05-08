@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
@@ -125,14 +124,6 @@ class StepFlowForm extends LitElement {
             })}
           </div>`
         : nothing}
-      <div class="buttons">
-        <ha-button @click=${this._submitStep} .loading=${this._loading}>
-          ${this.flowConfig.renderShowFormStepSubmitButton(
-            this.hass,
-            this.step
-          )}
-        </ha-button>
-      </div>
     `;
   }
 
@@ -143,6 +134,15 @@ class StepFlowForm extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_loading")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        loading: this._loading,
+      });
+    }
   }
 
   public override focus(_options?: FocusOptions): void {
@@ -277,6 +277,10 @@ class StepFlowForm extends LitElement {
     }
   }
 
+  public submit(): Promise<void> {
+    return this._submitStep();
+  }
+
   private _stepDataChanged(ev: CustomEvent): void {
     this._stepData = ev.detail.value;
   }
@@ -323,10 +327,6 @@ class StepFlowForm extends LitElement {
         ha-form {
           margin-top: 24px;
           display: block;
-        }
-
-        .buttons {
-          padding: 16px;
         }
       `,
     ];

@@ -10,7 +10,6 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
-import "../../components/ha-button";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
@@ -192,18 +191,16 @@ class StepFlowCreateEntry extends LitElement {
                 </div>
               `}
       </div>
-      <div class="buttons">
-        <ha-button @click=${this._flowDone}
-          >${localize(
-            `ui.panel.config.integrations.config_flow.${
-              !this.devices.length || Object.keys(this._deviceUpdate).length
-                ? "finish"
-                : "finish_skip"
-            }`
-          )}</ha-button
-        >
-      </div>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_deviceUpdate")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
+      });
+    }
   }
 
   private async _loadDomains() {
@@ -281,6 +278,10 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
+  public finish(): Promise<void> {
+    return this._flowDone();
+  }
+
   private async _areaPicked(ev: ValueChangedEvent<string>) {
     const picker = ev.currentTarget as any;
     const device = picker.device;
@@ -312,15 +313,7 @@ class StepFlowCreateEntry extends LitElement {
         .devices {
           display: flex;
           margin: -4px;
-          max-height: 600px;
-          overflow-y: auto;
           flex-direction: column;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .devices {
-            /* header - margin content - footer */
-            max-height: calc(100vh - 52px - 20px - 52px);
-          }
         }
         .device {
           border: 1px solid var(--divider-color);
@@ -351,11 +344,6 @@ class StepFlowCreateEntry extends LitElement {
         }
         ha-input {
           margin: var(--ha-space-2) 0;
-        }
-        .buttons > *:last-child {
-          margin-left: auto;
-          margin-inline-start: auto;
-          margin-inline-end: initial;
         }
         .error {
           color: var(--error-color);
