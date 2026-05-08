@@ -214,13 +214,6 @@ jobs:
           name: gallery-dist
           path: gallery/dist/
 
-      # Set up BrowserStack credentials
-      - name: Set up BrowserStack
-        uses: browserstack/github-actions@93aebce225b754566349151c0676b26b005e591b # v1.0.4
-        with:
-          username: ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-
       # Start BrowserStack Local tunnel so BrowserStack's cloud browsers can
       # reach the tests running on localhost.
       - name: Start BrowserStack Local tunnel
