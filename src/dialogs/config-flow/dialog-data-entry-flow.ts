@@ -512,7 +512,14 @@ class DataEntryFlowDialog extends LitElement {
             </ha-button>
           </ha-dialog-footer>
         `;
-      case "create_entry":
+      case "create_entry": {
+        const devices = this._devices(
+          this._params!.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          this._step.result?.entry_id,
+          this._params!.carryOverDevices
+        );
+
         return html`
           <ha-dialog-footer slot="footer">
             <ha-button
@@ -521,12 +528,9 @@ class DataEntryFlowDialog extends LitElement {
             >
               ${this.hass.localize(
                 `ui.panel.config.integrations.config_flow.${
-                  !this._devices(
-                    this._params!.flowConfig.showDevices,
-                    Object.values(this.hass.devices),
-                    this._step.result?.entry_id,
-                    this._params!.carryOverDevices
-                  ).length || this._createEntryHasPendingUpdates
+                  !devices.length ||
+                  this._createEntryHasPendingUpdates ||
+                  devices.some((device) => device.area_id)
                     ? "finish"
                     : "finish_skip"
                 }`
@@ -534,6 +538,7 @@ class DataEntryFlowDialog extends LitElement {
             </ha-button>
           </ha-dialog-footer>
         `;
+      }
       default:
         return nothing;
     }
