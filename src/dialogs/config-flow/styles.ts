@@ -25,7 +25,7 @@ export const configFlowContentStyles = css`
 
   .content,
   .preview {
-    margin-top: 20px;
+    margin-top: var(--ha-space-5);
   }
   ha-markdown {
     overflow-wrap: break-word;
