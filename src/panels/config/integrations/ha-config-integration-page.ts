@@ -348,7 +348,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       discoveryFlows,
       this._filter
     );
-    const filteredAttentionFlows = this._filterDiscoveryTree(
+    const filteredAttentionFlows = this._filterAttentionFlowTree(
       attentionFlows,
       this._filter
     );
@@ -1097,25 +1097,33 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._filterTree(data, filter, areas)
   );
 
-  private _filterDiscoveryTree = memoizeOne(
-    (
-      data: DataEntryFlowProgressExtended[],
-      filter: string
-    ): DataEntryFlowProgressExtended[] => {
-      if (!filter) {
-        return data;
-      }
-
-      const TITLE_KEYS = ["localized_title"];
-
-      return multiTermSearch(
-        data.filter((item) => item.localized_title),
-        filter,
-        TITLE_KEYS,
-        undefined,
-        { keys: TITLE_KEYS }
-      );
+  private _filterFlowTree = (
+    data: DataEntryFlowProgressExtended[],
+    filter: string
+  ): DataEntryFlowProgressExtended[] => {
+    if (!filter) {
+      return data;
     }
+
+    const TITLE_KEYS = ["localized_title"];
+
+    return multiTermSearch(
+      data.filter((item) => item.localized_title),
+      filter,
+      TITLE_KEYS,
+      undefined,
+      { keys: TITLE_KEYS }
+    );
+  };
+
+  private _filterDiscoveryTree = memoizeOne(
+    (data: DataEntryFlowProgressExtended[], filter: string) =>
+      this._filterFlowTree(data, filter)
+  );
+
+  private _filterAttentionFlowTree = memoizeOne(
+    (data: DataEntryFlowProgressExtended[], filter: string) =>
+      this._filterFlowTree(data, filter)
   );
 
   private _filterAttentionTree = memoizeOne(
