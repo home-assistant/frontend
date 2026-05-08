@@ -5497,6 +5497,10 @@
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
+                  "preview_currently_true": "Condition is currently true",
+                  "preview_currently_false": "Condition is currently false",
+                  "condition_chart_true": "Condition true",
+                  "condition_chart_false": "Condition false",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
                     "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
