@@ -27,13 +27,13 @@
     "test:e2e:show-report": "yarn playwright show-report test/e2e/reports/combined",
     "test:e2e:demo": "playwright test --config test/e2e/playwright.demo.config.ts",
     "test:e2e:demo:local": "playwright test --config test/e2e/playwright.demo.config.ts --project=local",
-    "test:e2e:demo:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.demo.config.ts --project=browserstack-*",
+    "test:e2e:demo:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.demo.config.ts",
     "test:e2e:app": "playwright test --config test/e2e/playwright.app.config.ts",
     "test:e2e:app:local": "playwright test --config test/e2e/playwright.app.config.ts --project=local",
-    "test:e2e:app:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.app.config.ts --project=browserstack-*",
+    "test:e2e:app:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.app.config.ts",
     "test:e2e:gallery": "playwright test --config test/e2e/playwright.gallery.config.ts",
     "test:e2e:gallery:local": "playwright test --config test/e2e/playwright.gallery.config.ts --project=local",
-    "test:e2e:gallery:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.gallery.config.ts --project=browserstack-*"
+    "test:e2e:gallery:browserstack": "BROWSERSTACK=true playwright test --config test/e2e/playwright.gallery.config.ts"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
