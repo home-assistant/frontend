@@ -78,7 +78,7 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      ${description ? html`<div class="content">${description}</div>` : ""}
+      ${description ? html`<div class="content">${description}</div>` : nothing}
       <div class="options">
         ${options.map(
           (option) => html`
