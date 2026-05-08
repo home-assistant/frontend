@@ -331,7 +331,7 @@ export default class HaAutomationActionRow extends LitElement {
               ></ha-svg-icon>
               <ha-tooltip for="svg-icon">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                  "ui.panel.config.automation.editor.actions.continue_on_error_description"
                 )}
               </ha-tooltip>`
           : nothing}
@@ -1148,7 +1148,7 @@ export default class HaAutomationActionRow extends LitElement {
     overflowStyles,
     css`
       ha-svg-icon.arrow-right {
-        --icon-primary-color: var(--ha-color-fill-neutral-normal-resting);
+        --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
       }
       ha-svg-icon#svg-icon {
         --icon-primary-color: var(--ha-color-fill-neutral-loud-active);
