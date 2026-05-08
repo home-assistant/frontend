@@ -315,14 +315,18 @@ export class HuiPowerSourcesGraphCard
         typeof item === "object" && "value" in item!
           ? item.value![0]
           : item![0];
-      usageData[i] = [x, 0];
+      let sum = 0;
       this._chartData.forEach((dataset) => {
         const y =
           typeof dataset.data![i] === "object" && "value" in dataset.data![i]!
             ? dataset.data![i].value![1]
             : dataset.data![i]![1];
-        usageData[i]![1] += y as number;
+        sum += y as number;
       });
+      // Consumption can't be negative; sources unaccounted for in the
+      // configuration (e.g. solar exporting to grid without a configured
+      // solar source) would otherwise drag the usage line below zero.
+      usageData[i] = [x, Math.max(0, sum)];
     });
     this._chartData.push({
       ...commonSeriesOptions,
