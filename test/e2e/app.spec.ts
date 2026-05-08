@@ -209,11 +209,11 @@ test.describe("Theming", () => {
     await expect(page.locator("ha-test")).toBeAttached();
 
     // The dark-theme scenario calls updateHass({ themes: { darkMode: true } });
-    // verify that flag is actually set on the mock hass object.
-    const darkMode = await page.evaluate(
-      () => (window.__mockHass as any)?.themes?.darkMode
+    // updateHass is reactive/async, so poll until the flag is reflected.
+    await page.waitForFunction(
+      () => (window.__mockHass as any)?.themes?.darkMode === true,
+      { timeout: 10_000 }
     );
-    expect(darkMode).toBe(true);
   });
 
   test("custom theme applies CSS variables", async ({ page }) => {

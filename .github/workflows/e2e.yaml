@@ -281,6 +281,9 @@ jobs:
           name: blob-report-browserstack
           path: test/e2e/reports/
 
+      - name: Stage blobs for merge
+        run: node test/e2e/collect-blob-reports.mjs
+
       - name: Merge blob reports
         run: npx playwright merge-reports -c test/e2e/playwright.merge.config.ts test/e2e/reports/blob
 
