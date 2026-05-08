@@ -1,7 +1,7 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { keyed } from "lit/directives/keyed";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -60,8 +60,6 @@ class HuiTargetTemperatureCardFeature
   @state() private _config?: TargetTemperatureCardFeatureConfig;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
-
-  @state() private _sliderKey = 0;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -146,13 +144,9 @@ class HuiTargetTemperatureCardFeature
       newTemp.value = value;
     } else if (this._supportsTargetRange()) {
       if (target === "low") {
-        const clamped = Math.min(value, newTemp.high ?? this._max);
-        if (clamped !== value) this._sliderKey++;
-        newTemp.low = clamped;
+        newTemp.low = Math.min(value, newTemp.high ?? this._max);
       } else if (target === "high") {
-        const clamped = Math.max(value, newTemp.low ?? this._min);
-        if (clamped !== value) this._sliderKey++;
-        newTemp.high = clamped;
+        newTemp.high = Math.max(value, newTemp.low ?? this._min);
       }
     }
 
@@ -287,51 +281,48 @@ class HuiTargetTemperatureCardFeature
       this._stateObj.state !== UNAVAILABLE
     ) {
       if (this._config.style === "slider") {
-        return keyed(
-          this._sliderKey,
-          html`
-            <ha-control-button-group>
-              <ha-control-slider
-                .target=${"low"}
-                .value=${this._targetTemperature.low}
-                .unit=${this.hass.config.unit_system.temperature}
-                .min=${this._min}
-                .max=${this._max}
-                .step=${this._step}
-                @value-changed=${this._valueChanged}
-                .label=${this.hass.formatEntityAttributeName(
-                  this._stateObj,
-                  "target_temp_low"
-                )}
-                style=${styleMap({
-                  "--control-slider-color": stateColor,
-                })}
-                .disabled=${this._stateObj!.state === UNAVAILABLE}
-                .locale=${this.hass.locale}
-              >
-              </ha-control-slider>
-              <ha-control-slider
-                .target=${"high"}
-                .value=${this._targetTemperature.high}
-                .unit=${this.hass.config.unit_system.temperature}
-                .min=${this._min}
-                .max=${this._max}
-                .step=${this._step}
-                @value-changed=${this._valueChanged}
-                .label=${this.hass.formatEntityAttributeName(
-                  this._stateObj,
-                  "target_temp_high"
-                )}
-                style=${styleMap({
-                  "--control-slider-color": stateColor,
-                })}
-                .disabled=${this._stateObj!.state === UNAVAILABLE}
-                .locale=${this.hass.locale}
-              >
-              </ha-control-slider>
-            </ha-control-button-group>
-          `
-        );
+        return html`
+          <ha-control-button-group>
+            <ha-control-slider
+              .target=${"low"}
+              .value=${live(this._targetTemperature.low)}
+              .unit=${this.hass.config.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this.hass.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_low"
+              )}
+              style=${styleMap({
+                "--control-slider-color": stateColor,
+              })}
+              .disabled=${this._stateObj!.state === UNAVAILABLE}
+              .locale=${this.hass.locale}
+            >
+            </ha-control-slider>
+            <ha-control-slider
+              .target=${"high"}
+              .value=${live(this._targetTemperature.high)}
+              .unit=${this.hass.config.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this.hass.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_high"
+              )}
+              style=${styleMap({
+                "--control-slider-color": stateColor,
+              })}
+              .disabled=${this._stateObj!.state === UNAVAILABLE}
+              .locale=${this.hass.locale}
+            >
+            </ha-control-slider>
+          </ha-control-button-group>
+        `;
       }
 
       return html`
