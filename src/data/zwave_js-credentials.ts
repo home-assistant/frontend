@@ -1,15 +1,3 @@
-import {
-  mdiBluetooth,
-  mdiCreditCardChip,
-  mdiDialpad,
-  mdiEye,
-  mdiFaceRecognition,
-  mdiFingerprint,
-  mdiFormTextboxPassword,
-  mdiHandBackRight,
-  mdiKey,
-  mdiNfc,
-} from "@mdi/js";
 import type { HomeAssistant } from "../types";
 
 export type ZwaveCredentialType =
@@ -87,35 +75,6 @@ export const getCredentialError = (
     return "pin_digits_only";
   }
   return "";
-};
-
-export const getZwaveCredentialTypeIcon = (
-  type: ZwaveCredentialType
-): string => {
-  switch (type) {
-    case "pin_code":
-      return mdiDialpad;
-    case "password":
-      return mdiFormTextboxPassword;
-    case "rfid_code":
-    case "desfire":
-      return mdiCreditCardChip;
-    case "finger_biometric":
-    case "unspecified_biometric":
-      return mdiFingerprint;
-    case "face_biometric":
-      return mdiFaceRecognition;
-    case "eye_biometric":
-      return mdiEye;
-    case "hand_biometric":
-      return mdiHandBackRight;
-    case "ble":
-      return mdiBluetooth;
-    case "nfc":
-      return mdiNfc;
-    default:
-      return mdiKey;
-  }
 };
 
 export interface ZwaveCredentialTypeCapability {

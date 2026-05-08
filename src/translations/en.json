@@ -7840,17 +7840,7 @@
             },
             "credential_types": {
               "pin_code": "PIN code",
-              "password": "Password",
-              "rfid_code": "RFID",
-              "finger_biometric": "Fingerprint",
-              "face_biometric": "Face",
-              "eye_biometric": "Eye",
-              "hand_biometric": "Hand",
-              "unspecified_biometric": "Biometric",
-              "ble": "BLE",
-              "nfc": "NFC",
-              "uwb": "UWB",
-              "desfire": "DESFire"
+              "password": "Password"
             },
             "credential_data": {
               "type": "Credential type",

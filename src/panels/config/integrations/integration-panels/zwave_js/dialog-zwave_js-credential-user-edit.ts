@@ -283,12 +283,13 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           ${showUserTypeSelect
             ? html`
                 <div class="user-type-section">
-                  <label>
+                  <label for="user-type-select">
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.credentials.users.type"
                     )}
                   </label>
                   <ha-select-box
+                    id="user-type-select"
                     .options=${userTypeOptions}
                     .value=${this._userType}
                     .maxColumns=${1}
