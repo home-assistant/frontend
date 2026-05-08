@@ -30,6 +30,10 @@ import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voi
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
+interface DeviceTarget {
+  device: string;
+}
+
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
@@ -221,18 +225,20 @@ class StepFlowCreateEntry extends LitElement {
           return updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
             area_id: update.area,
-          }).catch((err: any) => {
+          }).catch((err: unknown) => {
+            const message =
+              err instanceof Error ? err.message : "Unknown error";
             showAlertDialog(this, {
               text: this.hass.localize(
                 "ui.panel.config.integrations.config_flow.error_saving_device",
-                { error: err.message }
+                { error: message }
               ),
             });
           });
         }
       );
       await Promise.allSettled(deviceUpdates);
-      const entityUpdates: Promise<any>[] = [];
+      const entityUpdates: Promise<unknown>[] = [];
       const entityIds: string[] = [];
       renamedDevices.forEach((deviceId) => {
         const entities = this._deviceEntities(
@@ -283,7 +289,10 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   private async _areaPicked(ev: ValueChangedEvent<string>) {
-    const picker = ev.currentTarget as any;
+    const picker = ev.currentTarget as DeviceTarget | null;
+    if (!picker) {
+      return;
+    }
     const device = picker.device;
     const area = ev.detail.value;
 
@@ -295,8 +304,11 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   private _deviceNameChanged(ev: InputEvent): void {
-    const picker = ev.currentTarget as HaInput;
-    const device = (picker as any).device;
+    const picker = ev.currentTarget as (HaInput & DeviceTarget) | null;
+    if (!picker) {
+      return;
+    }
+    const device = picker.device;
     const name = picker.value;
 
     if (!(device in this._deviceUpdate)) {

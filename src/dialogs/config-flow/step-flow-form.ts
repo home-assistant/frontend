@@ -19,7 +19,7 @@ import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
@@ -235,13 +235,15 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
-    const toSendData = {};
+    const toSendData: Record<string, unknown> = {};
     Object.keys(stepData).forEach((key) => {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
       const selector = (field as HaFormSelector)?.selector ?? {};
-      const read_only = (Object.values(selector)[0] as any)?.read_only;
+      const read_only = (
+        Object.values(selector)[0] as { read_only?: boolean } | null | undefined
+      )?.read_only;
       if (!isEmpty && !read_only) {
         toSendData[key] = value;
       }
@@ -287,7 +289,9 @@ class StepFlowForm extends LitElement {
     return this._submitStep();
   }
 
-  private _stepDataChanged(ev: CustomEvent): void {
+  private _stepDataChanged(
+    ev: ValueChangedEvent<Record<string, unknown>>
+  ): void {
     this._stepData = ev.detail.value;
   }
 
