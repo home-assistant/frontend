@@ -1110,7 +1110,7 @@ export class HaChartBase extends LitElement {
   private _updateSankeyRoam() {
     const option = this.chart?.getOption();
     const sankeySeries = (option?.series as any[])?.filter(
-      (s: any) => s.type === "sankey"
+      (s: any) => s != null && s.type === "sankey"
     );
     if (sankeySeries?.length) {
       this.chart?.setOption({
