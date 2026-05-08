@@ -1108,13 +1108,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
       const TITLE_KEYS = ["localized_title"];
 
-      const titleMatches = (localized_title: string) =>
-        multiTermSearch([{ localized_title }], filter, TITLE_KEYS, undefined, {
-          keys: TITLE_KEYS,
-        }).length > 0;
-
-      return data.filter(
-        (item) => item.localized_title && titleMatches(item.localized_title)
+      return multiTermSearch(
+        data.filter((item) => item.localized_title),
+        filter,
+        TITLE_KEYS,
+        undefined,
+        { keys: TITLE_KEYS }
       );
     }
   );
