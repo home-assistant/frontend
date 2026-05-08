@@ -717,9 +717,6 @@ class DataEntryFlowDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --dialog-content-padding: 0;
-        }
         .dialog-title {
           overflow: hidden;
           text-overflow: ellipsis;
