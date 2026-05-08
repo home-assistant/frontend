@@ -1,6 +1,8 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../list/types";
 import { HaRowItem } from "./ha-row-item";
 
 /**
@@ -39,6 +41,12 @@ export class HaListItemBase extends HaRowItem {
     if (!this.hasAttribute("role")) {
       this.setAttribute("role", this.defaultRole);
     }
+    fireEvent(this, "ha-list-item-register", { item: this });
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    fireEvent(this, "ha-list-item-unregister", { item: this });
   }
 
   /**
