@@ -87,24 +87,26 @@ class StepFlowForm extends LitElement {
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-          : ""}
-        <ha-form
-          ?autofocus=${this.autoFocus}
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .data=${stepData}
-          .disabled=${this._loading}
-          @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(
-            this.handleReadOnlyFields(step.data_schema)
-          )}
-          .error=${this._errors}
-          .computeLabel=${this._labelCallback}
-          .computeHelper=${this._helperCallback}
-          .computeError=${this._errorCallback}
-          .localizeValue=${this._localizeValueCallback}
-          .context=${{ handler: step.handler }}
-        ></ha-form>
+          : nothing}
+        ${step.data_schema.length
+          ? html`<ha-form
+              ?autofocus=${this.autoFocus}
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .data=${stepData}
+              .disabled=${this._loading}
+              @value-changed=${this._stepDataChanged}
+              .schema=${autocompleteLoginFields(
+                this.handleReadOnlyFields(step.data_schema)
+              )}
+              .error=${this._errors}
+              .computeLabel=${this._labelCallback}
+              .computeHelper=${this._helperCallback}
+              .computeError=${this._errorCallback}
+              .localizeValue=${this._localizeValueCallback}
+              .context=${{ handler: step.handler }}
+            ></ha-form>`
+          : nothing}
       </div>
       ${step.preview
         ? html`<div class="preview" @set-flow-errors=${this._setError}>
