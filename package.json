@@ -121,12 +121,12 @@
     "superstruct": "2.0.2",
     "tinykeys": "3.0.0",
     "weekstart": "2.0.0",
-    "workbox-cacheable-response": "7.4.0",
-    "workbox-core": "7.4.0",
-    "workbox-expiration": "7.4.0",
-    "workbox-precaching": "7.4.0",
-    "workbox-routing": "7.4.0",
-    "workbox-strategies": "7.4.0",
+    "workbox-cacheable-response": "7.4.1",
+    "workbox-core": "7.4.1",
+    "workbox-expiration": "7.4.1",
+    "workbox-precaching": "7.4.1",
+    "workbox-routing": "7.4.1",
+    "workbox-strategies": "7.4.1",
     "xss": "1.0.15"
   },
   "devDependencies": {
