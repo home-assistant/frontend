@@ -224,7 +224,7 @@ class HaConfigSystemNavigation extends LitElement {
         return;
       }
     }
-    this._externalAccess = this.hass.config.external_url !== null;
+    this._externalAccess = this.hass.config.external_url != null;
   }
 
   private async _fetchLabFeatures() {
