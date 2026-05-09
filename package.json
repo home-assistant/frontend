@@ -195,7 +195,7 @@
     "prettier": "3.8.3",
     "rspack-manifest-plugin": "5.2.1",
     "serve": "14.2.6",
-    "sinon": "21.1.2",
+    "sinon": "22.0.0",
     "tar": "7.5.14",
     "terser-webpack-plugin": "5.5.0",
     "ts-lit-plugin": "2.0.2",
