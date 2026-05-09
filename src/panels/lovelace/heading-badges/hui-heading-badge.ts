@@ -9,6 +9,7 @@ import { checkConditionsMet } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
 import type { LovelaceHeadingBadgeConfig } from "./types";
+import { getConfigEntityId } from "../common/get-config-entity-id";
 
 declare global {
   interface HASSDomEvents {
@@ -94,6 +95,13 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("config")) {
+      this._conditionContext = {
+        ...this._conditionContext,
+        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+      };
+    }
 
     if (!this._element) {
       this.load();
