@@ -8404,7 +8404,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
-    lint-staged: "npm:17.0.0"
+    lint-staged: "npm:17.0.2"
     lit: "npm:3.3.2"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.2"
@@ -9647,9 +9647,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:17.0.0":
-  version: 17.0.0
-  resolution: "lint-staged@npm:17.0.0"
+"lint-staged@npm:17.0.2":
+  version: 17.0.2
+  resolution: "lint-staged@npm:17.0.2"
   dependencies:
     listr2: "npm:^10.2.1"
     picomatch: "npm:^4.0.4"
@@ -9661,7 +9661,7 @@ __metadata:
       optional: true
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/457c50c0d74db3c021c472c46a4afa2c76def9da62df6a613587802ed59fbbb5a112823b999d366fb61a0488adcb8ae9a5d63e19a3ad209c80a2af4f02c54008
+  checksum: 10/640d6e9624dd7fe0dfd78c1bde014156359e440fad4112dd551c22b766088d5072b1f62a57635d33e25e4a07ce740d869ce1e1adba6f4196f13d9475ee4f7cd0
   languageName: node
   linkType: hard
 
