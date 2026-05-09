@@ -515,12 +515,13 @@ export class StatisticsChart extends LitElement {
       const pushData = (
         start: Date, // Data point start time
         end: Date, // Data point end time
-        limit: Date, // Limited end time if bar extends beyond now
+        limit: Date, // Limit for end time (e.g. now)
         dataValues: (number | null)[][]
       ) => {
         if (!dataValues.length) return;
-
-        if (start > limit) {
+        // Limit for time range is lesser of overall limit and data point end
+        limit = end.getTime() < limit.getTime() ? end : limit;
+        if (start.getTime() > limit.getTime()) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
@@ -709,12 +710,7 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(
-            startDate,
-            endDate,
-            endDate.getTime() < endTime.getTime() ? endDate : endTime,
-            dataValues
-          );
+          pushData(startDate, endDate, endTime, dataValues);
         }
       });
 
