@@ -92,7 +92,9 @@ class HuiHistoryChartCardFeature
 
   protected firstUpdated() {
     this._setLoadingCoordinates();
-    this._subscribeHistory();
+    if (this.isConnected) {
+      this._subscribeHistory();
+    }
   }
 
   private _setLoadingCoordinates() {
@@ -163,6 +165,7 @@ class HuiHistoryChartCardFeature
     ) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (
+        this.isConnected &&
         oldHass &&
         oldHass.config.components !== this.hass!.config.components
       ) {
