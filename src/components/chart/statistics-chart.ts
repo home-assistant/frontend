@@ -506,13 +506,21 @@ export class StatisticsChart extends LitElement {
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
       const statLegendData: typeof legendData = [];
 
+      // Place bars at centre of their specified time range if this is a bar chart
+      // and the period is 5minute or hour.
+      const centerBars =
+        chartType === "bar" &&
+        (this.period === "5minute" || this.period === "hour");
+
       const pushData = (
-        start: Date,
-        end: Date,
+        start: Date, // Data point start time
+        end: Date, // Data point end time
+        limit: Date, // Limited end time if bar extends beyond now
         dataValues: (number | null)[][]
       ) => {
         if (!dataValues.length) return;
-        if (start > end) {
+
+        if (start > limit) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
@@ -529,10 +537,19 @@ export class StatisticsChart extends LitElement {
             d.data!.push([prevEndTime, ...prevValues[i]!]);
             d.data!.push([prevEndTime, null]);
           }
-          d.data!.push([start, ...dataValues[i]!]);
+          if (centerBars) {
+            // If centering bars, set the time to the midpoint between start and end instead
+            // of the start time.
+            d.data!.push([
+              new Date((start.getTime() + end.getTime()) / 2),
+              ...dataValues[i]!,
+            ]);
+          } else {
+            d.data!.push([start, ...dataValues[i]!]);
+          }
         });
         prevValues = dataValues;
-        prevEndTime = end;
+        prevEndTime = limit;
       };
 
       let color = colors[statistic_id];
@@ -694,6 +711,7 @@ export class StatisticsChart extends LitElement {
         if (!this._hiddenStats.has(statistic_id)) {
           pushData(
             startDate,
+            endDate,
             endDate.getTime() < endTime.getTime() ? endDate : endTime,
             dataValues
           );
