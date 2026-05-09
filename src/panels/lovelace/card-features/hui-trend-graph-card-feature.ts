@@ -157,6 +157,7 @@ class HuiHistoryChartCardFeature
 
   protected updated(changedProps: PropertyValues<this>) {
     if (
+      this.isConnected &&
       !this._subscribed &&
       !this._error &&
       this._config &&
@@ -165,7 +166,6 @@ class HuiHistoryChartCardFeature
     ) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (
-        this.isConnected &&
         oldHass &&
         oldHass.config.components !== this.hass!.config.components
       ) {
