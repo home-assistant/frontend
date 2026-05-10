@@ -1384,15 +1384,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.42.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.37.0, @codemirror/view@npm:^6.42.0":
-  version: 6.42.0
-  resolution: "@codemirror/view@npm:6.42.0"
+"@codemirror/view@npm:6.42.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.37.0, @codemirror/view@npm:^6.42.0":
+  version: 6.42.1
+  resolution: "@codemirror/view@npm:6.42.1"
   dependencies:
     "@codemirror/state": "npm:^6.6.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/d77bf95df48103a3cf1e53c36b216628f1a0eb9a195c18d5f477f17e5f18d6e15ac73f956bb80666f5534daa62d4dc1bd3810567e01dc55644ce92eb4a6b16e0
+  checksum: 10/5732718743c048d81d0f63b2c1804f7eb3ae61eac9442d0fee645214cdcca5bb2c5acceaa959c70602d7f1133b3fb150591c8e1c5e36ffbeaff6d6d252447fa2
   languageName: node
   linkType: hard
 
@@ -7729,14 +7729,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.4, fs-extra@npm:^11.1.1":
-  version: 11.3.4
-  resolution: "fs-extra@npm:11.3.4"
+"fs-extra@npm:11.3.5, fs-extra@npm:^11.1.1":
+  version: 11.3.5
+  resolution: "fs-extra@npm:11.3.5"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10/1b8deea9c540a2efe63c750bc9e1ba6238115579d1571d67fe8fb58e3fb6df19aba29fd4ebb81217cf0bf5bce0df30ca68dbc3e06f6652b856edd385ce0ff649
+  checksum: 10/dc8408818eec8b03efad8742d079ecab749a2f7bc9f208e429b447fcac7632fae52e09312d6d42218efe7e2efa97f03ff232d639ade4aa7fcd8c00ebe9ad0c0c
   languageName: node
   linkType: hard
 
@@ -8285,7 +8285,7 @@ __metadata:
     "@codemirror/lint": "npm:6.9.6"
     "@codemirror/search": "npm:6.7.0"
     "@codemirror/state": "npm:6.6.0"
-    "@codemirror/view": "npm:6.42.0"
+    "@codemirror/view": "npm:6.42.1"
     "@date-fns/tz": "npm:1.4.1"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
@@ -8382,7 +8382,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:4.4.1"
     eslint-plugin-wc: "npm:3.1.0"
     fancy-log: "npm:2.0.0"
-    fs-extra: "npm:11.3.4"
+    fs-extra: "npm:11.3.5"
     fuse.js: "npm:7.3.0"
     glob: "npm:13.0.6"
     globals: "npm:17.6.0"
