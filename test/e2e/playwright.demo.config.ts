@@ -8,6 +8,7 @@ import { browserstackDevices } from "./browserstack.capabilities";
 // In CI we serve the pre-built demo/dist on the same port.
 const DEMO_PORT = 8090;
 const DEMO_BASE_URL = `http://localhost:${DEMO_PORT}`;
+const DEMO_BS_URL = `http://bs-local.com:${DEMO_PORT}`;
 
 const isBrowserStack = Boolean(process.env.BROWSERSTACK);
 
@@ -45,7 +46,7 @@ export default defineConfig({
   reporter: [["list"], ["blob", { outputDir: "reports/demo" }]],
 
   use: {
-    baseURL: DEMO_BASE_URL,
+    baseURL: isBrowserStack ? DEMO_BS_URL : DEMO_BASE_URL,
     // Capture trace + screenshot on first retry so failures are easy to debug
     trace: "on-first-retry",
     screenshot: "only-on-failure",

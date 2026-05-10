@@ -3,6 +3,7 @@ import { browserstackDevices } from "./browserstack.capabilities";
 
 const APP_PORT = 8095;
 const APP_BASE_URL = `http://localhost:${APP_PORT}`;
+const APP_BS_URL = `http://bs-local.com:${APP_PORT}`;
 
 const isBrowserStack = Boolean(process.env.BROWSERSTACK);
 
@@ -26,7 +27,7 @@ export default defineConfig({
   reporter: [["list"], ["blob", { outputDir: "reports/app" }]],
 
   use: {
-    baseURL: APP_BASE_URL,
+    baseURL: isBrowserStack ? APP_BS_URL : APP_BASE_URL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "on-first-retry",

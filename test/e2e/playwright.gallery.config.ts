@@ -3,6 +3,7 @@ import { browserstackDevices } from "./browserstack.capabilities";
 
 const GALLERY_PORT = 8100;
 const GALLERY_BASE_URL = `http://localhost:${GALLERY_PORT}`;
+const GALLERY_BS_URL = `http://bs-local.com:${GALLERY_PORT}`;
 
 const isBrowserStack = Boolean(process.env.BROWSERSTACK);
 
@@ -26,7 +27,7 @@ export default defineConfig({
   reporter: [["list"], ["blob", { outputDir: "reports/gallery" }]],
 
   use: {
-    baseURL: GALLERY_BASE_URL,
+    baseURL: isBrowserStack ? GALLERY_BS_URL : GALLERY_BASE_URL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "on-first-retry",
