@@ -18,11 +18,15 @@ async function goToGalleryPage(page: Page, hash: string) {
   // First visit to let ha-gallery boot up
   await page.goto(`/#${hash}`);
   await page.waitForSelector("ha-gallery", { state: "attached" });
-  // Wait for the gallery to finish rendering the page content inside its shadow root
-  await page.waitForFunction(() => {
+  // Wait for the demo element to appear in ha-gallery's shadow root.
+  // The element name is derived from the hash: "components/ha-bar" → "demo-components-ha-bar".
+  // page-description is only rendered for pages that have a description field,
+  // so we cannot use it as a universal readiness signal.
+  const demoTag = `demo-${hash.replace("/", "-")}`;
+  await page.waitForFunction((tag) => {
     const gallery = document.querySelector("ha-gallery") as any;
-    return gallery?.shadowRoot?.querySelector("page-description") != null;
-  });
+    return gallery?.shadowRoot?.querySelector(tag) != null;
+  }, demoTag);
 }
 
 /** Assert a gallery page loads without console errors.
