@@ -38,7 +38,7 @@ export default defineConfig({
         use: {
           connectOptions: { wsEndpoint: browserstackCdpUrl({ ...caps }) },
           ...(caps.real_mobile
-            ? { isMobile: true }
+            ? { isMobile: true, trace: "off", video: "off" }
             : { viewport: { width: 1280, height: 800 } }),
         },
       }))

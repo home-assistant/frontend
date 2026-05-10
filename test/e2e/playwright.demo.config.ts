@@ -64,7 +64,7 @@ export default defineConfig({
           },
           // Use a viewport appropriate for the device type
           ...(caps.real_mobile
-            ? { isMobile: true }
+            ? { isMobile: true, trace: "off", video: "off" }
             : { viewport: { width: 1280, height: 800 } }),
         },
       }))
