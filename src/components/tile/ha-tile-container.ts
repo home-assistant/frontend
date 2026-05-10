@@ -99,7 +99,7 @@ export class HaTileContainer extends LitElement {
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding: 10px;
+      padding: 0 10px;
       flex: 1;
       min-width: 0;
       box-sizing: border-box;
