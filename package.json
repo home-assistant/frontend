@@ -36,7 +36,7 @@
     "@codemirror/lint": "6.9.6",
     "@codemirror/search": "6.7.0",
     "@codemirror/state": "6.6.0",
-    "@codemirror/view": "6.42.0",
+    "@codemirror/view": "6.42.1",
     "@date-fns/tz": "1.4.1",
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "7.4.2",
