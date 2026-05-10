@@ -1,16 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
-import { browserstackDevices } from "./browserstack.capabilities";
 
 const APP_PORT = 8095;
-const APP_BASE_URL = `http://localhost:${APP_PORT}`;
-const APP_BS_URL = `http://bs-local.com:${APP_PORT}`;
-
-const isBrowserStack = Boolean(process.env.BROWSERSTACK);
-
-function browserstackCdpUrl(caps: Record<string, unknown>): string {
-  const encoded = encodeURIComponent(JSON.stringify(caps));
-  return `wss://cdp.browserstack.com/playwright?caps=${encoded}`;
-}
+// When running via the BrowserStack SDK the tunnel maps bs-local.com to
+// localhost, so the remote browsers must use bs-local.com as the host.
+const APP_BASE_URL = process.env.BROWSERSTACK_AUTOMATION
+  ? `http://bs-local.com:${APP_PORT}`
+  : `http://localhost:${APP_PORT}`;
+// webServer healthcheck always talks to the local process, not via the tunnel.
+const APP_LOCAL_URL = `http://localhost:${APP_PORT}`;
 
 export default defineConfig({
   testDir: ".",
@@ -21,40 +18,32 @@ export default defineConfig({
 
   retries: process.env.CI ? 1 : 0,
 
-  workers: isBrowserStack ? 5 : undefined,
-
   outputDir: "test-results",
   reporter: [["list"], ["blob", { outputDir: "reports/app" }]],
 
   use: {
-    baseURL: isBrowserStack ? APP_BS_URL : APP_BASE_URL,
+    baseURL: APP_BASE_URL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "on-first-retry",
   },
 
-  projects: isBrowserStack
-    ? browserstackDevices.map(({ projectName, caps }) => ({
-        name: projectName,
-        use: {
-          connectOptions: { wsEndpoint: browserstackCdpUrl({ ...caps }) },
-          ...(caps.real_mobile
-            ? { isMobile: true, trace: "off", video: "off" }
-            : { viewport: { width: 1280, height: 800 } }),
-        },
-      }))
-    : [
-        {
-          name: "local",
-          use: { ...devices["Desktop Chrome"] },
-        },
-      ],
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 7"] },
+    },
+  ],
 
   webServer: {
     command: process.env.CI
       ? `npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`
       : `./node_modules/.bin/gulp build-e2e-test-app && npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`,
-    url: APP_BASE_URL,
+    url: APP_LOCAL_URL,
     reuseExistingServer: !process.env.CI,
     timeout: process.env.CI ? 30_000 : 600_000,
     cwd:

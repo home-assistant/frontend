@@ -159,7 +159,7 @@ jobs:
           path: gallery/dist/
 
       - name: Run Playwright tests (local)
-        run: yarn test:e2e:local
+        run: yarn test:e2e
 
       - name: Upload blob report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -170,6 +170,8 @@ jobs:
           retention-days: 3
 
   # ── Run Playwright tests on BrowserStack (real devices + browsers) ─────────
+  # The BrowserStack SDK manages the Local tunnel and uploads results to the
+  # BrowserStack Automate dashboard automatically — no tunnel action needed.
   e2e-browserstack:
     name: E2E (BrowserStack)
     needs: [build-demo, build-e2e-test-app, build-gallery]
@@ -178,9 +180,6 @@ jobs:
     env:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      # Unique identifier so BrowserStack Local tunnels from parallel CI runs
-      # don't collide with each other.
-      BROWSERSTACK_LOCAL_IDENTIFIER: ${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -214,36 +213,10 @@ jobs:
           name: gallery-dist
           path: gallery/dist/
 
-      # Start BrowserStack Local tunnel so BrowserStack's cloud browsers can
-      # reach the tests running on localhost.
-      - name: Start BrowserStack Local tunnel
-        uses: browserstack/github-actions/setup-local@93aebce225b754566349151c0676b26b005e591b # v1.0.4
-        with:
-          local-testing: start
-          local-identifier: ${{ env.BROWSERSTACK_LOCAL_IDENTIFIER }}
-
       - name: Run Playwright tests (BrowserStack)
         run: yarn test:e2e:browserstack
-        env:
-          BROWSERSTACK: "true"
-          BROWSERSTACK_LOCAL_IDENTIFIER: ${{ env.BROWSERSTACK_LOCAL_IDENTIFIER }}
 
-      - name: Stop BrowserStack Local tunnel
-        uses: browserstack/github-actions/setup-local@93aebce225b754566349151c0676b26b005e591b # v1.0.4
-        if: always()
-        with:
-          local-testing: stop
-          local-identifier: ${{ env.BROWSERSTACK_LOCAL_IDENTIFIER }}
-
-      - name: Upload blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
-        with:
-          name: blob-report-browserstack
-          path: test/e2e/reports/
-          retention-days: 3
-
-  # ── Merge reports and upload ──────────────────────────────────────
+  # ── Merge local blob reports and post PR comment ───────────────────────────
   report:
     name: Report
     needs: [e2e-local, e2e-browserstack]
@@ -274,13 +247,6 @@ jobs:
           name: blob-report-local
           path: test/e2e/reports/
 
-      - name: Download blob report (BrowserStack)
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
-        continue-on-error: true
-        with:
-          name: blob-report-browserstack
-          path: test/e2e/reports/
-
       - name: Stage blobs for merge
         run: node test/e2e/collect-blob-reports.mjs
 
@@ -294,3 +260,17 @@ jobs:
           name: playwright-report
           path: test/e2e/reports/combined/
           retention-days: 14
+
+      - name: Post report link to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `## Playwright E2E test report\n\nThe combined HTML report is available as a workflow artifact.\n\n[View workflow run](${runUrl})`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

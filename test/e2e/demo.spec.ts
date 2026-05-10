@@ -66,16 +66,30 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
+    // On narrow viewports (< 870 px — mobile / tablet) the sidebar lives
+    // inside a modal drawer that is closed by default.  Open it first via
+    // the ha-menu-button in the top app-bar.
+    const menuButton = page.locator("ha-menu-button");
+    if (await menuButton.isVisible()) {
+      await menuButton.click();
+    }
+
     // The sidebar uses ha-list-item-button elements with id="sidebar-panel-{url}"
     // Pick "map" as a reliable, always-present demo panel.  Fall back to
     // "logbook" or "history" if map isn't available.
+    // Wait for the sidebar itself to render before probing for panels.
+    await page
+      .locator("ha-sidebar")
+      .waitFor({ state: "attached", timeout: 30_000 });
+
     const candidatePanels = ["map", "logbook", "history", "config"];
     let clicked = false;
 
     for (const panel of candidatePanels) {
       const navItem = page.locator(`#sidebar-panel-${panel}`);
       // eslint-disable-next-line no-await-in-loop
-      if ((await navItem.count()) > 0) {
+      const visible = await navItem.isVisible();
+      if (visible) {
         // eslint-disable-next-line no-await-in-loop
         await navItem.click();
         // eslint-disable-next-line no-await-in-loop
