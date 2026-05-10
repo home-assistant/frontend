@@ -66,7 +66,7 @@ export const browserstackDevices: DeviceConfig[] = [
     projectName: "browserstack-firefox-macos",
     caps: {
       ...base,
-      browser: "firefox",
+      browser: "playwright-firefox",
       browser_version: "latest",
       os: "OS X",
       os_version: "Ventura",
@@ -78,7 +78,7 @@ export const browserstackDevices: DeviceConfig[] = [
     projectName: "browserstack-safari-ipad-ios12",
     caps: {
       ...base,
-      browser: "safari",
+      browser: "playwright-webkit",
       os_version: "12",
       device: "iPad 6th",
       real_mobile: true,
@@ -89,7 +89,7 @@ export const browserstackDevices: DeviceConfig[] = [
     projectName: "browserstack-safari-iphone-ios14",
     caps: {
       ...base,
-      browser: "safari",
+      browser: "playwright-webkit",
       os_version: "14",
       device: "iPhone 12",
       real_mobile: true,
@@ -97,14 +97,14 @@ export const browserstackDevices: DeviceConfig[] = [
     },
   },
   {
-    projectName: "browserstack-chrome-android8",
+    projectName: "browserstack-chrome-android",
     caps: {
       ...base,
       browser: "chrome",
-      os_version: "8.0",
-      device: "Samsung Galaxy S9",
+      os_version: "13.0",
+      device: "Samsung Galaxy S23",
       real_mobile: true,
-      name: "Chrome / Samsung Galaxy S9 / Android 8",
+      name: "Chrome / Samsung Galaxy S23 / Android 13",
     },
   },
 ];
