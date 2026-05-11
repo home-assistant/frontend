@@ -107,7 +107,7 @@ class HaConfigHttpForm extends LitElement {
   }
 
   protected render() {
-    if (!this._config) {
+    if (!this._config && !this._error) {
       return nothing;
     }
 
@@ -145,23 +145,30 @@ class HaConfigHttpForm extends LitElement {
                 </ha-alert>
               `
             : nothing}
-
-          <ha-form
-            .hass=${this.hass}
-            .data=${this._config}
-            .schema=${schema}
-            .error=${this._fieldErrors}
-            .disabled=${this._saving}
-            .computeLabel=${this._computeLabel}
-            .computeHelper=${this._computeHelper}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
+          ${this._config
+            ? html`
+                <ha-form
+                  .hass=${this.hass}
+                  .data=${this._config}
+                  .schema=${schema}
+                  .error=${this._fieldErrors}
+                  .disabled=${this._saving}
+                  .computeLabel=${this._computeLabel}
+                  .computeHelper=${this._computeHelper}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
         </div>
-        <div class="card-actions">
-          <ha-button @click=${this._save} .disabled=${this._saving}>
-            ${this.hass.localize("ui.panel.config.network.http.save")}
-          </ha-button>
-        </div>
+        ${this._config
+          ? html`
+              <div class="card-actions">
+                <ha-button @click=${this._save} .disabled=${this._saving}>
+                  ${this.hass.localize("ui.panel.config.network.http.save")}
+                </ha-button>
+              </div>
+            `
+          : nothing}
       </ha-card>
     `;
   }
@@ -195,6 +202,10 @@ class HaConfigHttpForm extends LitElement {
 
   private async _save(): Promise<void> {
     if (!this._config) {
+      return;
+    }
+    const form = this.renderRoot.querySelector("ha-form");
+    if (form && !form.reportValidity()) {
       return;
     }
     this._saving = true;
