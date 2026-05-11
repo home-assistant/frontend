@@ -7,9 +7,9 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-radio";
-import type { HaRadio } from "../../../../../components/ha-radio";
+import "../../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../../components/radio/ha-radio-group";
+import "../../../../../components/radio/ha-radio-option";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
 import "../../../../../components/ha-spinner";
@@ -218,31 +218,24 @@ class DialogZwaveCredentialUserEdit extends LitElement {
             ? html`
                 ${multipleEnterableTypes
                   ? html`
-                      <div class="credential-type-section">
-                        <label>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.credentials.credential_data.type"
-                          )}
-                        </label>
-                        <div class="radio-group">
-                          ${this._enterableTypes.map(
-                            (type) => html`
-                              <ha-formfield
-                                .label=${this.hass.localize(
-                                  `ui.panel.config.zwave_js.credentials.credential_types.${type}` as LocalizeKeys
-                                )}
-                              >
-                                <ha-radio
-                                  name="credential-type"
-                                  .value=${type}
-                                  .checked=${this._credentialType === type}
-                                  @change=${this._handleCredentialTypeChanged}
-                                ></ha-radio>
-                              </ha-formfield>
-                            `
-                          )}
-                        </div>
-                      </div>
+                      <ha-radio-group
+                        name="credential-type"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.credential_data.type"
+                        )}
+                        .value=${this._credentialType}
+                        @change=${this._handleCredentialTypeChanged}
+                      >
+                        ${this._enterableTypes.map(
+                          (type) => html`
+                            <ha-radio-option value=${type}>
+                              ${this.hass.localize(
+                                `ui.panel.config.zwave_js.credentials.credential_types.${type}` as LocalizeKeys
+                              )}
+                            </ha-radio-option>
+                          `
+                        )}
+                      </ha-radio-group>
                     `
                   : nothing}
                 <ha-input
@@ -453,7 +446,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   }
 
   private _handleCredentialTypeChanged(ev: Event): void {
-    this._credentialType = (ev.target as HaRadio).value as ZwaveCredentialType;
+    this._credentialType = (ev.currentTarget as HaRadioGroup)
+      .value as ZwaveCredentialType;
     // Switching types invalidates any data tied to the previous type's
     // length/charset constraints, so always clear the field for re-entry.
     this._credentialData = "";
@@ -610,20 +604,14 @@ class DialogZwaveCredentialUserEdit extends LitElement {
           flex-direction: column;
           gap: var(--ha-space-4);
         }
-        .user-type-section,
-        .credential-type-section {
+        .user-type-section {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-2);
         }
-        .user-type-section > label,
-        .credential-type-section > label {
+        .user-type-section > label {
           font-weight: 500;
           color: var(--primary-text-color);
-        }
-        .radio-group {
-          display: flex;
-          flex-direction: column;
         }
         .user-type-readonly {
           margin: 0;
