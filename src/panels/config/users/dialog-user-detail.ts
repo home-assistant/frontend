@@ -68,7 +68,6 @@ class DialogUserDetail extends LitElement {
     const badges = computeUserBadges(this.hass, user, true);
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${user.name}

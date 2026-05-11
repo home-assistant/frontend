@@ -67,7 +67,6 @@ class DialogHomeZoneDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize("ui.common.edit_item", {
           name: this._data.name,

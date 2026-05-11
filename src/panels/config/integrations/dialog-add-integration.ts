@@ -389,7 +389,6 @@ class AddIntegrationDialog extends LitElement {
       : this.hass.localize("ui.panel.config.integrations.new");
 
     return html`<ha-dialog
-      .hass=${this.hass}
       .open=${this._open}
       header-title=${headerTitle}
       @closed=${this._dialogClosed}
@@ -578,11 +577,7 @@ class AddIntegrationDialog extends LitElement {
       return nothing;
     }
     return html`
-      <ha-integration-list-item
-        .hass=${this.hass}
-        .integration=${integration}
-        tabindex="0"
-      >
+      <ha-integration-list-item .integration=${integration} tabindex="0">
       </ha-integration-list-item>
     `;
   };

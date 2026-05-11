@@ -104,7 +104,6 @@ class DialogMatterAddDevice extends LitElement {
       <div
         @pairing-code-changed=${this._handlePairingCodeChanged}
         @step-selected=${this._handleStepSelected}
-        .hass=${this.hass}
       >
         ${dynamicElement(
           `matter-add-device-${this._step.replaceAll("_", "-")}`,
@@ -174,7 +173,6 @@ class DialogMatterAddDevice extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         prevent-scrim-close

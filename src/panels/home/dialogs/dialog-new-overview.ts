@@ -45,7 +45,6 @@ export class DialogNewOverview
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize(
           "ui.panel.home.new_overview_dialog.title"

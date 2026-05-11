@@ -138,7 +138,6 @@ export class DialogEnergyDeviceSettingsWater
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.device_consumption_water.dialog.header"

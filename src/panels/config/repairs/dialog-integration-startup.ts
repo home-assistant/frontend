@@ -33,7 +33,6 @@ class DialogIntegrationStartup extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.repairs.integration_startup_time"
