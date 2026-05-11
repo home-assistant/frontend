@@ -23,6 +23,7 @@ const actions: UiAction[] = [
   "url",
   "assist",
   "perform-action",
+  "show-popup",
   "none",
 ];
 

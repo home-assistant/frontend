@@ -3,6 +3,8 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { refine } from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-alert";
 import "../../../components/ha-assist-pipeline-picker";
 import type {
   HaFormSchema,
@@ -134,6 +136,45 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
+  private _showPopupSchema = memoizeOne(
+    (localize: LocalizeFunc): readonly HaFormSchema[] => [
+      {
+        name: "title",
+        selector: { text: {} },
+      },
+      {
+        name: "desktop_mode",
+        default: "popover",
+        selector: {
+          select: {
+            mode: "box",
+            options: ["popover", "dialog"].map((value) => ({
+              value,
+              label: localize(
+                `ui.panel.lovelace.editor.action-editor.popup_modes.${value}`
+              ),
+            })),
+          },
+        },
+      },
+      {
+        name: "mobile_mode",
+        default: "bottom-sheet",
+        selector: {
+          select: {
+            mode: "box",
+            options: ["bottom-sheet", "dialog"].map((value) => ({
+              value,
+              label: localize(
+                `ui.panel.lovelace.editor.action-editor.popup_modes.${value}`
+              ),
+            })),
+          },
+        },
+      },
+    ]
+  );
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -235,6 +276,23 @@ export class HuiActionEditor extends LitElement {
             </ha-form>
           `
         : nothing}
+      ${this.config?.action === "show-popup"
+        ? html`
+            <ha-form
+              .hass=${this.hass}
+              .schema=${this._showPopupSchema(this.hass.localize)}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            >
+            </ha-form>
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.action-editor.show_popup_yaml_only"
+              )}
+            </ha-alert>
+          `
+        : nothing}
     `;
   }
 
@@ -273,6 +331,14 @@ export class HuiActionEditor extends LitElement {
         data = { navigation_path: this._navigation_path };
         break;
       }
+      case "show-popup": {
+        data = {
+          desktop_mode: "popover",
+          mobile_mode: "bottom-sheet",
+          cards: this.config?.action === "show-popup" ? this.config.cards : [],
+        };
+        break;
+      }
     }
 
     fireEvent(this, "value-changed", {
@@ -307,7 +373,9 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  private _computeFormLabel(schema: SchemaUnion<typeof ASSIST_SCHEMA>) {
+  private _computeFormLabel(
+    schema: SchemaUnion<typeof ASSIST_SCHEMA> | HaFormSchema
+  ) {
     return this.hass?.localize(
       `ui.panel.lovelace.editor.action-editor.${schema.name}`
     );
@@ -354,12 +422,14 @@ export class HuiActionEditor extends LitElement {
     }
     ha-service-control,
     ha-navigation-picker,
+    ha-alert,
     ha-form {
       display: block;
     }
     ha-input,
     ha-service-control,
     ha-navigation-picker,
+    ha-alert,
     ha-form {
       margin-top: 8px;
     }

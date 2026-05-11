@@ -1,5 +1,6 @@
 import {
   array,
+  any,
   boolean,
   dynamic,
   enums,
@@ -61,6 +62,15 @@ const actionConfigStructAssist = type({
   start_listening: optional(boolean()),
 });
 
+const actionConfigStructShowPopup = object({
+  action: literal("show-popup"),
+  title: optional(string()),
+  desktop_mode: optional(enums(["popover", "dialog"])),
+  mobile_mode: optional(enums(["bottom-sheet", "dialog"])),
+  cards: array(any()),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
 const actionConfigStructMoreInfo = type({
   action: literal("more-info"),
   entity: optional(string()),
@@ -76,6 +86,7 @@ export const actionConfigStructType = object({
     "url",
     "navigate",
     "assist",
+    "show-popup",
   ]),
   confirmation: optional(actionConfigStructConfirmation),
 });
@@ -97,6 +108,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
       }
       case "assist": {
         return actionConfigStructAssist;
+      }
+      case "show-popup": {
+        return actionConfigStructShowPopup;
       }
       case "more-info": {
         return actionConfigStructMoreInfo;

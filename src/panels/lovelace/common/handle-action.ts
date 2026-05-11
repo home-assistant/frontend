@@ -9,6 +9,9 @@ import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
 
+const loadLovelacePopupDialog = () =>
+  import("../dialogs/dialog-lovelace-popup");
+
 declare global {
   interface HASSDomEvents {
     "ll-custom": ActionConfig;
@@ -180,6 +183,30 @@ export const handleAction = async (
       showVoiceCommandDialog(node, hass, {
         start_listening: actionConfig.start_listening ?? false,
         pipeline_id: actionConfig.pipeline_id ?? "last_used",
+      });
+      break;
+    }
+    case "show-popup": {
+      if (!actionConfig.cards?.length) {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_popup_cards"
+          ),
+        });
+        forwardHaptic(node, "failure");
+        return;
+      }
+      fireEvent(node, "show-dialog", {
+        dialogTag: "dialog-lovelace-popup",
+        dialogImport: loadLovelacePopupDialog,
+        dialogAnchor: node,
+        dialogParams: {
+          hass,
+          title: actionConfig.title,
+          desktopMode: actionConfig.desktop_mode,
+          mobileMode: actionConfig.mobile_mode,
+          cards: actionConfig.cards,
+        },
       });
       break;
     }

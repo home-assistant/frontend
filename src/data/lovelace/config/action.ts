@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { LovelaceCardConfig } from "./card";
 
 export interface ToggleActionConfig extends BaseActionConfig {
   action: "toggle";
@@ -37,6 +38,14 @@ export interface AssistActionConfig extends BaseActionConfig {
   start_listening?: boolean;
 }
 
+export interface ShowPopupActionConfig extends BaseActionConfig {
+  action: "show-popup";
+  title?: string;
+  desktop_mode?: "popover" | "dialog";
+  mobile_mode?: "bottom-sheet" | "dialog";
+  cards: LovelaceCardConfig[];
+}
+
 export interface NoActionConfig extends BaseActionConfig {
   action: "none";
 }
@@ -69,5 +78,6 @@ export type ActionConfig =
   | UrlActionConfig
   | MoreInfoActionConfig
   | AssistActionConfig
+  | ShowPopupActionConfig
   | NoActionConfig
   | CustomActionConfig;

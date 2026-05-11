@@ -8496,7 +8496,8 @@
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
-            "no_action": "No action to run specified"
+            "no_action": "No action to run specified",
+            "no_popup_cards": "No cards configured for the popup"
           },
           "entities": {
             "never_triggered": "Never triggered"
@@ -9046,8 +9047,17 @@
           "action-editor": {
             "navigation_path": "Navigation path",
             "url_path": "URL path",
+            "title": "Title",
+            "desktop_mode": "Desktop mode",
+            "mobile_mode": "Mobile mode",
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",
+            "show_popup_yaml_only": "Configure popup cards in YAML.",
+            "popup_modes": {
+              "popover": "Popover",
+              "dialog": "Dialog",
+              "bottom-sheet": "Bottom sheet"
+            },
             "actions": {
               "default_action": "Default",
               "perform-action": "Perform action",
@@ -9055,6 +9065,7 @@
               "toggle": "Toggle",
               "navigate": "Navigate",
               "assist": "Assist",
+              "show-popup": "Show popup",
               "url": "URL",
               "none": "Nothing"
             }
