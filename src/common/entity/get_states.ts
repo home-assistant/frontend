@@ -225,6 +225,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "sulphur_dioxide",
       "temperature",
       "timestamp",
+      "uptime",
       "volatile_organic_compounds",
       "volatile_organic_compounds_parts",
       "voltage",

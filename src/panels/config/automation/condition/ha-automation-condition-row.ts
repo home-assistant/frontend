@@ -20,7 +20,7 @@ import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -32,8 +32,9 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import "../../../../components/ha-automation-row";
-import type { HaAutomationRow } from "../../../../components/ha-automation-row";
+import "../../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -51,10 +52,15 @@ import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
-import { validateConfig } from "../../../../data/config";
+import {
+  validateConfig,
+  type InvalidConfig,
+  type ValidConfig,
+} from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -144,6 +150,8 @@ export default class HaAutomationConditionRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  private _testingTimeout?: number;
+
   get selected() {
     return this._selected;
   }
@@ -173,6 +181,9 @@ export default class HaAutomationConditionRow extends LitElement {
         ? { device_id: [(this.condition as DeviceCondition).device_id] }
         : undefined;
 
+    const conditionTargetSpec =
+      this.conditionDescriptions[this.condition.condition]?.target;
+
     return html`
       <ha-condition-icon
         slot="leading-icon"
@@ -184,9 +195,26 @@ export default class HaAutomationConditionRow extends LitElement {
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              conditionTargetSpec
+            )
           : nothing}
       </h3>
+      <ha-automation-row-event-chip
+        .show=${this._testing}
+        .variant=${this._testingResult ? "success" : "warning"}
+        slot="event"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.conditions.testing_${
+            this._testingResult ? "pass" : "error"
+          }`
+        )}
+      </ha-automation-row-event-chip>
 
       <slot name="icons" slot="icons"></slot>
 
@@ -450,6 +478,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 this.condition.condition
               )}
               .sortSelected=${this.sortSelected}
+              .dim=${this._testing}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
@@ -462,21 +491,6 @@ export default class HaAutomationConditionRow extends LitElement {
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
-        <div
-          class="testing ${classMap({
-            active: this._testing,
-            pass: this._testingResult === true,
-            error: this._testingResult === false,
-          })}"
-        >
-          ${this._testingResult === undefined
-            ? nothing
-            : this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.testing_${
-                  this._testingResult ? "pass" : "error"
-                }`
-              )}
-        </div>
       </ha-card>
 
       ${this.optionsInSidebar &&
@@ -499,11 +513,16 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
 
@@ -519,6 +538,13 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._testingTimeout !== undefined) {
+      clearTimeout(this._testingTimeout);
     }
   }
 
@@ -578,11 +604,14 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _testCondition = async () => {
-    if (this._testing) {
+    if (this._testing && this._testingTimeout === undefined) {
       return;
     }
-    this._testingResult = undefined;
-    this._testing = true;
+
+    if (this._testingTimeout !== undefined) {
+      clearTimeout(this._testingTimeout);
+    }
+
     const condition = this.condition;
     requestAnimationFrame(() => {
       // @ts-ignore is supported in all browsers except firefox
@@ -594,53 +623,59 @@ export default class HaAutomationConditionRow extends LitElement {
       this.scrollIntoView();
     });
 
+    let validateResult: Record<"conditions", InvalidConfig | ValidConfig>;
     try {
-      const validateResult = await validateConfig(this.hass, {
+      validateResult = await validateConfig(this.hass, {
         conditions: condition,
       });
-
-      // Abort if condition changed.
-      if (this.condition !== condition) {
-        this._testing = false;
-        return;
-      }
-
-      if (!validateResult.conditions.valid) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.invalid_condition"
-          ),
-          text: validateResult.conditions.error,
-        });
-        this._testing = false;
-        return;
-      }
-
-      let result: { result: boolean };
-      try {
-        result = await testCondition(this.hass, condition);
-      } catch (err: any) {
-        if (this.condition !== condition) {
-          this._testing = false;
-          return;
-        }
-
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.test_failed"
-          ),
-          text: err.message,
-        });
-        this._testing = false;
-        return;
-      }
-
-      this._testingResult = result.result;
-    } finally {
-      setTimeout(() => {
-        this._testing = false;
-      }, 2500);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.validation_failed"
+        ),
+      });
+      // eslint-disable-next-line no-console
+      console.error("Error validating condition", err);
+      return;
     }
+
+    // Abort if condition changed.
+    if (this.condition !== condition) {
+      return;
+    }
+
+    if (!validateResult.conditions.valid) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.invalid_condition"
+        ),
+        text: validateResult.conditions.error,
+      });
+      return;
+    }
+
+    let result: { result: boolean };
+    try {
+      result = await testCondition(this.hass, condition);
+    } catch (err: any) {
+      if (this.condition !== condition) {
+        return;
+      }
+
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.test_failed"
+        ),
+        text: err.message,
+      });
+      return;
+    }
+
+    this._testingResult = result.result;
+    this._testing = true;
+    this._testingTimeout = window.setTimeout(() => {
+      this._testing = false;
+    }, 2500);
   };
 
   private _renameCondition = async (): Promise<void> => {
@@ -920,44 +955,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        .testing {
-          position: absolute;
-          top: 0px;
-          right: 0px;
-          left: 0px;
-          text-transform: uppercase;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-bold);
-          background-color: var(--divider-color, #e0e0e0);
-          color: var(--text-primary-color);
-          max-height: 0px;
-          overflow: hidden;
-          transition: max-height 0.3s;
-          text-align: center;
-          border-top-right-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          border-top-left-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-        }
-        .testing.active {
-          max-height: 100px;
-        }
-        .testing.error {
-          background-color: var(--accent-color);
-        }
-        .testing.pass {
-          background-color: var(--success-color);
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 

@@ -93,7 +93,6 @@ export class HuiCreateDialogBadge
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         flexcontent
         width="large"

@@ -7,7 +7,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import type { CustomShortcutItem } from "../../../data/frontend";
+import type { CustomShortcutItem } from "../../../data/home_shortcuts";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -86,7 +86,6 @@ export class DialogEditShortcut
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.edit_shortcut")}
         width="small"
@@ -131,6 +130,7 @@ export class DialogEditShortcut
     if (!this._params || !this._data?.path) return;
     const { path, label, icon, color } = this._data;
     this._params.saveCallback({
+      type: "custom",
       path,
       label: label || undefined,
       icon: icon || undefined,

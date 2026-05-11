@@ -47,7 +47,6 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.show_encryption_key.title"

@@ -445,10 +445,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         }
 
         wa-popover::part(body) {
-          width: max(var(--body-width), 250px);
+          width: var(--ha-generic-picker-width, max(var(--body-width), 250px));
           max-width: var(
             --ha-generic-picker-max-width,
-            max(var(--body-width), 250px)
+            var(--ha-generic-picker-width, max(var(--body-width), 250px))
           );
           max-height: 500px;
           height: 70vh;
@@ -469,6 +469,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
+          --ha-bottom-sheet-content-padding: 0 var(--safe-area-inset-right)
+            var(--safe-area-inset-bottom) var(--safe-area-inset-left);
         }
 
         ha-picker-field.opened {

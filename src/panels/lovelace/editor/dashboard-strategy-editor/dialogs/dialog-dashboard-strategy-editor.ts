@@ -136,7 +136,6 @@ class DialogDashboardStrategyEditor extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title || "-"}
         header-subtitle=${ifDefined(this._params.title)}

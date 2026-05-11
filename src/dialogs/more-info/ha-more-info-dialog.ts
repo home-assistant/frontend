@@ -598,7 +598,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}

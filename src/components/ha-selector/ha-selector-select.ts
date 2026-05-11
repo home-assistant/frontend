@@ -15,10 +15,11 @@ import "../ha-dropdown-item";
 import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
-import "../ha-radio";
 import "../ha-select";
 import "../ha-select-box";
 import "../ha-sortable";
+import "../radio/ha-radio-group";
+import "../radio/ha-radio-option";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -108,24 +109,23 @@ export class HaSelectSelector extends LitElement {
     ) {
       if (!this.selector.select?.multiple) {
         return html`
-          <div>
-            ${this.label}
+          <ha-radio-group
+            .label=${this.label}
+            .disabled=${this.disabled}
+            .value=${this.value}
+            @change=${this._radioChanged}
+          >
             ${options.map(
               (item: SelectOption) => html`
-                <ha-formfield
-                  .label=${item.label}
-                  .disabled=${item.disabled || this.disabled}
+                <ha-radio-option
+                  .value=${item.value}
+                  .disabled=${!!item.disabled}
                 >
-                  <ha-radio
-                    .checked=${item.value === this.value}
-                    .value=${item.value}
-                    .disabled=${item.disabled || this.disabled}
-                    @change=${this._radioChanged}
-                  ></ha-radio>
-                </ha-formfield>
+                  ${item.label}
+                </ha-radio-option>
               `
             )}
-          </div>
+          </ha-radio-group>
           ${this._renderHelper()}
         `;
       }

@@ -99,7 +99,6 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
-        .noEntity=${this.selector.state?.no_entity ?? false}
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-value

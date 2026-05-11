@@ -218,7 +218,8 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
-        "count_maintenance_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "count_maintenance_low_battery_issues": "{count} {count, plural,\n one {low battery}\n other {low batteries}\n}",
+        "count_maintenance_issues_unavailable_battery_entities": "{count} {count, plural,\n one {unavailable device}\n other {unavailable devices}\n}",
         "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
@@ -255,6 +256,8 @@
         "media_stop": "Stop",
         "media_next_track": "Next track",
         "media_previous_track": "Previous track",
+        "volume_up": "Volume up",
+        "volume_down": "Volume down",
         "media_volume_up": "Volume up",
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
@@ -491,16 +494,24 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
+          "used_by": "Used by {integrations}",
           "type": {
+            "recommended": "Recommended for {integration}",
             "serial_proxy": "Serial proxies",
             "integration": "Integration-provided",
             "usb": "USB",
             "embedded": "Built-in",
-            "unnamed": "Other"
+            "unnamed": "Other",
+            "not_recommended": "Not recommended"
           }
         },
         "media": {
@@ -620,6 +631,36 @@
             "between": "In range",
             "outside": "Outside range"
           }
+        },
+        "automation_behavior": {
+          "trigger": {
+            "options": {
+              "any": {
+                "label": "Each",
+                "description": "Triggers once for every target that changes"
+              },
+              "first": {
+                "label": "First",
+                "description": "Triggers the first time any target changes"
+              },
+              "last": {
+                "label": "All",
+                "description": "Triggers once all targets have changed"
+              }
+            }
+          },
+          "condition": {
+            "options": {
+              "any": {
+                "label": "Any",
+                "description": "Is true if any target matches the desired state"
+              },
+              "all": {
+                "label": "All",
+                "description": "Is true if all targets match the desired state"
+              }
+            }
+          }
         }
       },
       "logbook": {
@@ -635,6 +676,13 @@
         "triggered_by_time_pattern": "triggered by time pattern",
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
+        "numeric_state_of": "numeric state of",
+        "state_of": "state of",
+        "event": "event",
+        "time": "time",
+        "time_pattern": "time pattern",
+        "homeassistant_stopping": "Home Assistant stopping",
+        "homeassistant_starting": "Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
@@ -1100,7 +1148,8 @@
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
-        "collapse_legend": "Less"
+        "collapse_legend": "Less",
+        "toggle_visibility": "Toggle visibility"
       },
       "map": {
         "error": "Unable to load map"
@@ -1393,6 +1442,7 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
@@ -1462,6 +1512,9 @@
         "no_segments": "No segments available",
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
+      },
+      "codemirror": {
+        "open_documentation": "Open documentation"
       },
       "safe_mode": {
         "title": "Safe mode",
@@ -1695,7 +1748,8 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum."
+          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "other_areas": "Other areas"
         },
         "person": {
           "create_zone": "Create zone from current location"
@@ -2368,6 +2422,7 @@
         },
         "shortcuts": {
           "double_click": "Double-click",
+          "click": "Click",
           "scroll_wheel": "Scroll",
           "drag": "Drag"
         },
@@ -2399,7 +2454,8 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
-          "double_click": "to zoom in on part of the chart"
+          "double_click": "to zoom in on part of the chart",
+          "click_legend_solo": "on a chart legend item to show only that series"
         },
         "other": {
           "title": "Other",
@@ -2505,9 +2561,7 @@
           "welcome_message": "Welcome message",
           "welcome_message_helper": "Show the personalized greeting at the top of your overview page.",
           "summaries": "Summaries",
-          "summaries_description": "Choose which summaries to show on your overview page.",
-          "custom_shortcuts": "Custom shortcuts",
-          "custom_shortcuts_description": "Add shortcuts to other pages on your overview.",
+          "summaries_description": "Customize the summaries of your Overview page.",
           "add_custom_shortcut": "Add shortcut",
           "edit_shortcut": "Edit shortcut",
           "shortcut": {
@@ -3523,7 +3577,7 @@
               "show_all": "Show all backups"
             },
             "settings": {
-              "title": "Backup settings",
+              "title": "Automatic backup",
               "configure": "Configure backup settings",
               "schedule": "Automatic backup schedule and retention",
               "schedule_copies_all": "and keep all backups",
@@ -3569,6 +3623,10 @@
                 "sat": "Sa",
                 "sun": "Su"
               }
+            },
+            "app_update_backup": {
+              "title": "App update backup",
+              "description": "Backup behavior for app updates"
             }
           },
           "backups": {
@@ -3580,13 +3638,15 @@
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           },
           "settings": {
-            "header": "Backup settings",
+            "header": "Automatic backups",
             "menu": {
               "change_default_location": "Change default action location"
             },
             "schedule": {
-              "title": "Automatic backups",
-              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              "title": "Backup cycle",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups.",
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             },
             "data": {
               "title": "Backup data"
@@ -3613,6 +3673,9 @@
               "error_load": "Error loading Supervisor update config: {error}",
               "error_save": "Error saving Supervisor update config: {error}"
             }
+          },
+          "app_update_backups": {
+            "header": "App update backups"
           },
           "details": {
             "header": "Backup",
@@ -3696,10 +3759,13 @@
           },
           "detail": {
             "new_tag": "New tag",
+            "tag_details": "Tag details",
             "name": "Name",
             "description": "Description",
             "tag_id": "Tag ID",
             "tag_id_placeholder": "Auto-generated if left empty",
+            "use_custom_id": "Use a custom tag ID",
+            "custom_id_warning": "Tag IDs are written to the physical tag and can't be changed later. A random UUID is usually safer because the ID stays decoupled from what the tag does. You can rename the tag any time, and reuse the same physical tag in another Home Assistant instance for something completely different, without the ID carrying meaning that no longer fits.",
             "delete": "Delete",
             "update": "Update",
             "create": "Create",
@@ -3747,7 +3813,7 @@
               "type": "Event type",
               "data": "Event data (YAML, optional)",
               "fire_event": "Fire event",
-              "event_fired": "Event {name} fired",
+              "event_fired": "Event {name} fired at {time}",
               "active_listeners": "Active listeners",
               "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
               "listen_to_events": "Listen to events",
@@ -3761,7 +3827,15 @@
               "clear_events": "Clear events",
               "alert_event_type": "Event type is a mandatory field",
               "notification_event_fired": "Event {type} successfully fired!",
-              "subscribe_failed": "Failed to subscribe to event: {error}"
+              "subscribe_failed": "Failed to subscribe to event: {error}",
+              "unknown_error": "Unknown error",
+              "oldest_event": "Oldest event",
+              "older_event": "Older event",
+              "newer_event": "Newer event",
+              "newest_event": "Newest event",
+              "waiting_for_events": "Waiting for events…",
+              "subscribe_prompt": "Subscribe to an event type above to see events here.",
+              "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
             "actions": {
               "title": "Actions",
@@ -3772,8 +3846,8 @@
               "column_description": "Description",
               "column_example": "Example",
               "fill_example_data": "Fill example data",
-              "yaml_mode": "Go to YAML mode",
-              "ui_mode": "Go to UI mode",
+              "yaml_mode": "YAML mode",
+              "ui_mode": "UI mode",
               "yaml_parameters": "Parameters only available in YAML mode",
               "all_parameters": "All available parameters",
               "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
@@ -3819,6 +3893,7 @@
             "templates": {
               "title": "Template",
               "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
               "reset": "Reset to demo template",
@@ -3833,7 +3908,8 @@
               "no_listeners": "This template does not listen for any events and will not update automatically.",
               "listeners": "This template listens for the following state changed events:",
               "entity": "Entity",
-              "domain": "Domain"
+              "domain": "Domain",
+              "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
             "statistics": {
               "title": "Statistics",
@@ -4421,7 +4497,7 @@
           "detail": {
             "logger": "Logger",
             "source": "Source",
-            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
@@ -5032,7 +5108,14 @@
               "invalid": "Invalid target",
               "all_entities": "All entities",
               "none_entities": "No entities",
-              "template": "Template"
+              "template": "Template",
+              "types": {
+                "entity": "[%key:ui::components::target-picker::type::entities%]",
+                "device": "[%key:ui::components::target-picker::type::devices%]",
+                "area": "[%key:ui::components::target-picker::type::areas%]",
+                "floor": "Floors",
+                "label": "[%key:ui::components::target-picker::type::labels%]"
+              }
             },
             "generic": "Generic",
             "triggers": {
@@ -5075,14 +5158,14 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
                 "time_location": {
                   "label": "Time and location"
                 },
-                "other": {
-                  "label": "Other triggers"
+                "generic": {
+                  "label": "Generic"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5321,6 +5404,7 @@
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
               "invalid_condition": "Invalid condition configuration",
+              "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
@@ -5350,14 +5434,14 @@
                 "time_location": {
                   "label": "Time and location"
                 },
-                "helpers": {
-                  "label": "Helpers"
-                },
-                "other": {
-                  "label": "Other conditions"
+                "generic": {
+                  "label": "Generic"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
+                },
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 }
               },
               "type": {
@@ -5498,6 +5582,7 @@
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",
+              "running_action": "Running action",
               "run_action_error": "Error running action",
               "run_action_success": "Action ran successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -5515,6 +5600,7 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "continue_on_error_description": "If this action fails, the next action will still run.",
               "action": "Action",
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
@@ -5544,10 +5630,9 @@
                     "picker": "Previously known as call service.",
                     "service_based_on_template": "Perform an action based on a template on {targets}",
                     "service_based_on_name": "Perform action ''{name}'' on {targets}",
-                    "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_name": "{name} on {targets}",
                     "service_based_on_template_no_targets": "Perform an action based on a template",
                     "service_based_on_name_no_targets": "Perform action ''{name}''",
-                    "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
@@ -5776,6 +5861,7 @@
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
+            "select_trace": "Select trace",
             "download_trace": "Download trace",
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
@@ -5831,6 +5917,18 @@
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
               "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
               "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
+            },
+            "picker": {
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished (runtime: {executiontime}s)",
+              "aborted": "Aborted (runtime: {executiontime}s)",
+              "cancelled": "Cancelled (runtime: {executiontime}s)",
+              "stopped_failed_conditions": "Stopped because a condition failed",
+              "stopped_failed_single": "Stopped because only a single execution is allowed",
+              "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
+              "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
             }
           }
         },
@@ -6774,7 +6872,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
+            "device_created": "Name and assign",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
@@ -7656,7 +7754,9 @@
             "menu_remove_device": "Force-remove an unavailable device",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "ready_to_remove": "Ready to remove device.",
+            "follow_device_instructions": "Follow the directions that came with your device.",
+            "trigger_device_exclusion": "To trigger exclusion on the device:",
             "removing_device": "Removing device",
             "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
@@ -8707,7 +8807,6 @@
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
-            "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."
@@ -9067,6 +9166,7 @@
               "state": {
                 "label": "Entity state",
                 "attribute": "Attribute (optional)",
+                "current_entity": "Current entity",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
@@ -10137,19 +10237,6 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
-              },
-              "hourly-forecast": {
-                "label": "Hourly forecast",
-                "no_forecast": "No forecast data available"
-              },
-              "daily-forecast": {
-                "label": "Daily forecast",
-                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::hourly-forecast::no_forecast%]",
-                "forecast_type": "Forecast type",
-                "forecast_type_options": {
-                  "daily": "Daily",
-                  "twice_daily": "Twice daily"
-                }
               }
             }
           },
@@ -10399,6 +10486,7 @@
           "migrate_button": "Migrate",
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
+          "theme_mode": "Theme mode",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",

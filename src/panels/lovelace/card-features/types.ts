@@ -63,6 +63,8 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "media_stop",
   "media_previous_track",
   "media_next_track",
+  "volume_down",
+  "volume_up",
 ] as const;
 
 export type MediaPlayerPlaybackControl =
@@ -241,17 +243,6 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
-export interface HourlyForecastCardFeatureConfig {
-  type: "hourly-forecast";
-  hours_to_show?: number;
-}
-
-export interface DailyForecastCardFeatureConfig {
-  type: "daily-forecast";
-  forecast_type?: "daily" | "twice_daily";
-  days_to_show?: number;
-}
-
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -306,8 +297,6 @@ export type LovelaceCardFeatureConfig =
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
-  | HourlyForecastCardFeatureConfig
-  | DailyForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig

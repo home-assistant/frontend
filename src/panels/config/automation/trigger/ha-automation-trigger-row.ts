@@ -9,7 +9,6 @@ import {
   mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
-  mdiInformationOutline,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -22,9 +21,8 @@ import type {
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
@@ -35,9 +33,11 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-row-event-chip";
+import type { HaAutomationRowEventChip } from "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-automation-row";
-import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -59,6 +59,7 @@ import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -140,9 +141,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _yamlMode = false;
 
-  @state() private _triggered?: Record<string, unknown>;
-
-  @state() private _triggerColor = false;
+  @state() private _triggered = false;
 
   @state() private _selected = false;
 
@@ -161,6 +160,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  @query("ha-automation-row-event-chip")
+  private _eventChipElement?: HaAutomationRowEventChip;
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -178,6 +180,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
+
+  private _triggeredResult?: Record<string, unknown>;
 
   private _renderOverflowLabel(label: string, shortcut?: TemplateResult) {
     return html`
@@ -211,6 +215,12 @@ export default class HaAutomationTriggerRow extends LitElement {
         ? { device_id: (this.trigger as DeviceTrigger).device_id }
         : undefined;
 
+    const triggerTargetSpec =
+      type === "platform"
+        ? this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+            ?.target
+        : undefined;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -226,9 +236,26 @@ export default class HaAutomationTriggerRow extends LitElement {
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              triggerTargetSpec
+            )
           : nothing}
       </h3>
+      <ha-automation-row-event-chip
+        .show=${this._triggered}
+        slot="event"
+        class="event-chip"
+        interactive
+        aria-live="polite"
+        @click=${this._showTriggeredInfo}
+        @keydown=${this._showTriggeredInfo}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.triggered"
+        )}
+      </ha-automation-row-event-chip>
 
       <slot name="icons" slot="icons"></slot>
 
@@ -472,6 +499,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               .selected=${this._selected}
               .highlight=${this.highlight}
               .sortSelected=${this.sortSelected}
+              .dim=${this._triggered}
               @click=${this._toggleSidebar}
               >${this._selected
                 ? "selected"
@@ -485,28 +513,21 @@ export default class HaAutomationTriggerRow extends LitElement {
                 ${this._renderRow()}
               </ha-expansion-panel>
             `}
-        <div
-          class="triggered ${classMap({
-            active: this._triggered !== undefined,
-            accent: this._triggerColor,
-          })}"
-          @click=${this._showTriggeredInfo}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.triggered"
-          )}
-          <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-        </div>
       </ha-card>
     `;
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
 
@@ -575,13 +596,12 @@ export default class HaAutomationTriggerRow extends LitElement {
       (result) => {
         if (untriggerTimeout !== undefined) {
           clearTimeout(untriggerTimeout);
-          this._triggerColor = !this._triggerColor;
-        } else {
-          this._triggerColor = false;
+          this._eventChipElement?.highlight();
         }
-        this._triggered = result;
+        this._triggered = true;
+        this._triggeredResult = result;
         untriggerTimeout = window.setTimeout(() => {
-          this._triggered = undefined;
+          this._triggered = false;
           untriggerTimeout = undefined;
         }, showTriggeredTime);
       },
@@ -724,7 +744,14 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = true;
   }
 
-  private _showTriggeredInfo() {
+  private _showTriggeredInfo(ev: Event) {
+    if (ev instanceof KeyboardEvent) {
+      if (ev.key !== "Enter" && ev.key !== " ") {
+        return;
+      }
+    }
+    ev.stopPropagation();
+
     showAlertDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.triggering_event_detail"
@@ -734,7 +761,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           read-only
           disable-fullscreen
           .hass=${this.hass}
-          .defaultValue=${this._triggered}
+          .defaultValue=${this._triggeredResult}
         ></ha-yaml-editor>
       `,
     });
@@ -918,57 +945,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        .triggered {
-          cursor: pointer;
-          position: absolute;
-          top: 0px;
-          right: 0px;
-          left: 0px;
-          text-transform: uppercase;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-bold);
-          background-color: var(--primary-color);
-          color: var(--text-primary-color);
-          max-height: 0px;
-          overflow: hidden;
-          transition: max-height 0.3s;
-          text-align: center;
-          border-top-right-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          border-top-left-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: var(--ha-space-1);
-          line-height: 1;
-          padding: 0;
-        }
-        .triggered ha-svg-icon {
-          --mdc-icon-size: 16px;
-        }
-
-        .triggered.active {
-          max-height: 100px;
-          padding: 4px;
-        }
-        .triggered:hover {
-          opacity: 0.8;
-        }
-        .triggered.accent {
-          background-color: var(--accent-color);
-          color: var(--text-accent-color, var(--text-primary-color));
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 

@@ -209,7 +209,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._stepTitle}
         prevent-scrim-close

@@ -68,9 +68,7 @@ export class HuiPictureCardEditor
             {
               name: "tap_action",
               selector: {
-                ui_action: {
-                  default_action: "more-info",
-                },
+                ui_action: {},
               },
               context: ACTION_RELATED_CONTEXT,
             },

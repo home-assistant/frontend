@@ -11,6 +11,7 @@ import type {
 } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
+import type { DomainManifestLookup } from "../integration";
 import type { LabelRegistryEntry } from "../label/label_registry";
 
 /**
@@ -106,6 +107,12 @@ export const fullEntitiesContext =
  */
 export const configEntriesContext =
   createContext<ConfigEntry[]>("configEntries");
+
+/**
+ * Lazy loaded integration manifests, keyed by domain.
+ */
+export const manifestsContext =
+  createContext<DomainManifestLookup>("manifests");
 
 // #endregion lazy-contexts
 

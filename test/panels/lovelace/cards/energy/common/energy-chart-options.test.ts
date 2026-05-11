@@ -31,10 +31,10 @@ describe("getSuggestedMax", () => {
     assert.equal(result.getTime(), end.getTime());
   });
 
-  it("rounds down to start of hour for hour period", () => {
+  it("rounds down to middle of hour for hour period", () => {
     const end = new Date("2024-03-15T14:37:22.000");
     const result = getSuggestedMax("hour", end, false);
-    assert.equal(result.getMinutes(), 0);
+    assert.equal(result.getMinutes(), 30);
     assert.equal(result.getSeconds(), 0);
     assert.equal(result.getMilliseconds(), 0);
     assert.equal(result.getHours(), 14);

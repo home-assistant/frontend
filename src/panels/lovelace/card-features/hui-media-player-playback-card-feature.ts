@@ -3,9 +3,13 @@ import {
   mdiPlay,
   mdiPlayPause,
   mdiPower,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
+  mdiVolumeMinus,
+  mdiVolumePlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -50,6 +54,8 @@ const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
   media_stop: [MediaPlayerEntityFeature.STOP],
   media_previous_track: [MediaPlayerEntityFeature.PREVIOUS_TRACK],
   media_next_track: [MediaPlayerEntityFeature.NEXT_TRACK],
+  volume_down: [MediaPlayerEntityFeature.VOLUME_STEP],
+  volume_up: [MediaPlayerEntityFeature.VOLUME_STEP],
 };
 
 export const supportsMediaPlayerPlaybackControl = (
@@ -198,25 +204,32 @@ class HuiMediaPlayerPlaybackCardFeature
     stateObj: MediaPlayerEntity
   ): ControlButton[] {
     const active = stateActive(stateObj);
+    const assumedState = stateObj.attributes.assumed_state === true;
     const buttons: ControlButton[] = [];
 
     for (const control of this._controls) {
       switch (control) {
         case "turn_off":
           if (
-            active &&
+            (active || assumedState) &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)
           ) {
-            buttons.push({ icon: mdiPower, action: "turn_off" });
+            buttons.push({
+              icon: assumedState ? mdiPowerOff : mdiPower,
+              action: "turn_off",
+            });
           }
           break;
         case "turn_on":
           if (
-            !active &&
+            (!active || assumedState) &&
             !isUnavailableState(stateObj.state) &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
           ) {
-            buttons.push({ icon: mdiPower, action: "turn_on" });
+            buttons.push({
+              icon: assumedState ? mdiPowerOn : mdiPower,
+              action: "turn_on",
+            });
           }
           break;
         case "media_play":
@@ -255,6 +268,16 @@ class HuiMediaPlayerPlaybackCardFeature
         case "media_next_track":
           if (supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)) {
             buttons.push({ icon: mdiSkipNext, action: "media_next_track" });
+          }
+          break;
+        case "volume_down":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
+            buttons.push({ icon: mdiVolumeMinus, action: "volume_down" });
+          }
+          break;
+        case "volume_up":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
+            buttons.push({ icon: mdiVolumePlus, action: "volume_up" });
           }
           break;
       }
