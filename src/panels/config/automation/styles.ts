@@ -241,7 +241,6 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 8px;
   }
   .description {
     padding-top: 16px;
