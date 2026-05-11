@@ -38,9 +38,11 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
 
   @state() private _open = true;
 
+  @state() private _popoverOpen = false;
+
   private _unsubMediaQuery?: () => void;
 
-  private _syncPopoverAnchorAnimationFrame?: number;
+  private _openPopoverAnimationFrame?: number;
 
   connectedCallback() {
     super.connectedCallback();
@@ -53,10 +55,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
   }
 
   disconnectedCallback() {
-    if (this._syncPopoverAnchorAnimationFrame !== undefined) {
-      cancelAnimationFrame(this._syncPopoverAnchorAnimationFrame);
-      this._syncPopoverAnchorAnimationFrame = undefined;
-    }
+    this._cancelScheduledPopoverOpen();
     this._unsubMediaQuery?.();
     this._unsubMediaQuery = undefined;
     super.disconnectedCallback();
@@ -65,23 +64,46 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("params")) {
       this._open = true;
+      this._popoverOpen = false;
     }
   }
 
   protected updated() {
     if (this._presentationMode !== "popover") {
+      this._cancelScheduledPopoverOpen();
+      this._popoverOpen = false;
       return;
     }
 
     this._syncPopoverAnchor();
-    if (this._syncPopoverAnchorAnimationFrame !== undefined) {
+
+    if (!this._open) {
+      this._cancelScheduledPopoverOpen();
+      this._popoverOpen = false;
       return;
     }
 
-    this._syncPopoverAnchorAnimationFrame = requestAnimationFrame(() => {
-      this._syncPopoverAnchorAnimationFrame = undefined;
+    if (this._popoverOpen || this._openPopoverAnimationFrame !== undefined) {
+      return;
+    }
+
+    this._openPopoverAnimationFrame = requestAnimationFrame(() => {
+      this._openPopoverAnimationFrame = undefined;
       this._syncPopoverAnchor();
+
+      if (this._open && this._presentationMode === "popover") {
+        this._popoverOpen = true;
+      }
     });
+  }
+
+  private _cancelScheduledPopoverOpen() {
+    if (this._openPopoverAnimationFrame === undefined) {
+      return;
+    }
+
+    cancelAnimationFrame(this._openPopoverAnimationFrame);
+    this._openPopoverAnimationFrame = undefined;
   }
 
   private _syncPopoverAnchor() {
@@ -96,6 +118,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
   public override closeDialog(_historyState?: any): Promise<boolean> | boolean {
     if (this._presentationMode === "popover") {
       this._open = false;
+      this._popoverOpen = false;
       return true;
     }
     return super.closeDialog(_historyState);
@@ -131,7 +154,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     if (presentationMode === "popover") {
       return html`
         <wa-popover
-          .open=${this._open}
+          .open=${this._popoverOpen}
           .anchor=${this.dialogAnchor ?? null}
           auto-size="vertical"
           auto-size-padding="16"
@@ -180,6 +203,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
       return;
     }
     this._open = false;
+    this._popoverOpen = false;
     fireEvent(this, "closed");
   }
 
@@ -187,6 +211,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     ha-dialog,
     ha-bottom-sheet {
       --dialog-content-padding: var(--ha-space-4);
+      --ha-bottom-sheet-content-padding: var(--ha-space-4);
     }
 
     wa-popover {
