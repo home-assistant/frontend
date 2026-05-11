@@ -932,6 +932,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
+  private _filtersFromUrl = false;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -942,6 +944,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    if (this._filtersFromUrl) {
+      this._filters = {};
+    }
   }
 
   private _locationChanged = () => {
@@ -968,6 +973,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
 
+    this._filtersFromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
