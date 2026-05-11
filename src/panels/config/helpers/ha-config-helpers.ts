@@ -934,6 +934,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filtersFromUrl = false;
 
+  private _previousFilters?: DataTableFiltersValues;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -945,7 +947,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
     if (this._filtersFromUrl) {
-      this._filters = {};
+      this._filters = this._previousFilters ?? {};
     }
   }
 
@@ -973,7 +975,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._filtersFromUrl = true;
+    if (!this._filtersFromUrl) {
+      this._previousFilters = this._filters;
+      this._filtersFromUrl = true;
+    }
     this._filter = history.state?.filter || "";
 
     this._filters = {
