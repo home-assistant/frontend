@@ -92,7 +92,9 @@ class HuiHistoryChartCardFeature
 
   protected firstUpdated() {
     this._setLoadingCoordinates();
-    this._subscribeHistory();
+    if (this.isConnected) {
+      this._subscribeHistory();
+    }
   }
 
   private _setLoadingCoordinates() {
@@ -155,6 +157,7 @@ class HuiHistoryChartCardFeature
 
   protected updated(changedProps: PropertyValues<this>) {
     if (
+      this.isConnected &&
       !this._subscribed &&
       !this._error &&
       this._config &&

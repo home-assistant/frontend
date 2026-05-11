@@ -311,7 +311,12 @@ export class HuiGraphHeaderFooter
         this._unsubscribeHistory();
         this._subscribeHistory();
       }
-    } else if (!this._subscribed && !this._error && changedProps.has("hass")) {
+    } else if (
+      this.isConnected &&
+      !this._subscribed &&
+      !this._error &&
+      changedProps.has("hass")
+    ) {
       // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
