@@ -53,6 +53,7 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
+import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
 
 export interface IntegrationListItem {
   name: string;
@@ -69,29 +70,6 @@ export interface IntegrationListItem {
   is_add?: boolean;
   single_config_entry?: boolean;
   is_discovered?: boolean;
-}
-
-export async function showSingleConfigEntryWarning(
-  element: HTMLElement,
-  localize: LocalizeFunc,
-  domain: string,
-  loadBackendTranslation: HomeAssistant["loadBackendTranslation"]
-) {
-  const backendLocalize = await loadBackendTranslation("title", domain);
-  showAlertDialog(element, {
-    title: localize(
-      "ui.panel.config.integrations.config_flow.single_config_entry_title"
-    ),
-    text: localize(
-      "ui.panel.config.integrations.config_flow.single_config_entry",
-      {
-        integration_name: html`<a
-          href=${`/config/integrations/integration/${domain}`}
-          >${domainToName(backendLocalize, domain)}</a
-        >`,
-      }
-    ),
-  });
 }
 
 @customElement("dialog-add-integration")
