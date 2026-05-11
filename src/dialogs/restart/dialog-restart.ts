@@ -109,7 +109,6 @@ class DialogRestart extends LitElement {
 
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._dialogOpen}
         header-title=${dialogTitle}
         allow-mode-change

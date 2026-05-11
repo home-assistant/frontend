@@ -3,7 +3,6 @@ import { dump } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import type { Trigger } from "../../data/automation";
 import { migrateAutomationTrigger } from "../../data/automation";
@@ -23,9 +22,10 @@ import "../../panels/logbook/ha-logbook-renderer";
 import type { HomeAssistant } from "../../types";
 import "../ha-code-editor";
 import "../ha-icon-button";
+import "../ha-tab-group";
+import "../ha-tab-group-tab";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
-import { traceTabStyles } from "./trace-tab-styles";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -66,21 +66,21 @@ export class HaTracePathDetails extends LitElement {
         ${this._renderSelectedTraceInfo()}
       </div>
 
-      <div class="tabs top">
+      <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
         ${TRACE_PATH_TABS.map(
           (view) => html`
-            <button
-              .view=${view}
-              class=${classMap({ active: this._view === view })}
-              @click=${this._showTab}
+            <ha-tab-group-tab
+              slot="nav"
+              .active=${this._view === view}
+              .panel=${view}
             >
               ${this.hass!.localize(
                 `ui.panel.config.automation.trace.tabs.${view}`
               )}
-            </button>
+            </ha-tab-group-tab>
           `
         )}
-      </div>
+      </ha-tab-group>
       ${this._view === "step_config"
         ? this._renderSelectedConfig()
         : this._view === "changed_variables"
@@ -383,13 +383,12 @@ export class HaTracePathDetails extends LitElement {
         </div>`;
   }
 
-  private _showTab(ev) {
-    this._view = ev.target.view;
+  private _handleTabChanged(ev: CustomEvent) {
+    this._view = ev.detail.name as typeof this._view;
   }
 
   static get styles(): CSSResultGroup {
     return [
-      traceTabStyles,
       css`
         .padded-box {
           margin: 16px;
@@ -405,6 +404,16 @@ export class HaTracePathDetails extends LitElement {
 
         .error {
           color: var(--error-color);
+        }
+
+        ha-tab-group {
+          background-color: var(--primary-background-color);
+          border-top: 1px solid var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        ha-tab-group-tab::part(base) {
+          padding: 2px 16px;
         }
       `,
     ];

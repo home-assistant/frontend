@@ -81,7 +81,6 @@ class DialogTagDetail
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.entry
           ? this.hass!.localize("ui.panel.config.tag.detail.tag_details")

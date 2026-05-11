@@ -564,9 +564,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         id="sidebar-external-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
-        <span class="item-text" slot="headline"
-          >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
-        >
+        <span class="item-text" slot="headline">
+          ${this.hass.localize("ui.sidebar.external_app_configuration")}
+        </span>
       </ha-list-item-button>
       ${!this.alwaysExpand
         ? this._renderToolTip(
@@ -743,6 +743,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           border-radius: var(--ha-border-radius-sm);
           --ha-row-item-min-height: var(--ha-space-10);
           --ha-row-item-padding-block: 0;
+          --ha-row-item-padding-inline: var(--ha-space-3);
           width: var(--ha-space-12);
           position: relative;
           transition: width var(--ha-animation-duration-normal) ease;
@@ -843,21 +844,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
 
         ha-user-badge {
-          width: var(--ha-space-10);
-          height: var(--ha-space-10);
+          width: 40px;
+          height: 40px;
         }
 
         ha-list-item-button.user {
-          --ha-row-item-padding-inline: var(--ha-space-2) var(--ha-space-3);
-        }
-
-        ha-list-item-button.user.rtl {
-          --ha-row-item-padding-inline: var(--ha-space-4) var(--ha-space-3);
-        }
-
-        ha-user-badge {
-          flex-shrink: 0;
-          margin-right: calc(var(--ha-space-2) * -1);
+          --ha-row-item-padding-inline: var(--ha-space-1) 0;
         }
 
         .spacer {

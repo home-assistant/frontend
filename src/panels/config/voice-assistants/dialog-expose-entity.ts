@@ -84,7 +84,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
 
     return html`
       <ha-dialog
-        open
+        .open=${this._open}
         header-title=${header}
         header-subtitle=${subtitle}
         prevent-scrim-close

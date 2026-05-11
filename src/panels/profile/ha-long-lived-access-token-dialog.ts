@@ -71,7 +71,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._token
           ? this.hass.localize(

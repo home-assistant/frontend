@@ -133,7 +133,6 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     const nameInvalid = this._name.trim() === "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${this._params.entry

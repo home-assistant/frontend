@@ -43,7 +43,6 @@ class DialogThreadDataset extends LitElement {
       otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id);
 
     return html`<ha-dialog
-      .hass=${this.hass}
       .open=${this._open}
       header-title=${network.name}
       @closed=${this._dialogClosed}

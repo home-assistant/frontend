@@ -84,7 +84,6 @@ class DialogSystemLogDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="large"
         @closed=${this._dialogClosed}

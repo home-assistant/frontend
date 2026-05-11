@@ -156,7 +156,6 @@ export class DialogVacuumSegmentMapping
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         .headerTitle=${this.hass.localize(

@@ -136,7 +136,6 @@ class DialogNewDashboard extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         flexcontent
         width="large"

@@ -181,11 +181,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const selectedAgents = this._formData.agent_ids;
 
     return html`
-      <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        @closed=${this._dialogClosed}
-      >
+      <ha-dialog .open=${this._open} @closed=${this._dialogClosed}>
         <ha-dialog-header slot="header">
           ${isFirstStep
             ? html`

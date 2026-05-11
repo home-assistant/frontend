@@ -1,7 +1,7 @@
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 
 /**
  * @element ha-row-item
@@ -46,12 +46,33 @@ export class HaRowItem extends LitElement {
 
   protected readonly _slotController = new HasSlotController(
     this,
-    "start",
-    "end",
     "headline",
     "supporting-text",
     "content"
   );
+
+  @state() private _hasStart = false;
+
+  @state() private _hasEnd = false;
+
+  private _onSlotChange(name: "start" | "end") {
+    return (ev: Event) => {
+      const slot = ev.target as HTMLSlotElement;
+      const hasContent = slot
+        .assignedNodes({ flatten: true })
+        .some(
+          (node) =>
+            node.nodeType === Node.ELEMENT_NODE ||
+            (node.nodeType === Node.TEXT_NODE &&
+              (node as Text).textContent?.trim() !== "")
+        );
+      if (name === "start") {
+        this._hasStart = hasContent;
+      } else {
+        this._hasEnd = hasContent;
+      }
+    };
+  }
 
   protected render(): TemplateResult {
     return this._renderBase(this._renderInner());
@@ -65,16 +86,16 @@ export class HaRowItem extends LitElement {
     const hasContent = this._slotController.test("content");
 
     return html`
-      <div part="start" class="start">
-        <slot name="start"></slot>
+      <div part="start" class="start" ?hidden=${!this._hasStart}>
+        <slot name="start" @slotchange=${this._onSlotChange("start")}></slot>
       </div>
       <div part="content" class="content">
         ${hasContent
           ? html`<slot name="content"></slot>`
           : this._renderDefaultContent()}
       </div>
-      <div part="end" class="end">
-        <slot name="end"></slot>
+      <div part="end" class="end" ?hidden=${!this._hasEnd}>
+        <slot name="end" @slotchange=${this._onSlotChange("end")}></slot>
       </div>
     `;
   }
@@ -142,8 +163,8 @@ export class HaRowItem extends LitElement {
       align-items: center;
       flex: 0 0 auto;
     }
-    :host(:not(:has([slot="start"]))) .start,
-    :host(:not(:has([slot="end"]))) .end {
+    .start[hidden],
+    .end[hidden] {
       display: none;
     }
     .headline {

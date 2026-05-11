@@ -154,7 +154,6 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._opened}
         header-title=${this.hass.localize(
           "ui.components.target-picker.target_details"
