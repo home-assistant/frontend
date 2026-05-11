@@ -1,14 +1,24 @@
 import { consume } from "@lit/context";
 import {
+  mdiChevronLeft,
+  mdiChevronRight,
   mdiClose,
   mdiDevices,
   mdiHome,
   mdiLabel,
+  mdiMinusBox,
   mdiTextureBox,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,18 +48,17 @@ import {
   type ExtractFromTargetResultReferenced,
   type TargetType,
 } from "../../data/target";
+import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon-button";
-import "../ha-md-list";
-import type { HaMdList } from "../ha-md-list";
-import "../ha-md-list-item";
-import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-svg-icon";
+import "../item/ha-list-item-base";
+import "../item/ha-list-item-button";
 import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
 
 @customElement("ha-target-picker-item-row")
@@ -64,6 +73,9 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sub-entry", reflect: true })
   public subEntry = false;
+
+  @property({ attribute: false })
+  public subLevel = 0;
 
   @property({ type: Boolean, attribute: "hide-context" })
   public hideContext = false;
@@ -106,12 +118,6 @@ export class HaTargetPickerItemRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry!: LabelRegistryEntry[];
 
-  @query("ha-md-list-item") public item?: HaMdListItem;
-
-  @query("ha-md-list") public list?: HaMdList;
-
-  @query("ha-target-picker-item-row") public itemRow?: HaTargetPickerItemRow;
-
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
@@ -137,101 +143,128 @@ export class HaTargetPickerItemRow extends LitElement {
 
     const replaceable = !this.subEntry && !this.expand;
 
-    return html`
-      <ha-md-list-item
-        type=${replaceable ? "button" : "text"}
-        class=${classMap({
-          error: notFound,
-          replaceable,
-        })}
-        @click=${replaceable ? this._replaceItem : undefined}
-      >
-        <div class="icon" slot="start">
-          ${this.subEntry
-            ? html`
-                <div class="horizontal-line-wrapper">
-                  <div class="horizontal-line"></div>
-                </div>
-              `
-            : nothing}
-          ${iconPath
-            ? html`<ha-icon .icon=${iconPath}></ha-icon>`
-            : this._iconImg
-              ? html`<img
-                  alt=${this._domainName || ""}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${this._iconImg}
-                />`
-              : fallbackIconPath
-                ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                : this.type === "entity"
-                  ? html`
-                      <ha-state-icon
-                        .hass=${this.hass}
-                        .stateObj=${stateObject ||
-                        ({
-                          entity_id: this.itemId,
-                          attributes: {},
-                        } as HassEntity)}
-                      >
-                      </ha-state-icon>
-                    `
-                  : nothing}
-        </div>
+    const content = html`
+      <div class="icon" slot="start">
+        ${iconPath
+          ? html`<ha-icon .icon=${iconPath}></ha-icon>`
+          : this._iconImg
+            ? html`<img
+                alt=${this._domainName || ""}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${this._iconImg}
+              />`
+            : fallbackIconPath
+              ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
+              : this.type === "entity"
+                ? html`
+                    <ha-state-icon
+                      .hass=${this.hass}
+                      .stateObj=${stateObject ||
+                      ({
+                        entity_id: this.itemId,
+                        attributes: {},
+                      } as HassEntity)}
+                    >
+                    </ha-state-icon>
+                  `
+                : nothing}
+      </div>
 
-        <div slot="headline">${name}</div>
-        ${notFound || (context && !this.hideContext)
-          ? html`<span slot="supporting-text"
-              >${notFound
-                ? this.hass.localize(
-                    `ui.components.target-picker.${this.type}_not_found`
-                  )
-                : context}</span
-            >`
-          : nothing}
-        ${this._domainName && this.subEntry
-          ? html`<span slot="supporting-text" class="domain"
-              >${this._domainName}</span
-            >`
-          : nothing}
-        ${!this.subEntry && entries && showEntities
-          ? html`
-              <div slot="end" class="summary">
-                ${showEntities &&
-                !this.expand &&
-                entries?.referenced_entities.length
-                  ? html`<button class="main link" @click=${this._openDetails}>
+      <div slot="headline">${name}</div>
+      ${notFound || (context && !this.hideContext)
+        ? html`<span slot="supporting-text"
+            >${notFound
+              ? this.hass.localize(
+                  `ui.components.target-picker.${this.type}_not_found`
+                )
+              : context}</span
+          >`
+        : nothing}
+      ${stateObject && this.subEntry
+        ? html`<span slot="supporting-text" class="state"
+            >${this.hass.formatEntityState(stateObject)}</span
+          >`
+        : nothing}
+      ${!this.subEntry && entries && showEntities
+        ? html`
+            <div slot="end" class="summary">
+              ${showEntities &&
+              !this.expand &&
+              entries?.referenced_entities.length
+                ? html`<button class="main link" @click=${this._openDetails}>
+                    ${this.hass.localize(
+                      "ui.components.target-picker.entities_count",
+                      {
+                        count: entries?.referenced_entities.length,
+                      }
+                    )}
+                  </button>`
+                : showEntities
+                  ? html`<span class="main">
                       ${this.hass.localize(
                         "ui.components.target-picker.entities_count",
                         {
                           count: entries?.referenced_entities.length,
                         }
                       )}
-                    </button>`
-                  : showEntities
-                    ? html`<span class="main">
-                        ${this.hass.localize(
-                          "ui.components.target-picker.entities_count",
-                          {
-                            count: entries?.referenced_entities.length,
-                          }
-                        )}
-                      </span>`
-                    : nothing}
-              </div>
-            `
-          : nothing}
-        ${!this.expand && !this.subEntry
+                    </span>`
+                  : nothing}
+            </div>
+          `
+        : nothing}
+      ${!this.expand && !this.subEntry
+        ? html`
+            <ha-icon-button
+              .path=${mdiClose}
+              slot="end"
+              @click=${this._removeItem}
+            ></ha-icon-button>
+          `
+        : this.subEntry && this.type === "entity"
           ? html`
-              <ha-icon-button
-                .path=${mdiClose}
+              <ha-svg-icon
+                .path=${computeRTL(this.hass)
+                  ? mdiChevronLeft
+                  : mdiChevronRight}
                 slot="end"
-                @click=${this._removeItem}
-              ></ha-icon-button>
+              ></ha-svg-icon>
             `
           : nothing}
-      </ha-md-list-item>
+    `;
+
+    let item: TemplateResult;
+
+    if (replaceable || (this.subEntry && this.type === "entity")) {
+      item = html`
+        <ha-list-item-button
+          class=${classMap({
+            error: notFound,
+            replaceable,
+          })}
+          @click=${replaceable
+            ? this._replaceItem
+            : this.subEntry && this.type === "entity"
+              ? this._openMoreInfo
+              : undefined}
+        >
+          ${content}
+        </ha-list-item-button>
+      `;
+    } else {
+      item = html`
+        <ha-list-item-base
+          class=${classMap({
+            error: notFound,
+          })}
+        >
+          ${content}
+        </ha-list-item-base>
+      `;
+    }
+
+    return html`
+      ${item}
       ${this.expand && entries && entries.referenced_entities
         ? this._renderEntries()
         : nothing}
@@ -240,6 +273,10 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private _renderEntries() {
     const entries = this.parentEntries || this._entries;
+
+    if (!entries || entries.referenced_entities.length === 0) {
+      return this._renderEmptyEntries();
+    }
 
     let nextType: TargetType =
       this.type === "floor"
@@ -350,52 +387,62 @@ export class HaTargetPickerItemRow extends LitElement {
               ) || ([] as string[]),
           }));
 
+    const nextSubLevel = this.subLevel + 1;
+
     return html`
-      <div class="entries-tree">
-        <div class="line-wrapper">
-          <div class="line"></div>
-        </div>
-        <ha-md-list class="entries">
-          ${rows1.map(
-            (itemId, index) => html`
-              <ha-target-picker-item-row
-                sub-entry
-                .hass=${this.hass}
-                .type=${nextType}
-                .itemId=${itemId}
-                .parentEntries=${rows1Entries?.[index]}
-                .hideContext=${this.hideContext || this.type !== "label"}
-                expand
-              ></ha-target-picker-item-row>
-            `
-          )}
-          ${deviceRows.map(
-            (itemId, index) => html`
-              <ha-target-picker-item-row
-                sub-entry
-                .hass=${this.hass}
-                type="device"
-                .itemId=${itemId}
-                .parentEntries=${deviceRowsEntries?.[index]}
-                .hideContext=${this.hideContext || this.type !== "label"}
-                expand
-              ></ha-target-picker-item-row>
-            `
-          )}
-          ${entityRows.map(
-            (itemId) => html`
-              <ha-target-picker-item-row
-                sub-entry
-                .hass=${this.hass}
-                type="entity"
-                .itemId=${itemId}
-                .hideContext=${this.hideContext || this.type !== "label"}
-              ></ha-target-picker-item-row>
-            `
-          )}
-        </ha-md-list>
-      </div>
+      ${rows1.map(
+        (itemId, index) => html`
+          <ha-target-picker-item-row
+            sub-entry
+            .subLevel=${nextSubLevel}
+            style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
+            .hass=${this.hass}
+            .type=${nextType}
+            .itemId=${itemId}
+            .parentEntries=${rows1Entries?.[index]}
+            .hideContext=${this.hideContext || this.type !== "label"}
+            expand
+          ></ha-target-picker-item-row>
+        `
+      )}
+      ${deviceRows.map(
+        (itemId, index) => html`
+          <ha-target-picker-item-row
+            sub-entry
+            .subLevel=${nextSubLevel}
+            style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
+            .hass=${this.hass}
+            type="device"
+            .itemId=${itemId}
+            .parentEntries=${deviceRowsEntries?.[index]}
+            .hideContext=${this.hideContext || this.type !== "label"}
+            expand
+          ></ha-target-picker-item-row>
+        `
+      )}
+      ${entityRows.map(
+        (itemId) => html`
+          <ha-target-picker-item-row
+            sub-entry
+            .subLevel=${nextSubLevel}
+            style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
+            .hass=${this.hass}
+            type="entity"
+            .itemId=${itemId}
+            .hideContext=${this.hideContext || this.type !== "label"}
+          ></ha-target-picker-item-row>
+        `
+      )}
     `;
+  }
+
+  private _renderEmptyEntries() {
+    return html`<ha-list-item-base>
+      <ha-svg-icon .path=${mdiMinusBox} slot="start" class="icon"></ha-svg-icon>
+      <span slot="headline"
+        >${this.hass.localize("ui.components.target-picker.no_targets")}</span
+      >
+    </ha-list-item-base>`;
   }
 
   private async _updateItemData() {
@@ -640,6 +687,12 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   }
 
+  private _openMoreInfo = () => {
+    showMoreInfoDialog(this, {
+      entityId: this.itemId,
+    });
+  };
+
   static styles = [
     buttonLinkStyle,
     css`
@@ -649,12 +702,6 @@ export class HaTargetPickerItemRow extends LitElement {
         --md-list-item-leading-space: var(--ha-space-2);
         --md-list-item-trailing-space: var(--ha-space-2);
         --md-list-item-two-line-container-height: 56px;
-      }
-
-      :host([expand]:not([sub-entry])) ha-md-list-item {
-        border: 2px solid var(--ha-color-border-neutral-loud);
-        background-color: var(--ha-color-fill-neutral-quiet-resting);
-        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
 
       .error {
@@ -680,6 +727,7 @@ export class HaTargetPickerItemRow extends LitElement {
       .icon {
         width: 24px;
         display: flex;
+        color: var(--ha-color-on-neutral-normal);
       }
 
       img {
@@ -697,51 +745,19 @@ export class HaTargetPickerItemRow extends LitElement {
         line-height: var(--ha-line-height-condensed);
       }
       :host([sub-entry]) .summary {
-        margin-right: var(--ha-space-12);
+        margin-inline-start: var(--ha-space-12);
       }
       .summary .main {
         font-weight: var(--ha-font-weight-medium);
       }
+      :host([expand]) .summary .main {
+        color: var(--ha-color-text-secondary);
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-normal);
+      }
       .summary .secondary {
         font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
-      }
-
-      .entries-tree {
-        display: flex;
-        position: relative;
-      }
-
-      .entries-tree .line-wrapper {
-        padding: var(--ha-space-5);
-      }
-
-      .entries-tree .line-wrapper .line {
-        border-left: 2px dashed var(--divider-color);
-        height: calc(100% - 28px);
-        position: absolute;
-        top: 0;
-      }
-
-      :host([sub-entry]) .entries-tree .line-wrapper .line {
-        height: calc(100% - 12px);
-        top: -18px;
-      }
-
-      .entries {
-        padding: 0;
-        --md-item-overflow: visible;
-      }
-
-      .horizontal-line-wrapper {
-        position: relative;
-      }
-      .horizontal-line-wrapper .horizontal-line {
-        position: absolute;
-        top: 11px;
-        margin-inline-start: -28px;
-        width: 29px;
-        border-top: 2px dashed var(--divider-color);
       }
 
       button.link {
@@ -754,12 +770,19 @@ export class HaTargetPickerItemRow extends LitElement {
         text-decoration: underline;
       }
 
-      .domain {
+      .state {
         width: fit-content;
-        border-radius: var(--ha-border-radius-md);
-        background-color: var(--ha-color-fill-neutral-quiet-resting);
-        padding: var(--ha-space-1);
-        font-family: var(--ha-font-family-code);
+        font-size: var(--ha-font-size-s);
+        color: var(--ha-color-text-secondary);
+      }
+
+      ha-list-item-button::part(end) {
+        gap: var(--ha-space-2);
+      }
+
+      :host([sub-entry]) ha-list-item-button::part(base),
+      :host([sub-entry]) ha-list-item-base::part(base) {
+        padding-inline-start: var(--sub-entry-indent);
       }
     `,
   ];
