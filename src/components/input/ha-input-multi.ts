@@ -78,7 +78,7 @@ class HaInputMulti extends LitElement {
         <div class="items">
           ${repeat(
             this._items,
-            (item, index) => `${item}-${index}`,
+            (_item, index) => index,
             (item, index) => {
               const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
               return html`
