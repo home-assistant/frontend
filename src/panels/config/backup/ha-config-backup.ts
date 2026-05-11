@@ -99,7 +99,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
       this._fetchBackupAgents();
     }
   }
-  
+
   public disconnectedCallback() {
     this._debouncedFetchBackupAgents.cancel();
     super.disconnectedCallback();
