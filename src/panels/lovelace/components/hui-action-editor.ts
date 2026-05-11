@@ -143,10 +143,6 @@ export class HuiActionEditor extends LitElement {
   private _showPopupSchema = memoizeOne(
     (localize: LocalizeFunc): readonly HaFormSchema[] => [
       {
-        name: "title",
-        selector: { text: {} },
-      },
-      {
         name: "desktop_mode",
         default: "popover",
         selector: {

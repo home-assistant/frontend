@@ -202,7 +202,6 @@ export const handleAction = async (
         dialogAnchor: node,
         dialogParams: {
           hass,
-          title: actionConfig.title,
           desktopMode: actionConfig.desktop_mode,
           mobileMode: actionConfig.mobile_mode,
           cards: actionConfig.cards,

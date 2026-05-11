@@ -9047,7 +9047,6 @@
           "action-editor": {
             "navigation_path": "Navigation path",
             "url_path": "URL path",
-            "title": "Title",
             "desktop_mode": "Desktop mode",
             "mobile_mode": "Mobile mode",
             "start_listening": "Start listening",

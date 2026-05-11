@@ -40,7 +40,6 @@ export interface AssistActionConfig extends BaseActionConfig {
 
 export interface ShowPopupActionConfig extends BaseActionConfig {
   action: "show-popup";
-  title?: string;
   desktop_mode?: "popover" | "dialog";
   mobile_mode?: "bottom-sheet" | "dialog";
   cards: LovelaceCardConfig[];

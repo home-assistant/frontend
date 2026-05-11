@@ -1,9 +1,6 @@
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { ADAPTIVE_DIALOG_MEDIA_QUERY } from "../../../components/ha-adaptive-dialog";
@@ -11,8 +8,6 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-bottom-sheet";
 import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-icon-button";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import "../sections/hui-section";
 
@@ -26,7 +21,6 @@ type WaPopoverElement = HTMLElement & {
 
 export interface LovelacePopupDialogParams {
   hass: HomeAssistant;
-  title?: string;
   desktopMode?: DesktopPopupMode;
   mobileMode?: MobilePopupMode;
   cards: LovelaceCardConfig[];
@@ -122,17 +116,17 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     }
 
     const presentationMode = this._presentationMode;
+    const popupLabel = this.params.hass.localize(
+      "ui.panel.lovelace.editor.action-editor.actions.show-popup"
+    );
 
-    const content = html`
-      ${this.params.title ? html`<wa-divider></wa-divider>` : nothing}
-      <hui-section
-        .hass=${this.params.hass}
-        .config=${{ cards: this.params.cards }}
-        .index=${0}
-        .viewIndex=${0}
-        import-only
-      ></hui-section>
-    `;
+    const content = html`<hui-section
+      .hass=${this.params.hass}
+      .config=${{ cards: this.params.cards }}
+      .index=${0}
+      .viewIndex=${0}
+      import-only
+    ></hui-section>`;
 
     if (presentationMode === "popover") {
       return html`
@@ -145,72 +139,33 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
           trap-focus
           role="dialog"
           aria-modal="true"
-          aria-labelledby=${ifDefined(
-            this.params.title ? "ha-dialog-title" : undefined
-          )}
+          aria-label=${popupLabel}
           @wa-show=${this._handlePopoverShow}
           @wa-after-hide=${this._handlePopoverAfterHide}
         >
-          <div class="popover-surface" @click=${this._handleCloseAction}>
-            ${this._renderHeader()} ${content}
-          </div>
+          <div class="popover-surface">${content}</div>
         </wa-popover>
       `;
     }
 
     if (presentationMode === "bottom-sheet") {
       return html`
-        <ha-bottom-sheet .open=${this._open} @click=${this._handleCloseAction}>
-          ${this._renderHeader("header")} ${content}
-        </ha-bottom-sheet>
+        <ha-bottom-sheet .open=${this._open} aria-label=${popupLabel}
+          >${content}</ha-bottom-sheet
+        >
       `;
     }
 
     return html`
       <ha-dialog
         .open=${this._open}
-        .headerTitle=${this.params.title}
-        ?withoutHeader=${!this.params.title}
+        withoutHeader
         width="large"
+        aria-label=${popupLabel}
       >
         ${content}
       </ha-dialog>
     `;
-  }
-
-  private _renderHeader(slot?: string) {
-    if (!this.params?.title) {
-      return nothing;
-    }
-
-    return html`
-      <ha-dialog-header slot=${ifDefined(slot)}>
-        <ha-icon-button
-          data-dialog="close"
-          slot="navigationIcon"
-          .label=${this.params.hass.localize("ui.common.close")}
-          .path=${mdiClose}
-        ></ha-icon-button>
-        <span slot="title" class="title" id="ha-dialog-title">
-          ${this.params.title}
-        </span>
-      </ha-dialog-header>
-    `;
-  }
-
-  private _handleCloseAction(ev: Event) {
-    if (
-      ev
-        .composedPath()
-        .some(
-          (node) =>
-            node instanceof HTMLElement &&
-            (node.getAttribute("data-dialog") === "close" ||
-              node.closest('[data-dialog="close"]') !== null)
-        )
-    ) {
-      this._open = false;
-    }
   }
 
   private _handlePopoverShow(ev: Event) {
@@ -267,10 +222,6 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
       max-height: inherit;
       overflow: auto;
       padding: var(--ha-space-4);
-    }
-
-    .popover-surface ha-dialog-header {
-      margin: calc(-1 * var(--ha-space-4)) calc(-1 * var(--ha-space-4)) 0;
     }
 
     hui-section {

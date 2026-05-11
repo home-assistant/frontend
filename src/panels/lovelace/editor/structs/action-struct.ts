@@ -64,7 +64,6 @@ const actionConfigStructAssist = type({
 
 const actionConfigStructShowPopup = object({
   action: literal("show-popup"),
-  title: optional(string()),
   desktop_mode: optional(enums(["popover", "dialog"])),
   mobile_mode: optional(enums(["bottom-sheet", "dialog"])),
   cards: array(any()),
