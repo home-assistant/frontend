@@ -223,7 +223,10 @@ export class HaTargetPickerItemRow extends LitElement {
         : this.subEntry && this.type === "entity"
           ? html`
               <ha-svg-icon
-                .path=${computeRTL(this.hass)
+                .path=${computeRTL(
+                  this.hass.language,
+                  this.hass.translationMetadata.translations
+                )
                   ? mdiChevronLeft
                   : mdiChevronRight}
                 slot="end"
