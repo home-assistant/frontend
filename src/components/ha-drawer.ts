@@ -11,9 +11,7 @@ declare global {
     "hass-layout-transition": { active: boolean; reason?: string };
   }
   interface HTMLElementEventMap {
-    "hass-drawer-closed": HASSDomEvent<
-      HASSDomEvents["hass-drawer-closed"]
-    >;
+    "hass-drawer-closed": HASSDomEvent<HASSDomEvents["hass-drawer-closed"]>;
     "hass-layout-transition": HASSDomEvent<
       HASSDomEvents["hass-layout-transition"]
     >;
@@ -24,7 +22,7 @@ declare global {
 export class HaDrawer extends LitElement {
   @property({ reflect: true }) public direction: "ltr" | "rtl" = "ltr";
 
-  @property() public type  = "";
+  @property() public type = "";
 
   @property({ type: Boolean, reflect: true }) public open = false;
 
@@ -238,8 +236,7 @@ export class HaDrawer extends LitElement {
 
     :host([direction="rtl"]) .sidebar-shell {
       border-inline-end: none;
-      border-inline-start: 1px solid
-        var(--divider-color, rgba(0, 0, 0, 0.12));
+      border-inline-start: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
     }
 
     .app-content {
