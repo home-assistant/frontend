@@ -2924,6 +2924,13 @@
                 "experimental": "Experimental",
                 "deprecated": "Deprecated"
               },
+              "state": {
+                "started": "Running",
+                "stopped": "Stopped",
+                "error": "Error",
+                "startup": "Starting",
+                "unknown": "Unknown"
+              },
               "label": {
                 "rating": "Rating",
                 "host": "Host",

@@ -1,7 +1,8 @@
+import "@home-assistant/webawesome/dist/components/tag/tag";
 import {
+  mdiAlertCircle,
   mdiCheckCircle,
   mdiChip,
-  mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
   mdiExclamationThick,
@@ -17,11 +18,13 @@ import {
   mdiNumeric6,
   mdiNumeric7,
   mdiNumeric8,
-  mdiPlayCircle,
   mdiPound,
+  mdiProgressHelper,
+  mdiProgressQuestion,
   mdiShield,
+  mdiStopCircleOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -79,9 +82,9 @@ import { bytesToString } from "../../../../../util/bytes-to-string";
 import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-card-content";
 import "../components/supervisor-app-metric";
+import "../components/supervisor-app-update-available-card";
 import { extractChangelog } from "../util/supervisor-app";
 import "./supervisor-app-system-managed";
-import "../components/supervisor-app-update-available-card";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -203,28 +206,8 @@ class SupervisorAppInfo extends LitElement {
               : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
-                ? html`
-                    ${this._computeIsRunning
-                      ? html`
-                          <ha-svg-icon
-                            .title=${this.hass.localize(
-                              "ui.panel.config.apps.dashboard.app_running"
-                            )}
-                            class="running"
-                            .path=${mdiPlayCircle}
-                          ></ha-svg-icon>
-                        `
-                      : html`
-                          <ha-svg-icon
-                            .title=${this.hass.localize(
-                              "ui.panel.config.apps.dashboard.app_stopped"
-                            )}
-                            class="stopped"
-                            .path=${mdiCircleOffOutline}
-                          ></ha-svg-icon>
-                        `}
-                  `
-                : html` ${this.addon.version_latest} `}
+                ? html`${this._getStateTag()}`
+                : this.addon.version_latest}
             </div>
           </div>
           <div class="description light-color">
@@ -854,6 +837,42 @@ class SupervisorAppInfo extends LitElement {
         "ui.panel.config.apps.dashboard.system_managed.description"
       ),
     });
+  }
+
+  private _getStateTag(): TemplateResult {
+    let variant = "neutral";
+    let iconPath = mdiProgressQuestion;
+    const addonState = (this.addon as HassioAddonDetails)?.state || "unknown";
+
+    switch (addonState) {
+      case "started":
+        variant = "success";
+        iconPath = mdiCheckCircle;
+        break;
+      case "stopped":
+        iconPath = mdiStopCircleOutline;
+        break;
+      case "error":
+        variant = "error";
+        iconPath = mdiAlertCircle;
+        break;
+      case "startup":
+        variant = "warning";
+        iconPath = mdiProgressHelper;
+        break;
+      case "unknown":
+        iconPath = mdiProgressQuestion;
+    }
+
+    return html`
+      <supervisor-apps-tag
+        .variant=${variant}
+        .iconPath=${iconPath}
+        .label=${this.hass.localize(
+          `ui.panel.config.apps.dashboard.capability.state.${addonState}`
+        )}
+      ></supervisor-apps-tag>
+    `;
   }
 
   private get _computeIsRunning(): boolean {
