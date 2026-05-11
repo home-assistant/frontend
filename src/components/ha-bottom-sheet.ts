@@ -64,6 +64,11 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sliderInteractionActive = false;
 
+  // disabled till iOS app fix the "focus_element" implementation
+  // @state()
+  // @consume({ context: configContext, subscribe: true })
+  // private _hassConfig?: ContextType<typeof configContext>;
+
   @query("#drawer") private _drawer!: HTMLElement;
 
   @query("#body") private _bodyElement!: HTMLDivElement;
@@ -87,13 +92,13 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
     requestAnimationFrame(() => {
       // disabled till iOS app fix the "focus_element" implementation
-      // if (this.hass && isIosApp(this.hass.auth.external)) {
+      // if (this._hassConfig?.auth.external && isIosApp(this._hassConfig.auth.external)) {
       //   const element = this.renderRoot.querySelector("[autofocus]");
       //   if (element !== null) {
       //     if (!element.id) {
       //       element.id = "ha-bottom-sheet-autofocus";
       //     }
-      //     this.hass.auth.external?.fireMessage({
+      //     this._hassConfig.auth.external.fireMessage({
       //       type: "focus_element",
       //       payload: {
       //         element_id: element.id,
