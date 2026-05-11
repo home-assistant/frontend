@@ -253,6 +253,8 @@ export class HaConfigEntities extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
+  private _filtersFromUrl = false;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -271,6 +273,9 @@ export class HaConfigEntities extends LitElement {
       "exposed-entities-changed",
       this._fetchExposedEntities
     );
+    if (this._filtersFromUrl) {
+      this._filters = {};
+    }
   }
 
   private _locationChanged = () => {
@@ -1097,6 +1102,7 @@ export class HaConfigEntities extends LitElement {
       return;
     }
 
+    this._filtersFromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
