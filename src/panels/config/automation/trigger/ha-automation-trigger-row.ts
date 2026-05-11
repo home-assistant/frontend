@@ -196,7 +196,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
-  private _renderRow(row = true) {
+  private _renderRow() {
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
@@ -234,8 +234,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       </h3>
       <ha-automation-row-event-chip
         .show=${this._triggered}
-        .slot=${row ? "event" : ""}
-        class=${row ? "" : "event-chip"}
+        slot="event"
+        class="event-chip"
         interactive
         aria-live="polite"
         @click=${this._showTriggeredInfo}
@@ -499,7 +499,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow(false)}
+                ${this._renderRow()}
               </ha-expansion-panel>
             `}
       </ha-card>
