@@ -44,6 +44,8 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
 
   @state() private _selected: string[] = [];
 
+  @state() private _dialogReady = false;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected _i18n!: ContextType<typeof internationalizationContext>;
@@ -57,11 +59,6 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
 
   @consume({ context: registriesContext, subscribe: true })
   protected _registries!: ContextType<typeof registriesContext>;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    loadVirtualizer();
-  }
 
   protected render() {
     if (!this.params) {
@@ -91,6 +88,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
         header-title=${header}
         header-subtitle=${subtitle}
         prevent-scrim-close
+        @after-show=${this._loadVirtualizer}
       >
         <ha-input-search
           appearance="outlined"
@@ -98,16 +96,18 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
           @input=${this._filterChanged}
         ></ha-input-search>
         <ha-list multi>
-          <lit-virtualizer
-            scroller
-            class="ha-scrollbar"
-            @click=${this._itemClicked}
-            @keydown=${this._handleItemKeydown}
-            .items=${entities}
-            .renderItem=${this._renderItem}
-            .keyFunction=${this._keyFunction}
-          >
-          </lit-virtualizer>
+          ${this._dialogReady
+            ? html` <lit-virtualizer
+                scroller
+                class="ha-scrollbar"
+                @click=${this._itemClicked}
+                @keydown=${this._handleItemKeydown}
+                .items=${entities}
+                .renderItem=${this._renderItem}
+                .keyFunction=${this._keyFunction}
+              >
+              </lit-virtualizer>`
+            : nothing}
         </ha-list>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -130,6 +130,11 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private async _loadVirtualizer() {
+    await loadVirtualizer();
+    this._dialogReady = true;
   }
 
   private _keyFunction = (item: FilteredEntity) => item.entity.entity_id;
