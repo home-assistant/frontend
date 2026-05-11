@@ -60,6 +60,7 @@ import {
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -180,6 +181,9 @@ export default class HaAutomationConditionRow extends LitElement {
         ? { device_id: [(this.condition as DeviceCondition).device_id] }
         : undefined;
 
+    const conditionTargetSpec =
+      this.conditionDescriptions[this.condition.condition]?.target;
+
     return html`
       <ha-condition-icon
         slot="leading-icon"
@@ -191,7 +195,11 @@ export default class HaAutomationConditionRow extends LitElement {
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              conditionTargetSpec
+            )
           : nothing}
       </h3>
       <ha-automation-row-event-chip
@@ -505,11 +513,16 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
 
