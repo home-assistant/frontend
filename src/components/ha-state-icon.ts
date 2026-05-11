@@ -7,7 +7,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   configContext,
   connectionContext,
-  registriesContext,
+  entitiesContext,
 } from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
@@ -34,14 +34,13 @@ export class HaStateIcon extends LitElement {
   protected _connection?: ContextType<typeof connectionContext>;
 
   @state()
-  @consume({ context: registriesContext, subscribe: true })
-  protected _registries!: ContextType<typeof registriesContext>;
+  @consume({ context: entitiesContext, subscribe: true })
+  protected _entities?: ContextType<typeof entitiesContext>;
 
   protected render() {
     const overrideIcon =
       this.icon ||
-      (this.stateObj &&
-        this._registries?.entities[this.stateObj.entity_id]?.icon) ||
+      (this.stateObj && this._entities?.[this.stateObj.entity_id]?.icon) ||
       this.stateObj?.attributes.icon;
     if (overrideIcon) {
       return html`<ha-icon .icon=${overrideIcon}></ha-icon>`;
@@ -49,13 +48,13 @@ export class HaStateIcon extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    if (!this._config || !this._connection) {
+    if (!this._config || !this._connection || !this._entities) {
       return this._renderFallback();
     }
     const icon = entityIcon(
-      this._registries.entities,
-      this._config?.config,
-      this._connection?.connection,
+      this._entities,
+      this._config.config,
+      this._connection.connection,
       this.stateObj,
       this.stateValue
     ).then((icn) => {
