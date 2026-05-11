@@ -278,7 +278,7 @@ export class HaAutomationRowTargets extends LitElement {
     const iconTemplate = icon
       ? html`<ha-svg-icon
           .slot=${dropdownOption ? "icon" : ""}
-          .icon=${icon}
+          .path=${icon}
         ></ha-svg-icon>`
       : getTargetIcon(
           this.hass,
@@ -320,6 +320,10 @@ export class HaAutomationRowTargets extends LitElement {
       label: string;
     };
 
+    if (!target.targetId || !target.targetType) {
+      return;
+    }
+
     this._showTargetInfo(target.targetId, target.targetType, target.label, ev);
   }
 
@@ -345,9 +349,6 @@ export class HaAutomationRowTargets extends LitElement {
     label: string,
     ev?: Event
   ) {
-    if (!targetId || !targetType) {
-      return;
-    }
     ev?.stopPropagation();
 
     if (targetType === "entity") {
