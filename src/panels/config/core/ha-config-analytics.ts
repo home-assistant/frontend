@@ -7,18 +7,17 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-analytics";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import { getSignedPath } from "../../../data/auth";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
+import { getSignedPath } from "../../../data/auth";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { LabPreviewFeature } from "../../../data/labs";
 import { subscribeLabFeature } from "../../../data/labs";
@@ -103,26 +102,24 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   }
                 )}
               </p>
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      `ui.panel.config.analytics.preferences.snapshots.title`
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.hass.localize(
-                      `ui.panel.config.analytics.preferences.snapshots.description`
-                    )}
-                  </span>
-                  <ha-switch
-                    slot="end"
-                    @change=${this._handleDeviceRowClick}
-                    .checked=${!!this._analyticsDetails?.preferences.snapshots}
-                    .disabled=${this._analyticsDetails === undefined}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
+              <ha-row-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.title`
+                  )}
+                </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.description`
+                  )}
+                </span>
+                <ha-switch
+                  slot="end"
+                  @change=${this._handleDeviceRowClick}
+                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                  .disabled=${this._analyticsDetails === undefined}
+                ></ha-switch>
+              </ha-row-item>
             </div>
             <div class="card-actions">
               <ha-button
@@ -163,29 +160,27 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   }
                 )}
               </p>
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
-                    )}
-                  </span>
-                  ${this._zwaveDataCollectionOptIn !== undefined
-                    ? html`
-                        <ha-switch
-                          slot="end"
-                          @change=${this._zwaveDataCollectionToggled}
-                          .checked=${this._zwaveDataCollectionOptIn === true}
-                        ></ha-switch>
-                      `
-                    : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
-                </ha-md-list-item>
-              </ha-md-list>
+              <ha-row-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                  )}
+                </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
+                  )}
+                </span>
+                ${this._zwaveDataCollectionOptIn !== undefined
+                  ? html`
+                      <ha-switch
+                        slot="end"
+                        @change=${this._zwaveDataCollectionToggled}
+                        .checked=${this._zwaveDataCollectionOptIn === true}
+                      ></ha-switch>
+                    `
+                  : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
+              </ha-row-item>
             </div>
           </ha-card>`
         : nothing}
@@ -326,13 +321,8 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
         ha-card:not(:first-of-type) {
           margin-top: 24px;
         }
-        ha-md-list {
-          background: none;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-        }
-        ha-md-list-item {
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         ha-card {
           transition: box-shadow 0.3s ease;

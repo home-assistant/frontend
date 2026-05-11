@@ -193,9 +193,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
           outline: none;
           text-decoration: underline;
         }
-        ha-md-list-item {
-          font-size: var(--ha-font-size-l);
-        }
         div[slot="start"] {
           position: relative;
         }
