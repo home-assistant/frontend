@@ -598,7 +598,6 @@ class DialogAddAutomationElement
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         width="large"
         .open=${this._open}
         @closed=${this._handleClosed}

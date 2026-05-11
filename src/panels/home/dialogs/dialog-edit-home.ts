@@ -82,7 +82,6 @@ export class DialogEditHome
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
         .headerSubtitle=${this.hass.localize(

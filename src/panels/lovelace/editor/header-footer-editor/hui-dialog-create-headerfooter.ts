@@ -48,7 +48,6 @@ export class HuiCreateDialogHeaderFooter
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize(
           `ui.panel.lovelace.editor.header-footer.choose_header_footer`,

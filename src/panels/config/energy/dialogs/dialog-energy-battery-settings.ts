@@ -122,7 +122,6 @@ export class DialogEnergyBatterySettings
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.battery.dialog.header"
