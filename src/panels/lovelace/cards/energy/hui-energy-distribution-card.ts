@@ -38,6 +38,9 @@ import type { EnergyDistributionCardConfig } from "../types";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
+const periodIncludesNow = (data: EnergyData): boolean =>
+  !data.end || data.end.getTime() >= Date.now();
+
 @customElement("hui-energy-distribution-card")
 class HuiEnergyDistrubutionCard
   extends SubscribeMixin(LitElement)
@@ -116,17 +119,17 @@ class HuiEnergyDistrubutionCard
     ) {
       return true;
     }
-    const batteries = this._data
-      ? energySourcesByType(this._data.prefs).battery
-      : undefined;
-    if (
-      batteries?.some(
-        (source) =>
-          source.stat_soc &&
-          this.hass.states[source.stat_soc] !== oldStates[source.stat_soc]
-      )
-    ) {
-      return true;
+    if (this._data && periodIncludesNow(this._data)) {
+      const batteries = energySourcesByType(this._data.prefs).battery;
+      if (
+        batteries?.some(
+          (source) =>
+            source.stat_soc &&
+            this.hass.states[source.stat_soc] !== oldStates[source.stat_soc]
+        )
+      ) {
+        return true;
+      }
     }
     return false;
   }
@@ -201,17 +204,22 @@ class HuiEnergyDistrubutionCard
       totalBatteryIn = summedData.total.to_battery ?? 0;
       totalBatteryOut = summedData.total.from_battery ?? 0;
 
-      const socValues = types
-        .battery!.map((source) =>
-          source.stat_soc
-            ? Number(this.hass.states[source.stat_soc]?.state)
-            : NaN
-        )
-        .filter((value) => Number.isFinite(value));
-      if (socValues.length) {
-        const averageSoc =
-          socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
-        batteryIconPath = batteryLevelIconPath(averageSoc);
+      // The SOC reflects the current battery level, so it only matches the
+      // card's data when the selected period extends to now. For historical
+      // periods (yesterday, last week, ...) fall back to the generic icon.
+      if (periodIncludesNow(this._data)) {
+        const socValues = types
+          .battery!.map((source) =>
+            source.stat_soc
+              ? Number(this.hass.states[source.stat_soc]?.state)
+              : NaN
+          )
+          .filter((value) => Number.isFinite(value));
+        if (socValues.length) {
+          const averageSoc =
+            socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
+          batteryIconPath = batteryLevelIconPath(averageSoc);
+        }
       }
     }
 
