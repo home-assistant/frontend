@@ -183,7 +183,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     return html`
       <ha-dialog
         .open=${this._open}
-        without-header
+        ?without-header=${!this._narrow}
         width="large"
         aria-label=${popupLabel}
       >
