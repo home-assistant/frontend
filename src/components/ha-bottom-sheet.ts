@@ -7,7 +7,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
@@ -47,8 +46,6 @@ const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
  */
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
