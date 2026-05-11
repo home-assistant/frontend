@@ -69,7 +69,12 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    handleAction(
+      ev.currentTarget as HTMLElement,
+      this.hass!,
+      this._config!,
+      ev.detail.action!
+    );
   }
 
   private get _hasAction() {

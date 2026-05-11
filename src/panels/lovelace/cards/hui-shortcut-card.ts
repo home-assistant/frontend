@@ -95,7 +95,12 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    handleAction(
+      ev.currentTarget as HTMLElement,
+      this.hass!,
+      this._config!,
+      ev.detail.action!
+    );
   }
 
   private get _hasCardAction() {
