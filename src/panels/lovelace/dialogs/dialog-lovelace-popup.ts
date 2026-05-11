@@ -158,6 +158,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
           .anchor=${this.dialogAnchor ?? null}
           auto-size="vertical"
           auto-size-padding="16"
+          placement="bottom"
           without-arrow
           trap-focus
           role="dialog"
@@ -182,7 +183,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     return html`
       <ha-dialog
         .open=${this._open}
-        withoutHeader
+        .withoutHeader=${true}
         width="large"
         aria-label=${popupLabel}
       >
