@@ -147,6 +147,7 @@ class DialogEditSidebar extends LitElement {
 
     return html`
       <ha-items-display-editor
+        .hass=${this.hass}
         .value=${{
           order: this._order,
           hidden: hiddenPanels,

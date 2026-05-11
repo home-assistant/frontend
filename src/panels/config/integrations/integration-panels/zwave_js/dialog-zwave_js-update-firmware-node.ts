@@ -122,6 +122,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     }
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
+        .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
         .label=${this.hass.localize(
