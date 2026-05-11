@@ -190,6 +190,8 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _filtersFromUrl = false;
 
+  private _previousFilters?: DataTableFilters;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -201,7 +203,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
     if (this._filtersFromUrl) {
-      this._filters = {};
+      this._filters = this._previousFilters ?? {};
     }
   }
 
@@ -258,7 +260,10 @@ export class HaConfigDeviceDashboard extends LitElement {
       return;
     }
 
-    this._filtersFromUrl = true;
+    if (!this._filtersFromUrl) {
+      this._previousFilters = this._filters;
+      this._filtersFromUrl = true;
+    }
     this._filter = history.state?.filter || "";
 
     this._filters = {
