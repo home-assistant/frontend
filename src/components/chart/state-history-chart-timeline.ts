@@ -144,7 +144,10 @@ export class StateHistoryChartTimeline extends LitElement {
         "ui.components.history_charts.duration"
       )}: ${millisecondsToDuration(durationInMs)}`;
 
-      const markerLocalized = !computeRTL(this.hass)
+      const markerLocalized = !computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      )
         ? marker
         : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
 
@@ -198,7 +201,10 @@ export class StateHistoryChartTimeline extends LitElement {
       ? Math.max(this.paddingYAxis, this._yWidth)
       : 0;
     const labelMargin = 5;
-    const rtl = computeRTL(this.hass);
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
     this._chartOptions = {
       xAxis: {
         type: "time",

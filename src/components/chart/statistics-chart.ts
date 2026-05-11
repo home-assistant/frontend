@@ -368,7 +368,12 @@ export class StatisticsChart extends LitElement {
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(this.hass) ? "right" : "left",
+        position: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+          ? "right"
+          : "left",
         scale:
           this.chartType.startsWith("line") ||
           this.logarithmicScale ||

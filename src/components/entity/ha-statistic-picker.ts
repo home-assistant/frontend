@@ -210,7 +210,10 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(hass);
+      const isRTL = computeRTL(
+        hass.language,
+        hass.translationMetadata.translations
+      );
 
       const output: StatisticComboBoxItem[] = [];
 
@@ -353,7 +356,10 @@ export class HaStatisticPicker extends LitElement {
         this.hass.floors
       );
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
 
       const primary = entityName || deviceName || statisticId;
       const secondary = [areaName, entityName ? deviceName : undefined]

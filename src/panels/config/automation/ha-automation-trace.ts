@@ -172,7 +172,10 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.older_trace"
                   )}
-                  .path=${computeRTL(this.hass!)
+                  .path=${computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  )
                     ? mdiRayStartArrow
                     : mdiRayEndArrow}
                   .disabled=${this._traces[this._traces.length - 1].run_id ===
@@ -189,7 +192,10 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
                   )}
-                  .path=${computeRTL(this.hass!)
+                  .path=${computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  )
                     ? mdiRayEndArrow
                     : mdiRayStartArrow}
                   .disabled=${this._traces[0].run_id === this._runId}

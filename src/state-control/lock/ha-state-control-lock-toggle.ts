@@ -96,7 +96,6 @@ export class HaStateControlLockToggle extends LitElement {
             @click=${this._turnOn}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               .stateValue=${locking ? "locking" : "locked"}
             ></ha-state-icon>
@@ -106,7 +105,6 @@ export class HaStateControlLockToggle extends LitElement {
             @click=${this._turnOff}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               .stateValue=${unlocking ? "unlocking" : "unlocked"}
             ></ha-state-icon>
@@ -133,14 +131,12 @@ export class HaStateControlLockToggle extends LitElement {
       >
         <ha-state-icon
           slot="icon-on"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .stateValue=${locking ? "locking" : "locked"}
           class=${classMap({ pulse: locking })}
         ></ha-state-icon>
         <ha-state-icon
           slot="icon-off"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .stateValue=${unlocking ? "unlocking" : "unlocked"}
           class=${classMap({ pulse: unlocking })}

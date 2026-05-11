@@ -59,7 +59,10 @@ class HaMediaPlayerToggle extends LitElement {
       icon = mdiSpeakerPause;
     }
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const { primary, secondary } = this._computeDisplayData(
       this.entityId,

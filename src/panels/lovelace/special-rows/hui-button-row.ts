@@ -70,11 +70,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
     );
 
     return html`
-      <ha-state-icon
-        .icon=${this._config.icon}
-        .stateObj=${stateObj}
-        .hass=${this.hass}
-      >
+      <ha-state-icon .icon=${this._config.icon} .stateObj=${stateObj}>
       </ha-state-icon>
       <div class="flex">
         <div .title=${name}>${name}</div>

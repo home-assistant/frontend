@@ -201,7 +201,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 )}
                 data-state=${ifDefined(stateObj?.state)}
                 .icon=${this._config.icon}
-                .hass=${this.hass}
                 .stateObj=${stateObj}
                 style=${styleMap({
                   filter: stateObj ? stateColorBrightness(stateObj) : undefined,

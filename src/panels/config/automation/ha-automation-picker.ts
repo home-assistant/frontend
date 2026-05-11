@@ -302,7 +302,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (automation) =>
             html`<ha-state-icon
-              .hass=${this.hass}
               .stateObj=${automation}
               style=${styleMap({
                 color:

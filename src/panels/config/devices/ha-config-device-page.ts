@@ -588,7 +588,10 @@ export class HaConfigDevicePage extends LitElement {
                               </ha-list-item>
                               <ha-tooltip
                                 .for="scene-${slugify(entityState.entity_id)}"
-                                placement=${computeRTL(this.hass)
+                                placement=${computeRTL(
+                                  this.hass.language,
+                                  this.hass.translationMetadata.translations
+                                )
                                   ? "left"
                                   : "right"}
                               >

@@ -217,7 +217,6 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
             : html`
                 <ha-state-icon
                   slot="icon"
-                  .hass=${this.hass}
                   .stateObj=${stateObj}
                   .icon=${this._config.icon}
                 ></ha-state-icon>
