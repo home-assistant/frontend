@@ -9047,15 +9047,8 @@
           "action-editor": {
             "navigation_path": "Navigation path",
             "url_path": "URL path",
-            "desktop_mode": "Desktop mode",
-            "mobile_mode": "Mobile mode",
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",
-            "popup_modes": {
-              "popover": "Popover",
-              "dialog": "Dialog",
-              "bottom-sheet": "Bottom sheet"
-            },
             "actions": {
               "default_action": "Default",
               "perform-action": "Perform action",

@@ -4,7 +4,6 @@ import memoizeOne from "memoize-one";
 import { refine } from "superstruct";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-assist-pipeline-picker";
 import type {
   HaFormSchema,
@@ -140,41 +139,6 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
-  private _showPopupSchema = memoizeOne(
-    (localize: LocalizeFunc): readonly HaFormSchema[] => [
-      {
-        name: "desktop_mode",
-        default: "popover",
-        selector: {
-          select: {
-            mode: "box",
-            options: ["popover", "dialog"].map((value) => ({
-              value,
-              label: localize(
-                `ui.panel.lovelace.editor.action-editor.popup_modes.${value}`
-              ),
-            })),
-          },
-        },
-      },
-      {
-        name: "mobile_mode",
-        default: "bottom-sheet",
-        selector: {
-          select: {
-            mode: "box",
-            options: ["bottom-sheet", "dialog"].map((value) => ({
-              value,
-              label: localize(
-                `ui.panel.lovelace.editor.action-editor.popup_modes.${value}`
-              ),
-            })),
-          },
-        },
-      },
-    ]
-  );
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -278,14 +242,6 @@ export class HuiActionEditor extends LitElement {
         : nothing}
       ${this.config?.action === "show-popup"
         ? html`
-            <ha-form
-              .hass=${this.hass}
-              .schema=${this._showPopupSchema(this.hass.localize)}
-              .data=${this.config}
-              .computeLabel=${this._computeFormLabel}
-              @value-changed=${this._formValueChanged}
-            >
-            </ha-form>
             <hui-card-list-editor
               .hass=${this.hass}
               .lovelace=${this.context?.lovelace}
@@ -334,8 +290,6 @@ export class HuiActionEditor extends LitElement {
       }
       case "show-popup": {
         data = {
-          desktop_mode: "popover",
-          mobile_mode: "bottom-sheet",
           cards: this.config?.action === "show-popup" ? this.config.cards : [],
         };
         break;

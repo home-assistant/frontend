@@ -7,13 +7,8 @@ import { ADAPTIVE_DIALOG_MEDIA_QUERY } from "../../../components/ha-adaptive-dia
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-bottom-sheet";
-import "../../../components/ha-dialog";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import "../sections/hui-section";
-
-type DesktopPopupMode = "popover" | "dialog";
-
-type MobilePopupMode = "bottom-sheet" | "dialog";
 
 type WaPopoverElement = HTMLElement & {
   anchor: Element | null;
@@ -21,8 +16,6 @@ type WaPopoverElement = HTMLElement & {
 
 export interface LovelacePopupDialogParams {
   hass: HomeAssistant;
-  desktopMode?: DesktopPopupMode;
-  mobileMode?: MobilePopupMode;
   cards: LovelaceCardConfig[];
 }
 
@@ -124,13 +117,8 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
     return super.closeDialog(_historyState);
   }
 
-  private get _presentationMode(): DesktopPopupMode | MobilePopupMode {
-    if (!this.params) {
-      return "popover";
-    }
-    return this._narrow
-      ? (this.params.mobileMode ?? "bottom-sheet")
-      : (this.params.desktopMode ?? "popover");
+  private get _presentationMode(): "popover" | "bottom-sheet" {
+    return this._narrow ? "bottom-sheet" : "popover";
   }
 
   protected render() {
@@ -180,16 +168,7 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
       `;
     }
 
-    return html`
-      <ha-dialog
-        .open=${this._open}
-        ?without-header=${!this._narrow}
-        width="large"
-        aria-label=${popupLabel}
-      >
-        ${content}
-      </ha-dialog>
-    `;
+    return nothing;
   }
 
   private _handlePopoverShow(ev: Event) {
@@ -209,7 +188,6 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
   }
 
   static styles = css`
-    ha-dialog,
     ha-bottom-sheet {
       --dialog-content-padding: var(--ha-space-4);
       --ha-bottom-sheet-content-padding: var(--ha-space-4);
