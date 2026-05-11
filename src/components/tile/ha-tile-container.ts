@@ -100,6 +100,7 @@ export class HaTileContainer extends LitElement {
       flex-direction: row;
       align-items: center;
       padding: 0 10px;
+      min-height: var(--row-height, 56px);
       flex: 1;
       min-width: 0;
       box-sizing: border-box;
