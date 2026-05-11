@@ -82,10 +82,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     // Default to the existing enterable credential type (if any),
     // or the first supported enterable type.
     this._credentialType =
-      existingCred &&
-      ENTERABLE_ZWAVE_CREDENTIAL_TYPES.includes(existingCred.type)
-        ? existingCred.type
-        : (enterableCredentialTypes(params.capabilities)[0] ?? "");
+      existingCred?.type ??
+      enterableCredentialTypes(params.capabilities)[0] ??
+      "";
     // Always show an empty field for credential data - we override it when something is entered.
     this._credentialData = "";
 
@@ -93,10 +92,16 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._initialUserType = this._userType;
   }
 
+  // Credentials with non-enterable types (e.g. biometric) can't be edited
+  // through this dialog and should be left untouched. Treat them as if they
+  // don't exist so they aren't deleted on type-switch and don't block
+  // rename-only saves by being picked as the default credential type.
   private _existingCredential(
     params: ZwaveCredentialUserEditDialogParams
   ): ZwaveCredential | undefined {
-    return params.user?.credentials[0];
+    return params.user?.credentials.find((c) =>
+      ENTERABLE_ZWAVE_CREDENTIAL_TYPES.includes(c.type)
+    );
   }
 
   private get _enterableTypes(): ZwaveCredentialType[] {
