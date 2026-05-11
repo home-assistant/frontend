@@ -71,6 +71,29 @@ export interface IntegrationListItem {
   is_discovered?: boolean;
 }
 
+export async function showSingleConfigEntryWarning(
+  element: HTMLElement,
+  localize: LocalizeFunc,
+  domain: string,
+  loadBackendTranslation: HomeAssistant["loadBackendTranslation"]
+) {
+  const backendLocalize = await loadBackendTranslation("title", domain);
+  showAlertDialog(element, {
+    title: localize(
+      "ui.panel.config.integrations.config_flow.single_config_entry_title"
+    ),
+    text: localize(
+      "ui.panel.config.integrations.config_flow.single_config_entry",
+      {
+        integration_name: html`<a
+          href=${`/config/integrations/integration/${domain}`}
+          >${domainToName(backendLocalize, domain)}</a
+        >`,
+      }
+    ),
+  });
+}
+
 @customElement("dialog-add-integration")
 class AddIntegrationDialog extends LitElement {
   public hass!: HomeAssistant;
@@ -711,21 +734,13 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
-        const localize = await this.hass.loadBackendTranslation(
-          "title",
-          integration.name
+
+        await showSingleConfigEntryWarning(
+          this,
+          this.hass.localize,
+          integration.domain,
+          this.hass.loadBackendTranslation
         );
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry",
-            {
-              integration_name: domainToName(localize, integration.name),
-            }
-          ),
-        });
         return;
       }
     }

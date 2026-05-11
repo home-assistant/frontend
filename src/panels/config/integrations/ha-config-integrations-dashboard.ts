@@ -69,6 +69,7 @@ import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import { showSingleConfigEntryWarning } from "./dialog-add-integration";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -914,21 +915,12 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
-          const localize = await this.hass.loadBackendTranslation(
-            "title",
-            integration.name
+          await showSingleConfigEntryWarning(
+            this,
+            this.hass.localize,
+            domain,
+            this.hass.loadBackendTranslation
           );
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.integrations.config_flow.single_config_entry_title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.integrations.config_flow.single_config_entry",
-              {
-                integration_name: domainToName(localize, integration.name!),
-              }
-            ),
-          });
           return;
         }
       }

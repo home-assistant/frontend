@@ -621,7 +621,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     </ha-button>
                   `
                 : nothing}
-              ${this._manifest?.integration_type !== "hardware"
+              ${this._manifest?.integration_type !== "hardware" &&
+              (!this._manifest?.single_config_entry ||
+                (normalData.length === 0 && attentionData.length === 0))
                 ? html`<ha-button
                     .appearance=${canAddDevice ? "filled" : "accent"}
                     @click=${this._addIntegration}
@@ -1234,30 +1236,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ),
       });
       return;
-    }
-    if (this._manifest?.single_config_entry) {
-      const entries = this._domainConfigEntries(
-        this.domain,
-        this._extraConfigEntries || this.configEntries
-      );
-      if (entries.length > 0) {
-        const localize = await this.hass.loadBackendTranslation(
-          "title",
-          this._manifest.name
-        );
-        await showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry",
-            {
-              integration_name: domainToName(localize, this._manifest.name),
-            }
-          ),
-        });
-        return;
-      }
     }
     showAddIntegrationDialog(this, {
       domain: this.domain,
