@@ -1,11 +1,11 @@
 import "@lit-labs/virtualizer";
+import { consume, type ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -17,11 +17,17 @@ import "../../../components/ha-list";
 import "../../../components/ha-state-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import {
+  configContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../data/context";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
-import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
 import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
 
@@ -31,69 +37,60 @@ interface FilteredEntity {
 }
 
 @customElement("dialog-expose-entity")
-class DialogExposeEntity extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _params?: ExposeEntityDialogParams;
-
-  @state() private _open = false;
-
+class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
+  LitElement
+) {
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
 
-  public willUpdate(): void {
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
-  }
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n!: ContextType<typeof internationalizationContext>;
 
-  public async showDialog(params: ExposeEntityDialogParams): Promise<void> {
-    this._params = params;
-    this._open = true;
-  }
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  protected _config!: ContextType<typeof configContext>;
 
-  public closeDialog(): void {
-    this._open = false;
-  }
+  @consume({ context: statesContext, subscribe: true })
+  protected _states!: ContextType<typeof statesContext>;
 
-  private _dialogClosed(): void {
-    this._params = undefined;
-    this._selected = [];
-    this._filter = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  @consume({ context: registriesContext, subscribe: true })
+  protected _registries!: ContextType<typeof registriesContext>;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    loadVirtualizer();
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
 
-    const header = this.hass.localize(
+    const header = this._i18n.localize(
       "ui.panel.config.voice_assistants.expose.expose_dialog.header"
     );
-    const subtitle = this.hass.localize(
+    const subtitle = this._i18n.localize(
       "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
       {
-        assistants: this._params.filterAssistants
+        assistants: this.params.filterAssistants
           .map((ass) => voiceAssistants[ass].name)
           .join(", "),
       }
     );
 
     const entities = this._filterEntities(
-      this._params.exposedEntities,
+      this.params.exposedEntities,
       this._filter
     );
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
+        open
         header-title=${header}
         header-subtitle=${subtitle}
         prevent-scrim-close
-        @closed=${this._dialogClosed}
       >
         <ha-input-search
           appearance="outlined"
@@ -108,6 +105,7 @@ class DialogExposeEntity extends LitElement {
             @keydown=${this._handleItemKeydown}
             .items=${entities}
             .renderItem=${this._renderItem}
+            .keyFunction=${this._keyFunction}
           >
           </lit-virtualizer>
         </ha-list>
@@ -117,14 +115,14 @@ class DialogExposeEntity extends LitElement {
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass!.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._expose}
             .disabled=${this._selected.length === 0}
           >
-            ${this.hass.localize(
+            ${this._i18n.localize(
               "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
               { count: this._selected.length }
             )}
@@ -133,6 +131,8 @@ class DialogExposeEntity extends LitElement {
       </ha-dialog>
     `;
   }
+
+  private _keyFunction = (item: FilteredEntity) => item.entity.entity_id;
 
   private _handleSelected = (ev) => {
     const entityId = ev.target.value;
@@ -170,9 +170,9 @@ class DialogExposeEntity extends LitElement {
       const lowerFilter = filter?.toLowerCase();
       const result: FilteredEntity[] = [];
 
-      for (const entity of Object.values(this.hass.states)) {
+      for (const entity of Object.values(this._states)) {
         if (
-          this._params!.filterAssistants.every(
+          this.params!.filterAssistants.every(
             (ass) => exposedEntities[entity.entity_id]?.[ass]
           )
         ) {
@@ -182,10 +182,10 @@ class DialogExposeEntity extends LitElement {
         const nameList = computeEntityNameList(
           entity,
           [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
+          this._registries.entities,
+          this._registries.devices,
+          this._registries.areas,
+          this._registries.floors
         );
 
         if (!lowerFilter) {
@@ -225,12 +225,15 @@ class DialogExposeEntity extends LitElement {
     const { entity: entityState, nameList } = item;
     const [entityName, deviceName, areaName] = nameList;
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
+    );
     const primary = entityName || deviceName || entityState.entity_id;
     const context = [areaName, entityName ? deviceName : undefined]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
+    const showEntityId = this._config?.userData?.showEntityIdPicker;
 
     return html`
       <ha-check-list-item
@@ -245,7 +248,6 @@ class DialogExposeEntity extends LitElement {
         <ha-state-icon
           title=${ifDefined(entityState?.state)}
           slot="graphic"
-          .hass=${this.hass}
           .stateObj=${entityState}
         ></ha-state-icon>
         ${primary}
@@ -264,7 +266,7 @@ class DialogExposeEntity extends LitElement {
   };
 
   private _expose() {
-    this._params!.exposeEntities(this._selected);
+    this.params!.exposeEntities(this._selected);
     this.closeDialog();
   }
 

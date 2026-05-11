@@ -46,8 +46,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
           ? html`
               <div class="status">
                 <div class="icon">
-                  <ha-state-icon .hass=${this.hass} .stateObj=${this.stateObj}>
-                  </ha-state-icon>
+                  <ha-state-icon .stateObj=${this.stateObj}> </ha-state-icon>
                 </div>
               </div>
             `

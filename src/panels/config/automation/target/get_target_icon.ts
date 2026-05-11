@@ -51,7 +51,6 @@ export const getTargetIcon = (
 
   if (targetType === "entity" && hass.states[targetId]) {
     return html`<ha-state-icon
-      .hass=${hass}
       .stateObj=${hass.states[targetId]}
     ></ha-state-icon>`;
   }

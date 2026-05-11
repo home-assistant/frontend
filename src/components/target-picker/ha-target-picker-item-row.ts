@@ -168,7 +168,6 @@ export class HaTargetPickerItemRow extends LitElement {
                 : this.type === "entity"
                   ? html`
                       <ha-state-icon
-                        .hass=${this.hass}
                         .stateObj=${stateObject ||
                         ({
                           entity_id: this.itemId,
@@ -566,7 +565,14 @@ export class HaTargetPickerItemRow extends LitElement {
       const areaName = area ? computeAreaName(area) : undefined;
       const context = [areaName, entityName ? deviceName : undefined]
         .filter(Boolean)
-        .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+        .join(
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
+        );
       return {
         name: entityName || deviceName || item,
         context,

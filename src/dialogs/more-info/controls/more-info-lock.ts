@@ -97,10 +97,7 @@ class MoreInfoLock extends LitElement {
               <div class="status">
                 <span></span>
                 <div class="icon">
-                  <ha-state-icon
-                    .hass=${this.hass}
-                    .stateObj=${this.stateObj}
-                  ></ha-state-icon>
+                  <ha-state-icon .stateObj=${this.stateObj}></ha-state-icon>
                 </div>
               </div>
             `

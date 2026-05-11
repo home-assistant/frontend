@@ -80,7 +80,6 @@ export class HaStateControlCoverToggle extends LitElement {
             })}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               stateValue="open"
             ></ha-state-icon>
@@ -97,7 +96,6 @@ export class HaStateControlCoverToggle extends LitElement {
             })}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               stateValue="closed"
             ></ha-state-icon>
@@ -124,13 +122,11 @@ export class HaStateControlCoverToggle extends LitElement {
       >
         <ha-state-icon
           slot="icon-on"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           stateValue="open"
         ></ha-state-icon>
         <ha-state-icon
           slot="icon-off"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           stateValue="closed"
         ></ha-state-icon>

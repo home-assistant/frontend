@@ -971,7 +971,14 @@ class DialogAddAutomationElement
 
             subtitle = [areaName, entityName ? deviceName : undefined]
               .filter(Boolean)
-              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+              .join(
+                computeRTL(
+                  this.hass.language,
+                  this.hass.translationMetadata.translations
+                )
+                  ? " ◂ "
+                  : " ▸ "
+              );
           }
         }
 

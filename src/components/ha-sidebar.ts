@@ -523,7 +523,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   }
 
   private _renderUserItem(selectedPanel: string) {
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
     const isSelected = selectedPanel === "profile";
 
     return html`
