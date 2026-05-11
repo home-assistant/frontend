@@ -266,7 +266,7 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
-  private _renderRow(row = true) {
+  private _renderRow() {
     const type = getAutomationActionType(this.action);
 
     const action = type === "service" && (this.action as ServiceAction).action;
@@ -339,10 +339,10 @@ export default class HaAutomationActionRow extends LitElement {
       <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
-        .slot=${row ? "event" : ""}
+        slot="event"
         aria-live="polite"
         .interactive=${!!this._runResult?.details}
-        class=${row ? "" : "event-chip"}
+        class="event-chip"
         @click=${this._showRunResultDetails}
         @keydown=${this._showRunResultDetails}
       >
@@ -640,7 +640,7 @@ export default class HaAutomationActionRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow(false)}
+                ${this._renderRow()}
               </ha-expansion-panel>
             `}
       </ha-card>
