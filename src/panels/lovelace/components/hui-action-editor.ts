@@ -2,9 +2,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { refine } from "superstruct";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/ha-alert";
 import "../../../components/ha-assist-pipeline-picker";
 import type {
   HaFormSchema,
@@ -22,14 +22,18 @@ import type {
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
+import "../editor/card-editor/hui-card-list-editor";
+import type { CardsChangedEvent } from "../editor/card-editor/hui-card-list-editor";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
 export interface ActionRelatedContext {
   entity_id?: string;
   area_id?: string;
+  lovelace?: LovelaceConfig;
 }
 
 export const ACTION_RELATED_CONTEXT = {
@@ -286,11 +290,12 @@ export class HuiActionEditor extends LitElement {
               @value-changed=${this._formValueChanged}
             >
             </ha-form>
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.action-editor.show_popup_yaml_only"
-              )}
-            </ha-alert>
+            <hui-card-list-editor
+              .hass=${this.hass}
+              .lovelace=${this.context?.lovelace}
+              .cards=${this.config.cards ?? []}
+              @cards-changed=${this._popupCardsChanged}
+            ></hui-card-list-editor>
           `
         : nothing}
     `;
@@ -373,6 +378,16 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
+  private _popupCardsChanged(ev: HASSDomEvent<CardsChangedEvent>) {
+    ev.stopPropagation();
+    if (this.config?.action !== "show-popup") {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: { ...this.config, cards: ev.detail.cards },
+    });
+  }
+
   private _computeFormLabel(
     schema: SchemaUnion<typeof ASSIST_SCHEMA> | HaFormSchema
   ) {
@@ -422,19 +437,21 @@ export class HuiActionEditor extends LitElement {
     }
     ha-service-control,
     ha-navigation-picker,
-    ha-alert,
     ha-form {
       display: block;
     }
     ha-input,
     ha-service-control,
     ha-navigation-picker,
-    ha-alert,
     ha-form {
       margin-top: 8px;
     }
     ha-service-control {
       --service-control-padding: 0;
+    }
+    hui-card-list-editor {
+      display: block;
+      margin-top: 8px;
     }
   `;
 }

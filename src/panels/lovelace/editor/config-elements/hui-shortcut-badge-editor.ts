@@ -7,6 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { NavigationPathInfoController } from "../../../../data/navigation-path-controller";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { ServiceInfoController } from "../../../../data/service-info-controller";
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
@@ -44,6 +45,8 @@ export class HuiShortcutBadgeEditor
   implements LovelaceBadgeEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @state() private _config?: ShortcutBadgeConfig;
 
@@ -167,6 +170,7 @@ export class HuiShortcutBadgeEditor
         .hass=${this.hass}
         .data=${this._config}
         .schema=${this._schema(defaults.label, defaults.icon)}
+        .context=${{ lovelace: this.lovelace }}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

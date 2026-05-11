@@ -9052,7 +9052,6 @@
             "mobile_mode": "Mobile mode",
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",
-            "show_popup_yaml_only": "Configure popup cards in YAML.",
             "popup_modes": {
               "popover": "Popover",
               "dialog": "Dialog",

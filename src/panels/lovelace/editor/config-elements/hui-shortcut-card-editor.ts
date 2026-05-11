@@ -8,6 +8,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { NavigationPathInfoController } from "../../../../data/navigation-path-controller";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { ServiceInfoController } from "../../../../data/service-info-controller";
 import type { HomeAssistant } from "../../../../types";
 import { getShortcutCardDefaults } from "../../cards/hui-shortcut-card-defaults";
@@ -47,6 +48,8 @@ export class HuiShortcutCardEditor
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @state() private _config?: ShortcutCardConfig;
 
@@ -209,6 +212,7 @@ export class HuiShortcutCardEditor
           defaults.label,
           defaults.icon
         )}
+        .context=${{ lovelace: this.lovelace }}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
