@@ -89,8 +89,8 @@ describe("zwave_js-credentials", () => {
             user_type: "general",
             credential_rule: "single",
             credentials: [
-              { type: "pin_code", slot: 1, data: null },
-              { type: "finger_biometric", slot: 1, data: null },
+              { type: "pin_code", slot: 1 },
+              { type: "finger_biometric", slot: 1 },
             ],
           },
         ],

@@ -98,7 +98,6 @@ export interface ZwaveCredentialCapabilities {
 export interface ZwaveCredential {
   type: ZwaveCredentialType;
   slot: number;
-  data: string | null;
 }
 
 export interface ZwaveUser {

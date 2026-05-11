@@ -52,7 +52,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   @state() private _error = "";
 
-  @state() private _dataTouched = false;
+  @state() private _credentialDataDirty = false;
 
   @state() private _open = false;
 
@@ -60,16 +60,12 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   private _initialUserType = "";
 
-  private _initialCredentialType: ZwaveCredentialType | "" = "";
-
-  private _initialCredentialData = "";
-
   public async showDialog(
     params: ZwaveCredentialUserEditDialogParams
   ): Promise<void> {
     this._params = params;
     this._error = "";
-    this._dataTouched = false;
+    this._credentialDataDirty = false;
     this._open = true;
 
     const existingCred = this._existingCredential(params);
@@ -83,21 +79,18 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       this._userType = compatibleUserTypes(params.capabilities)[0] ?? "";
     }
 
+    // Default to the existing enterable credential type (if any),
+    // or the first supported enterable type.
     this._credentialType =
-      existingCred?.type ??
-      enterableCredentialTypes(params.capabilities)[0] ??
-      "";
-    this._credentialData =
       existingCred &&
-      ENTERABLE_ZWAVE_CREDENTIAL_TYPES.includes(existingCred.type) &&
-      existingCred.data
-        ? existingCred.data
-        : "";
+      ENTERABLE_ZWAVE_CREDENTIAL_TYPES.includes(existingCred.type)
+        ? existingCred.type
+        : (enterableCredentialTypes(params.capabilities)[0] ?? "");
+    // Always show an empty field for credential data - we override it when something is entered.
+    this._credentialData = "";
 
     this._initialUserName = this._userName;
     this._initialUserType = this._userType;
-    this._initialCredentialType = this._credentialType;
-    this._initialCredentialData = this._credentialData;
   }
 
   private _existingCredential(
@@ -273,9 +266,10 @@ class DialogZwaveCredentialUserEdit extends LitElement {
                   )}
                   minlength=${minLength}
                   maxlength=${maxLength}
-                  required
+                  ?required=${isNew}
                   auto-validate
-                  ?invalid=${this._dataTouched && !!this._credentialError}
+                  ?invalid=${this._credentialDataDirty &&
+                  !!this._credentialError}
                   validation-message=${this._credentialError || ""}
                 ></ha-input>
               `
@@ -368,7 +362,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   }
 
   private _handleCredentialBlur(): void {
-    this._dataTouched = true;
+    this._credentialDataDirty = true;
   }
 
   private get _canSave(): boolean {
@@ -381,14 +375,22 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     if (this._supportsUserNames && !this._userName.trim()) {
       return false;
     }
-    if (!this._credentialType || this._credentialError) {
+    if (!this._credentialType) {
+      return false;
+    }
+    if (this._credentialError) {
       return false;
     }
     if (!this._params.user) {
-      return true;
+      // New-user flow: entering a credential is mandatory
+      return !!this._credentialData;
     }
-    // Edit mode: require an actual change to enable Save.
-    return this._userChanged || this._credentialChanged;
+    // Edit flow: switching credential type requires new credential data.
+    if (this._credentialTypeChanged) {
+      return !!this._credentialData;
+    }
+    // Otherwise allow saving when the user was renamed or new credential data was entered
+    return !!this._credentialData || this._userChanged;
   }
 
   private get _userChanged(): boolean {
@@ -398,15 +400,25 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     );
   }
 
-  private get _credentialChanged(): boolean {
-    return (
-      this._credentialType !== this._initialCredentialType ||
-      this._credentialData !== this._initialCredentialData
-    );
+  private get _credentialTypeChanged(): boolean {
+    if (!this._params?.user) {
+      return false;
+    }
+    const existing = this._existingCredential(this._params);
+    return !!existing && this._credentialType !== existing.type;
   }
 
   private get _credentialError(): string {
     if (!this._params) {
+      return "";
+    }
+    // In edit mode without a credential-type switch, an empty field means
+    // "keep existing" — no validation needed until the operator types.
+    if (
+      this._params.user &&
+      !this._credentialData &&
+      !this._credentialTypeChanged
+    ) {
       return "";
     }
     const code = getCredentialError(
@@ -443,14 +455,11 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   private _handleCredentialTypeChanged(ev: Event): void {
     this._credentialType = (ev.target as HaRadio).value as ZwaveCredentialType;
     // Switching types invalidates any data tied to the previous type's
-    // length/charset constraints, so clear the field for re-entry. If the
-    // user is reverting to the original type, restore the prefilled data.
-    if (this._credentialType === this._initialCredentialType) {
-      this._credentialData = this._initialCredentialData;
-    } else {
-      this._credentialData = "";
-    }
-    this._dataTouched = false;
+    // length/charset constraints, so always clear the field for re-entry.
+    this._credentialData = "";
+    // Changing the credential type requires entering new credentials.
+    // To make this obvious, we mark the field as dirty, so a validation error is shown.
+    this._credentialDataDirty = this._credentialTypeChanged;
   }
 
   private _handleUserTypeChanged(ev: CustomEvent): void {
@@ -463,7 +472,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
 
     this._error = "";
-    this._dataTouched = true;
+    this._credentialDataDirty = true;
 
     if (this._supportsUserNames && !this._userName.trim()) {
       this._error = this.hass.localize(
@@ -553,7 +562,8 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       });
     }
 
-    if (this._credentialChanged) {
+    // Only update/override credentials when the user entered one.
+    if (this._credentialData) {
       const typeChanged =
         !!existingCred && existingCred.type !== credentialType;
       if (typeChanged) {
@@ -587,7 +597,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     this._credentialData = "";
     this._saving = false;
     this._error = "";
-    this._dataTouched = false;
+    this._credentialDataDirty = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
