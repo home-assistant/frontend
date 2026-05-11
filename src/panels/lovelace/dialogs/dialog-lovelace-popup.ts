@@ -139,36 +139,28 @@ export class DialogLovelacePopup extends DialogMixin<LovelacePopupDialogParams>(
       import-only
     ></hui-section>`;
 
-    if (presentationMode === "popover") {
-      return html`
-        <wa-popover
-          .open=${this._popoverOpen}
-          .anchor=${this.dialogAnchor ?? null}
-          auto-size="vertical"
-          auto-size-padding="16"
-          placement="bottom"
-          without-arrow
-          trap-focus
-          role="dialog"
-          aria-modal="true"
-          aria-label=${popupLabel}
-          @wa-show=${this._handlePopoverShow}
-          @wa-after-hide=${this._handlePopoverAfterHide}
-        >
-          <div class="popover-surface">${content}</div>
-        </wa-popover>
-      `;
-    }
-
     if (presentationMode === "bottom-sheet") {
-      return html`
-        <ha-bottom-sheet .open=${this._open} aria-label=${popupLabel}
-          >${content}</ha-bottom-sheet
-        >
-      `;
+      return html`<ha-bottom-sheet .open=${this._open} aria-label=${popupLabel}
+        >${content}</ha-bottom-sheet
+      >`;
     }
 
-    return nothing;
+    return html`<wa-popover
+      .open=${this._popoverOpen}
+      .anchor=${this.dialogAnchor ?? null}
+      auto-size="vertical"
+      auto-size-padding="16"
+      placement="bottom"
+      without-arrow
+      trap-focus
+      role="dialog"
+      aria-modal="true"
+      aria-label=${popupLabel}
+      @wa-show=${this._handlePopoverShow}
+      @wa-after-hide=${this._handlePopoverAfterHide}
+    >
+      <div class="popover-surface">${content}</div>
+    </wa-popover>`;
   }
 
   private _handlePopoverShow(ev: Event) {
