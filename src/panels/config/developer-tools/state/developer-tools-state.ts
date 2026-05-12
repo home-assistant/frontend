@@ -29,9 +29,12 @@ import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { showToast } from "../../../../util/toast";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 import "./developer-tools-state-renderer";
 
 // Use virtualizer after threshold to avoid performance issues
@@ -75,6 +78,8 @@ class HaPanelDevState extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: false }) public route!: Route;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _filteredEntities = memoizeOne(
@@ -101,167 +106,179 @@ class HaPanelDevState extends LitElement {
     );
 
     return html`
-      <div class="heading">
-        <h1>
-          ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.current_entities"
-          )}
-        </h1>
-        ${!this.narrow
-          ? html`<ha-checkbox
-              .checked=${this._showAttributes}
-              @change=${this._saveAttributeCheckboxState}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.states.attributes"
-              )}
-            </ha-checkbox>`
-          : nothing}
-      </div>
-      <ha-expansion-panel
-        .header=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.states.set_state"
-        )}
-        outlined
-        .expanded=${this._expanded}
-        @expanded-changed=${this._expandedChanged}
-      >
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.description1"
-          )}<br />
-          ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.description2"
-          )}
-        </p>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
-        <div class="state-wrapper flex-horizontal">
-          <div class="inputs">
-            <ha-entity-picker
-              autofocus
-              .hass=${this.hass}
-              .value=${this._entityId}
-              @value-changed=${this._entityIdChanged}
-              show-entity-id
-            ></ha-entity-picker>
-            ${this._entityId
-              ? html`
-                  <div class="entity-id">
-                    <span>${this._entityId}</span>
-                    <ha-icon-button
-                      .path=${mdiContentCopy}
-                      @click=${this._copyStateEntity}
-                      title=${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.states.copy_id"
-                      )}
-                    ></ha-icon-button>
-                  </div>
-                `
-              : nothing}
-            <ha-input
-              .label=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.states.state"
-              )}
-              required
-              autocapitalize="none"
-              autocomplete="off"
-              .autocorrect=${false}
-              .spellcheck=${false}
-              .value=${this._state}
-              @change=${this._stateChanged}
-              class="state-input"
-            ></ha-input>
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.states.state_attributes"
-              )}
-            </p>
-            <ha-yaml-editor
-              .hass=${this.hass}
-              .value=${this._stateAttributes}
-              .error=${!this._validJSON}
-              @value-changed=${this._yamlChanged}
-              dir="ltr"
-            ></ha-yaml-editor>
-            <div class="button-row">
-              <ha-button
-                @click=${this._handleSetState}
-                .disabled=${!this._validJSON}
-                raised
-                >${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.states.set_state"
-                )}</ha-button
-              >
-              <ha-icon-button
-                @click=${this._updateEntity}
-                .label=${this.hass.localize("ui.common.refresh")}
-                .path=${mdiRefresh}
-              ></ha-icon-button>
-            </div>
-          </div>
-          <div class="info">
-            ${this._entity
-              ? html`<p>
-                    <b
-                      >${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.states.last_changed"
-                      )}:</b
-                    ><br />
-                    <a href=${this._historyFromLastChanged(this._entity)}
-                      >${this._lastChangedString(this._entity)}</a
-                    >
-                  </p>
-                  <p>
-                    <b
-                      >${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.states.last_updated"
-                      )}:</b
-                    ><br />
-                    <a href=${this._historyFromLastUpdated(this._entity)}
-                      >${this._lastUpdatedString(this._entity)}</a
-                    >
-                  </p>`
-              : nothing}
-          </div>
-        </div>
-      </ha-expansion-panel>
-      <developer-tools-state-renderer
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .entities=${entities}
-        .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
-        .showAttributes=${this._showAttributes}
-        @states-tool-entity-selected=${this._entitySelected}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
       >
-        <ha-input-search
-          slot="filter-entities"
-          .label=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.filter_entities"
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div class="heading">
+          <h1>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.current_entities"
+            )}
+          </h1>
+          ${!this.narrow
+            ? html`<ha-checkbox
+                .checked=${this._showAttributes}
+                @change=${this._saveAttributeCheckboxState}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.states.attributes"
+                )}
+              </ha-checkbox>`
+            : nothing}
+        </div>
+        <ha-expansion-panel
+          .header=${this.hass.localize(
+            "ui.panel.config.developer-tools.tabs.states.set_state"
           )}
-          .value=${this._entityFilter}
-          @input=${this._entityFilterChanged}
-        ></ha-input-search>
-        <ha-input-search
-          slot="filter-states"
-          .label=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.filter_states"
-          )}
-          type="search"
-          .value=${this._stateFilter}
-          @input=${this._stateFilterChanged}
-        ></ha-input-search>
-        <ha-input-search
-          slot="filter-attributes"
-          .label=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.states.filter_attributes"
-          )}
-          type="search"
-          .value=${this._attributeFilter}
-          @input=${this._attributeFilterChanged}
-        ></ha-input-search>
-      </developer-tools-state-renderer>
+          outlined
+          .expanded=${this._expanded}
+          @expanded-changed=${this._expandedChanged}
+        >
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.description1"
+            )}<br />
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.description2"
+            )}
+          </p>
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
+          <div class="state-wrapper flex-horizontal">
+            <div class="inputs">
+              <ha-entity-picker
+                autofocus
+                .hass=${this.hass}
+                .value=${this._entityId}
+                @value-changed=${this._entityIdChanged}
+                show-entity-id
+              ></ha-entity-picker>
+              ${this._entityId
+                ? html`
+                    <div class="entity-id">
+                      <span>${this._entityId}</span>
+                      <ha-icon-button
+                        .path=${mdiContentCopy}
+                        @click=${this._copyStateEntity}
+                        title=${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.states.copy_id"
+                        )}
+                      ></ha-icon-button>
+                    </div>
+                  `
+                : nothing}
+              <ha-input
+                .label=${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.states.state"
+                )}
+                required
+                autocapitalize="none"
+                autocomplete="off"
+                .autocorrect=${false}
+                .spellcheck=${false}
+                .value=${this._state}
+                @change=${this._stateChanged}
+                class="state-input"
+              ></ha-input>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.states.state_attributes"
+                )}
+              </p>
+              <ha-yaml-editor
+                .hass=${this.hass}
+                .value=${this._stateAttributes}
+                .error=${!this._validJSON}
+                @value-changed=${this._yamlChanged}
+                dir="ltr"
+              ></ha-yaml-editor>
+              <div class="button-row">
+                <ha-button
+                  @click=${this._handleSetState}
+                  .disabled=${!this._validJSON}
+                  raised
+                  >${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.states.set_state"
+                  )}</ha-button
+                >
+                <ha-icon-button
+                  @click=${this._updateEntity}
+                  .label=${this.hass.localize("ui.common.refresh")}
+                  .path=${mdiRefresh}
+                ></ha-icon-button>
+              </div>
+            </div>
+            <div class="info">
+              ${this._entity
+                ? html`<p>
+                      <b
+                        >${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.states.last_changed"
+                        )}:</b
+                      ><br />
+                      <a href=${this._historyFromLastChanged(this._entity)}
+                        >${this._lastChangedString(this._entity)}</a
+                      >
+                    </p>
+                    <p>
+                      <b
+                        >${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.states.last_updated"
+                        )}:</b
+                      ><br />
+                      <a href=${this._historyFromLastUpdated(this._entity)}
+                        >${this._lastUpdatedString(this._entity)}</a
+                      >
+                    </p>`
+                : nothing}
+            </div>
+          </div>
+        </ha-expansion-panel>
+        <developer-tools-state-renderer
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .entities=${entities}
+          .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
+          .showAttributes=${this._showAttributes}
+          @states-tool-entity-selected=${this._entitySelected}
+        >
+          <ha-input-search
+            slot="filter-entities"
+            .label=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.filter_entities"
+            )}
+            .value=${this._entityFilter}
+            @input=${this._entityFilterChanged}
+          ></ha-input-search>
+          <ha-input-search
+            slot="filter-states"
+            .label=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.filter_states"
+            )}
+            type="search"
+            .value=${this._stateFilter}
+            @input=${this._stateFilterChanged}
+          ></ha-input-search>
+          <ha-input-search
+            slot="filter-attributes"
+            .label=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.filter_attributes"
+            )}
+            type="search"
+            .value=${this._attributeFilter}
+            @input=${this._attributeFilterChanged}
+          ></ha-input-search>
+        </developer-tools-state-renderer>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -504,7 +521,20 @@ class HaPanelDevState extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
-          padding: var(--ha-space-4);
+        }
+
+        hass-tabs-subpage {
+          height: 100%;
+        }
+
+        .heading,
+        ha-expansion-panel,
+        developer-tools-state-renderer {
+          margin-inline: var(--ha-space-4);
+        }
+
+        .heading {
+          margin-top: var(--ha-space-4);
         }
 
         :host ha-input-search {

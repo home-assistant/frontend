@@ -5,8 +5,9 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-md-list";
 import "../../../../components/entity/ha-entity-picker";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import "../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import "./ha-debug-connection-row";
 import "./ha-debug-disable-view-transition-row";
 import "./ha-debug-viewport-environment-card";
@@ -19,59 +20,77 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../util/toast";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
+
   @state() private _entityId?: string;
 
   protected render() {
     return html`
-      <div class="content">
-        <ha-card
-          .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.title"
-          )}
-        >
-          <ha-md-list>
-            <ha-debug-connection-row
-              .hass=${this.hass}
-            ></ha-debug-connection-row>
-            <ha-debug-disable-view-transition-row
-              .hass=${this.hass}
-            ></ha-debug-disable-view-transition-row>
-          </ha-md-list>
-        </ha-card>
-        <ha-card
-          .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
-          )}
-        >
-          <div class="card-content">
-            <ha-entity-picker
-              .hass=${this.hass}
-              .helper=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.description"
-              )}
-              @value-changed=${this._entityPicked}
-            ></ha-entity-picker>
-          </div>
-          <div class="card-actions">
-            <ha-button
-              @click=${this._copyEntityDiagnostic}
-              appearance="filled"
-              .disabled=${!this._entityId}
-              >${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
-              )}</ha-button
-            >
-          </div>
-        </ha-card>
-        <ha-debug-viewport-environment-card
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
+      >
+        <developer-tools-page-menu
+          slot="toolbar-icon"
           .hass=${this.hass}
-        ></ha-debug-viewport-environment-card>
-      </div>
+        ></developer-tools-page-menu>
+        <div class="content">
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.debug.title"
+            )}
+          >
+            <ha-md-list>
+              <ha-debug-connection-row
+                .hass=${this.hass}
+              ></ha-debug-connection-row>
+              <ha-debug-disable-view-transition-row
+                .hass=${this.hass}
+              ></ha-debug-disable-view-transition-row>
+            </ha-md-list>
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
+            )}
+          >
+            <div class="card-content">
+              <ha-entity-picker
+                .hass=${this.hass}
+                .helper=${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.description"
+                )}
+                @value-changed=${this._entityPicked}
+              ></ha-entity-picker>
+            </div>
+            <div class="card-actions">
+              <ha-button
+                @click=${this._copyEntityDiagnostic}
+                appearance="filled"
+                .disabled=${!this._entityId}
+                >${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
+                )}</ha-button
+              >
+            </div>
+          </ha-card>
+          <ha-debug-viewport-environment-card
+            .hass=${this.hass}
+          ></ha-debug-viewport-environment-card>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -130,6 +149,9 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         display: block;
         max-width: 600px;
         margin: 0 auto;
+      }
+      hass-tabs-subpage {
+        height: 100%;
       }
       ha-md-list {
         padding-top: 0;

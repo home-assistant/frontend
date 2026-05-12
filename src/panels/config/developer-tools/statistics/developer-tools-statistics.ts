@@ -45,10 +45,13 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import "../../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
@@ -85,6 +88,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
@@ -373,119 +378,133 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     </ha-assist-chip>`;
 
     return html`
-      <div class="table-with-toolbars">
-        ${this._selectMode
-          ? html`<div class="selection-bar">
-              <div class="selection-controls">
-                <ha-icon-button
-                  .path=${mdiClose}
-                  @click=${this._disableSelectMode}
-                  .label=${localize(
-                    "ui.components.subpage-data-table.exit_selection_mode"
-                  )}
-                ></ha-icon-button>
-                <ha-dropdown>
-                  <ha-assist-chip
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
+      >
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div class="table-with-toolbars">
+          ${this._selectMode
+            ? html`<div class="selection-bar">
+                <div class="selection-controls">
+                  <ha-icon-button
+                    .path=${mdiClose}
+                    @click=${this._disableSelectMode}
                     .label=${localize(
-                      "ui.components.subpage-data-table.select"
-                    )}
-                    slot="trigger"
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiFormatListChecks}
-                    ></ha-svg-icon>
-                    <ha-svg-icon
-                      slot="trailing-icon"
-                      .path=${mdiMenuDown}
-                    ></ha-svg-icon
-                  ></ha-assist-chip>
-                  <ha-dropdown-item @click=${this._selectAll}>
-                    ${localize("ui.components.subpage-data-table.select_all")}
-                  </ha-dropdown-item>
-                  <ha-dropdown-item @click=${this._selectAllIssues}>
-                    ${localize(
-                      "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
-                    )}
-                  </ha-dropdown-item>
-                  <ha-dropdown-item @click=${this._selectNone}>
-                    ${localize("ui.components.subpage-data-table.select_none")}
-                  </ha-dropdown-item>
-                  <wa-divider></wa-divider>
-                  <ha-dropdown-item @click=${this._disableSelectMode}>
-                    ${localize(
                       "ui.components.subpage-data-table.exit_selection_mode"
                     )}
-                  </ha-dropdown-item>
-                </ha-dropdown>
-                <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this._selected.length,
-                  })}
-                </p>
-              </div>
-              <div class="center-vertical">
-                <slot name="selection-bar"></slot>
-              </div>
-              <ha-assist-chip
-                .label=${localize(
-                  "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
-                )}
-                .disabled=${!this._selected.length}
-                @click=${this._clearSelected}
-              >
-              </ha-assist-chip>
-            </div>`
-          : nothing}
-        <div slot="toolbar-icon">
-          <slot name="toolbar-icon"></slot>
-        </div>
-        ${this.narrow
-          ? html`
-              <div slot="header">
-                <slot name="header">
-                  <div class="search-toolbar">${searchBar}</div>
-                </slot>
-              </div>
-            `
-          : ""}
-        <ha-data-table
-          .narrow=${this.narrow}
-          .columns=${columns}
-          .data=${this._displayData(this._data, this.hass.localize)}
-          .noDataText=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
-          )}
-          .filter=${this.filter}
-          .selectable=${this._selectMode}
-          id="statistic_id"
-          clickable
-          .sortColumn=${this._sortColumn}
-          .sortDirection=${this._sortDirection}
-          .groupColumn=${this._groupColumn}
-          .groupOrder=${this.groupOrder}
-          .columnOrder=${this.columnOrder}
-          .hiddenColumns=${this.hiddenColumns}
-          @row-click=${this._rowClicked}
-          @selection-changed=${this._handleSelectionChanged}
-          @sorting-changed=${this._handleTableSortingChanged}
-        >
-          ${!this.narrow
+                  ></ha-icon-button>
+                  <ha-dropdown>
+                    <ha-assist-chip
+                      .label=${localize(
+                        "ui.components.subpage-data-table.select"
+                      )}
+                      slot="trigger"
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiFormatListChecks}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon
+                    ></ha-assist-chip>
+                    <ha-dropdown-item @click=${this._selectAll}>
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item @click=${this._selectAllIssues}>
+                      ${localize(
+                        "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
+                      )}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item @click=${this._selectNone}>
+                      ${localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </ha-dropdown-item>
+                    <wa-divider></wa-divider>
+                    <ha-dropdown-item @click=${this._disableSelectMode}>
+                      ${localize(
+                        "ui.components.subpage-data-table.exit_selection_mode"
+                      )}
+                    </ha-dropdown-item>
+                  </ha-dropdown>
+                  <p>
+                    ${localize("ui.components.subpage-data-table.selected", {
+                      selected: this._selected.length,
+                    })}
+                  </p>
+                </div>
+                <div class="center-vertical">
+                  <slot name="selection-bar"></slot>
+                </div>
+                <ha-assist-chip
+                  .label=${localize(
+                    "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
+                  )}
+                  .disabled=${!this._selected.length}
+                  @click=${this._clearSelected}
+                >
+                </ha-assist-chip>
+              </div>`
+            : nothing}
+          <div slot="toolbar-icon">
+            <slot name="toolbar-icon"></slot>
+          </div>
+          ${this.narrow
             ? html`
                 <div slot="header">
                   <slot name="header">
-                    <div class="table-header">
-                      ${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
-                    </div>
+                    <div class="search-toolbar">${searchBar}</div>
                   </slot>
                 </div>
               `
-            : html`<div slot="header"></div>
-                <div slot="header-row" class="narrow-header-row">
-                  ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
-                </div>`}
-        </ha-data-table>
-      </div>
+            : ""}
+          <ha-data-table
+            .narrow=${this.narrow}
+            .columns=${columns}
+            .data=${this._displayData(this._data, this.hass.localize)}
+            .noDataText=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
+            )}
+            .filter=${this.filter}
+            .selectable=${this._selectMode}
+            id="statistic_id"
+            clickable
+            .sortColumn=${this._sortColumn}
+            .sortDirection=${this._sortDirection}
+            .groupColumn=${this._groupColumn}
+            .groupOrder=${this.groupOrder}
+            .columnOrder=${this.columnOrder}
+            .hiddenColumns=${this.hiddenColumns}
+            @row-click=${this._rowClicked}
+            @selection-changed=${this._handleSelectionChanged}
+            @sorting-changed=${this._handleTableSortingChanged}
+          >
+            ${!this.narrow
+              ? html`
+                  <div slot="header">
+                    <slot name="header">
+                      <div class="table-header">
+                        ${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
+                      </div>
+                    </slot>
+                  </div>
+                `
+              : html`<div slot="header"></div>
+                  <div slot="header-row" class="narrow-header-row">
+                    ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
+                  </div>`}
+          </ha-data-table>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -696,6 +715,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       css`
         :host {
           display: block;
+          height: 100%;
+        }
+
+        hass-tabs-subpage {
           height: 100%;
         }
 

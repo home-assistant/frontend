@@ -14,10 +14,13 @@ import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import type { AssistDebugResult } from "../../../../data/conversation";
 import { debugAgent, listAgents } from "../../../../data/conversation";
+import "../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 
 interface SentenceParsingResult {
   sentence: string;
@@ -30,6 +33,8 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
 
   @state() supportedLanguages?: string[];
 
@@ -115,110 +120,128 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <div class="content">
-        <ha-card
-          .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.assist.title"
-          )}
-          class="form"
-        >
-          <div class="card-content">
-            <p class="description">
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.description"
-              )}
-            </p>
-            ${this.supportedLanguages
-              ? html`
-                  <ha-language-picker
-                    .languages=${this.supportedLanguages}
-                    .hass=${this.hass}
-                    .value=${this._language}
-                    @value-changed=${this._languageChanged}
-                  ></ha-language-picker>
-                `
-              : nothing}
-            <ha-textarea
-              resize="auto"
-              .label=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.sentences"
-              )}
-              id="sentences-input"
-              @input=${this._textAreaInput}
-              @keydown=${this._handleKeyDown}
-            ></ha-textarea>
-          </div>
-          <div class="card-actions">
-            <ha-button
-              appearance="filled"
-              @click=${this._parse}
-              .disabled=${!this._language || !this._validInput}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.parse_sentences"
-              )}
-            </ha-button>
-          </div>
-        </ha-card>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
+      >
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div class="content">
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.assist.title"
+            )}
+            class="form"
+          >
+            <div class="card-content">
+              <p class="description">
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.assist.description"
+                )}
+              </p>
+              ${this.supportedLanguages
+                ? html`
+                    <ha-language-picker
+                      .languages=${this.supportedLanguages}
+                      .hass=${this.hass}
+                      .value=${this._language}
+                      @value-changed=${this._languageChanged}
+                    ></ha-language-picker>
+                  `
+                : nothing}
+              <ha-textarea
+                resize="auto"
+                .label=${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.assist.sentences"
+                )}
+                id="sentences-input"
+                @input=${this._textAreaInput}
+                @keydown=${this._handleKeyDown}
+              ></ha-textarea>
+            </div>
+            <div class="card-actions">
+              <ha-button
+                appearance="filled"
+                @click=${this._parse}
+                .disabled=${!this._language || !this._validInput}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.assist.parse_sentences"
+                )}
+              </ha-button>
+            </div>
+          </ha-card>
 
-        ${this._results.length
-          ? html`
-              <div class="result-toolbar">
-                <ha-button
-                  appearance="filled"
-                  @click=${this._clear}
-                  variant="danger"
-                >
-                  <ha-svg-icon slot="start" .path=${mdiTrashCan}></ha-svg-icon>
-                  ${this.hass.localize("ui.common.clear")}
-                </ha-button>
-                <ha-button appearance="filled" @click=${this._download}>
-                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.download_results"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : ""}
-        ${this._results.map((r) => {
-          const { sentence, result, language } = r;
-          const matched = result != null;
+          ${this._results.length
+            ? html`
+                <div class="result-toolbar">
+                  <ha-button
+                    appearance="filled"
+                    @click=${this._clear}
+                    variant="danger"
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiTrashCan}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.common.clear")}
+                  </ha-button>
+                  <ha-button appearance="filled" @click=${this._download}>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiDownload}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.assist.download_results"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : ""}
+          ${this._results.map((r) => {
+            const { sentence, result, language } = r;
+            const matched = result != null;
 
-          return html`
-            <ha-card class="result">
-              <div class="card-content">
-                <div class="sentence">
-                  <p>${sentence}</p>
-                  <p>${matched ? "✅" : "❌"}</p>
+            return html`
+              <ha-card class="result">
+                <div class="card-content">
+                  <div class="sentence">
+                    <p>${sentence}</p>
+                    <p>${matched ? "✅" : "❌"}</p>
+                  </div>
+                  <div class="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.assist.language"
+                    )}:
+                    ${formatLanguageCode(language, this.hass.locale)}
+                    (${language})
+                  </div>
+                  ${result
+                    ? html`
+                        <ha-code-editor
+                          mode="yaml"
+                          .hass=${this.hass}
+                          .value=${dump(result).trimRight()}
+                          read-only
+                          dir="ltr"
+                        ></ha-code-editor>
+                      `
+                    : html`<ha-alert alert-type="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.assist.no_match"
+                        )}
+                      </ha-alert>`}
                 </div>
-                <div class="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.language"
-                  )}:
-                  ${formatLanguageCode(language, this.hass.locale)}
-                  (${language})
-                </div>
-                ${result
-                  ? html`
-                      <ha-code-editor
-                        mode="yaml"
-                        .hass=${this.hass}
-                        .value=${dump(result).trimRight()}
-                        read-only
-                        dir="ltr"
-                      ></ha-code-editor>
-                    `
-                  : html`<ha-alert alert-type="error">
-                      ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.assist.no_match"
-                      )}
-                    </ha-alert>`}
-              </div>
-            </ha-card>
-          `;
-        })}
-      </div>
+              </ha-card>
+            `;
+          })}
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -243,6 +266,9 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
           max-width: 1040px;
           margin: 0 auto;
+        }
+        hass-tabs-subpage {
+          height: 100%;
         }
         .card-content {
           display: flex;

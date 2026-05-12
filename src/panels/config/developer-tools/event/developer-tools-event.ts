@@ -8,9 +8,12 @@ import "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 import "./event-subscribe-card";
 import "./events-list";
 
@@ -19,6 +22,8 @@ class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _eventType = "";
 
@@ -30,87 +35,99 @@ class HaPanelDevEvent extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div
-        class=${this.narrow
-          ? "content layout vertical"
-          : "content layout horizontal"}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
       >
-        <div class="flex">
-          <ha-card>
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.events.description"
-                )}
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/events/"
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.documentation"
-                  )}
-                </a>
-              </p>
-              <div class="inputs">
-                <ha-input
-                  .label=${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.type"
-                  )}
-                  autofocus
-                  required
-                  .value=${this._eventType}
-                  @change=${this._eventTypeChanged}
-                ></ha-input>
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div
+          class=${this.narrow
+            ? "content layout vertical"
+            : "content layout horizontal"}
+        >
+          <div class="flex">
+            <ha-card>
+              <div class="card-content">
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.data"
+                    "ui.panel.config.developer-tools.tabs.events.description"
                   )}
+                  <a
+                    href=${documentationUrl(
+                      this.hass,
+                      "/docs/configuration/events/"
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.events.documentation"
+                    )}
+                  </a>
                 </p>
+                <div class="inputs">
+                  <ha-input
+                    .label=${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.events.type"
+                    )}
+                    autofocus
+                    required
+                    .value=${this._eventType}
+                    @change=${this._eventTypeChanged}
+                  ></ha-input>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.events.data"
+                    )}
+                  </p>
+                </div>
+                <div class="code-editor">
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .value=${this._eventData}
+                    .error=${!this._isValid}
+                    @value-changed=${this._yamlChanged}
+                  ></ha-yaml-editor>
+                </div>
               </div>
-              <div class="code-editor">
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .value=${this._eventData}
-                  .error=${!this._isValid}
-                  @value-changed=${this._yamlChanged}
-                ></ha-yaml-editor>
+              <div class="card-actions">
+                <ha-button
+                  @click=${this._fireEvent}
+                  appearance="filled"
+                  .disabled=${!this._isValid}
+                  >${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.events.fire_event"
+                  )}</ha-button
+                >
               </div>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                @click=${this._fireEvent}
-                appearance="filled"
-                .disabled=${!this._isValid}
-                >${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.events.fire_event"
-                )}</ha-button
-              >
-            </div>
-          </ha-card>
+            </ha-card>
 
-          <event-subscribe-card
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .selectedEventType=${this._selectedEventType}
-          ></event-subscribe-card>
-        </div>
+            <event-subscribe-card
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .selectedEventType=${this._selectedEventType}
+            ></event-subscribe-card>
+          </div>
 
-        <div>
-          <h2>
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.events.active_listeners"
-            )}
-          </h2>
-          <events-list
-            @event-selected=${this._eventSelected}
-            .hass=${this.hass}
-          ></events-list>
+          <div>
+            <h2>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.events.active_listeners"
+              )}
+            </h2>
+            <events-list
+              @event-selected=${this._eventSelected}
+              .hass=${this.hass}
+            ></events-list>
+          </div>
         </div>
-      </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -168,6 +185,10 @@ class HaPanelDevEvent extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
+          height: 100%;
+        }
+
+        hass-tabs-subpage {
           height: 100%;
         }
 
