@@ -419,7 +419,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
               .placeholder=${this.entry.original_icon ||
               stateObj?.attributes.icon ||
-              (stateObj && until(entityIcon(this.hass, stateObj))) ||
+              (stateObj &&
+                until(
+                  entityIcon(
+                    this.hass.entities,
+                    this.hass.config,
+                    this.hass.connection,
+                    stateObj
+                  )
+                )) ||
               until(entryIcon(this.hass, this.entry))}
               .disabled=${this.disabled}
             >
@@ -427,7 +435,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 ? html`
                     <ha-state-icon
                       slot="start"
-                      .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
                   `

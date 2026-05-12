@@ -4185,6 +4185,8 @@
               "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
+              "state_of_charge": "Battery state of charge sensor",
+              "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
@@ -6908,6 +6910,7 @@
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
+            "show_integration": "Show integration",
             "single_config_entry": "{integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },

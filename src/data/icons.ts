@@ -456,11 +456,13 @@ const getIconFromTranslations = (
 };
 
 export const entityIcon = async (
-  hass: HomeAssistant,
+  entities: HomeAssistant["entities"],
+  hassConfig: HomeAssistant["config"],
+  hassConnection: Connection,
   stateObj: HassEntity,
   state?: string
 ) => {
-  const entry = hass.entities?.[stateObj.entity_id] as
+  const entry = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
   if (entry?.icon) {
@@ -468,7 +470,14 @@ export const entityIcon = async (
   }
   const domain = computeStateDomain(stateObj);
 
-  return getEntityIcon(hass, domain, stateObj, state, entry);
+  return getEntityIcon(
+    hassConfig,
+    hassConnection,
+    domain,
+    stateObj,
+    state,
+    entry
+  );
 };
 
 export const entryIcon = async (
@@ -480,11 +489,19 @@ export const entryIcon = async (
   }
   const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
   const domain = computeDomain(entry.entity_id);
-  return getEntityIcon(hass, domain, stateObj, undefined, entry);
+  return getEntityIcon(
+    hass.config,
+    hass.connection,
+    domain,
+    stateObj,
+    undefined,
+    entry
+  );
 };
 
 const getEntityIcon = async (
-  hass: HomeAssistant,
+  hassConfig: HomeAssistant["config"],
+  hassConnection: Connection,
   domain: string,
   stateObj?: HassEntity,
   stateValue?: string,
@@ -498,8 +515,8 @@ const getEntityIcon = async (
   let icon: string | undefined;
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(
-      hass.config,
-      hass.connection,
+      hassConfig,
+      hassConnection,
       platform
     );
     if (platformIcons) {
@@ -515,8 +532,8 @@ const getEntityIcon = async (
 
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(
-      hass.connection,
-      hass.config,
+      hassConnection,
+      hassConfig,
       domain
     );
     if (entityComponentIcons) {

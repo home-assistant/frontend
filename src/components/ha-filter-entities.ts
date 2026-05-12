@@ -122,11 +122,7 @@ export class HaFilterEntities extends LitElement {
           .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
         >
-          <ha-state-icon
-            slot="graphic"
-            .hass=${this.hass}
-            .stateObj=${entity}
-          ></ha-state-icon>
+          <ha-state-icon slot="graphic" .stateObj=${entity}></ha-state-icon>
           ${computeStateName(entity)}
         </ha-check-list-item>`;
 

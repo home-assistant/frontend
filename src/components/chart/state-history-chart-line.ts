@@ -293,7 +293,10 @@ export class StateHistoryChartLine extends LitElement {
       (changedProps.has("hass") &&
         this._hasEntityStatesChanged(changedProps.get("hass")))
     ) {
-      const rtl = computeRTL(this.hass);
+      const rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
         this.minYAxis;
       let maxYAxis: number | ((values: { max: number }) => number) | undefined =
