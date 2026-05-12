@@ -6,9 +6,12 @@ import {
 } from "../../panels/config/automation/show-add-automation-element-dialog";
 import type { HomeAssistant, TranslationDict } from "../../types";
 
-export interface EntityAddToAction {
-  /** Type of action. External is handled by external apps instead of in the frontend */
-  type: "default" | "external";
+type DefaultActionKey =
+  TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"] extends infer Actions
+    ? keyof Actions
+    : never;
+
+interface BaseEntityAddToAction {
   /** Whether the action is enabled and can be selected. */
   enabled: boolean;
   /** Translated name of the action */
@@ -17,14 +20,30 @@ export interface EntityAddToAction {
   description?: string;
   /** MDI icon name (e.g., "mdi:car") */
   icon: string;
+}
+
+export interface DefaultEntityAddToAction extends BaseEntityAddToAction {
+  /** Type of action handled in the frontend */
+  type: "default";
+  /** Stable key used to resolve the action handler */
+  key: DefaultActionKey;
+}
+
+export interface ExternalEntityAddToAction extends BaseEntityAddToAction {
+  /** Type of action. External is handled by external apps instead of in the frontend */
+  type: "external";
   /** Opaque payload for external action handling */
   payload?: string;
 }
 
+export type EntityAddToAction =
+  | DefaultEntityAddToAction
+  | ExternalEntityAddToAction;
+
 export type EntityAddToActions = EntityAddToAction[];
 
 interface ActionDefinition {
-  translation_key: keyof TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"];
+  translation_key: DefaultActionKey;
   icon: string;
 }
 
@@ -54,6 +73,7 @@ export const getDefaultAddToActions = (
   DEFAULT_ACTION_DEFS.map(
     (def: ActionDefinition): EntityAddToAction => ({
       type: "default",
+      key: def.translation_key,
       enabled: true,
       name: hass.localize(
         `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
