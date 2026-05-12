@@ -170,8 +170,7 @@ export class HaDrawer extends LitElement {
       return;
     }
 
-    const isClosingDirection =
-      this.direction === "rtl" ? delta > 0 : delta < 0;
+    const isClosingDirection = this.direction === "rtl" ? delta > 0 : delta < 0;
 
     if (isClosingDirection) {
       ev.preventDefault();
@@ -189,7 +188,9 @@ export class HaDrawer extends LitElement {
 
     if (result.isSwipe) {
       const closeByVelocity =
-        this.direction === "rtl" ? result.isDownwardSwipe : !result.isDownwardSwipe;
+        this.direction === "rtl"
+          ? result.isDownwardSwipe
+          : !result.isDownwardSwipe;
 
       if (closeByVelocity) {
         this._closeModalDrawer();
