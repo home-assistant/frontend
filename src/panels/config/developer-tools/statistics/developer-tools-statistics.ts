@@ -31,6 +31,7 @@ import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
+  RowClickedEvent,
   SelectionChangedEvent,
   SortingDirection,
 } from "../../../../components/data-table/ha-data-table";
@@ -309,7 +310,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                   @click=${this._showStatisticsAdjustSumDialog}
                 ></ha-icon-button>
               `
-            : "",
+            : nothing,
       },
     })
   );
@@ -542,7 +543,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 </slot>
               </div>
             `
-          : ""}
+          : nothing}
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${columns}
@@ -699,14 +700,16 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _showStatisticsAdjustSumDialog(ev) {
+  private _showStatisticsAdjustSumDialog(ev: Event) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
-      statistic: ev.currentTarget.statistic,
+      statistic: (
+        ev.currentTarget as HTMLElement & { statistic: StatisticData }
+      ).statistic,
     });
   }
 
-  private _rowClicked(ev) {
+  private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const id = ev.detail.id;
     if (id in this._states) {
       fireEvent(this, "hass-more-info", { entityId: id });
@@ -773,8 +776,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     });
   };
 
-  private _fixIssue = async (ev) => {
-    const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
+  private _fixIssue = async (ev: Event) => {
+    const issues = (
+      (ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] })
+        .data as StatisticsValidationResult[]
+    ).sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
