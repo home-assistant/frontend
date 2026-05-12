@@ -159,27 +159,20 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
       return data.map((item) => {
         const entry = entities[item.statistic_id];
+        const device = entry?.device_id ? devices[entry.device_id] : undefined;
+        const areaId = entry?.area_id || device?.area_id;
+        const area = areaId ? areas[areaId] : undefined;
 
-        let entityName: string | undefined;
-        let deviceName: string | undefined;
-        let areaName: string | undefined;
-        let deviceFullName: string | undefined;
-
-        if (entry) {
-          entityName = computeEntityEntryName(entry, devices, item.state);
-
-          const device = entry.device_id ? devices[entry.device_id] : undefined;
-          const areaId = entry.area_id || device?.area_id;
-          const area = areaId ? areas[areaId] : undefined;
-
-          deviceName = device ? computeDeviceName(device) : undefined;
-          areaName = area ? computeAreaName(area) : undefined;
-          deviceFullName = deviceName
-            ? duplicatedDeviceNames.has(deviceName) && areaName
-              ? `${deviceName} (${areaName})`
-              : deviceName
-            : undefined;
-        }
+        const entityName = entry
+          ? computeEntityEntryName(entry, devices, item.state)
+          : undefined;
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+        const deviceFullName = deviceName
+          ? duplicatedDeviceNames.has(deviceName) && areaName
+            ? `${deviceName} (${areaName})`
+            : deviceName
+          : undefined;
 
         return {
           ...item,
@@ -272,7 +265,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       fix: {
         title: "",
-        label: this._i18n.localize(
+        label: localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
         ),
         type: "icon",
@@ -322,15 +315,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   );
 
   protected render() {
-    const localize = this._i18n.localize;
-    const columns = this._columns(localize);
+    const columns = this._columns(this._i18n.localize);
 
     const selectModeBtn = !this._selectMode
       ? html`<ha-assist-chip
           class="has-dropdown select-mode-chip"
           .active=${this._selectMode}
           @click=${this._enableSelectMode}
-          .title=${localize(
+          .title=${this._i18n.localize(
             "ui.components.subpage-data-table.enter_selection_mode"
           )}
         >
@@ -350,11 +342,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           <ha-dropdown @wa-select=${this._handleSortBy}>
             <ha-assist-chip
               slot="trigger"
-              .label=${localize("ui.components.subpage-data-table.sort_by", {
-                sortColumn: this._sortColumn
-                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
-                  : "",
-              })}
+              .label=${this._i18n.localize(
+                "ui.components.subpage-data-table.sort_by",
+                {
+                  sortColumn: this._sortColumn
+                    ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
+                    : "",
+                }
+              )}
             >
               <ha-svg-icon
                 slot="trailing-icon"
@@ -392,11 +387,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           <ha-dropdown @wa-select=${this._handleOverflowGroupBy}>
             <ha-assist-chip
               slot="trigger"
-              .label=${localize("ui.components.subpage-data-table.group_by", {
-                groupColumn: this._groupColumn
-                  ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
-                  : "",
-              })}
+              .label=${this._i18n.localize(
+                "ui.components.subpage-data-table.group_by",
+                {
+                  groupColumn: this._groupColumn
+                    ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
+                    : "",
+                }
+              )}
             >
               <ha-svg-icon
                 slot="trailing-icon"
@@ -419,7 +417,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               value="none"
               .selected=${this._groupColumn === undefined}
             >
-              ${localize("ui.components.subpage-data-table.dont_group_by")}
+              ${this._i18n.localize(
+                "ui.components.subpage-data-table.dont_group_by"
+              )}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
             <ha-dropdown-item
@@ -431,7 +431,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 slot="icon"
                 .path=${mdiUnfoldLessHorizontal}
               ></ha-svg-icon>
-              ${localize(
+              ${this._i18n.localize(
                 "ui.components.subpage-data-table.collapse_all_groups"
               )}
             </ha-dropdown-item>
@@ -443,7 +443,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 slot="icon"
                 .path=${mdiUnfoldMoreHorizontal}
               ></ha-svg-icon>
-              ${localize("ui.components.subpage-data-table.expand_all_groups")}
+              ${this._i18n.localize(
+                "ui.components.subpage-data-table.expand_all_groups"
+              )}
             </ha-dropdown-item>
           </ha-dropdown>
         `
@@ -452,7 +454,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const settingsButton = html`<ha-assist-chip
       class="has-dropdown select-mode-chip"
       @click=${this._openSettings}
-      .title=${localize("ui.components.subpage-data-table.settings")}
+      .title=${this._i18n.localize("ui.components.subpage-data-table.settings")}
     >
       <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
@@ -465,13 +467,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 <ha-icon-button
                   .path=${mdiClose}
                   @click=${this._disableSelectMode}
-                  .label=${localize(
+                  .label=${this._i18n.localize(
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
                 <ha-dropdown>
                   <ha-assist-chip
-                    .label=${localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.select"
                     )}
                     slot="trigger"
@@ -486,34 +488,41 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                     ></ha-svg-icon
                   ></ha-assist-chip>
                   <ha-dropdown-item @click=${this._selectAll}>
-                    ${localize("ui.components.subpage-data-table.select_all")}
+                    ${this._i18n.localize(
+                      "ui.components.subpage-data-table.select_all"
+                    )}
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectAllIssues}>
-                    ${localize(
+                    ${this._i18n.localize(
                       "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
                     )}
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectNone}>
-                    ${localize("ui.components.subpage-data-table.select_none")}
+                    ${this._i18n.localize(
+                      "ui.components.subpage-data-table.select_none"
+                    )}
                   </ha-dropdown-item>
                   <wa-divider></wa-divider>
                   <ha-dropdown-item @click=${this._disableSelectMode}>
-                    ${localize(
+                    ${this._i18n.localize(
                       "ui.components.subpage-data-table.exit_selection_mode"
                     )}
                   </ha-dropdown-item>
                 </ha-dropdown>
                 <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this._selected.length,
-                  })}
+                  ${this._i18n.localize(
+                    "ui.components.subpage-data-table.selected",
+                    {
+                      selected: this._selected.length,
+                    }
+                  )}
                 </p>
               </div>
               <div class="center-vertical">
                 <slot name="selection-bar"></slot>
               </div>
               <ha-assist-chip
-                .label=${localize(
+                .label=${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
                 )}
                 .disabled=${!this._selected.length}
