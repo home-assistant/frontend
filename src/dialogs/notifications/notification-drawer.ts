@@ -23,7 +23,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _notifications: PersistentNotification[] = [];
 
-  @state() private _open = false;
+  @state() public _open = false;
 
   @state() private _drawerOpen = false;
 
