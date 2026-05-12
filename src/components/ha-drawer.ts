@@ -274,7 +274,7 @@ export class HaDrawer extends LitElement {
       display: block;
       height: 100%;
     }
-    
+
     .layout {
       height: 100%;
     }
