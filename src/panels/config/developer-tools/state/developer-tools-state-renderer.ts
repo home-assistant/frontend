@@ -3,6 +3,7 @@ import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
 } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -10,17 +11,23 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-svg-icon";
+import {
+  areasContext,
+  devicesContext,
+  entitiesContext,
+  internationalizationContext,
+} from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 
 @customElement("developer-tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public entities: HassEntity[] = [];
 
   @property({ type: Boolean, attribute: "narrow" })
@@ -32,7 +39,19 @@ class HaPanelDevStateRenderer extends LitElement {
   @property({ attribute: false })
   public showAttributes = true;
 
-  protected willUpdate(changedProps: PropertyValues<this>) {
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (
       (!this.hasUpdated && this.virtualize) ||
@@ -42,46 +61,49 @@ class HaPanelDevStateRenderer extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>) {
-    super.shouldUpdate(changedProps);
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const languageChanged =
-      oldHass === undefined || oldHass.locale !== this.hass.locale;
-
-    return (
-      changedProps.has("entities") ||
-      changedProps.has("narrow") ||
-      changedProps.has("virtualize") ||
-      changedProps.has("showAttributes") ||
-      languageChanged
-    );
-  }
-
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
     return html`
         <div
-          class=${classMap({ entities: true, "hide-attributes": !showAttributes })}
+          class=${classMap({
+            entities: true,
+            "hide-attributes": !showAttributes,
+            "hide-extra": this.narrow,
+          })}
           role="table"
         >
           <div class="row" role="row" aria-rowindex="1">
             <div class="header" role="columnheader">
               <span class="padded">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.states.entity"
                 )}
               </span>
             </div>
             <div class="header" role="columnheader">
               <span class="padded">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.states.state"
                 )}
               </span>
             </div>
             <div class="header" role="columnheader">
               <span class="padded">
-                ${this.hass.localize(
+                ${this._i18n.localize(
+                  "ui.panel.config.entities.picker.headers.device"
+                )}
+              </span>
+            </div>
+            <div class="header" role="columnheader">
+              <span class="padded">
+                ${this._i18n.localize(
+                  "ui.panel.config.generic.headers.area"
+                )}
+              </span>
+            </div>
+            <div class="header" role="columnheader">
+              <span class="padded">
+                ${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.states.attributes"
                 )}
               </span>
@@ -90,10 +112,12 @@ class HaPanelDevStateRenderer extends LitElement {
           <div class="row filters" role="row" aria-rowindex="2">
             <div class="header filter-entities" role="columnheader">
               <slot name="filter-entities"></slot>
-            </div></span>
+            </div>
             <div class="header filter-states" role="columnheader">
               <slot name="filter-states"></slot>
             </div>
+            <div class="header" role="columnheader"></div>
+            <div class="header" role="columnheader"></div>
             <div class="header filter-attributes" role="columnheader">
               <slot name="filter-attributes"></slot>
             </div>
@@ -101,9 +125,9 @@ class HaPanelDevStateRenderer extends LitElement {
           ${
             this.entities.length === 0
               ? html` <div class="row" role="row" aria-rowindex="3">
-                  <div class="cell" role="cell" aria-colspan="3">
+                  <div class="cell" role="cell" aria-colspan="5">
                     <span class="padded">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.no_entities"
                       )}
                     </span>
@@ -133,6 +157,20 @@ class HaPanelDevStateRenderer extends LitElement {
     if (!item || index === undefined) {
       return nothing;
     }
+
+    const entry = this._entities?.[item.entity_id];
+    const device = entry?.device_id
+      ? this._devices?.[entry.device_id]
+      : undefined;
+    const areaId = entry?.area_id || device?.area_id;
+    const area = areaId ? this._areas?.[areaId] : undefined;
+
+    const displayName = entry
+      ? computeEntityEntryName(entry, this._devices, item)
+      : undefined;
+    const deviceName = device ? computeDeviceName(device) : undefined;
+    const areaName = area ? computeAreaName(area) : undefined;
+
     return html`
       <div
         class=${classMap({
@@ -150,10 +188,10 @@ class HaPanelDevStateRenderer extends LitElement {
                 <ha-svg-icon
                   @click=${this._copyEntity}
                   .entity=${item}
-                  alt=${this.hass.localize(
+                  alt=${this._i18n.localize(
                     "ui.panel.config.developer-tools.tabs.states.copy_id"
                   )}
-                  title=${this.hass.localize(
+                  title=${this._i18n.localize(
                     "ui.panel.config.developer-tools.tabs.states.copy_id"
                   )}
                   .path=${mdiClipboardTextMultipleOutline}
@@ -166,16 +204,16 @@ class HaPanelDevStateRenderer extends LitElement {
                 <ha-svg-icon
                   @click=${this._entityMoreInfo}
                   .entity=${item}
-                  alt=${this.hass.localize(
+                  alt=${this._i18n.localize(
                     "ui.panel.config.developer-tools.tabs.states.more_info"
                   )}
-                  title=${this.hass.localize(
+                  title=${this._i18n.localize(
                     "ui.panel.config.developer-tools.tabs.states.more_info"
                   )}
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <span class="secondary">
-                  ${item.attributes.friendly_name}
+                  ${displayName ?? deviceName ?? item.attributes.friendly_name}
                 </span>
               </div>
             </div>
@@ -183,6 +221,12 @@ class HaPanelDevStateRenderer extends LitElement {
         </div>
         <div class="cell" role="cell">
           <span class="padded">${item.state}</span>
+        </div>
+        <div class="cell" role="cell">
+          <span class="padded">${deviceName ?? "\u2014"}</span>
+        </div>
+        <div class="cell" role="cell">
+          <span class="padded">${areaName ?? "\u2014"}</span>
         </div>
         <div class="cell" role="cell">
           <span class="padded">${this._attributeString(item)}</span>
@@ -214,26 +258,29 @@ class HaPanelDevStateRenderer extends LitElement {
     return output;
   }
 
-  private _copyEntity = async (ev) => {
+  private _copyEntity = async (ev: Event) => {
     ev.preventDefault();
-    const entity = (ev.currentTarget! as any).entity;
+    const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
+      .entity;
     await copyToClipboard(entity.entity_id, document.body);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   };
 
-  private _entityMoreInfo(ev) {
+  private _entityMoreInfo(ev: Event) {
     ev.preventDefault();
-    const entity = (ev.currentTarget! as any).entity;
+    const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
+      .entity;
     fireEvent(this, "hass-more-info", { entityId: entity.entity_id });
   }
 
-  private _entitySelected(ev) {
+  private _entitySelected(ev: Event) {
     ev.preventDefault();
-    const entity = (ev.currentTarget! as any).entity;
+    const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
+      .entity;
     fireEvent(this, "states-tool-entity-selected", {
-      entity: entity,
+      entity,
     });
   }
 
@@ -307,12 +354,12 @@ class HaPanelDevStateRenderer extends LitElement {
           flex: 2;
         }
 
-        .entities .row .header:nth-child(3),
-        .entities .row .cell:nth-child(3) {
+        .entities .row .header:nth-child(5),
+        .entities .row .cell:nth-child(5) {
           flex: 2;
         }
 
-        .entities .row .cell:nth-child(3) {
+        .entities .row .cell:nth-child(5) {
           white-space: pre-wrap;
         }
 
@@ -320,8 +367,15 @@ class HaPanelDevStateRenderer extends LitElement {
           display: none;
         }
 
-        .hide-attributes .row .header:nth-child(3),
-        .hide-attributes .row .cell:nth-child(3) {
+        .hide-attributes .row .header:nth-child(5),
+        .hide-attributes .row .cell:nth-child(5) {
+          display: none;
+        }
+
+        .hide-extra .row .header:nth-child(3),
+        .hide-extra .row .cell:nth-child(3),
+        .hide-extra .row .header:nth-child(4),
+        .hide-extra .row .cell:nth-child(4) {
           display: none;
         }
 

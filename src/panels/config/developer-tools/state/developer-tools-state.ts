@@ -1,4 +1,5 @@
 import { mdiContentCopy, mdiRefresh } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
@@ -28,6 +29,10 @@ import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
+import {
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -75,6 +80,12 @@ class HaPanelDevState extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _filteredEntities = memoizeOne(
@@ -97,13 +108,13 @@ class HaPanelDevState extends LitElement {
       this._entityFilter,
       this._stateFilter,
       this._attributeFilter,
-      this.hass.states
+      this._states
     );
 
     return html`
       <div class="heading">
         <h1>
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.current_entities"
           )}
         </h1>
@@ -112,14 +123,14 @@ class HaPanelDevState extends LitElement {
               .checked=${this._showAttributes}
               @change=${this._saveAttributeCheckboxState}
             >
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.attributes"
               )}
             </ha-checkbox>`
           : nothing}
       </div>
       <ha-expansion-panel
-        .header=${this.hass.localize(
+        .header=${this._i18n.localize(
           "ui.panel.config.developer-tools.tabs.states.set_state"
         )}
         outlined
@@ -127,10 +138,10 @@ class HaPanelDevState extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <p>
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.description1"
           )}<br />
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.description2"
           )}
         </p>
@@ -153,7 +164,7 @@ class HaPanelDevState extends LitElement {
                     <ha-icon-button
                       .path=${mdiContentCopy}
                       @click=${this._copyStateEntity}
-                      title=${this.hass.localize(
+                      title=${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.copy_id"
                       )}
                     ></ha-icon-button>
@@ -161,7 +172,7 @@ class HaPanelDevState extends LitElement {
                 `
               : nothing}
             <ha-input
-              .label=${this.hass.localize(
+              .label=${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
               )}
               required
@@ -174,7 +185,7 @@ class HaPanelDevState extends LitElement {
               class="state-input"
             ></ha-input>
             <p>
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.state_attributes"
               )}
             </p>
@@ -190,13 +201,13 @@ class HaPanelDevState extends LitElement {
                 @click=${this._handleSetState}
                 .disabled=${!this._validJSON}
                 raised
-                >${this.hass.localize(
+                >${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.states.set_state"
                 )}</ha-button
               >
               <ha-icon-button
                 @click=${this._updateEntity}
-                .label=${this.hass.localize("ui.common.refresh")}
+                .label=${this._i18n.localize("ui.common.refresh")}
                 .path=${mdiRefresh}
               ></ha-icon-button>
             </div>
@@ -205,7 +216,7 @@ class HaPanelDevState extends LitElement {
             ${this._entity
               ? html`<p>
                     <b
-                      >${this.hass.localize(
+                      >${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.last_changed"
                       )}:</b
                     ><br />
@@ -215,7 +226,7 @@ class HaPanelDevState extends LitElement {
                   </p>
                   <p>
                     <b
-                      >${this.hass.localize(
+                      >${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.last_updated"
                       )}:</b
                     ><br />
@@ -228,7 +239,6 @@ class HaPanelDevState extends LitElement {
         </div>
       </ha-expansion-panel>
       <developer-tools-state-renderer
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .entities=${entities}
         .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
@@ -237,7 +247,7 @@ class HaPanelDevState extends LitElement {
       >
         <ha-input-search
           slot="filter-entities"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_entities"
           )}
           .value=${this._entityFilter}
@@ -245,7 +255,7 @@ class HaPanelDevState extends LitElement {
         ></ha-input-search>
         <ha-input-search
           slot="filter-states"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_states"
           )}
           type="search"
@@ -254,7 +264,7 @@ class HaPanelDevState extends LitElement {
         ></ha-input-search>
         <ha-input-search
           slot="filter-attributes"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_attributes"
           )}
           type="search"
@@ -269,7 +279,7 @@ class HaPanelDevState extends LitElement {
     ev.preventDefault();
     await copyToClipboard(this._entityId);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 
@@ -296,7 +306,7 @@ class HaPanelDevState extends LitElement {
 
   private _updateEntity() {
     const entityState = this._entityId
-      ? this.hass.states[this._entityId]
+      ? this._states[this._entityId]
       : undefined;
     if (!entityState) {
       this._entity = undefined;
@@ -358,7 +368,7 @@ class HaPanelDevState extends LitElement {
     this._error = "";
     if (!this._entityId) {
       showAlertDialog(this, {
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.panel.config.developer-tools.tabs.states.alert_entity_field"
         ),
       });
