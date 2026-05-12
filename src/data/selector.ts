@@ -416,6 +416,7 @@ export interface ObjectSelector {
     label_field?: string;
     description_field?: string;
     translation_key?: string;
+    overview_labels?: boolean;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
   } | null;
