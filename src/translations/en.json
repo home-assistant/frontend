@@ -10172,6 +10172,7 @@
               "temperature-forecast": {
                 "label": "Temperature forecast",
                 "no_forecast": "No forecast data available",
+                "failed_to_load": "Failed to load forecast: {error}",
                 "forecast_type": "Forecast type",
                 "forecast_type_options": {
                   "daily": "Daily",
@@ -10184,6 +10185,7 @@
               "precipitation-forecast": {
                 "label": "Precipitation forecast",
                 "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::no_forecast%]",
+                "failed_to_load": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::failed_to_load%]",
                 "forecast_type": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type%]",
                 "forecast_type_options": {
                   "daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::daily%]",

@@ -1,4 +1,5 @@
 import { consume } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
   HassEntity,
@@ -116,6 +117,16 @@ class HuiTemperatureForecastCardFeature
 
   private _subscribedType?: ForecastResolution;
 
+  private _size = new ResizeController(this, {
+    callback: (entries) => {
+      const rect = entries?.[0]?.contentRect;
+      if (!rect) return undefined;
+      return { width: rect.width, height: rect.height };
+    },
+  });
+
+  private _lastHourlySize?: { width: number; height: number };
+
   static getStubConfig(): TemperatureForecastCardFeatureConfig {
     return {
       type: "temperature-forecast",
@@ -165,19 +176,24 @@ class HuiTemperatureForecastCardFeature
       this._subscribeForecast();
       return;
     }
+    const size = this._size.value;
+    const sizeChanged =
+      !!size &&
+      (size.width !== this._lastHourlySize?.width ||
+        size.height !== this._lastHourlySize?.height);
+    let showLabelsChanged = false;
     if (changedProps.has("_config")) {
       const prev = changedProps.get("_config") as
         | TemperatureForecastCardFeatureConfig
         | undefined;
-      const showLabelsChanged =
-        (prev?.show_labels !== false) !== this._showLabels;
-      if (
-        showLabelsChanged &&
-        this._subscribedType === "hourly" &&
-        this._forecast
-      ) {
-        this._computeHourly(this._forecast);
-      }
+      showLabelsChanged = (prev?.show_labels !== false) !== this._showLabels;
+    }
+    if (
+      (sizeChanged || showLabelsChanged) &&
+      this._subscribedType === "hourly" &&
+      this._forecast
+    ) {
+      this._computeHourly(this._forecast);
     }
   }
 
@@ -199,7 +215,12 @@ class HuiTemperatureForecastCardFeature
     if (this._error) {
       return html`
         <div class="container">
-          <div class="info">${this._error}</div>
+          <div class="info">
+            ${this._localize(
+              "ui.panel.lovelace.editor.features.types.temperature-forecast.failed_to_load",
+              { error: this._error }
+            )}
+          </div>
         </div>
       `;
     }
@@ -279,11 +300,7 @@ class HuiTemperatureForecastCardFeature
       <div class=${containerClasses}>
         <div class="bars">${this._renderBars(entries, customColor)}</div>
         ${this._showLabels && this._locale
-          ? renderDayLabels(
-              entries,
-              this._subscribedType === "twice_daily" ? 2 : 1,
-              this._locale
-            )
+          ? renderDayLabels(entries, entriesPerDay, this._locale)
           : nothing}
       </div>
     `;
@@ -293,8 +310,8 @@ class HuiTemperatureForecastCardFeature
     entries: ForecastAttribute[],
     customColor: string | undefined
   ): TemplateResult {
-    const width = this.clientWidth || 300;
-    const height = this.clientHeight || 42;
+    const width = this._size.value?.width || this.clientWidth;
+    const height = this._size.value?.height || this.clientHeight;
     const padding = 4;
     const minGap = 4;
     const slotWidth = width / entries.length;
@@ -385,6 +402,7 @@ class HuiTemperatureForecastCardFeature
     }
     this._subscribedType = undefined;
     this._hourly = undefined;
+    this._lastHourlySize = undefined;
   }
 
   private _computeHourly(forecast: ForecastAttribute[]) {
@@ -428,9 +446,14 @@ class HuiTemperatureForecastCardFeature
     const minY = dataMin - range * 0.1;
     const maxY = dataMax + range * 0.1;
 
-    const width = this.clientWidth || 300;
+    const size = this._size.value;
+    const width = size?.width || this.clientWidth;
     const labelSpace = this._showLabels ? LABEL_HEIGHT + LABEL_GAP : 0;
-    const height = Math.max(1, (this.clientHeight || 42) - labelSpace);
+    const height = Math.max(
+      1,
+      (size?.height || this.clientHeight) - labelSpace
+    );
+    this._lastHourlySize = size;
 
     const { points, yAxisOrigin } = coordinates(
       data,
@@ -439,6 +462,7 @@ class HuiTemperatureForecastCardFeature
       data.length,
       { minX: now, maxX: maxTime, minY, maxY }
     );
+    // coordinates() pads with a trailing step-line point at x=width; drop it so the curve ends at the last forecast point.
     points.pop();
 
     const isFahrenheit = this._stateObj.attributes?.temperature_unit === "°F";
@@ -517,7 +541,7 @@ class HuiTemperatureForecastCardFeature
         flex-direction: column;
         justify-content: flex-end;
         align-items: stretch;
-        pointer-events: none !important;
+        pointer-events: none;
         --feature-temperature-freezing-color: #a89bd8;
         --feature-temperature-cold-color: #7dc8dc;
         --feature-temperature-mild-color: #a8dc7c;
