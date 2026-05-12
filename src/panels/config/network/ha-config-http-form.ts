@@ -129,7 +129,7 @@ class HaConfigHttpForm extends LitElement {
           ${this._saved
             ? html`
                 <ha-alert
-                  alert-type="success"
+                  alert-type="info"
                   .title=${this.hass.localize(
                     "ui.panel.config.network.http.restart_required_title"
                   )}
