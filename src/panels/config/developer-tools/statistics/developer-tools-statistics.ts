@@ -12,6 +12,7 @@ import {
 
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { consume, type ContextType } from "@lit/context";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -51,6 +52,13 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import {
+  areasContext,
+  devicesContext,
+  entitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
@@ -115,6 +123,21 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @state() private _groupColumn?: string;
 
   @state() private _selectMode = false;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
@@ -249,7 +272,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       fix: {
         title: "",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
         ),
         type: "icon",
@@ -299,8 +322,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   );
 
   protected render() {
-    const localize = this.hass.localize;
-    const columns = this._columns(this.hass.localize);
+    const localize = this._i18n.localize;
+    const columns = this._columns(localize);
 
     const selectModeBtn = !this._selectMode
       ? html`<ha-assist-chip
@@ -516,12 +539,12 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           .columns=${columns}
           .data=${this._displayData(
             this._data,
-            this.hass.localize,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas
+            this._i18n.localize,
+            this._entities,
+            this._devices,
+            this._areas
           )}
-          .noDataText=${this.hass.localize(
+          .noDataText=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
           )}
           .filter=${this.filter}
@@ -619,7 +642,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _openSettings() {
     showDataTableSettingsDialog(this, {
-      columns: this._columns(this.hass.localize),
+      columns: this._columns(this._i18n.localize),
       hiddenColumns: this.hiddenColumns,
       columnOrder: this.columnOrder,
       onUpdate: (
@@ -629,7 +652,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this.hass.localize,
+      localizeFunc: this._i18n.localize,
     });
   }
 
@@ -676,7 +699,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _rowClicked(ev) {
     const id = ev.detail.id;
-    if (id in this.hass.states) {
+    if (id in this._states) {
       fireEvent(this, "hass-more-info", { entityId: id });
     }
   }
@@ -695,7 +718,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       statsIds.add(statistic.statistic_id);
       return {
         ...statistic,
-        state: this.hass.states[statistic.statistic_id],
+        state: this._states[statistic.statistic_id],
         issues: issues[statistic.statistic_id],
       };
     });
@@ -706,7 +729,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
           source: "",
-          state: this.hass.states[statisticId],
+          state: this._states[statisticId],
           issues: issues[statisticId],
           mean_type: StatisticMeanType.NONE,
           has_sum: false,
@@ -724,14 +747,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const deletableIds = this._selected;
 
     await showConfirmationDialog(this, {
-      title: this.hass.localize(
+      title: this._i18n.localize(
         "ui.panel.config.developer-tools.tabs.statistics.multi_delete.title"
       ),
-      text: html`${this.hass.localize(
+      text: html`${this._i18n.localize(
         "ui.panel.config.developer-tools.tabs.statistics.multi_delete.info_text",
         { statistic_count: deletableIds.length }
       )}`,
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this._i18n.localize("ui.common.delete"),
       destructive: true,
       confirm: async () => {
         await clearStatistics(this.hass, deletableIds);
