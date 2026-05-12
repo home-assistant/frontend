@@ -31,6 +31,8 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   private _unsubNotifications?: UnsubscribeFunc;
 
+  private _openAnimationFrame?: number;
+
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this.closeDialog);
@@ -39,9 +41,13 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this.closeDialog);
+    if (this._openAnimationFrame !== undefined) {
+      cancelAnimationFrame(this._openAnimationFrame);
+      this._openAnimationFrame = undefined;
+    }
   }
 
-  async showDialog({ narrow }) {
+  showDialog({ narrow }) {
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {
@@ -57,14 +63,6 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       `min(100vw, calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px)))`
     );
     this._open = true;
-
-    await this.updateComplete;
-
-    requestAnimationFrame(() => {
-      if (this._open) {
-        this._drawerOpen = true;
-      }
-    });
   }
 
   closeDialog = () => {
@@ -83,6 +81,17 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (changedProps.has("_open") && this._open && !this._drawerOpen) {
+      this._openAnimationFrame = requestAnimationFrame(() => {
+        this._openAnimationFrame = undefined;
+        this._drawerOpen = true;
+      });
     }
   }
 
@@ -177,6 +186,10 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _finalizeClose() {
+    if (this._openAnimationFrame !== undefined) {
+      cancelAnimationFrame(this._openAnimationFrame);
+      this._openAnimationFrame = undefined;
+    }
     if (this._unsubNotifications) {
       this._unsubNotifications();
       this._unsubNotifications = undefined;

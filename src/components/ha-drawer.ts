@@ -4,6 +4,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 
 declare global {
   interface HASSDomEvents {
@@ -20,28 +21,30 @@ declare global {
 
 @customElement("ha-drawer")
 export class HaDrawer extends LitElement {
+  private static readonly _SWIPE_AXIS_TOLERANCE = 32;
+
   @property({ reflect: true }) public direction: "ltr" | "rtl" = "ltr";
 
   @property() public type = "";
 
   @property({ type: Boolean, reflect: true }) public open = false;
 
-  @query(".sidebar-shell") private _sidebarShell?: HTMLElement;
+  @query("wa-drawer") private _modalDrawer?: HTMLElement;
 
-  private _mc?: HammerManager;
+  @query(".sidebar-shell") private _sidebarShell?: HTMLElement;
 
   private _sidebarTransitionActive = false;
 
-  private _swipeSetupId = 0;
-
   private _transitionTarget?: HTMLElement;
+
+  private _gestureRecognizer = new SwipeGestureRecognizer({
+    velocitySwipeThreshold: 0.35,
+  });
+
+  private _touchStartY = 0;
 
   private get _modal() {
     return this.type === "modal";
-  }
-
-  private get _placement() {
-    return this.direction === "rtl" ? "end" : "start";
   }
 
   protected render(): TemplateResult {
@@ -49,10 +52,11 @@ export class HaDrawer extends LitElement {
       ? html`
           <slot name="appContent"></slot>
           <wa-drawer
-            placement=${this._placement}
+            placement="start"
             .open=${this.open}
             light-dismiss
             without-header
+            @touchstart=${this._handleTouchStart}
             @wa-after-hide=${this._handleAfterHide}
           >
             <slot></slot>
@@ -70,28 +74,11 @@ export class HaDrawer extends LitElement {
         `;
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  protected updated(_: PropertyValues<this>) {
     this._syncTransitionListeners();
 
-    if (
-      (changedProps.has("direction") || changedProps.has("open")) &&
-      this._modal
-    ) {
-      if (this.open) {
-        this._setupSwipe();
-      } else if (this._mc) {
-        this._mc.destroy();
-        this._mc = undefined;
-      }
-    }
-
-    if (changedProps.has("type")) {
-      if (this._modal && this.open) {
-        this._setupSwipe();
-      } else if (this._mc) {
-        this._mc.destroy();
-        this._mc = undefined;
-      }
+    if (!this.open) {
+      this._resetSwipeTracking();
     }
   }
 
@@ -102,16 +89,17 @@ export class HaDrawer extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._removeTransitionListeners();
-    if (this._mc) {
-      this._mc.destroy();
-      this._mc = undefined;
-    }
-    this._swipeSetupId += 1;
+    this._unregisterSwipeHandlers();
   }
 
-  private _handleAfterHide() {
+  private _handleAfterHide(ev: Event) {
+    ev.stopPropagation();
     this.open = false;
     fireEvent(this, "hass-drawer-closed");
+  }
+
+  private _closeModalDrawer() {
+    this.open = false;
   }
 
   private _handleDrawerTransitionStart = (ev: TransitionEvent) => {
@@ -136,32 +124,100 @@ export class HaDrawer extends LitElement {
     });
   };
 
-  private async _setupSwipe() {
-    if (this._mc) {
-      this._mc.destroy();
-      this._mc = undefined;
-    }
-    const setupId = ++this._swipeSetupId;
-
-    const hammer = await import("../resources/hammer");
-    if (setupId !== this._swipeSetupId || !this.open || !this._modal) {
+  private _handleTouchStart = (ev: TouchEvent) => {
+    if (!this._modal || !this.open) {
       return;
     }
 
-    this._mc = new hammer.Manager(document, {
-      touchAction: "pan-y",
+    const drawer = this._modalDrawer;
+    const dialog = drawer?.shadowRoot?.querySelector(
+      "dialog"
+    ) as HTMLDialogElement | null;
+
+    if (!dialog) {
+      return;
+    }
+
+    const path = ev.composedPath();
+
+    if (!path.includes(dialog)) {
+      return;
+    }
+
+    ev.stopPropagation();
+    this._startSwipeTracking(ev.touches[0].clientX, ev.touches[0].clientY);
+  };
+
+  private _startSwipeTracking(clientX: number, clientY: number) {
+    document.addEventListener("touchmove", this._handleTouchMove, {
+      passive: false,
     });
-    this._mc.add(
-      new hammer.Swipe({
-        direction:
-          this.direction === "rtl"
-            ? hammer.DIRECTION_RIGHT
-            : hammer.DIRECTION_LEFT,
-      })
-    );
-    this._mc.on("swipeleft swiperight", () => {
-      fireEvent(this, "hass-toggle-menu", { open: false });
-    });
+    document.addEventListener("touchend", this._handleTouchEnd);
+    document.addEventListener("touchcancel", this._handleTouchEnd);
+
+    this._touchStartY = clientY;
+    this._gestureRecognizer.start(clientX);
+  }
+
+  private _handleTouchMove = (ev: TouchEvent) => {
+    const currentX = ev.touches[0].clientX;
+    const currentY = ev.touches[0].clientY;
+    const delta = this._gestureRecognizer.move(currentX);
+    const deltaY = Math.abs(currentY - this._touchStartY);
+
+    if (deltaY > Math.abs(delta) + HaDrawer._SWIPE_AXIS_TOLERANCE) {
+      this._resetSwipeTracking();
+      return;
+    }
+
+    const isClosingDirection =
+      this.direction === "rtl" ? delta > 0 : delta < 0;
+
+    if (isClosingDirection) {
+      ev.preventDefault();
+    }
+  };
+
+  private _handleTouchEnd = () => {
+    this._unregisterSwipeHandlers();
+
+    const result = this._gestureRecognizer.end();
+    const drawerDialog = this._modalDrawer?.shadowRoot?.querySelector(
+      '[part="dialog"]'
+    ) as HTMLElement | null;
+    const drawerWidth = drawerDialog?.offsetWidth || 0;
+
+    if (result.isSwipe) {
+      const closeByVelocity =
+        this.direction === "rtl" ? result.isDownwardSwipe : !result.isDownwardSwipe;
+
+      if (closeByVelocity) {
+        this._closeModalDrawer();
+      }
+      return;
+    }
+
+    const closeByDistance =
+      drawerWidth > 0 &&
+      (this.direction === "rtl"
+        ? result.delta > 0 && Math.abs(result.delta) > drawerWidth * 0.5
+        : result.delta < 0 && Math.abs(result.delta) > drawerWidth * 0.5);
+
+    if (closeByDistance) {
+      this._closeModalDrawer();
+    }
+  };
+
+  private _unregisterSwipeHandlers() {
+    document.removeEventListener("touchmove", this._handleTouchMove);
+    document.removeEventListener("touchend", this._handleTouchEnd);
+    document.removeEventListener("touchcancel", this._handleTouchEnd);
+  }
+
+  private _resetSwipeTracking() {
+    this._unregisterSwipeHandlers();
+    this._gestureRecognizer.reset();
+    this._touchStartY = 0;
   }
 
   private _syncTransitionListeners() {
@@ -221,22 +277,12 @@ export class HaDrawer extends LitElement {
       height: 100%;
     }
 
-    :host([direction="rtl"]) .layout {
-      flex-direction: row-reverse;
-    }
-
     .sidebar-shell {
       width: var(--ha-sidebar-width);
       height: 100%;
       flex: 0 0 auto;
-      border-inline-end: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
       box-sizing: border-box;
       transition: width var(--ha-animation-duration-normal) ease;
-    }
-
-    :host([direction="rtl"]) .sidebar-shell {
-      border-inline-end: none;
-      border-inline-start: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
     }
 
     .app-content {
@@ -253,24 +299,9 @@ export class HaDrawer extends LitElement {
       --hide-duration: var(--ha-animation-duration-normal);
     }
 
-    wa-drawer::part(dialog) {
-      border-color: var(--divider-color, rgba(0, 0, 0, 0.12));
-    }
-
     wa-drawer::part(body) {
       margin: 0;
       padding: 0;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .sidebar-shell {
-        transition: 1ms;
-      }
-
-      wa-drawer {
-        --show-duration: 1ms;
-        --hide-duration: 1ms;
-      }
     }
   `;
 }
