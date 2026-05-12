@@ -4,13 +4,14 @@ import { customElement, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-button";
 import { internationalizationContext } from "../../../data/context";
 import { domainToName } from "../../../data/integration";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import type { SingleConfigEntryWarningDialogParams } from "./show-single-config-entry-warning";
 
 @customElement("dialog-single-config-entry-warning")
-class DialogShortcuts extends DialogMixin<SingleConfigEntryWarningDialogParams>(
+class DialogSingleConfigEntryWarning extends DialogMixin<SingleConfigEntryWarningDialogParams>(
   LitElement
 ) {
   @state()
@@ -80,6 +81,6 @@ class DialogShortcuts extends DialogMixin<SingleConfigEntryWarningDialogParams>(
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-single-config-entry-warning": DialogShortcuts;
+    "dialog-single-config-entry-warning": DialogSingleConfigEntryWarning;
   }
 }
