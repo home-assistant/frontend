@@ -1,4 +1,5 @@
 import { consume } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
   HassEntity,
@@ -110,6 +111,14 @@ class HuiPrecipitationForecastCardFeature
 
   private _subscribedType?: ForecastResolution;
 
+  private _size = new ResizeController(this, {
+    callback: (entries) => {
+      const rect = entries?.[0]?.contentRect;
+      if (!rect) return undefined;
+      return { width: rect.width, height: rect.height };
+    },
+  });
+
   static getStubConfig(): PrecipitationForecastCardFeatureConfig {
     return {
       type: "precipitation-forecast",
@@ -178,7 +187,12 @@ class HuiPrecipitationForecastCardFeature
     if (this._error) {
       return html`
         <div class="container">
-          <div class="info">${this._error}</div>
+          <div class="info">
+            ${this._localize(
+              "ui.panel.lovelace.editor.features.types.precipitation-forecast.failed_to_load",
+              { error: this._error }
+            )}
+          </div>
         </div>
       `;
     }
@@ -249,8 +263,8 @@ class HuiPrecipitationForecastCardFeature
     precipitationType: "amount" | "probability",
     fill: string
   ): TemplateResult {
-    const width = this.clientWidth || 300;
-    const height = this.clientHeight || 42;
+    const width = this._size.value?.width || this.clientWidth;
+    const height = this._size.value?.height || this.clientHeight;
     const padding = 4;
     const minGap = 4;
     const slotWidth = width / entries.length;
@@ -280,7 +294,7 @@ class HuiPrecipitationForecastCardFeature
           cy=${cy}
           r=${dotRadius}
           fill=${fill}
-          opacity="0.4"
+          class="mark"
         ></circle>`;
       }
       const barHeight = Math.max(
@@ -295,7 +309,7 @@ class HuiPrecipitationForecastCardFeature
         barHeight,
         barWidth / 4
       );
-      return svg`<path d=${d} fill=${fill} opacity="0.4"></path>`;
+      return svg`<path d=${d} fill=${fill} class="mark"></path>`;
     });
 
     return html`
@@ -317,8 +331,8 @@ class HuiPrecipitationForecastCardFeature
     if (!this._forecast?.length) {
       return nothing;
     }
-    const width = this.clientWidth || 300;
-    const height = this.clientHeight || 42;
+    const width = this._size.value?.width || this.clientWidth;
+    const height = this._size.value?.height || this.clientHeight;
     const topPadding = 4;
     const drawableHeight = height - topPadding;
 
@@ -374,7 +388,7 @@ class HuiPrecipitationForecastCardFeature
           cy=${cy}
           r=${dotRadius}
           fill=${fill}
-          opacity="0.4"
+          class="mark"
         ></circle>`;
       }
       const x = xCenter - barWidth / 2;
@@ -384,7 +398,7 @@ class HuiPrecipitationForecastCardFeature
       );
       const y = height - barHeight;
       const d = topRoundedRectPath(x, y, barWidth, barHeight, barWidth / 4);
-      return svg`<path d=${d} fill=${fill} opacity="0.4"></path>`;
+      return svg`<path d=${d} fill=${fill} class="mark"></path>`;
     });
 
     return html`
@@ -452,7 +466,8 @@ class HuiPrecipitationForecastCardFeature
         flex-direction: column;
         justify-content: flex-end;
         align-items: stretch;
-        pointer-events: none !important;
+        pointer-events: none;
+        --feature-precipitation-opacity: 0.4;
       }
 
       .container {
@@ -462,14 +477,7 @@ class HuiPrecipitationForecastCardFeature
         flex-direction: column;
         justify-content: center;
         align-items: stretch;
-        border-bottom-right-radius: 8px;
-        border-bottom-left-radius: 8px;
         overflow: hidden;
-      }
-
-      .container.with-labels {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
       }
 
       .bars {
@@ -490,6 +498,10 @@ class HuiPrecipitationForecastCardFeature
 
       svg {
         display: block;
+      }
+
+      .mark {
+        opacity: var(--feature-precipitation-opacity);
       }
     `,
   ];

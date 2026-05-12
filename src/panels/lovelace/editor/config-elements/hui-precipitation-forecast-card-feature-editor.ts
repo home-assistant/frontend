@@ -164,7 +164,7 @@ export class HuiPrecipitationForecastCardFeatureEditor
     switch (schema.name) {
       case "forecast_type":
         return this.hass!.localize(
-          "ui.panel.lovelace.editor.features.types.temperature-forecast.forecast_type"
+          "ui.panel.lovelace.editor.features.types.precipitation-forecast.forecast_type"
         );
       case "days_to_show":
       case "hours_to_show":
