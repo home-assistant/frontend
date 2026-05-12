@@ -182,6 +182,8 @@ export interface GasSourceTypeEnergyPreference {
   entity_energy_price: string | null;
   number_energy_price: number | null;
   unit_of_measurement?: string | null;
+
+  name?: string;
 }
 
 export interface WaterSourceTypeEnergyPreference {
@@ -200,6 +202,8 @@ export interface WaterSourceTypeEnergyPreference {
   entity_energy_price: string | null;
   number_energy_price: number | null;
   unit_of_measurement?: string | null;
+
+  name?: string;
 }
 
 export type EnergySource =

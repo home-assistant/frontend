@@ -181,11 +181,13 @@ class HuiWaterSankeyCard
 
       nodes.push({
         id: `source-${source.stat_energy_from}`,
-        label: getStatisticLabel(
-          this.hass,
-          source.stat_energy_from,
-          this._data!.statsMetadata[source.stat_energy_from]
-        ),
+        label:
+          source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_energy_from,
+            this._data!.statsMetadata[source.stat_energy_from]
+          ),
         value,
         color: waterColor,
         index: 0,

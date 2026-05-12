@@ -95,7 +95,8 @@ export class EnergyWaterSettings extends LitElement {
                             ></ha-icon>`
                           : html`<ha-svg-icon .path=${mdiWater}></ha-svg-icon>`}
                         <span class="content"
-                          >${getStatisticLabel(
+                          >${source.name ||
+                          getStatisticLabel(
                             this.hass,
                             source.stat_energy_from,
                             this.statsMetadata?.[source.stat_energy_from]
