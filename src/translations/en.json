@@ -10178,7 +10178,8 @@
                   "twice_daily": "Twice daily",
                   "hourly": "Hourly"
                 },
-                "color": "Color"
+                "color": "Color",
+                "show_labels": "Show labels"
               },
               "precipitation-forecast": {
                 "label": "Precipitation forecast",
@@ -10194,7 +10195,8 @@
                   "amount": "Amount",
                   "probability": "Probability"
                 },
-                "color": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::color%]"
+                "color": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::color%]",
+                "show_labels": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::show_labels%]"
               }
             }
           },

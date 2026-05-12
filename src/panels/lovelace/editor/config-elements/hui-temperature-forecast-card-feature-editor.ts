@@ -87,6 +87,11 @@ export class HuiTemperatureForecastCardFeatureEditor
             },
           },
         },
+        {
+          name: "show_labels",
+          default: true,
+          selector: { boolean: {} },
+        },
       ] as const satisfies readonly HaFormSchema[];
     }
   );
@@ -145,6 +150,10 @@ export class HuiTemperatureForecastCardFeatureEditor
       case "color":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.features.types.temperature-forecast.color"
+        );
+      case "show_labels":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.temperature-forecast.show_labels"
         );
       default:
         return "";

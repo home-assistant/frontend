@@ -7,11 +7,13 @@ import type {
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../components/ha-spinner";
 import {
   connectionContext,
@@ -31,6 +33,13 @@ import {
   resolveForecastResolution,
   supportsForecast,
 } from "./common/forecast";
+import {
+  graphLabelsStyles,
+  LABEL_GAP,
+  LABEL_HEIGHT,
+  renderDayLabels,
+  renderHourLabels,
+} from "./common/graph-labels";
 import { coordinates } from "../common/graph/coordinates";
 import type { HuiGraphGradient } from "../components/hui-graph-base";
 import "../components/hui-graph-base";
@@ -76,6 +85,13 @@ class HuiTemperatureForecastCardFeature
     transformer: ({ localize }) => localize,
   })
   private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
 
   @state()
   @consume({ context: connectionContext, subscribe: true })
@@ -147,6 +163,21 @@ class HuiTemperatureForecastCardFeature
     if (contextChanged || configTypeChanged) {
       this._unsubscribeForecast();
       this._subscribeForecast();
+      return;
+    }
+    if (changedProps.has("_config")) {
+      const prev = changedProps.get("_config") as
+        | TemperatureForecastCardFeatureConfig
+        | undefined;
+      const showLabelsChanged =
+        (prev?.show_labels !== false) !== this._showLabels;
+      if (
+        showLabelsChanged &&
+        this._subscribedType === "hourly" &&
+        this._forecast
+      ) {
+        this._computeHourly(this._forecast);
+      }
     }
   }
 
@@ -155,6 +186,10 @@ class HuiTemperatureForecastCardFeature
       this._stateObj,
       this._config?.forecast_type
     );
+  }
+
+  private get _showLabels(): boolean {
+    return this._config?.show_labels !== false;
   }
 
   protected render() {
@@ -181,6 +216,11 @@ class HuiTemperatureForecastCardFeature
       ? computeCssColor(this._config.color)
       : undefined;
 
+    const containerClasses = classMap({
+      container: true,
+      "with-labels": this._showLabels,
+    });
+
     if (isHourly) {
       if (!this._hourly?.coordinates.length) {
         return html`
@@ -196,14 +236,20 @@ class HuiTemperatureForecastCardFeature
       const graphStyle = customColor
         ? styleMap({ "--feature-color": customColor })
         : nothing;
+      const hoursToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
       return html`
-        <div class="container">
-          <hui-graph-base
-            .coordinates=${this._hourly.coordinates}
-            .yAxisOrigin=${this._hourly.yAxisOrigin}
-            .gradient=${customColor ? undefined : this._hourly.gradient}
-            style=${graphStyle}
-          ></hui-graph-base>
+        <div class=${containerClasses}>
+          <div class="bars">
+            <hui-graph-base
+              .coordinates=${this._hourly.coordinates}
+              .yAxisOrigin=${this._hourly.yAxisOrigin}
+              .gradient=${customColor ? undefined : this._hourly.gradient}
+              style=${graphStyle}
+            ></hui-graph-base>
+          </div>
+          ${this._showLabels && this._locale
+            ? renderHourLabels(hoursToShow, this._locale)
+            : nothing}
         </div>
       `;
     }
@@ -230,7 +276,16 @@ class HuiTemperatureForecastCardFeature
     }
 
     return html`
-      <div class="container">${this._renderBars(entries, customColor)}</div>
+      <div class=${containerClasses}>
+        <div class="bars">${this._renderBars(entries, customColor)}</div>
+        ${this._showLabels && this._locale
+          ? renderDayLabels(
+              entries,
+              this._subscribedType === "twice_daily" ? 2 : 1,
+              this._locale
+            )
+          : nothing}
+      </div>
     `;
   }
 
@@ -374,7 +429,8 @@ class HuiTemperatureForecastCardFeature
     const maxY = dataMax + range * 0.1;
 
     const width = this.clientWidth || 300;
-    const height = this.clientHeight || 42;
+    const labelSpace = this._showLabels ? LABEL_HEIGHT + LABEL_GAP : 0;
+    const height = Math.max(1, (this.clientHeight || 42) - labelSpace);
 
     const { points, yAxisOrigin } = coordinates(
       data,
@@ -451,48 +507,68 @@ class HuiTemperatureForecastCardFeature
     });
   }
 
-  static styles = css`
-    :host {
-      display: flex;
-      width: 100%;
-      height: var(--feature-height);
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: stretch;
-      pointer-events: none !important;
-      --feature-temperature-freezing-color: #a89bd8;
-      --feature-temperature-cold-color: #7dc8dc;
-      --feature-temperature-mild-color: #a8dc7c;
-      --feature-temperature-warm-color: #e89042;
-      --feature-temperature-hot-color: #d24530;
-    }
+  static styles = [
+    graphLabelsStyles,
+    css`
+      :host {
+        display: flex;
+        width: 100%;
+        height: var(--feature-height);
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        pointer-events: none !important;
+        --feature-temperature-freezing-color: #a89bd8;
+        --feature-temperature-cold-color: #7dc8dc;
+        --feature-temperature-mild-color: #a8dc7c;
+        --feature-temperature-warm-color: #e89042;
+        --feature-temperature-hot-color: #d24530;
+      }
 
-    .container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom-right-radius: 8px;
-      border-bottom-left-radius: 8px;
-      overflow: hidden;
-    }
+      .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        overflow: hidden;
+      }
 
-    .info {
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-    }
+      .container.with-labels {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
 
-    svg {
-      display: block;
-    }
+      .bars {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+      }
 
-    hui-graph-base {
-      width: 100%;
-      height: 100%;
-      --accent-color: var(--feature-color);
-    }
-  `;
+      .container.with-labels .bars {
+        padding-bottom: 2px;
+      }
+
+      .info {
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
+      }
+
+      svg {
+        display: block;
+      }
+
+      hui-graph-base {
+        width: 100%;
+        height: 100%;
+        --accent-color: var(--feature-color);
+      }
+    `,
+  ];
 }
 
 declare global {
