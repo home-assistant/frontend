@@ -272,6 +272,10 @@ export class HaDrawer extends LitElement {
       display: block;
       height: 100%;
     }
+    
+    .layout {
+      height: 100%;
+    }
 
     .sidebar-shell {
       position: fixed;
@@ -287,6 +291,7 @@ export class HaDrawer extends LitElement {
       min-width: 0;
       padding-inline-start: var(--ha-sidebar-width);
       width: 100%;
+      height: 100%;
       box-sizing: border-box;
     }
 
