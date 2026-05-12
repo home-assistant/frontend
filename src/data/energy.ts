@@ -164,6 +164,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_to: string;
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
+  stat_soc?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
