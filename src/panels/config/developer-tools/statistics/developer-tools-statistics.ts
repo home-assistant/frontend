@@ -17,6 +17,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import {
+  computeDeviceName,
+  getDuplicatedDeviceNames,
+} from "../../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
@@ -45,6 +51,7 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -77,6 +84,9 @@ type StatisticData = StatisticsMetaData & {
 
 type DisplayedStatisticData = StatisticData & {
   displayName: string;
+  device?: string;
+  device_full?: string;
+  area?: string;
   issues_string?: string;
 };
 
@@ -115,22 +125,62 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _displayData = memoizeOne(
-    (data: StatisticData[], localize: LocalizeFunc): DisplayedStatisticData[] =>
-      data.map((item) => ({
-        ...item,
-        displayName: item.state
-          ? computeStateName(item.state)
-          : item.name || item.statistic_id,
-        issues_string: item.issues
-          ?.map(
-            (issue) =>
-              localize(
-                `ui.panel.config.developer-tools.tabs.statistics.issues.${issue.type}`,
-                issue.data
-              ) || issue.type
-          )
-          .join(" "),
-      }))
+    (
+      data: StatisticData[],
+      localize: LocalizeFunc,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ): DisplayedStatisticData[] => {
+      const duplicatedDeviceNames = getDuplicatedDeviceNames(devices);
+
+      return data.map((item) => {
+        const entry = entities[item.statistic_id];
+
+        let entityName: string | undefined;
+        let deviceName: string | undefined;
+        let areaName: string | undefined;
+        let deviceFullName: string | undefined;
+
+        if (entry) {
+          entityName = computeEntityEntryName(entry, devices, item.state);
+
+          const device = entry.device_id ? devices[entry.device_id] : undefined;
+          const areaId = entry.area_id || device?.area_id;
+          const area = areaId ? areas[areaId] : undefined;
+
+          deviceName = device ? computeDeviceName(device) : undefined;
+          areaName = area ? computeAreaName(area) : undefined;
+          deviceFullName = deviceName
+            ? duplicatedDeviceNames.has(deviceName) && areaName
+              ? `${deviceName} (${areaName})`
+              : deviceName
+            : undefined;
+        }
+
+        return {
+          ...item,
+          displayName:
+            entityName ||
+            deviceName ||
+            (item.state ? computeStateName(item.state) : undefined) ||
+            item.name ||
+            item.statistic_id,
+          device: deviceName,
+          device_full: deviceFullName,
+          area: areaName,
+          issues_string: item.issues
+            ?.map(
+              (issue) =>
+                localize(
+                  `ui.panel.config.developer-tools.tabs.statistics.issues.${issue.type}`,
+                  issue.data
+                ) || issue.type
+            )
+            .join(" "),
+        };
+      });
+    }
   );
 
   private _columns = memoizeOne(
@@ -146,6 +196,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         filterable: true,
         flex: 2,
       },
+      device: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        sortable: true,
+        template: (entry) => entry.device || "—",
+      },
+      device_full: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        filterable: true,
+        groupable: true,
+        hidden: true,
+      },
+      area: getAreaTableColumn(localize),
       statistic_id: {
         title: localize(
           "ui.panel.config.developer-tools.tabs.statistics.data_table.statistic_id"
@@ -452,7 +514,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${columns}
-          .data=${this._displayData(this._data, this.hass.localize)}
+          .data=${this._displayData(
+            this._data,
+            this.hass.localize,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas
+          )}
           .noDataText=${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
           )}
