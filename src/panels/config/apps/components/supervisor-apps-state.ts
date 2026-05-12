@@ -47,7 +47,7 @@ class SupervisorAppsState extends LitElement {
       background-color: var(--ha-color-on-warning-normal);
     }
     .dot.state-error {
-      background-color: var(--ha-color-on-error-normal);
+      background-color: var(--ha-color-on-danger-normal);
     }
     @keyframes state-dot-pulse {
       0% {

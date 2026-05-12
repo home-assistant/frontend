@@ -9,12 +9,7 @@ import type { HomeAssistant } from "../../../../types";
 import { getAppDisplayName } from "../common/app";
 import "./supervisor-apps-state";
 import "./supervisor-apps-tag";
-
-export interface AppTag {
-  label: string;
-  variant: "brand" | "success" | "warning" | "danger" | "neutral";
-  iconPath?: string;
-}
+import type { AppTag } from "./supervisor-apps-tag";
 
 @customElement("supervisor-apps-card-content")
 class SupervisorAppsCardContent extends LitElement {
@@ -81,7 +76,7 @@ class SupervisorAppsCardContent extends LitElement {
         ? html`
             <div class="footer">
               <supervisor-apps-state
-                .state=${this.state}
+                .state=${this.state || "unknown"}
               ></supervisor-apps-state>
 
               ${this.tags?.length

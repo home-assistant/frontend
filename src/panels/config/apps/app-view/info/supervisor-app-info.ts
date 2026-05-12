@@ -204,7 +204,6 @@ class SupervisorAppInfo extends LitElement {
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`<supervisor-apps-state
-                    right
                     .state=${this.addon.state}
                   ></supervisor-apps-state>`
                 : this.addon.version_latest}
