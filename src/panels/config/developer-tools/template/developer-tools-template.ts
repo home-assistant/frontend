@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -84,6 +85,18 @@ class HaPanelDevTemplate extends LitElement {
     this._inited = true;
   }
 
+  private _getTipHeight(): string | undefined {
+    const tip = this.shadowRoot!.getElementById("editor-tip");
+    if (tip) {
+      const height = tip.scrollHeight;
+      if (!isNaN(height)) {
+        return `${height}px`;
+      }
+      return undefined;
+    }
+    return undefined;
+  }
+
   protected render() {
     const type = typeof this._templateResult?.result;
     const resultType =
@@ -92,6 +105,7 @@ class HaPanelDevTemplate extends LitElement {
           ? "list"
           : "dict"
         : type;
+    const tipHeight = this._getTipHeight();
 
     return html`
       <div class="content">
@@ -143,7 +157,10 @@ class HaPanelDevTemplate extends LitElement {
           layout: !this.narrow,
           horizontal: !this.narrow,
         })}"
-        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
+        style=${styleMap({
+          "--description-expanded": `${this._descriptionExpanded ? 1 : 0}`,
+          "--tip-height": `${tipHeight}`,
+        })}
       >
         <ha-card
           class="edit-pane"
@@ -174,7 +191,7 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
-          <ha-tip .hass=${this.hass}>
+          <ha-tip id="editor-tip" .hass=${this.hass}>
             ${this.hass.localize(
               "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
               {
@@ -332,9 +349,8 @@ ${type === "object"
               var(--ha-card-header-font-size, var(--ha-font-size-2xl))
           );
           --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
-          --tip-height: calc(
-            var(--mdc-icon-size, 24px) + var(--ha-line-height-normal) *
-              var(--ha-font-size-m) + var(--ha-space-4)
+          --tip-height-minimal: calc(
+            var(--mdc-icon-size, 24px) + var(--ha-space-4)
           );
           --edit-pane-height: calc(
             100vh - var(--panel-header-height) - var(
@@ -345,7 +361,8 @@ ${type === "object"
           --code-mirror-max-height: calc(
             var(--edit-pane-height) - var(--card-header-height) +
               var(--ha-space-2) - var(--card-actions-height) - var(
-                --tip-height
+                --tip-height,
+                var(--tip-height-minimal)
               ) - var(--ha-space-4) - var(--ha-card-border-width, 1px) *
               2
           );
