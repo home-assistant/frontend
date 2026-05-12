@@ -332,6 +332,10 @@ ${type === "object"
               var(--ha-card-header-font-size, var(--ha-font-size-2xl))
           );
           --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
+          --tip-height: calc(
+            var(--mdc-icon-size, 24px) + var(--ha-line-height-normal) *
+              var(--ha-font-size-m) + var(--ha-space-4)
+          );
           --edit-pane-height: calc(
             100vh - var(--panel-header-height) - var(
                 --description-pane-height
@@ -341,8 +345,8 @@ ${type === "object"
           --code-mirror-max-height: calc(
             var(--edit-pane-height) - var(--card-header-height) +
               var(--ha-space-2) - var(--card-actions-height) - var(
-                --ha-space-4
-              ) - var(--ha-card-border-width, 1px) *
+                --tip-height
+              ) - var(--ha-space-4) - var(--ha-card-border-width, 1px) *
               2
           );
         }
