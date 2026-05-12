@@ -32,15 +32,15 @@ import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import {
-  areasContext,
-  devicesContext,
-  entitiesContext,
+  apiContext,
+  configContext,
   internationalizationContext,
+  registriesContext,
   statesContext,
 } from "../../../../data/context";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./developer-tools-state-renderer";
 
@@ -89,20 +89,25 @@ class HaPanelDevState extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
-  @consume({ context: devicesContext, subscribe: true })
-  private _devices!: ContextType<typeof devicesContext>;
-
-  @consume({ context: areasContext, subscribe: true })
-  private _areas!: ContextType<typeof areasContext>;
-
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -114,9 +119,9 @@ class HaPanelDevState extends LitElement {
       deviceFilter: string,
       areaFilter: string,
       states: HassEntities,
-      entities: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"]
+      entities: HomeAssistantRegistries["entities"],
+      devices: HomeAssistantRegistries["devices"],
+      areas: HomeAssistantRegistries["areas"]
     ): HassEntity[] =>
       this._applyFiltersOnEntities(
         entityFilter,
@@ -139,9 +144,9 @@ class HaPanelDevState extends LitElement {
       this._deviceFilter,
       this._areaFilter,
       this._states,
-      this._entities,
-      this._devices,
-      this._areas
+      this._registries.entities,
+      this._registries.devices,
+      this._registries.areas
     );
 
     return html`
@@ -433,7 +438,7 @@ class HaPanelDevState extends LitElement {
     }
     this._updateEditor();
     try {
-      await this.hass.callApi("POST", "states/" + this._entityId, {
+      await this._api.callApi("POST", "states/" + this._entityId, {
         state: this._state,
         attributes: this._stateAttributes,
       });
@@ -449,9 +454,9 @@ class HaPanelDevState extends LitElement {
     deviceFilter: string,
     areaFilter: string,
     states: HassEntities,
-    entities: HomeAssistant["entities"],
-    devices: HomeAssistant["devices"],
-    areas: HomeAssistant["areas"]
+    entities: HomeAssistantRegistries["entities"],
+    devices: HomeAssistantRegistries["devices"],
+    areas: HomeAssistantRegistries["areas"]
   ) {
     const entityFilterRegExp =
       entityFilter &&
@@ -572,16 +577,16 @@ class HaPanelDevState extends LitElement {
   private _lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._config.config
     );
   }
 
   private _lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._config.config
     );
   }
 

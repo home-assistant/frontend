@@ -8,7 +8,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
@@ -17,10 +17,8 @@ import { computeEntityEntryName } from "../../../../common/entity/compute_entity
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-svg-icon";
 import {
-  areasContext,
-  devicesContext,
-  entitiesContext,
   internationalizationContext,
+  registriesContext,
 } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
@@ -39,17 +37,13 @@ class HaPanelDevStateRenderer extends LitElement {
   @property({ attribute: false })
   public showAttributes = true;
 
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
-
-  @consume({ context: devicesContext, subscribe: true })
-  private _devices!: ContextType<typeof devicesContext>;
-
-  @consume({ context: areasContext, subscribe: true })
-  private _areas!: ContextType<typeof areasContext>;
-
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -156,15 +150,15 @@ class HaPanelDevStateRenderer extends LitElement {
       return nothing;
     }
 
-    const entry = this._entities?.[item.entity_id];
+    const entry = this._registries?.entities?.[item.entity_id];
     const device = entry?.device_id
-      ? this._devices?.[entry.device_id]
+      ? this._registries?.devices?.[entry.device_id]
       : undefined;
     const areaId = entry?.area_id || device?.area_id;
-    const area = areaId ? this._areas?.[areaId] : undefined;
+    const area = areaId ? this._registries?.areas?.[areaId] : undefined;
 
     const displayName = entry
-      ? computeEntityEntryName(entry, this._devices, item)
+      ? computeEntityEntryName(entry, this._registries.devices, item)
       : undefined;
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : undefined;
