@@ -64,89 +64,83 @@ class HaPanelDevStateRenderer extends LitElement {
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
     return html`
-        <div
-          class=${classMap({
-            entities: true,
-            "hide-attributes": !showAttributes,
-            "hide-extra": this.narrow,
-          })}
-          role="table"
-        >
-          <div class="row" role="row" aria-rowindex="1">
-            <div class="header" role="columnheader">
-              <span class="padded">
-                ${this._i18n.localize(
-                  "ui.panel.config.developer-tools.tabs.states.entity"
-                )}
-              </span>
-            </div>
-            <div class="header" role="columnheader">
-              <span class="padded">
-                ${this._i18n.localize(
-                  "ui.panel.config.developer-tools.tabs.states.state"
-                )}
-              </span>
-            </div>
-            <div class="header" role="columnheader">
-              <span class="padded">
-                ${this._i18n.localize(
-                  "ui.panel.config.entities.picker.headers.device"
-                )}
-              </span>
-            </div>
-            <div class="header" role="columnheader">
-              <span class="padded">
-                ${this._i18n.localize(
-                  "ui.panel.config.generic.headers.area"
-                )}
-              </span>
-            </div>
-            <div class="header" role="columnheader">
-              <span class="padded">
-                ${this._i18n.localize(
-                  "ui.panel.config.developer-tools.tabs.states.attributes"
-                )}
-              </span>
-            </div>
+      <div
+        class=${classMap({
+          entities: true,
+          "hide-attributes": !showAttributes,
+          "hide-extra": this.narrow,
+        })}
+        role="table"
+      >
+        <div class="row" role="row" aria-rowindex="1">
+          <div class="header" role="columnheader">
+            <span class="padded">
+              ${this._i18n.localize(
+                "ui.panel.config.developer-tools.tabs.states.entity"
+              )}
+            </span>
           </div>
-          <div class="row filters" role="row" aria-rowindex="2">
-            <div class="header filter-entities" role="columnheader">
-              <slot name="filter-entities"></slot>
-            </div>
-            <div class="header filter-states" role="columnheader">
-              <slot name="filter-states"></slot>
-            </div>
-            <div class="header" role="columnheader"></div>
-            <div class="header" role="columnheader"></div>
-            <div class="header filter-attributes" role="columnheader">
-              <slot name="filter-attributes"></slot>
-            </div>
+          <div class="header" role="columnheader">
+            <span class="padded">
+              ${this._i18n.localize(
+                "ui.panel.config.developer-tools.tabs.states.state"
+              )}
+            </span>
           </div>
-          ${
-            this.entities.length === 0
-              ? html` <div class="row" role="row" aria-rowindex="3">
-                  <div class="cell" role="cell" aria-colspan="5">
-                    <span class="padded">
-                      ${this._i18n.localize(
-                        "ui.panel.config.developer-tools.tabs.states.no_entities"
-                      )}
-                    </span>
-                  </div>
-                </div>`
-              : nothing
-          }
-        ${
-          this.virtualize
-            ? html`<lit-virtualizer
-                .items=${this.entities}
-                .renderItem=${this._renderStateItem}
-              >
-              </lit-virtualizer>`
-            : this.entities.map((item, index) =>
-                this._renderStateItem(item, index)
-              )
-        }
+          <div class="header" role="columnheader">
+            <span class="padded">
+              ${this._i18n.localize(
+                "ui.panel.config.entities.picker.headers.device"
+              )}
+            </span>
+          </div>
+          <div class="header" role="columnheader">
+            <span class="padded">
+              ${this._i18n.localize("ui.panel.config.generic.headers.area")}
+            </span>
+          </div>
+          <div class="header" role="columnheader">
+            <span class="padded">
+              ${this._i18n.localize(
+                "ui.panel.config.developer-tools.tabs.states.attributes"
+              )}
+            </span>
+          </div>
         </div>
+        <div class="row filters" role="row" aria-rowindex="2">
+          <div class="header filter-entities" role="columnheader">
+            <slot name="filter-entities"></slot>
+          </div>
+          <div class="header filter-states" role="columnheader">
+            <slot name="filter-states"></slot>
+          </div>
+          <div class="header" role="columnheader"></div>
+          <div class="header" role="columnheader"></div>
+          <div class="header filter-attributes" role="columnheader">
+            <slot name="filter-attributes"></slot>
+          </div>
+        </div>
+        ${this.entities.length === 0
+          ? html` <div class="row" role="row" aria-rowindex="3">
+              <div class="cell" role="cell" aria-colspan="5">
+                <span class="padded">
+                  ${this._i18n.localize(
+                    "ui.panel.config.developer-tools.tabs.states.no_entities"
+                  )}
+                </span>
+              </div>
+            </div>`
+          : nothing}
+        ${this.virtualize
+          ? html`<lit-virtualizer
+              .items=${this.entities}
+              .renderItem=${this._renderStateItem}
+            >
+            </lit-virtualizer>`
+          : this.entities.map((item, index) =>
+              this._renderStateItem(item, index)
+            )}
+      </div>
     `;
   }
 
