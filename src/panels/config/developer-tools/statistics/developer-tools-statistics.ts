@@ -54,16 +54,15 @@ import {
   validateStatistics,
 } from "../../../../data/recorder";
 import {
-  areasContext,
-  devicesContext,
-  entitiesContext,
+  apiContext,
   internationalizationContext,
+  registriesContext,
   statesContext,
 } from "../../../../data/context";
 import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistantRegistries } from "../../../../types";
 import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
@@ -101,8 +100,6 @@ type DisplayedStatisticData = StatisticData & {
 
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
@@ -125,20 +122,21 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _selectMode = false;
 
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
-  @consume({ context: devicesContext, subscribe: true })
-  private _devices!: ContextType<typeof devicesContext>;
-
-  @consume({ context: areasContext, subscribe: true })
-  private _areas!: ContextType<typeof areasContext>;
-
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
-
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
@@ -152,9 +150,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     (
       data: StatisticData[],
       localize: LocalizeFunc,
-      entities: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"]
+      entities: HomeAssistantRegistries["entities"],
+      devices: HomeAssistantRegistries["devices"],
+      areas: HomeAssistantRegistries["areas"]
     ): DisplayedStatisticData[] => {
       const duplicatedDeviceNames = getDuplicatedDeviceNames(devices);
 
@@ -550,9 +548,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           .data=${this._displayData(
             this._data,
             this._i18n.localize,
-            this._entities,
-            this._devices,
-            this._areas
+            this._registries.entities,
+            this._registries.devices,
+            this._registries.areas
           )}
           .noDataText=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
@@ -718,11 +716,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private async _validateStatistics() {
     const [statisticIds, issues] = await Promise.all([
-      getStatisticIds(this.hass),
-      validateStatistics(this.hass),
+      getStatisticIds(this._api),
+      validateStatistics(this._api),
     ]);
 
-    updateStatisticsIssues(this.hass);
+    updateStatisticsIssues(this._api);
 
     const statsIds = new Set();
 
@@ -769,7 +767,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       confirmText: this._i18n.localize("ui.common.delete"),
       destructive: true,
       confirm: async () => {
-        await clearStatistics(this.hass, deletableIds);
+        await clearStatistics(this._api, deletableIds);
         this._validateStatistics();
         this._dataTable.clearSelection();
       },
