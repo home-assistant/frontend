@@ -170,11 +170,12 @@ export class StateHistoryChartTimeline extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (
-      changedProps.has("startTime") ||
-      changedProps.has("endTime") ||
-      changedProps.has("data") ||
-      this._chartTime <
-        new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
+      this.isConnected &&
+      (changedProps.has("startTime") ||
+        changedProps.has("endTime") ||
+        changedProps.has("data") ||
+        this._chartTime <
+          new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES))
     ) {
       // If the line is more than 5 minutes old, re-gen it
       // so the X axis grows even if there is no new data
