@@ -108,7 +108,6 @@ class DialogFloorDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.floors.editor.update_floor")

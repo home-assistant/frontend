@@ -191,7 +191,6 @@ export class HuiDialogEditBadge
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
         prevent-scrim-close

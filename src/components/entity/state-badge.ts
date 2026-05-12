@@ -98,7 +98,6 @@ export class StateBadge extends LitElement {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
     return html`<ha-state-icon
-      .hass=${this.hass}
       style=${styleMap(this._iconStyle)}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}

@@ -156,14 +156,18 @@ export class DialogVacuumSegmentMapping
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         .headerTitle=${this.hass.localize(
           "ui.dialogs.vacuum_segment_mapping.title"
         )}
         .headerSubtitle=${breadcrumb.join(
-          computeRTL(this.hass) ? " ◂ " : " ▸ "
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
         )}
       >
         <ha-vacuum-segment-area-mapper

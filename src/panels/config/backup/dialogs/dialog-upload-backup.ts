@@ -75,7 +75,6 @@ export class DialogUploadBackup
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.title"

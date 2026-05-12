@@ -140,7 +140,6 @@ export class DialogForm
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
         prevent-scrim-close

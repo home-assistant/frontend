@@ -2312,10 +2312,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:15.7.1":
-  version: 15.7.1
-  resolution: "@lokalise/node-api@npm:15.7.1"
-  checksum: 10/a950c379778de0a5da29eedfb9ed92d96b2a10b68818d96a982ad3be0a699ab0d386ef9600403c1195d164390b034e88c51d66e674c94fb5013ea0ba55e6a5cc
+"@lokalise/node-api@npm:16.0.0":
+  version: 16.0.0
+  resolution: "@lokalise/node-api@npm:16.0.0"
+  checksum: 10/88075629f30feb19537f8c40dabf7a85cc0539445322c216686f7e5a68ba6735a083d7ce1eee806ce31606d28ee6250ca39b185a783ce5ec263e1e0e71c3a701
   languageName: node
   linkType: hard
 
@@ -3585,22 +3585,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsdoctor/client@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/client@npm:1.5.9"
-  checksum: 10/1ddf1b2315544e05b27bcb967cca0bb0a974a447fe0fb84e175d4492b343d73ab6149d9a8255da97cb7cec3fa6feba88b2337531143dce51a7aad6d5be6df03d
+"@rsdoctor/client@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/client@npm:1.5.10"
+  checksum: 10/f6d03aa576f04233616afee5c4ed3278f7fed13b96c7e4e62a204fc191ecda89866ad7dc06947133dde8d0e4613ae7621fed2ff1dc081756573fa7109321e976
   languageName: node
   linkType: hard
 
-"@rsdoctor/core@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/core@npm:1.5.9"
+"@rsdoctor/core@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/core@npm:1.5.10"
   dependencies:
     "@rsbuild/plugin-check-syntax": "npm:1.6.1"
-    "@rsdoctor/graph": "npm:1.5.9"
-    "@rsdoctor/sdk": "npm:1.5.9"
-    "@rsdoctor/types": "npm:1.5.9"
-    "@rsdoctor/utils": "npm:1.5.9"
+    "@rsdoctor/graph": "npm:1.5.10"
+    "@rsdoctor/sdk": "npm:1.5.10"
+    "@rsdoctor/types": "npm:1.5.10"
+    "@rsdoctor/utils": "npm:1.5.10"
     "@rspack/resolver": "npm:0.2.8"
     browserslist-load-config: "npm:^1.0.1"
     es-toolkit: "npm:^1.45.1"
@@ -3608,60 +3608,60 @@ __metadata:
     fs-extra: "npm:^11.1.1"
     semver: "npm:^7.7.4"
     source-map: "npm:^0.7.6"
-  checksum: 10/9ec662fe88096ab10b146fce3ecee12f732fda3526e6e48a4c2eca91e70097496fa64c417bfa74e24e0aaacf861c64b085905dfe5005f9b2a8a72589463c3df1
+  checksum: 10/1af72612cbfb224f977eac20aae4abd8af3dae4f95392c6885364c9152a9a1e4d7f50d7de2a6c486c8fd147ab045345c6f40c95df56b0567886f85288441be8b
   languageName: node
   linkType: hard
 
-"@rsdoctor/graph@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/graph@npm:1.5.9"
+"@rsdoctor/graph@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/graph@npm:1.5.10"
   dependencies:
-    "@rsdoctor/types": "npm:1.5.9"
-    "@rsdoctor/utils": "npm:1.5.9"
+    "@rsdoctor/types": "npm:1.5.10"
+    "@rsdoctor/utils": "npm:1.5.10"
     es-toolkit: "npm:^1.45.1"
     path-browserify: "npm:1.0.1"
     source-map: "npm:^0.7.6"
-  checksum: 10/7bf7fd3189f765e2ad78d7a13aeb889a089961d51f9ba161e82e6fce1bc9b843f656b36c68c78497e8414784b362ce2faa1c62b03349038f3ecc35337cb0e22d
+  checksum: 10/136c68a5a7c77fd5719d2d00ae7eacf957b71c7a83178fb50ac211376b476348b02a30f41b022d4e15f61bc8452de31757433b7a55ff4f25689425ce78f0d529
   languageName: node
   linkType: hard
 
-"@rsdoctor/rspack-plugin@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/rspack-plugin@npm:1.5.9"
+"@rsdoctor/rspack-plugin@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/rspack-plugin@npm:1.5.10"
   dependencies:
-    "@rsdoctor/core": "npm:1.5.9"
-    "@rsdoctor/graph": "npm:1.5.9"
-    "@rsdoctor/sdk": "npm:1.5.9"
-    "@rsdoctor/types": "npm:1.5.9"
-    "@rsdoctor/utils": "npm:1.5.9"
+    "@rsdoctor/core": "npm:1.5.10"
+    "@rsdoctor/graph": "npm:1.5.10"
+    "@rsdoctor/sdk": "npm:1.5.10"
+    "@rsdoctor/types": "npm:1.5.10"
+    "@rsdoctor/utils": "npm:1.5.10"
   peerDependencies:
     "@rspack/core": "*"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/bc261d18bbb91f1860175fb6d2ca5c2fa5c77bd8c62499c26100366f39b924ee1673281f4fa26193119b3aa0ca9cf2ebfab317f06a3357cf31ab832380dc4f21
+  checksum: 10/0caaced3edb5ffe164e39a55e64b543ed0dcc32a13f6244a121e80e2bea3198c4a1bb6cbe5a3cee7eca0fb6c55fb040c19392c393e958cd9e71080eae53c785b
   languageName: node
   linkType: hard
 
-"@rsdoctor/sdk@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/sdk@npm:1.5.9"
+"@rsdoctor/sdk@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/sdk@npm:1.5.10"
   dependencies:
-    "@rsdoctor/client": "npm:1.5.9"
-    "@rsdoctor/graph": "npm:1.5.9"
-    "@rsdoctor/types": "npm:1.5.9"
-    "@rsdoctor/utils": "npm:1.5.9"
+    "@rsdoctor/client": "npm:1.5.10"
+    "@rsdoctor/graph": "npm:1.5.10"
+    "@rsdoctor/types": "npm:1.5.10"
+    "@rsdoctor/utils": "npm:1.5.10"
     launch-editor: "npm:^2.13.2"
     safer-buffer: "npm:2.1.2"
     socket.io: "npm:4.8.1"
-    tapable: "npm:2.3.2"
-  checksum: 10/93f4f7c0dbdc59fcb57e8de47e1bdd5abf99d516ddcc19b6d22f8fed3b0703ffe9dcee38f1f522916694625e822c944e990db1017a03878a002799ef97009c99
+    tapable: "npm:2.3.3"
+  checksum: 10/4448f28f43d105834fb51a462d84c60fe2e760cbafe4164cd388f02e46e75f5adb466c58496c075c0911e25070a4328441ca5f7ea4bd302cd83fae003f190d9c
   languageName: node
   linkType: hard
 
-"@rsdoctor/types@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/types@npm:1.5.9"
+"@rsdoctor/types@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/types@npm:1.5.10"
   dependencies:
     "@types/connect": "npm:3.4.38"
     "@types/estree": "npm:1.0.5"
@@ -3675,16 +3675,16 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/0aa2b2220e3833ca819e50479452af6175e586318d8697e28140a426fd3b8d9c8176bd33e5a0b65a6be5c9db850fe4f858bd27e84338fb157783b4807f72fa50
+  checksum: 10/40dbcc864510ebec0f3568a2c2c0903eefec793ff89a096b773c0cf2e261ee345dfebc01bc14f46e8fbceaf3345779f02e93abc876723695263936ef35a903f9
   languageName: node
   linkType: hard
 
-"@rsdoctor/utils@npm:1.5.9":
-  version: 1.5.9
-  resolution: "@rsdoctor/utils@npm:1.5.9"
+"@rsdoctor/utils@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@rsdoctor/utils@npm:1.5.10"
   dependencies:
     "@babel/code-frame": "npm:7.26.2"
-    "@rsdoctor/types": "npm:1.5.9"
+    "@rsdoctor/types": "npm:1.5.10"
     "@types/estree": "npm:1.0.5"
     acorn: "npm:^8.10.0"
     acorn-import-attributes: "npm:^1.9.5"
@@ -3698,7 +3698,7 @@ __metadata:
     picocolors: "npm:^1.1.1"
     rslog: "npm:^1.3.2"
     strip-ansi: "npm:^6.0.1"
-  checksum: 10/5a7d6472ceadc313c46ad97f6d39ad6e6bd2db030d67b37e7e1dcd08efb1f30ead3db82459d39431497e63bb72113b5c962b64b9e13c9905c755f3c3deb55aa9
+  checksum: 10/fcdf15564a1f0c6792ffbe850e17e1239e2db3c131fcf38e59fdc936b488c9d92c3e449f957db1d7e777e47d27148c73a303127c7e6df86339afd34ce6d56479
   languageName: node
   linkType: hard
 
@@ -8312,7 +8312,7 @@ __metadata:
     "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
-    "@lokalise/node-api": "npm:15.7.1"
+    "@lokalise/node-api": "npm:16.0.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
@@ -8328,7 +8328,7 @@ __metadata:
     "@octokit/plugin-retry": "npm:8.1.0"
     "@octokit/rest": "npm:22.0.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
-    "@rsdoctor/rspack-plugin": "npm:1.5.9"
+    "@rsdoctor/rspack-plugin": "npm:1.5.10"
     "@rspack/core": "npm:2.0.2"
     "@rspack/dev-server": "npm:2.0.1"
     "@swc/helpers": "npm:0.5.21"
@@ -8404,7 +8404,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
-    lint-staged: "npm:17.0.2"
+    lint-staged: "npm:17.0.3"
     lit: "npm:3.3.2"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.2"
@@ -8430,7 +8430,7 @@ __metadata:
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     tar: "npm:7.5.15"
-    terser-webpack-plugin: "npm:5.5.0"
+    terser-webpack-plugin: "npm:5.6.0"
     tinykeys: "npm:3.0.0"
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:6.0.3"
@@ -9647,9 +9647,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:17.0.2":
-  version: 17.0.2
-  resolution: "lint-staged@npm:17.0.2"
+"lint-staged@npm:17.0.3":
+  version: 17.0.3
+  resolution: "lint-staged@npm:17.0.3"
   dependencies:
     listr2: "npm:^10.2.1"
     picomatch: "npm:^4.0.4"
@@ -9661,7 +9661,7 @@ __metadata:
       optional: true
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/640d6e9624dd7fe0dfd78c1bde014156359e440fad4112dd551c22b766088d5072b1f62a57635d33e25e4a07ce740d869ce1e1adba6f4196f13d9475ee4f7cd0
+  checksum: 10/83e46030e4a42a352eac7a797d1d3561eeda5f1f26a93bdb0ce76b9cd7f8c5524298bc2b620c0b38c534e0cf576bcbb574efec1ad2efa320bdc7ecf39a26bf11
   languageName: node
   linkType: hard
 
@@ -12361,10 +12361,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tapable@npm:2.3.2, tapable@npm:^2.3.0":
-  version: 2.3.2
-  resolution: "tapable@npm:2.3.2"
-  checksum: 10/fd3affe2e34efb3970883f934b1828f10b48dffb1eb71a52b7f955bfdd88bf80e94ec388704d95334f72ddf77e34d813b19e1f4bf56897d20252fa025d44bede
+"tapable@npm:2.3.3, tapable@npm:^2.3.0":
+  version: 2.3.3
+  resolution: "tapable@npm:2.3.3"
+  checksum: 10/21fb64a7ae1a0e11d855a6c33a22ae5ecf7e2f23170c942da673b44bf4c3aae8aa52451ef2792d0ce36c7feca13dceafa4f135105d66fc06912632488c0913fd
   languageName: node
   linkType: hard
 
@@ -12416,9 +12416,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.5.0":
-  version: 5.5.0
-  resolution: "terser-webpack-plugin@npm:5.5.0"
+"terser-webpack-plugin@npm:5.6.0":
+  version: 5.6.0
+  resolution: "terser-webpack-plugin@npm:5.6.0"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     jest-worker: "npm:^27.4.5"
@@ -12427,13 +12427,31 @@ __metadata:
   peerDependencies:
     webpack: ^5.1.0
   peerDependenciesMeta:
+    "@minify-html/node":
+      optional: true
     "@swc/core":
+      optional: true
+    "@swc/css":
+      optional: true
+    "@swc/html":
+      optional: true
+    clean-css:
+      optional: true
+    cssnano:
+      optional: true
+    csso:
       optional: true
     esbuild:
       optional: true
+    html-minifier-terser:
+      optional: true
+    lightningcss:
+      optional: true
+    postcss:
+      optional: true
     uglify-js:
       optional: true
-  checksum: 10/b6628967580a1e700bf2709c1900132a7d26ce3594f1d896cef48ac32a958d9e6a90914ce2c001b4e566002d9cf8a80d52e125fe5134997dda31f856a80b7dad
+  checksum: 10/15cae5c297146c6909a1c2daf2e3f4f6c1893416a3d19c388363bc963f1a3fd720803aceed44330bc52775434c85aa6df8d80f9524860568673195bafb600316
   languageName: node
   linkType: hard
 

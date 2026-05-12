@@ -70,7 +70,6 @@ class AppsRegistriesDialog extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         header-title=${this.hass.localize(

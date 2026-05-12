@@ -103,7 +103,6 @@ export class DialogEnergySolarSettings
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.solar.dialog.header"

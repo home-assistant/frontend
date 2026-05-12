@@ -769,7 +769,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _renderEntityIcon =
     (stateObj: HassEntity) => (slot: string | undefined) =>
       html`<ha-state-icon
-        .hass=${this.hass}
         slot=${ifDefined(slot)}
         .stateObj=${stateObj}
       ></ha-state-icon>`;

@@ -17,12 +17,12 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   AREA_CONTROLS_BUTTONS,
   getAreaControlEntities,
   MAX_DEFAULT_AREA_CONTROLS,
 } from "../../../data/area/area_controls";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
@@ -293,10 +293,7 @@ class HuiAreaControlsCardFeature
                     .deviceClass=${deviceClass}
                     .state=${entityState}
                   ></ha-domain-icon>`
-                : html`<ha-state-icon
-                    .hass=${this.hass}
-                    .stateObj=${entity}
-                  ></ha-state-icon>`}
+                : html`<ha-state-icon .stateObj=${entity}></ha-state-icon>`}
             </ha-control-button>
           `;
         })}

@@ -66,7 +66,6 @@ class DialogCalendarEventDetail extends LitElement {
     const stateObj = this.hass.states[this._calendarId!];
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._data!.summary}
         @closed=${this._dialogClosed}

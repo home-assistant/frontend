@@ -39,7 +39,6 @@ export class DialogSupportPackage extends LitElement {
   protected render() {
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="full"
         header-title="Download support package"
