@@ -14,7 +14,6 @@ import type { HomeAssistant } from "../../types";
 import {
   type EntityAddToAction,
   type EntityAddToActions,
-  DEFAULT_ACTION_DEFS,
   defaultActionHandler,
   getDefaultAddToActions,
 } from "./add-to";
@@ -103,22 +102,7 @@ export class HaMoreInfoAddTo extends LitElement {
       return;
     }
 
-    const key = DEFAULT_ACTION_DEFS.find(
-      (def) => def.icon === action.icon
-    )?.translation_key;
-    if (!key) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.dialogs.more_info_control.add_to.action_failed",
-          {
-            error: "Unknown action",
-          }
-        ),
-      });
-      return;
-    }
-
-    defaultActionHandler(key, this.entityId);
+    defaultActionHandler(action.key, this.entityId);
   }
 
   private _renderActionItems(actions: EntityAddToActions) {
