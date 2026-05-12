@@ -127,7 +127,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       !this.disabled &&
       this.hass &&
       this.conditions.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass, "condition")
+      getAddAutomationElementTargetFromQuery(this.hass.states, "condition")
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addConditionDialog());

@@ -16,7 +16,7 @@ export interface AddAutomationElementDialogParams {
 const loadDialog = () => import("./add-automation-element-dialog");
 
 export const getAddAutomationElementTargetFromQuery = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   type: AddAutomationElementDialogParams["type"]
 ): string | undefined => {
   const params = new URLSearchParams(window.location.search);
@@ -24,7 +24,7 @@ export const getAddAutomationElementTargetFromQuery = (
 
   return params.get(ADD_AUTOMATION_ELEMENT_QUERY_PARAM) === type &&
     entityId &&
-    hass.states[entityId]
+    states[entityId]
     ? entityId
     : undefined;
 };

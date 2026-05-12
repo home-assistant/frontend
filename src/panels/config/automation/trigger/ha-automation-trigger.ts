@@ -244,7 +244,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       !this.disabled &&
       this.hass &&
       this.triggers.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass, "trigger")
+      getAddAutomationElementTargetFromQuery(this.hass.states, "trigger")
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addTriggerDialog());
