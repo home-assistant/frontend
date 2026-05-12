@@ -43,6 +43,8 @@ export class HaDrawer extends LitElement {
 
   private _touchStartY = 0;
 
+  private _touchDeltaY = 0;
+
   private get _modal() {
     return this.type === "modal";
   }
@@ -150,37 +152,36 @@ export class HaDrawer extends LitElement {
 
   private _startSwipeTracking(clientX: number, clientY: number) {
     document.addEventListener("touchmove", this._handleTouchMove, {
-      passive: false,
+      passive: true,
     });
     document.addEventListener("touchend", this._handleTouchEnd);
     document.addEventListener("touchcancel", this._handleTouchEnd);
 
     this._touchStartY = clientY;
+    this._touchDeltaY = 0;
     this._gestureRecognizer.start(clientX);
   }
 
   private _handleTouchMove = (ev: TouchEvent) => {
     const currentX = ev.touches[0].clientX;
     const currentY = ev.touches[0].clientY;
-    const delta = this._gestureRecognizer.move(currentX);
-    const deltaY = Math.abs(currentY - this._touchStartY);
-
-    if (deltaY > Math.abs(delta) + HaDrawer._SWIPE_AXIS_TOLERANCE) {
-      this._resetSwipeTracking();
-      return;
-    }
-
-    const isClosingDirection = this.direction === "rtl" ? delta > 0 : delta < 0;
-
-    if (isClosingDirection) {
-      ev.preventDefault();
-    }
+    this._touchDeltaY = Math.abs(currentY - this._touchStartY);
+    this._gestureRecognizer.move(currentX);
   };
 
   private _handleTouchEnd = () => {
     this._unregisterSwipeHandlers();
 
     const result = this._gestureRecognizer.end();
+    const isHorizontalGesture =
+      Math.abs(result.delta) >
+      this._touchDeltaY + HaDrawer._SWIPE_AXIS_TOLERANCE;
+
+    if (!isHorizontalGesture) {
+      this._resetSwipeTracking();
+      return;
+    }
+
     const drawerDialog = this._modalDrawer?.shadowRoot?.querySelector(
       '[part="dialog"]'
     ) as HTMLElement | null;
@@ -219,6 +220,7 @@ export class HaDrawer extends LitElement {
     this._unregisterSwipeHandlers();
     this._gestureRecognizer.reset();
     this._touchStartY = 0;
+    this._touchDeltaY = 0;
   }
 
   private _syncTransitionListeners() {
