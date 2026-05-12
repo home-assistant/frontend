@@ -4,16 +4,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
 
-export interface AppTag {
-  label: string;
-  variant: "brand" | "success" | "warning" | "danger" | "neutral";
-  iconPath?: string;
-}
-
 @customElement("supervisor-apps-tag")
 class SupervisorAppsTag extends LitElement {
-  @property() public variant: "success" | "warning" | "danger" | "neutral" =
-    "neutral";
+  @property() public variant:
+    | "brand"
+    | "success"
+    | "warning"
+    | "danger"
+    | "neutral" = "neutral";
 
   @property({ attribute: "icon-path" }) public iconPath?: string;
 
