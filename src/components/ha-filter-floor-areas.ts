@@ -137,7 +137,10 @@ export class HaFilterFloorAreas extends LitElement {
         .selected=${this.value?.areas?.includes(area.area_id) || false}
         .type=${"areas"}
         class=${classMap({
-          rtl: computeRTL(this.hass),
+          rtl: computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          ),
           floor: hasFloor,
         })}
       >

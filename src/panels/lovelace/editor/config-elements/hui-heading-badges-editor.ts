@@ -177,7 +177,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
       this.hass.floors
     );
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const primary = entityName || deviceName || entityId;
     const secondary = [entityName ? deviceName : undefined, areaName]

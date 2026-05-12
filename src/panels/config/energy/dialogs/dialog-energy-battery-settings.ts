@@ -29,6 +29,8 @@ import {
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
+const socStatisticsUnits = ["%"];
+const socDeviceClass = "battery";
 
 @customElement("dialog-energy-battery-settings")
 export class DialogEnergyBatterySettings
@@ -179,6 +181,21 @@ export class DialogEnergyBatterySettings
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
 
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
+          .value=${this._source.stat_soc}
+          .includeStatisticsUnitOfMeasurement=${socStatisticsUnits}
+          .includeDeviceClass=${socDeviceClass}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.state_of_charge"
+          )}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.state_of_charge_helper"
+          )}
+          @value-changed=${this._statisticSocChanged}
+        ></ha-statistic-picker>
+
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
@@ -231,6 +248,13 @@ export class DialogEnergyBatterySettings
     this._powerConfig = ev.detail.powerConfig;
   }
 
+  private _statisticSocChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      stat_soc: ev.detail.value || undefined,
+    };
+  }
+
   private async _save() {
     try {
       const source: BatterySourceTypeEnergyPreference = {
@@ -242,6 +266,10 @@ export class DialogEnergyBatterySettings
       // Only include power_config if a power type is selected
       if (this._powerType !== "none") {
         source.power_config = { ...this._powerConfig };
+      }
+
+      if (this._source!.stat_soc) {
+        source.stat_soc = this._source!.stat_soc;
       }
 
       await this._params!.saveCallback(source);
@@ -256,7 +284,8 @@ export class DialogEnergyBatterySettings
       haStyle,
       haStyleDialog,
       css`
-        ha-statistic-picker {
+        ha-statistic-picker,
+        ha-energy-power-config {
           display: block;
           margin-bottom: var(--ha-space-4);
         }

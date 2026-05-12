@@ -343,7 +343,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     return html` <div
       id="root"
       class=${classMap({
-        rtl: computeRTL(this.hass),
+        rtl: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        ),
       })}
     >
       ${this._config

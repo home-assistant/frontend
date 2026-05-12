@@ -63,7 +63,12 @@ export class HaSelectBox extends LitElement {
     const selected = option.value === this.value;
 
     const isDark = this.hass?.themes.darkMode || false;
-    const isRTL = this.hass ? computeRTL(this.hass) : false;
+    const isRTL = this.hass
+      ? computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+      : false;
 
     const imageSrc =
       typeof option.image === "object"
