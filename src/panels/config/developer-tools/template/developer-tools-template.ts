@@ -85,18 +85,6 @@ class HaPanelDevTemplate extends LitElement {
     this._inited = true;
   }
 
-  private _getTipHeight(): string | undefined {
-    const tip = this.shadowRoot!.getElementById("editor-tip");
-    if (tip) {
-      const height = tip.scrollHeight;
-      if (!isNaN(height)) {
-        return `${height}px`;
-      }
-      return undefined;
-    }
-    return undefined;
-  }
-
   protected render() {
     const type = typeof this._templateResult?.result;
     const resultType =
@@ -105,7 +93,7 @@ class HaPanelDevTemplate extends LitElement {
           ? "list"
           : "dict"
         : type;
-    const tipHeight = this._getTipHeight();
+    const editorTipHeight = this._getTipHeight();
 
     return html`
       <div class="content">
@@ -159,7 +147,7 @@ class HaPanelDevTemplate extends LitElement {
         })}"
         style=${styleMap({
           "--description-expanded": `${this._descriptionExpanded ? 1 : 0}`,
-          "--tip-height": `${tipHeight}`,
+          "--tip-height": `${editorTipHeight}`,
         })}
       >
         <ha-card
@@ -304,6 +292,18 @@ ${type === "object"
         </ha-card>
       </div>
     `;
+  }
+
+  private _getTipHeight(): string | undefined {
+    const tip = this.shadowRoot?.getElementById("editor-tip");
+    if (tip) {
+      const height = tip.scrollHeight;
+      if (!isNaN(height)) {
+        return `${height}px`;
+      }
+      return undefined;
+    }
+    return undefined;
   }
 
   private _expandedChanged(
