@@ -7,10 +7,12 @@ import type {
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../components/ha-spinner";
 import {
   connectionContext,
@@ -33,6 +35,11 @@ import {
   resolveForecastResolution,
   supportsForecast,
 } from "./common/forecast";
+import {
+  graphLabelsStyles,
+  renderDayLabels,
+  renderHourLabels,
+} from "./common/graph-labels";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   ForecastResolution,
@@ -41,6 +48,17 @@ import type {
 } from "./types";
 
 const MAX_BAR_WIDTH = 16;
+
+const topRoundedRectPath = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+): string => {
+  const r = Math.max(0, Math.min(radius, width / 2, height));
+  return `M ${x},${y + r} a ${r},${r} 0 0 1 ${r},${-r} h ${width - 2 * r} a ${r},${r} 0 0 1 ${r},${r} v ${height - r} h ${-width} z`;
+};
 
 export const supportsPrecipitationForecastCardFeature = (
   hass: HomeAssistant,
@@ -67,6 +85,13 @@ class HuiPrecipitationForecastCardFeature
     transformer: ({ localize }) => localize,
   })
   private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
 
   @state()
   @consume({ context: connectionContext, subscribe: true })
@@ -142,6 +167,10 @@ class HuiPrecipitationForecastCardFeature
     );
   }
 
+  private get _showLabels(): boolean {
+    return this._config?.show_labels !== false;
+  }
+
   protected render() {
     if (!this._config || !this.context || !supportsForecast(this._stateObj)) {
       return nothing;
@@ -168,10 +197,21 @@ class HuiPrecipitationForecastCardFeature
       : undefined;
     const fill = customColor ?? "var(--state-weather-rainy-color)";
 
+    const containerClasses = classMap({
+      container: true,
+      "with-labels": this._showLabels,
+    });
+
     if (isHourly) {
+      const hoursToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
       return html`
-        <div class="container">
-          ${this._renderHourlyBars(precipitationType, fill)}
+        <div class=${containerClasses}>
+          <div class="bars">
+            ${this._renderHourlyBars(precipitationType, fill)}
+          </div>
+          ${this._showLabels && this._locale
+            ? renderHourLabels(hoursToShow, this._locale)
+            : nothing}
         </div>
       `;
     }
@@ -193,8 +233,13 @@ class HuiPrecipitationForecastCardFeature
     }
 
     return html`
-      <div class="container">
-        ${this._renderDailyBars(entries, precipitationType, fill)}
+      <div class=${containerClasses}>
+        <div class="bars">
+          ${this._renderDailyBars(entries, precipitationType, fill)}
+        </div>
+        ${this._showLabels && this._locale
+          ? renderDayLabels(entries, entriesPerDay, this._locale)
+          : nothing}
       </div>
     `;
   }
@@ -243,14 +288,14 @@ class HuiPrecipitationForecastCardFeature
         (value! / maxPrecipitation) * drawableHeight
       );
       const y = padding + drawableHeight - barHeight;
-      return svg`<rect
-        x=${x - barWidth / 2}
-        y=${y}
-        width=${barWidth}
-        height=${barHeight}
-        fill=${fill}
-        opacity="0.4"
-      ></rect>`;
+      const d = topRoundedRectPath(
+        x - barWidth / 2,
+        y,
+        barWidth,
+        barHeight,
+        barWidth / 4
+      );
+      return svg`<path d=${d} fill=${fill} opacity="0.4"></path>`;
     });
 
     return html`
@@ -338,14 +383,8 @@ class HuiPrecipitationForecastCardFeature
         (value! / maxPrecipitation) * drawableHeight
       );
       const y = height - barHeight;
-      return svg`<rect
-        x=${x}
-        y=${y}
-        width=${barWidth}
-        height=${barHeight}
-        fill=${fill}
-        opacity="0.4"
-      ></rect>`;
+      const d = topRoundedRectPath(x, y, barWidth, barHeight, barWidth / 4);
+      return svg`<path d=${d} fill=${fill} opacity="0.4"></path>`;
     });
 
     return html`
@@ -403,37 +442,57 @@ class HuiPrecipitationForecastCardFeature
     });
   }
 
-  static styles = css`
-    :host {
-      display: flex;
-      width: 100%;
-      height: var(--feature-height);
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: stretch;
-      pointer-events: none !important;
-    }
+  static styles = [
+    graphLabelsStyles,
+    css`
+      :host {
+        display: flex;
+        width: 100%;
+        height: var(--feature-height);
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        pointer-events: none !important;
+      }
 
-    .container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom-right-radius: 8px;
-      border-bottom-left-radius: 8px;
-      overflow: hidden;
-    }
+      .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        overflow: hidden;
+      }
 
-    .info {
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-    }
+      .container.with-labels {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
 
-    svg {
-      display: block;
-    }
-  `;
+      .bars {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+      }
+
+      .container.with-labels .bars {
+        padding-bottom: 2px;
+      }
+
+      .info {
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
+      }
+
+      svg {
+        display: block;
+      }
+    `,
+  ];
 }
 
 declare global {

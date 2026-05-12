@@ -259,6 +259,7 @@ export interface TemperatureForecastCardFeatureConfig {
   days_to_show?: number;
   hours_to_show?: number;
   color?: string;
+  show_labels?: boolean;
 }
 
 export interface PrecipitationForecastCardFeatureConfig {
@@ -268,6 +269,7 @@ export interface PrecipitationForecastCardFeatureConfig {
   hours_to_show?: number;
   precipitation_type?: ForecastPrecipitationType;
   color?: string;
+  show_labels?: boolean;
 }
 
 export const AREA_CONTROL_DOMAINS = [

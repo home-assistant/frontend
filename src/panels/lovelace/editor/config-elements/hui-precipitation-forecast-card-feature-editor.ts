@@ -110,6 +110,11 @@ export class HuiPrecipitationForecastCardFeatureEditor
             },
           },
         },
+        {
+          name: "show_labels",
+          default: true,
+          selector: { boolean: {} },
+        },
       ] as const satisfies readonly HaFormSchema[];
     }
   );
@@ -173,6 +178,10 @@ export class HuiPrecipitationForecastCardFeatureEditor
       case "color":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.features.types.precipitation-forecast.color"
+        );
+      case "show_labels":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.precipitation-forecast.show_labels"
         );
       default:
         return "";
