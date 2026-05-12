@@ -16,10 +16,6 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
 import {
   formatNumber,
   isNumericState,
@@ -37,9 +33,13 @@ import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity/entity";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -373,7 +373,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-tile-badge class="alert-badge">
-        <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
+        <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
       </ha-tile-badge>
     `;
   }
@@ -389,10 +389,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         ${states.map(
           (stateObj) => html`
             <div class="alert">
-              <ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-state-icon>
+              <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
             </div>
           `
         )}

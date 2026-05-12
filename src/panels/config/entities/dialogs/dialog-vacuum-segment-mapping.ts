@@ -162,7 +162,12 @@ export class DialogVacuumSegmentMapping
           "ui.dialogs.vacuum_segment_mapping.title"
         )}
         .headerSubtitle=${breadcrumb.join(
-          computeRTL(this.hass) ? " ◂ " : " ▸ "
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
         )}
       >
         <ha-vacuum-segment-area-mapper

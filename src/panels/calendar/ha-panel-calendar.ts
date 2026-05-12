@@ -24,8 +24,8 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import type {
   Calendar,
   CalendarEvent,
-  CalendarEventSubscription,
   CalendarEventApiData,
+  CalendarEventSubscription,
 } from "../../data/calendar";
 import {
   getCalendars,
@@ -144,7 +144,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         >
           <ha-state-icon
             slot="icon"
-            .hass=${this.hass}
             .stateObj=${selCal}
             style="--icon-primary-color: ${selCal.backgroundColor}"
           ></ha-state-icon>
