@@ -5,9 +5,9 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
-import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
@@ -327,7 +327,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                     <ha-state-icon
                       class="weather-icon"
                       .stateObj=${stateObj}
-                      .hass=${this.hass}
                     ></ha-state-icon>
                   `}
                 </div>

@@ -14,7 +14,8 @@ export const getTargetIcon = (
   targetType: string,
   targetId: string | undefined,
   configEntryLookup: Record<string, ConfigEntry>,
-  getLabel?: (id: string) => LabelRegistryEntry | undefined
+  getLabel?: (id: string) => LabelRegistryEntry | undefined,
+  slot?: string
 ): TemplateResult | typeof nothing => {
   if (!targetId) {
     return nothing;
@@ -22,6 +23,7 @@ export const getTargetIcon = (
 
   if (targetType === "floor" && hass.floors[targetId]) {
     return html`<ha-floor-icon
+      .slot=${slot}
       .floor=${hass.floors[targetId]}
     ></ha-floor-icon>`;
   }
@@ -29,9 +31,12 @@ export const getTargetIcon = (
   if (targetType === "area") {
     const area = hass.areas[targetId];
     if (area?.icon) {
-      return html`<ha-icon .icon=${area.icon}></ha-icon>`;
+      return html`<ha-icon .slot=${slot} .icon=${area.icon}></ha-icon>`;
     }
-    return html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`;
+    return html`<ha-svg-icon
+      .slot=${slot}
+      .path=${mdiTextureBox}
+    ></ha-svg-icon>`;
   }
 
   if (targetType === "device" && hass.devices[targetId]) {
@@ -45,23 +50,24 @@ export const getTargetIcon = (
       return html`<ha-domain-icon
         .domain=${domain}
         brand-fallback
+        .slot=${slot}
       ></ha-domain-icon>`;
     }
   }
 
   if (targetType === "entity" && hass.states[targetId]) {
     return html`<ha-state-icon
-      .hass=${hass}
       .stateObj=${hass.states[targetId]}
+      .slot=${slot}
     ></ha-state-icon>`;
   }
 
   if (targetType === "label" && getLabel) {
     const label = getLabel(targetId);
     if (label?.icon) {
-      return html`<ha-icon .icon=${label.icon}></ha-icon>`;
+      return html`<ha-icon .slot=${slot} .icon=${label.icon}></ha-icon>`;
     }
-    return html`<ha-svg-icon .path=${mdiLabel}></ha-svg-icon>`;
+    return html`<ha-svg-icon .slot=${slot} .path=${mdiLabel}></ha-svg-icon>`;
   }
 
   return nothing;

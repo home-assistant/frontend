@@ -69,7 +69,6 @@ export class DialogPanelDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${this.hass.localize(

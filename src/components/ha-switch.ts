@@ -228,6 +228,10 @@ export class HaSwitch extends Switch {
           outline: var(--wa-focus-ring);
           outline-offset: var(--wa-focus-ring-offset);
         }
+
+        :host(:empty) slot.label {
+          display: none;
+        }
       `,
     ];
   }

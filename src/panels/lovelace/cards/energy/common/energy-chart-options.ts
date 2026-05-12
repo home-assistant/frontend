@@ -60,17 +60,21 @@ export function getSuggestedMax(
   noRounding: boolean
 ): Date {
   // Maximum period depends on whether plotting a line chart or discrete bars.
-  //  - For line charts we must be plotting all the way to end of a given period,
-  //    otherwise we cut off the last period of data.
-  //  - For bar charts we need to round down to the start of the final bars period
-  //    to avoid unnecessary padding of the chart.
+  //  - For line charts use noRounding true as we must always plot all the way
+  //    to end of a given period, otherwise we cut off the last period of data.
+  //  - For bar charts with 5minute intervals, leave the full time range
+  //    to ensure we don't cut off any bars
+  //  - For bar charts of hourly intervals, round to half-period to avoid excess
+  //    padding but not cut off the final bar if placed mid interval.
+  //  - For bar charts with whole numbers of days we need to round down to the
+  //    start of the final bars period to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
   if (noRounding || period === "5minute") {
     return suggestedMax;
   }
-  suggestedMax.setMinutes(0, 0, 0);
   if (period === "hour") {
+    suggestedMax.setMinutes(30, 0, 0);
     return suggestedMax;
   }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -78,7 +82,7 @@ export function getSuggestedMax(
   if (suggestedMax.getHours() === 0) {
     suggestedMax = subHours(suggestedMax, 1);
   }
-  suggestedMax.setHours(0);
+  suggestedMax.setHours(0, 0, 0, 0);
   if (period === "day" || period === "week") {
     return suggestedMax;
   }

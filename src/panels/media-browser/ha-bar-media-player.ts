@@ -27,9 +27,11 @@ import "../../components/ha-domain-icon";
 import "../../components/ha-dropdown";
 import "../../components/ha-icon-button";
 import "../../components/ha-slider";
+import type { HaSlider } from "../../components/ha-slider";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
+import "../../components/media-player/ha-media-player-picker";
 import type {
   ControlButton,
   MediaPlayerEntity,
@@ -50,13 +52,11 @@ import type { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
-import type { HaSlider } from "../../components/ha-slider";
 import "../lovelace/components/hui-marquee";
 import {
   BrowserMediaPlayer,
   ERR_UNSUPPORTED_MEDIA,
 } from "./browser-media-player";
-import "../../components/media-player/ha-media-player-picker";
 
 declare global {
   interface HASSDomEvents {
@@ -417,9 +417,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       return html`<ha-svg-icon .path=${mdiMonitor}></ha-svg-icon>`;
     }
     if (stateObj) {
-      return html`
-        <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
-      `;
+      return html` <ha-state-icon .stateObj=${stateObj}></ha-state-icon> `;
     }
     return html`
       <ha-domain-icon .domain=${computeDomain(this.entityId)}></ha-domain-icon>

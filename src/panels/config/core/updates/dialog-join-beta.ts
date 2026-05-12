@@ -46,7 +46,6 @@ export class DialogJoinBeta
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.join_beta_channel.title")}
         @closed=${this._dialogClosed}

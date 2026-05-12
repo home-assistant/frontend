@@ -67,7 +67,6 @@ class DialogDeviceRegistryDetail extends LitElement {
     const device = this._params.device;
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${computeDeviceNameDisplay(
           device,

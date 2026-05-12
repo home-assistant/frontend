@@ -41,7 +41,6 @@ class DialogSSDPRawData extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${`${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
         @closed=${this._dialogClosed}

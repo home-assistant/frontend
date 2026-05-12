@@ -127,7 +127,6 @@ export class DialogDataTableSettings extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${localize("ui.components.data-table.settings.header")}
         @closed=${this._dialogClosed}

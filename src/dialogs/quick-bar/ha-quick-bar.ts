@@ -1,6 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -149,6 +149,14 @@ export class QuickBar extends LitElement {
     this._loading = false;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
+  }
+
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
@@ -234,7 +242,6 @@ export class QuickBar extends LitElement {
       <ha-adaptive-dialog
         without-header
         flexcontent
-        .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
@@ -245,7 +252,6 @@ export class QuickBar extends LitElement {
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               id="combo-box"
-              .hass=${this.hass}
               @index-selected=${this._handleItemSelected}
               .notFoundLabel=${this.hass.localize(
                 "ui.dialogs.quick-bar.nothing_found"

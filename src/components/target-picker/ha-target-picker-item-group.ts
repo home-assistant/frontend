@@ -5,7 +5,7 @@ import type { TargetType, TargetTypeFloorless } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../ha-expansion-panel";
-import "../ha-md-list";
+import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
 
 @customElement("ha-target-picker-item-group")
@@ -66,23 +66,25 @@ export class HaTargetPickerItemGroup extends LitElement {
           }
         )}
       </div>
-      ${Object.entries(this.items).map(([type, items]) =>
-        items
-          ? items.map(
-              (item) =>
-                html`<ha-target-picker-item-row
-                  .hass=${this.hass}
-                  .type=${type as TargetTypeFloorless}
-                  .itemId=${item}
-                  .deviceFilter=${this.deviceFilter}
-                  .entityFilter=${this.entityFilter}
-                  .includeDomains=${this.includeDomains}
-                  .includeDeviceClasses=${this.includeDeviceClasses}
-                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-                ></ha-target-picker-item-row>`
-            )
-          : nothing
-      )}
+      <ha-list-base>
+        ${Object.entries(this.items).map(([type, items]) =>
+          items
+            ? items.map(
+                (item) =>
+                  html`<ha-target-picker-item-row
+                    .hass=${this.hass}
+                    .type=${type as TargetTypeFloorless}
+                    .itemId=${item}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                    .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                  ></ha-target-picker-item-row>`
+              )
+            : nothing
+        )}
+      </ha-list-base>
     </ha-expansion-panel>`;
   }
 
@@ -96,16 +98,13 @@ export class HaTargetPickerItemGroup extends LitElement {
       --expansion-panel-content-padding: 0;
     }
     ha-expansion-panel::part(summary) {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      background-color: var(--ha-color-surface-low);
       padding: var(--ha-space-1) var(--ha-space-2);
       font-weight: var(--ha-font-weight-bold);
       color: var(--secondary-text-color);
       display: flex;
       justify-content: space-between;
       min-height: unset;
-    }
-    ha-md-list {
-      padding: 0;
     }
   `;
 }

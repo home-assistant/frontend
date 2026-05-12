@@ -63,7 +63,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     );
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${heading}
         prevent-scrim-close

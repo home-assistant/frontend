@@ -639,7 +639,6 @@ class DialogAddAutomationElement
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         width="large"
         .open=${this._open}
         @closed=${this._handleClosed}
@@ -1012,7 +1011,14 @@ class DialogAddAutomationElement
 
             subtitle = [areaName, entityName ? deviceName : undefined]
               .filter(Boolean)
-              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+              .join(
+                computeRTL(
+                  this.hass.language,
+                  this.hass.translationMetadata.translations
+                )
+                  ? " ◂ "
+                  : " ▸ "
+              );
           }
         }
 

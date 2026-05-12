@@ -552,7 +552,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       </hass-tabs-subpage>
       ${this.showFilters && !showPane
         ? html`<ha-dialog
-            .hass=${this.hass}
             .open=${true}
             width="full"
             header-title=${localize("ui.components.subpage-data-table.filters")}

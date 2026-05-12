@@ -1,13 +1,14 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
-import "./ha-radio";
-import type { HaRadio } from "./ha-radio";
+import "./radio/ha-radio-group";
+import type { HaRadioGroup } from "./radio/ha-radio-group";
+import "./radio/ha-radio-option";
 
 interface SelectBoxOptionImage {
   src: string;
@@ -44,9 +45,14 @@ export class HaSelectBox extends LitElement {
     const columns = Math.min(maxColumns, this.options.length);
 
     return html`
-      <div class="list" style=${styleMap({ "--columns": columns })}>
+      <ha-radio-group
+        class="list"
+        style=${styleMap({ "--columns": columns })}
+        .value=${this.value}
+        @change=${this._radioChanged}
+      >
         ${this.options.map((option) => this._renderOption(option))}
-      </div>
+      </ha-radio-group>
     `;
   }
 
@@ -57,7 +63,12 @@ export class HaSelectBox extends LitElement {
     const selected = option.value === this.value;
 
     const isDark = this.hass?.themes.darkMode || false;
-    const isRTL = this.hass ? computeRTL(this.hass) : false;
+    const isRTL = this.hass
+      ? computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+      : false;
 
     const imageSrc =
       typeof option.image === "object"
@@ -74,20 +85,24 @@ export class HaSelectBox extends LitElement {
           selected: selected,
         })}"
         ?disabled=${disabled}
-        @click=${this._labelClick}
       >
         <div class="content">
-          <ha-radio
-            .checked=${option.value === this.value}
+          <ha-radio-option
+            aria-describedby=${ifDefined(
+              option.description ? `desc-${option.value}` : undefined
+            )}
+            aria-labelledby=${`label-${option.value}`}
             .value=${option.value}
             .disabled=${disabled}
-            @change=${this._radioChanged}
-            @click=${stopPropagation}
-          ></ha-radio>
+          ></ha-radio-option>
           <div class="text">
-            <span class="label">${option.label}</span>
+            <span id=${`label-${option.value}`} class="label"
+              >${option.label}</span
+            >
             ${option.description
-              ? html`<span class="description">${option.description}</span>`
+              ? html`<span class="description" id="desc-${option.value}"
+                  >${option.description}</span
+                >`
               : nothing}
           </div>
         </div>
@@ -100,14 +115,9 @@ export class HaSelectBox extends LitElement {
     `;
   }
 
-  private _labelClick(ev) {
-    ev.stopPropagation();
-    ev.currentTarget.querySelector("ha-radio")?.click();
-  }
-
   private _radioChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const radio = ev.currentTarget as HaRadio;
+    const radio = ev.currentTarget as HaRadioGroup;
     const value = radio.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
@@ -118,7 +128,7 @@ export class HaSelectBox extends LitElement {
   }
 
   static styles = css`
-    .list {
+    .list::part(form-control-input) {
       display: grid;
       grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
       gap: var(--ha-space-3);
@@ -146,8 +156,9 @@ export class HaSelectBox extends LitElement {
       min-width: 0;
       width: 100%;
     }
-    .option .content ha-radio {
-      margin: -12px;
+    .option .content ha-radio-option {
+      --ha-radio-option-control-margin: 0;
+      margin: 0;
       flex: none;
     }
     .option .content .text {
@@ -156,6 +167,7 @@ export class HaSelectBox extends LitElement {
       gap: var(--ha-space-1);
       min-width: 0;
       flex: 1;
+      justify-content: center;
     }
     .option .content .text .label {
       color: var(--primary-text-color);

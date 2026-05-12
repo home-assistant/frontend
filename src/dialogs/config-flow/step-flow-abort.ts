@@ -8,7 +8,6 @@ import type { HomeAssistant } from "../../types";
 import { showConfigFlowDialog } from "./show-dialog-config-flow";
 import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import "../../components/ha-button";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
@@ -37,13 +36,6 @@ class StepFlowAbort extends LitElement {
       <div class="content">
         ${this.params.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
-      <div class="buttons">
-        <ha-button appearance="plain" @click=${this._flowDone}
-          >${this.hass.localize(
-            "ui.panel.config.integrations.config_flow.close"
-          )}</ha-button
-        >
-      </div>
     `;
   }
 
@@ -66,6 +58,10 @@ class StepFlowAbort extends LitElement {
 
   private _flowDone(): void {
     fireEvent(this, "flow-update", { step: undefined });
+  }
+
+  public close(): void {
+    this._flowDone();
   }
 
   static get styles(): CSSResultGroup {

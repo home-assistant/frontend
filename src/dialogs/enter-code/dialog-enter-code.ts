@@ -112,7 +112,6 @@ export class DialogEnterCode
     if (isText) {
       return html`
         <ha-dialog
-          .hass=${this.hass}
           .open=${this._open}
           header-title=${this._dialogParams.title ??
           this.hass.localize("ui.dialogs.enter_code.title")}
@@ -150,7 +149,6 @@ export class DialogEnterCode
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._dialogParams.title ?? "Enter code"}
         width="small"

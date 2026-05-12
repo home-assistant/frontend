@@ -6,7 +6,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/user/ha-user-badge";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import type {
   LovelaceViewConfig,
@@ -65,24 +66,26 @@ export class HuiViewVisibilityEditor extends LitElement {
           "ui.panel.lovelace.editor.edit_view.visibility.select_users"
         )}
       </p>
-      ${this._sortedUsers(this._users).map(
-        (user) => html`
-          <ha-list-item graphic="avatar" hasMeta>
-            <ha-user-badge
-              slot="graphic"
-              .hass=${this.hass}
-              .user=${user}
-            ></ha-user-badge>
-            <span>${user.name}</span>
-            <ha-switch
-              slot="meta"
-              .userId=${user.id}
-              @change=${this._valChange}
-              .checked=${this.checkUser(user.id)}
-            ></ha-switch>
-          </ha-list-item>
-        `
-      )}
+      <ha-md-list>
+        ${this._sortedUsers(this._users).map(
+          (user) => html`
+            <ha-md-list-item>
+              <ha-user-badge
+                slot="start"
+                .hass=${this.hass}
+                .user=${user}
+              ></ha-user-badge>
+              <span slot="headline">${user.name}</span>
+              <ha-switch
+                slot="end"
+                .userId=${user.id}
+                @change=${this._valChange}
+                .checked=${this.checkUser(user.id)}
+              ></ha-switch>
+            </ha-md-list-item>
+          `
+        )}
+      </ha-md-list>
     `;
   }
 
@@ -135,6 +138,16 @@ export class HuiViewVisibilityEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
+    }
+    ha-md-list {
+      padding: 0;
+    }
+    ha-md-list-item {
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+      --md-list-item-top-space: var(--ha-space-1);
+      --md-list-item-bottom-space: var(--ha-space-1);
+      --md-list-item-one-line-container-height: 48px;
     }
   `;
 }

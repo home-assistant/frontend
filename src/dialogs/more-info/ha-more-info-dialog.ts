@@ -617,11 +617,13 @@ export class MoreInfoDialog extends SubscribeMixin(
         ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
         : false;
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}

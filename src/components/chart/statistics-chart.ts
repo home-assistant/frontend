@@ -68,6 +68,11 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
+
   @property() public unit?: string;
 
   @property({ attribute: false }) public startTime?: Date;
@@ -363,7 +368,12 @@ export class StatisticsChart extends LitElement {
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(this.hass) ? "right" : "left",
+        position: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+          ? "right"
+          : "left",
         scale:
           this.chartType.startsWith("line") ||
           this.logarithmicScale ||
@@ -485,6 +495,7 @@ export class StatisticsChart extends LitElement {
     }
 
     const names = this.names || {};
+    const colors = this.colors || {};
     statisticsData.forEach(([statistic_id, stats]) => {
       const meta = statisticsMetaData?.[statistic_id];
       let name = names[statistic_id];
@@ -529,11 +540,14 @@ export class StatisticsChart extends LitElement {
         prevEndTime = end;
       };
 
-      const color = getGraphColorByIndex(
-        colorIndex,
-        this._computedStyle || getComputedStyle(this)
-      );
-      colorIndex++;
+      let color = colors[statistic_id];
+      if (color === undefined) {
+        color = getGraphColorByIndex(
+          colorIndex,
+          this._computedStyle || getComputedStyle(this)
+        );
+        colorIndex++;
+      }
 
       const statTypes: this["statTypes"] = [];
 

@@ -142,6 +142,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           min-height: 0;
           overflow: auto;
           margin-top: 0;
+          padding-top: 0;
           padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
         }
 

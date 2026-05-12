@@ -44,7 +44,7 @@ export class HaProgressBar extends ProgressBar {
             --ha-progress-bar-track-color,
             var(--ha-color-fill-neutral-normal-hover)
           );
-          --track-height: var(--ha-progress-bar-track-height, 16px);
+          --track-height: var(--ha-progress-bar-track-height, 12px);
           --wa-transition-slow: var(--ha-animation-duration-slow);
           position: relative;
         }

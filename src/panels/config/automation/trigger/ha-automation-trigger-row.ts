@@ -59,6 +59,7 @@ import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -196,7 +197,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
-  private _renderRow(row = true) {
+  private _renderRow() {
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
@@ -214,6 +215,12 @@ export default class HaAutomationTriggerRow extends LitElement {
         ? { device_id: (this.trigger as DeviceTrigger).device_id }
         : undefined;
 
+    const triggerTargetSpec =
+      type === "platform"
+        ? this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+            ?.target
+        : undefined;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -229,13 +236,17 @@ export default class HaAutomationTriggerRow extends LitElement {
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              triggerTargetSpec
+            )
           : nothing}
       </h3>
       <ha-automation-row-event-chip
         .show=${this._triggered}
-        .slot=${row ? "event" : ""}
-        class=${row ? "" : "event-chip"}
+        slot="event"
+        class="event-chip"
         interactive
         aria-live="polite"
         @click=${this._showTriggeredInfo}
@@ -499,7 +510,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow(false)}
+                ${this._renderRow()}
               </ha-expansion-panel>
             `}
       </ha-card>
@@ -507,11 +518,16 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
 

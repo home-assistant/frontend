@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { internationalizationContext } from "../data/context";
-import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
 import "./ha-icon-button";
@@ -82,8 +81,6 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
  */
 @customElement("ha-adaptive-dialog")
 export class HaAdaptiveDialog extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
@@ -202,7 +199,6 @@ export class HaAdaptiveDialog extends LitElement {
           .ariaLabelledBy=${this._defaultAriaLabelledBy}
           .ariaDescribedBy=${this.ariaDescribedBy}
           .flexContent=${this.flexContent}
-          .hass=${this.hass}
           .open=${this.open}
           .preventScrimClose=${this.preventScrimClose}
         >
@@ -221,7 +217,6 @@ export class HaAdaptiveDialog extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this.open}
         .type=${this.type}
         .width=${this.width}

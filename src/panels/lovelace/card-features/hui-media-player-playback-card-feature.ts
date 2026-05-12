@@ -8,6 +8,8 @@ import {
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
+  mdiVolumeMinus,
+  mdiVolumePlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -52,6 +54,8 @@ const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
   media_stop: [MediaPlayerEntityFeature.STOP],
   media_previous_track: [MediaPlayerEntityFeature.PREVIOUS_TRACK],
   media_next_track: [MediaPlayerEntityFeature.NEXT_TRACK],
+  volume_down: [MediaPlayerEntityFeature.VOLUME_STEP],
+  volume_up: [MediaPlayerEntityFeature.VOLUME_STEP],
 };
 
 export const supportsMediaPlayerPlaybackControl = (
@@ -264,6 +268,16 @@ class HuiMediaPlayerPlaybackCardFeature
         case "media_next_track":
           if (supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)) {
             buttons.push({ icon: mdiSkipNext, action: "media_next_track" });
+          }
+          break;
+        case "volume_down":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
+            buttons.push({ icon: mdiVolumeMinus, action: "volume_down" });
+          }
+          break;
+        case "volume_up":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
+            buttons.push({ icon: mdiVolumePlus, action: "volume_up" });
           }
           break;
       }

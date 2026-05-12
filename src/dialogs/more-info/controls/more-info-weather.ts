@@ -190,7 +190,6 @@ class MoreInfoWeather extends LitElement {
             <ha-state-icon
               class="weather-icon"
               .stateObj=${this.stateObj}
-              .hass=${this.hass}
             ></ha-state-icon>
           `}
         </div>
