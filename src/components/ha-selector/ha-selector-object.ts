@@ -98,14 +98,12 @@ export class HaObjectSelector extends LitElement {
     const overviewLabels = this.selector.object!.overview_labels || false;
 
     const labelField =
-      this.selector.object!.label_field ||
-      Object.keys(this.selector.object!.fields!)[0];
+      preferredLabel || Object.keys(this.selector.object!.fields!)[0];
 
-    const labelSelector = this.selector.object!.fields![labelField].selector;
     const labelHeader = overviewLabels
       ? `${this._computeLabel({
           name: labelField,
-          selector: labelSelector,
+          selector: fields[labelField]?.selector,
         })}: `
       : "";
 
