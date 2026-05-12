@@ -97,10 +97,19 @@ export class HaObjectSelector extends LitElement {
           .filter(Boolean)
           .join(" · ");
 
-    const labelHeader = this._computeLabel({
-      name: labelField,
-      selector: labelSelector,
-    });
+    const overviewLabels = this.selector.object!.overview_labels || false;
+
+    const labelField =
+      this.selector.object!.label_field ||
+      Object.keys(this.selector.object!.fields!)[0];
+
+    const labelSelector = this.selector.object!.fields![labelField].selector;
+    const labelHeader = overviewLabels
+      ? `${this._computeLabel({
+          name: labelField,
+          selector: labelSelector,
+        })}: `
+      : "";
 
     let description = "";
     let descriptionHeader = "";
@@ -116,10 +125,12 @@ export class HaObjectSelector extends LitElement {
             descriptionSelector
           )
         : "";
-      descriptionHeader = this._computeLabel({
-        name: descriptionField,
-        selector: descriptionSelector,
-      });
+      descriptionHeader = overviewLabels
+        ? `${this._computeLabel({
+            name: descriptionField,
+            selector: descriptionSelector,
+          })}: `
+        : "";
     }
 
     const reorderable = this.selector.object!.multiple || false;
