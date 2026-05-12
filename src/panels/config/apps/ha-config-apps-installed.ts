@@ -1,14 +1,11 @@
 import {
-  mdiAlertCircle,
+  mdiAlertDecagramOutline,
   mdiArrowUpBoldCircle,
-  mdiCheckCircleOutline,
-  mdiProgressHelper,
-  mdiProgressQuestion,
+  mdiArrowUpBoldCircleOutline,
+  mdiFlask,
   mdiPuzzle,
   mdiRefresh,
-  mdiStopCircleOutline,
   mdiStorePlus,
-  mdiUpdate,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -222,47 +219,13 @@ export class HaConfigAppsInstalled extends LitElement {
   private _getAppTags(addon: HassioAddonInfo): AppTag[] {
     const labels: AppTag[] = [];
 
-    const stateLabel: Partial<AppTag> = {
-      label: this.hass.localize(
-        `ui.panel.config.apps.dashboard.capability.state.${addon.state || "unknown"}`
-      ),
-    };
-
-    switch (addon.state) {
-      case "started":
-        stateLabel.variant = "success";
-        stateLabel.iconPath = mdiCheckCircleOutline;
-        break;
-      case "stopped":
-        stateLabel.variant = "neutral";
-        stateLabel.iconPath = mdiStopCircleOutline;
-        break;
-      case "unknown":
-        stateLabel.variant = "neutral";
-        stateLabel.iconPath = mdiProgressQuestion;
-        break;
-      case "error":
-        stateLabel.variant = "danger";
-        stateLabel.iconPath = mdiAlertCircle;
-        break;
-      case "startup":
-        stateLabel.label = this.hass.localize(
-          `ui.panel.config.apps.dashboard.capability.state.startup`
-        );
-        stateLabel.variant = "warning";
-        stateLabel.iconPath = mdiProgressHelper;
-        break;
-    }
-
-    labels.push(stateLabel as AppTag);
-
     if (addon.update_available) {
       labels.push({
         label: this.hass.localize(
           `ui.panel.config.apps.state.update_available`
         ),
         variant: "brand",
-        iconPath: mdiUpdate,
+        iconPath: mdiArrowUpBoldCircleOutline,
       });
     }
     if (addon.stage !== "stable") {
@@ -271,6 +234,8 @@ export class HaConfigAppsInstalled extends LitElement {
           `ui.panel.config.apps.dashboard.capability.stages.${addon.stage}`
         ),
         variant: addon.stage === "experimental" ? "warning" : "danger",
+        iconPath:
+          addon.stage === "experimental" ? mdiFlask : mdiAlertDecagramOutline,
       });
     }
 
@@ -289,6 +254,10 @@ export class HaConfigAppsInstalled extends LitElement {
       ha-card {
         cursor: pointer;
         overflow: hidden;
+      }
+
+      ha-card:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-resting);
       }
 
       .search {

@@ -4,9 +4,10 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
-import type { AddonStage } from "../../../../data/hassio/addon";
+import type { AddonStage, AddonState } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
 import { getAppDisplayName } from "../common/app";
+import "./supervisor-apps-state";
 import "./supervisor-apps-tag";
 
 export interface AppTag {
@@ -23,6 +24,8 @@ class SupervisorAppsCardContent extends LitElement {
   @property() public title!: string;
 
   @property() public stage: AddonStage = "stable";
+
+  @property() public state: AddonState = null;
 
   @property() public description?: string;
 
@@ -41,24 +44,24 @@ class SupervisorAppsCardContent extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="app">
-        ${this.iconImage
-          ? html`
-              <div class="icon_image">
+        <div class="icon-wrapper">
+          ${this.iconImage
+            ? html`
                 <img
+                  class="icon-image"
                   src=${this.iconImage}
                   .title=${this.iconTitle}
                   alt=${this.iconTitle ?? ""}
                 />
-                <div></div>
-              </div>
-            `
-          : html`
-              <ha-svg-icon
-                class="app-icon"
-                .path=${this.icon}
-                .title=${this.iconTitle}
-              ></ha-svg-icon>
-            `}
+              `
+            : html`
+                <ha-svg-icon
+                  class="app-icon"
+                  .path=${this.icon}
+                  .title=${this.iconTitle}
+                ></ha-svg-icon>
+              `}
+        </div>
         <div>
           <div class="title-row">
             <div class="title">
@@ -74,17 +77,27 @@ class SupervisorAppsCardContent extends LitElement {
           </div>
         </div>
       </div>
-      ${this.tags?.length
-        ? html`<div class="tags">
-            ${this.tags.map(
-              (tag) =>
-                html`<supervisor-apps-tag
-                  .variant=${tag.variant}
-                  .iconPath=${tag.iconPath}
-                  .label=${tag.label}
-                ></supervisor-apps-tag>`
-            )}
-          </div>`
+      ${this.tags?.length || this.state
+        ? html`
+            <div class="footer">
+              <supervisor-apps-state
+                .state=${this.state}
+              ></supervisor-apps-state>
+
+              ${this.tags?.length
+                ? html`<div class="tags">
+                    ${this.tags.map(
+                      (tag) =>
+                        html`<supervisor-apps-tag
+                          .variant=${tag.variant}
+                          .iconPath=${tag.iconPath}
+                          .label=${tag.label}
+                        ></supervisor-apps-tag>`
+                    )}
+                  </div>`
+                : nothing}
+            </div>
+          `
         : nothing}
     `;
   }
@@ -92,13 +105,24 @@ class SupervisorAppsCardContent extends LitElement {
   static styles = css`
     .app {
       margin-bottom: var(--ha-space-2);
+      gap: var(--ha-space-4);
       display: flex;
     }
+    .icon-wrapper {
+      position: relative;
+      margin-top: var(--ha-space-1);
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
     .app-icon {
-      margin-right: var(--ha-space-6);
       margin-left: var(--ha-space-2);
-      margin-top: var(--ha-space-3);
+      margin-top: var(--ha-space-2);
       color: var(--secondary-text-color);
+    }
+    .icon-image {
+      max-height: 40px;
+      max-width: 40px;
     }
     .title {
       flex: 1;
@@ -122,42 +146,18 @@ class SupervisorAppsCardContent extends LitElement {
       height: 2.4em;
       line-height: var(--ha-line-height-condensed);
     }
-    .icon_image img {
-      max-height: 40px;
-      max-width: 40px;
-      margin-top: var(--ha-space-1);
-      margin-right: var(--ha-space-4);
-      float: left;
-    }
-    .tags {
+    .footer {
       border-top: var(--ha-border-width-sm) solid
         var(--ha-color-border-neutral-quiet);
       padding-top: var(--ha-space-2);
       display: flex;
       gap: var(--ha-space-2);
       flex-wrap: wrap;
+      justify-content: space-between;
     }
-    wa-tag {
-      font-size: var(--ha-font-size-s);
-      border-radius: var(--ha-border-radius-pill);
-      height: 24px;
-    }
-    wa-tag ha-svg-icon {
-      --mdc-icon-size: 16px;
-      width: 16px;
-      height: 16px;
-    }
-    wa-tag[variant="success"] ha-svg-icon {
-      color: var(--ha-color-on-success-normal);
-    }
-    wa-tag[variant="warning"] ha-svg-icon {
-      color: var(--ha-color-on-warning-normal);
-    }
-    wa-tag[variant="danger"] ha-svg-icon {
-      color: var(--ha-color-on-error-normal);
-    }
-    wa-tag[variant="neutral"] ha-svg-icon {
-      color: var(--ha-color-on-neutral-normal);
+    .tags {
+      display: flex;
+      gap: var(--ha-space-2);
     }
   `;
 }

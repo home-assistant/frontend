@@ -20,7 +20,7 @@ class SupervisorAppsTag extends LitElement {
   @property() public label!: string;
 
   protected render(): TemplateResult {
-    return html`<wa-tag appearance="outlined" .variant=${this.variant}>
+    return html`<wa-tag .variant=${this.variant}>
       ${this.iconPath
         ? html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`
         : nothing}
@@ -30,9 +30,11 @@ class SupervisorAppsTag extends LitElement {
 
   static styles = css`
     wa-tag {
-      font-size: var(--ha-font-size-s);
+      font-size: var(--ha-font-size-xs);
       border-radius: var(--ha-border-radius-pill);
-      height: 24px;
+      height: 20px;
+      border: none;
+      padding-inline: var(--ha-space-1) var(--ha-space-2);
     }
     wa-tag ha-svg-icon {
       --mdc-icon-size: 16px;
@@ -52,7 +54,6 @@ class SupervisorAppsTag extends LitElement {
       color: var(--ha-color-on-neutral-normal);
     }
     wa-tag[variant="brand"] {
-      border-color: var(--ha-color-border-primary-normal);
       color: var(--ha-color-on-primary-normal);
     }
   `;

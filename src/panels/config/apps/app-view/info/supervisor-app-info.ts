@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/tag/tag";
 import {
-  mdiAlertCircle,
   mdiCheckCircle,
   mdiChip,
   mdiCursorDefaultClickOutline,
@@ -19,10 +18,7 @@ import {
   mdiNumeric7,
   mdiNumeric8,
   mdiPound,
-  mdiProgressHelper,
-  mdiProgressQuestion,
   mdiShield,
-  mdiStopCircleOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -34,6 +30,7 @@ import { atLeastVersion } from "../../../../../common/config/version";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/chips/ha-assist-chip";
 import "../../../../../components/chips/ha-chip-set";
@@ -206,7 +203,10 @@ class SupervisorAppInfo extends LitElement {
               : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
-                ? html`${this._getStateTag()}`
+                ? html`<supervisor-apps-state
+                    right
+                    .state=${this.addon.state}
+                  ></supervisor-apps-state>`
                 : this.addon.version_latest}
             </div>
           </div>
@@ -820,7 +820,7 @@ class SupervisorAppInfo extends LitElement {
     const id = ev.currentTarget.id as AddonCapability;
     showAlertDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.apps.dashboard.capability.${id}.title`
+        `ui.panel.config.apps.dashboard.capability.${id}.title` as LocalizeKeys
       ),
       text: this.hass.localize(
         `ui.panel.config.apps.dashboard.capability.${id}.description`
@@ -837,42 +837,6 @@ class SupervisorAppInfo extends LitElement {
         "ui.panel.config.apps.dashboard.system_managed.description"
       ),
     });
-  }
-
-  private _getStateTag(): TemplateResult {
-    let variant = "neutral";
-    let iconPath = mdiProgressQuestion;
-    const addonState = (this.addon as HassioAddonDetails)?.state || "unknown";
-
-    switch (addonState) {
-      case "started":
-        variant = "success";
-        iconPath = mdiCheckCircle;
-        break;
-      case "stopped":
-        iconPath = mdiStopCircleOutline;
-        break;
-      case "error":
-        variant = "error";
-        iconPath = mdiAlertCircle;
-        break;
-      case "startup":
-        variant = "warning";
-        iconPath = mdiProgressHelper;
-        break;
-      case "unknown":
-        iconPath = mdiProgressQuestion;
-    }
-
-    return html`
-      <supervisor-apps-tag
-        .variant=${variant}
-        .iconPath=${iconPath}
-        .label=${this.hass.localize(
-          `ui.panel.config.apps.dashboard.capability.state.${addonState}`
-        )}
-      ></supervisor-apps-tag>
-    `;
   }
 
   private get _computeIsRunning(): boolean {
