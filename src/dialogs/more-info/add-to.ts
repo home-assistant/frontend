@@ -53,23 +53,6 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
     icon: "mdi:robot-outline",
   },
   {
-    translation_key: "condition",
-    icon: "mdi:playlist-check",
-  },
-  {
-    translation_key: "action",
-    icon: "mdi:play-circle-outline",
-  },
-  {
-    translation_key: "script",
-    icon: "mdi:script-text-outline",
-  },
-export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
-  {
-    translation_key: "automation_trigger",
-    icon: "mdi:robot-outline",
-  },
-  {
     translation_key: "automation_condition",
     icon: "mdi:playlist-check",
   },
@@ -81,6 +64,7 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
     translation_key: "script_action",
     icon: "mdi:script-text-outline",
   },
+];
 
 export const getDefaultAddToActions = (
   hass: HomeAssistant,
@@ -114,13 +98,16 @@ export function defaultActionHandler(
       [ADD_AUTOMATION_ELEMENT_TARGET_PARAM]: entityId,
     })}`;
 
-if (key.startsWith("automation_") {
-	return navigate(`/config/automation/edit/new${params(key.substring(11))}`)
-}
-if (key === "script_action") {
-	return navigate(`/config/script/edit/new${params("action")}`);
-}
-
-return Promise.reject(new Error(`Unknown action key ${key}`));
+  switch (key) {
+    case "automation_trigger":
+      return navigate(`/config/automation/edit/new${params("trigger")}`);
+    case "automation_condition":
+      return navigate(`/config/automation/edit/new${params("condition")}`);
+    case "automation_action":
+      return navigate(`/config/automation/edit/new${params("action")}`);
+    case "script_action":
+      return navigate(`/config/script/edit/new${params("action")}`);
+    default:
+      return Promise.reject(new Error(`Unknown action key ${key}`));
   }
 }
