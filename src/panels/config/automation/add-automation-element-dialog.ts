@@ -306,7 +306,7 @@ class DialogAddAutomationElement
     this._resetVariables();
 
     const queryEntityId = getAddAutomationElementTargetFromQuery(
-      this.hass,
+      this.hass.states,
       params.type
     );
     if (queryEntityId) {

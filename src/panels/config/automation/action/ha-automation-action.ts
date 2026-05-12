@@ -142,7 +142,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
       !this.disabled &&
       this.hass &&
       this.actions.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass, "action")
+      getAddAutomationElementTargetFromQuery(this.hass.states, "action")
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addActionDialog());
