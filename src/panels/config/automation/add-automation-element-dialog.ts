@@ -236,6 +236,8 @@ class DialogAddAutomationElement
 
   @state() private _newTriggersAndConditions = false;
 
+  @state() private _openedFromQuery = false;
+
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
@@ -309,6 +311,8 @@ class DialogAddAutomationElement
       this.hass.states,
       params.type
     );
+    this._openedFromQuery = !!queryEntityId;
+
     if (queryEntityId) {
       const searchParams = new URLSearchParams(mainWindow.location.search);
       searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
@@ -448,6 +452,7 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._openedFromQuery = false;
   }
 
   private _updateNarrow = () => {
@@ -936,7 +941,9 @@ class DialogAddAutomationElement
               ></ha-icon-button>
             `
           : nothing}
-        ${this._narrow && (this._selectedGroup || this._selectedTarget)
+        ${this._narrow &&
+        (this._selectedGroup || this._selectedTarget) &&
+        !this._openedFromQuery
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
               @click=${this._back}
