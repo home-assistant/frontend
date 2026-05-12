@@ -713,12 +713,7 @@ class AddIntegrationDialog extends LitElement {
       if (configEntries.length > 0) {
         this.closeDialog();
 
-        await showSingleConfigEntryWarning(
-          this,
-          this.hass.localize,
-          integration.domain,
-          this.hass.loadBackendTranslation
-        );
+        showSingleConfigEntryWarning(this, { domain: integration.domain });
         return;
       }
     }

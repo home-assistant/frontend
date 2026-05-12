@@ -915,12 +915,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
-          await showSingleConfigEntryWarning(
-            this,
-            this.hass.localize,
-            domain,
-            this.hass.loadBackendTranslation
-          );
+          showSingleConfigEntryWarning(this, { domain });
           return;
         }
       }
