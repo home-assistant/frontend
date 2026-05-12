@@ -13,6 +13,8 @@ import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-alert";
@@ -30,6 +32,9 @@ import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import {
+  areasContext,
+  devicesContext,
+  entitiesContext,
   internationalizationContext,
   statesContext,
 } from "../../../../data/context";
@@ -60,6 +65,10 @@ class HaPanelDevState extends LitElement {
 
   @state() private _attributeFilter = "";
 
+  @state() private _deviceFilter = "";
+
+  @state() private _areaFilter = "";
+
   @state() private _entity?: HassEntity;
 
   @state() private _state = "";
@@ -83,6 +92,15 @@ class HaPanelDevState extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
@@ -93,13 +111,23 @@ class HaPanelDevState extends LitElement {
       entityFilter: string,
       stateFilter: string,
       attributeFilter: string,
-      states: HassEntities
+      deviceFilter: string,
+      areaFilter: string,
+      states: HassEntities,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
     ): HassEntity[] =>
       this._applyFiltersOnEntities(
         entityFilter,
         stateFilter,
         attributeFilter,
-        states
+        deviceFilter,
+        areaFilter,
+        states,
+        entities,
+        devices,
+        areas
       )
   );
 
@@ -108,7 +136,12 @@ class HaPanelDevState extends LitElement {
       this._entityFilter,
       this._stateFilter,
       this._attributeFilter,
-      this._states
+      this._deviceFilter,
+      this._areaFilter,
+      this._states,
+      this._entities,
+      this._devices,
+      this._areas
     );
 
     return html`
@@ -263,6 +296,24 @@ class HaPanelDevState extends LitElement {
           @input=${this._stateFilterChanged}
         ></ha-input-search>
         <ha-input-search
+          slot="filter-devices"
+          .label=${this._i18n.localize(
+            "ui.panel.config.entities.picker.headers.device"
+          )}
+          type="search"
+          .value=${this._deviceFilter}
+          @input=${this._deviceFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
+          slot="filter-areas"
+          .label=${this._i18n.localize(
+            "ui.panel.config.generic.headers.area"
+          )}
+          type="search"
+          .value=${this._areaFilter}
+          @input=${this._areaFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-attributes"
           .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_attributes"
@@ -338,6 +389,14 @@ class HaPanelDevState extends LitElement {
     this._attributeFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
+  private _deviceFilterChanged(ev: InputEvent) {
+    this._deviceFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _areaFilterChanged(ev: InputEvent) {
+    this._areaFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
   private _getHistoryURL(entityId, inputDate) {
     const date = new Date(inputDate);
     const hourBefore = addHours(date, -1).toISOString();
@@ -389,7 +448,12 @@ class HaPanelDevState extends LitElement {
     entityFilter: string,
     stateFilter: string,
     attributeFilter: string,
-    states: HassEntities
+    deviceFilter: string,
+    areaFilter: string,
+    states: HassEntities,
+    entities: HomeAssistant["entities"],
+    devices: HomeAssistant["devices"],
+    areas: HomeAssistant["areas"]
   ) {
     const entityFilterRegExp =
       entityFilter &&
@@ -398,6 +462,14 @@ class HaPanelDevState extends LitElement {
     const stateFilterRegExp =
       stateFilter &&
       RegExp(escapeRegExp(stateFilter).replace(/\\\*/g, ".*"), "i");
+
+    const deviceFilterRegExp =
+      deviceFilter &&
+      RegExp(escapeRegExp(deviceFilter).replace(/\\\*/g, ".*"), "i");
+
+    const areaFilterRegExp =
+      areaFilter &&
+      RegExp(escapeRegExp(areaFilter).replace(/\\\*/g, ".*"), "i");
 
     let keyFilterRegExp;
     let valueFilterRegExp;
@@ -436,6 +508,30 @@ class HaPanelDevState extends LitElement {
 
         if (stateFilterRegExp && !stateFilterRegExp.test(value.state)) {
           return false;
+        }
+
+        if (deviceFilterRegExp) {
+          const entry = entities[value.entity_id];
+          const device = entry?.device_id
+            ? devices[entry.device_id]
+            : undefined;
+          const deviceName = device ? computeDeviceName(device) : undefined;
+          if (!deviceName || !deviceFilterRegExp.test(deviceName)) {
+            return false;
+          }
+        }
+
+        if (areaFilterRegExp) {
+          const entry = entities[value.entity_id];
+          const device = entry?.device_id
+            ? devices[entry.device_id]
+            : undefined;
+          const areaId = entry?.area_id || device?.area_id;
+          const area = areaId ? areas[areaId] : undefined;
+          const areaName = area ? computeAreaName(area) : undefined;
+          if (!areaName || !areaFilterRegExp.test(areaName)) {
+            return false;
+          }
         }
 
         if (keyFilterRegExp && valueFilterRegExp) {

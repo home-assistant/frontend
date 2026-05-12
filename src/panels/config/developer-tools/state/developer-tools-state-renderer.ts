@@ -114,8 +114,12 @@ class HaPanelDevStateRenderer extends LitElement {
           <div class="header filter-states" role="columnheader">
             <slot name="filter-states"></slot>
           </div>
-          <div class="header" role="columnheader"></div>
-          <div class="header" role="columnheader"></div>
+            <div class="header filter-devices" role="columnheader">
+              <slot name="filter-devices"></slot>
+            </div>
+            <div class="header filter-areas" role="columnheader">
+              <slot name="filter-areas"></slot>
+            </div>
           <div class="header filter-attributes" role="columnheader">
             <slot name="filter-attributes"></slot>
           </div>
@@ -370,6 +374,11 @@ class HaPanelDevStateRenderer extends LitElement {
         .hide-extra .row .cell:nth-child(3),
         .hide-extra .row .header:nth-child(4),
         .hide-extra .row .cell:nth-child(4) {
+          display: none;
+        }
+
+        .hide-extra .filter-devices,
+        .hide-extra .filter-areas {
           display: none;
         }
 
