@@ -114,12 +114,12 @@ class HaPanelDevStateRenderer extends LitElement {
           <div class="header filter-states" role="columnheader">
             <slot name="filter-states"></slot>
           </div>
-            <div class="header filter-devices" role="columnheader">
-              <slot name="filter-devices"></slot>
-            </div>
-            <div class="header filter-areas" role="columnheader">
-              <slot name="filter-areas"></slot>
-            </div>
+          <div class="header filter-devices" role="columnheader">
+            <slot name="filter-devices"></slot>
+          </div>
+          <div class="header filter-areas" role="columnheader">
+            <slot name="filter-areas"></slot>
+          </div>
           <div class="header filter-attributes" role="columnheader">
             <slot name="filter-attributes"></slot>
           </div>

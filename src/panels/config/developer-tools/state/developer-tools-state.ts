@@ -306,9 +306,7 @@ class HaPanelDevState extends LitElement {
         ></ha-input-search>
         <ha-input-search
           slot="filter-areas"
-          .label=${this._i18n.localize(
-            "ui.panel.config.generic.headers.area"
-          )}
+          .label=${this._i18n.localize("ui.panel.config.generic.headers.area")}
           type="search"
           .value=${this._areaFilter}
           @input=${this._areaFilterChanged}
