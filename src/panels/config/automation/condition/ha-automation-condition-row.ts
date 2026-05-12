@@ -17,10 +17,13 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -32,6 +35,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/automation/ha-automation-row-event-chip";
@@ -42,13 +46,18 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-tooltip";
 import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
   PlatformCondition,
 } from "../../../../data/automation";
-import { isCondition, testCondition } from "../../../../data/automation";
+import {
+  isCondition,
+  subscribeCondition,
+  testCondition,
+} from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
@@ -140,6 +149,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
+  @state() private _liveTestResult: {
+    state: "pass" | "fail" | "invalid" | "unknown";
+    message?: string;
+  } = { state: "unknown" };
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -151,6 +165,8 @@ export default class HaAutomationConditionRow extends LitElement {
   private _automationRowElement?: HaAutomationRow;
 
   private _testingTimeout?: number;
+
+  private _conditionUnsub?: Promise<UnsubscribeFunc>;
 
   get selected() {
     return this._selected;
@@ -481,7 +497,23 @@ export default class HaAutomationConditionRow extends LitElement {
               .dim=${this._testing}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              >${this._renderRow()}</ha-automation-row
+              >${this._renderRow()}
+              <div
+                slot="icons"
+                id="live-test"
+                class=${this._liveTestResult.state}
+                role="status"
+                tabindex="0"
+                aria-label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
+                )}
+              >
+                ${this._liveTestResult.message
+                  ? html`<ha-tooltip for="live-test">
+                      ${this._liveTestResult.message}
+                    </ha-tooltip>`
+                  : nothing}
+              </div></ha-automation-row
             >`
           : html`
               <ha-expansion-panel
@@ -526,6 +558,11 @@ export default class HaAutomationConditionRow extends LitElement {
       ></ha-automation-row-targets>`
   );
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._subscribeCondition();
+  }
+
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
@@ -541,11 +578,85 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  protected override updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    if (
+      changedProps.has("condition") &&
+      changedProps.get("condition") !== undefined
+    ) {
+      this._resetSubscription();
+      this._debounceSubscribeCondition();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._testingTimeout !== undefined) {
       clearTimeout(this._testingTimeout);
     }
+    this._resetSubscription();
+  }
+
+  private _resetSubscription() {
+    this._liveTestResult = {
+      state: "unknown",
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
+      ),
+    };
+    if (this._conditionUnsub) {
+      this._conditionUnsub.then((unsub) => unsub());
+      this._conditionUnsub = undefined;
+    }
+  }
+
+  private _debounceSubscribeCondition = debounce(
+    () => this._subscribeCondition(),
+    500
+  );
+
+  private async _subscribeCondition() {
+    const condition = this.condition;
+
+    this._resetSubscription();
+
+    // Don't do anything if condition changed.
+    if (this.condition !== condition) {
+      return;
+    }
+
+    const conditionUnsub = subscribeCondition(
+      this.hass.connection,
+      (result) => {
+        if (result.error) {
+          this._handleLiveTestError(result.error);
+        } else {
+          this._liveTestResult = {
+            state: result.result ? "pass" : "fail",
+            message: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
+            ),
+          };
+        }
+      },
+      condition
+    );
+    conditionUnsub.catch((err: any) => {
+      this._handleLiveTestError(err);
+      if (this._conditionUnsub === conditionUnsub) {
+        this._conditionUnsub = undefined;
+      }
+    });
+    this._conditionUnsub = conditionUnsub;
+  }
+
+  private _handleLiveTestError(error: any) {
+    const invalid =
+      typeof error !== "string" && error.code === "invalid_format";
+    this._liveTestResult = {
+      state: invalid ? "invalid" : "unknown",
+      message: typeof error === "string" ? error : error.message,
+    };
   }
 
   private _onValueChange(event: CustomEvent) {
@@ -955,7 +1066,52 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [rowStyles, overflowStyles];
+    return [
+      rowStyles,
+      overflowStyles,
+      css`
+        #live-test {
+          position: absolute;
+          inset-inline-end: -6px;
+          width: 12px;
+          height: 12px;
+          border-radius: var(--ha-border-radius-circle);
+          border: 3px solid;
+          box-sizing: border-box;
+          background-color: var(--card-background-color);
+          transition: all var(--ha-animation-duration-normal) ease-in-out;
+        }
+        #live-test.pass {
+          background-color: var(--ha-color-fill-success-loud-resting);
+          border-color: var(--ha-color-fill-success-loud-resting);
+        }
+        #live-test.pass:hover {
+          background-color: var(--ha-color-fill-success-loud-hover);
+          border-color: var(--ha-color-fill-success-loud-hover);
+        }
+        #live-test.fail {
+          border-color: var(--ha-color-fill-warning-loud-resting);
+        }
+        #live-test.fail:hover {
+          background-color: var(--ha-color-fill-warning-loud-hover);
+          border-color: var(--ha-color-fill-warning-loud-hover);
+        }
+        #live-test.invalid {
+          border-color: var(--ha-color-fill-danger-loud-resting);
+        }
+        #live-test.invalid:hover {
+          background-color: var(--ha-color-fill-danger-loud-hover);
+          border-color: var(--ha-color-fill-danger-loud-hover);
+        }
+        #live-test.unknown {
+          border-color: var(--ha-color-fill-neutral-loud-resting);
+        }
+        #live-test.unknown:hover {
+          background-color: var(--ha-color-fill-neutral-loud-hover);
+          border-color: var(--ha-color-fill-neutral-loud-hover);
+        }
+      `,
+    ];
   }
 }
 
