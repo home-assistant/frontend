@@ -308,7 +308,7 @@ export class HaTracePathDetails extends LitElement {
               ? this.hass!.localize(
                   "ui.panel.config.automation.trace.path.no_variables_changed"
                 )
-              : html`<pre>${dump(trace.changed_variables).trimEnd()}</pre>`}
+              : html`<ha-code-editor read-only .hass=${this.hass} .value=${dump(trace.changed_variables).trimEnd()}></ha-code-editor>`}
           `
         )}
       </div>
