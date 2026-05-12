@@ -30,7 +30,7 @@ interface ActionDefinition {
 
 export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
   {
-    translation_key: "automation",
+    translation_key: "automation_trigger",
     icon: "mdi:robot-outline",
   },
   {
@@ -79,7 +79,7 @@ export function defaultActionHandler(
     })}`;
 
   switch (key) {
-    case "automation":
+    case "automation_trigger":
       return navigate(`/config/automation/edit/new${params("trigger")}`);
     case "condition":
       return navigate(`/config/automation/edit/new${params("condition")}`);

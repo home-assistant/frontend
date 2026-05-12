@@ -1692,7 +1692,7 @@
         },
         "add_to": {
           "actions": {
-            "automation": "Create new automation using {entity} as a trigger",
+            "automation_trigger": "Create new automation using {entity} as a trigger",
             "condition": "Create new automation using {entity} as a condition",
             "action": "Create new automation using {entity} in an action",
             "script": "Create new script using {entity} in an action"
