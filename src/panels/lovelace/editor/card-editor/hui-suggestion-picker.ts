@@ -44,7 +44,7 @@ export class HuiSuggestionPicker extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._narrowMql = matchMedia("(max-width: 700px)");
+    this._narrowMql = matchMedia("(max-width: 600px)");
     this._narrow = this._narrowMql.matches;
     this._narrowMql.addEventListener("change", this._handleNarrowChange);
   }
@@ -84,9 +84,9 @@ export class HuiSuggestionPicker extends LitElement {
   protected render() {
     if (!this.hass) return nothing;
     const hasEntity = !!this._entityId;
-    // The tree element is rendered unconditionally so its internal state
-    // (search filter, expanded branches, fuse index) survives switching
-    // between desktop/mobile and entering/leaving the suggestions pane.
+    // Tree is rendered unconditionally so its state (filter, expanded
+    // branches, fuse index) survives the desktop/mobile and tree/suggestions
+    // switches.
     const showTree = !this._narrow || !hasEntity;
     const showMain = !this._narrow || hasEntity;
     return html`
@@ -94,30 +94,34 @@ export class HuiSuggestionPicker extends LitElement {
         <hui-suggestion-entity-tree
           class="tree"
           .hass=${this.hass}
-          .selectedEntityIds=${this._entityId ? [this._entityId] : []}
+          .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
-          ${this._narrow && hasEntity ? this._renderSelectedEntity() : nothing}
-          ${hasEntity
-            ? html`
-                ${this._narrow
-                  ? html`
-                      <ha-section-title>
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.cardpicker.suggestions_title"
-                        )}
-                      </ha-section-title>
-                    `
-                  : nothing}
-                ${this._renderSuggestionsGrid(this._suggestions())}
-              `
-            : this._renderEmptyState()}
+          ${this._renderMainContent(hasEntity)}
         </div>
       </div>
     `;
+  }
+
+  private _renderMainContent(
+    hasEntity: boolean
+  ): TemplateResult | typeof nothing {
+    if (!hasEntity) return this._renderEmptyState();
+    if (this._narrow) {
+      return html`
+        ${this._renderSelectedEntity()}
+        <ha-section-title>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.cardpicker.suggestions_title"
+          )}
+        </ha-section-title>
+        ${this._renderSuggestionsGrid(this._suggestions())}
+      `;
+    }
+    return this._renderSuggestionsGrid(this._suggestions());
   }
 
   private _renderSelectedEntity(): TemplateResult {
@@ -355,7 +359,7 @@ export class HuiSuggestionPicker extends LitElement {
         }
 
         /* Mobile master/detail — sidebar OR main is visible, never both. */
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
           :host {
             flex-direction: column;
             overflow: hidden;

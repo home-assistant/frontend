@@ -16,31 +16,34 @@ declare global {
 
 const PREVIEW_ITEM_CAP = 6;
 
-const getItemCount = (config: LovelaceCardConfig): number => {
-  const c = config as { cards?: unknown[]; entities?: unknown[] };
-  return c.cards?.length ?? c.entities?.length ?? 0;
-};
+interface PreviewState {
+  config: LovelaceCardConfig;
+  hiddenCount: number;
+}
 
-// Truncates preview content so the card grid stays responsive — full content
-// is restored when the suggestion is actually picked.
-const cappedCardConfig = (config: LovelaceCardConfig): LovelaceCardConfig => {
-  const c = config as { cards?: LovelaceCardConfig[]; entities?: unknown[] };
-  if (c.cards && c.cards.length > PREVIEW_ITEM_CAP) {
-    return { ...config, cards: c.cards.slice(0, PREVIEW_ITEM_CAP) };
+const buildPreview = (config: LovelaceCardConfig): PreviewState => {
+  const c = config as LovelaceCardConfig & {
+    cards?: LovelaceCardConfig[];
+    entities?: unknown[];
+  };
+  const items = c.cards ?? c.entities;
+  if (!items || items.length <= PREVIEW_ITEM_CAP) {
+    return { config, hiddenCount: 0 };
   }
-  if (c.entities && c.entities.length > PREVIEW_ITEM_CAP) {
-    return { ...config, entities: c.entities.slice(0, PREVIEW_ITEM_CAP) };
-  }
-  return config;
+  const slice = items.slice(0, PREVIEW_ITEM_CAP);
+  const truncated = c.cards
+    ? { ...config, cards: slice }
+    : { ...config, entities: slice };
+  return { config: truncated, hiddenCount: items.length - PREVIEW_ITEM_CAP };
 };
 
 @customElement("hui-suggestion-card")
 export class HuiSuggestionCard extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public suggestion!: CardSuggestion;
 
-  @state() private _preview?: LovelaceCardConfig;
+  @state() private _preview?: PreviewState;
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -48,14 +51,13 @@ export class HuiSuggestionCard extends LitElement {
       return;
     }
     this._preview = this.suggestion?.config
-      ? cappedCardConfig(this.suggestion.config)
+      ? buildPreview(this.suggestion.config)
       : undefined;
   }
 
   protected render(): TemplateResult {
     const { suggestion } = this;
-    const totalCount = getItemCount(suggestion.config);
-    const hiddenCount = Math.max(0, totalCount - PREVIEW_ITEM_CAP);
+    const hiddenCount = this._preview?.hiddenCount ?? 0;
 
     return html`
       <div
@@ -72,7 +74,7 @@ export class HuiSuggestionCard extends LitElement {
             ? html`
                 <hui-card
                   .hass=${this.hass}
-                  .config=${this._preview}
+                  .config=${this._preview.config}
                   preview
                 ></hui-card>
               `
@@ -81,7 +83,7 @@ export class HuiSuggestionCard extends LitElement {
         ${hiddenCount > 0
           ? html`
               <div class="more-badge">
-                ${this.hass?.localize(
+                ${this.hass.localize(
                   "ui.panel.lovelace.editor.cardpicker.more_cards",
                   { count: hiddenCount }
                 )}
