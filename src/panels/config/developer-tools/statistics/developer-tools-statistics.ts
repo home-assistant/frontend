@@ -12,11 +12,18 @@ import {
 
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { consume, type ContextType } from "@lit/context";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import {
+  computeDeviceName,
+  getDuplicatedDeviceNames,
+} from "../../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
@@ -24,6 +31,7 @@ import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
+  RowClickedEvent,
   SelectionChangedEvent,
   SortingDirection,
 } from "../../../../components/data-table/ha-data-table";
@@ -45,9 +53,16 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import {
+  apiContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
+import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistantRegistries } from "../../../../types";
 import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
@@ -77,13 +92,14 @@ type StatisticData = StatisticsMetaData & {
 
 type DisplayedStatisticData = StatisticData & {
   displayName: string;
+  device?: string;
+  device_full?: string;
+  area?: string;
   issues_string?: string;
 };
 
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
@@ -106,6 +122,22 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _selectMode = false;
 
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
@@ -115,22 +147,55 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _displayData = memoizeOne(
-    (data: StatisticData[], localize: LocalizeFunc): DisplayedStatisticData[] =>
-      data.map((item) => ({
-        ...item,
-        displayName: item.state
-          ? computeStateName(item.state)
-          : item.name || item.statistic_id,
-        issues_string: item.issues
-          ?.map(
-            (issue) =>
-              localize(
-                `ui.panel.config.developer-tools.tabs.statistics.issues.${issue.type}`,
-                issue.data
-              ) || issue.type
-          )
-          .join(" "),
-      }))
+    (
+      data: StatisticData[],
+      localize: LocalizeFunc,
+      entities: HomeAssistantRegistries["entities"],
+      devices: HomeAssistantRegistries["devices"],
+      areas: HomeAssistantRegistries["areas"]
+    ): DisplayedStatisticData[] => {
+      const duplicatedDeviceNames = getDuplicatedDeviceNames(devices);
+
+      return data.map((item) => {
+        const entry = entities[item.statistic_id];
+        const device = entry?.device_id ? devices[entry.device_id] : undefined;
+        const areaId = entry?.area_id || device?.area_id;
+        const area = areaId ? areas[areaId] : undefined;
+
+        const entityName = entry
+          ? computeEntityEntryName(entry, devices, item.state)
+          : undefined;
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+        const deviceFullName = deviceName
+          ? duplicatedDeviceNames.has(deviceName) && areaName
+            ? `${deviceName} (${areaName})`
+            : deviceName
+          : undefined;
+
+        return {
+          ...item,
+          displayName:
+            entityName ||
+            deviceName ||
+            (item.state ? computeStateName(item.state) : undefined) ||
+            item.name ||
+            item.statistic_id,
+          device: deviceName,
+          device_full: deviceFullName,
+          area: areaName,
+          issues_string: item.issues
+            ?.map(
+              (issue) =>
+                localize(
+                  `ui.panel.config.developer-tools.tabs.statistics.issues.${issue.type}`,
+                  issue.data
+                ) || issue.type
+            )
+            .join(" "),
+        };
+      });
+    }
   );
 
   private _columns = memoizeOne(
@@ -146,6 +211,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         filterable: true,
         flex: 2,
       },
+      device: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        sortable: true,
+        template: (entry) => entry.device || "",
+      },
+      device_full: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        filterable: true,
+        groupable: true,
+        hidden: true,
+      },
+      area: getAreaTableColumn(localize),
       statistic_id: {
         title: localize(
           "ui.panel.config.developer-tools.tabs.statistics.data_table.statistic_id"
@@ -187,7 +264,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       fix: {
         title: "",
-        label: this.hass.localize(
+        label: localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
         ),
         type: "icon",
@@ -231,21 +308,20 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                   @click=${this._showStatisticsAdjustSumDialog}
                 ></ha-icon-button>
               `
-            : "",
+            : nothing,
       },
     })
   );
 
   protected render() {
-    const localize = this.hass.localize;
-    const columns = this._columns(this.hass.localize);
+    const columns = this._columns(this._i18n.localize);
 
     const selectModeBtn = !this._selectMode
       ? html`<ha-assist-chip
           class="has-dropdown select-mode-chip"
           .active=${this._selectMode}
           @click=${this._enableSelectMode}
-          .title=${localize(
+          .title=${this._i18n.localize(
             "ui.components.subpage-data-table.enter_selection_mode"
           )}
         >
@@ -265,11 +341,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           <ha-dropdown @wa-select=${this._handleSortBy}>
             <ha-assist-chip
               slot="trigger"
-              .label=${localize("ui.components.subpage-data-table.sort_by", {
-                sortColumn: this._sortColumn
-                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
-                  : "",
-              })}
+              .label=${this._i18n.localize(
+                "ui.components.subpage-data-table.sort_by",
+                {
+                  sortColumn: this._sortColumn
+                    ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}`
+                    : "",
+                }
+              )}
             >
               <ha-svg-icon
                 slot="trailing-icon"
@@ -307,11 +386,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           <ha-dropdown @wa-select=${this._handleOverflowGroupBy}>
             <ha-assist-chip
               slot="trigger"
-              .label=${localize("ui.components.subpage-data-table.group_by", {
-                groupColumn: this._groupColumn
-                  ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
-                  : "",
-              })}
+              .label=${this._i18n.localize(
+                "ui.components.subpage-data-table.group_by",
+                {
+                  groupColumn: this._groupColumn
+                    ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
+                    : "",
+                }
+              )}
             >
               <ha-svg-icon
                 slot="trailing-icon"
@@ -334,7 +416,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               value="none"
               .selected=${this._groupColumn === undefined}
             >
-              ${localize("ui.components.subpage-data-table.dont_group_by")}
+              ${this._i18n.localize(
+                "ui.components.subpage-data-table.dont_group_by"
+              )}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
             <ha-dropdown-item
@@ -346,7 +430,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 slot="icon"
                 .path=${mdiUnfoldLessHorizontal}
               ></ha-svg-icon>
-              ${localize(
+              ${this._i18n.localize(
                 "ui.components.subpage-data-table.collapse_all_groups"
               )}
             </ha-dropdown-item>
@@ -358,7 +442,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 slot="icon"
                 .path=${mdiUnfoldMoreHorizontal}
               ></ha-svg-icon>
-              ${localize("ui.components.subpage-data-table.expand_all_groups")}
+              ${this._i18n.localize(
+                "ui.components.subpage-data-table.expand_all_groups"
+              )}
             </ha-dropdown-item>
           </ha-dropdown>
         `
@@ -367,7 +453,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const settingsButton = html`<ha-assist-chip
       class="has-dropdown select-mode-chip"
       @click=${this._openSettings}
-      .title=${localize("ui.components.subpage-data-table.settings")}
+      .title=${this._i18n.localize("ui.components.subpage-data-table.settings")}
     >
       <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
@@ -380,13 +466,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 <ha-icon-button
                   .path=${mdiClose}
                   @click=${this._disableSelectMode}
-                  .label=${localize(
+                  .label=${this._i18n.localize(
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
                 <ha-dropdown>
                   <ha-assist-chip
-                    .label=${localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.select"
                     )}
                     slot="trigger"
@@ -401,34 +487,41 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                     ></ha-svg-icon
                   ></ha-assist-chip>
                   <ha-dropdown-item @click=${this._selectAll}>
-                    ${localize("ui.components.subpage-data-table.select_all")}
+                    ${this._i18n.localize(
+                      "ui.components.subpage-data-table.select_all"
+                    )}
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectAllIssues}>
-                    ${localize(
+                    ${this._i18n.localize(
                       "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
                     )}
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectNone}>
-                    ${localize("ui.components.subpage-data-table.select_none")}
+                    ${this._i18n.localize(
+                      "ui.components.subpage-data-table.select_none"
+                    )}
                   </ha-dropdown-item>
                   <wa-divider></wa-divider>
                   <ha-dropdown-item @click=${this._disableSelectMode}>
-                    ${localize(
+                    ${this._i18n.localize(
                       "ui.components.subpage-data-table.exit_selection_mode"
                     )}
                   </ha-dropdown-item>
                 </ha-dropdown>
                 <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this._selected.length,
-                  })}
+                  ${this._i18n.localize(
+                    "ui.components.subpage-data-table.selected",
+                    {
+                      selected: this._selected.length,
+                    }
+                  )}
                 </p>
               </div>
               <div class="center-vertical">
                 <slot name="selection-bar"></slot>
               </div>
               <ha-assist-chip
-                .label=${localize(
+                .label=${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
                 )}
                 .disabled=${!this._selected.length}
@@ -448,12 +541,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 </slot>
               </div>
             `
-          : ""}
+          : nothing}
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${columns}
-          .data=${this._displayData(this._data, this.hass.localize)}
-          .noDataText=${this.hass.localize(
+          .data=${this._displayData(
+            this._data,
+            this._i18n.localize,
+            this._registries.entities,
+            this._registries.devices,
+            this._registries.areas
+          )}
+          .noDataText=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
           )}
           .filter=${this.filter}
@@ -551,7 +650,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _openSettings() {
     showDataTableSettingsDialog(this, {
-      columns: this._columns(this.hass.localize),
+      columns: this._columns(this._i18n.localize),
       hiddenColumns: this.hiddenColumns,
       columnOrder: this.columnOrder,
       onUpdate: (
@@ -561,7 +660,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this.hass.localize,
+      localizeFunc: this._i18n.localize,
     });
   }
 
@@ -599,27 +698,29 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _showStatisticsAdjustSumDialog(ev) {
+  private _showStatisticsAdjustSumDialog(ev: Event) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
-      statistic: ev.currentTarget.statistic,
+      statistic: (
+        ev.currentTarget as HTMLElement & { statistic: StatisticData }
+      ).statistic,
     });
   }
 
-  private _rowClicked(ev) {
+  private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const id = ev.detail.id;
-    if (id in this.hass.states) {
+    if (id in this._states) {
       fireEvent(this, "hass-more-info", { entityId: id });
     }
   }
 
   private async _validateStatistics() {
     const [statisticIds, issues] = await Promise.all([
-      getStatisticIds(this.hass),
-      validateStatistics(this.hass),
+      getStatisticIds(this._api),
+      validateStatistics(this._api),
     ]);
 
-    updateStatisticsIssues(this.hass);
+    updateStatisticsIssues(this._api);
 
     const statsIds = new Set();
 
@@ -627,7 +728,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       statsIds.add(statistic.statistic_id);
       return {
         ...statistic,
-        state: this.hass.states[statistic.statistic_id],
+        state: this._states[statistic.statistic_id],
         issues: issues[statistic.statistic_id],
       };
     });
@@ -638,7 +739,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
           source: "",
-          state: this.hass.states[statisticId],
+          state: this._states[statisticId],
           issues: issues[statisticId],
           mean_type: StatisticMeanType.NONE,
           has_sum: false,
@@ -656,25 +757,27 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const deletableIds = this._selected;
 
     await showConfirmationDialog(this, {
-      title: this.hass.localize(
+      title: this._i18n.localize(
         "ui.panel.config.developer-tools.tabs.statistics.multi_delete.title"
       ),
-      text: html`${this.hass.localize(
+      text: html`${this._i18n.localize(
         "ui.panel.config.developer-tools.tabs.statistics.multi_delete.info_text",
         { statistic_count: deletableIds.length }
       )}`,
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this._i18n.localize("ui.common.delete"),
       destructive: true,
       confirm: async () => {
-        await clearStatistics(this.hass, deletableIds);
+        await clearStatistics(this._api, deletableIds);
         this._validateStatistics();
         this._dataTable.clearSelection();
       },
     });
   };
 
-  private _fixIssue = async (ev) => {
-    const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
+  private _fixIssue = async (ev: Event) => {
+    const issues = (
+      ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] }
+    ).data.sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
