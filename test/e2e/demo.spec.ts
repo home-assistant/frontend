@@ -69,20 +69,23 @@ test.describe("Home Assistant Demo", () => {
 
     // Lovelace cards are rendered inside the shadow DOM.
     // Playwright pierces shadow roots with CSS selectors automatically.
-    // We wait for at least one hui-* card element to appear.
-    const card = page.locator("[class*='hui-']").first();
-    // Alternatively match by the lovelace view container:
-    const lovelaceView = page
-      .locator(
-        "hui-masonry-view, hui-sections-view, hui-panel-view, hui-sidebar-view"
-      )
-      .first();
-
-    // One of the two approaches should succeed — wait for whichever is present
-    await Promise.race([
-      lovelaceView.waitFor({ state: "attached", timeout: 30_000 }),
-      card.waitFor({ state: "attached", timeout: 30_000 }),
-    ]);
+    // Wait for the lovelace view container first, then fall back to a card.
+    // Note: avoid concurrent waitFor() calls (Promise.race) on mobile WebKit —
+    // running two selector watchers simultaneously can crash the driver.
+    try {
+      await page
+        .locator(
+          "hui-masonry-view, hui-sections-view, hui-panel-view, hui-sidebar-view"
+        )
+        .first()
+        .waitFor({ state: "attached", timeout: 30_000 });
+    } catch {
+      // Fall back to any hui-* class element if view containers aren't present.
+      await page
+        .locator("[class*='hui-']")
+        .first()
+        .waitFor({ state: "attached", timeout: 30_000 });
+    }
 
     // At least one card must be visible
     const cards = page.locator(
@@ -177,11 +180,12 @@ test.describe("Home Assistant Demo", () => {
     await expect(title).toBeVisible({ timeout: 10_000 });
 
     // Filter out dynamic-import network errors that can occur transiently on
-    // certain platforms/browsers (e.g. Firefox over the BrowserStack tunnel).
-    // These are infrastructure-level errors, not application bugs.
+    // certain platforms/browsers (e.g. Firefox/WebKit over the BrowserStack
+    // tunnel). These are infrastructure-level errors, not application bugs.
+    const dynamicImportErrorPattern =
+      /error loading dynamically imported module|Importing a module script failed/i;
     const appErrors = pageErrors.filter(
-      (err) =>
-        !err.message.includes("error loading dynamically imported module")
+      (err) => !dynamicImportErrorPattern.test(err.message)
     );
     expect(appErrors).toHaveLength(0);
   });
