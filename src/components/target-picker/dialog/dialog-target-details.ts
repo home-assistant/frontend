@@ -22,8 +22,6 @@ import "../../ha-adaptive-dialog";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
-import "../../ha-md-list";
-import "../../ha-md-list-item";
 import "../../ha-svg-icon";
 import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";

@@ -10,14 +10,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/animation/ha-fade-in";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
-import "../../components/animation/ha-fade-in";
 import "../../components/ha-icon-next";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
+import "../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import "../../components/progress/ha-progress-bar";
 import { fetchBackupInfo } from "../../data/backup";
 import type { BackupManagerState } from "../../data/backup_manager";
@@ -130,9 +131,8 @@ class DialogRestart extends LitElement {
                 </div>
               `
             : html`
-                <ha-md-list dialogInitialFocus>
-                  <ha-md-list-item
-                    type="button"
+                <ha-list-base dialogInitialFocus>
+                  <ha-list-item-button
                     @click=${this._reload}
                     .disabled=${this._loadingBackupInfo}
                   >
@@ -148,9 +148,8 @@ class DialogRestart extends LitElement {
                       <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>
-                  <ha-md-list-item
-                    type="button"
+                  </ha-list-item-button>
+                  <ha-list-item-button
                     .action=${"restart"}
                     @click=${this._handleAction}
                     .disabled=${this._loadingBackupInfo}
@@ -167,18 +166,17 @@ class DialogRestart extends LitElement {
                       )}
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>
-                </ha-md-list>
+                  </ha-list-item-button>
+                </ha-list-base>
                 <ha-expansion-panel
                   .header=${this.hass.localize(
                     "ui.dialogs.restart.advanced_options"
                   )}
                 >
-                  <ha-md-list>
+                  <ha-list-base>
                     ${showRebootShutdown
                       ? html`
-                          <ha-md-list-item
-                            type="button"
+                          <ha-list-item-button
                             .action=${"reboot"}
                             @click=${this._handleAction}
                             .disabled=${this._loadingBackupInfo}
@@ -197,9 +195,8 @@ class DialogRestart extends LitElement {
                               )}
                             </div>
                             <ha-icon-next slot="end"></ha-icon-next>
-                          </ha-md-list-item>
-                          <ha-md-list-item
-                            type="button"
+                          </ha-list-item-button>
+                          <ha-list-item-button
                             .action=${"shutdown"}
                             @click=${this._handleAction}
                             .disabled=${this._loadingBackupInfo}
@@ -218,11 +215,10 @@ class DialogRestart extends LitElement {
                               )}
                             </div>
                             <ha-icon-next slot="end"></ha-icon-next>
-                          </ha-md-list-item>
+                          </ha-list-item-button>
                         `
                       : nothing}
-                    <ha-md-list-item
-                      type="button"
+                    <ha-list-item-button
                       .action=${"restart-safe-mode"}
                       @click=${this._handleAction}
                       .disabled=${this._loadingBackupInfo}
@@ -244,8 +240,8 @@ class DialogRestart extends LitElement {
                         )}
                       </div>
                       <ha-icon-next slot="end"></ha-icon-next>
-                    </ha-md-list-item>
-                  </ha-md-list>
+                    </ha-list-item-button>
+                  </ha-list-base>
                 </ha-expansion-panel>
               `}
         </div>
@@ -324,16 +320,13 @@ class DialogRestart extends LitElement {
       }
     };
 
-  private async _handleAction(ev) {
+  private async _handleAction(ev: Event) {
     if (this._loadingBackupInfo) {
       return;
     }
     this._loadingBackupInfo = true;
-    const action = ev.currentTarget.action as
-      | "restart"
-      | "reboot"
-      | "shutdown"
-      | "restart-safe-mode";
+    const action = (ev.currentTarget as HaListItemButton & { action: string })
+      .action as "restart" | "reboot" | "shutdown" | "restart-safe-mode";
 
     const backupState = await this._loadBackupState();
 

@@ -8,8 +8,6 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select-box";
 import "../../../../components/input/ha-input";
 

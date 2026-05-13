@@ -225,6 +225,11 @@ export const darkSemanticColorStyles = css`
     --ha-color-fill-neutral-normal-hover: var(--ha-color-neutral-20);
     --ha-color-fill-neutral-normal-active: var(--ha-color-neutral-10);
 
+    /* fill neutral loud */
+    --ha-color-fill-neutral-loud-resting: var(--ha-color-neutral-60);
+    --ha-color-fill-neutral-loud-hover: var(--ha-color-neutral-70);
+    --ha-color-fill-neutral-loud-active: var(--ha-color-neutral-60);
+
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10);
     --ha-color-fill-disabled-quiet-hover: var(--ha-color-neutral-20);
