@@ -6,7 +6,7 @@
 // package where the reported identifier is non-standard), add it to
 // ALLOWED_PACKAGES with a comment explaining why.
 
-import checker from "license-checker";
+import checker from "license-checker-rseidelsohn";
 import { createRequire } from "module";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -69,23 +69,17 @@ checker.init(
 
     if (violations.length > 0) {
       console.error(
-        "The following packages have licenses that are not on the allowlist:\n"
+        "The following packages have licenses that are not on the allowlist:"
       );
       for (const { package: pkg, license } of violations) {
         console.error(`  ${pkg}: ${license}`);
       }
-      console.error(
-        "\nIf the license is permissive and appropriate for distribution, add it"
-      );
-      console.error(
-        "to ALLOWED_LICENSES in script/check-licenses. If it is a specific"
-      );
-      console.error(
-        "package with an ambiguous identifier, add it to ALLOWED_PACKAGES."
-      );
-      console.error(
-        "\nDo NOT add copyleft licenses (GPL, LGPL, AGPL, etc.) to the allowlist."
-      );
+      console.error(`
+If the license is permissive and appropriate for distribution, add it
+to ALLOWED_LICENSES in script/check-licenses. If it is a specific
+package with an ambiguous identifier, add it to ALLOWED_PACKAGES.
+
+Do NOT add copyleft licenses (GPL, LGPL, AGPL, etc.) to the allowlist.`);
       process.exit(1);
     }
 
