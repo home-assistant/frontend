@@ -1,6 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
@@ -8,6 +9,7 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
+import { actionToYamlSchema } from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import {
@@ -40,6 +42,14 @@ export default class HaAutomationActionEditor extends LitElement {
 
   @query(COLLAPSIBLE_ACTION_ELEMENTS.join(", "))
   private _collapsibleElement?: ActionElement;
+
+  private _actionYamlSchema = memoizeOne(
+    (
+      action: Action,
+      services: HomeAssistant["services"],
+      localize: HomeAssistant["localize"]
+    ) => actionToYamlSchema(action, { services, localize } as HomeAssistant)
+  );
 
   protected render() {
     const yamlMode = this.yamlMode || !this.uiSupported;
@@ -75,6 +85,11 @@ export default class HaAutomationActionEditor extends LitElement {
                 .defaultValue=${this.action}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}
+                .yamlFieldSchema=${this._actionYamlSchema(
+                  this.action,
+                  this.hass.services,
+                  this.hass.localize
+                )}
               ></ha-yaml-editor>
             `
           : html`

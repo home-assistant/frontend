@@ -31,15 +31,20 @@ import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
-import { computeDeviceName } from "../common/entity/compute_device_name";
-import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
+import {
+  buildEntityCompletions,
+  buildDeviceCompletions,
+  buildAreaCompletions,
+} from "../resources/ha_completion_items";
 import type {
   JinjaArgType,
   HassArgHoverContext,
 } from "../resources/jinja_ha_completions";
+import type { YamlFieldSchemaMap } from "../resources/yaml_field_schema";
+import "./ha-code-editor-yaml-hover";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import { documentationUrl } from "../util/documentation-url";
@@ -79,6 +84,14 @@ export class HaCodeEditor extends ReactiveElement {
   @property() public mode = "yaml";
 
   public hass?: HomeAssistant;
+
+  /**
+   * Optional field schema for YAML mode. When set, the editor will provide
+   * field-aware key/value completions, hover tooltips, and linting for the
+   * known fields described by this map.
+   */
+  @property({ attribute: false })
+  public yamlFieldSchema?: YamlFieldSchemaMap;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -136,6 +149,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _completionInfoDestroy?: () => void;
 
+  // Stored YAML syntax error set by setYamlError(); consumed by _yamlSyntaxLinter.
+  private _yamlSyntaxError: {
+    mark?: { position: number; line: number; column: number };
+    reason?: string;
+  } | null = null;
+
   private _completionInfoRequest = 0;
 
   private _completionInfoKey?: string;
@@ -169,6 +188,10 @@ export class HaCodeEditor extends ReactiveElement {
    * Push a YAML parse error (or null to clear) into the lint gutter as a
    * diagnostic. Avoids re-parsing the document — the caller (ha-yaml-editor)
    * already has the error from its own js-yaml load() call.
+   *
+   * Stores the error and triggers forceLinting() so the yamlLintCompartment
+   * linter re-runs and returns it as a diagnostic — rather than calling
+   * setDiagnostics() which would wipe diagnostics from other linters.
    */
   public setYamlError(
     err: {
@@ -176,27 +199,10 @@ export class HaCodeEditor extends ReactiveElement {
       reason?: string;
     } | null
   ): void {
-    if (!this.codemirror || !this._loadedCodeMirror) return;
-    let diagnostics: {
-      from: number;
-      to: number;
-      severity: "error";
-      message: string;
-    }[] = [];
-    if (err) {
-      const doc = this.codemirror.state.doc;
-      const pos = err.mark ? Math.min(err.mark.position, doc.length) : 0;
-      const line = doc.lineAt(pos);
-      const message = `${
-        err.reason ||
-        this.hass?.localize("ui.components.yaml-editor.error") ||
-        "YAML syntax error"
-      }${err.mark ? ` (${this.hass?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
-      diagnostics = [{ from: pos, to: line.to, severity: "error", message }];
+    this._yamlSyntaxError = err;
+    if (this.codemirror && this._loadedCodeMirror) {
+      this._loadedCodeMirror.forceLinting(this.codemirror);
     }
-    this.codemirror.dispatch(
-      this._loadedCodeMirror.setDiagnostics(this.codemirror.state, diagnostics)
-    );
   }
 
   public connectedCallback() {
@@ -257,9 +263,7 @@ export class HaCodeEditor extends ReactiveElement {
         effects: [
           this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
           this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
-            this.lint && !this.readOnly
-              ? [this._loadedCodeMirror!.lintGutter()]
-              : []
+            this._buildYamlSyntaxLinter()
           ),
         ],
       });
@@ -271,20 +275,23 @@ export class HaCodeEditor extends ReactiveElement {
             this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
           ),
           this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
-            this.lint && !this.readOnly
-              ? [this._loadedCodeMirror!.lintGutter()]
-              : []
+            this._buildYamlSyntaxLinter()
           ),
         ],
       });
       this._updateToolbarButtons();
     }
-    if (changedProps.has("lint")) {
+    if (changedProps.has("lint") || changedProps.has("yamlFieldSchema")) {
       transactions.push({
         effects: this._loadedCodeMirror!.yamlLintCompartment!.reconfigure(
-          this.lint && !this.readOnly
-            ? [this._loadedCodeMirror!.lintGutter()]
-            : []
+          this._buildYamlSyntaxLinter()
+        ),
+      });
+    }
+    if (changedProps.has("yamlFieldSchema") || changedProps.has("readOnly")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.yamlSchemaCompartment!.reconfigure(
+          this._buildSchemaLinter()
         ),
       });
     }
@@ -337,6 +344,60 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
+  private _buildSchemaLinter() {
+    if (!this._loadedCodeMirror || !this.yamlFieldSchema || this.readOnly) {
+      return [];
+    }
+    const schema = this.yamlFieldSchema;
+    return [
+      this._loadedCodeMirror.linter(
+        (view) => this._loadedCodeMirror!.haYamlLintSource(view, schema),
+        { delay: 500 }
+      ),
+    ];
+  }
+
+  /**
+   * Builds the yamlLintCompartment extensions: a linter that surfaces the
+   * stored _yamlSyntaxError (set by setYamlError), plus the lint gutter when
+   * either syntax linting or schema linting is active.
+   *
+   * Using a linter() instead of setDiagnostics() means this linter's
+   * diagnostics are managed independently of the schema linter's diagnostics —
+   * they don't overwrite each other.
+   */
+  private _buildYamlSyntaxLinter() {
+    if (this.readOnly) return [];
+    const showGutter = this.lint || !!this.yamlFieldSchema;
+    const extensions: Extension[] = [];
+    if (showGutter) {
+      extensions.push(this._loadedCodeMirror!.lintGutter());
+    }
+    if (this.lint) {
+      extensions.push(
+        this._loadedCodeMirror!.linter(
+          (view) => {
+            const err = this._yamlSyntaxError;
+            if (!err) return [];
+            const doc = view.state.doc;
+            const pos = err.mark ? Math.min(err.mark.position, doc.length) : 0;
+            const line = doc.lineAt(pos);
+            const message = `${
+              err.reason ||
+              this.hass?.localize("ui.components.yaml-editor.error") ||
+              "YAML syntax error"
+            }${err.mark ? ` (${this.hass?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+            return [
+              { from: pos, to: line.to, severity: "error" as const, message },
+            ];
+          },
+          { delay: 0 }
+        )
+      );
+    }
+    return extensions;
+  }
+
   private _createCodeMirror() {
     if (!this._loadedCodeMirror) {
       throw new Error("Cannot create editor before CodeMirror is loaded");
@@ -385,7 +446,10 @@ export class HaCodeEditor extends ReactiveElement {
         this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
       ),
       this._loadedCodeMirror.yamlLintCompartment.of(
-        this.lint && !this.readOnly ? [this._loadedCodeMirror.lintGutter()] : []
+        this._buildYamlSyntaxLinter()
+      ),
+      this._loadedCodeMirror.yamlSchemaCompartment.of(
+        this._buildSchemaLinter()
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
       this._loadedCodeMirror.tooltips({
@@ -401,6 +465,23 @@ export class HaCodeEditor extends ReactiveElement {
           ),
         { hoverTime: 300 }
       ),
+      ...(this.mode === "yaml" && this.yamlFieldSchema
+        ? [
+            this._loadedCodeMirror.hoverTooltip(
+              (view, pos) =>
+                this._loadedCodeMirror!.haYamlHoverSource(view, pos, {
+                  schema: this.yamlFieldSchema!,
+                  localize: this.hass?.localize.bind(this.hass) as
+                    | ((key: string, ...args: unknown[]) => string)
+                    | undefined,
+                  hassContext: this.hass
+                    ? this._hassArgHoverContext()
+                    : undefined,
+                }),
+              { hoverTime: 300 }
+            ),
+          ]
+        : []),
       ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
@@ -408,6 +489,16 @@ export class HaCodeEditor extends ReactiveElement {
       const completionSources: CompletionSource[] = [
         this._loadedCodeMirror.haJinjaCompletionSource,
       ];
+      if (this.mode === "yaml" && this.yamlFieldSchema) {
+        completionSources.push(
+          this._loadedCodeMirror.haYamlCompletionSource({
+            schema: this.yamlFieldSchema,
+            states: this.hass?.states,
+            devices: this.hass?.devices,
+            areas: this.hass?.areas,
+          })
+        );
+      }
       if (this.autocompleteEntities && this.hass) {
         completionSources.push(this._entityCompletions.bind(this));
       }
@@ -418,6 +509,7 @@ export class HaCodeEditor extends ReactiveElement {
         this._loadedCodeMirror.autocompletion({
           override: completionSources,
           maxRenderedOptions: 10,
+          activateOnCompletion: (completion) => completion.type === "yaml-key",
         }),
         this._loadedCodeMirror.closeBrackets(),
         this._loadedCodeMirror.closeBracketsOverride,
@@ -965,23 +1057,9 @@ export class HaCodeEditor extends ReactiveElement {
     });
   };
 
-  private _getStates = memoizeOne((states: HassEntities): Completion[] => {
-    if (!states) {
-      return [];
-    }
-
-    const options = Object.keys(states).map((key) => ({
-      type: "variable",
-      label: states[key].attributes.friendly_name
-        ? `${states[key].attributes.friendly_name} ${key}` // label is used for searching, so include both name and entity_id here
-        : key,
-      displayLabel: key,
-      detail: states[key].attributes.friendly_name,
-      apply: key,
-    }));
-
-    return options;
-  });
+  private _getStates = memoizeOne((states: HassEntities): Completion[] =>
+    buildEntityCompletions(states)
+  );
 
   // Map of HA Jinja function name → (arg index → JinjaArgType).
   // Derived from the snippet definitions in jinja_ha_completions.ts.
@@ -1378,18 +1456,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getDevices = memoizeOne(
     (devices: HomeAssistant["devices"]): Completion[] =>
-      Object.values(devices)
-        .filter((device) => !device.disabled_by)
-        .map((device) => {
-          const name = computeDeviceName(device);
-          return {
-            type: "variable",
-            label: `${name} ${device.id}`,
-            displayLabel: name ?? device.id,
-            detail: device.id,
-            apply: device.id,
-          };
-        })
+      buildDeviceCompletions(devices)
   );
 
   /** Build a CompletionResult for device IDs, with `from` set inside the quotes. */
@@ -1408,17 +1475,7 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _getAreas = memoizeOne(
-    (areas: HomeAssistant["areas"]): Completion[] =>
-      Object.values(areas).map((area) => {
-        const name = computeAreaName(area) ?? area.area_id;
-        return {
-          type: "variable",
-          label: `${name} ${area.area_id}`, // label is used for searching, so include both name and ID here
-          displayLabel: name,
-          detail: area.area_id,
-          apply: area.area_id,
-        };
-      })
+    (areas: HomeAssistant["areas"]): Completion[] => buildAreaCompletions(areas)
   );
 
   /** Build a CompletionResult for area IDs, with `from` set inside the quotes. */

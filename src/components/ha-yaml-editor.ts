@@ -7,6 +7,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import type { YamlFieldSchemaMap } from "../resources/yaml_field_schema";
 import { showToast } from "../util/toast";
 import "./ha-button";
 import "./ha-code-editor";
@@ -31,6 +32,14 @@ export class HaYamlEditor extends LitElement {
   @property() public value?: any;
 
   @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
+
+  /**
+   * Optional field schema for YAML mode. When provided, the code editor will
+   * offer field-aware key/value completions, hover tooltips, and linting.
+   * This is forwarded directly to ha-code-editor.
+   */
+  @property({ attribute: false })
+  public yamlFieldSchema?: YamlFieldSchemaMap;
 
   @property({ attribute: false }) public defaultValue?: any;
 
@@ -119,8 +128,9 @@ export class HaYamlEditor extends LitElement {
         .inDialog=${this.inDialog}
         mode="yaml"
         lint
-        autocomplete-entities
+        .autocompleteEntities=${!this.yamlFieldSchema}
         autocomplete-icons
+        .yamlFieldSchema=${this.yamlFieldSchema}
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
         @editor-save=${this._onEditorSave}

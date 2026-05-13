@@ -37,7 +37,13 @@ export {
   search,
   searchKeymap,
 } from "@codemirror/search";
-export { lintGutter, lintKeymap, setDiagnostics } from "@codemirror/lint";
+export {
+  lintGutter,
+  lintKeymap,
+  setDiagnostics,
+  linter,
+  forceLinting,
+} from "@codemirror/lint";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,
@@ -76,12 +82,23 @@ export {
   JINJA_FUNCTION_ARG_TYPES,
 } from "./jinja_ha_completions";
 export type { HassArgHoverContext, JinjaArgType } from "./jinja_ha_completions";
+export {
+  haYamlCompletionSource,
+  haYamlHoverSource,
+  haYamlLintSource,
+} from "./yaml_ha_completions";
+export type {
+  HaYamlCompletionContext,
+  HaYamlHoverContext,
+} from "./yaml_ha_completions";
+export type { YamlFieldSchemaMap, YamlFieldSchema } from "./yaml_field_schema";
 export { closePercentBrace };
 
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
 export const yamlLintCompartment = new Compartment();
+export const yamlSchemaCompartment = new Compartment();
 
 // ---------------------------------------------------------------------------
 // YAML scalar type highlighter

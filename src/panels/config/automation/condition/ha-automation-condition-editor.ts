@@ -11,6 +11,7 @@ import { expandConditionWithShorthand } from "../../../../data/automation";
 import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
+import { conditionDescriptionToSchema } from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
@@ -43,6 +44,21 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
   private _collapsibleElement?: ConditionElement;
+
+  private _conditionYamlSchema = memoizeOne(
+    (
+      condition: Condition,
+      description: ConditionDescription | undefined,
+      localize: HomeAssistant["localize"]
+    ) => {
+      if (!description) return undefined;
+      return conditionDescriptionToSchema(
+        condition.condition,
+        description,
+        localize
+      );
+    }
+  );
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -83,6 +99,11 @@ export default class HaAutomationConditionEditor extends LitElement {
                 .defaultValue=${this.condition}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}
+                .yamlFieldSchema=${this._conditionYamlSchema(
+                  condition,
+                  this.description,
+                  this.hass.localize
+                )}
               ></ha-yaml-editor>
             `
           : html`
