@@ -13,7 +13,7 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { calculateNextTimeUpdate } from "../../../../common/condition/time-calculator";
+import { ConditionListenersController } from "../../../../common/controllers/condition-listeners-controller";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -40,7 +40,6 @@ import type {
   LegacyCondition,
   NotCondition,
   OrCondition,
-  TimeCondition,
 } from "../../common/validate-condition";
 import {
   checkConditionsMet,
@@ -111,12 +110,7 @@ export class HaCardConditionEditor extends LitElement {
     message?: string;
   } = { state: "unknown" };
 
-  private _mediaQueryLists: {
-    mql: MediaQueryList;
-    handler: () => void;
-  }[] = [];
-
-  private _timeTimeout?: number;
+  private _listeners = new ConditionListenersController(this);
 
   private get _editor() {
     if (!this._condition) return undefined;
@@ -131,110 +125,12 @@ export class HaCardConditionEditor extends LitElement {
     });
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._setupConditionListeners();
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._clearConditionListeners();
-  }
-
   private _setupConditionListeners() {
-    this._clearConditionListeners();
-    if (!this.condition) return;
-
-    const { screenQueries, timeConditions } = this._inspectCondition(
-      this.condition
+    this._listeners.setup(
+      this.condition ? [this.condition as Condition] : [],
+      this.hass,
+      () => this._evaluateLiveTest()
     );
-
-    for (const query of screenQueries) {
-      const mql = matchMedia(query);
-      const handler = () => this._evaluateLiveTest();
-      mql.addEventListener("change", handler);
-      this._mediaQueryLists.push({ mql, handler });
-    }
-
-    this._scheduleNextTimeCheck(timeConditions);
-  }
-
-  private _clearConditionListeners() {
-    for (const { mql, handler } of this._mediaQueryLists) {
-      mql.removeEventListener("change", handler);
-    }
-    this._mediaQueryLists = [];
-    if (this._timeTimeout !== undefined) {
-      window.clearTimeout(this._timeTimeout);
-      this._timeTimeout = undefined;
-    }
-  }
-
-  private _scheduleNextTimeCheck(timeConditions: TimeCondition[]) {
-    if (this._timeTimeout !== undefined) {
-      window.clearTimeout(this._timeTimeout);
-      this._timeTimeout = undefined;
-    }
-
-    const delay = this._nextTimeBreakpoint(timeConditions);
-    if (delay === undefined) {
-      return;
-    }
-
-    this._timeTimeout = window.setTimeout(() => {
-      this._evaluateLiveTest();
-      this._scheduleNextTimeCheck(timeConditions);
-    }, delay);
-  }
-
-  private _nextTimeBreakpoint(
-    timeConditions: TimeCondition[]
-  ): number | undefined {
-    let next: number | undefined;
-    for (const condition of timeConditions) {
-      const delay = calculateNextTimeUpdate(this.hass, condition);
-      if (delay === undefined || !Number.isFinite(delay) || delay < 0) {
-        continue;
-      }
-      if (next === undefined || delay < next) {
-        next = delay;
-      }
-    }
-    return next;
-  }
-
-  private _inspectCondition(condition: Condition | LegacyCondition): {
-    screenQueries: string[];
-    timeConditions: TimeCondition[];
-  } {
-    if (!("condition" in condition)) {
-      return { screenQueries: [], timeConditions: [] };
-    }
-    if (condition.condition === "screen") {
-      return {
-        screenQueries: condition.media_query ? [condition.media_query] : [],
-        timeConditions: [],
-      };
-    }
-    if (condition.condition === "time") {
-      return { screenQueries: [], timeConditions: [condition] };
-    }
-    if (
-      condition.condition === "and" ||
-      condition.condition === "or" ||
-      condition.condition === "not"
-    ) {
-      const screenQueries: string[] = [];
-      const timeConditions: TimeCondition[] = [];
-      for (const sub of (condition as OrCondition | AndCondition | NotCondition)
-        .conditions ?? []) {
-        const subResult = this._inspectCondition(sub);
-        screenQueries.push(...subResult.screenQueries);
-        timeConditions.push(...subResult.timeConditions);
-      }
-      return { screenQueries, timeConditions };
-    }
-    return { screenQueries: [], timeConditions: [] };
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {

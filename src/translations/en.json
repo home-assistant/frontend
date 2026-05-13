@@ -8917,9 +8917,6 @@
             "tab_visibility": "Visibility",
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
-            "visibility": {
-              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
             "layout": {
               "full_width": "Full width",
               "full_width_helper": "Take up the full width of the section whatever its size",
@@ -8950,10 +8947,7 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
-            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
-            "visibility": {
-              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
-            }
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
           },
           "suggest_badge": {
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
@@ -9025,9 +9019,6 @@
               "background_opacity": "Opacity",
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
-            },
-            "visibility": {
-              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
             }
           },
           "suggest_card": {
@@ -9069,7 +9060,6 @@
             }
           },
           "condition-editor": {
-            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
             "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
@@ -9079,6 +9069,20 @@
               "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
               "invalid": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::invalid%]",
               "unknown": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::unknown%]"
+            },
+            "visibility_status": {
+              "visible": {
+                "headline": "Current visibility: Visible",
+                "supporting": "All visibility conditions are met"
+              },
+              "hidden": {
+                "headline": "Current visibility: Hidden",
+                "supporting": "Not all visibility conditions are met"
+              },
+              "invalid": {
+                "headline": "Visibility status unknown",
+                "supporting": "One or more conditions have an invalid configuration"
+              }
             },
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
