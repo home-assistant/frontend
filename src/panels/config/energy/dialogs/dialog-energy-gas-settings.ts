@@ -19,6 +19,7 @@ import {
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
+  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -27,6 +28,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
+import type { HaInput } from "../../../../components/input/ha-input";
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];
@@ -71,7 +73,9 @@ export class DialogEnergyGasSettings
     this._pickedDisplayUnit = getDisplayUnit(
       this.hass,
       params.source?.stat_energy_from,
-      params.metadata
+      params.source?.stat_energy_from
+        ? params.statsMetadata?.[params.source?.stat_energy_from]
+        : undefined
     );
     this._costs = this._source.entity_energy_price
       ? "entity"
@@ -195,6 +199,24 @@ export class DialogEnergyGasSettings
             { unit: this._flow_rate_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
+
+        <ha-input
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!this._source?.stat_energy_from}
+          .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
+          @input=${this._nameChanged}
+        >
+        </ha-input>
 
         <ha-radio-group
           .label=${this.hass.localize(
@@ -366,6 +388,31 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
   }
 
   private async _save() {

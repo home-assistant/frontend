@@ -17,12 +17,17 @@ import {
   emptyWaterEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
-import { isExternalStatistic } from "../../../../data/recorder";
+import {
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
+import type { HaInput } from "../../../../components/input/ha-input";
 
 const flowRateUnitClasses = ["volume_flow_rate"];
 
@@ -153,6 +158,24 @@ export class DialogEnergyWaterSettings
             { unit: this._flow_rate_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
+
+        <ha-input
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.water.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!this._source?.stat_energy_from}
+          .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
+          @input=${this._nameChanged}
+        >
+        </ha-input>
 
         <ha-radio-group
           .label=${this.hass.localize(
@@ -300,6 +323,31 @@ export class DialogEnergyWaterSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
   }
 
   private async _save() {
