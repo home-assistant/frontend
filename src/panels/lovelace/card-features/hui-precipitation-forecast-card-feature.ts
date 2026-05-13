@@ -156,17 +156,23 @@ class HuiPrecipitationForecastCardFeature
   }
 
   protected updated(changedProps: PropertyValues) {
-    const resolvedType = this._resolvedForecastType();
-    const contextChanged =
-      changedProps.has("context") &&
-      (changedProps.get("context") as LovelaceCardFeatureContext | undefined)
-        ?.entity_id !== this.context?.entity_id;
-    const configTypeChanged =
-      changedProps.has("_config") && resolvedType !== this._subscribedType;
-    if (contextChanged || configTypeChanged) {
+    if (this._shouldResubscribe(changedProps)) {
       this._unsubscribeForecast();
       this._subscribeForecast();
     }
+  }
+
+  private _shouldResubscribe(changedProps: PropertyValues): boolean {
+    if (changedProps.has("context")) {
+      const previous = changedProps.get("context") as
+        | LovelaceCardFeatureContext
+        | undefined;
+      if (previous?.entity_id !== this.context?.entity_id) return true;
+    }
+    if (changedProps.has("_config")) {
+      if (this._resolvedForecastType() !== this._subscribedType) return true;
+    }
+    return false;
   }
 
   private _resolvedForecastType(): ForecastResolution | undefined {
@@ -217,12 +223,22 @@ class HuiPrecipitationForecastCardFeature
     });
 
     if (isHourly) {
+      const hourlyBars = this._renderHourlyBars(precipitationType, fill);
+      if (!hourlyBars) {
+        return html`
+          <div class="container">
+            <div class="info">
+              ${this._localize(
+                "ui.panel.lovelace.editor.features.types.precipitation-forecast.no_forecast"
+              )}
+            </div>
+          </div>
+        `;
+      }
       const hoursToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
       return html`
         <div class=${containerClasses}>
-          <div class="bars">
-            ${this._renderHourlyBars(precipitationType, fill)}
-          </div>
+          <div class="bars">${hourlyBars}</div>
           ${this._showLabels && this._locale
             ? renderHourLabels(hoursToShow, this._locale)
             : nothing}
@@ -271,12 +287,12 @@ class HuiPrecipitationForecastCardFeature
     const barWidth = Math.max(1, Math.min(MAX_BAR_WIDTH, slotWidth - minGap));
     const drawableHeight = height - padding * 2;
 
-    let maxPrecipitation = 0;
-    if (precipitationType === "probability") {
-      maxPrecipitation = 100;
-    } else {
-      for (const entry of entries) {
-        const value = getForecastPrecipitation(entry, precipitationType);
+    const values = entries.map((entry) =>
+      getForecastPrecipitation(entry, precipitationType)
+    );
+    let maxPrecipitation = precipitationType === "probability" ? 100 : 0;
+    if (precipitationType === "amount") {
+      for (const value of values) {
         if (Number.isFinite(value)) {
           maxPrecipitation = Math.max(maxPrecipitation, value!);
         }
@@ -284,8 +300,7 @@ class HuiPrecipitationForecastCardFeature
     }
 
     const dotRadius = 1.5;
-    const elements = entries.map((entry, i) => {
-      const value = getForecastPrecipitation(entry, precipitationType);
+    const elements = values.map((value, i) => {
       const x = slotWidth * i + slotWidth / 2;
       if (!Number.isFinite(value) || value! <= 0 || maxPrecipitation <= 0) {
         const cy = padding + drawableHeight - dotRadius;
@@ -327,9 +342,9 @@ class HuiPrecipitationForecastCardFeature
   private _renderHourlyBars(
     precipitationType: "amount" | "probability",
     fill: string
-  ): TemplateResult | typeof nothing {
+  ): TemplateResult | undefined {
     if (!this._forecast?.length) {
-      return nothing;
+      return undefined;
     }
     const width = this._size.value?.width || this.clientWidth;
     const height = this._size.value?.height || this.clientHeight;
@@ -342,35 +357,30 @@ class HuiPrecipitationForecastCardFeature
       Math.floor((now + hoursToShow * MS_PER_HOUR) / MS_PER_HOUR) * MS_PER_HOUR;
     const timeRange = maxTime - now;
     if (timeRange <= 0) {
-      return nothing;
+      return undefined;
     }
 
-    const inRange: { entry: ForecastAttribute; t: number }[] = [];
+    const inRange: { value: number | undefined; t: number }[] = [];
     for (const entry of this._forecast) {
       const t = new Date(entry.datetime).getTime();
       if (t >= now && t <= maxTime) {
-        inRange.push({ entry, t });
+        inRange.push({
+          value: getForecastPrecipitation(entry, precipitationType),
+          t,
+        });
       }
     }
 
     if (!inRange.length) {
-      return nothing;
+      return undefined;
     }
 
-    const entriesWithRain = inRange.filter(({ entry }) => {
-      const value = getForecastPrecipitation(entry, precipitationType);
-      return Number.isFinite(value) && value! > 0;
-    });
-
-    let maxPrecipitation = 0;
-    if (precipitationType === "probability") {
-      maxPrecipitation = 100;
-    } else {
-      for (const { entry } of entriesWithRain) {
-        maxPrecipitation = Math.max(
-          maxPrecipitation,
-          getForecastPrecipitation(entry, precipitationType)!
-        );
+    let maxPrecipitation = precipitationType === "probability" ? 100 : 0;
+    if (precipitationType === "amount") {
+      for (const { value } of inRange) {
+        if (Number.isFinite(value)) {
+          maxPrecipitation = Math.max(maxPrecipitation, value!);
+        }
       }
     }
 
@@ -378,9 +388,9 @@ class HuiPrecipitationForecastCardFeature
     const barWidth = Math.max(1, Math.min(MAX_BAR_WIDTH, slotWidth - 2));
     const dotRadius = 1.5;
 
-    const elements = inRange.map(({ entry, t }) => {
-      const value = getForecastPrecipitation(entry, precipitationType);
-      const xCenter = ((t - now) / timeRange) * width;
+    const elements = inRange.map(({ value, t }) => {
+      // Each entry represents an hour-long slot; center the bar in that slot.
+      const xCenter = ((t - now) / timeRange) * width + slotWidth / 2;
       if (!Number.isFinite(value) || value! <= 0 || maxPrecipitation <= 0) {
         const cy = height - dotRadius;
         return svg`<circle
@@ -466,7 +476,7 @@ class HuiPrecipitationForecastCardFeature
         flex-direction: column;
         justify-content: flex-end;
         align-items: stretch;
-        pointer-events: none;
+        pointer-events: none !important;
         --feature-precipitation-opacity: 0.4;
       }
 

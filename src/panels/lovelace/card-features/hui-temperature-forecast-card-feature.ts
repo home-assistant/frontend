@@ -105,12 +105,6 @@ class HuiTemperatureForecastCardFeature
 
   @state() private _forecast?: ForecastAttribute[];
 
-  @state() private _hourly?: {
-    coordinates: [number, number][];
-    yAxisOrigin: number;
-    gradient?: HuiGraphGradient;
-  };
-
   @state() private _error?: string;
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
@@ -124,8 +118,6 @@ class HuiTemperatureForecastCardFeature
       return { width: rect.width, height: rect.height };
     },
   });
-
-  private _lastHourlySize?: { width: number; height: number };
 
   static getStubConfig(): TemperatureForecastCardFeatureConfig {
     return {
@@ -164,37 +156,23 @@ class HuiTemperatureForecastCardFeature
   }
 
   protected updated(changedProps: PropertyValues) {
-    const resolvedType = this._resolvedForecastType();
-    const contextChanged =
-      changedProps.has("context") &&
-      (changedProps.get("context") as LovelaceCardFeatureContext | undefined)
-        ?.entity_id !== this.context?.entity_id;
-    const configTypeChanged =
-      changedProps.has("_config") && resolvedType !== this._subscribedType;
-    if (contextChanged || configTypeChanged) {
+    if (this._shouldResubscribe(changedProps)) {
       this._unsubscribeForecast();
       this._subscribeForecast();
-      return;
     }
-    const size = this._size.value;
-    const sizeChanged =
-      !!size &&
-      (size.width !== this._lastHourlySize?.width ||
-        size.height !== this._lastHourlySize?.height);
-    let showLabelsChanged = false;
-    if (changedProps.has("_config")) {
-      const prev = changedProps.get("_config") as
-        | TemperatureForecastCardFeatureConfig
+  }
+
+  private _shouldResubscribe(changedProps: PropertyValues): boolean {
+    if (changedProps.has("context")) {
+      const previous = changedProps.get("context") as
+        | LovelaceCardFeatureContext
         | undefined;
-      showLabelsChanged = (prev?.show_labels !== false) !== this._showLabels;
+      if (previous?.entity_id !== this.context?.entity_id) return true;
     }
-    if (
-      (sizeChanged || showLabelsChanged) &&
-      this._subscribedType === "hourly" &&
-      this._forecast
-    ) {
-      this._computeHourly(this._forecast);
+    if (changedProps.has("_config")) {
+      if (this._resolvedForecastType() !== this._subscribedType) return true;
     }
+    return false;
   }
 
   private _resolvedForecastType(): ForecastResolution | undefined {
@@ -243,7 +221,8 @@ class HuiTemperatureForecastCardFeature
     });
 
     if (isHourly) {
-      if (!this._hourly?.coordinates.length) {
+      const hourly = this._computeHourly();
+      if (!hourly?.coordinates.length) {
         return html`
           <div class="container">
             <div class="info">
@@ -262,9 +241,9 @@ class HuiTemperatureForecastCardFeature
         <div class=${containerClasses}>
           <div class="bars">
             <hui-graph-base
-              .coordinates=${this._hourly.coordinates}
-              .yAxisOrigin=${this._hourly.yAxisOrigin}
-              .gradient=${customColor ? undefined : this._hourly.gradient}
+              .coordinates=${hourly.coordinates}
+              .yAxisOrigin=${hourly.yAxisOrigin}
+              .gradient=${customColor ? undefined : hourly.gradient}
               style=${graphStyle}
             ></hui-graph-base>
           </div>
@@ -401,14 +380,17 @@ class HuiTemperatureForecastCardFeature
       this._subscribed = undefined;
     }
     this._subscribedType = undefined;
-    this._hourly = undefined;
-    this._lastHourlySize = undefined;
   }
 
-  private _computeHourly(forecast: ForecastAttribute[]) {
-    if (!forecast.length || !this._stateObj) {
-      this._hourly = undefined;
-      return;
+  private _computeHourly():
+    | {
+        coordinates: [number, number][];
+        yAxisOrigin: number;
+        gradient: HuiGraphGradient;
+      }
+    | undefined {
+    if (!this._forecast?.length || !this._stateObj) {
+      return undefined;
     }
 
     const data: [number, number][] = [];
@@ -422,7 +404,7 @@ class HuiTemperatureForecastCardFeature
       data.push([now, Number(currentTemp)]);
     }
 
-    for (const entry of forecast) {
+    for (const entry of this._forecast) {
       if (entry.temperature != null && !Number.isNaN(entry.temperature)) {
         const time = new Date(entry.datetime).getTime();
         if (time > maxTime) break;
@@ -432,8 +414,7 @@ class HuiTemperatureForecastCardFeature
     }
 
     if (!data.length) {
-      this._hourly = undefined;
-      return;
+      return undefined;
     }
 
     let dataMin = data[0][1];
@@ -453,7 +434,6 @@ class HuiTemperatureForecastCardFeature
       1,
       (size?.height || this.clientHeight) - labelSpace
     );
-    this._lastHourlySize = size;
 
     const { points, yAxisOrigin } = coordinates(
       data,
@@ -490,7 +470,7 @@ class HuiTemperatureForecastCardFeature
       })),
     };
 
-    this._hourly = { coordinates: points, yAxisOrigin, gradient };
+    return { coordinates: points, yAxisOrigin, gradient };
   }
 
   private async _subscribeForecast() {
@@ -519,9 +499,6 @@ class HuiTemperatureForecastCardFeature
       forecastType,
       (forecastEvent: ForecastEvent) => {
         this._forecast = forecastEvent.forecast ?? [];
-        if (this._subscribedType === "hourly") {
-          this._computeHourly(this._forecast);
-        }
       }
     ).catch((err) => {
       this._subscribed = undefined;
@@ -541,7 +518,7 @@ class HuiTemperatureForecastCardFeature
         flex-direction: column;
         justify-content: flex-end;
         align-items: stretch;
-        pointer-events: none;
+        pointer-events: none !important;
         --feature-temperature-freezing-color: #a89bd8;
         --feature-temperature-cold-color: #7dc8dc;
         --feature-temperature-mild-color: #a8dc7c;
