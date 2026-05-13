@@ -124,6 +124,7 @@ export class HaAutomationRow extends LitElement {
   static styles = css`
     :host {
       display: block;
+      position: relative;
     }
     .row {
       display: flex;

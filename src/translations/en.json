@@ -5405,6 +5405,12 @@
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
+              "live_test_state": {
+                "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+                "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+                "invalid": "Condition is invalid",
+                "unknown": "Condition state unknown"
+              },
               "invalid_condition": "Invalid condition configuration",
               "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
