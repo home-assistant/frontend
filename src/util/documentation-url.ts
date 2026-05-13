@@ -1,7 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export const documentationUrl = (
-  hass: Pick<HomeAssistant, "config">,
+  hassConfig: HomeAssistantConfig,
   path: string
 ) =>
   `https://${
