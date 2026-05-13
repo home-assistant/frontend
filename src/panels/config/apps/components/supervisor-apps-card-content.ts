@@ -1,11 +1,20 @@
+import "@home-assistant/webawesome/dist/components/tag/tag";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
-import type { AddonStage } from "../../../../data/hassio/addon";
+import type { AddonStage, AddonState } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
 import { getAppDisplayName } from "../common/app";
+import "./supervisor-apps-state";
+import "./supervisor-apps-tag";
+
+export interface AppTag {
+  label: string;
+  variant: "brand" | "success" | "warning" | "danger" | "neutral";
+  iconPath?: string;
+}
 
 @customElement("supervisor-apps-card-content")
 class SupervisorAppsCardContent extends LitElement {
@@ -16,13 +25,13 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property() public stage: AddonStage = "stable";
 
+  @property() public state: AddonState = null;
+
   @property() public description?: string;
 
   @property({ type: Boolean }) public available = true;
 
-  @property({ attribute: false }) public showTopbar = false;
-
-  @property({ attribute: false }) public topbarClass?: string;
+  @property({ attribute: false }) public tags?: AppTag[];
 
   @property({ attribute: false }) public iconTitle?: string;
 
@@ -33,78 +42,87 @@ class SupervisorAppsCardContent extends LitElement {
   @property({ attribute: false }) public iconImage?: string;
 
   protected render(): TemplateResult {
-    const stageLabel =
-      this.stage !== "stable"
-        ? this.hass.localize(
-            `ui.panel.config.apps.dashboard.capability.stages.${this.stage}`
-          )
-        : undefined;
-
     return html`
-      ${this.showTopbar
-        ? html` <div class="topbar ${this.topbarClass}"></div> `
-        : ""}
-      ${this.iconImage
-        ? html`
-            <div class="icon_image ${this.iconClass}">
-              <img
-                src=${this.iconImage}
-                .title=${this.iconTitle}
-                alt=${this.iconTitle ?? ""}
-              />
-              <div></div>
-            </div>
-          `
-        : html`
-            <ha-svg-icon
-              class=${this.iconClass!}
-              .path=${this.icon}
-              .title=${this.iconTitle}
-            ></ha-svg-icon>
-          `}
-      <div>
-        <div class="title-row">
-          <div class="title">${getAppDisplayName(this.title, this.stage)}</div>
-          ${stageLabel
-            ? html` <span class="stage ${this.stage}"> ${stageLabel} </span> `
-            : nothing}
+      <div class="app">
+        <div class="icon-wrapper">
+          ${this.iconImage
+            ? html`
+                <img
+                  class="icon-image"
+                  src=${this.iconImage}
+                  .title=${this.iconTitle}
+                  alt=${this.iconTitle ?? ""}
+                />
+              `
+            : html`
+                <ha-svg-icon
+                  class="app-icon"
+                  .path=${this.icon}
+                  .title=${this.iconTitle}
+                ></ha-svg-icon>
+              `}
         </div>
-        <div class="addition">
-          ${this.description}
-          ${
-            /* treat as available when undefined */
-            this.available === false ? " (Not available)" : ""
-          }
+        <div>
+          <div class="title-row">
+            <div class="title">
+              ${getAppDisplayName(this.title, this.stage)}
+            </div>
+          </div>
+          <div class="addition">
+            ${this.description}
+            ${
+              /* treat as available when undefined */
+              this.available === false ? " (Not available)" : ""
+            }
+          </div>
         </div>
       </div>
+      ${this.tags?.length || this.state
+        ? html`
+            <div class="footer">
+              <supervisor-apps-state
+                .state=${this.state || "unknown"}
+              ></supervisor-apps-state>
+
+              ${this.tags?.length
+                ? html`<div class="tags">
+                    ${this.tags.map(
+                      (tag) =>
+                        html`<supervisor-apps-tag
+                          .variant=${tag.variant}
+                          .iconPath=${tag.iconPath}
+                          .label=${tag.label}
+                        ></supervisor-apps-tag>`
+                    )}
+                  </div>`
+                : nothing}
+            </div>
+          `
+        : nothing}
     `;
   }
 
   static styles = css`
-    :host {
-      direction: ltr;
+    .app {
+      margin-bottom: var(--ha-space-2);
+      gap: var(--ha-space-4);
+      display: flex;
     }
-
-    ha-svg-icon {
-      margin-right: var(--ha-space-6);
+    .icon-wrapper {
+      position: relative;
+      margin-top: var(--ha-space-1);
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+    .app-icon {
       margin-left: var(--ha-space-2);
-      margin-top: var(--ha-space-3);
-      float: left;
+      margin-top: var(--ha-space-2);
       color: var(--secondary-text-color);
     }
-    ha-svg-icon.update {
-      color: var(--warning-color);
-    }
-    ha-svg-icon.running,
-    ha-svg-icon.installed {
-      color: var(--success-color);
-    }
-    ha-svg-icon.hassupdate,
-    ha-svg-icon.backup {
-      color: var(--state-icon-color);
-    }
-    ha-svg-icon.not_available {
-      color: var(--error-color);
+    .icon-image {
+      max-height: 40px;
+      max-width: 40px;
     }
     .title {
       flex: 1;
@@ -120,22 +138,6 @@ class SupervisorAppsCardContent extends LitElement {
       gap: var(--ha-space-2);
       min-width: 0;
     }
-    .stage {
-      flex: none;
-      border-radius: 999px;
-      font-size: 12px;
-      line-height: 1;
-      padding: 4px 8px;
-      white-space: nowrap;
-    }
-    .stage.experimental {
-      color: var(--warning-color);
-      background-color: rgba(var(--rgb-warning-color), 0.12);
-    }
-    .stage.deprecated {
-      color: var(--error-color);
-      background-color: rgba(var(--rgb-error-color), 0.12);
-    }
     .addition {
       color: var(--secondary-text-color);
       margin-top: var(--ha-space-1);
@@ -144,43 +146,18 @@ class SupervisorAppsCardContent extends LitElement {
       height: 2.4em;
       line-height: var(--ha-line-height-condensed);
     }
-    .icon_image img {
-      max-height: 40px;
-      max-width: 40px;
-      margin-top: var(--ha-space-1);
-      margin-right: var(--ha-space-4);
-      float: left;
+    .footer {
+      border-top: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
+      padding-top: var(--ha-space-2);
+      display: flex;
+      gap: var(--ha-space-2);
+      flex-wrap: wrap;
+      justify-content: space-between;
     }
-    .icon_image.stopped,
-    .icon_image.not_available {
-      filter: grayscale(1);
-    }
-    .dot {
-      position: absolute;
-      background-color: var(--warning-color);
-      width: 12px;
-      height: 12px;
-      top: var(--ha-space-2);
-      right: var(--ha-space-2);
-      border-radius: var(--ha-border-radius-circle);
-    }
-    .topbar {
-      position: absolute;
-      width: 100%;
-      height: 2px;
-      top: 0;
-      left: 0;
-      border-top-left-radius: 2px;
-      border-top-right-radius: 2px;
-    }
-    .topbar.installed {
-      background-color: var(--primary-color);
-    }
-    .topbar.update {
-      background-color: var(--accent-color);
-    }
-    .topbar.unavailable {
-      background-color: var(--error-color);
+    .tags {
+      display: flex;
+      gap: var(--ha-space-2);
     }
   `;
 }
