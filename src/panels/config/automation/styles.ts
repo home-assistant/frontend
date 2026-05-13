@@ -51,9 +51,6 @@ export const rowStyles = css`
 
   ha-automation-row-event-chip.event-chip {
     position: absolute;
-    inset-inline-end: 96px;
-    top: var(--ha-space-6);
-    box-shadow: var(--ha-box-shadow-s);
   }
 `;
 
