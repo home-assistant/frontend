@@ -137,11 +137,24 @@ test.describe("Home Assistant Demo", () => {
       throw err;
     }
 
-    // At least one card must be visible
-    const cards = page.locator(
-      "hui-tile-card, hui-entity-card, hui-glance-card, hui-button-card, hui-markdown-card"
-    );
-    await expect(cards.first()).toBeVisible({ timeout: 30_000 });
+    // At least one card must be visible — use evaluate to check visibility
+    // since Playwright's locator engine may not pierce shadow DOM on all
+    // BrowserStack platforms.
+    const cardVisible = await page.evaluate((selector) => {
+      function shadowVisible(root: Document | ShadowRoot): boolean {
+        const el = root.querySelector(selector);
+        if (el) {
+          const rect = (el as HTMLElement).getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        }
+        for (const child of root.querySelectorAll("*")) {
+          if (child.shadowRoot && shadowVisible(child.shadowRoot)) return true;
+        }
+        return false;
+      }
+      return shadowVisible(document);
+    }, "hui-tile-card, hui-entity-card, hui-glance-card, hui-button-card, hui-markdown-card");
+    expect(cardVisible).toBe(true);
   });
 
   // ── 3. Sidebar navigation ─────────────────────────────────────────────────
