@@ -90,44 +90,38 @@ test.describe("Home Assistant Demo", () => {
     // Additionally, BrowserStack's iOS WebKit driver may throw "Internal error"
     // for complex CSS selectors in waitFor(). Use page.evaluate polling as a
     // more compatible alternative.
-    const tags = [
-      "hui-masonry-view",
-      "hui-sections-view",
-      "hui-panel-view",
-      "hui-sidebar-view",
-      "hui-tile-card",
-      "hui-entity-card",
-      "hui-glance-card",
-      "hui-button-card",
-      "hui-markdown-card",
-    ];
-
     try {
       // Poll via evaluate — avoids WebKit driver issues with waitForSelector.
       // Uses recursive shadow DOM traversal since hui-* elements are nested
       // inside shadow roots and document.querySelector() won't find them.
+      // Note: avoid passing array arguments to page.evaluate on BrowserStack
+      // iOS — serialize as a comma-separated selector string instead.
+      const viewOrCardSelector = [
+        "hui-masonry-view",
+        "hui-sections-view",
+        "hui-panel-view",
+        "hui-sidebar-view",
+        "hui-tile-card",
+        "hui-entity-card",
+        "hui-glance-card",
+        "hui-button-card",
+        "hui-markdown-card",
+      ].join(",");
       await expect
         .poll(
           async () =>
-            page.evaluate((selectors) => {
+            page.evaluate((selector) => {
               // Recursively search shadow roots for any matching element.
               // document.querySelector() does not pierce shadow DOM.
-              function shadowQuery(
-                root: Document | ShadowRoot,
-                sels: string[]
-              ): boolean {
-                for (const sel of sels) {
-                  if (root.querySelector(sel)) return true;
-                }
+              function shadowQuery(root: Document | ShadowRoot): boolean {
+                if (root.querySelector(selector)) return true;
                 for (const el of root.querySelectorAll("*")) {
-                  if (el.shadowRoot && shadowQuery(el.shadowRoot, sels)) {
-                    return true;
-                  }
+                  if (el.shadowRoot && shadowQuery(el.shadowRoot)) return true;
                 }
                 return false;
               }
-              return shadowQuery(document, selectors);
-            }, tags),
+              return shadowQuery(document);
+            }, viewOrCardSelector),
           { timeout: 30_000, intervals: [500, 1000, 2000] }
         )
         .toBe(true);
