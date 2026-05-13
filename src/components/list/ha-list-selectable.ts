@@ -142,6 +142,9 @@ export class HaListSelectable extends HaListBase {
 
     this.items.forEach((item, i) => {
       const opt = item as HaListItemOption;
+      if (opt.selected && !this._selectedIndices!.has(i)) {
+        this._selectedIndices!.add(i);
+      }
       const shouldBe = this._selectedIndices!.has(i);
       if (opt.selected !== shouldBe) {
         opt.selected = shouldBe;
