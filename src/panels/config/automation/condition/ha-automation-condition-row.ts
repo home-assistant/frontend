@@ -591,6 +591,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._debounceSubscribeCondition.cancel();
     if (this._testingTimeout !== undefined) {
       clearTimeout(this._testingTimeout);
     }
