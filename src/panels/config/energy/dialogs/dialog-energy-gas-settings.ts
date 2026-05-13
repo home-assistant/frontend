@@ -19,6 +19,7 @@ import {
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
+  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -72,7 +73,9 @@ export class DialogEnergyGasSettings
     this._pickedDisplayUnit = getDisplayUnit(
       this.hass,
       params.source?.stat_energy_from,
-      params.metadata
+      params.source?.stat_energy_from
+        ? params.statsMetadata?.[params.source?.stat_energy_from]
+        : undefined
     );
     this._costs = this._source.entity_energy_price
       ? "entity"
@@ -199,13 +202,18 @@ export class DialogEnergyGasSettings
 
         <ha-input
           .label=${this.hass.localize(
-            "ui.panel.config.energy.water.dialog.display_name"
+            "ui.panel.config.energy.gas.dialog.display_name"
           )}
           type="text"
-          .disabled=${!(
-            this._source?.stat_energy_from || this._source?.stat_rate
-          )}
+          .disabled=${!this._source?.stat_energy_from}
           .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -380,6 +388,21 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
   }
 
   private _nameChanged(ev: InputEvent) {

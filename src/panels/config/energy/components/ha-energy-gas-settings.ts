@@ -142,6 +142,7 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
+      statsMetadata: this.statsMetadata,
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         undefined,
@@ -165,12 +166,12 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
+      statsMetadata: this.statsMetadata,
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         origSource.stat_energy_from,
         this.statsMetadata
       ),
-      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"
       ) as GasSourceTypeEnergyPreference[],
