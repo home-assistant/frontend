@@ -121,15 +121,15 @@ export class HaListSelectable extends HaListBase {
 
   public updateListItems() {
     super.updateListItems();
-    this._syncItemSelectedState();
+    this._syncItemSelectedState(true);
   }
 
   private _sortedSelectedIndices(): number[] {
     return [...this._selectedIndices!].sort((a, b) => a - b);
   }
 
-  private _syncItemSelectedState() {
-    if (!this._selectedIndices) {
+  private _syncItemSelectedState(reset = false): void {
+    if (!this._selectedIndices || reset) {
       this._selectedIndices = new Set<number>();
       this.items.forEach((item, i) => {
         const opt = item as HaListItemOption;
@@ -142,9 +142,6 @@ export class HaListSelectable extends HaListBase {
 
     this.items.forEach((item, i) => {
       const opt = item as HaListItemOption;
-      if (opt.selected && !this._selectedIndices!.has(i)) {
-        this._selectedIndices!.add(i);
-      }
       const shouldBe = this._selectedIndices!.has(i);
       if (opt.selected !== shouldBe) {
         opt.selected = shouldBe;
