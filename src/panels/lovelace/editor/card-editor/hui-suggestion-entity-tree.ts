@@ -1,4 +1,9 @@
-import { mdiChevronDown, mdiChevronRight, mdiTextureBox } from "@mdi/js";
+import {
+  mdiChevronDown,
+  mdiChevronRight,
+  mdiMagnify,
+  mdiTextureBox,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -199,7 +204,19 @@ export class HuiSuggestionEntityTree extends LitElement {
     );
     if (!results.length) {
       return html`
-        <div class="empty">${this.hass.localize("ui.common.no_results")}</div>
+        <div class="empty">
+          <ha-svg-icon .path=${mdiMagnify}></ha-svg-icon>
+          <h2>
+            ${this.hass.localize(
+              "ui.panel.lovelace.editor.cardpicker.no_search_results_title"
+            )}
+          </h2>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.lovelace.editor.cardpicker.no_search_results_description"
+            )}
+          </p>
+        </div>
       `;
     }
     const rtl = computeRTL(
@@ -524,7 +541,8 @@ export class HuiSuggestionEntityTree extends LitElement {
           min-height: 0;
         }
         ha-input-search {
-          padding: var(--ha-space-3) var(--ha-space-3) var(--ha-space-2);
+          padding: var(--ha-space-3);
+          border-bottom: 1px solid var(--divider-color);
         }
         .tree {
           flex: 1;
@@ -591,9 +609,27 @@ export class HuiSuggestionEntityTree extends LitElement {
           --state-icon-color: var(--primary-color);
         }
         .empty {
-          padding: var(--ha-space-4);
-          color: var(--ha-color-text-secondary);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-8) var(--ha-space-4);
           text-align: center;
+        }
+        .empty ha-svg-icon {
+          --mdc-icon-size: 32px;
+          color: var(--ha-color-text-secondary);
+        }
+        .empty h2 {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-text-color);
+        }
+        .empty p {
+          margin: 0;
+          color: var(--ha-color-text-secondary);
           font-size: var(--ha-font-size-s);
         }
       `,
