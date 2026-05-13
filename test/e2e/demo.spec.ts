@@ -1,18 +1,41 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+
+// BrowserStack mobile platforms only allow a single browser context per
+// session.  Using serial mode + a shared page (created once in beforeAll)
+// avoids Playwright spinning up a new context for each test.
+test.describe.configure({ mode: "serial" });
 
 test.describe("Home Assistant Demo", () => {
   // Collect JS errors during each test so we can assert no unexpected crashes.
   let pageErrors: Error[] = [];
+  let sharedPage: Page;
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeAll(async ({ browser }) => {
+    // BrowserStack mobile only allows one browser context per session.
+    // Re-use the browser's existing default context instead of creating a new
+    // one, which would trigger "Only one browser context is allowed".
+    const contexts = browser.contexts();
+    const context =
+      contexts.length > 0 ? contexts[0] : await browser.newContext();
+    sharedPage = await context.newPage();
+  });
+
+  test.afterAll(async () => {
+    await sharedPage.close();
+  });
+
+  test.beforeEach(async () => {
     pageErrors = [];
-    page.on("pageerror", (err) => pageErrors.push(err));
-    await page.goto("/");
+    sharedPage.removeAllListeners("pageerror");
+    sharedPage.on("pageerror", (err) => pageErrors.push(err));
+    await sharedPage.goto("/");
   });
 
   // ── 1. Page loads ──────────────────────────────────────────────────────────
 
-  test("page loads and ha-demo mounts without JS errors", async ({ page }) => {
+  test("page loads and ha-demo mounts without JS errors", async () => {
+    const page = sharedPage;
     // The custom element is present in the document
     await expect(page.locator("ha-demo")).toBeAttached({ timeout: 30_000 });
 
@@ -27,7 +50,8 @@ test.describe("Home Assistant Demo", () => {
 
   // ── 2. Dashboard renders ───────────────────────────────────────────────────
 
-  test("dashboard renders Lovelace cards", async ({ page }) => {
+  test("dashboard renders Lovelace cards", async () => {
+    const page = sharedPage;
     // Wait for the app shell to be ready
     await expect(page.locator("ha-demo")).toBeAttached({ timeout: 30_000 });
     await expect(page.locator("#ha-launch-screen")).toBeHidden({
@@ -60,7 +84,8 @@ test.describe("Home Assistant Demo", () => {
 
   // ── 3. Sidebar navigation ─────────────────────────────────────────────────
 
-  test("sidebar navigation changes the active panel", async ({ page }) => {
+  test("sidebar navigation changes the active panel", async () => {
+    const page = sharedPage;
     await expect(page.locator("ha-demo")).toBeAttached({ timeout: 30_000 });
     await expect(page.locator("#ha-launch-screen")).toBeHidden({
       timeout: 30_000,
@@ -72,18 +97,25 @@ test.describe("Home Assistant Demo", () => {
     const menuButton = page.locator("ha-menu-button");
     if (await menuButton.isVisible()) {
       await menuButton.click();
+      // Wait for the drawer animation to complete so sidebar items are visible.
+      await page
+        .locator("ha-sidebar")
+        .waitFor({ state: "visible", timeout: 15_000 });
+    } else {
+      // On wide viewports the sidebar is always rendered.
+      await page
+        .locator("ha-sidebar")
+        .waitFor({ state: "attached", timeout: 30_000 });
     }
-
-    // The sidebar uses ha-list-item-button elements with id="sidebar-panel-{url}"
-    // Pick "map" as a reliable, always-present demo panel.  Fall back to
-    // "logbook" or "history" if map isn't available.
-    // Wait for the sidebar itself to render before probing for panels.
-    await page
-      .locator("ha-sidebar")
-      .waitFor({ state: "attached", timeout: 30_000 });
 
     const candidatePanels = ["map", "logbook", "history", "config"];
     let clicked = false;
+
+    // Wait for at least one panel item to appear before probing visibility.
+    await page
+      .locator(candidatePanels.map((p) => `#sidebar-panel-${p}`).join(", "))
+      .first()
+      .waitFor({ state: "visible", timeout: 15_000 });
 
     for (const panel of candidatePanels) {
       const navItem = page.locator(`#sidebar-panel-${panel}`);
@@ -107,26 +139,23 @@ test.describe("Home Assistant Demo", () => {
 
   // ── 4. More info dialog ───────────────────────────────────────────────────
 
-  test("clicking an entity card opens the more-info dialog", async ({
-    page,
-  }) => {
+  test("clicking an entity card opens the more-info dialog", async () => {
+    const page = sharedPage;
     await expect(page.locator("ha-demo")).toBeAttached({ timeout: 30_000 });
     await expect(page.locator("#ha-launch-screen")).toBeHidden({
       timeout: 30_000,
     });
 
-    // Navigate to the default dashboard (root) in case a previous test
-    // already navigated away.
-    await page.goto("/");
-    await expect(page.locator("#ha-launch-screen")).toBeHidden({
-      timeout: 30_000,
-    });
-
-    // Tile cards are the most common card type in the demo configs; they are
-    // clickable and open the more-info dialog.
-    const tileCard = page.locator("hui-tile-card").first();
-    await tileCard.waitFor({ state: "visible", timeout: 30_000 });
-    await tileCard.click();
+    // Tile cards are the most common card type in the demo; they open the
+    // more-info dialog on click.  Fall back to other clickable card types in
+    // case the demo layout on this platform doesn't include tile cards.
+    const clickableCard = page
+      .locator(
+        "hui-tile-card, hui-entity-card, hui-button-card, hui-glance-card"
+      )
+      .first();
+    await clickableCard.waitFor({ state: "visible", timeout: 30_000 });
+    await clickableCard.click();
 
     // The more-info dialog is a top-level custom element appended to the body.
     // We verify it is attached, then confirm it rendered by checking the title
