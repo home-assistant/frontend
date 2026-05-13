@@ -1,8 +1,9 @@
 import type { HomeAssistant } from "../../../types";
-import { CARD_SUGGESTION_PROVIDERS } from "../card-suggestions/registry";
-import type { CardSuggestion } from "../card-suggestions/types";
+import { CARD_SUGGESTION_PROVIDERS } from "./registry";
+import type { CardSuggestion } from "./types";
 
-export type { CardSuggestion } from "../card-suggestions/types";
+export type { CardSuggestion, CardSuggestionProvider } from "./types";
+export { CARD_SUGGESTION_PROVIDERS } from "./registry";
 
 export const generateCardSuggestions = (
   hass: HomeAssistant,

@@ -1,8 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { afterEach, describe, expect, it } from "vitest";
-import { CARD_SUGGESTION_PROVIDERS } from "../../../../src/panels/lovelace/card-suggestions/registry";
+import {
+  CARD_SUGGESTION_PROVIDERS,
+  generateCardSuggestions,
+} from "../../../../src/panels/lovelace/card-suggestions";
 import type { CardSuggestionProvider } from "../../../../src/panels/lovelace/card-suggestions/types";
-import { generateCardSuggestions } from "../../../../src/panels/lovelace/common/card-suggestions";
 import type { HomeAssistant } from "../../../../src/types";
 
 const makeState = (

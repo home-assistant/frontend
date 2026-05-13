@@ -135,14 +135,15 @@ const SENSOR_TREND_VARIANTS: TileVariant[] = [
   { id: "tile_trend_graph", features: ["trend-graph"] },
 ];
 
-const EXCLUDED_DOMAINS = ["calendar", "todo"];
+// Domains with a dedicated card-suggestions provider — skip tile suggestions
+// for them so the dedicated card wins.
+const EXCLUDED_DOMAINS = new Set(["calendar", "todo"]);
 
 const getVariants = (
   hass: HomeAssistant,
   entityId: string
 ): TileVariant[] | undefined => {
   const domain = computeDomain(entityId);
-  if (EXCLUDED_DOMAINS.includes(domain)) return undefined;
   if (domain === "sensor") {
     const deviceClass = hass.states[entityId]?.attributes.device_class;
     if (deviceClass && SENSOR_TREND_DEVICE_CLASSES.has(deviceClass)) {
@@ -166,18 +167,16 @@ const buildTileConfig = (
   return config;
 };
 
+// A throwing supportsX would invalidate the variant — treat it as unsupported
+// rather than tearing down the whole suggestion list.
 const allFeaturesSupported = (
   hass: HomeAssistant,
   entityId: string,
   features: UiFeatureType[]
 ): boolean =>
   features.every((type) => {
-    const supports = SUPPORTS_FEATURE_TYPES[type];
-    if (!supports) {
-      return false;
-    }
     try {
-      return supports(hass, { entity_id: entityId });
+      return SUPPORTS_FEATURE_TYPES[type](hass, { entity_id: entityId });
     } catch {
       return false;
     }
@@ -185,7 +184,7 @@ const allFeaturesSupported = (
 
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
   getEntitySuggestion(hass, entityId) {
-    if (EXCLUDED_DOMAINS.includes(computeDomain(entityId))) return null;
+    if (EXCLUDED_DOMAINS.has(computeDomain(entityId))) return null;
     const variants = getVariants(hass, entityId) ?? [DEFAULT_VARIANT];
     const suggestions: CardSuggestion<TileCardConfig>[] = [];
     for (const variant of variants) {
