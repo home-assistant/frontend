@@ -1,12 +1,15 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
+import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
+import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
@@ -64,10 +67,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sliderInteractionActive = false;
 
-  // disabled till iOS app fix the "focus_element" implementation
-  // @state()
-  // @consume({ context: configContext, subscribe: true })
-  // private _hassConfig?: ContextType<typeof configContext>;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
 
   @query("#drawer") private _drawer!: HTMLElement;
 
@@ -91,22 +93,24 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      // disabled till iOS app fix the "focus_element" implementation
-      // if (this._hassConfig?.auth.external && isIosApp(this._hassConfig.auth.external)) {
-      //   const element = this.renderRoot.querySelector("[autofocus]");
-      //   if (element !== null) {
-      //     if (!element.id) {
-      //       element.id = "ha-bottom-sheet-autofocus";
-      //     }
-      //     this._hassConfig.auth.external.fireMessage({
-      //       type: "focus_element",
-      //       payload: {
-      //         element_id: element.id,
-      //       },
-      //     });
-      //   }
-      //   return;
-      // }
+      if (
+        this._hassConfig?.auth.external &&
+        isIosApp(this._hassConfig.auth.external)
+      ) {
+        const element = this.renderRoot.querySelector("[autofocus]");
+        if (element !== null) {
+          if (!element.id) {
+            element.id = "ha-bottom-sheet-autofocus";
+          }
+          this._hassConfig.auth.external.fireMessage({
+            type: "focus_element",
+            payload: {
+              element_id: element.id,
+            },
+          });
+        }
+        return;
+      }
       (
         this.renderRoot.querySelector("[autofocus]") as HTMLElement | null
       )?.focus();
