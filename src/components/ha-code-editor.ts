@@ -45,7 +45,6 @@ import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import { documentationUrl } from "../util/documentation-url";
 import {
-  apiContext,
   internationalizationContext,
   registriesContext,
   statesContext,
@@ -129,10 +128,6 @@ export class HaCodeEditor extends ReactiveElement {
   @state() private _canRedo = false;
 
   @state() private _canCopy = false;
-
-  @state()
-  @consume({ context: apiContext, subscribe: true })
-  private _api?: ContextType<typeof apiContext>;
 
   @state()
   @consume({ context: configContext, subscribe: true })
