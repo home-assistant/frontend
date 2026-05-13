@@ -9074,6 +9074,12 @@
             "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "live_test_state": {
+              "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+              "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+              "invalid": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::invalid%]",
+              "unknown": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::unknown%]"
+            },
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {

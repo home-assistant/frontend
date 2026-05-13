@@ -23,7 +23,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -39,6 +39,7 @@ import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/automation/ha-automation-row-event-chip";
+import "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -46,7 +47,6 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-tooltip";
 import type {
   AutomationClipboard,
   Condition,
@@ -498,23 +498,15 @@ export default class HaAutomationConditionRow extends LitElement {
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}
-              <div
+              <ha-automation-row-live-test
                 slot="icons"
-                id="live-test"
-                class=${this._liveTestResult.state}
-                role="status"
-                tabindex="0"
-                aria-label=${this.hass.localize(
+                .state=${this._liveTestResult.state}
+                .label=${this.hass.localize(
                   `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
                 )}
-              >
-                ${this._liveTestResult.message
-                  ? html`<ha-tooltip for="live-test">
-                      ${this._liveTestResult.message}
-                    </ha-tooltip>`
-                  : nothing}
-              </div></ha-automation-row
-            >`
+                .message=${this._liveTestResult.message}
+              ></ha-automation-row-live-test
+            ></ha-automation-row>`
           : html`
               <ha-expansion-panel
                 left-chevron
@@ -1064,52 +1056,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        #live-test {
-          position: absolute;
-          inset-inline-end: -6px;
-          width: 12px;
-          height: 12px;
-          border-radius: var(--ha-border-radius-circle);
-          border: 3px solid;
-          box-sizing: border-box;
-          background-color: var(--card-background-color);
-          transition: all var(--ha-animation-duration-normal) ease-in-out;
-        }
-        #live-test.pass {
-          background-color: var(--ha-color-fill-success-loud-resting);
-          border-color: var(--ha-color-fill-success-loud-resting);
-        }
-        #live-test.pass:hover {
-          background-color: var(--ha-color-fill-success-loud-hover);
-          border-color: var(--ha-color-fill-success-loud-hover);
-        }
-        #live-test.fail {
-          border-color: var(--ha-color-fill-warning-loud-resting);
-        }
-        #live-test.fail:hover {
-          background-color: var(--ha-color-fill-warning-loud-hover);
-          border-color: var(--ha-color-fill-warning-loud-hover);
-        }
-        #live-test.invalid {
-          border-color: var(--ha-color-fill-danger-loud-resting);
-        }
-        #live-test.invalid:hover {
-          background-color: var(--ha-color-fill-danger-loud-hover);
-          border-color: var(--ha-color-fill-danger-loud-hover);
-        }
-        #live-test.unknown {
-          border-color: var(--ha-color-fill-neutral-loud-resting);
-        }
-        #live-test.unknown:hover {
-          background-color: var(--ha-color-fill-neutral-loud-hover);
-          border-color: var(--ha-color-fill-neutral-loud-hover);
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 
