@@ -8,7 +8,9 @@ import {
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
+  mdiVolumeHigh,
   mdiVolumeMinus,
+  mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
@@ -56,6 +58,7 @@ const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
   media_next_track: [MediaPlayerEntityFeature.NEXT_TRACK],
   volume_down: [MediaPlayerEntityFeature.VOLUME_STEP],
   volume_up: [MediaPlayerEntityFeature.VOLUME_STEP],
+  volume_mute: [MediaPlayerEntityFeature.VOLUME_MUTE],
 };
 
 export const supportsMediaPlayerPlaybackControl = (
@@ -280,6 +283,16 @@ class HuiMediaPlayerPlaybackCardFeature
             buttons.push({ icon: mdiVolumePlus, action: "volume_up" });
           }
           break;
+        case "volume_mute":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)) {
+            buttons.push({
+              icon: stateObj.attributes.is_volume_muted
+                ? mdiVolumeOff
+                : mdiVolumeHigh,
+              action: "volume_mute",
+            });
+          }
+          break;
       }
     }
 
@@ -311,6 +324,14 @@ class HuiMediaPlayerPlaybackCardFeature
             : "media_stop";
       this.hass!.callService("media_player", service, {
         entity_id: this._stateObj.entity_id,
+      });
+      return;
+    }
+
+    if (action === "volume_mute") {
+      this.hass!.callService("media_player", "volume_mute", {
+        entity_id: this._stateObj.entity_id,
+        is_volume_muted: !this._stateObj.attributes.is_volume_muted,
       });
       return;
     }
