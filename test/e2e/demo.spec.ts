@@ -166,11 +166,23 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
-    // Helper: poll shadow DOM for an element matching the selector.
+    // Helper: poll shadow DOM recursively for an element matching the selector.
+    // Playwright's locator engine pierces shadow DOM but throws "Internal error"
+    // on BrowserStack iOS WebKit. Use page.evaluate as a compatible fallback.
     const waitForShadow = (selector: string, timeout = 15_000) =>
       expect
         .poll(
-          () => page.evaluate((sel) => !!document.querySelector(sel), selector),
+          () =>
+            page.evaluate((sel) => {
+              function shadowFind(root: Document | ShadowRoot): boolean {
+                if (root.querySelector(sel)) return true;
+                for (const el of root.querySelectorAll("*")) {
+                  if (el.shadowRoot && shadowFind(el.shadowRoot)) return true;
+                }
+                return false;
+              }
+              return shadowFind(document);
+            }, selector),
           { timeout }
         )
         .toBe(true);
