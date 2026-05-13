@@ -267,7 +267,6 @@ export class HaScriptTrace extends LitElement {
                           : this._view === "config"
                             ? html`
                                 <ha-trace-config
-                                  .hass=${this.hass}
                                   .trace=${this._trace}
                                 ></ha-trace-config>
                               `
@@ -283,7 +282,6 @@ export class HaScriptTrace extends LitElement {
                               : this._view === "blueprint"
                                 ? html`
                                     <ha-trace-blueprint-config
-                                      .hass=${this.hass}
                                       .trace=${this._trace}
                                     ></ha-trace-blueprint-config>
                                   `

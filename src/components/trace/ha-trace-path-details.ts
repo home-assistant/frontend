@@ -271,7 +271,6 @@ export class HaTracePathDetails extends LitElement {
     return config
       ? html`<ha-code-editor
           .value=${dump(config).trimEnd()}
-          .hass=${this.hass}
           read-only
           dir="ltr"
         ></ha-code-editor>`
@@ -311,7 +310,6 @@ export class HaTracePathDetails extends LitElement {
               : html`<ha-code-editor
                   read-only
                   dir="ltr"
-                  .hass=${this.hass}
                   .value=${dump(trace.changed_variables).trimEnd()}
                 ></ha-code-editor>`}
           `
