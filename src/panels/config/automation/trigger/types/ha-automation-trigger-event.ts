@@ -34,7 +34,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         @change=${this._valueChanged}
       ></ha-input>
       <ha-yaml-editor
-        .hass=${this.hass}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.event.event_data"
         )}

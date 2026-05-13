@@ -71,7 +71,6 @@ export default class HaAutomationActionEditor extends LitElement {
                   `
                 : nothing}
               <ha-yaml-editor
-                .hass=${this.hass}
                 .defaultValue=${this.action}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}

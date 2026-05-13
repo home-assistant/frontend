@@ -179,7 +179,6 @@ class HaPanelDevState extends LitElement {
               )}
             </p>
             <ha-yaml-editor
-              .hass=${this.hass}
               .value=${this._stateAttributes}
               .error=${!this._validJSON}
               @value-changed=${this._yamlChanged}
