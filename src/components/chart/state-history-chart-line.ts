@@ -11,6 +11,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { sideTooltipPosition } from "./chart-tooltip-position";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -413,8 +414,7 @@ export class StateHistoryChartLine extends LitElement {
         tooltip: {
           trigger: "axis",
           renderMode: "html",
-          position: "bottom",
-          align: "center",
+          position: sideTooltipPosition,
           confine: true,
           formatter: this._renderTooltip,
         },
