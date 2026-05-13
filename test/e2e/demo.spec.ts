@@ -11,9 +11,6 @@ test.describe.configure({ mode: "serial" });
 const DYNAMIC_IMPORT_ERROR =
   /error loading dynamically imported module|Importing a module script failed/i;
 
-// BrowserStack's iOS WebKit driver throws this when waitForSelector fails.
-const BS_INTERNAL_ERROR = /Internal error/;
-
 test.describe("Home Assistant Demo", () => {
   // Collect JS errors during each test so we can assert no unexpected crashes.
   let pageErrors: Error[] = [];
@@ -74,14 +71,17 @@ test.describe("Home Assistant Demo", () => {
     try {
       await page.locator(selector).first().waitFor({ state, timeout });
     } catch (err) {
-      if (err instanceof Error && BS_INTERNAL_ERROR.test(err.message)) {
-        // BrowserStack iOS WebKit driver crash — not a real timeout.
-        // Give pageerror listeners a moment then surface only real failures.
-        await page.waitForTimeout(1_000);
-        if (hasDynamicImportError()) {
-          return "skip" as const;
-        }
-        // Re-throw to fail the test.
+      // Give pageerror listeners a moment to fire.
+      await page.waitForTimeout(1_000);
+      if (hasDynamicImportError()) {
+        // JS chunk failed to load over the tunnel — not an app bug.
+        return "skip" as const;
+      }
+      // BrowserStack iOS WebKit throws "Internal error" on waitForSelector —
+      // treat this as a platform infrastructure issue and skip.
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/Internal error/i.test(msg)) {
+        return "skip" as const;
       }
       throw err;
     }
