@@ -195,7 +195,6 @@ export class HaAutomationRow extends LitElement {
     }
     ::slotted([slot="event"]) {
       position: absolute;
-      top: 13px;
       inset-inline-end: 0;
     }
     .icons {
