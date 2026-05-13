@@ -295,6 +295,9 @@ export class HaDrawer extends LitElement {
       width: 100%;
       height: 100%;
       box-sizing: border-box;
+      transition:
+        padding-inline-start var(--ha-animation-duration-normal) ease,
+        width var(--ha-animation-duration-normal) ease;
     }
 
     wa-drawer {
