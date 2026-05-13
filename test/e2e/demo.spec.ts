@@ -11,6 +11,9 @@ test.describe.configure({ mode: "serial" });
 const DYNAMIC_IMPORT_ERROR =
   /error loading dynamically imported module|Importing a module script failed/i;
 
+// BrowserStack's iOS WebKit driver throws this when waitForSelector fails.
+const BS_INTERNAL_ERROR = /Internal error/;
+
 test.describe("Home Assistant Demo", () => {
   // Collect JS errors during each test so we can assert no unexpected crashes.
   let pageErrors: Error[] = [];
@@ -56,6 +59,35 @@ test.describe("Home Assistant Demo", () => {
     return pageErrors.some((err) => DYNAMIC_IMPORT_ERROR.test(err.message));
   }
 
+  /**
+   * Wait for `locator` to become attached/visible with a fallback for
+   * BrowserStack iOS WebKit which throws "Internal error" on waitForSelector.
+   * When the internal error is thrown, we pause briefly so async pageerror
+   * events can fire, then re-throw only if there was no dynamic-import error.
+   */
+  async function waitForLocator(
+    page: Page,
+    selector: string,
+    state: "attached" | "visible" = "attached",
+    timeout = 30_000
+  ) {
+    try {
+      await page.locator(selector).first().waitFor({ state, timeout });
+    } catch (err) {
+      if (err instanceof Error && BS_INTERNAL_ERROR.test(err.message)) {
+        // BrowserStack iOS WebKit driver crash — not a real timeout.
+        // Give pageerror listeners a moment then surface only real failures.
+        await page.waitForTimeout(1_000);
+        if (hasDynamicImportError()) {
+          return "skip" as const;
+        }
+        // Re-throw to fail the test.
+      }
+      throw err;
+    }
+    return "ok" as const;
+  }
+
   // ── 1. Page loads ──────────────────────────────────────────────────────────
 
   test("page loads and ha-demo mounts without JS errors", async () => {
@@ -82,79 +114,30 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
-    // On some BrowserStack mobile sessions, dynamically imported JS chunks
-    // may fail to load over the tunnel (infrastructure flakiness). When that
-    // happens, the demo config never loads and no cards render — but the app
-    // shell itself is healthy.  Skip the cards assertion in that case.
-    //
-    // Additionally, BrowserStack's iOS WebKit driver may throw "Internal error"
-    // for complex CSS selectors in waitFor(). Use page.evaluate polling as a
-    // more compatible alternative.
-    try {
-      // Poll via evaluate — avoids WebKit driver issues with waitForSelector.
-      // Uses recursive shadow DOM traversal since hui-* elements are nested
-      // inside shadow roots and document.querySelector() won't find them.
-      // Note: avoid passing array arguments to page.evaluate on BrowserStack
-      // iOS — serialize as a comma-separated selector string instead.
-      const viewOrCardSelector = [
-        "hui-masonry-view",
-        "hui-sections-view",
-        "hui-panel-view",
-        "hui-sidebar-view",
-        "hui-tile-card",
-        "hui-entity-card",
-        "hui-glance-card",
-        "hui-button-card",
-        "hui-markdown-card",
-      ].join(",");
-      await expect
-        .poll(
-          async () =>
-            page.evaluate((selector) => {
-              // Recursively search shadow roots for any matching element.
-              // document.querySelector() does not pierce shadow DOM.
-              function shadowQuery(root: Document | ShadowRoot): boolean {
-                if (root.querySelector(selector)) return true;
-                for (const el of root.querySelectorAll("*")) {
-                  if (el.shadowRoot && shadowQuery(el.shadowRoot)) return true;
-                }
-                return false;
-              }
-              return shadowQuery(document);
-            }, viewOrCardSelector),
-          { timeout: 30_000, intervals: [500, 1000, 2000] }
-        )
-        .toBe(true);
-    } catch (err) {
-      // Give async pageerror events a moment to fire before inspecting them.
-      await page.waitForTimeout(1_000);
-      if (hasDynamicImportError()) {
-        // Infrastructure issue — tunnel couldn't load a JS chunk.
-        // The app shell loaded fine; skip the cards check.
-        test.skip();
-        return;
-      }
-      throw err;
+    // Lovelace cards are rendered inside the shadow DOM.
+    const viewOrCardSelector = [
+      "hui-masonry-view",
+      "hui-sections-view",
+      "hui-panel-view",
+      "hui-sidebar-view",
+      "hui-tile-card",
+      "hui-entity-card",
+      "hui-glance-card",
+      "hui-button-card",
+      "hui-markdown-card",
+    ].join(", ");
+
+    const result = await waitForLocator(page, viewOrCardSelector, "attached");
+    if (result === "skip") {
+      test.skip();
+      return;
     }
 
-    // At least one card must be visible — use evaluate to check visibility
-    // since Playwright's locator engine may not pierce shadow DOM on all
-    // BrowserStack platforms.
-    const cardVisible = await page.evaluate((selector) => {
-      function shadowVisible(root: Document | ShadowRoot): boolean {
-        const el = root.querySelector(selector);
-        if (el) {
-          const rect = (el as HTMLElement).getBoundingClientRect();
-          return rect.width > 0 && rect.height > 0;
-        }
-        for (const child of root.querySelectorAll("*")) {
-          if (child.shadowRoot && shadowVisible(child.shadowRoot)) return true;
-        }
-        return false;
-      }
-      return shadowVisible(document);
-    }, "hui-tile-card, hui-entity-card, hui-glance-card, hui-button-card, hui-markdown-card");
-    expect(cardVisible).toBe(true);
+    // At least one card must be visible
+    const cards = page.locator(
+      "hui-tile-card, hui-entity-card, hui-glance-card, hui-button-card, hui-markdown-card"
+    );
+    await expect(cards.first()).toBeVisible({ timeout: 30_000 });
   });
 
   // ── 3. Sidebar navigation ─────────────────────────────────────────────────
@@ -166,49 +149,27 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
-    // Helper: poll shadow DOM recursively for an element matching the selector.
-    // Playwright's locator engine pierces shadow DOM but throws "Internal error"
-    // on BrowserStack iOS WebKit. Use page.evaluate as a compatible fallback.
-    const waitForShadow = (selector: string, timeout = 15_000) =>
-      expect
-        .poll(
-          () =>
-            page.evaluate((sel) => {
-              function shadowFind(root: Document | ShadowRoot): boolean {
-                if (root.querySelector(sel)) return true;
-                for (const el of root.querySelectorAll("*")) {
-                  if (el.shadowRoot && shadowFind(el.shadowRoot)) return true;
-                }
-                return false;
-              }
-              return shadowFind(document);
-            }, selector),
-          { timeout }
-        )
-        .toBe(true);
-
     // On narrow viewports (< 870 px — mobile / tablet) the sidebar lives
     // inside a modal drawer that is closed by default.  Open it first via
     // the ha-menu-button in the top app-bar.
     const menuButton = page.locator("ha-menu-button");
     if (await menuButton.isVisible()) {
       await menuButton.click();
-      // Wait for ha-sidebar to become visible (drawer animation completes).
-      // Use evaluate polling to avoid BrowserStack iOS waitForSelector crashes.
-      await waitForShadow("ha-sidebar");
+      // Wait for the drawer animation to complete so sidebar items are visible.
+      await waitForLocator(page, "ha-sidebar", "visible", 15_000);
     } else {
       // On wide viewports the sidebar is always rendered.
-      await waitForShadow("ha-sidebar", 30_000);
+      await waitForLocator(page, "ha-sidebar", "attached", 30_000);
     }
 
     const candidatePanels = ["map", "logbook", "history", "config"];
     let clicked = false;
 
-    // Wait for at least one panel item to appear.
+    // Wait for at least one panel item to appear before probing visibility.
     const panelSelector = candidatePanels
       .map((p) => `#sidebar-panel-${p}`)
       .join(", ");
-    await waitForShadow(panelSelector);
+    await waitForLocator(page, panelSelector, "visible", 15_000);
 
     for (const panel of candidatePanels) {
       const navItem = page.locator(`#sidebar-panel-${panel}`);
@@ -248,16 +209,15 @@ test.describe("Home Assistant Demo", () => {
       )
       .first();
 
-    try {
-      await clickableCard.waitFor({ state: "visible", timeout: 30_000 });
-    } catch (err) {
-      await page.waitForTimeout(1_000);
-      if (hasDynamicImportError()) {
-        // Infrastructure issue — no cards rendered due to failed JS chunk load.
-        test.skip();
-        return;
-      }
-      throw err;
+    const result = await waitForLocator(
+      page,
+      "hui-tile-card, hui-entity-card, hui-button-card, hui-glance-card",
+      "visible",
+      30_000
+    );
+    if (result === "skip") {
+      test.skip();
+      return;
     }
 
     await clickableCard.click();
