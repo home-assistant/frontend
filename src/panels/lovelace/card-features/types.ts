@@ -86,6 +86,7 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
 export interface MediaPlayerVolumeButtonsCardFeatureConfig {
   type: "media-player-volume-buttons";
   step?: number;
+  show_mute_button?: boolean;
 }
 
 export interface MediaPlayerSoundModeCardFeatureConfig {

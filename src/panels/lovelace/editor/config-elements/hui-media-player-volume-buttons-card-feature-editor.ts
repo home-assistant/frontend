@@ -41,6 +41,10 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
             },
           },
         },
+        {
+          name: "show_mute_button",
+          selector: { boolean: {} },
+        },
       ] as const
   );
 
@@ -52,6 +56,7 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
     const data: MediaPlayerVolumeButtonsCardFeatureConfig = {
       type: "media-player-volume-buttons",
       step: this._config.step ?? 5,
+      show_mute_button: this._config.show_mute_button ?? true,
     };
 
     const schema = this._schema();

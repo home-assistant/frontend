@@ -90,10 +90,9 @@ class HuiMediaPlayerVolumeButtonsCardFeature
 
     const stateObj = this._stateObj;
     const disabled = isUnavailableState(stateObj.state);
-    const supportsMute = supportsFeature(
-      stateObj,
-      MediaPlayerEntityFeature.VOLUME_MUTE
-    );
+    const supportsMute =
+      (this._config.show_mute_button ?? true) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
     const isMuted = stateObj.attributes.is_volume_muted;
 
     const position =
