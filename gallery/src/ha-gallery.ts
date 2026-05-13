@@ -230,6 +230,9 @@ class HaGallery extends LitElement {
       }
 
       .sidebar {
+        box-sizing: border-box;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
         padding: 4px;
       }
 
