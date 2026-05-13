@@ -372,20 +372,22 @@ export class DialogEnergyGasSettings
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
-      const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
       if (
         metadata &&
         isExternalStatistic(ev.detail.value) &&
         this._params?.statsMetadata &&
         !(ev.detail.value in this._params.statsMetadata)
       ) {
-        this._params.statsMetadata[ev.detail.value] = metadata[0];
+        this._params.statsMetadata[ev.detail.value] = metadata;
         this.requestUpdate("_params");
       }
       this._pickedDisplayUnit = getDisplayUnit(
         this.hass,
         ev.detail.value,
-        metadata[0]
+        metadata
       );
       if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
         this._costs = "no-costs";
