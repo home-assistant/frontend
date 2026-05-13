@@ -95,7 +95,12 @@ export const SEARCH_KEYS: FuseWeightedKey[] = [
 
 const FUSE_KEY_NAMES = SEARCH_KEYS.map((k) => k.name as string);
 
-export function buildEntityTree(hass: HomeAssistant): EntityTree {
+export function buildEntityTree(
+  hass: HomeAssistant,
+  // Translations from `config` fragment may load after hass was passed down;
+  // accept an override so callers can pass the freshly-loaded LocalizeFunc.
+  localize: HomeAssistant["localize"] = hass.localize
+): EntityTree {
   const {
     states,
     entities: entityReg,
@@ -132,7 +137,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
       area: area ? (computeAreaName(area) ?? "") : "",
       device: device ? (computeDeviceName(device) ?? "") : "",
       floor: floor?.name ?? "",
-      domain: domainToName(hass.localize, domain),
+      domain: domainToName(localize, domain),
     });
 
     if (!areaId || !areaReg[areaId]) {
@@ -247,7 +252,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
     [...source.entries()]
       .map(([domain, ids]) => ({
         domain,
-        name: domainToName(hass.localize, domain),
+        name: domainToName(localize, domain),
         entityIds: ids.sort(sortByName),
       }))
       .sort((a, b) => stringCompare(a.name, b.name, language));
@@ -258,7 +263,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
     unassignedSections.push({
       id: "entities",
       iconPath: mdiShape,
-      label: hass.localize("ui.panel.lovelace.editor.cardpicker.entities"),
+      label: localize("ui.panel.lovelace.editor.cardpicker.entities"),
       domains: entityDomains,
     });
   }
@@ -267,7 +272,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
     unassignedSections.push({
       id: "helpers",
       iconPath: mdiToggleSwitch,
-      label: hass.localize("ui.panel.lovelace.editor.cardpicker.helpers"),
+      label: localize("ui.panel.lovelace.editor.cardpicker.helpers"),
       domains: helperDomains,
     });
   }
@@ -276,7 +281,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
     unassignedSections.push({
       id: "devices",
       iconPath: mdiPuzzle,
-      label: hass.localize("ui.panel.lovelace.editor.cardpicker.devices"),
+      label: localize("ui.panel.lovelace.editor.cardpicker.devices"),
       devices: orphanDevices,
     });
   }
@@ -285,7 +290,7 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
     unassignedSections.push({
       id: "services",
       iconPath: mdiHomeAssistant,
-      label: hass.localize("ui.panel.lovelace.editor.cardpicker.services"),
+      label: localize("ui.panel.lovelace.editor.cardpicker.services"),
       devices: orphanServices,
     });
   }

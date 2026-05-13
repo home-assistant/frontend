@@ -63,7 +63,8 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  @state() private _translationsReady = false;
+  // Captured from the load promise to avoid racing parent hass propagation.
+  @state() private _domainLocalize?: HomeAssistant["localize"];
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -73,13 +74,12 @@ export class HuiSuggestionEntityTree extends LitElement {
     this._loadDomainTranslations();
   }
 
-  // domainToName reads `component.X.title` from the config fragment. Without
-  // this load it falls back to the raw key ("light", "sensor"), which also
-  // breaks Fuse search on the localized domain name.
+  // `component.X.title` strings come from the "title" backend category, not
+  // from any frontend fragment. The config panel loads them eagerly, but a
+  // dashboard session might never have triggered that load.
   private async _loadDomainTranslations() {
     if (!this.hass) return;
-    await this.hass.loadFragmentTranslation("config");
-    this._translationsReady = true;
+    this._domainLocalize = await this.hass.loadBackendTranslation("title");
   }
 
   public disconnectedCallback(): void {
@@ -117,8 +117,8 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (!this._tree && this.hass && this._translationsReady) {
-      this._tree = buildEntityTree(this.hass);
+    if (!this._tree && this.hass && this._domainLocalize) {
+      this._tree = buildEntityTree(this.hass, this._domainLocalize);
     }
   }
 

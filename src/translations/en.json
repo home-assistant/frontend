@@ -10227,6 +10227,8 @@
             "more_cards": "+{count} more",
             "content_empty_title": "Pick an entity to see suggestions",
             "content_empty_description": "Or browse all card types.",
+            "selected_entity": "Selected entity",
+            "suggestions_title": "Suggestions",
             "not_found": "Can't find the card you want?",
             "suggestions": {
               "tile": "Tile",

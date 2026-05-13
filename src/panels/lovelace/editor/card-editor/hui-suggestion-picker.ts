@@ -1,13 +1,18 @@
-import { mdiViewGridPlus } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import { mdiClose, mdiViewGridPlus } from "@mdi/js";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/entity/ha-entity-picker";
+import { computeEntityPickerDisplay } from "../../../../common/entity/compute_entity_name_display";
+import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
+import "../../../../components/ha-combo-box-item";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-ripple";
+import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyleScrollbar } from "../../../../resources/styles";
@@ -77,102 +82,147 @@ export class HuiSuggestionPicker extends LitElement {
   );
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
+    if (!this.hass) return nothing;
+    const hasEntity = !!this._entityId;
+    // The tree element is rendered unconditionally so its internal state
+    // (search filter, expanded branches, fuse index) survives switching
+    // between desktop/mobile and entering/leaving the suggestions pane.
+    const showTree = !this._narrow || !hasEntity;
+    const showMain = !this._narrow || hasEntity;
+    return html`
+      <div class=${classMap({ sidebar: true, hidden: !showTree })}>
+        <hui-suggestion-entity-tree
+          class="tree"
+          .hass=${this.hass}
+          .selectedEntityIds=${this._entityId ? [this._entityId] : []}
+          @entity-picked=${this._handleEntityPicked}
+        ></hui-suggestion-entity-tree>
+      </div>
+      <div class=${classMap({ main: true, hidden: !showMain })}>
+        <div class="content ha-scrollbar">
+          ${this._narrow && hasEntity ? this._renderSelectedEntity() : nothing}
+          ${hasEntity
+            ? html`
+                ${this._narrow
+                  ? html`
+                      <ha-section-title>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.cardpicker.suggestions_title"
+                        )}
+                      </ha-section-title>
+                    `
+                  : nothing}
+                ${this._renderSuggestionsGrid(this._suggestions())}
+              `
+            : this._renderEmptyState()}
+        </div>
+      </div>
+    `;
+  }
 
-    const suggestions = this._computeSuggestions(
+  private _renderSelectedEntity(): TemplateResult {
+    const stateObj = this.hass!.states[this._entityId!];
+    const { primary, secondary } = stateObj
+      ? computeEntityPickerDisplay(this.hass!, stateObj)
+      : { primary: this._entityId!, secondary: undefined };
+    return html`
+      <ha-section-title>
+        ${this.hass!.localize(
+          "ui.panel.lovelace.editor.cardpicker.selected_entity"
+        )}
+      </ha-section-title>
+      <ha-combo-box-item compact class="selected-entity">
+        ${stateObj
+          ? html`<state-badge
+              slot="start"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+            ></state-badge>`
+          : nothing}
+        <span slot="headline">${primary}</span>
+        ${secondary
+          ? html`<span slot="supporting-text">${secondary}</span>`
+          : nothing}
+        <ha-icon-button
+          slot="end"
+          .label=${this.hass!.localize("ui.common.clear")}
+          .path=${mdiClose}
+          @click=${this._clearEntity}
+        ></ha-icon-button>
+      </ha-combo-box-item>
+    `;
+  }
+
+  private _renderEmptyState(): TemplateResult {
+    return html`
+      <div class="content-empty">
+        <h2>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.cardpicker.content_empty_title"
+          )}
+        </h2>
+        <p>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.cardpicker.content_empty_description"
+          )}
+        </p>
+        <ha-button appearance="plain" @click=${this._browseCards}>
+          <ha-svg-icon slot="start" .path=${mdiViewGridPlus}></ha-svg-icon>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.cardpicker.browse_cards"
+          )}
+        </ha-button>
+      </div>
+    `;
+  }
+
+  private _renderSuggestionsGrid(
+    suggestions: CardSuggestion[]
+  ): TemplateResult {
+    return html`
+      <div class="suggestions" @pick-suggestion=${this._pickSuggestion}>
+        ${repeat(
+          suggestions,
+          (s: CardSuggestion) => s.id,
+          (s: CardSuggestion) => html`
+            <hui-suggestion-card
+              .hass=${this.hass}
+              .suggestion=${s}
+            ></hui-suggestion-card>
+          `
+        )}
+        <div
+          class="browse-card"
+          tabindex="0"
+          role="button"
+          aria-label=${this.hass!.localize(
+            "ui.panel.lovelace.editor.cardpicker.browse_cards"
+          )}
+          @click=${this._browseCards}
+          @keydown=${this._browseCardsKeydown}
+        >
+          <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
+          <span class="browse-card-title">
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.cardpicker.browse_cards"
+            )}
+          </span>
+          <p>
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.cardpicker.not_found"
+            )}
+          </p>
+          <ha-ripple></ha-ripple>
+        </div>
+      </div>
+    `;
+  }
+
+  private _suggestions(): CardSuggestion[] {
+    return this._computeSuggestions(
       this._entityId,
       (this.prioritizedCardTypes ?? []).join("|")
     );
-    const excludeEntities = this._entityId ? [this._entityId] : undefined;
-
-    return html`
-      <div class="sidebar">
-        ${this._narrow
-          ? html`
-              <div class="add-row">
-                <ha-entity-picker
-                  .hass=${this.hass}
-                  add-button
-                  .excludeEntities=${excludeEntities}
-                  @value-changed=${this._entityPickerValueChanged}
-                ></ha-entity-picker>
-              </div>
-            `
-          : html`
-              <hui-suggestion-entity-tree
-                class="tree"
-                .hass=${this.hass}
-                .selectedEntityIds=${this._entityId ? [this._entityId] : []}
-                @entity-picked=${this._handleEntityPicked}
-              ></hui-suggestion-entity-tree>
-            `}
-      </div>
-      <div class="content ha-scrollbar">
-        ${!this._entityId
-          ? html`
-              <div class="content-empty">
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.content_empty_title"
-                  )}
-                </h2>
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.content_empty_description"
-                  )}
-                </p>
-                <ha-button appearance="plain" @click=${this._browseCards}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiViewGridPlus}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : html`
-              <div class="suggestions" @pick-suggestion=${this._pickSuggestion}>
-                ${repeat(
-                  suggestions,
-                  (s: CardSuggestion) => s.id,
-                  (s: CardSuggestion) => html`
-                    <hui-suggestion-card
-                      .hass=${this.hass}
-                      .suggestion=${s}
-                    ></hui-suggestion-card>
-                  `
-                )}
-                <div
-                  class="browse-card"
-                  tabindex="0"
-                  role="button"
-                  aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
-                  )}
-                  @click=${this._browseCards}
-                  @keydown=${this._browseCardsKeydown}
-                >
-                  <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
-                  <span class="browse-card-title">
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.editor.cardpicker.browse_cards"
-                    )}
-                  </span>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.editor.cardpicker.not_found"
-                    )}
-                  </p>
-                  <ha-ripple></ha-ripple>
-                </div>
-              </div>
-            `}
-      </div>
-    `;
   }
 
   private _browseCards(): void {
@@ -190,12 +240,8 @@ export class HuiSuggestionPicker extends LitElement {
     this._entityId = ev.detail.entityId;
   }
 
-  private _entityPickerValueChanged(ev: CustomEvent<{ value: string }>): void {
-    const value = ev.detail.value;
-    if (!value) {
-      return;
-    }
-    this._entityId = value;
+  private _clearEntity(): void {
+    this._entityId = undefined;
   }
 
   private _pickSuggestion(
@@ -228,20 +274,19 @@ export class HuiSuggestionPicker extends LitElement {
           flex: 1;
           min-height: 0;
         }
-        .add-row {
-          display: flex;
-          align-items: center;
-          padding: var(--ha-space-2) var(--ha-space-3);
-        }
-        .add-row ha-entity-picker {
+        .main {
           flex: 1;
-          --ha-generic-picker-min-width: 0;
-          --ha-generic-picker-max-width: none;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
         }
         .content {
           flex: 1;
           min-height: 0;
           overflow: auto;
+        }
+        .hidden {
+          display: none !important;
         }
         .suggestions {
           display: grid;
@@ -309,22 +354,15 @@ export class HuiSuggestionPicker extends LitElement {
           font-size: var(--ha-font-size-s);
         }
 
+        /* Mobile master/detail — sidebar OR main is visible, never both. */
         @media (max-width: 700px) {
           :host {
             flex-direction: column;
-            overflow-y: auto;
-          }
-          .sidebar,
-          .content {
-            flex: 0 0 auto;
-            overflow: visible;
+            overflow: hidden;
           }
           .sidebar {
+            flex: 1;
             border-inline-end: none;
-            border-bottom: 1px solid var(--divider-color);
-          }
-          .tree {
-            min-height: 320px;
           }
         }
       `,
