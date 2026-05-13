@@ -516,7 +516,7 @@ export class HuiCardPicker extends LitElement {
         }
 
         ha-input-search {
-          padding: var(--ha-space-3) var(--ha-space-4) 0;
+          padding: var(--ha-space-3) var(--ha-space-3) 0;
           position: sticky;
           top: 0;
           z-index: 10;

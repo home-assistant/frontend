@@ -178,6 +178,9 @@ export class HuiCreateDialogCard
         ha-dialog::part(body) {
           overflow: hidden;
         }
+        ha-dialog-footer {
+          border-top: 1px solid var(--divider-color);
+        }
 
         ha-tab-group-tab {
           flex: 1;

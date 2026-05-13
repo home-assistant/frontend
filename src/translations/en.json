@@ -10227,6 +10227,8 @@
             "more_cards": "+{count} more",
             "content_empty_title": "Pick an entity to see suggestions",
             "content_empty_description": "Or browse all card types.",
+            "no_search_results_title": "No entity matches your search",
+            "no_search_results_description": "Try a different keyword.",
             "selected_entity": "Selected entity",
             "suggestions_title": "Suggestions",
             "not_found": "Can't find the card you want?",
