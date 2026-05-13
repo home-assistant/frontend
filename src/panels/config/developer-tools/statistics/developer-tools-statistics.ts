@@ -776,9 +776,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _fixIssue = async (ev: Event) => {
     const issues = (
-      (ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] })
-        .data
-    ).sort(
+      ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] }
+    ).data.sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
