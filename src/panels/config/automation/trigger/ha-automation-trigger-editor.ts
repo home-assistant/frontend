@@ -14,7 +14,10 @@ import type { TriggerDescription } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { triggerDescriptionToSchema } from "../yaml_schema_helpers";
+import {
+  builtInTriggerSchema,
+  triggerDescriptionToSchema,
+} from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import "./types/ha-automation-trigger-platform";
 
@@ -45,7 +48,10 @@ export default class HaAutomationTriggerEditor extends LitElement {
       description: TriggerDescription | undefined,
       localize: HomeAssistant["localize"]
     ) => {
-      if (isTriggerList(trigger) || !description) return undefined;
+      if (isTriggerList(trigger)) return undefined;
+      if (!description) {
+        return builtInTriggerSchema(trigger.trigger, localize);
+      }
       return triggerDescriptionToSchema(trigger.trigger, description, localize);
     }
   );

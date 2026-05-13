@@ -13,6 +13,24 @@ import type { ConditionElement } from "../ha-automation-condition-row";
 
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
+export const YAML_SCHEMA = [
+  { name: "after", selector: { time: {} } },
+  { name: "before", selector: { time: {} } },
+  {
+    name: "weekday",
+    type: "multi_select" as const,
+    options: DAYS.map((d) => [d, d] as const),
+  },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.conditions.type.time.${fieldName}` as any
+  );
+
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -184,10 +202,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.conditions.type.time.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

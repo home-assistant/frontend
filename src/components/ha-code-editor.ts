@@ -32,13 +32,14 @@ import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
-import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyleScrollbar } from "../resources/styles";
 import {
   buildEntityCompletions,
   buildDeviceCompletions,
   buildAreaCompletions,
+  buildFloorCompletions,
+  buildLabelCompletions,
 } from "../resources/ha_completion_items";
 import type {
   JinjaArgType,
@@ -530,6 +531,8 @@ export class HaCodeEditor extends ReactiveElement {
             states: this._states,
             devices: this._registries?.devices,
             areas: this._registries?.areas,
+            floors: this._registries?.floors,
+            labels: this._labels,
           }))
         );
       }
@@ -1535,16 +1538,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getFloors = memoizeOne(
     (floors: HomeAssistant["floors"]): Completion[] =>
-      Object.values(floors).map((floor) => {
-        const name = computeFloorName(floor) ?? floor.floor_id;
-        return {
-          type: "variable",
-          label: `${name} ${floor.floor_id}`, // label is used for searching, so include both name and ID here
-          displayLabel: name,
-          detail: floor.floor_id,
-          apply: floor.floor_id,
-        };
-      })
+      buildFloorCompletions(floors)
   );
 
   /** Build a CompletionResult for floor IDs, with `from` set inside the quotes. */
@@ -1564,16 +1558,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getLabels = memoizeOne(
     (labels: LabelRegistryEntry[]): Completion[] =>
-      labels.map((label) => {
-        const name = label.name.trim() || label.label_id;
-        return {
-          type: "variable",
-          label: `${name} ${label.label_id}`, // label is used for searching, so include both name and ID here
-          displayLabel: name,
-          detail: label.label_id,
-          apply: label.label_id,
-        };
-      })
+      buildLabelCompletions(labels)
   );
 
   /** Build a CompletionResult for label IDs, with `from` set inside the quotes. */

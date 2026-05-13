@@ -17,8 +17,11 @@ import type { Completion } from "@codemirror/autocomplete";
 import type { HassEntities } from "home-assistant-js-websocket";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import { computeFloorName } from "../common/entity/compute_floor_name";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { DeviceRegistryEntry } from "../data/device/device_registry";
+import type { FloorRegistryEntry } from "../data/floor_registry";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 
 /**
  * Build completion items for entity IDs.
@@ -80,4 +83,41 @@ export function buildAreaCompletions(
       apply: area.area_id,
     };
   });
+}
+
+/**
+ * Build completion items for floor IDs.
+ * `label` is "name + floor_id" for search; `displayLabel` shows only the name;
+ * `detail` shows the floor ID.
+ */
+export function buildFloorCompletions(
+  floors: Record<string, FloorRegistryEntry>
+): Completion[] {
+  return Object.values(floors).map((floor) => {
+    const name = computeFloorName(floor) ?? floor.floor_id;
+    return {
+      type: "variable",
+      label: `${name} ${floor.floor_id}`,
+      displayLabel: name,
+      detail: floor.floor_id,
+      apply: floor.floor_id,
+    };
+  });
+}
+
+/**
+ * Build completion items for label IDs.
+ * `label` is "name + label_id" for search; `displayLabel` shows only the name;
+ * `detail` shows the label ID.
+ */
+export function buildLabelCompletions(
+  labels: LabelRegistryEntry[]
+): Completion[] {
+  return labels.map((label) => ({
+    type: "variable",
+    label: `${label.name} ${label.label_id}`,
+    displayLabel: label.name,
+    detail: label.label_id,
+    apply: label.label_id,
+  }));
 }

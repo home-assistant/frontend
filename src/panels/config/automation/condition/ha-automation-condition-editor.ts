@@ -11,7 +11,10 @@ import { expandConditionWithShorthand } from "../../../../data/automation";
 import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
-import { conditionDescriptionToSchema } from "../yaml_schema_helpers";
+import {
+  builtInConditionSchema,
+  conditionDescriptionToSchema,
+} from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
@@ -51,7 +54,9 @@ export default class HaAutomationConditionEditor extends LitElement {
       description: ConditionDescription | undefined,
       localize: HomeAssistant["localize"]
     ) => {
-      if (!description) return undefined;
+      if (!description) {
+        return builtInConditionSchema(condition.condition, localize);
+      }
       return conditionDescriptionToSchema(
         condition.condition,
         description,
