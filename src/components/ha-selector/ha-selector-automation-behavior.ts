@@ -13,13 +13,16 @@ import "../ha-input-helper-text";
 import type { SelectBoxOption } from "../ha-select-box";
 import "../ha-select-box";
 
-const TRIGGER_BEHAVIORS: AutomationBehaviorTriggerMode[] = [
+export const TRIGGER_BEHAVIORS: AutomationBehaviorTriggerMode[] = [
   "any",
   "first",
   "last",
 ];
 
-const CONDITION_BEHAVIORS: AutomationBehaviorConditionMode[] = ["any", "all"];
+export const CONDITION_BEHAVIORS: AutomationBehaviorConditionMode[] = [
+  "any",
+  "all",
+];
 
 @customElement("ha-selector-automation_behavior")
 export class HaSelectorAutomationBehavior extends LitElement {

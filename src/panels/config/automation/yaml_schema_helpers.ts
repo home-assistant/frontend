@@ -13,6 +13,10 @@ import type {
   YamlFieldSchemaMap,
 } from "../../../resources/yaml_field_schema";
 import type { HomeAssistant } from "../../../types";
+import {
+  TRIGGER_BEHAVIORS,
+  CONDITION_BEHAVIORS,
+} from "../../../components/ha-selector/ha-selector-automation-behavior";
 
 // ---------------------------------------------------------------------------
 // Shared base field sets
@@ -371,6 +375,110 @@ function buildTargetSchema(
 }
 
 /**
+ * Replace an `automation_behavior` selector with a plain `select` selector
+ * so the YAML editor can offer value completions and tooltips.
+ * Trigger mode: any | first | last
+ * Condition mode: any | all
+ */
+function resolveSelector(
+  selector: Record<string, any> | undefined,
+  mode: "trigger" | "condition"
+): Record<string, any> | undefined {
+  if (!selector) return selector;
+
+  if ("automation_behavior" in selector) {
+    const options =
+      mode === "condition" ? CONDITION_BEHAVIORS : TRIGGER_BEHAVIORS;
+    return {
+      select: {
+        options: options.map((v) => ({ value: v, label: v })),
+      },
+    };
+  }
+
+  if ("numeric_threshold" in selector) {
+    return { object: null };
+  }
+
+  return selector;
+}
+
+/** Sub-schema for a single ThresholdValueEntry (value / value_min / value_max). */
+const THRESHOLD_VALUE_ENTRY_FIELDS: YamlFieldSchemaMap = {
+  active_choice: {
+    description: "Whether to use a fixed number or an entity state.",
+    selector: {
+      select: {
+        options: [
+          { value: "number", label: "number" },
+          { value: "entity", label: "entity" },
+        ],
+      },
+    },
+  },
+  number: {
+    description: "Fixed numeric value.",
+    selector: { number: {} },
+  },
+  entity: {
+    description: "Entity whose state provides the value.",
+    selector: { entity: null },
+  },
+  unit_of_measurement: {
+    description: "Unit of measurement.",
+    selector: { text: null },
+  },
+};
+
+/**
+ * Build a YamlFieldSchemaMap for a numeric_threshold selector value.
+ * type selects the comparison mode; value / value_min / value_max hold the
+ * threshold entries depending on the type.
+ */
+export function numericThresholdSchema(): YamlFieldSchemaMap {
+  const valueEntry: YamlFieldSchema = {
+    description: "Threshold value entry.",
+    selector: { object: null },
+    fields: THRESHOLD_VALUE_ENTRY_FIELDS,
+  };
+  return {
+    type: {
+      description: "Comparison type.",
+      selector: {
+        select: {
+          options: (
+            ["above", "below", "between", "outside", "any"] as const
+          ).map((v) => ({ value: v, label: v })),
+        },
+      },
+      required: true,
+    },
+    value: {
+      ...valueEntry,
+      description: "Threshold value (for above / below types).",
+    },
+    value_min: {
+      ...valueEntry,
+      description: "Lower bound (for between / outside types).",
+    },
+    value_max: {
+      ...valueEntry,
+      description: "Upper bound (for between / outside types).",
+    },
+  };
+}
+
+/** Return nested field schema for selectors that have structured sub-keys. */
+function selectorFields(
+  selector: Record<string, any> | undefined
+): YamlFieldSchemaMap | undefined {
+  if (selector && "numeric_threshold" in selector) {
+    return numericThresholdSchema();
+  }
+  return undefined;
+}
+
+/**
  * Convert a `TriggerDescription` (from subscribeTriggers) into a
  * `YamlFieldSchemaMap` usable by the YAML editor.
  */
@@ -396,10 +504,11 @@ export function triggerDescriptionToSchema(
 
     fieldSchemas[fieldName] = {
       description: localizedDesc || undefined,
-      selector: field.selector,
-      required: field.required,
+      selector: resolveSelector(field.selector, "trigger"),
+      required: field.required && field.default === undefined,
       example: field.example,
       default: field.default,
+      fields: selectorFields(field.selector),
     };
   }
 
@@ -408,7 +517,15 @@ export function triggerDescriptionToSchema(
     ...(desc.target !== undefined
       ? { target: buildTargetSchema(desc.target) }
       : {}),
-    ...fieldSchemas,
+    ...(Object.keys(fieldSchemas).length > 0
+      ? {
+          options: {
+            description: "Trigger options.",
+            selector: { object: null },
+            fields: fieldSchemas,
+          },
+        }
+      : {}),
   };
 }
 
@@ -437,10 +554,11 @@ export function conditionDescriptionToSchema(
 
     fieldSchemas[fieldName] = {
       description: localizedDesc || undefined,
-      selector: field.selector,
-      required: field.required,
+      selector: resolveSelector(field.selector, "condition"),
+      required: field.required && field.default === undefined,
       example: field.example,
       default: field.default,
+      fields: selectorFields(field.selector),
     };
   }
 
@@ -449,7 +567,15 @@ export function conditionDescriptionToSchema(
     ...(desc.target !== undefined
       ? { target: buildTargetSchema(desc.target) }
       : {}),
-    ...fieldSchemas,
+    ...(Object.keys(fieldSchemas).length > 0
+      ? {
+          options: {
+            description: "Condition options.",
+            selector: { object: null },
+            fields: fieldSchemas,
+          },
+        }
+      : {}),
   };
 }
 
@@ -483,7 +609,7 @@ export function serviceActionSchema(
           fieldSchemas[subFieldName] = {
             description: localizedSubDesc || undefined,
             selector: sf.selector,
-            required: sf.required,
+            required: sf.required && sf.default === undefined,
             example: sf.example,
             default: sf.default,
           } satisfies YamlFieldSchema;
@@ -496,7 +622,7 @@ export function serviceActionSchema(
         fieldSchemas[fieldName] = {
           description: localizedDesc || undefined,
           selector: f.selector,
-          required: f.required,
+          required: f.required && f.default === undefined,
           example: f.example,
           default: f.default,
         } satisfies YamlFieldSchema;
