@@ -44,6 +44,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _submitting?: boolean;
 
+  @state() private _dirty = false;
+
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
@@ -144,7 +146,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
-        <ha-button @click=${this._updateEntry} .loading=${!!this._submitting}>
+        <ha-button
+          @click=${this._updateEntry}
+          .disabled=${!this._dirty || !!this._submitting}
+          .loading=${!!this._submitting}
+        >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
       </div>
@@ -153,6 +159,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _entityRegistryChanged() {
     this._error = undefined;
+    this._dirty = this._registryEditor?.dirty ?? false;
   }
 
   private _openDeviceSettings() {

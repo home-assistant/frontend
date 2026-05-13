@@ -208,6 +208,34 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _deviceClassOptions?: string[][];
 
+  private _initialStateJson!: string;
+
+  private _lastDirty = false;
+
+  private _currentState() {
+    return {
+      name: this._name.trim() || null,
+      icon: this._icon.trim() || null,
+      entityId: this._entityId.trim(),
+      areaId: this._areaId ?? null,
+      labels: this._labels ?? [],
+      deviceClass: this._deviceClass,
+      disabledBy: this._disabledBy,
+      hiddenBy: this._hiddenBy,
+      unitOfMeasurement: this._unit_of_measurement,
+      precision: this._precision,
+      defaultCode: this._defaultCode,
+      calendarColor: this._calendarColor ?? null,
+      precipitationUnit: this._precipitation_unit,
+      pressureUnit: this._pressure_unit,
+      temperatureUnit: this._temperature_unit,
+      visibilityUnit: this._visibility_unit,
+      windSpeedUnit: this._wind_speed_unit,
+      switchAsDomain: this._switchAsDomain,
+      switchAsInvert: this._switchAsInvert,
+    };
+  }
+
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (
@@ -273,6 +301,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._visibility_unit = stateObj?.attributes?.visibility_unit;
       this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
     }
+
+    this._initialStateJson = JSON.stringify(this._currentState());
+    this._lastDirty = false;
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
 
@@ -371,6 +402,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
+      }
+      this._initialStateJson = JSON.stringify(this._currentState());
+      this._lastDirty = false;
+    }
+
+    if (this._initialStateJson) {
+      const dirty = this.dirty;
+      if (dirty !== this._lastDirty) {
+        this._lastDirty = dirty;
+        fireEvent(this, "change");
       }
     }
   }
@@ -1058,6 +1099,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
           `
         : nothing}
     `;
+  }
+
+  public get dirty(): boolean {
+    return JSON.stringify(this._currentState()) !== this._initialStateJson;
   }
 
   public async updateEntry(): Promise<{
