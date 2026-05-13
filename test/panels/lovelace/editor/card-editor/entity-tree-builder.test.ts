@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
   buildEntityTree,
+  buildSearchIndex,
   pathToEntity,
   searchEntities,
   areaKey,
@@ -268,25 +269,33 @@ describe("searchEntities", () => {
       },
       floors: { ground: floor("ground") },
     });
-    return buildEntityTree(hass);
+    const tree = buildEntityTree(hass);
+    return {
+      entities: tree.searchableEntities,
+      index: buildSearchIndex(tree.searchableEntities),
+    };
   };
 
   it("returns nothing for an empty filter", () => {
-    expect(searchEntities(buildSample(), "")).toEqual([]);
+    const { entities, index } = buildSample();
+    expect(searchEntities(entities, index, "")).toEqual([]);
   });
 
   it("matches on entity name", () => {
-    const ids = searchEntities(buildSample(), "kitchen").map((s) => s.id);
+    const { entities, index } = buildSample();
+    const ids = searchEntities(entities, index, "kitchen").map((s) => s.id);
     expect(ids).toContain("light.kitchen_ceiling");
   });
 
   it("matches on area name", () => {
-    const ids = searchEntities(buildSample(), "Living").map((s) => s.id);
+    const { entities, index } = buildSample();
+    const ids = searchEntities(entities, index, "Living").map((s) => s.id);
     expect(ids).toContain("light.living_lamp");
   });
 
   it("respects the result limit", () => {
-    expect(searchEntities(buildSample(), "light", 1)).toHaveLength(1);
+    const { entities, index } = buildSample();
+    expect(searchEntities(entities, index, "light", 1)).toHaveLength(1);
   });
 });
 

@@ -9,12 +9,13 @@ import Fuse from "fuse.js";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../common/string/compare";
+import { entityComboBoxKeys } from "../../../../data/entity/entity_picker";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import { getFloorAreaLookup } from "../../../../data/floor_registry";
 import { domainToName } from "../../../../data/integration";
-import type { FuseWeightedKey } from "../../../../resources/fuseMultiTerm";
 import { multiTermSortedSearch } from "../../../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../../../types";
 import { isHelperDomain } from "../../../config/helpers/const";
@@ -47,13 +48,22 @@ export interface DomainGroup {
   entityIds: string[];
 }
 
+// Display fields are flat; search_labels match ha-entity-picker so the
+// fuzzy weights and behavior stay consistent across pickers.
 export interface SearchableEntity {
   id: string;
   name: string;
   area: string;
   device: string;
-  floor: string;
   domain: string;
+  search_labels: {
+    entityName: string | null;
+    friendlyName: string | null;
+    deviceName: string | null;
+    areaName: string | null;
+    domainName: string | null;
+    entityId: string;
+  };
 }
 
 export interface UnassignedSection {
@@ -69,8 +79,15 @@ export interface EntityTree {
   otherAreas: AreaNode[];
   unassignedSections: UnassignedSection[];
   searchableEntities: SearchableEntity[];
-  fuseIndex: FuseIndex<SearchableEntity>;
 }
+
+export type EntityFuseIndex = FuseIndex<SearchableEntity>;
+
+// Pre-built so the first keystroke in the search input doesn't trigger
+// Fuse.createIndex (50-100ms on large registries).
+export const buildSearchIndex = (
+  entities: SearchableEntity[]
+): EntityFuseIndex => Fuse.createIndex(FUSE_KEY_NAMES, entities);
 
 export const OTHER_AREAS_ID = "__other_areas__";
 const SEP = "~";
@@ -84,21 +101,12 @@ export const domainKey = (parent: string, domain: string) =>
   `${parent}${SEP}dom|${domain}`;
 export const childKeyPrefix = (key: string) => `${key}${SEP}`;
 
-export const SEARCH_KEYS: FuseWeightedKey[] = [
-  { name: "name", weight: 4 },
-  { name: "id", weight: 2 },
-  { name: "area", weight: 2 },
-  { name: "device", weight: 2 },
-  { name: "floor", weight: 1 },
-  { name: "domain", weight: 1 },
-];
-
-const FUSE_KEY_NAMES = SEARCH_KEYS.map((k) => k.name as string);
+const FUSE_KEY_NAMES = entityComboBoxKeys.map((k) => k.name as string);
 
 export function buildEntityTree(
   hass: HomeAssistant,
-  // Translations from `config` fragment may load after hass was passed down;
-  // accept an override so callers can pass the freshly-loaded LocalizeFunc.
+  // Override for callers that loaded translations themselves and need to
+  // bypass the parent's possibly-stale hass.localize.
   localize: HomeAssistant["localize"] = hass.localize
 ): EntityTree {
   const {
@@ -128,16 +136,28 @@ export function buildEntityTree(
     const device = entry?.device_id ? deviceReg[entry.device_id] : undefined;
     const areaId = entry?.area_id ?? device?.area_id;
     const area = areaId ? areaReg[areaId] : undefined;
-    const floor = area?.floor_id ? floorReg[area.floor_id] : undefined;
     const domain = computeDomain(entityId);
+
+    const entityName = computeEntityName(stateObj, entityReg, deviceReg);
+    const friendlyName = computeStateName(stateObj);
+    const deviceName = device ? computeDeviceName(device) : undefined;
+    const areaName = area ? computeAreaName(area) : undefined;
+    const domainName = domainToName(localize, domain);
 
     searchableEntities.push({
       id: entityId,
-      name: computeStateName(stateObj) || entityId,
-      area: area ? (computeAreaName(area) ?? "") : "",
-      device: device ? (computeDeviceName(device) ?? "") : "",
-      floor: floor?.name ?? "",
-      domain: domainToName(localize, domain),
+      name: entityName || friendlyName || entityId,
+      area: areaName ?? "",
+      device: deviceName ?? "",
+      domain: domainName,
+      search_labels: {
+        entityName: entityName || null,
+        friendlyName: friendlyName || null,
+        deviceName: deviceName || null,
+        areaName: areaName || null,
+        domainName: domainName || null,
+        entityId,
+      },
     });
 
     if (!areaId || !areaReg[areaId]) {
@@ -300,13 +320,9 @@ export function buildEntityTree(
     otherAreas,
     unassignedSections,
     searchableEntities,
-    fuseIndex: Fuse.createIndex(FUSE_KEY_NAMES, searchableEntities),
   };
 }
 
-// Returns the list of branch keys (floor, area, device, …) that must be
-// expanded so the entity is visible in the tree. Empty when the entity isn't
-// reachable from the snapshot.
 export function pathToEntity(tree: EntityTree, entityId: string): string[] {
   for (const floor of tree.floors) {
     const fKey = floorKey(floor.id);
@@ -356,16 +372,17 @@ export function pathToEntity(tree: EntityTree, entityId: string): string[] {
 }
 
 export function searchEntities(
-  tree: EntityTree,
+  entities: SearchableEntity[],
+  index: EntityFuseIndex,
   filter: string,
   limit = 100
 ): SearchableEntity[] {
   if (!filter) return [];
   return multiTermSortedSearch(
-    tree.searchableEntities,
+    entities,
     filter,
-    SEARCH_KEYS,
+    entityComboBoxKeys,
     (item) => item.id,
-    tree.fuseIndex
+    index
   ).slice(0, limit);
 }

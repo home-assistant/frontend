@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
@@ -25,6 +26,7 @@ import type {
   AreaNode,
   DeviceNode,
   DomainGroup,
+  EntityFuseIndex,
   EntityTree,
   FloorNode,
   SearchableEntity,
@@ -33,6 +35,7 @@ import type {
 import {
   areaKey,
   buildEntityTree,
+  buildSearchIndex,
   childKeyPrefix,
   deviceKey,
   domainKey,
@@ -42,7 +45,6 @@ import {
   searchEntities,
   unassignedKey,
 } from "./entity-tree-builder";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -54,8 +56,7 @@ declare global {
 export class HuiSuggestionEntityTree extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false, type: Array })
-  public selectedEntityIds: string[] = [];
+  @property({ attribute: false }) public selectedEntityId?: string;
 
   @state() private _filter = "";
 
@@ -66,6 +67,12 @@ export class HuiSuggestionEntityTree extends LitElement {
   // Captured from the load promise to avoid racing parent hass propagation.
   @state() private _domainLocalize?: HomeAssistant["localize"];
 
+  // Built once; rebuilding the structure and Fuse index on each hass tick
+  // would freeze the picker on large registries.
+  @state() private _tree?: EntityTree;
+
+  @state() private _fuseIndex?: EntityFuseIndex;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass && !Object.keys(this._configEntryLookup).length) {
@@ -74,9 +81,7 @@ export class HuiSuggestionEntityTree extends LitElement {
     this._loadDomainTranslations();
   }
 
-  // `component.X.title` strings come from the "title" backend category, not
-  // from any frontend fragment. The config panel loads them eagerly, but a
-  // dashboard session might never have triggered that load.
+  // Backend "title" category is loaded by the config panel — not from the dashboard.
   private async _loadDomainTranslations() {
     if (!this.hass) return;
     this._domainLocalize = await this.hass.loadBackendTranslation("title");
@@ -107,18 +112,13 @@ export class HuiSuggestionEntityTree extends LitElement {
     return this._configEntryLookup[device.primary_config_entry]?.domain;
   }
 
-  // Built once on first render. Rebuilding on every hass tick would re-run
-  // Fuse.createIndex and freeze the search input; a snapshot is enough for a
-  // picker session — entities added/renamed mid-session won't show up until
-  // the dialog reopens.
-  @state() private _tree?: EntityTree;
-
   private _searchMemo = memoizeOne(searchEntities);
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (!this._tree && this.hass && this._domainLocalize) {
       this._tree = buildEntityTree(this.hass, this._domainLocalize);
+      this._fuseIndex = buildSearchIndex(this._tree.searchableEntities);
     }
   }
 
@@ -193,7 +193,11 @@ export class HuiSuggestionEntityTree extends LitElement {
   }
 
   private _renderSearchResults(): TemplateResult {
-    const results = this._searchMemo(this._tree!, this._filter);
+    const results = this._searchMemo(
+      this._tree!.searchableEntities,
+      this._fuseIndex!,
+      this._filter
+    );
     if (!results.length) {
       return html`
         <div class="empty">${this.hass.localize("ui.common.no_results")}</div>
@@ -220,7 +224,7 @@ export class HuiSuggestionEntityTree extends LitElement {
     separator: string
   ): TemplateResult {
     const stateObj = this.hass.states[item.id];
-    const selected = this.selectedEntityIds.includes(item.id);
+    const selected = this.selectedEntityId === item.id;
     const secondary = [item.area, item.device].filter(Boolean).join(separator);
     return html`
       <ha-combo-box-item
@@ -433,7 +437,7 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   private _renderEntity(entityId: string, depthClass: string): TemplateResult {
     const stateObj = this.hass.states[entityId];
-    const selected = this.selectedEntityIds.includes(entityId);
+    const selected = this.selectedEntityId === entityId;
     const entityName = stateObj
       ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
       : undefined;
@@ -488,8 +492,6 @@ export class HuiSuggestionEntityTree extends LitElement {
     fireEvent(this, "entity-picked", { entityId });
   }
 
-  // When the user picks an entity from the flat search results, pre-expand
-  // its branch so clearing the filter drops them right at the selection.
   private _expandToEntity(entityId: string) {
     if (!this._tree) return;
     const path = pathToEntity(this._tree, entityId);
