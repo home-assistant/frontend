@@ -1,7 +1,9 @@
 import { consume, type ContextType } from "@lit/context";
+import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import type { AddonState } from "../../../../data/hassio/addon";
 
@@ -15,7 +17,9 @@ class SupervisorAppsState extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="dot state-${this.state}"></div>
+      ${this.state === "unknown"
+        ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
+        : html` <div class="dot state-${this.state}"></div> `}
       <span
         >${this._i18n.localize(
           `ui.panel.config.apps.dashboard.capability.state.${this.state}`
@@ -40,7 +44,7 @@ class SupervisorAppsState extends LitElement {
       flex-shrink: 0;
     }
     .dot.state-started {
-      background-color: var(--ha-color-on-success-normal);
+      background-color: var(--ha-color-green-80);
       animation: state-dot-pulse 1.8s infinite;
     }
     .dot.state-startup {
@@ -48,6 +52,9 @@ class SupervisorAppsState extends LitElement {
     }
     .dot.state-error {
       background-color: var(--ha-color-on-danger-normal);
+    }
+    ha-svg-icon {
+      --mdc-icon-size: 20px;
     }
     @keyframes state-dot-pulse {
       0% {
