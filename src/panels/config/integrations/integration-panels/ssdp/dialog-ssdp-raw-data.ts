@@ -1,11 +1,13 @@
 import { LitElement, html, nothing, css } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import type { TemplateResult } from "lit";
+import type { ContextType } from "@lit/context";
+import { consume } from "@lit/context";
 import { dump } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog";
+import { internationalizationContext } from "../../../../../data/context";
 
 export interface SSDPRawDataDialogParams {
   key: string;
@@ -14,11 +16,13 @@ export interface SSDPRawDataDialogParams {
 
 @customElement("dialog-ssdp-raw-data")
 class DialogSSDPRawData extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state() private _params?: SSDPRawDataDialogParams;
 
   @state() private _open = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public async showDialog(params: SSDPRawDataDialogParams): Promise<void> {
     this._params = params;
@@ -42,13 +46,12 @@ class DialogSSDPRawData extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${`${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
+        header-title=${`${this._i18n.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
         @closed=${this._dialogClosed}
       >
         <ha-code-editor
           mode="yaml"
           .value=${dump(this._params.data)}
-          .hass=${this.hass}
           read-only
           autofocus
         ></ha-code-editor>

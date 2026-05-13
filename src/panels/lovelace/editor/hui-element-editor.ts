@@ -246,7 +246,6 @@ export abstract class HuiElementEditor<
                 <ha-yaml-editor
                   .defaultValue=${this._config}
                   autofocus
-                  .hass=${this.hass}
                   .inDialog=${this.inDialog}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}

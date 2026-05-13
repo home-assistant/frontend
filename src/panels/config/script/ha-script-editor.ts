@@ -458,7 +458,6 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : this.mode === "yaml"
               ? html`<ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     disable-fullscreen
