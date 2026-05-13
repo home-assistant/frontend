@@ -50,6 +50,7 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
 import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
 import { withViewTransition } from "../../../../common/util/view-transition";
+import { serviceActionSchema } from "../../automation/yaml_schema_helpers";
 
 @customElement("tools-action")
 class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
@@ -197,6 +198,11 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   <ha-yaml-editor
                     id="yaml-editor"
                     .defaultValue=${this._serviceData}
+                    .yamlFieldSchema=${this._yamlFieldSchema(
+                      this._serviceData?.action,
+                      this.hass.services,
+                      this.hass.localize
+                    )}
                     @value-changed=${this._yamlChanged}
                   ></ha-yaml-editor>
                 </div>`
@@ -395,6 +401,20 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
 
   private _filterSelectorFields = memoizeOne((fields) =>
     fields.filter((field) => !field.selector)
+  );
+
+  private _yamlFieldSchema = memoizeOne(
+    (
+      action: string | undefined,
+      services: HomeAssistant["services"],
+      localize: HomeAssistant["localize"]
+    ) => {
+      if (!action) return undefined;
+      const domain = computeDomain(action);
+      const service = computeObjectId(action);
+      if (!domain || !service) return undefined;
+      return serviceActionSchema(domain, service, services, localize);
+    }
   );
 
   private _validateServiceData = (
