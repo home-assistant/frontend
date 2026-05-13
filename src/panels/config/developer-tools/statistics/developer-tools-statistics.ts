@@ -214,7 +214,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       device: {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         sortable: true,
-        template: (entry) => entry.device || "—",
+        template: (entry) => entry.device || "",
       },
       device_full: {
         title: localize("ui.panel.config.entities.picker.headers.device"),
