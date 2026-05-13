@@ -616,12 +616,9 @@ export default class HaAutomationConditionRow extends LitElement {
   );
 
   private async _subscribeCondition() {
-    const condition = this.condition;
-
     this._resetSubscription();
 
-    // Don't do anything if condition changed.
-    if (this.condition !== condition) {
+    if (!this.condition) {
       return;
     }
 
@@ -639,7 +636,7 @@ export default class HaAutomationConditionRow extends LitElement {
           };
         }
       },
-      condition
+      this.condition
     );
     conditionUnsub.catch((err: any) => {
       this._handleLiveTestError(err);
