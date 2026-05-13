@@ -1,9 +1,6 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantConfig } from "../types";
 
-export const documentationUrl = (
-  hassConfig: HomeAssistantConfig,
-  path: string
-) =>
+export const documentationUrl = (hass: HomeAssistantConfig, path: string) =>
   `https://${
     hass.config.version.includes("b")
       ? "rc"
