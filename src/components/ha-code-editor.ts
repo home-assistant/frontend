@@ -682,7 +682,7 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   /**
-   * Builds a HassArgHoverContext from the current hass object so that
+   * Builds a HassArgHoverContext from the context objects so that
    * haJinjaHoverSource can resolve entity / device / area friendly names
    * without importing the full HomeAssistant type into the resource file.
    */
@@ -1378,8 +1378,8 @@ export class HaCodeEditor extends ReactiveElement {
   ): CompletionResult {
     const from = stringNode.from + 1;
     const empty: CompletionResult = { from, options: [] };
-    if (!entityId || !this.hass) return empty;
-    const entityState = this.hass.states[entityId];
+    if (!entityId || !this._states) return empty;
+    const entityState = this._states[entityId];
     if (!entityState) return empty;
     const attrs = Object.keys(entityState.attributes).sort();
     if (!attrs.length) return empty;
@@ -1399,7 +1399,7 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    const states = this._getStates(this.hass!.states);
+    const states = this._getStates(this._states!);
     if (!states?.length) return null;
     // from is stringNode.from + 1 to skip the opening quote character.
     const from = stringNode.from + 1;
@@ -1433,8 +1433,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.devices) return null;
-    const devices = this._getDevices(this.hass.devices);
+    if (!this._registries?.devices) return null;
+    const devices = this._getDevices(this._registries.devices);
     if (!devices.length) return null;
     return {
       from: stringNode.from + 1,
@@ -1462,8 +1462,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.areas) return null;
-    const areas = this._getAreas(this.hass.areas);
+    if (!this._registries?.areas) return null;
+    const areas = this._getAreas(this._registries.areas);
     if (!areas.length) return null;
     return {
       from: stringNode.from + 1,
@@ -1491,8 +1491,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.floors) return null;
-    const floors = this._getFloors(this.hass.floors);
+    if (!this._registries?.floors) return null;
+    const floors = this._getFloors(this._registries.floors);
     if (!floors.length) return null;
     return {
       from: stringNode.from + 1,
