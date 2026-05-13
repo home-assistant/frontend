@@ -3,7 +3,7 @@ import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -34,6 +34,7 @@ import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-tip";
 import "../../../components/input/ha-input";
 import {
   CAMERA_ORIENTATIONS,
@@ -203,6 +204,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _calendarColor?: string | null;
 
   @state() private _noDeviceArea?: boolean;
+
+  @query("ha-input.name") private _nameInput?: HTMLElement;
 
   private _origEntityId!: string;
 
@@ -439,16 +442,21 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${this.hideName
         ? nothing
         : html`<ha-input
-            inset-label
-            class="name"
-            .value=${this._name}
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.name"
-            )}
-            .disabled=${this.disabled}
-            @input=${this._nameChanged}
-          >
-          </ha-input>`}
+              inset-label
+              class="name"
+              .value=${this._name}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.name"
+              )}
+              .disabled=${this.disabled}
+              @input=${this._nameChanged}
+            >
+            </ha-input>
+            ${this._renderDeviceNameTip(
+              this._device,
+              this._name,
+              this.entry.name || ""
+            )}`}
       ${this.hideIcon
         ? nothing
         : html`
@@ -1563,6 +1571,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
+  private _resetNameAndOpenDeviceSettings() {
+    this._name = this.entry.name || "";
+    fireEvent(this, "change");
+
+    this._openDeviceSettings();
+  }
+
   private _openDeviceSettings() {
     showDeviceRegistryDetailDialog(this, {
       device: this._device!,
@@ -1595,6 +1610,36 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ),
     });
   }
+
+  private _renderDeviceNameTip = memoizeOne(
+    (
+      device: DeviceRegistryEntry | undefined,
+      name: string,
+      originalName: string
+    ) => {
+      if (!device || name === originalName) {
+        return nothing;
+      }
+      return html`<ha-tip
+        .hass=${this.hass}
+        .popoverAnchor=${this._nameInput}
+      >
+        ${this.hass.localize(
+          "ui.dialogs.entity_registry.editor.device_name_tip",
+          {
+            link: html`<button
+              class="link"
+              @click=${this._resetNameAndOpenDeviceSettings}
+            >
+              ${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.open_device_settings"
+              )}
+            </button>`,
+          }
+        )}
+      </ha-tip>`;
+    }
+  );
 
   private _switchAsDomainsSorted = memoizeOne(
     (domains: string[], localize: LocalizeFunc) =>
