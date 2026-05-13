@@ -12,8 +12,11 @@ import type { CheckConfigResult } from "../../../../data/core";
 import { checkCoreConfig } from "../../../../data/core";
 import { domainToName } from "../../../../data/integration";
 import { showRestartDialog } from "../../../../dialogs/restart/show-dialog-restart";
+import "../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, Route, TranslationDict } from "../../../../types";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 
 type ReloadableDomain = Exclude<
   keyof TranslationDict["ui"]["panel"]["config"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],
@@ -78,26 +81,37 @@ export class DeveloperYamlConfig extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
-        <ha-card
-          outlined
-          header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.yaml.section.validation.heading"
-          )}
-        >
-          <div class="card-content">
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.yaml.section.validation.introduction"
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
+      >
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div class="content">
+          <ha-card
+            outlined
+            header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.yaml.section.validation.heading"
             )}
-            ${!this._validateResult
-              ? this._validating
-                ? html`<div
-                    class="validate-container layout vertical center-center"
-                  >
-                    <ha-spinner></ha-spinner>
-                  </div> `
-                : nothing
-              : html`
+          >
+            <div class="card-content">
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.yaml.section.validation.introduction"
+              )}
+              ${!this._validateResult
+                ? this._validating
+                  ? html`<div
+                      class="validate-container layout vertical center-center"
+                    >
+                      <ha-spinner></ha-spinner>
+                    </div> `
+                  : nothing
+                : html`
                     <div class="validate-result ${
                       this._validateResult.result === "invalid" ? "invalid" : ""
                     }">
@@ -142,70 +156,71 @@ export class DeveloperYamlConfig extends LitElement {
                     }
                   </div>
                 `}
-          </div>
-          <div class="card-actions">
-            <ha-button appearance="plain" @click=${this._validateConfig}>
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.yaml.section.validation.check_config"
-              )}
-            </ha-button>
-            <ha-button
-              variant="danger"
-              appearance="plain"
-              @click=${this._restart}
-              .disabled=${this._validateResult?.result === "invalid"}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.yaml.section.server_management.restart"
-              )}
-            </ha-button>
-          </div>
-        </ha-card>
-        <ha-card
-          outlined
-          header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.yaml.section.reloading.heading"
-          )}
-        >
-          <div class="card-content">
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.yaml.section.reloading.introduction"
+            </div>
+            <div class="card-actions">
+              <ha-button appearance="plain" @click=${this._validateConfig}>
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.yaml.section.validation.check_config"
+                )}
+              </ha-button>
+              <ha-button
+                variant="danger"
+                appearance="plain"
+                @click=${this._restart}
+                .disabled=${this._validateResult?.result === "invalid"}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.yaml.section.server_management.restart"
+                )}
+              </ha-button>
+            </div>
+          </ha-card>
+          <ha-card
+            outlined
+            header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.yaml.section.reloading.heading"
             )}
-          </div>
-          <div class="card-actions">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="homeassistant"
-              service="reload_all"
-              >${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.yaml.section.reloading.all"
+          >
+            <div class="card-content">
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.yaml.section.reloading.introduction"
               )}
-            </ha-call-service-button>
-          </div>
-          <div class="card-actions">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="homeassistant"
-              service="reload_core_config"
-              >${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.yaml.section.reloading.core"
-              )}
-            </ha-call-service-button>
-          </div>
-          ${this._reloadableDomains.map(
-            (reloadable) => html`
-              <div class="card-actions">
-                <ha-call-service-button
-                  .hass=${this.hass}
-                  .domain=${reloadable.domain}
-                  service="reload"
-                  >${reloadable.name}
-                </ha-call-service-button>
-              </div>
-            `
-          )}
-        </ha-card>
-      </div>
+            </div>
+            <div class="card-actions">
+              <ha-call-service-button
+                .hass=${this.hass}
+                domain="homeassistant"
+                service="reload_all"
+                >${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.yaml.section.reloading.all"
+                )}
+              </ha-call-service-button>
+            </div>
+            <div class="card-actions">
+              <ha-call-service-button
+                .hass=${this.hass}
+                domain="homeassistant"
+                service="reload_core_config"
+                >${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.yaml.section.reloading.core"
+                )}
+              </ha-call-service-button>
+            </div>
+            ${this._reloadableDomains.map(
+              (reloadable) => html`
+                <div class="card-actions">
+                  <ha-call-service-button
+                    .hass=${this.hass}
+                    .domain=${reloadable.domain}
+                    service="reload"
+                    >${reloadable.name}
+                  </ha-call-service-button>
+                </div>
+              `
+            )}
+          </ha-card>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -254,6 +269,10 @@ export class DeveloperYamlConfig extends LitElement {
           padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
           max-width: 1040px;
           margin: 0 auto;
+        }
+
+        hass-tabs-subpage {
+          height: 100%;
         }
 
         ha-card {

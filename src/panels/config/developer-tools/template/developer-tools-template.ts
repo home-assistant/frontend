@@ -15,9 +15,12 @@ import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../../layouts/hass-tabs-subpage";
 import { haStyle, haStyleScrollbar } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
+import "../developer-tools-page-menu";
+import { getDeveloperToolsTabs } from "../developer-tools-tabs";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -45,6 +48,8 @@ class HaPanelDevTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _error?: string;
 
@@ -94,198 +99,210 @@ class HaPanelDevTemplate extends LitElement {
         : type;
 
     return html`
-      <div class="content">
-        <ha-expansion-panel
-          .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.about"
-          )}
-          outlined
-          .expanded=${this._descriptionExpanded}
-          @expanded-changed=${this._expandedChanged}
-        >
-          <div class="description">
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.description"
-              )}
-            </p>
-            <ul>
-              <li>
-                <a
-                  href="https://jinja.palletsprojects.com/en/latest/templates/"
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
-                  )}
-                </a>
-              </li>
-              <li>
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/templating/"
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.templates.template_extensions"
-                  )}</a
-                >
-              </li>
-            </ul>
-          </div>
-        </ha-expansion-panel>
-      </div>
-      <div
-        class="content ${classMap({
-          layout: !this.narrow,
-          horizontal: !this.narrow,
-        })}"
-        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${getDeveloperToolsTabs()}
       >
-        <ha-card
-          class="edit-pane"
-          header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.editor"
-          )}
-        >
-          <div class="card-content">
-            <ha-code-editor
-              mode="jinja2"
-              .hass=${this.hass}
-              .value=${this._template}
-              .error=${this._error}
-              autofocus
-              autocomplete-entities
-              autocomplete-icons
-              @value-changed=${this._templateChanged}
-              dir="ltr"
-            ></ha-code-editor>
-          </div>
-          <div class="card-actions">
-            <ha-button appearance="plain" @click=${this._restoreDemo}>
-              ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.reset"
-              )}
-            </ha-button>
-            <ha-button appearance="plain" @click=${this._clear}>
-              ${this.hass.localize("ui.common.clear")}
-            </ha-button>
-          </div>
-          <ha-tip .hass=${this.hass}>
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
-              {
-                autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
-              }
+        <developer-tools-page-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></developer-tools-page-menu>
+        <div class="content">
+          <ha-expansion-panel
+            .header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.about"
             )}
-          </ha-tip>
-        </ha-card>
-
-        <ha-card
-          class="render-pane"
-          header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.result"
-          )}
-        >
-          <div class="card-content ha-scrollbar">
-            ${this._rendering
-              ? html`<ha-spinner
-                  class="render-spinner"
-                  size="small"
-                ></ha-spinner>`
-              : ""}
-            ${this._error
-              ? html`<ha-alert
-                  alert-type=${this._errorLevel?.toLowerCase() || "error"}
-                  >${this._error}</ha-alert
-                >`
-              : nothing}
-            ${this._templateResult
-              ? html`<pre
-                    class="rendered ${classMap({
-                      [resultType]: resultType,
-                    })}"
+            outlined
+            .expanded=${this._descriptionExpanded}
+            @expanded-changed=${this._expandedChanged}
+          >
+            <div class="description">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.templates.description"
+                )}
+              </p>
+              <ul>
+                <li>
+                  <a
+                    href="https://jinja.palletsprojects.com/en/latest/templates/"
+                    target="_blank"
+                    rel="noreferrer"
+                    >${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
+                    )}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=${documentationUrl(
+                      this.hass,
+                      "/docs/configuration/templating/"
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
                   >
-${type === "object"
-                      ? JSON.stringify(this._templateResult.result, null, 2)
-                      : this._templateResult.result}</pre
-                  >
-                  <p>
                     ${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.templates.result_type"
-                    )}:
-                    ${resultType}
-                  </p>
-                  ${this._templateResult.listeners.time
-                    ? html`
-                        <p>
-                          ${this.hass.localize(
-                            "ui.panel.config.developer-tools.tabs.templates.time"
-                          )}
-                        </p>
-                      `
-                    : ""}
-                  ${!this._templateResult.listeners
-                    ? nothing
-                    : this._templateResult.listeners.all
+                      "ui.panel.config.developer-tools.tabs.templates.template_extensions"
+                    )}</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </ha-expansion-panel>
+        </div>
+        <div
+          class="content ${classMap({
+            layout: !this.narrow,
+            horizontal: !this.narrow,
+          })}"
+          style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
+        >
+          <ha-card
+            class="edit-pane"
+            header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.editor"
+            )}
+          >
+            <div class="card-content">
+              <ha-code-editor
+                mode="jinja2"
+                .hass=${this.hass}
+                .value=${this._template}
+                .error=${this._error}
+                autofocus
+                autocomplete-entities
+                autocomplete-icons
+                @value-changed=${this._templateChanged}
+                dir="ltr"
+              ></ha-code-editor>
+            </div>
+            <div class="card-actions">
+              <ha-button appearance="plain" @click=${this._restoreDemo}>
+                ${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.templates.reset"
+                )}
+              </ha-button>
+              <ha-button appearance="plain" @click=${this._clear}>
+                ${this.hass.localize("ui.common.clear")}
+              </ha-button>
+            </div>
+            <ha-tip .hass=${this.hass}>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
+                {
+                  autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+                }
+              )}
+            </ha-tip>
+          </ha-card>
+
+          <ha-card
+            class="render-pane"
+            header=${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.templates.result"
+            )}
+          >
+            <div class="card-content ha-scrollbar">
+              ${this._rendering
+                ? html`<ha-spinner
+                    class="render-spinner"
+                    size="small"
+                  ></ha-spinner>`
+                : ""}
+              ${this._error
+                ? html`<ha-alert
+                    alert-type=${this._errorLevel?.toLowerCase() || "error"}
+                    >${this._error}</ha-alert
+                  >`
+                : nothing}
+              ${this._templateResult
+                ? html`<pre
+                      class="rendered ${classMap({
+                        [resultType]: resultType,
+                      })}"
+                    >
+${type === "object"
+                        ? JSON.stringify(this._templateResult.result, null, 2)
+                        : this._templateResult.result}</pre
+                    >
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.templates.result_type"
+                      )}:
+                      ${resultType}
+                    </p>
+                    ${this._templateResult.listeners.time
                       ? html`
-                          <p class="all_listeners">
+                          <p>
                             ${this.hass.localize(
-                              "ui.panel.config.developer-tools.tabs.templates.all_listeners"
+                              "ui.panel.config.developer-tools.tabs.templates.time"
                             )}
                           </p>
                         `
-                      : this._templateResult.listeners.domains.length ||
-                          this._templateResult.listeners.entities.length
+                      : ""}
+                    ${!this._templateResult.listeners
+                      ? nothing
+                      : this._templateResult.listeners.all
                         ? html`
-                            <p>
+                            <p class="all_listeners">
                               ${this.hass.localize(
-                                "ui.panel.config.developer-tools.tabs.templates.listeners"
+                                "ui.panel.config.developer-tools.tabs.templates.all_listeners"
                               )}
                             </p>
-                            <ul>
-                              ${this._templateResult.listeners.domains
-                                .sort()
-                                .map(
-                                  (domain) => html`
-                                    <li>
-                                      <b
-                                        >${this.hass.localize(
-                                          "ui.panel.config.developer-tools.tabs.templates.domain"
-                                        )}</b
-                                      >: ${domain}
-                                    </li>
-                                  `
-                                )}
-                              ${this._templateResult.listeners.entities
-                                .sort()
-                                .map(
-                                  (entity_id) => html`
-                                    <li>
-                                      <b
-                                        >${this.hass.localize(
-                                          "ui.panel.config.developer-tools.tabs.templates.entity"
-                                        )}</b
-                                      >: ${entity_id}
-                                    </li>
-                                  `
-                                )}
-                            </ul>
                           `
-                        : !this._templateResult.listeners.time
-                          ? html`<span class="all_listeners">
-                              ${this.hass.localize(
-                                "ui.panel.config.developer-tools.tabs.templates.no_listeners"
-                              )}
-                            </span>`
-                          : nothing}`
-              : nothing}
-          </div>
-        </ha-card>
-      </div>
+                        : this._templateResult.listeners.domains.length ||
+                            this._templateResult.listeners.entities.length
+                          ? html`
+                              <p>
+                                ${this.hass.localize(
+                                  "ui.panel.config.developer-tools.tabs.templates.listeners"
+                                )}
+                              </p>
+                              <ul>
+                                ${this._templateResult.listeners.domains
+                                  .sort()
+                                  .map(
+                                    (domain) => html`
+                                      <li>
+                                        <b
+                                          >${this.hass.localize(
+                                            "ui.panel.config.developer-tools.tabs.templates.domain"
+                                          )}</b
+                                        >: ${domain}
+                                      </li>
+                                    `
+                                  )}
+                                ${this._templateResult.listeners.entities
+                                  .sort()
+                                  .map(
+                                    (entity_id) => html`
+                                      <li>
+                                        <b
+                                          >${this.hass.localize(
+                                            "ui.panel.config.developer-tools.tabs.templates.entity"
+                                          )}</b
+                                        >: ${entity_id}
+                                      </li>
+                                    `
+                                  )}
+                              </ul>
+                            `
+                          : !this._templateResult.listeners.time
+                            ? html`<span class="all_listeners">
+                                ${this.hass.localize(
+                                  "ui.panel.config.developer-tools.tabs.templates.no_listeners"
+                                )}
+                              </span>`
+                            : nothing}`
+                : nothing}
+            </div>
+          </ha-card>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -302,6 +319,12 @@ ${type === "object"
       css`
         :host {
           user-select: none;
+          display: block;
+          height: 100%;
+        }
+
+        hass-tabs-subpage {
+          height: 100%;
         }
 
         .content {
