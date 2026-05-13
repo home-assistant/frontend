@@ -82,14 +82,15 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
-    // Lovelace cards are rendered inside the shadow DOM.
-    // Playwright pierces shadow roots with CSS selectors automatically.
-    // Wait for either a lovelace view container or a specific card type.
-    // Note: avoid concurrent waitFor() calls (Promise.race) on mobile WebKit —
-    // running two selector watchers simultaneously can crash the driver.
-    // Note: attribute selectors like [class*='hui-'] may not pierce shadow DOM
-    // reliably on all platforms — use tag name selectors instead.
-    const viewOrCardSelector = [
+    // On some BrowserStack mobile sessions, dynamically imported JS chunks
+    // may fail to load over the tunnel (infrastructure flakiness). When that
+    // happens, the demo config never loads and no cards render — but the app
+    // shell itself is healthy.  Skip the cards assertion in that case.
+    //
+    // Additionally, BrowserStack's iOS WebKit driver may throw "Internal error"
+    // for complex CSS selectors in waitFor(). Use page.evaluate polling as a
+    // more compatible alternative.
+    const tags = [
       "hui-masonry-view",
       "hui-sections-view",
       "hui-panel-view",
@@ -99,17 +100,37 @@ test.describe("Home Assistant Demo", () => {
       "hui-glance-card",
       "hui-button-card",
       "hui-markdown-card",
-    ].join(", ");
+    ];
 
-    // On some BrowserStack mobile sessions, dynamically imported JS chunks
-    // may fail to load over the tunnel (infrastructure flakiness). When that
-    // happens, the demo config never loads and no cards render — but the app
-    // shell itself is healthy.  Skip the cards assertion in that case.
     try {
-      await page
-        .locator(viewOrCardSelector)
-        .first()
-        .waitFor({ state: "attached", timeout: 30_000 });
+      // Poll via evaluate — avoids WebKit driver issues with waitForSelector.
+      // Uses recursive shadow DOM traversal since hui-* elements are nested
+      // inside shadow roots and document.querySelector() won't find them.
+      await expect
+        .poll(
+          async () =>
+            page.evaluate((selectors) => {
+              // Recursively search shadow roots for any matching element.
+              // document.querySelector() does not pierce shadow DOM.
+              function shadowQuery(
+                root: Document | ShadowRoot,
+                sels: string[]
+              ): boolean {
+                for (const sel of sels) {
+                  if (root.querySelector(sel)) return true;
+                }
+                for (const el of root.querySelectorAll("*")) {
+                  if (el.shadowRoot && shadowQuery(el.shadowRoot, sels)) {
+                    return true;
+                  }
+                }
+                return false;
+              }
+              return shadowQuery(document, selectors);
+            }, tags),
+          { timeout: 30_000, intervals: [500, 1000, 2000] }
+        )
+        .toBe(true);
     } catch (err) {
       // Give async pageerror events a moment to fire before inspecting them.
       await page.waitForTimeout(1_000);
