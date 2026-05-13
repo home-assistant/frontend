@@ -123,9 +123,14 @@ class HuiWaterSankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    // Calculate total water consumption from all sources or devices
+    // Sum only top-level devices. Devices with `included_in_stat` are already
+    // counted inside their parent stat; adding them again would double-count
+    // and push the home total above the source meter.
     const totalDownstreamConsumption = prefs.device_consumption_water.reduce(
       (total, device) => {
+        if (device.included_in_stat) {
+          return total;
+        }
         const value =
           device.stat_consumption in this._data!.stats
             ? calculateStatisticSumGrowth(
