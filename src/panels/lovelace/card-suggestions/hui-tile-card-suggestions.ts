@@ -135,8 +135,8 @@ const SENSOR_TREND_VARIANTS: TileVariant[] = [
   { id: "tile_trend_graph", features: ["trend-graph"] },
 ];
 
-// Domains with a dedicated card-suggestions provider — skip tile suggestions
-// for them so the dedicated card wins.
+// Domains with a dedicated card-suggestions provider; skip the tile
+// fallback so the dedicated card wins.
 const EXCLUDED_DOMAINS = new Set(["calendar", "todo"]);
 
 const getVariants = (
@@ -167,7 +167,7 @@ const buildTileConfig = (
   return config;
 };
 
-// A throwing supportsX would invalidate the variant — treat it as unsupported
+// A throwing supportsX would invalidate the variant; treat it as unsupported
 // rather than tearing down the whole suggestion list.
 const allFeaturesSupported = (
   hass: HomeAssistant,

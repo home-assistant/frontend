@@ -81,7 +81,6 @@ export class HuiSuggestionEntityTree extends LitElement {
     this._loadDomainTranslations();
   }
 
-  // Backend "title" category is loaded by the config panel — not from the dashboard.
   private async _loadDomainTranslations() {
     if (!this.hass) return;
     this._domainLocalize = await this.hass.loadBackendTranslation("title");

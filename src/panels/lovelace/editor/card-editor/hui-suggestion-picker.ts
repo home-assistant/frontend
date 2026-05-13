@@ -59,8 +59,8 @@ export class HuiSuggestionPicker extends LitElement {
     this._narrow = ev.matches;
   };
 
-  // Memoize on scalars so the result stays stable when only hass changes —
-  // keeps hui-card previews from re-rendering on every state tick.
+  // Memoize on scalars so the result stays stable when only hass changes.
+  // Keeps hui-card previews from re-rendering on every state tick.
   private _computeSuggestions = memoizeOne(
     (
       entityId: string | undefined,
@@ -358,7 +358,7 @@ export class HuiSuggestionPicker extends LitElement {
           font-size: var(--ha-font-size-s);
         }
 
-        /* Mobile master/detail — sidebar OR main is visible, never both. */
+        /* Mobile master/detail: sidebar OR main is visible, never both. */
         @media (max-width: 600px) {
           :host {
             flex-direction: column;
