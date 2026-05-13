@@ -166,36 +166,42 @@ test.describe("Home Assistant Demo", () => {
       timeout: 30_000,
     });
 
+    // Helper: poll shadow DOM for an element matching the selector.
+    const waitForShadow = (selector: string, timeout = 15_000) =>
+      expect
+        .poll(
+          () => page.evaluate((sel) => !!document.querySelector(sel), selector),
+          { timeout }
+        )
+        .toBe(true);
+
     // On narrow viewports (< 870 px — mobile / tablet) the sidebar lives
     // inside a modal drawer that is closed by default.  Open it first via
     // the ha-menu-button in the top app-bar.
     const menuButton = page.locator("ha-menu-button");
     if (await menuButton.isVisible()) {
       await menuButton.click();
-      // Wait for the drawer animation to complete so sidebar items are visible.
-      await page
-        .locator("ha-sidebar")
-        .waitFor({ state: "visible", timeout: 15_000 });
+      // Wait for ha-sidebar to become visible (drawer animation completes).
+      // Use evaluate polling to avoid BrowserStack iOS waitForSelector crashes.
+      await waitForShadow("ha-sidebar");
     } else {
       // On wide viewports the sidebar is always rendered.
-      await page
-        .locator("ha-sidebar")
-        .waitFor({ state: "attached", timeout: 30_000 });
+      await waitForShadow("ha-sidebar", 30_000);
     }
 
     const candidatePanels = ["map", "logbook", "history", "config"];
     let clicked = false;
 
-    // Wait for at least one panel item to appear before probing visibility.
-    await page
-      .locator(candidatePanels.map((p) => `#sidebar-panel-${p}`).join(", "))
-      .first()
-      .waitFor({ state: "visible", timeout: 15_000 });
+    // Wait for at least one panel item to appear.
+    const panelSelector = candidatePanels
+      .map((p) => `#sidebar-panel-${p}`)
+      .join(", ");
+    await waitForShadow(panelSelector);
 
     for (const panel of candidatePanels) {
       const navItem = page.locator(`#sidebar-panel-${panel}`);
       // eslint-disable-next-line no-await-in-loop
-      const visible = await navItem.isVisible();
+      const visible = await navItem.isVisible().catch(() => false);
       if (visible) {
         // eslint-disable-next-line no-await-in-loop
         await navItem.click();
