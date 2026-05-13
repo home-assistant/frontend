@@ -322,13 +322,13 @@ class HaRefreshTokens extends LitElement {
     return [
       haStyle,
       css`
-        ha-row-item {
+        ha-list-item-base {
           --ha-row-item-padding-inline: 0;
         }
         ha-icon-button {
           color: var(--primary-text-color);
         }
-        ha-row-item .dot {
+        ha-list-item-base .dot {
           display: inline-block;
           width: 8px;
           height: 8px;
