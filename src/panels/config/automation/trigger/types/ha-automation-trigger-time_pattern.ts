@@ -6,12 +6,27 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimePatternTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
-const SCHEMA = [
+export const SCHEMA = [
   { name: "hours", selector: { text: {} } },
   { name: "minutes", selector: { text: {} } },
   { name: "seconds", selector: { text: {} } },
 ] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.triggers.type.time_pattern.${fieldName}` as any
+  );
+
+export const computeHelper = (
+  _fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize("ui.panel.config.automation.editor.triggers.type.time_pattern.help");
 
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {
@@ -47,17 +62,11 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<typeof SCHEMA>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.time_pattern.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 
   private _computeHelperCallback = (
-    _schema: SchemaUnion<typeof SCHEMA>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.time_pattern.help`
-    );
+    schema: SchemaUnion<typeof SCHEMA>
+  ): string => computeHelper(schema.name, this.hass.localize);
 }
 
 declare global {

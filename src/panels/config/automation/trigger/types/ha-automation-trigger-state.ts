@@ -43,6 +43,40 @@ const stateTriggerStruct = assign(
   })
 );
 
+export const YAML_SCHEMA = [
+  {
+    name: "entity_id",
+    required: true,
+    selector: { entity: { multiple: true } },
+  },
+  {
+    name: "attribute",
+    selector: { attribute: {} },
+    context: { filter_entity: "entity_id" },
+  },
+  {
+    name: "from",
+    selector: { state: { multiple: true } },
+    context: { filter_entity: "entity_id" },
+  },
+  {
+    name: "to",
+    selector: { state: { multiple: true } },
+    context: { filter_entity: "entity_id" },
+  },
+  { name: "for", selector: { duration: {} } },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    fieldName === "entity_id"
+      ? "ui.components.entity.entity-picker.entity"
+      : (`ui.panel.config.automation.editor.triggers.type.state.${fieldName}` as any)
+  );
+
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -297,12 +331,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      schema.name === "entity_id"
-        ? "ui.components.entity.entity-picker.entity"
-        : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

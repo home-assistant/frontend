@@ -26,10 +26,14 @@ import { NodeProp } from "@lezer/common";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { DeviceRegistryEntry } from "../data/device/device_registry";
+import type { FloorRegistryEntry } from "../data/floor_registry";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
   buildAreaCompletions,
   buildDeviceCompletions,
   buildEntityCompletions,
+  buildFloorCompletions,
+  buildLabelCompletions,
 } from "./ha_completion_items";
 import {
   buildArgTooltipDom,
@@ -37,6 +41,7 @@ import {
 } from "./jinja_ha_completions";
 import "../components/ha-code-editor-jinja-arg-hover";
 import type { YamlFieldSchema, YamlFieldSchemaMap } from "./yaml_field_schema";
+import { hasAllowUnknownFields } from "./yaml_field_schema";
 
 // ---------------------------------------------------------------------------
 // Helpers – YAML syntax tree traversal
@@ -111,6 +116,14 @@ function valueCompletionsForSelector(
     return buildAreaCompletions(ctx.areas);
   }
 
+  if (type === "floor" && ctx.floors) {
+    return buildFloorCompletions(ctx.floors);
+  }
+
+  if (type === "label" && ctx.labels) {
+    return buildLabelCompletions(ctx.labels);
+  }
+
   if (type === "template") {
     return [
       { label: "{{ }}", type: "text", detail: "Jinja2 template" },
@@ -134,6 +147,10 @@ export interface HaYamlCompletionContext {
   devices?: Record<string, DeviceRegistryEntry>;
   /** Optional area registry for AreaSelector completions. */
   areas?: Record<string, AreaRegistryEntry>;
+  /** Optional floor registry for FloorSelector completions. */
+  floors?: Record<string, FloorRegistryEntry>;
+  /** Optional label registry for LabelSelector completions. */
+  labels?: LabelRegistryEntry[];
 }
 
 /**
@@ -388,12 +405,13 @@ export function haYamlCompletionSource(
                 ]);
                 if (field2) {
                   const completions = valueCompletionsForSelector(field2, ctx);
-                  if (completions)
+                  if (completions) {
                     return {
                       options: completions,
                       from: pos,
                       validFor: VALUE_VALID_FOR,
                     };
+                  }
                 }
               }
             }
@@ -766,12 +784,14 @@ export function haYamlLintSource(
           presentKeys.add(key);
 
           if (!(key in schemaLevel)) {
-            diagnostics.push({
-              from: lit.from,
-              to: lit.to,
-              severity: "warning",
-              message: `Unknown field: "${key}"`,
-            });
+            if (!hasAllowUnknownFields(schemaLevel)) {
+              diagnostics.push({
+                from: lit.from,
+                to: lit.to,
+                severity: "warning",
+                message: `Unknown field: "${key}"`,
+              });
+            }
           } else {
             // Recurse into nested mappings.
             const fieldDef = schemaLevel[key];

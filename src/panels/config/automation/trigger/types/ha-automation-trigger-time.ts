@@ -18,6 +18,37 @@ const MODE_ENTITY = "entity";
 const VALID_DOMAINS = ["sensor", "input_datetime"];
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
+// Real YAML keys for the time trigger (the UI uses time/entity/mode/offset
+// as an abstraction, but the actual YAML uses `at` and `weekday`).
+export const YAML_SCHEMA = [
+  { name: "at", required: true, selector: { text: {} } },
+  {
+    name: "weekday",
+    type: "multi_select" as const,
+    options: DAYS.map((d) => [d, d] as const),
+  },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string => {
+  switch (fieldName) {
+    case "time":
+      return localize(
+        "ui.panel.config.automation.editor.triggers.type.time.at"
+      );
+    case "weekday":
+      return localize(
+        "ui.panel.config.automation.editor.triggers.type.time.weekday"
+      );
+    default:
+      return localize(
+        `ui.panel.config.automation.editor.triggers.type.time.${fieldName}` as any
+      );
+  }
+};
+
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -210,21 +241,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      case "time":
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.time.at`
-        );
-      case "weekday":
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.time.weekday`
-        );
-    }
-    return this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
-    );
-  };
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

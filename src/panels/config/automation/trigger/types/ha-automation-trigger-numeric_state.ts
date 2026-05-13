@@ -12,6 +12,63 @@ import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string => {
+  switch (fieldName) {
+    case "entity_id":
+      return localize("ui.components.entity.entity-picker.entity");
+    case "attribute":
+      return localize("ui.components.entity.entity-attribute-picker.attribute");
+    case "for":
+      return localize(
+        "ui.panel.config.automation.editor.triggers.type.state.for"
+      );
+    default:
+      return localize(
+        `ui.panel.config.automation.editor.triggers.type.numeric_state.${fieldName}` as any
+      );
+  }
+};
+
+export const YAML_SCHEMA = [
+  {
+    name: "entity_id",
+    required: true,
+    selector: { entity: { multiple: true } },
+  },
+  {
+    name: "attribute",
+    selector: { attribute: {} },
+    context: { filter_entity: "entity_id" },
+  },
+  {
+    name: "above",
+    selector: {
+      number: {
+        mode: "box",
+        min: Number.MIN_SAFE_INTEGER,
+        max: Number.MAX_SAFE_INTEGER,
+        step: 0.1,
+      },
+    },
+  },
+  {
+    name: "below",
+    selector: {
+      number: {
+        mode: "box",
+        min: Number.MIN_SAFE_INTEGER,
+        max: Number.MAX_SAFE_INTEGER,
+        step: 0.1,
+      },
+    },
+  },
+  { name: "value_template", selector: { template: {} } },
+  { name: "for", selector: { duration: {} } },
+] as const;
+
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -315,24 +372,7 @@ export class HaNumericStateTrigger extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      case "entity_id":
-        return this.hass.localize("ui.components.entity.entity-picker.entity");
-      case "attribute":
-        return this.hass.localize(
-          "ui.components.entity.entity-attribute-picker.attribute"
-        );
-      case "for":
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.state.for`
-        );
-      default:
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.numeric_state.${schema.name}`
-        );
-    }
-  };
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

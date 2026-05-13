@@ -19,6 +19,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { StateCondition } from "../../../../../data/automation";
 import { STATE_CONDITION_HIDDEN_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
@@ -33,7 +34,7 @@ const stateConditionStruct = object({
   enabled: optional(boolean()),
 });
 
-const SCHEMA = [
+export const SCHEMA = [
   { name: "entity_id", required: true, selector: { entity: {} } },
   {
     name: "attribute",
@@ -59,6 +60,26 @@ const SCHEMA = [
   },
   { name: "for", selector: { duration: {} } },
 ] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string => {
+  switch (fieldName) {
+    case "entity_id":
+      return localize("ui.components.entity.entity-picker.entity");
+    case "attribute":
+      return localize("ui.components.entity.entity-attribute-picker.attribute");
+    case "for":
+      return localize(
+        "ui.panel.config.automation.editor.triggers.type.state.for"
+      );
+    default:
+      return localize(
+        `ui.panel.config.automation.editor.conditions.type.state.${fieldName}` as any
+      );
+  }
+};
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -124,24 +145,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<typeof SCHEMA>
-  ): string => {
-    switch (schema.name) {
-      case "entity_id":
-        return this.hass.localize("ui.components.entity.entity-picker.entity");
-      case "attribute":
-        return this.hass.localize(
-          "ui.components.entity.entity-attribute-picker.attribute"
-        );
-      case "for":
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.state.for`
-        );
-      default:
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.conditions.type.state.${schema.name}`
-        );
-    }
-  };
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

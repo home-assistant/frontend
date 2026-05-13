@@ -9,14 +9,180 @@ import type { TriggerDescription } from "../../../data/trigger";
 import type { ConditionDescription } from "../../../data/condition";
 import type { Action } from "../../../data/script";
 import type {
+  HaFormSchema,
+  HaFormSelectSchema,
+  HaFormMultiSelectSchema,
+} from "../../../components/ha-form/types";
+import type {
   YamlFieldSchema,
   YamlFieldSchemaMap,
 } from "../../../resources/yaml_field_schema";
+import { allowUnknownFields } from "../../../resources/yaml_field_schema";
 import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   TRIGGER_BEHAVIORS,
   CONDITION_BEHAVIORS,
 } from "../../../components/ha-selector/ha-selector-automation-behavior";
+import {
+  SCHEMA as STATE_CONDITION_FORM_SCHEMA,
+  computeLabel as stateConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-state";
+import {
+  SCHEMA as TEMPLATE_CONDITION_FORM_SCHEMA,
+  computeLabel as templateConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-template";
+import {
+  YAML_SCHEMA as NUMERIC_STATE_CONDITION_FORM_SCHEMA,
+  computeLabel as numericStateConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-numeric_state";
+import {
+  YAML_SCHEMA as SUN_CONDITION_FORM_SCHEMA,
+  computeLabel as sunConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-sun";
+import {
+  YAML_SCHEMA as TIME_CONDITION_FORM_SCHEMA,
+  computeLabel as timeConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-time";
+import {
+  YAML_SCHEMA as TRIGGER_CONDITION_FORM_SCHEMA,
+  computeLabel as triggerConditionComputeLabel,
+} from "./condition/types/ha-automation-condition-trigger";
+import {
+  SCHEMA as TEMPLATE_TRIGGER_FORM_SCHEMA,
+  computeLabel as templateTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-template";
+import {
+  SCHEMA as TIME_PATTERN_TRIGGER_FORM_SCHEMA,
+  computeLabel as timePatternTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-time_pattern";
+import {
+  YAML_SCHEMA as HOMEASSISTANT_TRIGGER_FORM_SCHEMA,
+  computeLabel as homeassistantTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-homeassistant";
+import {
+  YAML_SCHEMA as SUN_TRIGGER_FORM_SCHEMA,
+  computeLabel as sunTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-sun";
+import {
+  YAML_SCHEMA as CALENDAR_TRIGGER_FORM_SCHEMA,
+  computeLabel as calendarTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-calendar";
+import {
+  YAML_SCHEMA as GEO_LOCATION_TRIGGER_FORM_SCHEMA,
+  computeLabel as geoLocationTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-geo_location";
+import {
+  YAML_SCHEMA as PERSISTENT_NOTIFICATION_TRIGGER_FORM_SCHEMA,
+  computeLabel as persistentNotificationTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-persistent_notification";
+import {
+  YAML_SCHEMA as NUMERIC_STATE_TRIGGER_FORM_SCHEMA,
+  computeLabel as numericStateTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-numeric_state";
+import {
+  YAML_SCHEMA as TIME_TRIGGER_FORM_SCHEMA,
+  computeLabel as timeTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-time";
+import {
+  YAML_SCHEMA as STATE_TRIGGER_FORM_SCHEMA,
+  computeLabel as stateTriggerComputeLabel,
+} from "./trigger/types/ha-automation-trigger-state";
+
+// ---------------------------------------------------------------------------
+// Converter: HaFormSchema[] → YamlFieldSchemaMap
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert an `HaFormSchema[]` (used by ha-form UI components) into a
+ * `YamlFieldSchemaMap` for the YAML editor.
+ *
+ * - `HaFormSelector` entries map their `selector` directly.
+ * - `type: "select"` entries become `selector: { select: { options } }` with
+ *   only the option values (labels are display-only and not needed for YAML).
+ * - `type: "grid"` / `type: "expandable"` are flattened into the parent map.
+ * - Other typed entries (`boolean`, `integer`, `string`, etc.) get a
+ *   best-effort selector so completions still work.
+ * - UI-only fields that don't correspond to real YAML keys (e.g. mode-toggle
+ *   selects like `lower_limit`) should be excluded by the caller.
+ */
+export function haFormSchemaToYamlFieldSchemaMap(
+  schema: readonly HaFormSchema[],
+  getDescription?: (fieldName: string) => string | undefined
+): YamlFieldSchemaMap {
+  const result: YamlFieldSchemaMap = {};
+  for (const field of schema) {
+    if (!("name" in field) || !field.name) continue;
+
+    // Flatten grid / expandable containers into the parent map.
+    if (
+      "type" in field &&
+      (field.type === "grid" ||
+        field.type === "expandable" ||
+        field.type === "optional_actions")
+    ) {
+      Object.assign(
+        result,
+        haFormSchemaToYamlFieldSchemaMap(
+          (field as { schema: readonly HaFormSchema[] }).schema,
+          getDescription
+        )
+      );
+      continue;
+    }
+
+    const entry: YamlFieldSchema = {
+      required: field.required,
+      default: field.default as YamlFieldSchema["default"],
+      description: getDescription
+        ? getDescription(field.name) || undefined
+        : undefined,
+    };
+
+    if (!("type" in field) || field.type === undefined) {
+      // HaFormSelector – has a `selector` property
+      entry.selector = (
+        field as { selector: YamlFieldSchema["selector"] }
+      ).selector;
+    } else if (field.type === "select") {
+      const selectField = field as HaFormSelectSchema;
+      entry.selector = {
+        select: {
+          options: selectField.options.map((opt) => ({
+            value: opt[0],
+            label: opt[1],
+          })),
+        },
+      };
+    } else if (field.type === "multi_select") {
+      const multiField = field as HaFormMultiSelectSchema;
+      const opts = multiField.options;
+      const options: { value: string; label: string }[] = Array.isArray(opts)
+        ? (opts as readonly (string | readonly [string, string])[]).map(
+            (opt) =>
+              Array.isArray(opt)
+                ? {
+                    value: (opt as readonly [string, string])[0],
+                    label: (opt as readonly [string, string])[1],
+                  }
+                : { value: opt as string, label: opt as string }
+          )
+        : Object.entries(opts as Record<string, string>).map(([v, l]) => ({
+            value: v,
+            label: l,
+          }));
+      entry.selector = { select: { multiple: true, options } };
+    } else if (field.type === "positive_time_period_dict") {
+      entry.selector = { time: null };
+    } else {
+      // constant, multi_select, or unknown – skip
+      continue;
+    }
+
+    result[field.name] = entry;
+  }
+  return result;
+}
 
 // ---------------------------------------------------------------------------
 // Shared base field sets
@@ -344,6 +510,316 @@ export function builtInActionSchema(
 }
 
 // ---------------------------------------------------------------------------
+// Built-in condition schemas
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns a YAML field schema for a known built-in condition type, or undefined
+ * if the type is not recognised.
+ */
+export function builtInConditionSchema(
+  conditionType: string,
+  localize?: LocalizeFunc
+): YamlFieldSchemaMap | undefined {
+  const desc = localize
+    ? (fn: (n: string, l: LocalizeFunc) => string) => (name: string) =>
+        fn(name, localize) || undefined
+    : undefined;
+
+  switch (conditionType) {
+    case "state":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          STATE_CONDITION_FORM_SCHEMA,
+          desc && desc(stateConditionComputeLabel)
+        ),
+      };
+    case "numeric_state":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          NUMERIC_STATE_CONDITION_FORM_SCHEMA,
+          desc && desc(numericStateConditionComputeLabel)
+        ),
+      };
+    case "template":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TEMPLATE_CONDITION_FORM_SCHEMA,
+          desc && desc(templateConditionComputeLabel)
+        ),
+      };
+    case "time":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TIME_CONDITION_FORM_SCHEMA,
+          desc && desc(timeConditionComputeLabel)
+        ),
+      };
+    case "sun":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          SUN_CONDITION_FORM_SCHEMA,
+          desc && desc(sunConditionComputeLabel)
+        ),
+      };
+    case "zone":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        entity_id: {
+          description: localize
+            ? localize("ui.components.entity.entity-picker.entity") || undefined
+            : "The person or device_tracker entity to check.",
+          selector: { entity: null },
+          required: true,
+        },
+        zone: {
+          description: "The zone the entity must be in.",
+          selector: { entity: { domain: "zone" } },
+          required: true,
+        },
+      };
+    case "trigger":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TRIGGER_CONDITION_FORM_SCHEMA,
+          desc && desc(triggerConditionComputeLabel)
+        ),
+      };
+    case "and":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        conditions: {
+          description: "All of these conditions must be true.",
+          selector: { condition: null },
+          required: true,
+        },
+      };
+    case "or":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        conditions: {
+          description: "At least one of these conditions must be true.",
+          selector: { condition: null },
+          required: true,
+        },
+      };
+    case "not":
+      return {
+        ...CONDITION_BASE_FIELDS,
+        conditions: {
+          description: "None of these conditions must be true.",
+          selector: { condition: null },
+          required: true,
+        },
+      };
+    case "device":
+    default:
+      return allowUnknownFields({ ...CONDITION_BASE_FIELDS });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Built-in trigger schemas
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns a YAML field schema for a known built-in trigger type, or undefined
+ * if the type is not recognised.
+ */
+export function builtInTriggerSchema(
+  triggerType: string,
+  localize?: LocalizeFunc
+): YamlFieldSchemaMap | undefined {
+  const desc = localize
+    ? (fn: (n: string, l: LocalizeFunc) => string) => (name: string) =>
+        fn(name, localize) || undefined
+    : undefined;
+
+  switch (triggerType) {
+    case "state":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          STATE_TRIGGER_FORM_SCHEMA,
+          desc && desc(stateTriggerComputeLabel)
+        ),
+      };
+    case "numeric_state":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          NUMERIC_STATE_TRIGGER_FORM_SCHEMA,
+          desc && desc(numericStateTriggerComputeLabel)
+        ),
+      };
+    case "event":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        event_type: {
+          description: "The event type to listen for.",
+          selector: { text: null },
+          required: true,
+          example: "my_custom_event",
+        },
+        event_data: {
+          description: "Optional event data to match.",
+          selector: { object: null },
+        },
+        context: {
+          description: "Optional context to match (e.g. user_id).",
+          selector: { object: null },
+        },
+      };
+    case "homeassistant":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          HOMEASSISTANT_TRIGGER_FORM_SCHEMA,
+          desc && desc(homeassistantTriggerComputeLabel)
+        ),
+      };
+    case "template":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TEMPLATE_TRIGGER_FORM_SCHEMA,
+          desc && desc(templateTriggerComputeLabel)
+        ),
+      };
+    case "time":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TIME_TRIGGER_FORM_SCHEMA,
+          desc && desc(timeTriggerComputeLabel)
+        ),
+      };
+    case "time_pattern":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          TIME_PATTERN_TRIGGER_FORM_SCHEMA,
+          desc && desc(timePatternTriggerComputeLabel)
+        ),
+      };
+    case "sun":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          SUN_TRIGGER_FORM_SCHEMA,
+          desc && desc(sunTriggerComputeLabel)
+        ),
+      };
+    case "zone":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        entity_id: {
+          description: "The person or device_tracker entity to watch.",
+          selector: { entity: null },
+          required: true,
+        },
+        zone: {
+          description: "The zone to watch.",
+          selector: { entity: { domain: "zone" } },
+          required: true,
+        },
+        event: {
+          description: "Whether to trigger on zone entry or exit.",
+          selector: {
+            select: {
+              options: [
+                { value: "enter", label: "Enter" },
+                { value: "leave", label: "Leave" },
+              ],
+            },
+          },
+          required: true,
+        },
+      };
+    case "tag":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        tag_id: {
+          description: "The NFC/QR tag ID(s) to watch.",
+          selector: { text: null },
+          required: true,
+        },
+      };
+    case "webhook":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        webhook_id: {
+          description: "The webhook ID. Will be part of the webhook URL.",
+          selector: { text: null },
+          required: true,
+        },
+        allowed_methods: {
+          description: "HTTP methods that are accepted (default: POST, PUT).",
+          selector: {
+            select: {
+              multiple: true,
+              options: [
+                { value: "GET", label: "GET" },
+                { value: "HEAD", label: "HEAD" },
+                { value: "POST", label: "POST" },
+                { value: "PUT", label: "PUT" },
+              ],
+            },
+          },
+        },
+        local_only: {
+          description:
+            "Only allow requests from the local network. Defaults to true.",
+          selector: { boolean: null },
+          default: true,
+        },
+      };
+    case "geo_location":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          GEO_LOCATION_TRIGGER_FORM_SCHEMA,
+          desc && desc(geoLocationTriggerComputeLabel)
+        ),
+      };
+    case "calendar":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          CALENDAR_TRIGGER_FORM_SCHEMA,
+          desc && desc(calendarTriggerComputeLabel)
+        ),
+      };
+    case "persistent_notification":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        ...haFormSchemaToYamlFieldSchemaMap(
+          PERSISTENT_NOTIFICATION_TRIGGER_FORM_SCHEMA,
+          desc && desc(persistentNotificationTriggerComputeLabel)
+        ),
+      };
+    case "conversation":
+      return {
+        ...TRIGGER_BASE_FIELDS,
+        command: {
+          description: "The voice command phrase(s) to match.",
+          selector: { text: null },
+          required: true,
+        },
+      };
+    case "device":
+    default:
+      return allowUnknownFields({ ...TRIGGER_BASE_FIELDS });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Conversion functions
 // ---------------------------------------------------------------------------
 
@@ -356,7 +832,7 @@ function buildTargetSchema(
   targetDef?: Record<string, any> | null
 ): YamlFieldSchema {
   return {
-    description: "The target entities, devices, or areas.",
+    description: "The target entities, devices, areas, floors, or labels.",
     fields: {
       entity_id: {
         description: "One or more entity IDs to target.",
@@ -369,6 +845,14 @@ function buildTargetSchema(
       area_id: {
         description: "One or more area IDs to target.",
         selector: { area: null },
+      },
+      floor_id: {
+        description: "One or more floor IDs to target.",
+        selector: { floor: null },
+      },
+      label_id: {
+        description: "One or more label IDs to target.",
+        selector: { label: {} },
       },
     },
   };
@@ -587,9 +1071,10 @@ export function conditionDescriptionToSchema(
 export function serviceActionSchema(
   domain: string,
   service: string,
-  hass: HomeAssistant
+  services: HomeAssistant["services"],
+  localize: HomeAssistant["localize"]
 ): YamlFieldSchemaMap {
-  const serviceDef = hass.services?.[domain]?.[service];
+  const serviceDef = services?.[domain]?.[service];
   const fieldSchemas: YamlFieldSchemaMap = {};
 
   if (serviceDef?.fields) {
@@ -603,7 +1088,7 @@ export function serviceActionSchema(
         for (const [subFieldName, subField] of Object.entries(f.fields)) {
           const sf = subField as any;
           const localizedSubDesc =
-            hass.localize(
+            localize(
               `component.${domain}.services.${service}.fields.${subFieldName}.description` as any
             ) || sf.description;
           fieldSchemas[subFieldName] = {
@@ -616,7 +1101,7 @@ export function serviceActionSchema(
         }
       } else {
         const localizedDesc =
-          hass.localize(
+          localize(
             `component.${domain}.services.${service}.fields.${fieldName}.description` as any
           ) || f.description;
         fieldSchemas[fieldName] = {
@@ -661,16 +1146,17 @@ export function serviceActionSchema(
  */
 export function actionToYamlSchema(
   action: Action,
-  hass: HomeAssistant
+  services: HomeAssistant["services"],
+  localize: HomeAssistant["localize"]
 ): YamlFieldSchemaMap | undefined {
   // Service/action calls have an "action" or "service" key.
   if ("action" in action && typeof (action as any).action === "string") {
     const [domain, service] = ((action as any).action as string).split(".", 2);
     if (domain && service) {
-      return serviceActionSchema(domain, service, hass);
+      return serviceActionSchema(domain, service, services, localize);
     }
     // Unknown action string — return base fields only.
-    return { ...ACTION_BASE_FIELDS };
+    return allowUnknownFields({ ...ACTION_BASE_FIELDS });
   }
 
   // Detect action type from the primary key.
@@ -696,5 +1182,5 @@ export function actionToYamlSchema(
   }
 
   // Unknown — return base fields at minimum so hover/completions still work.
-  return { ...ACTION_BASE_FIELDS };
+  return allowUnknownFields({ ...ACTION_BASE_FIELDS });
 }

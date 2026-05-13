@@ -31,6 +31,54 @@ const numericStateConditionStruct = object({
   enabled: optional(boolean()),
 });
 
+export const YAML_SCHEMA = [
+  { name: "entity_id", required: true, selector: { entity: {} } },
+  {
+    name: "attribute",
+    selector: { attribute: { hide_attributes: NON_NUMERIC_ATTRIBUTES } },
+    context: { filter_entity: "entity_id" },
+  },
+  {
+    name: "above",
+    selector: {
+      number: {
+        mode: "box",
+        min: Number.MIN_SAFE_INTEGER,
+        max: Number.MAX_SAFE_INTEGER,
+        step: 0.1,
+      },
+    },
+  },
+  {
+    name: "below",
+    selector: {
+      number: {
+        mode: "box",
+        min: Number.MIN_SAFE_INTEGER,
+        max: Number.MAX_SAFE_INTEGER,
+        step: 0.1,
+      },
+    },
+  },
+  { name: "value_template", selector: { template: {} } },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string => {
+  switch (fieldName) {
+    case "entity_id":
+      return localize("ui.components.entity.entity-picker.entity");
+    case "attribute":
+      return localize("ui.components.entity.entity-attribute-picker.attribute");
+    default:
+      return localize(
+        `ui.panel.config.automation.editor.conditions.type.numeric_state.${fieldName}` as any
+      );
+  }
+};
+
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -241,20 +289,7 @@ export default class HaNumericStateCondition extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      case "entity_id":
-        return this.hass.localize("ui.components.entity.entity-picker.entity");
-      case "attribute":
-        return this.hass.localize(
-          "ui.components.entity.entity-attribute-picker.attribute"
-        );
-      default:
-        return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.numeric_state.${schema.name}`
-        );
-    }
-  };
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

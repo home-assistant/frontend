@@ -14,6 +14,29 @@ type FormType = "before" | "after" | "between";
 const BEFORE_DEFAULT = "sunrise";
 const AFTER_DEFAULT = "sunset";
 
+export const YAML_SCHEMA = [
+  {
+    name: "before",
+    type: "select" as const,
+    options: [["sunrise", "sunrise"] as const, ["sunset", "sunset"] as const],
+  },
+  { name: "before_offset", selector: { duration: { allow_negative: true } } },
+  {
+    name: "after",
+    type: "select" as const,
+    options: [["sunrise", "sunrise"] as const, ["sunset", "sunset"] as const],
+  },
+  { name: "after_offset", selector: { duration: { allow_negative: true } } },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.conditions.type.sun.${fieldName}` as any
+  );
+
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -154,10 +177,7 @@ export class HaSunCondition extends LitElement implements ConditionElement {
 
   private _computeLabelCallback = (schema: {
     name: "before" | "after";
-  }): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.conditions.type.sun.${schema.name}`
-    );
+  }): string => computeLabel(schema.name, this.hass.localize);
 
   private _typeSelected(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value as FormType;
