@@ -12,20 +12,20 @@ import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { generateCardSuggestions } from "../../card-suggestions";
 import type { CardSuggestion } from "../../card-suggestions/types";
-import { generateCardSuggestions } from "../../common/card-suggestions";
-import "./hui-recipe-entity-tree";
-import "./hui-recipe-suggestion";
+import "./hui-suggestion-card";
+import "./hui-suggestion-entity-tree";
 
 declare global {
   interface HASSDomEvents {
-    "recipe-browse-cards": undefined;
-    "recipe-picked": { config: LovelaceCardConfig };
+    "browse-cards": undefined;
+    "suggestion-picked": { config: LovelaceCardConfig };
   }
 }
 
-@customElement("hui-recipe-picker")
-export class HuiRecipePicker extends LitElement {
+@customElement("hui-suggestion-picker")
+export class HuiSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Array, attribute: false })
@@ -54,8 +54,8 @@ export class HuiRecipePicker extends LitElement {
     this._narrow = ev.matches;
   };
 
-  // Args are scalars so memoization survives hass updates (preview elements
-  // stay stable when only hass changes).
+  // Memoize on scalars so the result stays stable when only hass changes —
+  // keeps hui-card previews from re-rendering on every state tick.
   private _computeSuggestions = memoizeOne(
     (
       entityId: string | undefined,
@@ -101,12 +101,12 @@ export class HuiRecipePicker extends LitElement {
               </div>
             `
           : html`
-              <hui-recipe-entity-tree
+              <hui-suggestion-entity-tree
                 class="tree"
                 .hass=${this.hass}
                 .selectedEntityIds=${this._entityId ? [this._entityId] : []}
                 @entity-picked=${this._handleEntityPicked}
-              ></hui-recipe-entity-tree>
+              ></hui-suggestion-entity-tree>
             `}
       </div>
       <div class="content ha-scrollbar">
@@ -135,22 +135,26 @@ export class HuiRecipePicker extends LitElement {
               </div>
             `
           : html`
-              <div class="recipes" @suggestion-picked=${this._suggestionPicked}>
+              <div class="suggestions" @pick-suggestion=${this._pickSuggestion}>
                 ${repeat(
                   suggestions,
                   (s: CardSuggestion) => s.id,
                   (s: CardSuggestion) => html`
-                    <hui-recipe-suggestion
+                    <hui-suggestion-card
                       .hass=${this.hass}
                       .suggestion=${s}
-                    ></hui-recipe-suggestion>
+                    ></hui-suggestion-card>
                   `
                 )}
                 <div
                   class="browse-card"
                   tabindex="0"
                   role="button"
+                  aria-label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.browse_cards"
+                  )}
                   @click=${this._browseCards}
+                  @keydown=${this._browseCardsKeydown}
                 >
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
                   <span class="browse-card-title">
@@ -172,7 +176,14 @@ export class HuiRecipePicker extends LitElement {
   }
 
   private _browseCards(): void {
-    fireEvent(this, "recipe-browse-cards", undefined);
+    fireEvent(this, "browse-cards", undefined);
+  }
+
+  private _browseCardsKeydown(ev: KeyboardEvent): void {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._browseCards();
+    }
   }
 
   private _handleEntityPicked(ev: CustomEvent<{ entityId: string }>): void {
@@ -187,10 +198,12 @@ export class HuiRecipePicker extends LitElement {
     this._entityId = value;
   }
 
-  private _suggestionPicked(
+  private _pickSuggestion(
     ev: CustomEvent<{ suggestion: CardSuggestion }>
   ): void {
-    fireEvent(this, "recipe-picked", { config: ev.detail.suggestion.config });
+    fireEvent(this, "suggestion-picked", {
+      config: ev.detail.suggestion.config,
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -230,7 +243,7 @@ export class HuiRecipePicker extends LitElement {
           min-height: 0;
           overflow: auto;
         }
-        .recipes {
+        .suggestions {
           display: grid;
           gap: var(--ha-space-3);
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -279,6 +292,10 @@ export class HuiRecipePicker extends LitElement {
           background: var(--primary-background-color, #fafafa);
           color: var(--primary-text-color);
         }
+        .browse-card:focus-visible {
+          outline: 2px solid var(--primary-color);
+          outline-offset: 2px;
+        }
         .browse-card ha-svg-icon {
           color: var(--ha-color-text-secondary);
         }
@@ -317,6 +334,6 @@ export class HuiRecipePicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-recipe-picker": HuiRecipePicker;
+    "hui-suggestion-picker": HuiSuggestionPicker;
   }
 }

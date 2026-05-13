@@ -19,7 +19,7 @@ import type { HomeAssistant } from "../../../../types";
 import { addCard } from "../config-util";
 import { findLovelaceContainer } from "../lovelace-path";
 import "./hui-card-picker";
-import "./hui-recipe-picker";
+import "./hui-suggestion-picker";
 import type { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 
@@ -131,12 +131,12 @@ export class HuiCreateDialogCard
         ${cache(
           this._currTab === "entity"
             ? html`
-                <hui-recipe-picker
+                <hui-suggestion-picker
                   .hass=${this.hass}
                   .prioritizedCardTypes=${this._params.suggestedCards}
-                  @recipe-picked=${this._handleRecipePicked}
-                  @recipe-browse-cards=${this._handleBrowseCards}
-                ></hui-recipe-picker>
+                  @suggestion-picked=${this._handleSuggestionPicked}
+                  @browse-cards=${this._handleBrowseCards}
+                ></hui-suggestion-picker>
               `
             : html`
                 <hui-card-picker
@@ -193,13 +193,13 @@ export class HuiCreateDialogCard
         }
 
         hui-card-picker,
-        hui-recipe-picker {
+        hui-suggestion-picker {
           height: calc(100vh - 198px);
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-card-picker,
-          hui-recipe-picker {
+          hui-suggestion-picker {
             height: calc(100vh - 158px);
           }
         }
@@ -211,7 +211,7 @@ export class HuiCreateDialogCard
     this._currTab = "card";
   }
 
-  private async _handleRecipePicked(
+  private async _handleSuggestionPicked(
     ev: CustomEvent<{ config: LovelaceCardConfig }>
   ): Promise<void> {
     const config = ev.detail.config;
