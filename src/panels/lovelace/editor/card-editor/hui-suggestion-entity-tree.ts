@@ -27,6 +27,7 @@ import type {
   DomainGroup,
   EntityTree,
   FloorNode,
+  SearchableEntity,
   UnassignedSection,
 } from "./entity-tree-builder";
 import {
@@ -35,11 +36,13 @@ import {
   childKeyPrefix,
   deviceKey,
   domainKey,
-  filterEntityTree,
   floorKey,
   OTHER_AREAS_ID,
+  pathToEntity,
+  searchEntities,
   unassignedKey,
 } from "./entity-tree-builder";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -60,11 +63,23 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _translationsReady = false;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass && !Object.keys(this._configEntryLookup).length) {
       this._loadConfigEntries();
     }
+    this._loadDomainTranslations();
+  }
+
+  // domainToName reads `component.X.title` from the config fragment. Without
+  // this load it falls back to the raw key ("light", "sensor"), which also
+  // breaks Fuse search on the localized domain name.
+  private async _loadDomainTranslations() {
+    if (!this.hass) return;
+    await this.hass.loadFragmentTranslation("config");
+    this._translationsReady = true;
   }
 
   public disconnectedCallback(): void {
@@ -98,27 +113,17 @@ export class HuiSuggestionEntityTree extends LitElement {
   // the dialog reopens.
   @state() private _tree?: EntityTree;
 
-  private _filteredMemo = memoizeOne(filterEntityTree);
+  private _searchMemo = memoizeOne(searchEntities);
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (!this._tree && this.hass) {
+    if (!this._tree && this.hass && this._translationsReady) {
       this._tree = buildEntityTree(this.hass);
     }
   }
 
   protected render() {
     if (!this.hass || !this._tree) return nothing;
-
-    const { tree, autoExpand } = this._filteredMemo(this._tree, this._filter);
-
-    const isExpanded = (key: string) =>
-      this._filter ? autoExpand.has(key) : (this._expanded[key] ?? false);
-
-    const noResults =
-      !tree.floors.length &&
-      !tree.otherAreas.length &&
-      !tree.unassignedSections.length;
 
     return html`
       <ha-input-search
@@ -130,57 +135,120 @@ export class HuiSuggestionEntityTree extends LitElement {
         @input=${this._handleFilterChange}
       ></ha-input-search>
       <div class="tree ha-scrollbar">
-        ${noResults
-          ? html`<div class="empty">
-              ${this.hass.localize("ui.common.no_results")}
+        ${this._filter
+          ? this._renderSearchResults()
+          : this._renderTree(this._tree)}
+      </div>
+    `;
+  }
+
+  private _isExpanded(key: string): boolean {
+    return this._expanded[key] ?? false;
+  }
+
+  private _renderTree(tree: EntityTree): TemplateResult {
+    return html`
+      ${tree.floors.length || tree.otherAreas.length
+        ? html`
+            <ha-section-title>
+              ${this.hass.localize("ui.panel.lovelace.editor.cardpicker.home")}
+            </ha-section-title>
+            ${repeat(
+              tree.floors,
+              (floor: FloorNode) => floor.id,
+              (floor: FloorNode) => this._renderFloor(floor, false)
+            )}
+            ${tree.otherAreas.length
+              ? this._renderFloor(
+                  {
+                    id: OTHER_AREAS_ID,
+                    name: this.hass.localize(
+                      "ui.panel.lovelace.editor.cardpicker.other_areas"
+                    ),
+                    icon: null,
+                    level: null,
+                    areas: tree.otherAreas,
+                  },
+                  true
+                )
+              : nothing}
+          `
+        : nothing}
+      ${tree.unassignedSections.length
+        ? html`
+            <ha-section-title>
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.cardpicker.unassigned"
+              )}
+            </ha-section-title>
+            ${repeat(
+              tree.unassignedSections,
+              (section: UnassignedSection) => section.id,
+              (section: UnassignedSection) =>
+                this._renderUnassignedSection(section)
+            )}
+          `
+        : nothing}
+    `;
+  }
+
+  private _renderSearchResults(): TemplateResult {
+    const results = this._searchMemo(this._tree!, this._filter);
+    if (!results.length) {
+      return html`
+        <div class="empty">${this.hass.localize("ui.common.no_results")}</div>
+      `;
+    }
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    const separator = rtl ? " ◂ " : " ▸ ";
+    return html`
+      ${repeat(
+        results,
+        (item: SearchableEntity) => item.id,
+        (item: SearchableEntity, index: number) =>
+          this._renderSearchRow(item, index, separator)
+      )}
+    `;
+  }
+
+  private _renderSearchRow(
+    item: SearchableEntity,
+    index: number,
+    separator: string
+  ): TemplateResult {
+    const stateObj = this.hass.states[item.id];
+    const selected = this.selectedEntityIds.includes(item.id);
+    const secondary = [item.area, item.device].filter(Boolean).join(separator);
+    return html`
+      <ha-combo-box-item
+        type="button"
+        compact
+        .borderTop=${index !== 0}
+        class="entity-item ${selected ? "selected" : ""}"
+        aria-current=${selected ? "true" : "false"}
+        data-entity-id=${item.id}
+        @click=${this._pickEntity}
+      >
+        ${stateObj
+          ? html`<state-badge
+              slot="start"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+            ></state-badge>`
+          : nothing}
+        <span slot="headline">${item.name}</span>
+        ${secondary
+          ? html`<span slot="supporting-text">${secondary}</span>`
+          : nothing}
+        ${item.domain
+          ? html`<div slot="trailing-supporting-text" class="domain">
+              ${item.domain}
             </div>`
           : nothing}
-        ${tree.floors.length || tree.otherAreas.length
-          ? html`
-              <ha-section-title>
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.cardpicker.home"
-                )}
-              </ha-section-title>
-              ${repeat(
-                tree.floors,
-                (floor: FloorNode) => floor.id,
-                (floor: FloorNode) =>
-                  this._renderFloor(floor, false, isExpanded)
-              )}
-              ${tree.otherAreas.length
-                ? this._renderFloor(
-                    {
-                      id: OTHER_AREAS_ID,
-                      name: this.hass.localize(
-                        "ui.panel.lovelace.editor.cardpicker.other_areas"
-                      ),
-                      icon: null,
-                      level: null,
-                      areas: tree.otherAreas,
-                    },
-                    true,
-                    isExpanded
-                  )
-                : nothing}
-            `
-          : nothing}
-        ${tree.unassignedSections.length
-          ? html`
-              <ha-section-title>
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.cardpicker.unassigned"
-                )}
-              </ha-section-title>
-              ${repeat(
-                tree.unassignedSections,
-                (section: UnassignedSection) => section.id,
-                (section: UnassignedSection) =>
-                  this._renderUnassignedSection(section, isExpanded)
-              )}
-            `
-          : nothing}
-      </div>
+      </ha-combo-box-item>
     `;
   }
 
@@ -193,11 +261,10 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   private _renderFloor(
     floor: FloorNode,
-    isUnassigned: boolean,
-    isExpanded: (k: string) => boolean
+    isUnassigned: boolean
   ): TemplateResult {
     const key = floorKey(floor.id);
-    const expanded = isExpanded(key);
+    const expanded = this._isExpanded(key);
     return html`
       <ha-combo-box-item
         type="button"
@@ -220,19 +287,15 @@ export class HuiSuggestionEntityTree extends LitElement {
         ? repeat(
             floor.areas,
             (area: AreaNode) => area.id,
-            (area: AreaNode) => this._renderArea(area, key, isExpanded)
+            (area: AreaNode) => this._renderArea(area, key)
           )
         : nothing}
     `;
   }
 
-  private _renderArea(
-    area: AreaNode,
-    parentKey: string,
-    isExpanded: (k: string) => boolean
-  ): TemplateResult {
+  private _renderArea(area: AreaNode, parentKey: string): TemplateResult {
     const key = areaKey(parentKey, area.id);
-    const expanded = isExpanded(key);
+    const expanded = this._isExpanded(key);
     return html`
       <ha-combo-box-item
         type="button"
@@ -252,28 +315,23 @@ export class HuiSuggestionEntityTree extends LitElement {
       ${expanded
         ? html`
             ${repeat(
+              area.devices,
+              (device: DeviceNode) => device.id,
+              (device: DeviceNode) => this._renderDevice(device, key)
+            )}
+            ${repeat(
               area.directEntityIds,
               (id: string) => id,
               (id: string) => this._renderEntity(id, "depth-entity-area")
-            )}
-            ${repeat(
-              area.devices,
-              (device: DeviceNode) => device.id,
-              (device: DeviceNode) =>
-                this._renderDevice(device, key, isExpanded)
             )}
           `
         : nothing}
     `;
   }
 
-  private _renderDevice(
-    device: DeviceNode,
-    parentKey: string,
-    isExpanded: (k: string) => boolean
-  ): TemplateResult {
+  private _renderDevice(device: DeviceNode, parentKey: string): TemplateResult {
     const key = deviceKey(parentKey, device.id);
-    const expanded = isExpanded(key);
+    const expanded = this._isExpanded(key);
     const domain = this._deviceDomain(device.id);
     return html`
       <ha-combo-box-item
@@ -305,12 +363,9 @@ export class HuiSuggestionEntityTree extends LitElement {
     `;
   }
 
-  private _renderUnassignedSection(
-    section: UnassignedSection,
-    isExpanded: (k: string) => boolean
-  ): TemplateResult {
+  private _renderUnassignedSection(section: UnassignedSection): TemplateResult {
     const key = unassignedKey(section.id);
-    const expanded = isExpanded(key);
+    const expanded = this._isExpanded(key);
     return html`
       <ha-combo-box-item
         type="button"
@@ -331,8 +386,7 @@ export class HuiSuggestionEntityTree extends LitElement {
               ? repeat(
                   section.devices,
                   (device: DeviceNode) => device.id,
-                  (device: DeviceNode) =>
-                    this._renderDevice(device, key, isExpanded)
+                  (device: DeviceNode) => this._renderDevice(device, key)
                 )
               : nothing}
             ${section.domains
@@ -341,7 +395,7 @@ export class HuiSuggestionEntityTree extends LitElement {
                   (g: DomainGroup) => g.domain,
                   (g: DomainGroup) => {
                     const dKey = domainKey(key, g.domain);
-                    const dExpanded = isExpanded(dKey);
+                    const dExpanded = this._isExpanded(dKey);
                     return html`
                       <ha-combo-box-item
                         type="button"
@@ -430,7 +484,25 @@ export class HuiSuggestionEntityTree extends LitElement {
     const target = ev.currentTarget as HTMLElement;
     const entityId = target.dataset.entityId;
     if (!entityId) return;
+    this._expandToEntity(entityId);
     fireEvent(this, "entity-picked", { entityId });
+  }
+
+  // When the user picks an entity from the flat search results, pre-expand
+  // its branch so clearing the filter drops them right at the selection.
+  private _expandToEntity(entityId: string) {
+    if (!this._tree) return;
+    const path = pathToEntity(this._tree, entityId);
+    if (!path.length) return;
+    const next = { ...this._expanded };
+    let changed = false;
+    for (const key of path) {
+      if (!next[key]) {
+        next[key] = true;
+        changed = true;
+      }
+    }
+    if (changed) this._expanded = next;
   }
 
   private _handleFilterChange(ev: Event) {
@@ -488,22 +560,20 @@ export class HuiSuggestionEntityTree extends LitElement {
         .leading ha-icon,
         .leading ha-floor-icon,
         .leading ha-domain-icon {
-          --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
         }
         .leading state-badge {
           --state-icon-color: var(--secondary-text-color);
-          width: 20px;
-          height: 20px;
+          width: 24px;
+          height: 24px;
         }
         .chevron {
-          --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
-          flex: 0 0 20px;
+          flex: 0 0 24px;
         }
         .chevron-spacer {
-          width: 20px;
-          flex: 0 0 20px;
+          width: 24px;
+          flex: 0 0 24px;
         }
         .floor-item {
           --md-list-item-label-text-weight: var(--ha-font-weight-medium);

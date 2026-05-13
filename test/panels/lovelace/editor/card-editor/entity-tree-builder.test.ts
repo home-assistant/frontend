@@ -2,7 +2,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
   buildEntityTree,
-  filterEntityTree,
+  pathToEntity,
+  searchEntities,
   areaKey,
   deviceKey,
   domainKey,
@@ -248,7 +249,7 @@ describe("buildEntityTree", () => {
   });
 });
 
-describe("filterEntityTree", () => {
+describe("searchEntities", () => {
   const buildSample = () => {
     const hass = makeHass({
       states: {
@@ -262,41 +263,82 @@ describe("filterEntityTree", () => {
         "sensor.orphan": entity({}),
       },
       areas: {
-        kitchen: area("kitchen", { floor_id: "ground" }),
-        living: area("living", { floor_id: "ground" }),
+        kitchen: area("kitchen", { floor_id: "ground", name: "Kitchen" }),
+        living: area("living", { floor_id: "ground", name: "Living" }),
       },
       floors: { ground: floor("ground") },
     });
     return buildEntityTree(hass);
   };
 
-  it("returns the input tree unchanged when filter is empty", () => {
-    const tree = buildSample();
-    const { tree: out, autoExpand } = filterEntityTree(tree, "");
-    expect(out).toBe(tree);
-    expect(autoExpand.size).toBe(0);
+  it("returns nothing for an empty filter", () => {
+    expect(searchEntities(buildSample(), "")).toEqual([]);
   });
 
-  it("auto-expands the ancestors of every match", () => {
-    const tree = buildSample();
-    const { tree: out, autoExpand } = filterEntityTree(tree, "kitchen");
-
-    expect(out.floors).toHaveLength(1);
-    expect(out.floors[0].areas.map((a) => a.id)).toEqual(["kitchen"]);
-
-    const groundKey = floorKey("ground");
-    const kitchenKey = areaKey(groundKey, "kitchen");
-    expect(autoExpand.has(groundKey)).toBe(true);
-    expect(autoExpand.has(kitchenKey)).toBe(true);
+  it("matches on entity name", () => {
+    const ids = searchEntities(buildSample(), "kitchen").map((s) => s.id);
+    expect(ids).toContain("light.kitchen_ceiling");
   });
 
-  it("drops branches with no matches", () => {
-    const tree = buildSample();
-    const { tree: out } = filterEntityTree(tree, "orphan");
+  it("matches on area name", () => {
+    const ids = searchEntities(buildSample(), "Living").map((s) => s.id);
+    expect(ids).toContain("light.living_lamp");
+  });
 
-    expect(out.floors).toHaveLength(0);
-    expect(out.otherAreas).toHaveLength(0);
-    expect(out.unassignedSections.map((s) => s.id)).toContain("entities");
+  it("respects the result limit", () => {
+    expect(searchEntities(buildSample(), "light", 1)).toHaveLength(1);
+  });
+});
+
+describe("pathToEntity", () => {
+  it("returns the floor+area keys for a directly attached entity", () => {
+    const hass = makeHass({
+      states: { "light.lamp": state("light.lamp") },
+      entities: { "light.lamp": entity({ area_id: "kitchen" }) },
+      areas: { kitchen: area("kitchen", { floor_id: "ground" }) },
+      floors: { ground: floor("ground") },
+    });
+    const tree = buildEntityTree(hass);
+    const path = pathToEntity(tree, "light.lamp");
+    expect(path).toEqual([
+      floorKey("ground"),
+      areaKey(floorKey("ground"), "kitchen"),
+    ]);
+  });
+
+  it("includes the device key when the entity is nested under a device", () => {
+    const hass = makeHass({
+      states: { "sensor.temp": state("sensor.temp") },
+      entities: { "sensor.temp": entity({ device_id: "dev1" }) },
+      devices: { dev1: device("dev1", { area_id: "kitchen" }) },
+      areas: { kitchen: area("kitchen") },
+    });
+    const tree = buildEntityTree(hass);
+    const otherAreasFloor = floorKey(OTHER_AREAS_ID);
+    const path = pathToEntity(tree, "sensor.temp");
+    expect(path).toEqual([
+      otherAreasFloor,
+      areaKey(otherAreasFloor, "kitchen"),
+      deviceKey(areaKey(otherAreasFloor, "kitchen"), "dev1"),
+    ]);
+  });
+
+  it("returns the unassigned section + domain path for orphan entities", () => {
+    const hass = makeHass({
+      states: { "light.unowned": state("light.unowned") },
+      entities: { "light.unowned": entity({}) },
+    });
+    const tree = buildEntityTree(hass);
+    const sKey = unassignedKey("entities");
+    expect(pathToEntity(tree, "light.unowned")).toEqual([
+      sKey,
+      domainKey(sKey, "light"),
+    ]);
+  });
+
+  it("returns an empty path for an unknown entity", () => {
+    const hass = makeHass({});
+    expect(pathToEntity(buildEntityTree(hass), "light.ghost")).toEqual([]);
   });
 });
 

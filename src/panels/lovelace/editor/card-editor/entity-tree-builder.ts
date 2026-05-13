@@ -299,104 +299,68 @@ export function buildEntityTree(hass: HomeAssistant): EntityTree {
   };
 }
 
-export interface FilteredTree {
-  tree: EntityTree;
-  autoExpand: Set<string>;
-}
-
-export function filterEntityTree(
-  tree: EntityTree,
-  filter: string
-): FilteredTree {
-  if (!filter) return { tree, autoExpand: new Set<string>() };
-
-  const matchedIds = new Set(
-    multiTermSortedSearch(
-      tree.searchableEntities,
-      filter,
-      SEARCH_KEYS,
-      (item) => item.id,
-      tree.fuseIndex
-    ).map((item) => item.id)
-  );
-  const matches = (entityId: string) => matchedIds.has(entityId);
-  const autoExpand = new Set<string>();
-
-  const filterArea = (
-    area: AreaNode,
-    parentKey: string
-  ): AreaNode | undefined => {
-    const aKey = areaKey(parentKey, area.id);
-    const directIds = area.directEntityIds.filter(matches);
-    const devices = area.devices
-      .map((device) => {
-        const ids = device.entityIds.filter(matches);
-        if (!ids.length) return undefined;
-        autoExpand.add(deviceKey(aKey, device.id));
-        return { ...device, entityIds: ids };
-      })
-      .filter((d): d is DeviceNode => !!d);
-    if (!directIds.length && !devices.length) return undefined;
-    autoExpand.add(aKey);
-    return { ...area, directEntityIds: directIds, devices };
-  };
-
-  const floors = tree.floors
-    .map((floor) => {
-      const fKey = floorKey(floor.id);
-      const areas = floor.areas
-        .map((a) => filterArea(a, fKey))
-        .filter((a): a is AreaNode => !!a);
-      if (!areas.length) return undefined;
-      autoExpand.add(fKey);
-      return { ...floor, areas };
-    })
-    .filter((f): f is FloorNode => !!f);
-
-  const otherAreasKey = floorKey(OTHER_AREAS_ID);
-  const otherAreas = tree.otherAreas
-    .map((a) => filterArea(a, otherAreasKey))
-    .filter((a): a is AreaNode => !!a);
-  if (otherAreas.length) {
-    autoExpand.add(otherAreasKey);
+// Returns the list of branch keys (floor, area, device, …) that must be
+// expanded so the entity is visible in the tree. Empty when the entity isn't
+// reachable from the snapshot.
+export function pathToEntity(tree: EntityTree, entityId: string): string[] {
+  for (const floor of tree.floors) {
+    const fKey = floorKey(floor.id);
+    for (const area of floor.areas) {
+      const aKey = areaKey(fKey, area.id);
+      if (area.directEntityIds.includes(entityId)) return [fKey, aKey];
+      for (const device of area.devices) {
+        if (device.entityIds.includes(entityId)) {
+          return [fKey, aKey, deviceKey(aKey, device.id)];
+        }
+      }
+    }
   }
 
-  const filterDeviceList = (sectionKey: string, list: DeviceNode[]) =>
-    list
-      .map((device) => {
-        const ids = device.entityIds.filter(matches);
-        if (!ids.length) return undefined;
-        autoExpand.add(deviceKey(sectionKey, device.id));
-        return { ...device, entityIds: ids };
-      })
-      .filter((d): d is DeviceNode => !!d);
+  const otherAreasFloor = floorKey(OTHER_AREAS_ID);
+  for (const area of tree.otherAreas) {
+    const aKey = areaKey(otherAreasFloor, area.id);
+    if (area.directEntityIds.includes(entityId)) {
+      return [otherAreasFloor, aKey];
+    }
+    for (const device of area.devices) {
+      if (device.entityIds.includes(entityId)) {
+        return [otherAreasFloor, aKey, deviceKey(aKey, device.id)];
+      }
+    }
+  }
 
-  const filterDomainList = (sectionKey: string, list: DomainGroup[]) =>
-    list
-      .map((group) => {
-        const ids = group.entityIds.filter(matches);
-        if (!ids.length) return undefined;
-        autoExpand.add(domainKey(sectionKey, group.domain));
-        return { ...group, entityIds: ids };
-      })
-      .filter((g): g is DomainGroup => !!g);
-
-  const unassignedSections: UnassignedSection[] = [];
   for (const section of tree.unassignedSections) {
     const sKey = unassignedKey(section.id);
-    const devices = section.devices
-      ? filterDeviceList(sKey, section.devices)
-      : undefined;
-    const domains = section.domains
-      ? filterDomainList(sKey, section.domains)
-      : undefined;
-    if (!devices?.length && !domains?.length) continue;
-    autoExpand.add(sKey);
-    unassignedSections.push({ ...section, devices, domains });
+    if (section.devices) {
+      for (const device of section.devices) {
+        if (device.entityIds.includes(entityId)) {
+          return [sKey, deviceKey(sKey, device.id)];
+        }
+      }
+    }
+    if (section.domains) {
+      for (const group of section.domains) {
+        if (group.entityIds.includes(entityId)) {
+          return [sKey, domainKey(sKey, group.domain)];
+        }
+      }
+    }
   }
 
-  return {
-    tree: { ...tree, floors, otherAreas, unassignedSections },
-    autoExpand,
-  };
+  return [];
+}
+
+export function searchEntities(
+  tree: EntityTree,
+  filter: string,
+  limit = 100
+): SearchableEntity[] {
+  if (!filter) return [];
+  return multiTermSortedSearch(
+    tree.searchableEntities,
+    filter,
+    SEARCH_KEYS,
+    (item) => item.id,
+    tree.fuseIndex
+  ).slice(0, limit);
 }
