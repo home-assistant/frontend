@@ -69,23 +69,26 @@ test.describe("Home Assistant Demo", () => {
 
     // Lovelace cards are rendered inside the shadow DOM.
     // Playwright pierces shadow roots with CSS selectors automatically.
-    // Wait for the lovelace view container first, then fall back to a card.
+    // Wait for either a lovelace view container or a specific card type.
     // Note: avoid concurrent waitFor() calls (Promise.race) on mobile WebKit —
     // running two selector watchers simultaneously can crash the driver.
-    try {
-      await page
-        .locator(
-          "hui-masonry-view, hui-sections-view, hui-panel-view, hui-sidebar-view"
-        )
-        .first()
-        .waitFor({ state: "attached", timeout: 30_000 });
-    } catch {
-      // Fall back to any hui-* class element if view containers aren't present.
-      await page
-        .locator("[class*='hui-']")
-        .first()
-        .waitFor({ state: "attached", timeout: 30_000 });
-    }
+    // Note: attribute selectors like [class*='hui-'] may not pierce shadow DOM
+    // reliably on all platforms — use tag name selectors instead.
+    const viewOrCardSelector = [
+      "hui-masonry-view",
+      "hui-sections-view",
+      "hui-panel-view",
+      "hui-sidebar-view",
+      "hui-tile-card",
+      "hui-entity-card",
+      "hui-glance-card",
+      "hui-button-card",
+      "hui-markdown-card",
+    ].join(", ");
+    await page
+      .locator(viewOrCardSelector)
+      .first()
+      .waitFor({ state: "attached", timeout: 30_000 });
 
     // At least one card must be visible
     const cards = page.locator(
