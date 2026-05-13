@@ -687,7 +687,11 @@ export function haYamlHoverSource(
                 ? "device_id"
                 : selectorType === "area"
                   ? "area_id"
-                  : null;
+                  : selectorType === "floor"
+                    ? "floor_id"
+                    : selectorType === "label"
+                      ? "label_id"
+                      : null;
           if (argType) {
             const value = nodeText(node, doc);
             const dom = buildArgTooltipDom(
