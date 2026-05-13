@@ -12,6 +12,37 @@ import { durationDataToSeconds } from "../../../../../common/datetime/duration_t
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string => {
+  switch (fieldName) {
+    case "entity_id":
+      return localize("ui.components.entity.entity-picker.entity");
+    case "event":
+      return localize(
+        "ui.panel.config.automation.editor.triggers.type.calendar.event"
+      );
+    default:
+      return "";
+  }
+};
+
+export const YAML_SCHEMA = [
+  {
+    name: "entity_id",
+    required: true,
+    selector: { entity: { domain: "calendar" } },
+  },
+  {
+    name: "event",
+    type: "select" as const,
+    required: true,
+    options: [["start", "start"] as const, ["end", "end"] as const],
+  },
+  { name: "offset", selector: { text: {} } },
+] as const;
+
 @customElement("ha-automation-trigger-calendar")
 export class HaCalendarTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -135,17 +166,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      case "entity_id":
-        return this.hass.localize("ui.components.entity.entity-picker.entity");
-      case "event":
-        return this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.calendar.event"
-        );
-    }
-    return "";
-  };
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

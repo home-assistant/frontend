@@ -32,5 +32,37 @@ export interface YamlFieldSchema {
   fields?: YamlFieldSchemaMap;
 }
 
-/** A map of YAML key → field schema. Passed to ha-yaml-editor / ha-code-editor. */
+/**
+ * A map of YAML key → field schema. Passed to ha-yaml-editor / ha-code-editor.
+ *
+ * The optional `__allowUnknownFields` marker suppresses "unknown field"
+ * lint warnings for this mapping level. Use it for schemas where the full
+ * set of valid keys is not statically known (e.g. device triggers/conditions/
+ * actions that accept integration-specific fields).
+ *
+ * Note: `__allowUnknownFields` is set as a non-enumerable property so it does
+ * not appear in Object.keys() / Object.entries() iteration used for completions
+ * and required-field checks.
+ */
 export type YamlFieldSchemaMap = Record<string, YamlFieldSchema>;
+
+/**
+ * Mark a `YamlFieldSchemaMap` so that the linter does not warn about unknown
+ * keys at this mapping level. Returns the same object for convenience.
+ */
+export function allowUnknownFields(
+  map: YamlFieldSchemaMap
+): YamlFieldSchemaMap {
+  Object.defineProperty(map, "__allowUnknownFields", {
+    value: true,
+    enumerable: false,
+    writable: false,
+    configurable: false,
+  });
+  return map;
+}
+
+/** Return true if the map was marked via `allowUnknownFields()`. */
+export function hasAllowUnknownFields(map: YamlFieldSchemaMap): boolean {
+  return (map as any).__allowUnknownFields === true;
+}

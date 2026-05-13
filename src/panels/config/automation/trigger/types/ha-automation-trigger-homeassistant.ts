@@ -8,6 +8,23 @@ import type { HomeAssistant } from "../../../../../types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.triggers.type.homeassistant.${fieldName}` as any
+  );
+
+export const YAML_SCHEMA = [
+  {
+    name: "event",
+    type: "select" as const,
+    required: true,
+    options: [["start", "start"] as const, ["shutdown", "shutdown"] as const],
+  },
+] as const;
+
 @customElement("ha-automation-trigger-homeassistant")
 export class HaHassTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -69,10 +86,7 @@ export class HaHassTrigger extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.homeassistant.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 
   static styles = css`
     label {

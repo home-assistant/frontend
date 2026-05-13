@@ -52,7 +52,7 @@ export default class HaAutomationActionEditor extends LitElement {
       action: Action,
       services: HomeAssistant["services"],
       localize: HomeAssistant["localize"]
-    ) => actionToYamlSchema(action, { services, localize } as HomeAssistant)
+    ) => actionToYamlSchema(action, services, localize)
   );
 
   protected render() {

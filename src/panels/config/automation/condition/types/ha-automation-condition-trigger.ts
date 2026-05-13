@@ -22,8 +22,23 @@ import {
 import { describeTrigger } from "../../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import { rowStyles } from "../../styles";
+
+// Static YAML schema — trigger IDs are dynamic at runtime, so we use a
+// plain text selector here to at least provide key completion.
+export const YAML_SCHEMA = [
+  { name: "id", required: true, selector: { text: { multiple: true } } },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.conditions.type.trigger.${fieldName}` as any
+  );
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {
