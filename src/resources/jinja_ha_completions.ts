@@ -1952,7 +1952,7 @@ function buildTooltipDom(
  * Returns null when no hass context is available or the value can't be resolved.
  * `siblingEntityId` is only used for `attribute` arg types.
  */
-function buildArgTooltipDom(
+export function buildArgTooltipDom(
   argType: JinjaArgType,
   value: string,
   ctx: HassArgHoverContext,
