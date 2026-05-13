@@ -18,7 +18,7 @@ import {
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
-import "../../ha-dialog";
+import "../../ha-adaptive-dialog";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
@@ -151,7 +151,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       !this._entitySourcesLoaded;
 
     return html`
-      <ha-dialog
+      <ha-adaptive-dialog
         .open=${this._opened}
         header-title=${this.hass.localize(
           "ui.components.target-picker.target_details"
@@ -185,7 +185,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                 `}
           </ha-list-base>
         </div>
-      </ha-dialog>
+      </ha-adaptive-dialog>
     `;
   }
 

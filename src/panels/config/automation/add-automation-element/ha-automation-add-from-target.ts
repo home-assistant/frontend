@@ -769,7 +769,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _renderEntityIcon =
     (stateObj: HassEntity) => (slot: string | undefined) =>
       html`<ha-state-icon
-        .hass=${this.hass}
         slot=${ifDefined(slot)}
         .stateObj=${stateObj}
       ></ha-state-icon>`;
@@ -867,10 +866,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
       undefined
     );
 
+    const filteredFloors = this._floorAreas.filter(
+      ({ id, areas }) => id !== undefined && areas.length
+    );
     this._floorAreas.forEach((floor) => {
       this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
         // auto expand if only one floor is present
-        open: this._floorAreas.length === 1,
+        open: filteredFloors.length === 1 && filteredFloors[0].id === floor.id,
         areas: {},
       };
 

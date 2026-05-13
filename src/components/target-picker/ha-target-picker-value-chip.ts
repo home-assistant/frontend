@@ -74,7 +74,6 @@ export class HaTargetPickerValueChip extends LitElement {
                 ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
                 : stateObject
                   ? html`<ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${stateObject}
                     ></ha-state-icon>`
                   : nothing}

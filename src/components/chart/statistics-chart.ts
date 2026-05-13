@@ -13,7 +13,9 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 
+import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import {
   formatNumber,
   getNumberFormatOptions,
@@ -241,6 +243,8 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
+    const chartIsBar = this.chartType.startsWith("bar");
+    const period = this.period;
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
@@ -252,8 +256,67 @@ export class StatisticsChart extends LitElement {
         const statisticId = this._statisticIds[param.seriesIndex];
         const stateObj = this.hass.states[statisticId];
         const entry = this.hass.entities[statisticId];
-        // max series can have 3 values, as the second value is the max-min to form a band
-        const rawValue = String(param.value[2] ?? param.value[1]);
+        let rawValue: string;
+        let rawTime: string;
+        if (chartIsBar) {
+          // For bar charts value is always second value.
+          rawValue = String(param.value[1]);
+          // Time value is third value (un-shifted date) if given, otherwise first value
+          let startTime: Date;
+          let endTime: Date | undefined;
+          if (param.value[2]) {
+            startTime = new Date(param.value[2]);
+            if (param.value[3]) {
+              endTime = new Date(param.value[3]);
+            }
+          } else {
+            startTime = new Date(param.value[0]);
+          }
+          if (
+            period === "year" ||
+            period === "month" ||
+            period === "week" ||
+            period === "day"
+          ) {
+            // For year/month/day periods, show only the date
+            rawTime =
+              formatDate(startTime, this.hass.locale, this.hass.config) +
+              (endTime && period !== "day"
+                ? ` – ${formatDate(
+                    endTime,
+                    this.hass.locale,
+                    this.hass.config
+                  )}`
+                : "") +
+              "<br>";
+          } else {
+            // For other time periods, include time in render, and optionally show range
+            // if we have an end time.
+            rawTime =
+              formatDateTimeWithSeconds(
+                startTime,
+                this.hass.locale,
+                this.hass.config
+              ) +
+              (endTime
+                ? ` – ${formatTimeWithSeconds(
+                    endTime,
+                    this.hass.locale,
+                    this.hass.config
+                  )}`
+                : "") +
+              "<br>";
+          }
+        } else {
+          // For lines max series can have 3 values, as the second value is the max-min to form a band
+          rawValue = String(param.value[2] ?? param.value[1]);
+          // Time value is always first value
+          rawTime = `${formatDateTimeWithSeconds(
+            new Date(param.value[0]),
+            this.hass.locale,
+            this.hass.config
+          )} <br>`;
+        }
 
         const options = getNumberFormatOptions(stateObj, entry) ?? {
           maximumFractionDigits: 2,
@@ -265,14 +328,7 @@ export class StatisticsChart extends LitElement {
           options
         )}${unit}`;
 
-        const time =
-          index === 0
-            ? formatDateTimeWithSeconds(
-                new Date(param.value[0]),
-                this.hass.locale,
-                this.hass.config
-              ) + "<br>"
-            : "";
+        const time = index === 0 ? rawTime : "";
         return `${time}${param.marker} ${param.seriesName}: ${value}`;
       })
       .filter(Boolean)
@@ -368,7 +424,12 @@ export class StatisticsChart extends LitElement {
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(this.hass) ? "right" : "left",
+        position: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+          ? "right"
+          : "left",
         scale:
           this.chartType.startsWith("line") ||
           this.logarithmicScale ||
@@ -506,33 +567,53 @@ export class StatisticsChart extends LitElement {
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
       const statLegendData: typeof legendData = [];
 
+      // Place bars at centre of their specified time range if this is a bar chart
+      // and the period is 5minute or hour.
+      const centerBars =
+        chartType === "bar" &&
+        (this.period === "5minute" || this.period === "hour");
+
       const pushData = (
-        start: Date,
-        end: Date,
+        start: Date, // Data point start time
+        end: Date, // Data point end time
+        limit: Date, // Limit for end time (e.g. now)
         dataValues: (number | null)[][]
       ) => {
         if (!dataValues.length) return;
-        if (start > end) {
+        // Limit for time range is lesser of overall limit and data point end
+        limit = end.getTime() < limit.getTime() ? end : limit;
+        if (start.getTime() > limit.getTime()) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
         statDataSets.forEach((d, i) => {
-          if (
-            chartType === "line" &&
-            prevEndTime &&
-            prevValues &&
-            prevEndTime.getTime() !== start.getTime()
-          ) {
-            // if the end of the previous data doesn't match the start of the current data,
-            // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime, ...prevValues[i]!]);
-            d.data!.push([prevEndTime, null]);
+          if (chartType === "line") {
+            if (
+              prevEndTime &&
+              prevValues &&
+              prevEndTime.getTime() !== start.getTime()
+            ) {
+              // if the end of the previous data doesn't match the start of the current data,
+              // we have to draw a gap so add a value at the end time, and then an empty value.
+              d.data!.push([prevEndTime, ...prevValues[i]!]);
+              d.data!.push([prevEndTime, null]);
+            }
+            d.data!.push([start, ...dataValues[i]!]);
+          } else {
+            let time = start;
+            if (centerBars) {
+              // If centering bars, set the time to the midpoint between start and end instead
+              // of the start time.
+              time = new Date((start.getTime() + end.getTime()) / 2);
+            }
+            // Data value should always be a scalar for bar charts. Pass in
+            // real start time as extra value to allow formatting tooltip.
+            d.data!.push([time, dataValues[i][0]!, start, end]);
           }
-          d.data!.push([start, ...dataValues[i]!]);
         });
         prevValues = dataValues;
-        prevEndTime = end;
+        prevEndTime = limit;
       };
 
       let color = colors[statistic_id];
@@ -692,11 +773,7 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(
-            startDate,
-            endDate.getTime() < endTime.getTime() ? endDate : endTime,
-            dataValues
-          );
+          pushData(startDate, endDate, endTime, dataValues);
         }
       });
 

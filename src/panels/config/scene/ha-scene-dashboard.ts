@@ -280,10 +280,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon
-              .hass=${this.hass}
-              .stateObj=${scene}
-            ></ha-state-icon>
+            <ha-state-icon .stateObj=${scene}></ha-state-icon>
           `,
         },
         name: {

@@ -303,7 +303,9 @@ export default class HaAutomationSidebar extends LitElement {
   private _updateSize(clientX: number) {
     let delta = this._resizeStartX - clientX;
 
-    if (computeRTL(this.hass)) {
+    if (
+      computeRTL(this.hass.language, this.hass.translationMetadata.translations)
+    ) {
       delta = -delta;
     }
 
@@ -350,14 +352,24 @@ export default class HaAutomationSidebar extends LitElement {
   private _increaseSize = (ev: KeyboardEvent) => {
     ev.stopPropagation();
 
-    this._resizeStartX -= computeRTL(this.hass) ? 10 : -10;
+    this._resizeStartX -= computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    )
+      ? 10
+      : -10;
     this._keyboardResize();
   };
 
   private _decreaseSize = (ev: KeyboardEvent) => {
     ev.stopPropagation();
 
-    this._resizeStartX += computeRTL(this.hass) ? 10 : -10;
+    this._resizeStartX += computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    )
+      ? 10
+      : -10;
     this._keyboardResize();
   };
 

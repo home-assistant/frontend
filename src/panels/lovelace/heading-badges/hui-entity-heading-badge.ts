@@ -170,7 +170,6 @@ export class HuiEntityHeadingBadge
           ? html`
               <ha-state-icon
                 slot="icon"
-                .hass=${this.hass}
                 .icon=${config.icon}
                 .stateObj=${stateObj}
               ></ha-state-icon>

@@ -8,7 +8,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -117,7 +117,7 @@ class HuiNumericInputCardFeature
           .max=${stateObj.attributes.max}
           .step=${stateObj.attributes.step}
           @value-changed=${this._setValue}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           .unit=${stateObj.attributes.unit_of_measurement}
           .locale=${this.hass.locale}
         ></ha-control-number-buttons>
@@ -130,7 +130,7 @@ class HuiNumericInputCardFeature
         .max=${stateObj.attributes.max}
         .step=${stateObj.attributes.step}
         @value-changed=${this._setValue}
-        .disabled=${isUnavailableState(stateObj.state)}
+        .disabled=${stateObj.state === UNAVAILABLE}
         .unit=${stateObj.attributes.unit_of_measurement}
         .locale=${this.hass.locale}
       ></ha-control-slider>
