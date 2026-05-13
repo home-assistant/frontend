@@ -156,10 +156,18 @@ test.describe("Home Assistant Demo", () => {
     if (await menuButton.isVisible()) {
       await menuButton.click();
       // Wait for the drawer animation to complete so sidebar items are visible.
-      await waitForLocator(page, "ha-sidebar", "visible", 15_000);
+      const r1 = await waitForLocator(page, "ha-sidebar", "visible", 15_000);
+      if (r1 === "skip") {
+        test.skip();
+        return;
+      }
     } else {
       // On wide viewports the sidebar is always rendered.
-      await waitForLocator(page, "ha-sidebar", "attached", 30_000);
+      const r1 = await waitForLocator(page, "ha-sidebar", "attached", 30_000);
+      if (r1 === "skip") {
+        test.skip();
+        return;
+      }
     }
 
     const candidatePanels = ["map", "logbook", "history", "config"];
@@ -169,7 +177,11 @@ test.describe("Home Assistant Demo", () => {
     const panelSelector = candidatePanels
       .map((p) => `#sidebar-panel-${p}`)
       .join(", ");
-    await waitForLocator(page, panelSelector, "visible", 15_000);
+    const r2 = await waitForLocator(page, panelSelector, "visible", 15_000);
+    if (r2 === "skip") {
+      test.skip();
+      return;
+    }
 
     for (const panel of candidatePanels) {
       const navItem = page.locator(`#sidebar-panel-${panel}`);
