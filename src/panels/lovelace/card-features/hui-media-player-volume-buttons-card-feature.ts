@@ -90,7 +90,7 @@ class HuiMediaPlayerVolumeButtonsCardFeature
 
     const stateObj = this._stateObj;
     const disabled = isUnavailableState(stateObj.state);
-    const supportsMute =
+    const showMute =
       (this._config.show_mute_button ?? true) &&
       supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
     const isMuted = stateObj.attributes.is_volume_muted;
@@ -111,7 +111,7 @@ class HuiMediaPlayerVolumeButtonsCardFeature
         unit="%"
         @value-changed=${this._valueChanged}
       ></ha-control-number-buttons>
-      ${supportsMute
+      ${showMute
         ? html`
             <ha-control-button
               class="mute"
