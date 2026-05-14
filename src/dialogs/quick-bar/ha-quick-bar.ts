@@ -1,6 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -54,6 +54,7 @@ import {
 } from "../../resources/fuseMultiTerm";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
@@ -149,19 +150,26 @@ export class QuickBar extends LitElement {
     this._loading = false;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
+  }
+
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      // disabled till iOS app fix the "focus_element" implementation
-      // if (this.hass && isIosApp(this.hass.auth.external)) {
-      //   this.hass.auth.external!.fireMessage({
-      //     type: "focus_element",
-      //     payload: {
-      //       element_id: "combo-box",
-      //     },
-      //   });
-      //   return;
-      // }
+      if (this.hass && isIosApp(this.hass.auth.external)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
       this._comboBox?.focus();
     });
   };

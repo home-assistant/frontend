@@ -178,7 +178,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               <ha-switch
                 slot="end"
                 @change=${this._allowLoginChanged}
-                .disabled=${this._user &&
+                ?disabled=${this._user &&
                 (this._user.id === this.hass.user?.id ||
                   this._user.system_generated ||
                   this._user.is_owner)}

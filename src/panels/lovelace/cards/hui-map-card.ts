@@ -384,7 +384,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
-      if ((!this._subscribed && !this._error) || changedProps.has("_config")) {
+      if (
+        (this.isConnected && !this._subscribed && !this._error) ||
+        changedProps.has("_config")
+      ) {
         this._unsubscribeHistory();
         this._subscribeHistory();
       }
