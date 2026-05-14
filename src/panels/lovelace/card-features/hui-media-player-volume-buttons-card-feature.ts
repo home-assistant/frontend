@@ -1,13 +1,9 @@
-import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { clamp } from "../../../common/number/clamp";
-import "../../../components/ha-control-button";
 import "../../../components/ha-control-number-buttons";
-import "../../../components/ha-svg-icon";
-import { forwardHaptic } from "../../../data/haptics";
 import { isUnavailableState } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
@@ -16,6 +12,10 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import {
+  renderMuteButton,
+  toggleMediaPlayerMute,
+} from "./common/media-player-mute-button";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerVolumeButtonsCardFeatureConfig,
@@ -90,10 +90,6 @@ class HuiMediaPlayerVolumeButtonsCardFeature
 
     const stateObj = this._stateObj;
     const disabled = isUnavailableState(stateObj.state);
-    const showMute =
-      (this._config.show_mute_button ?? true) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
-    const isMuted = stateObj.attributes.is_volume_muted;
 
     const position =
       stateObj.attributes.volume_level != null
@@ -111,22 +107,13 @@ class HuiMediaPlayerVolumeButtonsCardFeature
         unit="%"
         @value-changed=${this._valueChanged}
       ></ha-control-number-buttons>
-      ${showMute
-        ? html`
-            <ha-control-button
-              class="mute"
-              .label=${this.hass.localize(
-                `ui.card.media_player.${isMuted ? "media_volume_unmute" : "media_volume_mute"}`
-              )}
-              .disabled=${disabled}
-              @click=${this._toggleMute}
-            >
-              <ha-svg-icon
-                .path=${isMuted ? mdiVolumeOff : mdiVolumeHigh}
-              ></ha-svg-icon>
-            </ha-control-button>
-          `
-        : nothing}
+      ${renderMuteButton(
+        this.hass,
+        stateObj,
+        this._config.show_mute_button,
+        disabled,
+        this._toggleMute
+      )}
     `;
   }
 
@@ -139,14 +126,9 @@ class HuiMediaPlayerVolumeButtonsCardFeature
     });
   }
 
-  private _toggleMute(ev: Event) {
-    ev.stopPropagation();
-    forwardHaptic(this, "light");
-    this.hass!.callService("media_player", "volume_mute", {
-      entity_id: this._stateObj!.entity_id,
-      is_volume_muted: !this._stateObj!.attributes.is_volume_muted,
-    });
-  }
+  private _toggleMute = (ev: Event) => {
+    toggleMediaPlayerMute(ev, this.hass!, this._stateObj!, this);
+  };
 
   static get styles() {
     return [
