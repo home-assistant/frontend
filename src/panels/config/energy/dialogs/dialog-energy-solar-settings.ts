@@ -11,6 +11,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/radio/ha-radio-group";
+import "../../../../components/input/ha-input";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -27,6 +28,12 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
+import {
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
+import type { HaInput } from "../../../../components/input/ha-input";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -128,6 +135,24 @@ export class DialogEnergySolarSettings
           )}
           autofocus
         ></ha-statistic-picker>
+
+        <ha-input
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!this._source?.stat_energy_from}
+          .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
+          @input=${this._nameChanged}
+        >
+        </ha-input>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -284,12 +309,36 @@ export class DialogEnergySolarSettings
     });
   }
 
-  private _statisticChanged(ev: ValueChangedEvent<string>) {
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
   }
 
   private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_rate: ev.detail.value };
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
   }
 
   private async _save() {

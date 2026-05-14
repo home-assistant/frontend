@@ -551,7 +551,13 @@ export class HuiEnergySourcesTableCard
                   null,
                   null,
                   showCosts,
-                  compare
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+                        { name: source.name }
+                      )
+                    : ""
                 )}${this._renderRow(
                   computedStyles,
                   "battery_in",
@@ -563,7 +569,13 @@ export class HuiEnergySourcesTableCard
                   null,
                   null,
                   showCosts,
-                  compare
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+                        { name: source.name }
+                      )
+                    : ""
                 )}`;
               })}
               ${types.battery
@@ -630,6 +642,15 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_to
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
                   return this._renderRow(
                     computedStyles,
                     "grid_consumption",
@@ -641,7 +662,8 @@ export class HuiEnergySourcesTableCard
                     cost,
                     costCompare,
                     showCosts,
-                    compare
+                    compare,
+                    name
                   );
                 })();
 
@@ -670,6 +692,15 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_from
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
                   return this._renderRow(
                     computedStyles,
                     "grid_return",
@@ -681,7 +712,8 @@ export class HuiEnergySourcesTableCard
                     -cost,
                     -costCompare,
                     showCosts,
-                    compare
+                    compare,
+                    name
                   );
                 })();
 

@@ -335,11 +335,13 @@ export class HuiEnergySolarGraphCard
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
           {
-            name: getStatisticLabel(
-              this.hass,
-              source.stat_energy_from,
-              statisticsMetaData[source.stat_energy_from]
-            ),
+            name:
+              source.name ||
+              getStatisticLabel(
+                this.hass,
+                source.stat_energy_from,
+                statisticsMetaData[source.stat_energy_from]
+              ),
           }
         ),
         barMaxWidth: 50,
@@ -443,11 +445,13 @@ export class HuiEnergySolarGraphCard
               name: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {
-                  name: getStatisticLabel(
-                    this.hass,
-                    source.stat_energy_from,
-                    statisticsMetaData[source.stat_energy_from]
-                  ),
+                  name:
+                    source.name ||
+                    getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_from,
+                      statisticsMetaData[source.stat_energy_from]
+                    ),
                 }
               ),
               step: false,

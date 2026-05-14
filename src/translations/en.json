@@ -4113,6 +4113,7 @@
               "energy_from_helper": "Pick a sensor which measures grid import in either of {unit}.",
               "energy_to_grid": "Energy exported to grid",
               "energy_to_helper": "Pick a sensor which measures grid export in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "import_cost": "Cost tracking",
               "import_cost_para": "Select how Home Assistant should keep track of the costs of the imported energy.",
               "no_cost_tracking": "Do not track costs",
@@ -4170,6 +4171,7 @@
             "dialog": {
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -4193,6 +4195,7 @@
               "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
               "power": "Battery power",
@@ -8568,7 +8571,10 @@
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
-              "consumed_battery": "Consumed battery"
+              "consumed_battery": "Consumed battery",
+              "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
+              "named_grid_consumed": "Consumed {name}",
+              "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
@@ -8581,7 +8587,11 @@
               "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
-              "total_costs": "Total costs"
+              "total_costs": "Total costs",
+              "named_battery_charged": "{name} charged",
+              "named_battery_discharged": "{name} discharged",
+              "named_grid_imported": "{name} imported",
+              "named_grid_exported": "{name} exported"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
