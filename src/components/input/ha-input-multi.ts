@@ -218,7 +218,7 @@ class HaInputMulti extends LitElement {
           margin-bottom: 8px;
           --ha-input-padding-bottom: 0;
         }
-        .add-row {
+        .add-row:has(+ ha-input-helper-text) {
           margin-bottom: var(--ha-space-1);
         }
         ha-icon-button {
