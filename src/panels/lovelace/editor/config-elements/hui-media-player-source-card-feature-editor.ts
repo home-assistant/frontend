@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { MediaPlayerEntity } from "../../../../data/media-player";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerSourceCardFeatureConfig,
@@ -72,7 +72,9 @@ export class HuiMediaPlayerSourceCardFeatureEditor
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(
+    ev: ValueChangedEvent<MediaPlayerSourceCardFeatureConfig>
+  ): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
@@ -81,7 +83,7 @@ export class HuiMediaPlayerSourceCardFeatureEditor
   ) => {
     switch (schema.name) {
       case "sources":
-        return this.hass!.localize(
+        return this.hass?.localize(
           `ui.panel.lovelace.editor.features.types.media-player-source.${schema.name}`
         );
       default:
