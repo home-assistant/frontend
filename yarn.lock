@@ -2444,26 +2444,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/drawer@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/drawer@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/list": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/4401b23f77e24cbf7d25dbd98fb30cc58872438b702000a9b809c728ecb2008ac51389884235b8510660007fcaeb2134c237c47f0adfffa297a94b5f3b41cae0
-  languageName: node
-  linkType: hard
-
 "@material/elevation@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/elevation@npm:14.0.0-canary.53b3cad2f.0"
@@ -2650,20 +2630,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/064a32f238e6582f1d83f545a7f953a14f4774b0f7205f440fd34531d3cc72c9bfdd3e87c9a309eec0c4f42b1de9fb29ac8b35ccf2bdb76fd3216dfed2f387ad
-  languageName: node
-  linkType: hard
-
-"@material/mwc-drawer@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-drawer@npm:0.27.0"
-  dependencies:
-    "@material/drawer": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    blocking-elements: "npm:^0.1.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-    wicg-inert: "npm:^3.0.0"
-  checksum: 10/5f329a216cb72e1431ffcab83855aa694bcfb58fc65abc62e4d5258d10240fe03815089c532ea604a8758c4719a6c284ccbb2e8cd117f8d7f4f58b79046fb650
   languageName: node
   linkType: hard
 
@@ -6032,13 +5998,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"blocking-elements@npm:^0.1.0":
-  version: 0.1.1
-  resolution: "blocking-elements@npm:0.1.1"
-  checksum: 10/4022a3aa56d7ee83af690d6c3a39304bdfe23ab0ee60b067b0b821db9e462cbd038340b3be8917dd7cd73d9c6dfaacd11cd7dafa374231567eef85ba04c4762a
-  languageName: node
-  linkType: hard
-
 "bmp-js@npm:^0.1.0":
   version: 0.1.0
   resolution: "bmp-js@npm:0.1.0"
@@ -8770,7 +8729,6 @@ __metadata:
     "@lokalise/node-api": "npm:16.0.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
-    "@material/mwc-drawer": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-top-app-bar": "npm:0.27.0"
@@ -14753,13 +14711,6 @@ __metadata:
   bin:
     why-is-node-running: cli.js
   checksum: 10/0de6e6cd8f2f94a8b5ca44e84cf1751eadcac3ebedcdc6e5fbbe6c8011904afcbc1a2777c53496ec02ced7b81f2e7eda61e76bf8262a8bc3ceaa1f6040508051
-  languageName: node
-  linkType: hard
-
-"wicg-inert@npm:^3.0.0":
-  version: 3.1.3
-  resolution: "wicg-inert@npm:3.1.3"
-  checksum: 10/b9ca89ba4d4ce17eceab37aa6a10124490584b0d76e5287a43126bff1042aded8f624792db52f9e80f59bd70ffd0e79f243312a94fe928883f6c8834009b12e1
   languageName: node
   linkType: hard
 
