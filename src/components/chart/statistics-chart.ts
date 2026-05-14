@@ -41,6 +41,7 @@ import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
+import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -131,7 +132,7 @@ export class StatisticsChart extends LitElement {
 
   private _computedStyle?: CSSStyleDeclaration;
 
-  private _previousYAxisLabelValue = 0;
+  private _yAxisFractionDigits = 1;
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -495,6 +496,14 @@ export class StatisticsChart extends LitElement {
     const chartStacked = this.chartType.endsWith("stack");
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number | null | undefined) => {
+      if (typeof v === "number" && Number.isFinite(v)) {
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    };
     const legendData: {
       id: string;
       name: string;
@@ -600,6 +609,9 @@ export class StatisticsChart extends LitElement {
               d.data!.push([prevEndTime, null]);
             }
             d.data!.push([start, ...dataValues[i]!]);
+            // For band-top rows dataValues[i] is [diff, top]; the actual Y is
+            // the last element. For regular rows it's [value]. Same call works.
+            trackY(dataValues[i][dataValues[i].length - 1]);
           } else {
             let time = start;
             if (centerBars) {
@@ -610,6 +622,7 @@ export class StatisticsChart extends LitElement {
             // Data value should always be a scalar for bar charts. Pass in
             // real start time as extra value to allow formatting tooltip.
             d.data!.push([time, dataValues[i][0]!, start, end]);
+            trackY(dataValues[i][0]);
           }
         });
         prevValues = dataValues;
@@ -822,6 +835,7 @@ export class StatisticsChart extends LitElement {
                   val.push(currentValue);
                 }
                 statDataSets[i].data!.push([now, ...val]);
+                trackY(val[val.length - 1]);
               });
             }
           }
@@ -855,6 +869,7 @@ export class StatisticsChart extends LitElement {
       });
     });
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = totalDataSets;
     if (legendData.length !== this._legendData?.length) {
       // only update the legend if it has changed or it will trigger options update
@@ -888,21 +903,10 @@ export class StatisticsChart extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 
-  private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+  private _formatYAxisLabel = (value: number) =>
+    formatNumber(value, this.hass.locale, {
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
-    this._previousYAxisLabelValue = value;
-    return label;
-  };
 
   static styles = css`
     :host {

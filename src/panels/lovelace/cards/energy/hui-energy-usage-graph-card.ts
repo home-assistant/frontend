@@ -13,6 +13,7 @@ import type {
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import "./common/hui-energy-graph-chip";
 import type {
@@ -78,6 +79,8 @@ export class HuiEnergyUsageGraphCard
   }
 
   @state() private _chartData: BarSeriesOption[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -154,7 +157,8 @@ export class HuiEnergyUsageGraphCard
               this.hass.locale,
               this.hass.config,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -189,8 +193,9 @@ export class HuiEnergyUsageGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      compareStart?: Date,
-      compareEnd?: Date
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
     ): ECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -200,7 +205,9 @@ export class HuiEnergyUsageGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       );
       const options: ECOption = {
         ...commonOptions,
@@ -236,6 +243,13 @@ export class HuiEnergyUsageGraphCard
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
     const datasets: BarSeriesOption[] = [];
+
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
 
     const statIds: {
       to_grid?: string[];
@@ -341,6 +355,7 @@ export class HuiEnergyUsageGraphCard
           colorIndices,
           computedStyles,
           labels,
+          trackY,
           true
         )
       );
@@ -367,6 +382,7 @@ export class HuiEnergyUsageGraphCard
         colorIndices,
         computedStyles,
         labels,
+        trackY,
         false
       )
     );
@@ -374,6 +390,7 @@ export class HuiEnergyUsageGraphCard
     // @ts-expect-error
     datasets.sort((a, b) => a.order - b.order);
     fillDataGapsAndRoundCaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(consumption);
   }
@@ -403,6 +420,7 @@ export class HuiEnergyUsageGraphCard
       used_solar: string;
       used_battery: string;
     },
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -504,18 +522,17 @@ export class HuiEnergyUsageGraphCard
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
-          const dataPoint: EnergyDataPoint = [
-            key + periodOffset,
+          const y =
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
-              : value,
-            key,
-          ];
+              : value;
+          const dataPoint: EnergyDataPoint = [key + periodOffset, y, key];
           if (compare) {
             dataPoint[0] =
               compareTransform(new Date(key)).getTime() + periodOffset;
           }
           points.push(dataPoint);
+          trackY(y);
         }
 
         data.push({
