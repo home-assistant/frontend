@@ -65,6 +65,7 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "media_next_track",
   "volume_down",
   "volume_up",
+  "volume_mute",
 ] as const;
 
 export type MediaPlayerPlaybackControl =
