@@ -86,9 +86,6 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "show-advanced", type: Boolean })
-  public showAdvanced = false;
-
   @property({ attribute: "show-service-id", type: Boolean })
   public showServiceId = false;
 
@@ -666,10 +663,7 @@ export class HaServiceControl extends LitElement {
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
 
-    return dataField.selector &&
-      (!dataField.advanced ||
-        this.showAdvanced ||
-        (this._value?.data && this._value.data[dataField.key] !== undefined))
+    return dataField.selector
       ? html`<ha-settings-row .narrow=${this.narrow}>
           ${!showOptional
             ? hasOptional
