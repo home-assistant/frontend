@@ -1,9 +1,13 @@
-import { html, LitElement, nothing } from "lit";
+import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { clamp } from "../../../common/number/clamp";
+import "../../../components/ha-control-button";
 import "../../../components/ha-control-number-buttons";
+import "../../../components/ha-svg-icon";
+import { forwardHaptic } from "../../../data/haptics";
 import { isUnavailableState } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
@@ -84,14 +88,21 @@ class HuiMediaPlayerVolumeButtonsCardFeature
       return nothing;
     }
 
+    const stateObj = this._stateObj;
+    const disabled = isUnavailableState(stateObj.state);
+    const showMute =
+      (this._config.show_mute_button ?? true) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
+    const isMuted = stateObj.attributes.is_volume_muted;
+
     const position =
-      this._stateObj.attributes.volume_level != null
-        ? Math.round(this._stateObj.attributes.volume_level * 100)
+      stateObj.attributes.volume_level != null
+        ? Math.round(stateObj.attributes.volume_level * 100)
         : undefined;
 
     return html`
       <ha-control-number-buttons
-        .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
+        .disabled=${disabled}
         .locale=${this.hass.locale}
         min="0"
         max="100"
@@ -100,6 +111,22 @@ class HuiMediaPlayerVolumeButtonsCardFeature
         unit="%"
         @value-changed=${this._valueChanged}
       ></ha-control-number-buttons>
+      ${showMute
+        ? html`
+            <ha-control-button
+              class="mute"
+              .label=${this.hass.localize(
+                `ui.card.media_player.${isMuted ? "media_volume_unmute" : "media_volume_mute"}`
+              )}
+              .disabled=${disabled}
+              @click=${this._toggleMute}
+            >
+              <ha-svg-icon
+                .path=${isMuted ? mdiVolumeOff : mdiVolumeHigh}
+              ></ha-svg-icon>
+            </ha-control-button>
+          `
+        : nothing}
     `;
   }
 
@@ -112,8 +139,34 @@ class HuiMediaPlayerVolumeButtonsCardFeature
     });
   }
 
+  private _toggleMute(ev: Event) {
+    ev.stopPropagation();
+    forwardHaptic(this, "light");
+    this.hass!.callService("media_player", "volume_mute", {
+      entity_id: this._stateObj!.entity_id,
+      is_volume_muted: !this._stateObj!.attributes.is_volume_muted,
+    });
+  }
+
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: flex;
+          flex-direction: row;
+          gap: var(--feature-button-spacing);
+        }
+        ha-control-number-buttons {
+          flex: 1;
+          min-width: 0;
+        }
+        .mute {
+          width: var(--feature-height);
+          height: var(--feature-height);
+        }
+      `,
+    ];
   }
 }
 
