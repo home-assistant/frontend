@@ -7052,12 +7052,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"domelementtype@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "domelementtype@npm:3.0.0"
+  checksum: 10/6b5120222f7e8b3491ad2f00036a1a14965bccab91014bfa54fa7789081b71f88141bf3b5b264c75ca4916b08e16ac1233a4f3b38067acb3fca9a7b21327cec1
+  languageName: node
+  linkType: hard
+
 "domhandler@npm:^5.0.2, domhandler@npm:^5.0.3":
   version: 5.0.3
   resolution: "domhandler@npm:5.0.3"
   dependencies:
     domelementtype: "npm:^2.3.0"
   checksum: 10/809b805a50a9c6884a29f38aec0a4e1b4537f40e1c861950ed47d10b049febe6b79ab72adaeeebb3cc8fc1cd33f34e97048a72a9265103426d93efafa78d3e96
+  languageName: node
+  linkType: hard
+
+"domhandler@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "domhandler@npm:6.0.1"
+  dependencies:
+    domelementtype: "npm:^3.0.0"
+  checksum: 10/370e7c121cf3223a5aa21ce03666189eebac8d5b16af83efc221a93ed4f6c7b9f2cf2cc92ef7d50cbbd05787e1fbad42ec3c4717f6eb578667280443b94ffe10
   languageName: node
   linkType: hard
 
@@ -7562,15 +7578,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:2.2.1, eslint-plugin-lit@npm:^2.0.0":
-  version: 2.2.1
-  resolution: "eslint-plugin-lit@npm:2.2.1"
+"eslint-plugin-lit@npm:2.3.1, eslint-plugin-lit@npm:^2.0.0":
+  version: 2.3.1
+  resolution: "eslint-plugin-lit@npm:2.3.1"
   dependencies:
-    parse5: "npm:^6.0.1"
-    parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
+    parse5: "npm:^8.0.1"
+    parse5-htmlparser2-tree-adapter: "npm:^8.0.1"
   peerDependencies:
     eslint: ">= 8"
-  checksum: 10/fc0f3c2bec52c2c1c2467b373a71e68f2bb101b3872b30be9f439660e735684bec016c6b83cea1ed71e6d94f9ec9621a805f3a188b618b84c2e25ae1adbde192
+  checksum: 10/e1de53d3e8dc4d7e43dba67ad66cbc150025a52e6c30877874f162dfc5625b323c6f0d04beb727d7b97ff8e33a9a5a0a224b0711e7817b9ab8ef2bc77bed6cce
   languageName: node
   linkType: hard
 
@@ -8790,7 +8806,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.8"
     eslint-import-resolver-webpack: "npm:0.13.11"
     eslint-plugin-import-x: "npm:4.16.2"
-    eslint-plugin-lit: "npm:2.2.1"
+    eslint-plugin-lit: "npm:2.3.1"
     eslint-plugin-lit-a11y: "npm:5.1.1"
     eslint-plugin-unused-imports: "npm:4.4.1"
     eslint-plugin-wc: "npm:3.1.0"
@@ -11404,6 +11420,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"parse5-htmlparser2-tree-adapter@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "parse5-htmlparser2-tree-adapter@npm:8.0.1"
+  dependencies:
+    domhandler: "npm:^6.0.1"
+    parse5: "npm:^8.0.0"
+  checksum: 10/6d7590d247752f6259d6f8d6c5e44e074ec3b7665ed9ea95f877a5b341f756b61af2aeadc5b773942420c052123915a26d59bada9c794071ad7e8da8997fb984
+  languageName: node
+  linkType: hard
+
 "parse5@npm:5.1.0":
   version: 5.1.0
   resolution: "parse5@npm:5.1.0"
@@ -11434,7 +11460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^8.0.1":
+"parse5@npm:^8.0.0, parse5@npm:^8.0.1":
   version: 8.0.1
   resolution: "parse5@npm:8.0.1"
   dependencies:
