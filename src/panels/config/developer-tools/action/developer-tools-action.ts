@@ -203,7 +203,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   .hass=${this.hass}
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
-                  show-advanced
                   show-service-id
                   @value-changed=${this._serviceDataChanged}
                   class="card-content ui-mode-content"
