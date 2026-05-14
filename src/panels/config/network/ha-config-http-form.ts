@@ -27,62 +27,94 @@ const SCHEMA = memoizeOne(
         selector: { text: { multiple: true } },
       },
       {
-        name: "ssl_certificate",
-        selector: { text: {} },
-      },
-      {
-        name: "ssl_key",
-        selector: { text: {} },
-      },
-      {
-        name: "ssl_peer_certificate",
-        selector: { text: {} },
-      },
-      {
-        name: "ssl_profile",
-        selector: {
-          select: {
-            options: [
-              {
-                value: "modern",
-                label: localize(
-                  "ui.panel.config.network.http.ssl_profile_modern"
-                ),
-              },
-              {
-                value: "intermediate",
-                label: localize(
-                  "ui.panel.config.network.http.ssl_profile_intermediate"
-                ),
-              },
-            ],
+        name: "ssl",
+        type: "expandable",
+        flatten: true,
+        title: localize("ui.panel.config.network.http.sections.ssl"),
+        schema: [
+          {
+            name: "ssl_certificate",
+            selector: { text: {} },
           },
-        },
+          {
+            name: "ssl_key",
+            selector: { text: {} },
+          },
+          {
+            name: "ssl_peer_certificate",
+            selector: { text: {} },
+          },
+          {
+            name: "ssl_profile",
+            selector: {
+              select: {
+                options: [
+                  {
+                    value: "modern",
+                    label: localize(
+                      "ui.panel.config.network.http.ssl_profile_modern"
+                    ),
+                  },
+                  {
+                    value: "intermediate",
+                    label: localize(
+                      "ui.panel.config.network.http.ssl_profile_intermediate"
+                    ),
+                  },
+                ],
+              },
+            },
+          },
+        ],
       },
       {
-        name: "cors_allowed_origins",
-        selector: { text: { multiple: true } },
+        name: "reverse_proxy",
+        type: "expandable",
+        flatten: true,
+        title: localize("ui.panel.config.network.http.sections.reverse_proxy"),
+        schema: [
+          {
+            name: "use_x_forwarded_for",
+            selector: { boolean: {} },
+          },
+          {
+            name: "trusted_proxies",
+            selector: { text: { multiple: true } },
+          },
+        ],
       },
       {
-        name: "use_x_forwarded_for",
-        selector: { boolean: {} },
+        name: "ip_banning",
+        type: "expandable",
+        flatten: true,
+        title: localize("ui.panel.config.network.http.sections.ip_banning"),
+        schema: [
+          {
+            name: "ip_ban_enabled",
+            selector: { boolean: {} },
+          },
+          {
+            name: "login_attempts_threshold",
+            required: true,
+            selector: { number: { min: -1, max: 1000, mode: "box" } },
+          },
+        ],
       },
       {
-        name: "trusted_proxies",
-        selector: { text: { multiple: true } },
-      },
-      {
-        name: "use_x_frame_options",
-        selector: { boolean: {} },
-      },
-      {
-        name: "ip_ban_enabled",
-        selector: { boolean: {} },
-      },
-      {
-        name: "login_attempts_threshold",
-        required: true,
-        selector: { number: { min: -1, max: 1000, mode: "box" } },
+        name: "advanced",
+        type: "expandable",
+        flatten: true,
+        title: localize("ui.panel.config.network.http.sections.advanced"),
+        schema: [
+          {
+            name: "cors_allowed_origins",
+            selector: { text: { multiple: true } },
+          },
+          {
+            name: "use_x_frame_options",
+            selector: { boolean: {} },
+          },
+        ],
       },
     ] as const
 );
@@ -184,14 +216,28 @@ class HaConfigHttpForm extends LitElement {
 
   private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof SCHEMA>>
-  ): string =>
-    this.hass.localize(`ui.panel.config.network.http.fields.${schema.name}`);
+  ): string => {
+    if ("type" in schema && schema.type === "expandable") {
+      // Expandable sections render their own title; never label them.
+      return "";
+    }
+    return this.hass.localize(
+      `ui.panel.config.network.http.fields.${schema.name}` as any
+    );
+  };
 
   private _computeHelper = (
     schema: SchemaUnion<ReturnType<typeof SCHEMA>>
-  ): string =>
-    this.hass.localize(`ui.panel.config.network.http.helpers.${schema.name}`) ||
-    "";
+  ): string => {
+    if ("type" in schema && schema.type === "expandable") {
+      return "";
+    }
+    return (
+      this.hass.localize(
+        `ui.panel.config.network.http.helpers.${schema.name}` as any
+      ) || ""
+    );
+  };
 
   private _valueChanged(ev: CustomEvent): void {
     this._config = ev.detail.value;

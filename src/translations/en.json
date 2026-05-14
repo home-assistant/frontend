@@ -8260,6 +8260,12 @@
             "restart_required_description": "Restart Home Assistant to apply the new HTTP settings.",
             "ssl_profile_modern": "Modern",
             "ssl_profile_intermediate": "Intermediate",
+            "sections": {
+              "ssl": "SSL/TLS",
+              "reverse_proxy": "Reverse proxy",
+              "ip_banning": "IP banning",
+              "advanced": "Advanced"
+            },
             "fields": {
               "server_port": "Server port",
               "server_host": "Listen addresses",
