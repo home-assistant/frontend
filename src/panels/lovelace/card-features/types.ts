@@ -78,6 +78,7 @@ export interface MediaPlayerPlaybackCardFeatureConfig {
 
 export interface MediaPlayerSourceCardFeatureConfig {
   type: "media-player-source";
+  sources?: string[];
 }
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {

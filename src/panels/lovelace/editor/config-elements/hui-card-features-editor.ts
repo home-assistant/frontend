@@ -152,6 +152,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "lawn-mower-commands",
   "media-player-playback",
   "light-color-favorites",
+  "media-player-source",
   "media-player-volume-buttons",
   "numeric-input",
   "select-options",
