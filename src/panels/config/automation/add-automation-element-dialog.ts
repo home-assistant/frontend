@@ -47,8 +47,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
@@ -56,6 +54,8 @@ import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
@@ -731,7 +731,7 @@ class DialogAddAutomationElement
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
-                <ha-md-list
+                <ha-list-base
                   class=${classMap({
                     groups: true,
                     hidden: hideCollections,
@@ -739,9 +739,7 @@ class DialogAddAutomationElement
                   })}
                 >
                   ${this._params!.clipboardItem
-                    ? html`<ha-md-list-item
-                          interactive
-                          type="button"
+                    ? html`<ha-list-item-button
                           class="paste"
                           @click=${this._paste}
                         >
@@ -785,7 +783,7 @@ class DialogAddAutomationElement
                             slot="end"
                             .path=${mdiPlus}
                           ></ha-svg-icon>
-                        </ha-md-list-item>
+                        </ha-list-item-button>
                         <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
@@ -799,9 +797,7 @@ class DialogAddAutomationElement
                         collection.groups,
                         (item) => item.key,
                         (item) => html`
-                          <ha-md-list-item
-                            interactive
-                            type="button"
+                          <ha-list-item-button
                             .value=${item.key}
                             .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
@@ -821,12 +817,12 @@ class DialogAddAutomationElement
                             ${this._narrow
                               ? html`<ha-icon-next slot="end"></ha-icon-next>`
                               : nothing}
-                          </ha-md-list-item>
+                          </ha-list-item-button>
                         `
                       )}
                     `
                   )}
-                </ha-md-list>
+                </ha-list-base>
               `}
         ${!this._filter
           ? html`
@@ -2391,8 +2387,14 @@ class DialogAddAutomationElement
           gap: var(--ha-space-3);
         }
 
-        ha-md-list {
-          padding: 0;
+        ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-1);
+          --ha-row-item-padding-inline: var(--ha-space-3);
+          --ha-row-item-min-height: 40px;
+        }
+        ha-list-item-button::part(start),
+        ha-list-item-button::part(end) {
+          color: var(--ha-color-on-neutral-quiet);
         }
 
         ha-automation-add-from-target,

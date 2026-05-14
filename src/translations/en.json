@@ -258,6 +258,7 @@
         "media_previous_track": "Previous track",
         "volume_up": "Volume up",
         "volume_down": "Volume down",
+        "volume_mute": "Mute",
         "media_volume_up": "Volume up",
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
@@ -2924,6 +2925,13 @@
                 "experimental": "Experimental",
                 "deprecated": "Deprecated"
               },
+              "state": {
+                "started": "Running",
+                "stopped": "Stopped",
+                "error": "Error",
+                "startup": "Starting",
+                "unknown": "Unknown"
+              },
               "label": {
                 "rating": "Rating",
                 "host": "Host",
@@ -4213,6 +4221,7 @@
               "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
               "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
@@ -4242,6 +4251,7 @@
               "paragraph": "Water consumption is the volume of water that flows to your home.",
               "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
@@ -5405,6 +5415,12 @@
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
+              "live_test_state": {
+                "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+                "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+                "invalid": "Condition is invalid",
+                "unknown": "Condition state unknown"
+              },
               "invalid_condition": "Invalid condition configuration",
               "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
@@ -9276,7 +9292,9 @@
             "history-graph": {
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
+              "show_names": "Show entity names",
               "logarithmic_scale": "Logarithmic scale",
+              "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
@@ -9978,7 +9996,8 @@
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
-                "step": "Step size"
+                "step": "Step size",
+                "show_mute_button": "Show mute button"
               },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"

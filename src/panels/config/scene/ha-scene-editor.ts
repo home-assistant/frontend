@@ -325,7 +325,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   private _renderYamlMode() {
     return html` <ha-yaml-editor
-      .hass=${this.hass}
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
       @editor-save=${this._saveScene}

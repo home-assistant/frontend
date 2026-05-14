@@ -107,7 +107,8 @@ export class HuiEnergySourcesTableCard
     cost: number | null,
     compareCost: number | null,
     showCosts: boolean,
-    compare: boolean
+    compare: boolean,
+    name?: string
   ) {
     return html`<tr
       class="mdc-data-table__row ${classMap({
@@ -140,11 +141,8 @@ export class HuiEnergySourcesTableCard
         ></div>
       </td>
       <th class="mdc-data-table__cell" scope="row">
-        ${getStatisticLabel(
-          this.hass,
-          statId,
-          this._data?.statsMetadata[statId]
-        )}
+        ${name ||
+        getStatisticLabel(this.hass, statId, this._data?.statsMetadata[statId])}
       </th>
       ${compare
         ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
@@ -415,7 +413,8 @@ export class HuiEnergySourcesTableCard
           cost_stat ? cost : null,
           cost_stat ? costCompare : null,
           showCosts,
-          compare
+          compare,
+          source.name
         );
       })}
       ${types[type]

@@ -3,8 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-card";
-import "../../components/ha-md-list-item";
 import "../../components/ha-switch";
+import "../../components/item/ha-row-item";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
 import type { HomeAssistant } from "../../types";
@@ -21,7 +21,7 @@ class EntityIdPickerRow extends LitElement {
     return html`${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : nothing}
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.profile.entity_id_picker.title"
@@ -40,7 +40,7 @@ class EntityIdPickerRow extends LitElement {
           .disabled=${this.coreUserData === undefined}
           @change=${this._toggled}
         ></ha-switch>
-      </ha-md-list-item>`;
+      </ha-row-item>`;
   }
 
   private async _toggled(ev) {

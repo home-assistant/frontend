@@ -3,14 +3,16 @@ import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { ContextType } from "@lit/context";
+import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import "./ha-button";
 import "./ha-code-editor";
 import type { HaCodeEditor } from "./ha-code-editor";
+import { internationalizationContext } from "../data/context";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object" || obj === null) {
@@ -26,8 +28,6 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public value?: any;
 
   @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
@@ -58,6 +58,10 @@ export class HaYamlEditor extends LitElement {
   public hasExtraActions = false;
 
   @state() private _yaml = "";
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
@@ -112,7 +116,6 @@ export class HaYamlEditor extends LitElement {
         ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
         : nothing}
       <ha-code-editor
-        .hass=${this.hass}
         .value=${this._yaml}
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
@@ -132,7 +135,7 @@ export class HaYamlEditor extends LitElement {
               ${this.copyClipboard
                 ? html`
                     <ha-button appearance="plain" @click=${this._copyYaml}>
-                      ${this.hass.localize(
+                      ${this._i18n!.localize(
                         "ui.components.yaml-editor.copy_to_clipboard"
                       )}
                     </ha-button>
@@ -163,7 +166,7 @@ export class HaYamlEditor extends LitElement {
         // Invalid YAML
         isValid = false;
         yamlError = err;
-        errorMsg = `${this.hass.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this.hass.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+        errorMsg = `${this._i18n!.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this._i18n!.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       }
     } else {
       parsed = {};
@@ -201,7 +204,7 @@ export class HaYamlEditor extends LitElement {
     if (this.yaml) {
       await copyToClipboard(this.yaml);
       showToast(this, {
-        message: this.hass.localize("ui.common.copied_clipboard"),
+        message: this._i18n!.localize("ui.common.copied_clipboard"),
       });
     }
   }

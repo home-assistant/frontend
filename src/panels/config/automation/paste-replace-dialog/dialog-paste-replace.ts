@@ -52,7 +52,6 @@ class DialogPasteReplace extends LitElement {
         </p>
 
         <ha-yaml-editor
-          .hass=${this.hass}
           .defaultValue=${this._params?.pastedConfig}
           read-only
         ></ha-yaml-editor>

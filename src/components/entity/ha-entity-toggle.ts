@@ -22,6 +22,14 @@ const isOn = (stateObj?: HassEntity) =>
   !STATES_OFF.includes(stateObj.state) &&
   !isUnavailableState(stateObj.state);
 
+/**
+ * @element ha-entity-toggle
+ *
+ * @cssprop --ha-entity-toggle-switch-width - Width of the switch track. Defaults to `38px`.
+ * @cssprop --ha-entity-toggle-switch-size - Height of the switch track. Defaults to `20px`.
+ * @cssprop --ha-entity-toggle-switch-thumb-size - Size of the switch thumb. Defaults to `14px`.
+ */
+
 @customElement("ha-entity-toggle")
 export class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
@@ -165,9 +173,9 @@ export class HaEntityToggle extends LitElement {
       white-space: nowrap;
     }
     ha-switch {
-      --ha-switch-width: 38px;
-      --ha-switch-size: 20px;
-      --ha-switch-thumb-size: 14px;
+      --ha-switch-width: var(--ha-entity-toggle-switch-width, 38px);
+      --ha-switch-size: var(--ha-entity-toggle-switch-size, 20px);
+      --ha-switch-thumb-size: var(--ha-entity-toggle-switch-thumb-size, 14px);
     }
     ha-icon-button {
       --ha-icon-button-size: 40px;

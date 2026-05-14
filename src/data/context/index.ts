@@ -5,6 +5,7 @@ import type {
   HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantConnection,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
   HomeAssistantRegistries,
   HomeAssistantUI,
@@ -62,6 +63,14 @@ export const uiContext = createContext<HomeAssistantUI>("hassUi");
  * `auth`, `config` (core HA config), `user`, `userData`, and `systemData`.
  */
 export const configContext = createContext<HomeAssistantConfig>("hassConfig");
+
+/**
+ * Entity formatting functions: `formatEntityState`, `formatEntityStateToParts`,
+ * `formatEntityAttributeValue`, `formatEntityAttributeValueToParts`,
+ * `formatEntityAttributeName`, and `formatEntityName`.
+ */
+export const formattersContext =
+  createContext<HomeAssistantFormatters>("hassFormatters");
 
 /**
  * Map of all entities in the entity registry, keyed by entity ID.

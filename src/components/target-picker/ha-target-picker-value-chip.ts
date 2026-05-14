@@ -28,8 +28,6 @@ import "../ha-domain-icon";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon";
 import "../ha-icon-button";
-import "../ha-md-list";
-import "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-tooltip";
 

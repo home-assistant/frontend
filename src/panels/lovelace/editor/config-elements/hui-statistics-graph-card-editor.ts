@@ -375,22 +375,21 @@ export class HuiStatisticsGraphCardEditor
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-        <ha-statistics-picker
-          .hass=${this.hass}
-          .placeholder=${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
-          )}
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
-          )}
-          .includeStatisticsUnitOfMeasurement=${statisticsUnit}
-          .includeUnitClass=${unitClass}
-          .ignoreRestrictionsOnFirstStatistic=${true}
-          .value=${this._configEntities}
-          .configValue=${"entities"}
-          @value-changed=${this._entitiesChanged}
-        ></ha-statistics-picker>
-      </div>
+      <ha-statistics-picker
+        .hass=${this.hass}
+        .placeholder=${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
+        )}
+        .label=${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
+        )}
+        .includeStatisticsUnitOfMeasurement=${statisticsUnit}
+        .includeUnitClass=${unitClass}
+        .ignoreRestrictionsOnFirstStatistic=${true}
+        .value=${this._configEntities}
+        .configValue=${"entities"}
+        @value-changed=${this._entitiesChanged}
+      ></ha-statistics-picker>
     `;
   }
 

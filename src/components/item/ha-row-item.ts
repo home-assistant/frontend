@@ -130,10 +130,6 @@ export class HaRowItem extends LitElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-normal);
-      --ha-row-item-padding-block: var(--ha-space-3);
-      --ha-row-item-padding-inline: var(--ha-space-4);
-      --ha-row-item-gap: var(--ha-space-4);
-      --ha-row-item-min-height: 48px;
     }
     :host([disabled]) {
       color: var(--disabled-text-color);
@@ -144,10 +140,10 @@ export class HaRowItem extends LitElement {
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: var(--ha-row-item-gap);
-      padding-block: var(--ha-row-item-padding-block);
-      padding-inline: var(--ha-row-item-padding-inline);
-      min-height: var(--ha-row-item-min-height);
+      gap: var(--ha-row-item-gap, var(--ha-space-4));
+      padding-block: var(--ha-row-item-padding-block, var(--ha-space-3));
+      padding-inline: var(--ha-row-item-padding-inline, var(--ha-space-4));
+      min-height: var(--ha-row-item-min-height, 48px);
       box-sizing: border-box;
     }
     .content {

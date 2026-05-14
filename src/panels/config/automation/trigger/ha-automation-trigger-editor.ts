@@ -71,7 +71,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
                   `
                 : nothing}
               <ha-yaml-editor
-                .hass=${this.hass}
                 .defaultValue=${this.trigger}
                 .readOnly=${this.disabled}
                 @value-changed=${this._onYamlChange}

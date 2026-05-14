@@ -121,6 +121,7 @@ export class HaAutomationRowEventChip extends LitElement {
       align-items: center;
       --mdc-icon-size: 16px;
       line-height: 1;
+      box-shadow: var(--ha-box-shadow-s);
     }
 
     button {

@@ -541,7 +541,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                       `
                     : nothing}
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     @value-changed=${this._yamlChanged}

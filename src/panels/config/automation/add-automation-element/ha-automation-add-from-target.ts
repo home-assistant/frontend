@@ -23,11 +23,12 @@ import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-section-title";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/item/ha-row-item";
+import "../../../../components/list/ha-list-base";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -328,15 +329,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
           )}</ha-section-title
         >
         ${emptyFloors
-          ? html`<ha-md-list>
-              <ha-md-list-item type="text">
-                <div slot="headline">
-                  ${this._i18n.localize("ui.components.area-picker.no_areas")}
-                </div>
-              </ha-md-list-item>
-            </ha-md-list>`
+          ? html`<ha-row-item>
+              <div slot="headline">
+                ${this._i18n.localize("ui.components.area-picker.no_areas")}
+              </div>
+            </ha-row-item>`
           : html`${narrow
-              ? html`<ha-md-list>${floorAreas}</ha-md-list>`
+              ? html`<ha-list-base>${floorAreas}</ha-list-base>`
               : html`<wa-tree
                   @wa-selection-change=${this._handleSelectionChange}
                   >${floorAreas}</wa-tree
@@ -370,12 +369,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.label-picker.labels"
           )}</ha-section-title
         >
-        <ha-md-list>
+        <ha-list-base>
           ${labels.map(
             (label) =>
-              html`<ha-md-list-item
-                interactive
-                type="button"
+              html`<ha-list-item-button
                 .target=${label.id}
                 @click=${this._selectItem}
                 class=${this._getSelectedTargetId(value) === label.id
@@ -393,9 +390,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 ${narrow
                   ? html`<ha-icon-next slot="end"></ha-icon-next> `
                   : nothing}
-              </ha-md-list-item>`
+              </ha-list-item-button>`
           )}
-        </ha-md-list>`;
+        </ha-list-base>`;
     }
   );
 
@@ -514,7 +511,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.panel.config.automation.editor.unassigned"
           )}</ha-section-title
         >${narrow
-          ? html`<ha-md-list>${items}</ha-md-list>`
+          ? html`<ha-list-base>${items}</ha-list-base>`
           : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
               ${items}
             </wa-tree>`} `;
@@ -568,7 +565,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.areas"
           )}</ha-section-title
         >
-        <ha-md-list>${renderedAreas}</ha-md-list>`;
+        <ha-list-base>${renderedAreas}</ha-list-base>`;
     }
 
     return renderedAreas;
@@ -617,7 +614,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.devices"
           )}</ha-section-title
         >
-        <ha-md-list>${renderedDevices}</ha-md-list>`;
+        <ha-list-base>${renderedDevices}</ha-list-base>`;
     }
 
     return renderedDevices;
@@ -664,7 +661,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.devices"
           )}</ha-section-title
         >
-        <ha-md-list> ${renderedDomains} </ha-md-list>`;
+        <ha-list-base>${renderedDomains}</ha-list-base>`;
     }
 
     return renderedDomains;
@@ -719,7 +716,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.entities"
           )}</ha-section-title
         >
-        <ha-md-list>${renderedEntites}</ha-md-list>`;
+        <ha-list-base>${renderedEntites}</ha-list-base>`;
     }
 
     return renderedEntites;
@@ -784,17 +781,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
     children?: TemplateResult | TemplateResult[] | typeof nothing
   ) {
     if (this.narrow) {
-      return html`<ha-md-list-item
-        interactive
-        type="button"
+      return html`<ha-list-item-button
         .target=${target}
         @click=${this._selectItem}
-        .title=${label}
       >
         ${icon?.("start")}
         <div slot="headline">${label}</div>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>`;
+      </ha-list-item-button>`;
     }
 
     return html`
@@ -866,10 +860,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
       undefined
     );
 
+    const filteredFloors = this._floorAreas.filter(
+      ({ id, areas }) => id !== undefined && areas.length
+    );
     this._floorAreas.forEach((floor) => {
       this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
         // auto expand if only one floor is present
-        open: this._floorAreas.length === 1,
+        open: filteredFloors.length === 1 && filteredFloors[0].id === floor.id,
         areas: {},
       };
 
@@ -1188,7 +1185,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       await this.updateComplete;
       if (type === "label") {
         this.shadowRoot!.querySelector(
-          "ha-md-list-item.selected"
+          "ha-list-item-button.selected"
         )?.scrollIntoView({
           block: "center",
         });
@@ -1413,9 +1410,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
       font-weight: var(--ha-font-weight-medium);
       overflow: hidden;
     }
-    ha-md-list-item {
-      --md-list-item-label-text-weight: var(--ha-font-weight-medium);
-      --md-list-item-label-text-font: var(--ha-font-family-heading);
+    ha-list-item-button::part(label) {
+      font-weight: var(--ha-font-weight-medium);
+      font-family: var(--ha-font-family-heading);
     }
 
     .item-label {
@@ -1459,20 +1456,24 @@ export default class HaAutomationAddFromTarget extends LitElement {
       background-color: yellow;
     }
 
-    ha-md-list {
-      padding: 0;
-      --md-list-item-leading-space: var(--ha-space-3);
-      --md-list-item-trailing-space: var(--md-list-item-leading-space);
-      --md-list-item-bottom-space: var(--ha-space-1);
-      --md-list-item-top-space: var(--md-list-item-bottom-space);
-      --md-list-item-supporting-text-font: var(--ha-font-size-s);
-      --md-list-item-one-line-container-height: var(--ha-space-10);
+    ha-list-base {
+      --ha-row-item-padding-inline: var(--ha-space-3);
+      --ha-row-item-padding-block: var(--ha-space-1);
+      --ha-row-item-min-height: 40px;
     }
 
-    ha-md-list-item.selected {
+    ha-list-item-button::part(end) {
+      color: var(--ha-color-on-neutral-quiet);
+    }
+
+    ha-list-item-button.selected {
       background-color: var(--ha-color-fill-primary-normal-active);
       --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
       --icon-primary-color: var(--ha-color-on-primary-normal);
+    }
+
+    ha-list-item-button.selected::part(headline) {
+      color: var(--ha-color-on-primary-normal);
     }
 
     wa-tree-item[selected],
@@ -1480,8 +1481,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     wa-tree-item[selected] > ha-icon,
     wa-tree-item[selected] > ha-state-icon,
     wa-tree-item[selected] > ha-floor-icon,
-    ha-md-list-item.selected ha-icon,
-    ha-md-list-item.selected ha-svg-icon {
+    ha-list-item-button.selected ha-icon,
+    ha-list-item-button.selected ha-svg-icon {
       color: var(--ha-color-on-primary-normal);
     }
 

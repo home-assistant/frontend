@@ -27,6 +27,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { ContextType } from "@lit/context";
 import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
@@ -43,7 +44,14 @@ import type {
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import { documentationUrl } from "../util/documentation-url";
-import { labelsContext } from "../data/context";
+import {
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+  labelsContext,
+  configContext,
+  formattersContext,
+} from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-code-editor-completion-items";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
@@ -77,8 +85,6 @@ export class HaCodeEditor extends ReactiveElement {
   public codemirror?: EditorView;
 
   @property() public mode = "yaml";
-
-  public hass?: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -123,9 +129,29 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _canCopy = false;
 
-  @consume({ context: labelsContext, subscribe: true })
   @state()
-  private _labels?: LabelRegistryEntry[];
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labels?: ContextType<typeof labelsContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries?: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: ContextType<typeof statesContext>;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
@@ -189,9 +215,9 @@ export class HaCodeEditor extends ReactiveElement {
       const line = doc.lineAt(pos);
       const message = `${
         err.reason ||
-        this.hass?.localize("ui.components.yaml-editor.error") ||
+        this._i18n?.localize("ui.components.yaml-editor.error") ||
         "YAML syntax error"
-      }${err.mark ? ` (${this.hass?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+      }${err.mark ? ` (${this._i18n?.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       diagnostics = [{ from: pos, to: line.to, severity: "error", message }];
     }
     this.codemirror.dispatch(
@@ -396,8 +422,8 @@ export class HaCodeEditor extends ReactiveElement {
           this._loadedCodeMirror!.haJinjaHoverSource(
             view,
             pos,
-            this.hass ? documentationUrl(this.hass, "") : undefined,
-            this.hass ? this._hassArgHoverContext() : undefined
+            this._config ? documentationUrl(this._config, "") : undefined,
+            this._hassArgHoverContext()
           ),
         { hoverTime: 300 }
       ),
@@ -408,7 +434,7 @@ export class HaCodeEditor extends ReactiveElement {
       const completionSources: CompletionSource[] = [
         this._loadedCodeMirror.haJinjaCompletionSource,
       ];
-      if (this.autocompleteEntities && this.hass) {
+      if (this.autocompleteEntities) {
         completionSources.push(this._entityCompletions.bind(this));
       }
       if (this.autocompleteIcons) {
@@ -447,12 +473,12 @@ export class HaCodeEditor extends ReactiveElement {
   private _fullscreenLabel(): string {
     if (this._isFullscreen) {
       return (
-        this.hass?.localize("ui.components.yaml-editor.exit_fullscreen") ||
+        this._i18n?.localize("ui.components.yaml-editor.exit_fullscreen") ||
         "Exit fullscreen"
       );
     }
     return (
-      this.hass?.localize("ui.components.yaml-editor.enter_fullscreen") ||
+      this._i18n?.localize("ui.components.yaml-editor.enter_fullscreen") ||
       "Enter fullscreen"
     );
   }
@@ -507,7 +533,7 @@ export class HaCodeEditor extends ReactiveElement {
             {
               id: "test",
               label:
-                this.hass?.localize(
+                this._i18n?.localize(
                   `ui.components.yaml-editor.test_${this.testing ? "off" : "on"}`
                 ) || "Test",
               path: this.testing ? mdiBugOutline : mdiBug,
@@ -518,14 +544,14 @@ export class HaCodeEditor extends ReactiveElement {
       {
         id: "undo",
         disabled: !this._canUndo,
-        label: this.hass?.localize("ui.common.undo") || "Undo",
+        label: this._i18n?.localize("ui.common.undo") || "Undo",
         path: mdiUndo,
         action: (e: Event) => this._handleUndoClick(e),
       },
       {
         id: "redo",
         disabled: !this._canRedo,
-        label: this.hass?.localize("ui.common.redo") || "Redo",
+        label: this._i18n?.localize("ui.common.redo") || "Redo",
         path: mdiRedo,
         action: (e: Event) => this._handleRedoClick(e),
       },
@@ -533,7 +559,7 @@ export class HaCodeEditor extends ReactiveElement {
         id: "copy",
         disabled: !this._canCopy,
         label:
-          this.hass?.localize("ui.components.yaml-editor.copy_to_clipboard") ||
+          this._i18n?.localize("ui.components.yaml-editor.copy_to_clipboard") ||
           "Copy to Clipboard",
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
@@ -541,7 +567,7 @@ export class HaCodeEditor extends ReactiveElement {
       {
         id: "find-replace",
         label:
-          this.hass?.localize("ui.components.yaml-editor.find_and_replace") ||
+          this._i18n?.localize("ui.components.yaml-editor.find_and_replace") ||
           "Find and replace",
         path: mdiFindReplace,
         action: (e: Event) => this._handleFindReplaceClick(e),
@@ -583,7 +609,7 @@ export class HaCodeEditor extends ReactiveElement {
       await copyToClipboard(this.value);
       showToast(this, {
         message:
-          this.hass?.localize("ui.common.copied_clipboard") ||
+          this._i18n?.localize("ui.common.copied_clipboard") ||
           "Copied to clipboard",
       });
     }
@@ -651,12 +677,11 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   /**
-   * Builds a HassArgHoverContext from the current hass object so that
+   * Builds a HassArgHoverContext from the context objects so that
    * haJinjaHoverSource can resolve entity / device / area friendly names
    * without importing the full HomeAssistant type into the resource file.
    */
   private _hassArgHoverContext(): HassArgHoverContext {
-    const hass = this.hass!;
     const labelMap: Record<
       string,
       { name: string; description?: string | null }
@@ -668,27 +693,33 @@ export class HaCodeEditor extends ReactiveElement {
       };
     }
     return {
-      states: hass.states as HassArgHoverContext["states"],
-      devices: hass.devices as HassArgHoverContext["devices"],
-      areas: hass.areas as HassArgHoverContext["areas"],
-      floors: hass.floors as HassArgHoverContext["floors"],
-      entities: hass.entities as HassArgHoverContext["entities"],
+      states: this._states as HassArgHoverContext["states"],
+      devices: this._registries?.devices as HassArgHoverContext["devices"],
+      areas: this._registries?.areas as HassArgHoverContext["areas"],
+      floors: this._registries?.floors as HassArgHoverContext["floors"],
+      entities: this._registries?.entities as HassArgHoverContext["entities"],
       labels: labelMap,
       formatEntityState: (entityId) =>
-        hass.formatEntityState(hass.states[entityId]),
+        this._formatters!.formatEntityState(this._states![entityId]),
       formatEntityName: (entityId) => {
-        const stateObj = hass.states[entityId];
+        const stateObj = this._states?.[entityId];
         return (
           (stateObj?.attributes.friendly_name as string | undefined) ??
-          hass.entities[entityId]?.name ??
+          this._registries?.entities?.[entityId]?.name ??
           undefined
         );
       },
       formatAttributeName: (entityId, attribute) =>
-        hass.formatEntityAttributeName(hass.states[entityId], attribute),
+        this._formatters!.formatEntityAttributeName(
+          this._states![entityId],
+          attribute
+        ),
       formatAttributeValue: (entityId, attribute) =>
-        hass.formatEntityAttributeValue(hass.states[entityId], attribute),
-      localize: (key) => hass.localize(key as never),
+        this._formatters!.formatEntityAttributeValue(
+          this._states![entityId],
+          attribute
+        ),
+      localize: (key) => this._i18n!.localize(key as never),
     };
   }
 
@@ -698,49 +729,51 @@ export class HaCodeEditor extends ReactiveElement {
         ? completion.apply
         : completion.label;
     const context = getEntityContext(
-      this.hass!.states[key],
-      this.hass!.entities,
-      this.hass!.devices,
-      this.hass!.areas,
-      this.hass!.floors
+      this._states![key],
+      this._registries!.entities,
+      this._registries!.devices,
+      this._registries!.areas,
+      this._registries!.floors
     );
 
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");
 
-    const formattedState = this.hass!.formatEntityState(this.hass!.states[key]);
+    const formattedState = this._formatters!.formatEntityState(
+      this._states![key]
+    );
 
     const completionItems: CompletionItem[] = [
       {
-        label: this.hass!.localize(
+        label: this._i18n!.localize(
           "ui.components.entity.entity-state-picker.state"
         ),
         value: formattedState,
         subValue:
           // If the state exactly matches the formatted state, don't show the raw state
-          this.hass!.states[key].state === formattedState
+          this._states![key].state === formattedState
             ? undefined
-            : this.hass!.states[key].state,
+            : this._states![key].state,
       },
     ];
 
     if (context.device && context.device.name) {
       completionItems.push({
-        label: this.hass!.localize("ui.components.device-picker.device"),
+        label: this._i18n!.localize("ui.components.device-picker.device"),
         value: context.device.name,
       });
     }
 
     if (context.area && context.area.name) {
       completionItems.push({
-        label: this.hass!.localize("ui.components.area-picker.area"),
+        label: this._i18n!.localize("ui.components.area-picker.area"),
         value: context.area.name,
       });
     }
 
     if (context.floor && context.floor.name) {
       completionItems.push({
-        label: this.hass!.localize("ui.components.floor-picker.floor"),
+        label: this._i18n!.localize("ui.components.floor-picker.floor"),
         value: context.floor.name,
       });
     }
@@ -761,15 +794,15 @@ export class HaCodeEditor extends ReactiveElement {
     entityId: string,
     attribute: string
   ): CompletionInfo | null => {
-    if (!this.hass) return null;
-    const stateObj = this.hass.states[entityId];
+    if (!this._states || !this._formatters) return null;
+    const stateObj = this._states[entityId];
     if (!stateObj) return null;
 
-    const translatedName = this.hass.formatEntityAttributeName(
+    const translatedName = this._formatters.formatEntityAttributeName(
       stateObj,
       attribute
     );
-    const formattedValue = this.hass.formatEntityAttributeValue(
+    const formattedValue = this._formatters.formatEntityAttributeValue(
       stateObj,
       attribute
     );
@@ -809,9 +842,9 @@ export class HaCodeEditor extends ReactiveElement {
     completion: Completion
   ): CompletionInfo | Promise<CompletionInfo> | null => {
     if (
-      this.hass &&
+      this._states &&
       typeof completion.apply === "string" &&
-      completion.apply in this.hass.states
+      completion.apply in this._states
     ) {
       return this._renderInfo(completion);
     }
@@ -1020,7 +1053,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _statesDotNotationCompletions(
     context: CompletionContext
   ): CompletionResult | null | undefined {
-    if (!this.hass) return undefined;
+    if (!this._states) return undefined;
 
     const { state: editorState, pos } = context;
     const tree = this._loadedCodeMirror!.syntaxTree(editorState);
@@ -1129,9 +1162,7 @@ export class HaCodeEditor extends ReactiveElement {
       case 0: {
         // states.   → offer all unique domains
         const domains = [
-          ...new Set(
-            Object.keys(this.hass.states).map((id) => id.split(".")[0])
-          ),
+          ...new Set(Object.keys(this._states).map((id) => id.split(".")[0])),
         ].sort();
         return {
           from: completionFrom,
@@ -1142,7 +1173,7 @@ export class HaCodeEditor extends ReactiveElement {
       case 1: {
         // states.<domain>.   → offer entity object_ids for that domain
         const [domain] = segments;
-        const entities = Object.keys(this.hass.states)
+        const entities = Object.keys(this._states)
           .filter((id) => id.startsWith(`${domain}.`))
           .map((id) => id.split(".").slice(1).join("."));
         if (!entities.length) return { from: completionFrom, options: [] };
@@ -1172,7 +1203,7 @@ export class HaCodeEditor extends ReactiveElement {
         }
         // Offer attribute names from the entity's state object
         const entityId = `${domain}.${entity}`;
-        const entityState = this.hass.states[entityId];
+        const entityState = this._states[entityId];
         if (!entityState) return { from: completionFrom, options: [] };
         const attrNames = Object.keys(entityState.attributes).sort();
         return {
@@ -1342,8 +1373,8 @@ export class HaCodeEditor extends ReactiveElement {
   ): CompletionResult {
     const from = stringNode.from + 1;
     const empty: CompletionResult = { from, options: [] };
-    if (!entityId || !this.hass) return empty;
-    const entityState = this.hass.states[entityId];
+    if (!entityId || !this._states) return empty;
+    const entityState = this._states[entityId];
     if (!entityState) return empty;
     const attrs = Object.keys(entityState.attributes).sort();
     if (!attrs.length) return empty;
@@ -1363,7 +1394,7 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    const states = this._getStates(this.hass!.states);
+    const states = this._getStates(this._states!);
     if (!states?.length) return null;
     // from is stringNode.from + 1 to skip the opening quote character.
     const from = stringNode.from + 1;
@@ -1397,8 +1428,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.devices) return null;
-    const devices = this._getDevices(this.hass.devices);
+    if (!this._registries?.devices) return null;
+    const devices = this._getDevices(this._registries.devices);
     if (!devices.length) return null;
     return {
       from: stringNode.from + 1,
@@ -1426,8 +1457,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.areas) return null;
-    const areas = this._getAreas(this.hass.areas);
+    if (!this._registries?.areas) return null;
+    const areas = this._getAreas(this._registries.areas);
     if (!areas.length) return null;
     return {
       from: stringNode.from + 1,
@@ -1455,8 +1486,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this.hass?.floors) return null;
-    const floors = this._getFloors(this.hass.floors);
+    if (!this._registries?.floors) return null;
+    const floors = this._getFloors(this._registries.floors);
     if (!floors.length) return null;
     return {
       from: stringNode.from + 1,
@@ -1556,7 +1587,7 @@ export class HaCodeEditor extends ReactiveElement {
 
         // If cursor is after the entity field, show all entities
         if (context.pos >= afterField) {
-          const states = this._getStates(this.hass!.states);
+          const states = this._getStates(this._states!);
 
           if (!states || !states.length) {
             return null;
@@ -1611,7 +1642,7 @@ export class HaCodeEditor extends ReactiveElement {
             const afterListMarker = currentLine.from + listItemMatch[0].length;
 
             if (context.pos >= afterListMarker) {
-              const states = this._getStates(this.hass!.states);
+              const states = this._getStates(this._states!);
 
               if (!states || !states.length) {
                 return null;
@@ -1671,7 +1702,7 @@ export class HaCodeEditor extends ReactiveElement {
       return null;
     }
 
-    const states = this._getStates(this.hass!.states);
+    const states = this._getStates(this._states!);
 
     if (!states || !states.length) {
       return null;

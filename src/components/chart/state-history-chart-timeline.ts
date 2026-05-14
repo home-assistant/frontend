@@ -14,6 +14,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { sideTooltipPosition } from "./chart-tooltip-position";
 import { computeTimelineColor } from "./timeline-color";
 import type { ECOption } from "../../resources/echarts/echarts";
 import echarts from "../../resources/echarts/echarts";
@@ -263,8 +264,7 @@ export class StateHistoryChartTimeline extends LitElement {
       },
       tooltip: {
         renderMode: "html",
-        position: "bottom",
-        align: "center",
+        position: sideTooltipPosition,
         confine: true,
         formatter: this._renderTooltip,
       },

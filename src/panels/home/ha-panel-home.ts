@@ -392,7 +392,7 @@ class PanelHome extends LitElement {
       gap: var(--ha-space-2);
       position: fixed;
       top: var(--header-height, 56px);
-      left: var(--mdc-drawer-width, 0px);
+      left: var(--ha-sidebar-width, 0px);
       right: 0;
       z-index: 5;
     }
