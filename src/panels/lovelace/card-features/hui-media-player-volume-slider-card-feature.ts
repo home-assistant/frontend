@@ -1,16 +1,20 @@
-import { html, LitElement, nothing } from "lit";
+import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-control-button";
 import "../../../components/ha-control-slider";
+import "../../../components/ha-svg-icon";
+import { forwardHaptic } from "../../../data/haptics";
 import { isUnavailableState } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -58,6 +62,13 @@ class HuiMediaPlayerVolumeSliderCardFeature
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-media-player-volume-slider-card-feature-editor");
+    return document.createElement(
+      "hui-media-player-volume-slider-card-feature-editor"
+    );
+  }
+
   public setConfig(config: MediaPlayerVolumeSliderCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -76,9 +87,16 @@ class HuiMediaPlayerVolumeSliderCardFeature
       return nothing;
     }
 
+    const stateObj = this._stateObj;
+    const disabled = isUnavailableState(stateObj.state);
+    const showMute =
+      (this._config.show_mute_button ?? true) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
+    const isMuted = stateObj.attributes.is_volume_muted;
+
     const position =
-      this._stateObj.attributes.volume_level != null
-        ? Math.round(this._stateObj.attributes.volume_level * 100)
+      stateObj.attributes.volume_level != null
+        ? Math.round(stateObj.attributes.volume_level * 100)
         : undefined;
 
     return html`
@@ -86,12 +104,28 @@ class HuiMediaPlayerVolumeSliderCardFeature
         .value=${position}
         min="0"
         max="100"
-        .showHandle=${stateActive(this._stateObj)}
-        .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
+        .showHandle=${stateActive(stateObj)}
+        .disabled=${disabled}
         @value-changed=${this._valueChanged}
         unit="%"
         .locale=${this.hass.locale}
       ></ha-control-slider>
+      ${showMute
+        ? html`
+            <ha-control-button
+              class="mute"
+              .label=${this.hass.localize(
+                `ui.card.media_player.${isMuted ? "media_volume_unmute" : "media_volume_mute"}`
+              )}
+              .disabled=${disabled}
+              @click=${this._toggleMute}
+            >
+              <ha-svg-icon
+                .path=${isMuted ? mdiVolumeOff : mdiVolumeHigh}
+              ></ha-svg-icon>
+            </ha-control-button>
+          `
+        : nothing}
     `;
   }
 
@@ -105,8 +139,34 @@ class HuiMediaPlayerVolumeSliderCardFeature
     });
   }
 
+  private _toggleMute(ev: Event) {
+    ev.stopPropagation();
+    forwardHaptic(this, "light");
+    this.hass!.callService("media_player", "volume_mute", {
+      entity_id: this._stateObj!.entity_id,
+      is_volume_muted: !this._stateObj!.attributes.is_volume_muted,
+    });
+  }
+
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: flex;
+          flex-direction: row;
+          gap: var(--feature-button-spacing);
+        }
+        ha-control-slider {
+          flex: 1;
+          min-width: 0;
+        }
+        .mute {
+          width: var(--feature-height);
+          height: var(--feature-height);
+        }
+      `,
+    ];
   }
 }
 
