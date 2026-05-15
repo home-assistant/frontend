@@ -263,6 +263,9 @@ interface EntitySelectorFilter {
   device_class?: string | readonly string[];
   supported_features?: number | [number];
   unit_of_measurement?: string | readonly string[];
+  manufacturer?: string;
+  model?: string;
+  model_id?: string;
 }
 
 export interface EntitySelectorExtraOption {
@@ -658,7 +661,9 @@ export const expandLabelTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -724,7 +729,9 @@ export const expandAreaTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -747,7 +754,9 @@ export const expandDeviceTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -788,7 +797,9 @@ export const areaMeetsTargetSelector = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       return true;
@@ -826,7 +837,9 @@ export const deviceMeetsTargetSelector = (
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       );
     });
   }
@@ -836,14 +849,22 @@ export const deviceMeetsTargetSelector = (
 export const entityMeetsTargetSelector = (
   entity: HassEntity | undefined,
   targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  entitySources?: EntitySources,
+  entities?: HomeAssistant["entities"],
+  devices?: HomeAssistant["devices"]
 ): boolean => {
   if (!entity) {
     return false;
   }
   if (targetSelector.target?.entity) {
     return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
-      filterSelectorEntities(filterEntity, entity, entitySources)
+      filterSelectorEntities(
+        filterEntity,
+        entity,
+        entitySources,
+        entities,
+        devices
+      )
     );
   }
   return true;
@@ -884,7 +905,9 @@ export const filterSelectorDevices = (
 export const filterSelectorEntities = (
   filterEntity: EntitySelectorFilter,
   entity: HassEntity,
-  entitySources?: EntitySources
+  entitySources?: EntitySources,
+  entityRegistry?: HomeAssistant["entities"],
+  devices?: HomeAssistant["devices"]
 ): boolean => {
   const {
     domain: filterDomain,
@@ -892,6 +915,9 @@ export const filterSelectorEntities = (
     supported_features: filterSupportedFeature,
     unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
+    manufacturer: filterManufacturer,
+    model: filterModel,
+    model_id: filterModelId,
   } = filterEntity;
 
   if (filterDomain) {
@@ -933,6 +959,33 @@ export const filterSelectorEntities = (
       (Array.isArray(filterUnitOfMeasurement)
         ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
         : entityUnitOfMeasurement !== filterUnitOfMeasurement)
+    ) {
+      return false;
+    }
+  }
+
+  if (filterManufacturer || filterModel || filterModelId) {
+    if (!entityRegistry || !devices) {
+      return false;
+    }
+
+    const deviceId = entityRegistry[entity.entity_id]?.device_id;
+    if (!deviceId) {
+      return false;
+    }
+    const device = devices[deviceId];
+    if (!device) {
+      return false;
+    }
+    if (
+      !filterSelectorDevices(
+        {
+          manufacturer: filterManufacturer,
+          model: filterModel,
+          model_id: filterModelId,
+        },
+        device
+      )
     ) {
       return false;
     }
@@ -1025,6 +1078,9 @@ export const computeCreateDomains = (
     !entityFilter.integration &&
     !entityFilter.device_class &&
     !entityFilter.supported_features &&
+    !entityFilter.manufacturer &&
+    !entityFilter.model &&
+    !entityFilter.model_id &&
     entityFilter.domain
       ? ensureArray(entityFilter.domain).filter((domain) =>
           isHelperDomain(domain)

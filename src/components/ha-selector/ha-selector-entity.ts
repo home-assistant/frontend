@@ -117,7 +117,13 @@ export class HaEntitySelector extends LitElement {
       return true;
     }
     return ensureArray(this.selector.entity.filter).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 }

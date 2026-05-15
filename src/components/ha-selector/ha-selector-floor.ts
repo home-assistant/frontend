@@ -133,7 +133,13 @@ export class HaFloorSelector extends LitElement {
     }
 
     return ensureArray(this.selector.floor.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 
