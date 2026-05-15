@@ -95,6 +95,7 @@ export interface MediaPlayerVolumeButtonsCardFeatureConfig {
 
 export interface MediaPlayerSoundModeCardFeatureConfig {
   type: "media-player-sound-mode";
+  sound_modes?: string[];
 }
 
 export interface FanDirectionCardFeatureConfig {

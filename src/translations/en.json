@@ -9991,7 +9991,8 @@
                 "controls": "Controls"
               },
               "media-player-sound-mode": {
-                "label": "Media player sound mode"
+                "label": "Media player sound mode",
+                "sound_modes": "Sound modes"
               },
               "media-player-source": {
                 "label": "Media player source",
