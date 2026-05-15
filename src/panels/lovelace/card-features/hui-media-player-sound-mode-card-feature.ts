@@ -64,9 +64,7 @@ class HuiMediaPlayerSoundModeCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-media-player-sound-mode-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-media-player-sound-mode-card-feature-editor");
     return document.createElement(
       "hui-media-player-sound-mode-card-feature-editor"
     );
