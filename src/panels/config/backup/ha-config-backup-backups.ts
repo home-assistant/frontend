@@ -7,7 +7,7 @@ import {
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -104,13 +104,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @state() private _selected: string[] = [];
 
   @state()
+  @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "backups-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
+
+  private _fromUrl = false;
 
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string = "formatted_type";
@@ -131,11 +136,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _overflowBackup?: BackupRow;
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
+      this._setFiltersFromUrl();
+    }
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
-    this._setFiltersFromUrl();
   }
 
   disconnectedCallback(): void {
@@ -568,14 +580,23 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _typeFilterChanged(ev) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _locationsFilterChanged(ev) {
     this._filters = { ...this._filters, [LOCATIONS_FILTER]: ev.detail.value };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _setFiltersFromUrl() {
@@ -586,6 +607,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
+    this._fromUrl = true;
     this._filters = {
       [TYPE_FILTER]: type === "all" ? [] : [type],
     };
