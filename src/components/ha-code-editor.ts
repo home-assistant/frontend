@@ -188,6 +188,7 @@ export class HaCodeEditor extends ReactiveElement {
       this.codemirror.state,
       [this._loadedCodeMirror.tags.comment]
     );
+    // eslint-disable-next-line lit/prefer-query-decorators
     return !!this.renderRoot.querySelector(`span.${className}`);
   }
 

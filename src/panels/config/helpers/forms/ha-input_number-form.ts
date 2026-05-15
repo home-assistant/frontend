@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/radio/ha-radio-group";
@@ -49,6 +49,8 @@ class HaInputNumberForm extends LitElement {
   // eslint-disable-next-line: variable-name
   @state() private _unit_of_measurement?: string;
 
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   /* Configuring initial value is intentionally not supported because the behavior
      compared to restoring the value after restart is hard to explain */
   set item(item: InputNumber) {
@@ -76,11 +78,7 @@ class HaInputNumberForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {

@@ -19,7 +19,7 @@ import type {
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -101,6 +101,8 @@ export class HaChartBase extends LitElement {
   @state() private _minutesDifference = 24 * 60;
 
   @state() private _hiddenDatasets = new Set<string>();
+
+  @query(".chart") private _chartContainer?: HTMLDivElement;
 
   private _modifierPressed = false;
 
@@ -469,7 +471,6 @@ export class HaChartBase extends LitElement {
 
   private async _setupChart() {
     if (this._loading) return;
-    const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
     this._loading = true;
     try {
       if (this.chart) {
@@ -484,7 +485,7 @@ export class HaChartBase extends LitElement {
       const style = getComputedStyle(this);
       echarts.registerTheme("custom", this._createTheme(style));
 
-      this.chart = echarts.init(container, "custom");
+      this.chart = echarts.init(this._chartContainer!, "custom");
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });

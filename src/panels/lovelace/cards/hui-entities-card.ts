@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, queryAll, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -75,6 +75,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: EntitiesCardConfig;
 
+  @queryAll("#states > div > *") private _rowElements!: NodeListOf<HTMLElement>;
+
+  @query("hui-entities-toggle") private _entitiesToggle?: HTMLElement;
+
   private _hass?: HomeAssistant;
 
   private _configEntities?: LovelaceRowConfig[];
@@ -102,22 +106,17 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot
-      ?.querySelectorAll("#states > div > *")
-      .forEach((element: unknown) => {
-        (element as LovelaceRow).hass = hass;
-      });
+    this._rowElements.forEach((element: unknown) => {
+      (element as LovelaceRow).hass = hass;
+    });
     if (this._headerElement) {
       this._headerElement.hass = hass;
     }
     if (this._footerElement) {
       this._footerElement.hass = hass;
     }
-    const entitiesToggle = this.shadowRoot?.querySelector(
-      "hui-entities-toggle"
-    );
-    if (entitiesToggle) {
-      (entitiesToggle as any).hass = hass;
+    if (this._entitiesToggle) {
+      (this._entitiesToggle as any).hass = hass;
     }
   }
 
