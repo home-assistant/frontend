@@ -2,6 +2,9 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
+  mdiAlertCircleOutline,
+  mdiAlertOutline,
+  mdiCheckCircleOutline,
   mdiCog,
   mdiContentDuplicate,
   mdiDelete,
@@ -66,6 +69,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-tooltip";
+import "../../../components/data-table/ha-data-table-icon";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import {
@@ -128,6 +132,7 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { loadTraces } from "../../../data/trace";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -139,6 +144,7 @@ type AutomationItem = AutomationEntity & {
   labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
+  errors: undefined | "none" | "some" | "all";
 };
 
 @customElement("ha-automation-picker")
@@ -158,6 +164,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _filteredEntityIds?: string[] | null;
+
+  @state() private _errors: Record<string, "none" | "some" | "all"> = {};
 
   @state()
   @storage({
@@ -238,6 +246,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
+      errors: Record<string, "none" | "some" | "all">,
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
@@ -282,6 +291,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
+          errors: automation.attributes.id
+            ? errors[automation.attributes.id]
+            : undefined,
         };
       });
     }
@@ -331,6 +343,33 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         category: getCategoryTableColumn(localize),
         labels: getLabelsTableColumn(),
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
+        result_icon: {
+          title: "",
+          label: localize("ui.panel.config.automation.picker.headers.result"),
+          type: "icon",
+          showNarrow: true,
+          template: (automation) =>
+            automation.errors
+              ? html`<ha-data-table-icon
+                  .path=${automation.errors === "all"
+                    ? mdiAlertCircleOutline
+                    : automation.errors === "none"
+                      ? mdiCheckCircleOutline
+                      : mdiAlertOutline}
+                  .tooltip=${localize(
+                    `ui.panel.config.automation.picker.result_errors.${automation.errors}`
+                  )}
+                  style=${styleMap({
+                    "--ha-data-table-icon-color":
+                      automation.errors === "all"
+                        ? "var(--error-color)"
+                        : automation.errors === "none"
+                          ? "var(--success-color)"
+                          : "var(--warning-color)",
+                  })}
+                ></ha-data-table-icon>`
+              : nothing,
+        },
         formatted_state: {
           minWidth: "82px",
           maxWidth: "82px",
@@ -421,6 +460,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
     const automations = this._automations(
       this.automations,
+      this._errors,
       this._entityReg,
       this.hass.areas,
       this._categories,
@@ -774,6 +814,28 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
+    loadTraces(this.hass, "automation").then((traces) => {
+      const errors = {};
+      traces.forEach((trace) => {
+        const error = trace.script_execution === "error";
+        const success =
+          trace.script_execution === "aborted" ||
+          trace.script_execution === "finished";
+        const current = errors[trace.item_id];
+        if (!current) {
+          if (error) {
+            errors[trace.item_id] = "all";
+          } else if (success) {
+            errors[trace.item_id] = "none";
+          }
+        } else if (current === "all" && success) {
+          errors[trace.item_id] = "some";
+        } else if (current === "none" && error) {
+          errors[trace.item_id] = "some";
+        }
+      });
+      this._errors = errors;
+    });
   }
 
   private _filterExpanded(ev) {
