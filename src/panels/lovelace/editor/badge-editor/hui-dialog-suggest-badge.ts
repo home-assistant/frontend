@@ -94,7 +94,6 @@ export class HuiDialogSuggestBadge extends LitElement {
             ? html`
                 <div class="editor">
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._badgeConfig}
                     in-dialog
                   ></ha-yaml-editor>

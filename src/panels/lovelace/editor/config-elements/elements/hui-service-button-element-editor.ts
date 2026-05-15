@@ -65,7 +65,6 @@ export class HuiServiceButtonElementEditor
       <ha-service-control
         .hass=${this.hass}
         .value=${this._serviceData(this._config)}
-        .showAdvanced=${this.hass.userData?.showAdvanced}
         narrow
         @value-changed=${this._serviceDataChanged}
       ></ha-service-control>

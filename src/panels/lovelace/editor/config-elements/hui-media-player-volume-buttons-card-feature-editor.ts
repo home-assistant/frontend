@@ -4,6 +4,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceCardFeatureContext,
@@ -27,7 +29,7 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    () =>
+    (supportsMute: boolean) =>
       [
         {
           name: "step",
@@ -41,6 +43,11 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
             },
           },
         },
+        {
+          name: "show_mute_button",
+          disabled: !supportsMute,
+          selector: { boolean: {} },
+        },
       ] as const
   );
 
@@ -49,12 +56,20 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
       return nothing;
     }
 
+    const stateObj = this.context?.entity_id
+      ? this.hass.states[this.context.entity_id]
+      : undefined;
+    const supportsMute =
+      !!stateObj &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
+
     const data: MediaPlayerVolumeButtonsCardFeatureConfig = {
       type: "media-player-volume-buttons",
       step: this._config.step ?? 5,
+      show_mute_button: this._config.show_mute_button ?? true,
     };
 
-    const schema = this._schema();
+    const schema = this._schema(supportsMute);
 
     return html`
       <ha-form

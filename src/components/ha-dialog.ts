@@ -15,9 +15,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { withViewTransition } from "../common/util/view-transition";
-import { internationalizationContext } from "../data/context";
+import { configContext, internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
+import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -127,10 +128,9 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
 
-  // disabled till iOS app fix the "focus_element" implementation
-  // @state()
-  // @consume({ context: configContext, subscribe: true })
-  // private _hassConfig?: ContextType<typeof configContext>;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
 
   @state()
   private _bodyScrolled = false;
@@ -221,22 +221,24 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      // disabled till iOS app fix the "focus_element" implementation
-      // if (this._hassConfig?.auth.external && isIosApp(this._hassConfig.auth.external)) {
-      //   const element = this.querySelector("[autofocus]");
-      //   if (element !== null) {
-      //     if (!element.id) {
-      //       element.id = "ha-dialog-autofocus";
-      //     }
-      //     this._hassConfig.auth.external.fireMessage({
-      //       type: "focus_element",
-      //       payload: {
-      //         element_id: element.id,
-      //       },
-      //     });
-      //   }
-      //   return;
-      // }
+      if (
+        this._hassConfig?.auth.external &&
+        isIosApp(this._hassConfig.auth.external)
+      ) {
+        const element = this.querySelector("[autofocus]");
+        if (element !== null) {
+          if (!element.id) {
+            element.id = "ha-dialog-autofocus";
+          }
+          this._hassConfig.auth.external.fireMessage({
+            type: "focus_element",
+            payload: {
+              element_id: element.id,
+            },
+          });
+        }
+        return;
+      }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };

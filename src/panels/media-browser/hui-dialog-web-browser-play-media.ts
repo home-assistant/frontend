@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-hls-player";
@@ -16,6 +16,8 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
 
   @state() private _open = false;
 
+  @query("img") private _img?: HTMLImageElement;
+
   public showDialog(params: WebBrowserPlayMediaDialogParams): void {
     this._params = params;
     this._open = true;
@@ -26,10 +28,9 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
   }
 
   private _dialogClosed(): void {
-    const img = this.renderRoot.querySelector("img");
-    if (img) {
+    if (this._img) {
       // Unload streaming images so the connection can be closed
-      img.src = "";
+      this._img.src = "";
     }
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });

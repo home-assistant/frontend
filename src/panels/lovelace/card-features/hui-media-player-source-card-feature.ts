@@ -8,7 +8,7 @@ import {
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { HuiModeSelectCardFeatureBase } from "./hui-mode-select-card-feature-base";
 import type {
   LovelaceCardFeatureContext,
@@ -43,6 +43,11 @@ class HuiMediaPlayerSourceCardFeature
 
   protected readonly _modesAttribute = "source_list";
 
+  protected get _configuredModes() {
+    const sources = this._config?.sources;
+    return sources?.length ? sources : undefined;
+  }
+
   protected readonly _serviceDomain = "media_player";
 
   protected readonly _serviceAction = "select_source";
@@ -61,6 +66,13 @@ class HuiMediaPlayerSourceCardFeature
     return {
       type: "media-player-source",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-media-player-source-card-feature-editor");
+    return document.createElement(
+      "hui-media-player-source-card-feature-editor"
+    );
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

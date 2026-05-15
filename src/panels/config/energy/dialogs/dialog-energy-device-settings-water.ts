@@ -13,7 +13,11 @@ import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
-import { getStatisticLabel } from "../../../../data/recorder";
+import {
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -232,13 +236,27 @@ export class DialogEnergyDeviceSettingsWater
     `;
   }
 
-  private _statisticChanged(ev: ValueChangedEvent<string>) {
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
       return;
     }
     this._device = { stat_consumption: ev.detail.value };
     this._computePossibleParents();
+
+    if (
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
   }
 
   private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {

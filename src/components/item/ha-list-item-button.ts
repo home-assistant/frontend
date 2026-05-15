@@ -1,6 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../ha-ripple";
 import { HaListItemBase } from "./ha-list-item-base";
@@ -34,8 +34,10 @@ export class HaListItemButton extends HaListItemBase {
 
   @property({ type: String }) public download?: string;
 
+  @query("#item") private _item?: HTMLElement;
+
   public override activate(): void {
-    this.renderRoot.querySelector<HTMLElement>("#item")?.click();
+    this._item?.click();
   }
 
   protected _renderBase(inner: TemplateResult): TemplateResult {

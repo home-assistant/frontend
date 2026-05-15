@@ -7,11 +7,11 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -157,7 +157,7 @@ export class DialogAddUser extends LitElement {
               "ui.panel.config.users.add_user.password_not_match"
             )}
           ></ha-input>
-          <ha-md-list-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.hass.localize(
                 "ui.panel.config.users.editor.local_access_only"
@@ -173,8 +173,8 @@ export class DialogAddUser extends LitElement {
               .checked=${this._localOnly}
               @change=${this._localOnlyChanged}
             ></ha-switch>
-          </ha-md-list-item>
-          <ha-md-list-item>
+          </ha-row-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.hass.localize("ui.panel.config.users.editor.admin")}</span
             >
@@ -188,7 +188,7 @@ export class DialogAddUser extends LitElement {
               .checked=${this._isAdmin}
               @change=${this._adminChanged}
             ></ha-switch>
-          </ha-md-list-item>
+          </ha-row-item>
           ${!this._isAdmin
             ? html`
                 <ha-alert alert-type="info">
@@ -320,10 +320,8 @@ export class DialogAddUser extends LitElement {
           display: flex;
           padding: 8px 0;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
       `,
     ];

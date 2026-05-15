@@ -194,7 +194,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                 ></ha-service-picker>
                 <ha-yaml-editor
                   id="yaml-editor"
-                  .hass=${this.hass}
                   .defaultValue=${this._serviceData}
                   @value-changed=${this._yamlChanged}
                 ></ha-yaml-editor>
@@ -204,7 +203,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   .hass=${this.hass}
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
-                  show-advanced
                   show-service-id
                   @value-changed=${this._serviceDataChanged}
                   class="card-content ui-mode-content"
@@ -238,7 +236,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
             >
               <div class="card-content">
                 <ha-yaml-editor
-                  .hass=${this.hass}
                   read-only
                   auto-update
                   has-extra-actions

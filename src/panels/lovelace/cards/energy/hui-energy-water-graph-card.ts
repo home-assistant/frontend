@@ -310,11 +310,13 @@ export class HuiEnergyWaterGraphCard
         id: compare
           ? "compare-" + source.stat_energy_from
           : source.stat_energy_from,
-        name: getStatisticLabel(
-          this.hass,
-          source.stat_energy_from,
-          statisticsMetaData[source.stat_energy_from]
-        ),
+        name:
+          source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_energy_from,
+            statisticsMetaData[source.stat_energy_from]
+          ),
         barMaxWidth: 50,
         itemStyle: {
           borderColor: getEnergyColor(

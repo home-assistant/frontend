@@ -292,14 +292,12 @@ export class HaListBase extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
-      --ha-list-gap: 0;
-      --ha-list-padding: 0;
     }
     .base {
       display: flex;
       flex-direction: column;
-      gap: var(--ha-list-gap);
-      padding: var(--ha-list-padding);
+      gap: var(--ha-list-gap, 0);
+      padding: var(--ha-list-padding, 0);
       margin: 0;
       list-style: none;
     }

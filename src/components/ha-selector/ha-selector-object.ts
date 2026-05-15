@@ -188,7 +188,6 @@ export class HaObjectSelector extends LitElement {
     }
 
     return html`<ha-yaml-editor
-        .hass=${this.hass}
         .readonly=${this.disabled}
         .label=${this.label}
         .required=${this.required}

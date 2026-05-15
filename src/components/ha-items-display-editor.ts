@@ -314,6 +314,7 @@ export class HaItemDisplayEditor extends LitElement {
     // refocus the item after the sort
     setTimeout(async () => {
       await this.updateComplete;
+      // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
         `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
       ) as HTMLElement | null;
