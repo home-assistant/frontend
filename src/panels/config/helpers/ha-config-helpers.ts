@@ -241,13 +241,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -819,6 +822,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -929,9 +935,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
-  private _filtersFromUrl = false;
-
-  private _previousFilters?: DataTableFiltersValues;
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -943,9 +947,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
-    if (this._filtersFromUrl) {
-      this._filters = this._previousFilters ?? {};
-    }
   }
 
   private _locationChanged = () => {
@@ -972,10 +973,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (!this._filtersFromUrl) {
-      this._previousFilters = this._filters;
-      this._filtersFromUrl = true;
-    }
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
@@ -989,6 +987,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
@@ -1217,6 +1218,7 @@ ${rejected
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
