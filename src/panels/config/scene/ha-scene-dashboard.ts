@@ -410,7 +410,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      this._filters = this._storageFilters;
+      if (!this._searchParms.has("label")) {
+        this._filters = this._storageFilters;
+      }
       this._filterLabel();
     }
   }

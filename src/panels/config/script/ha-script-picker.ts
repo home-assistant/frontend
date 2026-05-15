@@ -782,7 +782,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      this._filters = this._storageFilters;
+      const hasUrlFilter =
+        this._searchParms.has("blueprint") || this._searchParms.has("label");
+      if (!hasUrlFilter) {
+        this._filters = this._storageFilters;
+      }
       if (this._searchParms.has("blueprint")) {
         this._filterBlueprint();
       }
