@@ -160,15 +160,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   private _filter = "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "scene-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
+
+  private _fromUrl = false;
 
   @state() private _expandedFilter?: string;
 
@@ -402,6 +406,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       return columns;
     }
   );
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
+      this._filterLabel();
+    }
+  }
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -704,12 +716,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   };
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -759,13 +777,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
-    this._applyFilters();
-  }
-
-  firstUpdated() {
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
+    if (!this._fromUrl) {
+      this._storageFilters = {};
     }
+    this._applyFilters();
   }
 
   private _filterLabel() {
@@ -773,6 +788,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     if (!label) {
       return;
     }
+    this._fromUrl = true;
     this._filters = {
       ...this._filters,
       "ha-filter-labels": {
