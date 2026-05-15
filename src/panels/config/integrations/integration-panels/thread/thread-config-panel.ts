@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
 import { extractSearchParam } from "../../../../../common/url/search-params";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
@@ -22,6 +23,8 @@ import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagno
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateNetwork,
+  OTBRDeletePendingDataset,
+  OTBRGetPendingDataset,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
@@ -49,7 +52,13 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
+import "../../../../lovelace/components/hui-timestamp-display";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+
+interface PendingChannelChange {
+  pending_channel: number;
+  end_time: Date;
+}
 
 export interface ThreadNetwork {
   name: string;
@@ -70,6 +79,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @state() private _datasets: ThreadDataSet[] = [];
 
   @state() private _otbrInfo?: OTBRInfoDict;
+
+  @state() private _pendingChanges: Record<string, PendingChannelChange> = {};
+
+  private _completionTimeouts: Record<string, ReturnType<typeof setTimeout>> =
+    {};
 
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
@@ -210,6 +224,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
       </div>
+      ${this._renderPendingChannelAlert(otbrForNetwork)}
       ${network.routers?.length
         ? html`<div class="card-content routers">
               <h4>
@@ -413,6 +428,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     ev.target.style.display = "";
   }
 
+  public override disconnectedCallback() {
+    super.disconnectedCallback();
+    this._clearCompletionTimeouts();
+  }
+
   hassSubscribe() {
     return [
       subscribeDiscoverThreadRouters(this.hass, (routers: ThreadRouter[]) => {
@@ -488,6 +508,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     } catch (_err) {
       this._otbrInfo = undefined;
     }
+    await this._refreshPendingDatasets();
   }
 
   private async _signUrl(ev) {
@@ -657,6 +678,106 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     this._refresh();
   }
 
+  private _renderPendingChannelAlert(
+    otbr: OTBRInfo | false | undefined
+  ): TemplateResult | typeof nothing {
+    if (!otbr) {
+      return nothing;
+    }
+    const extAddr = otbr.extended_address;
+
+    const pending = this._pendingChanges[extAddr];
+    if (!pending) {
+      return nothing;
+    }
+
+    return html`<ha-alert class="pending-alert" alert-type="info">
+      ${this.hass.localize(
+        "ui.panel.config.thread.pending_channel_change_label"
+      )}:
+      <b>${otbr.channel}</b> → <b>${pending.pending_channel}</b>
+      —
+      <hui-timestamp-display
+        .hass=${this.hass}
+        .ts=${pending.end_time}
+        format="relative"
+        capitalize
+      ></hui-timestamp-display>
+      <ha-button
+        slot="action"
+        .extendedAddress=${extAddr}
+        @click=${this._cancelChannelChange}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.thread.pending_channel_change_cancel"
+        )}
+      </ha-button>
+    </ha-alert>`;
+  }
+
+  private async _refreshPendingDatasets() {
+    if (!this._otbrInfo) {
+      this._pendingChanges = {};
+      return;
+    }
+    this._clearCompletionTimeouts();
+    const newPending: Record<string, PendingChannelChange> = {};
+    const now = Date.now();
+    const promises = Object.keys(this._otbrInfo).map(async (extAddr) => {
+      try {
+        const result = await OTBRGetPendingDataset(this.hass, extAddr);
+        if (result) {
+          newPending[extAddr] = {
+            pending_channel: result.pending_channel,
+            end_time: new Date(now + result.pending_dataset_delay * 1000),
+          };
+        }
+      } catch (_err) {
+        // Ignore errors fetching pending dataset
+      }
+    });
+    await Promise.all(promises);
+    this._pendingChanges = newPending;
+
+    for (const [extAddr, pending] of Object.entries(this._pendingChanges)) {
+      const remaining = pending.end_time.getTime() - Date.now();
+      this._completionTimeouts[extAddr] = setTimeout(
+        () => {
+          if (this.isConnected) {
+            this._refresh();
+          }
+        },
+        Math.max(0, remaining)
+      );
+    }
+  }
+
+  private _clearCompletionTimeouts() {
+    for (const timeout of Object.values(this._completionTimeouts)) {
+      clearTimeout(timeout);
+    }
+    this._completionTimeouts = {};
+  }
+
+  private async _cancelChannelChange(ev: Event) {
+    const extAddr = (ev.currentTarget as any).extendedAddress as string;
+    try {
+      await OTBRDeletePendingDataset(this.hass, extAddr);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
+        text: err.message || err,
+      });
+      return;
+    }
+    if (this._completionTimeouts[extAddr]) {
+      clearTimeout(this._completionTimeouts[extAddr]);
+      delete this._completionTimeouts[extAddr];
+    }
+    const { [extAddr]: _, ...rest } = this._pendingChanges;
+    this._pendingChanges = rest;
+  }
+
   private async _changeChannel(otbr: OTBRInfo) {
     const currentChannel = otbr.channel;
     const channelStr = await showPromptDialog(this, {
@@ -685,20 +806,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       return;
     }
     try {
-      const result = await OTBRSetChannel(
-        this.hass,
-        otbr.extended_address,
-        channel
-      );
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.thread.change_channel_initiated_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.config.thread.change_channel_initiated_text",
-          { delay: Math.floor(result.delay / 60) }
-        ),
-      });
+      await OTBRSetChannel(this.hass, otbr.extended_address, channel);
     } catch (err: any) {
       if (err.code === "multiprotocol_enabled") {
         showAlertDialog(this, {
@@ -772,6 +880,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       .card-header {
         display: flex;
         justify-content: space-between;
+      }
+
+      .pending-alert {
+        margin: var(--ha-space-2) var(--ha-space-4);
       }
 
       .send-to-phone-description {
