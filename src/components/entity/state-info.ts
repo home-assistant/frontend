@@ -21,7 +21,9 @@ class StateInfo extends LitElement {
       return nothing;
     }
 
-    const name = this.hass.formatEntityName(this.stateObj, { type: "entity" });
+    const name =
+      this.hass.formatEntityName(this.stateObj, { type: "entity" }) ||
+      this.hass.formatEntityName(this.stateObj, { type: "device" });
 
     return html`<state-badge
         .hass=${this.hass}
