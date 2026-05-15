@@ -1,7 +1,7 @@
 import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
@@ -25,6 +25,8 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
   @state() private _open = false;
 
   @state() private _params?: ShowBackupEncryptionKeyDialogParams;
+
+  @query("div") private _copyContainer?: HTMLElement;
 
   public showDialog(params: ShowBackupEncryptionKeyDialogParams): void {
     this._params = params;
@@ -105,10 +107,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
     if (!this._params?.currentKey) {
       return;
     }
-    await copyToClipboard(
-      this._params?.currentKey,
-      this.renderRoot.querySelector("div")!
-    );
+    await copyToClipboard(this._params?.currentKey, this._copyContainer!);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });

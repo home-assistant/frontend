@@ -9,11 +9,11 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -111,7 +111,7 @@ class DialogUserDetail extends LitElement {
                         "ui.panel.config.users.editor.name"
                       )}
                     ></ha-input>
-                    <ha-md-list-item>
+                    <ha-row-item>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.users.editor.username"
@@ -131,14 +131,14 @@ class DialogUserDetail extends LitElement {
                             </ha-icon-button>
                           `
                         : nothing}
-                    </ha-md-list-item>
+                    </ha-row-item>
                   `
                 : nothing
             }
             ${
               !user.system_generated && this.hass.user?.is_owner
                 ? html`
-                    <ha-md-list-item>
+                    <ha-row-item>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.users.editor.password"
@@ -158,11 +158,11 @@ class DialogUserDetail extends LitElement {
                             </ha-icon-button>
                           `
                         : nothing}
-                    </ha-md-list-item>
+                    </ha-row-item>
                   `
                 : nothing
             }
-              <ha-md-list-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.config.users.editor.active"
@@ -179,8 +179,8 @@ class DialogUserDetail extends LitElement {
                   .checked=${this._isActive}
                   @change=${this._activeChanged}
                 ></ha-switch>
-              </ha-md-list-item>
-              <ha-md-list-item>
+              </ha-row-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.config.users.editor.local_access_only"
@@ -197,8 +197,8 @@ class DialogUserDetail extends LitElement {
                   .checked=${this._localOnly}
                   @change=${this._localOnlyChanged}
                 ></ha-switch>
-              </ha-md-list-item>
-              <ha-md-list-item>
+              </ha-row-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.config.users.editor.admin"
@@ -216,7 +216,7 @@ class DialogUserDetail extends LitElement {
                   @change=${this._adminChanged}
                 ></ha-switch>
                 </ha-switch>
-              </ha-md-list-item>
+              </ha-row-item>
             ${
               !this._isAdmin && !user.system_generated
                 ? html`
@@ -398,10 +398,8 @@ class DialogUserDetail extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         .badge-container {
           margin-top: 4px;

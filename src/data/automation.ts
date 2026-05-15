@@ -1,4 +1,5 @@
 import type {
+  Connection,
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
@@ -582,6 +583,19 @@ export const testCondition = (
     type: "test_condition",
     condition,
     variables,
+  });
+
+export const subscribeCondition = (
+  connection: Connection,
+  onChange: (result: {
+    result?: boolean;
+    error?: string | { code: string; message: string };
+  }) => void,
+  condition: Condition
+) =>
+  connection.subscribeMessage(onChange, {
+    type: "subscribe_condition",
+    condition,
   });
 
 export interface AutomationClipboard {

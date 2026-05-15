@@ -277,6 +277,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   }
 
   private _scrollToPreviewFeature(previewFeatureId: string): void {
+    // eslint-disable-next-line lit/prefer-query-decorators
     const card = this.shadowRoot?.querySelector(
       `[data-feature-id="${previewFeatureId}"]`
     ) as HTMLElement;

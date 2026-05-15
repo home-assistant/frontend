@@ -1,7 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
   findEntities,
@@ -11,7 +10,6 @@ import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { isHelperDomain } from "../../../config/helpers/const";
 import type {
   EmptyStateCardConfig,
   EntitiesCardConfig,
@@ -41,7 +39,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     const sections: LovelaceSectionRawConfig[] = [];
 
     const entitiesByDevice: Record<string, string[]> = {};
-    const entitiesWithoutDevices: string[] = [];
     for (const entityId of otherDevicesEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
@@ -53,7 +50,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
         hass.floors
       );
       if (!device) {
-        entitiesWithoutDevices.push(entityId);
         continue;
       }
       if (!(device.id in entitiesByDevice)) {
@@ -68,16 +64,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
         entities: entities,
       })
     );
-
-    const helpersEntities = entitiesWithoutDevices.filter((entityId) => {
-      const domain = computeDomain(entityId);
-      return isHelperDomain(domain);
-    });
-
-    const otherEntities = entitiesWithoutDevices.filter((entityId) => {
-      const domain = computeDomain(entityId);
-      return !isHelperDomain(domain);
-    });
 
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
@@ -148,44 +134,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)
     const maxColumns = clamp(sections.length, 2, 3);
-
-    if (helpersEntities.length) {
-      sections.push({
-        type: "grid",
-        column_span: maxColumns,
-        cards: [
-          {
-            type: "heading",
-            heading: hass.localize(
-              "ui.panel.lovelace.strategy.home-other-devices.helpers"
-            ),
-          } satisfies HeadingCardConfig,
-          ...helpersEntities.map((e) => ({
-            type: "tile",
-            entity: e,
-          })),
-        ],
-      });
-    }
-
-    if (otherEntities.length) {
-      sections.push({
-        type: "grid",
-        column_span: maxColumns,
-        cards: [
-          {
-            type: "heading",
-            heading: hass.localize(
-              "ui.panel.lovelace.strategy.home-other-devices.entities"
-            ),
-          } satisfies HeadingCardConfig,
-          ...otherEntities.map((e) => ({
-            type: "tile",
-            entity: e,
-          })),
-        ],
-      });
-    }
 
     // No sections, show empty state
     if (sections.length === 0) {

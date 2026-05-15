@@ -5,10 +5,17 @@ import {
   mdiPower,
   mdiPowerOff,
   mdiPowerOn,
+  mdiRepeat,
+  mdiRepeatOff,
+  mdiRepeatOnce,
+  mdiShuffle,
+  mdiShuffleDisabled,
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
+  mdiVolumeHigh,
   mdiVolumeMinus,
+  mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
@@ -56,6 +63,9 @@ const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
   media_next_track: [MediaPlayerEntityFeature.NEXT_TRACK],
   volume_down: [MediaPlayerEntityFeature.VOLUME_STEP],
   volume_up: [MediaPlayerEntityFeature.VOLUME_STEP],
+  volume_mute: [MediaPlayerEntityFeature.VOLUME_MUTE],
+  shuffle: [MediaPlayerEntityFeature.SHUFFLE_SET],
+  repeat: [MediaPlayerEntityFeature.REPEAT_SET],
 };
 
 export const supportsMediaPlayerPlaybackControl = (
@@ -280,6 +290,40 @@ class HuiMediaPlayerPlaybackCardFeature
             buttons.push({ icon: mdiVolumePlus, action: "volume_up" });
           }
           break;
+        case "volume_mute":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)) {
+            buttons.push({
+              icon: stateObj.attributes.is_volume_muted
+                ? mdiVolumeOff
+                : mdiVolumeHigh,
+              action: "volume_mute",
+            });
+          }
+          break;
+        case "shuffle":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.SHUFFLE_SET)) {
+            buttons.push({
+              icon:
+                stateObj.attributes.shuffle === true
+                  ? mdiShuffle
+                  : mdiShuffleDisabled,
+              action: "shuffle",
+            });
+          }
+          break;
+        case "repeat":
+          if (supportsFeature(stateObj, MediaPlayerEntityFeature.REPEAT_SET)) {
+            buttons.push({
+              icon:
+                stateObj.attributes.repeat === "all"
+                  ? mdiRepeat
+                  : stateObj.attributes.repeat === "one"
+                    ? mdiRepeatOnce
+                    : mdiRepeatOff,
+              action: "repeat",
+            });
+          }
+          break;
       }
     }
 
@@ -311,6 +355,31 @@ class HuiMediaPlayerPlaybackCardFeature
             : "media_stop";
       this.hass!.callService("media_player", service, {
         entity_id: this._stateObj.entity_id,
+      });
+      return;
+    }
+
+    if (action === "volume_mute") {
+      this.hass!.callService("media_player", "volume_mute", {
+        entity_id: this._stateObj.entity_id,
+        is_volume_muted: !this._stateObj.attributes.is_volume_muted,
+      });
+      return;
+    }
+
+    if (action === "shuffle") {
+      this.hass!.callService("media_player", "shuffle_set", {
+        entity_id: this._stateObj.entity_id,
+        shuffle: !this._stateObj.attributes.shuffle,
+      });
+      return;
+    }
+
+    if (action === "repeat") {
+      const repeat = this._stateObj.attributes.repeat ?? "off";
+      this.hass!.callService("media_player", "repeat_set", {
+        entity_id: this._stateObj.entity_id,
+        repeat: repeat === "off" ? "one" : repeat === "one" ? "all" : "off",
       });
       return;
     }

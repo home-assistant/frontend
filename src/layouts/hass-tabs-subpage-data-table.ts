@@ -214,10 +214,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (
       changedProperties.has("tabs") ||
       (changedProperties.has("hass") &&
-        (this.hass?.config.components !==
-          changedProperties.get("hass")?.config.components ||
-          this.hass?.userData?.showAdvanced !==
-            changedProperties.get("hass")?.userData?.showAdvanced))
+        this.hass?.config.components !==
+          changedProperties.get("hass")?.config.components)
     ) {
       this.showTabs =
         this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;

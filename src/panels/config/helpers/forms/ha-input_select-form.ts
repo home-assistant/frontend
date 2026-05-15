@@ -36,6 +36,8 @@ class HaInputSelectForm extends LitElement {
 
   @query("#option_input", true) private _optionInput?: HaInput;
 
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   private _optionMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
@@ -62,11 +64,7 @@ class HaInputSelectForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {

@@ -1,7 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
@@ -58,9 +58,13 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _descriptionExpanded = false;
 
+  @query("ha-tip") private _editorTip?: HTMLElement;
+
   private _template = "";
 
   private _inited = false;
+
+  private _tipResizeObserver?: ResizeObserver;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -72,6 +76,8 @@ class HaPanelDevTemplate extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeTemplate();
+    this._tipResizeObserver?.disconnect();
+    this._tipResizeObserver = undefined;
   }
 
   protected firstUpdated() {
@@ -81,6 +87,7 @@ class HaPanelDevTemplate extends LitElement {
       this._template = DEMO_TEMPLATE;
     }
     this._subscribeTemplate();
+    this._observeTipHeight();
     this._inited = true;
   }
 
@@ -154,7 +161,6 @@ class HaPanelDevTemplate extends LitElement {
           <div class="card-content">
             <ha-code-editor
               mode="jinja2"
-              .hass=${this.hass}
               .value=${this._template}
               .error=${this._error}
               autofocus
@@ -289,6 +295,21 @@ ${type === "object"
     `;
   }
 
+  private _observeTipHeight() {
+    if (!this._editorTip || this._tipResizeObserver) {
+      return;
+    }
+    this._tipResizeObserver = new ResizeObserver((entries) => {
+      const height =
+        entries[0]?.borderBoxSize?.[0]?.blockSize ??
+        entries[0]?.contentRect.height;
+      if (height) {
+        this.style.setProperty("--tip-height", `${height}px`);
+      }
+    });
+    this._tipResizeObserver.observe(this._editorTip);
+  }
+
   private _expandedChanged(
     ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
   ) {
@@ -332,6 +353,9 @@ ${type === "object"
               var(--ha-card-header-font-size, var(--ha-font-size-2xl))
           );
           --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
+          --tip-height-minimal: calc(
+            var(--mdc-icon-size, 24px) + var(--ha-space-4)
+          );
           --edit-pane-height: calc(
             100vh - var(--panel-header-height) - var(
                 --description-pane-height
@@ -341,8 +365,9 @@ ${type === "object"
           --code-mirror-max-height: calc(
             var(--edit-pane-height) - var(--card-header-height) +
               var(--ha-space-2) - var(--card-actions-height) - var(
-                --ha-space-4
-              ) - var(--ha-card-border-width, 1px) *
+                --tip-height,
+                var(--tip-height-minimal)
+              ) - var(--ha-space-4) - var(--ha-card-border-width, 1px) *
               2
           );
         }

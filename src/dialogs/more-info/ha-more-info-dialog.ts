@@ -594,7 +594,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
         : false;
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     return html`
       <ha-adaptive-dialog

@@ -363,9 +363,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-md-list-item {
-        text-align: initial;
-      }
       ha-tts-voice-picker {
         display: block;
       }

@@ -20,12 +20,12 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction, hasAnyAction } from "../common/has-action";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { handleAction } from "../common/handle-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -159,7 +159,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             <ha-state-icon
               .icon=${this._config.icon}
               .stateObj=${stateObj}
-              .hass=${this.hass}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({

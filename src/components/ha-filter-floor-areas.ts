@@ -1,7 +1,7 @@
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -41,6 +41,8 @@ export class HaFilterFloorAreas extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @state() private _shouldRender = false;
+
+  @query("ha-list-selectable") private _list?: HTMLElement;
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -137,7 +139,10 @@ export class HaFilterFloorAreas extends LitElement {
         .selected=${this.value?.areas?.includes(area.area_id) || false}
         .type=${"areas"}
         class=${classMap({
-          rtl: computeRTL(this.hass),
+          rtl: computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          ),
           floor: hasFloor,
         })}
       >
@@ -204,8 +209,7 @@ export class HaFilterFloorAreas extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list-selectable")!.style.height =
-          `${this.clientHeight - 49}px`;
+        this._list!.style.height = `${this.clientHeight - 49}px`;
       }, 300);
     }
   }

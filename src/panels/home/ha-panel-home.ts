@@ -2,7 +2,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
@@ -47,6 +47,8 @@ class PanelHome extends LitElement {
   @state() private _config: FrontendSystemData["home"] = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
+
+  @query(".banner") private _banner?: HTMLElement;
 
   private _loadConfigPromise?: Promise<void>;
 
@@ -299,9 +301,8 @@ class PanelHome extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_showBanner") || changedProps.has("_lovelace")) {
-      const banner = this.shadowRoot?.querySelector(".banner");
-      if (banner) {
-        this._bannerHeight.observe(banner);
+      if (this._banner) {
+        this._bannerHeight.observe(this._banner);
       }
     }
   }
@@ -392,7 +393,7 @@ class PanelHome extends LitElement {
       gap: var(--ha-space-2);
       position: fixed;
       top: var(--header-height, 56px);
-      left: var(--mdc-drawer-width, 0px);
+      left: var(--ha-sidebar-width, 0px);
       right: 0;
       z-index: 5;
     }

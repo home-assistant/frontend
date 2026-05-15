@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
@@ -62,6 +62,8 @@ export class DialogEnergyGridSettings
   @state() private _energy_units?: string[];
 
   @state() private _error?: string;
+
+  @query("ha-energy-power-config") private _powerConfigEl?: HaEnergyPowerConfig;
 
   private _excludeList?: string[];
 
@@ -434,10 +436,7 @@ export class DialogEnergyGridSettings
 
     // Check power config validity (if power is configured)
     if (hasPower) {
-      const powerConfigEl = this.shadowRoot?.querySelector(
-        "ha-energy-power-config"
-      ) as HaEnergyPowerConfig | null;
-      if (powerConfigEl && !powerConfigEl.isValid()) {
+      if (this._powerConfigEl && !this._powerConfigEl.isValid()) {
         return false;
       }
     }

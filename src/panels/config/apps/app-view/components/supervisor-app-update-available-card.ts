@@ -13,13 +13,12 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-faded";
 import "../../../../../components/ha-markdown";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
+import "../../../../../components/item/ha-row-item";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
@@ -108,25 +107,20 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
                   ${createBackupTexts
                     ? html`
                         <hr />
-                        <ha-md-list>
-                          <ha-md-list-item>
-                            <span slot="headline">
-                              ${createBackupTexts.title}
-                            </span>
+                        <ha-row-item>
+                          <span slot="headline">
+                            ${createBackupTexts.title}
+                          </span>
 
-                            ${createBackupTexts.description
-                              ? html`
-                                  <span slot="supporting-text">
-                                    ${createBackupTexts.description}
-                                  </span>
-                                `
-                              : nothing}
-                            <ha-switch
-                              slot="end"
-                              id="create-backup"
-                            ></ha-switch>
-                          </ha-md-list-item>
-                        </ha-md-list>
+                          ${createBackupTexts.description
+                            ? html`
+                                <span slot="supporting-text">
+                                  ${createBackupTexts.description}
+                                </span>
+                              `
+                            : nothing}
+                          <ha-switch slot="end" id="create-backup"></ha-switch>
+                        </ha-row-item>
                       `
                     : nothing}
                 `
@@ -273,15 +267,9 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
           margin: var(--ha-space-4) 0 0 0;
         }
 
-        ha-md-list {
-          padding: 0;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
           margin-bottom: calc(-1 * var(--ha-space-4));
-        }
-
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
         }
       `,
     ];

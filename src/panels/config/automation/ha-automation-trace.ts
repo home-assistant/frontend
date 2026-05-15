@@ -11,7 +11,6 @@ import {
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -21,6 +20,8 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -31,7 +32,6 @@ import type {
   HatScriptGraph,
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
-import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
 import type { AutomationEntity } from "../../../data/automation";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -172,7 +172,10 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.older_trace"
                   )}
-                  .path=${computeRTL(this.hass!)
+                  .path=${computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  )
                     ? mdiRayStartArrow
                     : mdiRayEndArrow}
                   .disabled=${this._traces[this._traces.length - 1].run_id ===
@@ -189,7 +192,10 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
                   )}
-                  .path=${computeRTL(this.hass!)
+                  .path=${computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  )
                     ? mdiRayEndArrow
                     : mdiRayStartArrow}
                   .disabled=${this._traces[0].run_id === this._runId}
@@ -223,40 +229,34 @@ export class HaAutomationTrace extends LitElement {
                     </div>
 
                     <div class="info">
-                      <div class="tabs top">
+                      <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                         ${TABS.map(
                           (view) => html`
-                            <button
-                              tabindex="0"
-                              .view=${view}
-                              class=${classMap({
-                                active: this._view === view,
-                              })}
-                              @click=${this._showTab}
+                            <ha-tab-group-tab
+                              slot="nav"
+                              .active=${this._view === view}
+                              .panel=${view}
                             >
                               ${this.hass!.localize(
                                 `ui.panel.config.automation.trace.tabs.${view}`
                               )}
-                            </button>
+                            </ha-tab-group-tab>
                           `
                         )}
                         ${this._trace.blueprint_inputs
                           ? html`
-                              <button
-                                tabindex="0"
-                                .view=${"blueprint"}
-                                class=${classMap({
-                                  active: this._view === "blueprint",
-                                })}
-                                @click=${this._showTab}
+                              <ha-tab-group-tab
+                                slot="nav"
+                                .active=${this._view === "blueprint"}
+                                panel="blueprint"
                               >
                                 ${this.hass!.localize(
                                   `ui.panel.config.automation.trace.tabs.blueprint_config`
                                 )}
-                              </button>
+                              </ha-tab-group-tab>
                             `
                           : ""}
-                      </div>
+                      </ha-tab-group>
                       ${this._selected === undefined ||
                       this._logbookEntries === undefined ||
                       trackedNodes === undefined
@@ -276,7 +276,6 @@ export class HaAutomationTrace extends LitElement {
                           : this._view === "automation_config"
                             ? html`
                                 <ha-trace-config
-                                  .hass=${this.hass}
                                   .trace=${this._trace}
                                 ></ha-trace-config>
                               `
@@ -292,7 +291,6 @@ export class HaAutomationTrace extends LitElement {
                               : this._view === "blueprint"
                                 ? html`
                                     <ha-trace-blueprint-config
-                                      .hass=${this.hass}
                                       .trace=${this._trace}
                                     ></ha-trace-blueprint-config>
                                   `
@@ -483,8 +481,8 @@ export class HaAutomationTrace extends LitElement {
     this._logbookEntries = traceInfo.logbookEntries;
   }
 
-  private _showTab(ev: Event) {
-    this._view = (ev.target as any).view;
+  private _handleTabChanged(ev: CustomEvent) {
+    this._view = ev.detail.name as typeof this._view;
   }
 
   private _timelinePathPicked(ev: CustomEvent) {
@@ -536,7 +534,6 @@ export class HaAutomationTrace extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      traceTabStyles,
       css`
         .toolbar {
           display: flex;
@@ -598,6 +595,14 @@ export class HaAutomationTrace extends LitElement {
           flex: 1;
           overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        ha-tab-group {
+          background-color: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          direction: var(--direction);
+        }
+        ha-tab-group-tab::part(base) {
+          padding: 2px 16px;
         }
         :host([narrow]) .info {
           overflow: visible;

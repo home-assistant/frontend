@@ -252,7 +252,6 @@ export class HaCardConditionEditor extends LitElement {
             ${this._yamlMode
               ? html`
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this.condition}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>

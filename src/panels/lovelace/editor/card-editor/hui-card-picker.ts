@@ -2,7 +2,7 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
@@ -62,14 +62,15 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _filter = "";
 
+  @query("ha-input-search") private _searchInput?: HTMLElement;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
 
   public async focus(): Promise<void> {
-    const searchInput = this.renderRoot.querySelector("ha-input-search");
-    if (searchInput) {
-      searchInput.focus();
+    if (this._searchInput) {
+      this._searchInput.focus();
     } else {
       await this.updateComplete;
       this.focus();

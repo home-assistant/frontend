@@ -46,6 +46,7 @@ const cardConfigStruct = assign(
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
     logarithmic_scale: optional(boolean()),
+    expand_legend: optional(boolean()),
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
     fit_y_data: optional(boolean()),
@@ -81,12 +82,23 @@ export class HuiHistoryGraphCardEditor
               default: DEFAULT_HOURS_TO_SHOW,
               selector: { number: { min: 0, step: "any", mode: "box" } },
             },
+            {
+              name: "show_names",
+              default: true,
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              name: "logarithmic_scale",
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              name: "expand_legend",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
-        },
-        {
-          name: "logarithmic_scale",
-          required: false,
-          selector: { boolean: {} },
         },
         {
           name: "",
@@ -273,7 +285,9 @@ export class HuiHistoryGraphCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "show_names":
       case "logarithmic_scale":
+      case "expand_legend":
       case "min_y_axis":
       case "max_y_axis":
       case "fit_y_data":

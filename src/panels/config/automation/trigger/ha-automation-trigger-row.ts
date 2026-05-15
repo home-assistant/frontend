@@ -760,7 +760,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         <ha-yaml-editor
           read-only
           disable-fullscreen
-          .hass=${this.hass}
           .defaultValue=${this._triggeredResult}
         ></ha-yaml-editor>
       `,

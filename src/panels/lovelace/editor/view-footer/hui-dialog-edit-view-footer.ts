@@ -81,7 +81,6 @@ export class HuiDialogEditViewFooter extends LitElement {
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
           autofocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
