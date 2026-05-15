@@ -154,6 +154,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "light-color-favorites",
   "media-player-source",
   "media-player-volume-buttons",
+  "media-player-volume-slider",
   "numeric-input",
   "select-options",
   "trend-graph",
