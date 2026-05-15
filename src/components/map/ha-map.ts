@@ -12,7 +12,7 @@ import type {
 } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -104,6 +104,8 @@ export class HaMap extends ReactiveElement {
   public clusterMarkers = true;
 
   @state() private _loaded = false;
+
+  @query("#map") private _mapElement?: HTMLElement;
 
   public leafletMap?: Map;
 
@@ -235,11 +237,11 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const map = this.renderRoot.querySelector("#map");
-    map!.classList.toggle("clickable", this.clickable);
-    map!.classList.toggle("dark", this._darkMode);
-    map!.classList.toggle("forced-dark", this.themeMode === "dark");
-    map!.classList.toggle("forced-light", this.themeMode === "light");
+    const map = this._mapElement!;
+    map.classList.toggle("clickable", this.clickable);
+    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("forced-dark", this.themeMode === "dark");
+    map.classList.toggle("forced-light", this.themeMode === "light");
   }
 
   private _loading = false;

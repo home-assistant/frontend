@@ -1,7 +1,7 @@
 import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
@@ -119,6 +119,9 @@ export class DialogHelperDetail extends LitElement {
   @state() private _loading = false;
 
   @state() private _filter?: string;
+
+  @query("ha-input-search")
+  private _searchInput?: HTMLElement & { updateComplete?: Promise<unknown> };
 
   private _pendingConfigFlow?: {
     startFlowHandler: string;
@@ -429,9 +432,7 @@ export class DialogHelperDetail extends LitElement {
   }
 
   private async _focusSearchInput() {
-    const searchInput = this.shadowRoot?.querySelector("ha-input-search") as
-      | (HTMLElement & { updateComplete?: Promise<unknown> })
-      | null;
+    const searchInput = this._searchInput;
 
     if (!searchInput) {
       return;

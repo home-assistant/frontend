@@ -24,6 +24,7 @@ import "../ha-icon-button";
 import "../ha-icon-button-next";
 import "../ha-icon-button-prev";
 import "../ha-textarea";
+import type { HaTextArea } from "../ha-textarea";
 import "./date-range-picker";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
@@ -97,6 +98,8 @@ export class HaDateRangePicker extends LitElement {
   @state() private _popoverWidth = 0;
 
   @query(".container") private _containerElement?: HTMLDivElement;
+
+  @query("ha-textarea") private _textareaElement?: HaTextArea;
 
   private _narrow = false;
 
@@ -335,9 +338,8 @@ export class HaDateRangePicker extends LitElement {
   };
 
   private _setTextareaFocusStyle(focused: boolean) {
-    const textarea = this.renderRoot.querySelector("ha-textarea");
-    if (textarea) {
-      textarea.setFocused(focused);
+    if (this._textareaElement) {
+      this._textareaElement.setFocused(focused);
     }
   }
 

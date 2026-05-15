@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
@@ -10,8 +10,12 @@ import {
   type MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import {
+  renderMuteButton,
+  toggleMediaPlayerMute,
+} from "./common/media-player-mute-button";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerVolumeSliderCardFeatureConfig,
@@ -58,6 +62,13 @@ class HuiMediaPlayerVolumeSliderCardFeature
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-media-player-volume-slider-card-feature-editor");
+    return document.createElement(
+      "hui-media-player-volume-slider-card-feature-editor"
+    );
+  }
+
   public setConfig(config: MediaPlayerVolumeSliderCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -76,9 +87,12 @@ class HuiMediaPlayerVolumeSliderCardFeature
       return nothing;
     }
 
+    const stateObj = this._stateObj;
+    const disabled = isUnavailableState(stateObj.state);
+
     const position =
-      this._stateObj.attributes.volume_level != null
-        ? Math.round(this._stateObj.attributes.volume_level * 100)
+      stateObj.attributes.volume_level != null
+        ? Math.round(stateObj.attributes.volume_level * 100)
         : undefined;
 
     return html`
@@ -86,12 +100,19 @@ class HuiMediaPlayerVolumeSliderCardFeature
         .value=${position}
         min="0"
         max="100"
-        .showHandle=${stateActive(this._stateObj)}
-        .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
+        .showHandle=${stateActive(stateObj)}
+        .disabled=${disabled}
         @value-changed=${this._valueChanged}
         unit="%"
         .locale=${this.hass.locale}
       ></ha-control-slider>
+      ${renderMuteButton(
+        this.hass,
+        stateObj,
+        this._config.show_mute_button,
+        disabled,
+        this._toggleMute
+      )}
     `;
   }
 
@@ -105,8 +126,29 @@ class HuiMediaPlayerVolumeSliderCardFeature
     });
   }
 
+  private _toggleMute = (ev: Event) => {
+    toggleMediaPlayerMute(ev, this.hass!, this._stateObj!, this);
+  };
+
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: flex;
+          flex-direction: row;
+          gap: var(--feature-button-spacing);
+        }
+        ha-control-slider {
+          flex: 1;
+          min-width: 0;
+        }
+        .mute {
+          width: var(--feature-height);
+          height: var(--feature-height);
+        }
+      `,
+    ];
   }
 }
 

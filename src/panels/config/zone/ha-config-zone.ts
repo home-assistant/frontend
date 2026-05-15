@@ -433,6 +433,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _editZone(id: string) {
     await this.updateComplete;
+    // eslint-disable-next-line lit/prefer-query-decorators
     (this.shadowRoot?.querySelector(`[id="${id}"]`) as HTMLElement)?.click();
   }
 

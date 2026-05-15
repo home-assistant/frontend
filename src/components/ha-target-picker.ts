@@ -486,6 +486,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     fireEvent(this, "value-changed", { value });
 
+    // eslint-disable-next-line lit/prefer-query-decorators
     this.shadowRoot
       ?.querySelector(
         `ha-target-picker-item-group[type='${this._newTarget?.type}']`
