@@ -1267,6 +1267,9 @@ ${rejected
       !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
       this._helperEntities = newHelpers;
+      if (Object.keys(this._filters).length > 0) {
+        this._applyFilters();
+      }
     }
   }
 
