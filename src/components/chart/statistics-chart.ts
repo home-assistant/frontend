@@ -143,7 +143,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
-      changedProps.has("_hiddenStats")
+      changedProps.has("_hiddenStats") ||
+      changedProps.has("names")
     ) {
       this._generateData();
     }
