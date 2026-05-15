@@ -46,6 +46,7 @@ export const getDevices = (
   includeDeviceClasses?: string[],
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeDevices?: string[],
   excludeDevices?: string[],
   value?: string,
   idPrefix = ""
@@ -67,6 +68,12 @@ export const getDevices = (
   let inputDevices = devices.filter(
     (device) => device.id === value || !device.disabled_by
   );
+
+  if (includeDevices) {
+    inputDevices = inputDevices.filter((device) =>
+      includeDevices.includes(device.id)
+    );
+  }
 
   if (includeDomains) {
     inputDevices = inputDevices.filter((device) => {

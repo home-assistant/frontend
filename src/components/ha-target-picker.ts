@@ -930,7 +930,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 )
               : ensureArray(targetValue.device_id)
             : undefined,
-          replacingDeviceId,
+          replacingDeviceId ? [replacingDeviceId] : undefined,
           `device${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 

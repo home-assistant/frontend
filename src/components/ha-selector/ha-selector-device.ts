@@ -100,6 +100,8 @@ export class HaDeviceSelector extends LitElement {
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}
+          .includeDevices=${this.selector.device?.include_devices}
+          .excludeDevices=${this.selector.device?.exclude_devices}
           .deviceFilter=${this._filterDevices}
           .entityFilter=${this.selector.device?.entity
             ? this._filterEntities
@@ -117,6 +119,8 @@ export class HaDeviceSelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
+        .includeDevices=${this.selector.device?.include_devices}
+        .excludeDevices=${this.selector.device?.exclude_devices}
         .deviceFilter=${this._filterDevices}
         .entityFilter=${this.selector.device?.entity
           ? this._filterEntities

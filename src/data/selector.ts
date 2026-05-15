@@ -217,6 +217,8 @@ interface DeviceSelectorFilter {
 
 export interface DeviceSelector {
   device: {
+    include_devices?: string[];
+    exclude_devices?: string[];
     filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     multiple?: boolean;
