@@ -1,4 +1,3 @@
-import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";

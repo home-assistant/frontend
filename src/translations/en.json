@@ -259,6 +259,8 @@
         "volume_up": "Volume up",
         "volume_down": "Volume down",
         "volume_mute": "Mute",
+        "shuffle": "Shuffle",
+        "repeat": "Repeat",
         "media_volume_up": "Volume up",
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
@@ -9992,7 +9994,8 @@
                 "label": "Media player sound mode"
               },
               "media-player-source": {
-                "label": "Media player source"
+                "label": "Media player source",
+                "sources": "Sources"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",

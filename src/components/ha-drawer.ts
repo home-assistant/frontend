@@ -25,7 +25,7 @@ export class HaDrawer extends LitElement {
 
   @property({ reflect: true }) public direction: "ltr" | "rtl" = "ltr";
 
-  @property() public type = "";
+  @property({ reflect: true }) public type: "" | "dismissible" | "modal" = "";
 
   @property({ type: Boolean, reflect: true }) public open = false;
 
@@ -105,7 +105,11 @@ export class HaDrawer extends LitElement {
   }
 
   private _handleDrawerTransitionStart = (ev: TransitionEvent) => {
-    if (ev.propertyName !== "width" || this._sidebarTransitionActive) {
+    if (
+      ev.propertyName !==
+        (this.type === "dismissible" ? "transform" : "width") ||
+      this._sidebarTransitionActive
+    ) {
       return;
     }
     this._sidebarTransitionActive = true;
@@ -116,7 +120,11 @@ export class HaDrawer extends LitElement {
   };
 
   private _handleDrawerTransitionEnd = (ev: TransitionEvent) => {
-    if (ev.propertyName !== "width" || !this._sidebarTransitionActive) {
+    if (
+      ev.propertyName !==
+        (this.type === "dismissible" ? "transform" : "width") ||
+      !this._sidebarTransitionActive
+    ) {
       return;
     }
     this._sidebarTransitionActive = false;
@@ -298,6 +306,22 @@ export class HaDrawer extends LitElement {
       transition:
         padding-inline-start var(--ha-animation-duration-normal) ease,
         width var(--ha-animation-duration-normal) ease;
+    }
+
+    :host([type="dismissible"]) .sidebar-shell {
+      transition: transform var(--ha-animation-duration-normal) ease;
+    }
+
+    :host([type="dismissible"]:not([open])) .sidebar-shell {
+      transform: translateX(-100%);
+    }
+
+    :host([type="dismissible"][direction="rtl"]:not([open])) .sidebar-shell {
+      transform: translateX(100%);
+    }
+
+    :host([type="dismissible"]:not([open])) .app-content {
+      padding-inline-start: 0;
     }
 
     wa-drawer {

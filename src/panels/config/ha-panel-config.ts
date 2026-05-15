@@ -414,7 +414,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBadgeAccountHorizontal,
       iconColor: "#5A87FA",
       core: true,
-      advancedOnly: true,
       adminOnly: true,
     },
   ],

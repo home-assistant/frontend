@@ -66,6 +66,8 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "volume_down",
   "volume_up",
   "volume_mute",
+  "shuffle",
+  "repeat",
 ] as const;
 
 export type MediaPlayerPlaybackControl =
@@ -78,6 +80,7 @@ export interface MediaPlayerPlaybackCardFeatureConfig {
 
 export interface MediaPlayerSourceCardFeatureConfig {
   type: "media-player-source";
+  sources?: string[];
 }
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {

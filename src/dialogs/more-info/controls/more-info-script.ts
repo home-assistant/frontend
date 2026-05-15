@@ -120,7 +120,6 @@ class MoreInfoScript extends LitElement {
                   ...(this.data ? { data: this.data } : {}),
                   ...this._scriptData,
                 }}
-                .showAdvanced=${this.hass.userData?.showAdvanced}
                 .narrow=${this.narrow}
                 @value-changed=${this._scriptDataChanged}
               ></ha-service-control>
