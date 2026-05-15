@@ -221,6 +221,13 @@ export const getMyRedirects = (): Redirects => ({
     component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
+  lovelace_view_import: {
+    component: "lovelace",
+    redirect: "/config/lovelace/dashboards/import-view",
+    params: {
+      url: "url",
+    },
+  },
   oauth: {
     redirect: "/auth/external/callback",
     navigate_outside_spa: true,
