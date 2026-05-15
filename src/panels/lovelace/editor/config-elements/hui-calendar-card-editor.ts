@@ -26,6 +26,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(union([string(), boolean()])),
     initial_view: optional(string()),
+    schedule_day_view: optional(boolean()),
     theme: optional(string()),
     entities: array(string()),
   })
@@ -68,6 +69,11 @@ export class HuiCalendarCardEditor
                   })),
                 },
               },
+            },
+            {
+              name: "schedule_day_view",
+              required: false,
+              selector: { boolean: {} },
             },
           ],
         },
