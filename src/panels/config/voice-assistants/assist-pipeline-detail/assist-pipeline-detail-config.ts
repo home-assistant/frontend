@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -15,10 +15,11 @@ export class AssistPipelineDetailConfig extends LitElement {
   @property({ attribute: false })
   public supportedLanguages?: string[];
 
+  @query("ha-form") private _form?: HTMLElement;
+
   public async focus() {
     await this.updateComplete;
-    const input = this.renderRoot?.querySelector("ha-form");
-    input?.focus();
+    this._form?.focus();
   }
 
   private _schema = memoizeOne(

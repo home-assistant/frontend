@@ -54,6 +54,7 @@ export class HaControlSelect extends LitElement {
     this._activeIndex = index;
     this.requestUpdate();
     this.updateComplete.then(() => {
+      // eslint-disable-next-line lit/prefer-query-decorators
       const option = this.shadowRoot?.querySelector(
         `#option-${this.options![index].value}`
       ) as HTMLElement;

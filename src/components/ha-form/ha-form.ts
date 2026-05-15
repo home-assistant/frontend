@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
@@ -83,8 +83,10 @@ export class HaForm extends LitElement implements HaFormElement {
     delegatesFocus: true,
   };
 
+  @query(".root") private _root?: HTMLElement;
+
   public reportValidity(): boolean {
-    const root = this.renderRoot.querySelector(".root");
+    const root = this._root;
     if (!root) {
       return true;
     }

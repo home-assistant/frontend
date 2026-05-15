@@ -34,6 +34,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -89,6 +90,8 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _newScriptId?: string;
 
@@ -750,7 +753,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.blueprintConfig = config;
       this.config = newConfig;
       if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+        this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
       this.errors = undefined;

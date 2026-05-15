@@ -17,7 +17,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -83,6 +83,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @state() private _dataCollectionOptIn?: boolean;
 
   @state() private _multipleNetworks = false;
+
+  @query("#nvm-restore-file") private _restoreFileInput?: HTMLInputElement;
 
   private _dialogOpen = false;
 
@@ -702,10 +704,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _restoreButtonClick() {
-    const fileInput = this.shadowRoot?.querySelector(
-      "#nvm-restore-file"
-    ) as HTMLInputElement;
-    fileInput?.click();
+    this._restoreFileInput?.click();
   }
 
   private async _handleRestoreFileSelected(ev: Event) {

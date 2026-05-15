@@ -7,7 +7,7 @@ import type { Day } from "date-fns";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
@@ -65,6 +65,10 @@ class HaScheduleForm extends LitElement {
 
   @state() private calendar?: Calendar;
 
+  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
+
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   private _item?: Schedule;
 
   set item(item: Schedule) {
@@ -96,7 +100,7 @@ class HaScheduleForm extends LitElement {
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+    this._fullCalendarStyle?.remove();
   }
 
   public connectedCallback(): void {
@@ -107,11 +111,7 @@ class HaScheduleForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {
