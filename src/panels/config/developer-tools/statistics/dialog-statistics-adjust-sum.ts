@@ -91,8 +91,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._precision = Math.max(entry?.display_precision ?? 0, 2);
   }
 
-  public closeDialog(): void {
-    this._open = false;
+  private _resetSelectionAndRefreshStatisticData(): void {
+    this._clearChosenStatistic();
+    this._fetchStats();
   }
 
   private _dialogClosed(): void {
@@ -492,7 +493,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         unit || null
       );
     } catch (err: any) {
-      this._busy = false;
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
@@ -500,13 +500,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         ),
       });
       return;
+    } finally {
+      this._busy = false;
     }
     showToast(this, {
       message: this.hass.localize(
         "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this.closeDialog();
+    this._resetSelectionAndRefreshStatisticData();
   }
 
   static get styles(): CSSResultGroup {
