@@ -1047,6 +1047,8 @@ class HUIRoot extends LitElement {
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      lovelaceConfig: this.lovelace?.config,
+      saveConfig: this.lovelace?.saveConfig,
       updateDashboard: async (values) => {
         await updateDashboard(this.hass!, dashboard!.id, values);
       },
