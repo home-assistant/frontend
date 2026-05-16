@@ -28,7 +28,7 @@ import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart"
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import "../components/ha-config-navigation-list";
+import "../../../components/ha-config-navigation-list";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
