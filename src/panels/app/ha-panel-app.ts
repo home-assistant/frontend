@@ -136,6 +136,7 @@ class HaPanelApp extends LitElement {
         })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
+        allow="microphone; camera; clipboard-write"
         @load=${this._checkLoaded}
         ${ref(this._iframeRef)}
       >
