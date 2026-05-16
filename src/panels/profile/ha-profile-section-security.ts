@@ -1,8 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../layouts/hass-tabs-subpage";
-import { profileSections } from "./ha-panel-profile";
+import "../../layouts/hass-subpage";
 import type { RefreshToken } from "../../data/refresh_token";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -34,14 +33,12 @@ class HaProfileSectionSecurity extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
-        main-page
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${profileSections}
-        .route=${this.route}
+        back-path="/profile"
+        .header=${this.hass.localize("ui.panel.profile.tabs.security")}
       >
-        <div slot="title">${this.hass.localize("panel.profile")}</div>
         <div class="content">
           ${this.hass.user!.credentials.some(
             (cred) => cred.auth_provider_type === "homeassistant"
@@ -71,7 +68,7 @@ class HaProfileSectionSecurity extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -104,11 +101,6 @@ class HaProfileSectionSecurity extends LitElement {
         .content > * {
           display: block;
           margin: 24px 0;
-        }
-
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
         }
       `,
     ];
