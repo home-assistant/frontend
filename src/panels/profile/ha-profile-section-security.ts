@@ -39,7 +39,7 @@ class HaProfileSectionSecurity extends LitElement {
         back-path="/profile"
         .header=${this.hass.localize("ui.panel.profile.tabs.security")}
       >
-        <div class="content">
+        <div class="container">
           ${this.hass.user!.credentials.some(
             (cred) => cred.auth_provider_type === "homeassistant"
           )
@@ -91,16 +91,14 @@ class HaProfileSectionSecurity extends LitElement {
           -moz-user-select: initial;
         }
 
-        .content {
-          display: block;
-          max-width: 600px;
-          margin: 0 auto;
-          padding-bottom: var(--safe-area-inset-bottom);
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
-        .content > * {
-          display: block;
-          margin: 24px 0;
+        ha-card {
+          margin: 0 auto var(--ha-space-4);
+          max-width: 600px;
         }
       `,
     ];

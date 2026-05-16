@@ -13,8 +13,6 @@ import "./ha-svg-icon";
 class HaNavigationList extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public pages!: PageNavigation[];
 
   @property({ attribute: "has-secondary", type: Boolean })
@@ -52,9 +50,7 @@ class HaNavigationList extends LitElement {
               ${this.hasSecondary
                 ? html`<span slot="supporting-text">${page.description}</span>`
                 : ""}
-              ${!this.narrow
-                ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : ""}
+              <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
           `;
         })}

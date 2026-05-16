@@ -71,7 +71,7 @@ class HaProfileSectionPreferences extends LitElement {
           "ui.panel.profile.user_preferences_header"
         )}
       >
-        <div class="content">
+        <div class="container">
           <ha-card
             .header=${this.hass.localize(
               "ui.panel.profile.user_preferences_header"
@@ -152,16 +152,14 @@ class HaProfileSectionPreferences extends LitElement {
           -moz-user-select: initial;
         }
 
-        .content {
-          display: block;
-          max-width: 600px;
-          margin: 0 auto;
-          padding-bottom: var(--safe-area-inset-bottom);
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
-        .content > * {
-          display: block;
-          margin: 24px 0;
+        ha-card {
+          margin: 0 auto var(--ha-space-4);
+          max-width: 600px;
         }
 
         ha-md-list {
