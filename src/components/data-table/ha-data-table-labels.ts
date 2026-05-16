@@ -99,7 +99,7 @@ class HaDataTableLabels extends LitElement {
             `
           )}
           <div class="measure-chip" data-plus>
-            <ha-label class="plus" dense>+999</ha-label>
+            <ha-label class="plus" dense>+99</ha-label>
           </div>
         </ha-chip-set>
       </div>
