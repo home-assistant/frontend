@@ -1,17 +1,18 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
+import "./ha-icon-next";
+import "./ha-svg-icon";
+import "./item/ha-list-item-button";
+import "./list/ha-list-nav";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
-import "./ha-icon-next";
-import "./ha-md-list";
-import "./ha-md-list-item";
-import "./ha-svg-icon";
 
-@customElement("ha-navigation-list")
-class HaNavigationList extends LitElement {
+@customElement("ha-config-navigation-list")
+class HaConfigNavigationList extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
@@ -22,16 +23,11 @@ class HaNavigationList extends LitElement {
 
   public render(): TemplateResult {
     return html`
-      <ha-md-list
-        innerRole="menu"
-        itemRoles="menuitem"
-        innerAriaLabel=${ifDefined(this.label)}
-      >
+      <ha-list-nav .ariaLabel=${this.label}>
         ${this.pages.map((page) => {
           const externalApp = page.path.endsWith("#external-app-configuration");
           return html`
-            <ha-md-list-item
-              .type=${externalApp ? "button" : "link"}
+            <ha-list-item-button
               .href=${externalApp ? undefined : page.path}
               @click=${externalApp ? this._handleExternalApp : undefined}
             >
@@ -50,11 +46,13 @@ class HaNavigationList extends LitElement {
               ${this.hasSecondary
                 ? html`<span slot="supporting-text">${page.description}</span>`
                 : ""}
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
+              ${!this.narrow
+                ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                : ""}
+            </ha-list-item-button>
           `;
         })}
-      </ha-md-list>
+      </ha-list-nav>
     `;
   }
 
@@ -79,14 +77,11 @@ class HaNavigationList extends LitElement {
     .icon-background ha-svg-icon {
       color: #fff;
     }
-    ha-md-list-item {
-      font-size: var(--navigation-list-item-title-font-size);
-    }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-navigation-list": HaNavigationList;
+    "ha-config-navigation-list": HaConfigNavigationList;
   }
 }

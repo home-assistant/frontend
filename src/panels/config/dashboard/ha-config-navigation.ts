@@ -8,7 +8,7 @@ import type { CloudStatus } from "../../../data/cloud";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
-import "../components/ha-config-navigation-list";
+import "../../../components/ha-config-navigation-list";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
