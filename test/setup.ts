@@ -1,9 +1,5 @@
-import { beforeAll } from "vitest";
+global.window = (global.window ?? {}) as any;
+global.navigator = (global.navigator ?? {}) as any;
 
-beforeAll(() => {
-  global.window = {} as any;
-  global.navigator = {} as any;
-
-  global.__DEMO__ = false;
-  global.__DEV__ = false;
-});
+global.__DEMO__ = false;
+global.__DEV__ = false;
