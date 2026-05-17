@@ -65,7 +65,7 @@ export class FlowPreviewGeneric extends LitElement {
     }
     const now = new Date().toISOString();
     this._preview = {
-      entity_id: `${this.stepId}.___flow_preview___`,
+      entity_id: `${preview.domain ?? this.stepId}.___flow_preview___`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },
@@ -85,7 +85,8 @@ export class FlowPreviewGeneric extends LitElement {
     if (
       this.flowType !== "config_flow" &&
       this.flowType !== "options_flow" &&
-      this.flowType !== "config_subentries_flow"
+      this.flowType !== "config_subentries_flow" &&
+      this.flowType !== "repair_flow"
     ) {
       return;
     }
