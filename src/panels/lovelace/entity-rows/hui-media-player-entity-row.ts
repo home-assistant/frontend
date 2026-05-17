@@ -22,7 +22,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNKNOWN, isUnavailableState } from "../../../data/entity/entity";
 import type {
   ControlButton,
   MediaPlayerEntity,
@@ -195,7 +195,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         <div class="controls">
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) &&
           (!stateActive(stateObj) || assumedState) &&
-          !isUnavailableState(entityState)
+          (!isUnavailableState(entityState) ||
+            (assumedState && entityState === UNKNOWN))
             ? html`
                 <ha-icon-button
                   .path=${assumedState ? mdiPowerOn : mdiPower}

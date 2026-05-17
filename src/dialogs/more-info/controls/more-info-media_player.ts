@@ -37,7 +37,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNKNOWN, isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -315,7 +315,12 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    if (isUnavailableState(this.stateObj.state)) {
+    const assumedState = this.stateObj.attributes.assumed_state === true;
+
+    if (
+      isUnavailableState(this.stateObj.state) &&
+      !(assumedState && this.stateObj.state === UNKNOWN)
+    ) {
       return this._renderEmptyCover(this.hass.formatEntityState(this.stateObj));
     }
 
