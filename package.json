@@ -104,7 +104,7 @@
     "leaflet": "1.9.4",
     "leaflet-draw": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch",
     "leaflet.markercluster": "1.5.3",
-    "lit": "3.3.2",
+    "lit": "3.3.3",
     "lit-html": "3.3.2",
     "luxon": "3.7.2",
     "marked": "18.0.3",
@@ -210,7 +210,7 @@
     "workbox-build": "patch:workbox-build@npm%3A7.4.1#~/.yarn/patches/workbox-build-npm-7.4.1-c84561662c.patch"
   },
   "resolutions": {
-    "lit": "3.3.2",
+    "lit": "3.3.3",
     "lit-html": "3.3.2",
     "clean-css": "5.3.3",
     "@lit/reactive-element": "2.1.2",
