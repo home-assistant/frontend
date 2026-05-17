@@ -8836,7 +8836,7 @@ __metadata:
     leaflet.markercluster: "npm:1.5.3"
     license-checker-rseidelsohn: "npm:4.4.2"
     lint-staged: "npm:17.0.4"
-    lit: "npm:3.3.2"
+    lit: "npm:3.3.3"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.2"
     lodash.merge: "npm:4.6.2"
@@ -10303,14 +10303,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:3.3.2":
-  version: 3.3.2
-  resolution: "lit@npm:3.3.2"
+"lit@npm:3.3.3":
+  version: 3.3.3
+  resolution: "lit@npm:3.3.3"
   dependencies:
     "@lit/reactive-element": "npm:^2.1.0"
     lit-element: "npm:^4.2.0"
     lit-html: "npm:^3.3.0"
-  checksum: 10/0af8e06a0ef5bb6a84c3dd58b64b6b554baf4bc195d725951ae60bbd9999618364815dc4438bf949051e7f15497b71b2bb9f7514772b33c4526882bdfb805858
+  checksum: 10/238a6574447f6499b7a4c6e30a4da89907b095ea48d6291fb1de570e937745b84550ced459f9c51632c3010c964403e2d6ebe65caf1500f03779b6049f229f12
   languageName: node
   linkType: hard
 
