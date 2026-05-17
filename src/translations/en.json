@@ -8573,16 +8573,16 @@
               "consumed_battery": "Battery"
             },
             "energy_sources_table": {
-              "grid_total": "Grid",
-              "gas_total": "Gas",
-              "solar_total": "Solar",
-              "water_total": "Water",
+              "grid_total": "Grid total",
+              "gas_total": "Gas total",
+              "solar_total": "Solar total",
+              "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
               "previous_energy": "Previous energy",
               "previous_cost": "Previous cost",
-              "battery_total": "Battery",
+              "battery_total": "Battery total",
               "total_costs": "Total costs"
             },
             "energy_solar_graph": {
