@@ -14,6 +14,7 @@ import type { StatisticsMetaData } from "../../../../data/recorder";
 export interface EnergySettingsGridDialogParams {
   source?: GridSourceTypeEnergyPreference;
   grid_sources: GridSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: GridSourceTypeEnergyPreference) => Promise<void>;
 }
 
@@ -21,12 +22,14 @@ export interface EnergySettingsSolarDialogParams {
   info: EnergyInfo;
   source?: SolarSourceTypeEnergyPreference;
   solar_sources: SolarSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsBatteryDialogParams {
   source?: BatterySourceTypeEnergyPreference;
   battery_sources: BatterySourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
 }
 

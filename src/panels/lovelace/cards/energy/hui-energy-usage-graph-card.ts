@@ -245,6 +245,16 @@ export class HuiEnergyUsageGraphCard
       from_battery?: string[];
     } = {};
 
+    const statLabels: {
+      to_grid: Record<string, string>;
+      from_grid: Record<string, string>;
+      to_battery: Record<string, string>;
+    } = {
+      to_grid: {},
+      from_grid: {},
+      to_battery: {},
+    };
+
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (statIds.solar) {
@@ -263,6 +273,12 @@ export class HuiEnergyUsageGraphCard
           statIds.to_battery = [source.stat_energy_to];
           statIds.from_battery = [source.stat_energy_from];
         }
+        if (source.name) {
+          statLabels.to_battery[source.stat_energy_to] = this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+            { name: source.name }
+          );
+        }
         continue;
       }
 
@@ -277,12 +293,30 @@ export class HuiEnergyUsageGraphCard
         } else {
           statIds.from_grid = [gridSource.stat_energy_from];
         }
+        if (gridSource.name) {
+          statLabels.from_grid[gridSource.stat_energy_from] =
+            gridSource.stat_energy_to
+              ? this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_consumed",
+                  { name: gridSource.name }
+                )
+              : gridSource.name;
+        }
       }
       if (gridSource.stat_energy_to) {
         if (statIds.to_grid) {
           statIds.to_grid.push(gridSource.stat_energy_to);
         } else {
           statIds.to_grid = [gridSource.stat_energy_to];
+        }
+        if (gridSource.name) {
+          statLabels.to_grid[gridSource.stat_energy_to] =
+            gridSource.stat_energy_from
+              ? this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_exported",
+                  { name: gridSource.name }
+                )
+              : gridSource.name;
         }
       }
     }
@@ -306,7 +340,7 @@ export class HuiEnergyUsageGraphCard
       }
     });
 
-    const labels = {
+    const typeLabels = {
       used_grid: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
       ),
@@ -340,7 +374,8 @@ export class HuiEnergyUsageGraphCard
           statIds,
           colorIndices,
           computedStyles,
-          labels,
+          typeLabels,
+          statLabels,
           true
         )
       );
@@ -366,7 +401,8 @@ export class HuiEnergyUsageGraphCard
         statIds,
         colorIndices,
         computedStyles,
-        labels,
+        typeLabels,
+        statLabels,
         false
       )
     );
@@ -398,10 +434,15 @@ export class HuiEnergyUsageGraphCard
     },
     colorIndices: Record<string, Record<string, number>>,
     computedStyles: CSSStyleDeclaration,
-    labels: {
+    typeLabels: {
       used_grid: string;
       used_solar: string;
       used_battery: string;
+    },
+    statLabels: {
+      to_grid: Record<string, string>;
+      from_grid: Record<string, string>;
+      to_battery: Record<string, string>;
     },
     compare = false
   ) {
@@ -523,9 +564,10 @@ export class HuiEnergyUsageGraphCard
           type: "bar",
           cursor: "default",
           name:
-            type in labels
-              ? labels[type]
-              : getStatisticLabel(
+            type in typeLabels
+              ? typeLabels[type]
+              : statLabels[type]?.[statId] ||
+                getStatisticLabel(
                   this.hass,
                   statId,
                   statisticsMetaData[statId]

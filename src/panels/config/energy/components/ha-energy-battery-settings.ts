@@ -1,6 +1,6 @@
 import { mdiBatteryHigh, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
@@ -100,19 +100,24 @@ export class EnergyBatterySettings extends LitElement {
                             ></ha-svg-icon>`}
                         <div class="content">
                           <span class="label"
-                            >${getStatisticLabel(
+                            >${source.name ||
+                            getStatisticLabel(
                               this.hass,
                               source.stat_energy_from,
                               this.statsMetadata?.[source.stat_energy_from]
                             )}</span
                           >
-                          <span class="label"
-                            >${getStatisticLabel(
-                              this.hass,
-                              source.stat_energy_to,
-                              this.statsMetadata?.[source.stat_energy_to]
-                            )}</span
-                          >
+                          ${source.name
+                            ? nothing
+                            : html`
+                                <span class="label"
+                                  >${getStatisticLabel(
+                                    this.hass,
+                                    source.stat_energy_to,
+                                    this.statsMetadata?.[source.stat_energy_to]
+                                  )}</span
+                                >
+                              `}
                         </div>
                         <ha-icon-button
                           .label=${this.hass.localize(
@@ -153,6 +158,7 @@ export class EnergyBatterySettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsBatteryDialog(this, {
+      statsMetadata: this.statsMetadata,
       battery_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "battery"
       ) as BatterySourceTypeEnergyPreference[],
@@ -169,6 +175,7 @@ export class EnergyBatterySettings extends LitElement {
     const origSource: BatterySourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsBatteryDialog(this, {
+      statsMetadata: this.statsMetadata,
       source: { ...origSource },
       battery_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "battery"
