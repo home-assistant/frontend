@@ -283,12 +283,13 @@ export const computeMediaControls = (
   }
 
   const state = stateObj.state;
-  const assumedState = stateObj.attributes.assumed_state === true;
 
-  // Treat "unknown" like "off" so assumed-state players still expose controls.
+  // We only filter out `unavailable`, not `unknown`
   if (state === UNAVAILABLE) {
     return undefined;
   }
+
+  const assumedState = stateObj.attributes.assumed_state === true;
 
   if (!stateActive(stateObj) && !assumedState) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)

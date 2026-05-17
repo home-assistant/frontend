@@ -275,6 +275,7 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderGrouping() {
     if (
       !this.stateObj ||
+      // Compare against `unavailable` so we allow `unknown`
       this.stateObj.state === UNAVAILABLE ||
       !supportsFeature(this.stateObj, MediaPlayerEntityFeature.GROUPING)
     ) {
