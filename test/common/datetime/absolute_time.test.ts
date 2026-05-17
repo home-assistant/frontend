@@ -37,7 +37,9 @@ describe("absoluteTime", () => {
   });
 
   it("should format date with year correctly", () => {
-    const from = new Date(2024, 1, 29, 13, 23);
+    const from = new Date();
+    from.setUTCFullYear(2024, 1, 29);
+    from.setUTCHours(13, 23);
     const result = absoluteTime(from, locale, config);
     expect(result).toBe("Feb 29, 2024, 13:23");
   });
