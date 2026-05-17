@@ -1,12 +1,11 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-select";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-settings-row";
+import "../../components/ha-theme-picker";
 import "../../components/input/ha-input";
 import "../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../components/radio/ha-radio-group";
@@ -20,11 +19,14 @@ import {
   DefaultAccentColor,
   DefaultPrimaryColor,
 } from "../../resources/theme/color/color.globals";
-import type { HomeAssistant, ThemeSettings } from "../../types";
+import type {
+  HomeAssistant,
+  ThemeSettings,
+  ValueChangedEvent,
+} from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { clearSelectedThemeState } from "../../util/ha-pref-storage";
 
-const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
 
 @customElement("ha-pick-theme-row")
@@ -32,8 +34,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @state() _themeNames: string[] = [];
 
   @state() private _userTheme?: ThemeSettings | null;
 
@@ -88,24 +88,17 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
             ${this.hass.localize("ui.panel.profile.themes.link_promo")}
           </a>
         </span>
-        <ha-select
+        <ha-theme-picker
+          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.profile.themes.dropdown_label")}
+          .noThemeLabel=${this.hass.localize(
+            "ui.panel.profile.themes.use_default"
+          )}
+          .value=${this.hass.selectedTheme?.theme || undefined}
           .disabled=${!hasThemes}
-          .value=${this.hass.selectedTheme?.theme || USE_DEFAULT_THEME}
-          @selected=${this._handleThemeSelection}
-          .options=${[
-            {
-              value: USE_DEFAULT_THEME,
-              label: this.hass.localize("ui.panel.profile.themes.use_default"),
-            },
-            { value: HOME_ASSISTANT_THEME, label: "Home Assistant" },
-            ...this._themeNames.map((theme) => ({
-              value: theme,
-              label: theme,
-            })),
-          ]}
-        >
-        </ha-select>
+          include-default
+          @value-changed=${this._handleThemeSelection}
+        ></ha-theme-picker>
       </ha-settings-row>
       ${curTheme === HOME_ASSISTANT_THEME ||
       (curThemeIsUseDefault &&
@@ -194,17 +187,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     `;
   }
 
-  public willUpdate(changedProperties: PropertyValues<this>) {
-    const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
-    const themesChanged =
-      changedProperties.has("hass") &&
-      (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
-
-    if (themesChanged) {
-      this._themeNames = Object.keys(this.hass.themes.themes).sort();
-    }
-  }
-
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
 
@@ -245,13 +227,13 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev: HaSelectSelectEvent) {
-    const theme = ev.detail.value;
-    if (theme === this.hass.selectedTheme?.theme) {
-      return;
-    }
+  private _handleThemeSelection(
+    ev: ValueChangedEvent<string | undefined>
+  ): void {
+    ev.stopPropagation();
+    const theme = ev.detail.value; // undefined = "use default"
 
-    if (theme === USE_DEFAULT_THEME) {
+    if (theme === undefined) {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",
@@ -261,6 +243,11 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       }
       return;
     }
+
+    if (theme === this.hass.selectedTheme?.theme) {
+      return;
+    }
+
     fireEvent(this, "settheme", {
       theme,
       primaryColor: undefined,
@@ -320,7 +307,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       margin: 0 4px;
     }
 
-    ha-select {
+    ha-theme-picker {
       display: block;
       width: 100%;
     }
