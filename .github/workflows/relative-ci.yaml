@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
-        uses: relative-ci/agent-action@3c681926017930047fc03acaa35cd6a44efcbfc3 # v3.2.2
+        uses: relative-ci/agent-action@fcf45416581928e8dd62eded78ce98c78e5149f8 # v3.2.3
         with:
           key: ${{ secrets.RELATIVE_CI_KEY_frontend_modern }}
           token: ${{ github.token }}
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
-        uses: relative-ci/agent-action@3c681926017930047fc03acaa35cd6a44efcbfc3 # v3.2.2
+        uses: relative-ci/agent-action@fcf45416581928e8dd62eded78ce98c78e5149f8 # v3.2.3
         with:
           key: ${{ secrets.RELATIVE_CI_KEY_frontend_legacy }}
           token: ${{ github.token }}
