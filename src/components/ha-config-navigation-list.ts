@@ -1,12 +1,12 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-svg-icon";
-import "../../../components/item/ha-list-item-button";
-import "../../../components/list/ha-list-nav";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant } from "../../../types";
+import "./ha-icon-next";
+import "./ha-svg-icon";
+import "./item/ha-list-item-button";
+import "./list/ha-list-nav";
+import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-config-navigation-list")
 class HaConfigNavigationList extends LitElement {

@@ -143,6 +143,10 @@ export class HuiViewEditor extends LitElement {
     const data = {
       ...this._config,
       type: this._type,
+      theme:
+        this._config.theme?.toLowerCase() === "backend-selected"
+          ? undefined
+          : this._config.theme,
     };
 
     if (data.max_columns === undefined && this._type === SECTIONS_VIEW_LAYOUT) {
