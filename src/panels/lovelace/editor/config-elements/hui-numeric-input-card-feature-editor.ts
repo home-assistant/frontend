@@ -6,7 +6,7 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
-  NumericInputCardFeatureConfig,
+  NumericInputConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
@@ -21,9 +21,12 @@ export class HuiNumericInputCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: NumericInputCardFeatureConfig;
+  @property({ attribute: false })
+  public defaultInputMode?: NumericInputConfig["style"];
 
-  public setConfig(config: NumericInputCardFeatureConfig): void {
+  @state() private _config?: NumericInputConfig;
+
+  public setConfig(config: NumericInputConfig): void {
     this._config = config;
   }
 
@@ -53,8 +56,8 @@ export class HuiNumericInputCardFeatureEditor
       return nothing;
     }
 
-    const data: NumericInputCardFeatureConfig = {
-      style: "buttons",
+    const data: NumericInputConfig = {
+      style: this.defaultInputMode ?? "buttons",
       ...this._config,
     };
 

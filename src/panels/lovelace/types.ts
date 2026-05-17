@@ -14,6 +14,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
   LovelaceCardFeaturePosition,
+  NumericInputConfig,
 } from "./card-features/types";
 import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -192,7 +193,7 @@ export interface LovelaceCardFeatureConstructor extends Constructor<LovelaceCard
 }
 
 export interface LovelaceCardFeatureEditor extends LovelaceGenericElementEditor {
-  setConfig(config: LovelaceCardFeatureConfig): void;
+  setConfig(config: LovelaceCardFeatureConfig | NumericInputConfig): void;
 }
 
 export interface LovelaceHeadingBadge extends HTMLElement {

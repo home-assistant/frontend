@@ -2,11 +2,13 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { HuiNumericInputCardFeatureEditor } from "../editor/config-elements/hui-numeric-input-card-feature-editor";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -50,14 +52,27 @@ class HuiTargetHumidityCardFeature
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
       type: "target-humidity",
+      style: "slider",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
+    const el = document.createElement(
+      "hui-numeric-input-card-feature-editor"
+    ) as HuiNumericInputCardFeatureEditor;
+    el.defaultInputMode = "slider";
+    return el;
   }
 
   public setConfig(config: TargetHumidityCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
-    this._config = config;
+    this._config = {
+      ...this._config,
+      ...config,
+    } as TargetHumidityCardFeatureConfig;
   }
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
@@ -109,6 +124,24 @@ class HuiTargetHumidityCardFeature
       return nothing;
     }
 
+    if (this._config.style === "buttons") {
+      return html`
+        <ha-control-number-buttons
+          .value=${this._stateObj.attributes.humidity}
+          .min=${this._min}
+          .max=${this._max}
+          .step=${this._step}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass.formatEntityAttributeName(
+            this._stateObj,
+            "humidity"
+          )}
+          unit="%"
+          .locale=${this.hass.locale}
+        ></ha-control-number-buttons>
+      `;
+    }
     return html`
       <ha-control-slider
         .value=${this._stateObj.attributes.humidity}

@@ -158,6 +158,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "target-humidity",
+  "target-temperature",
   "trend-graph",
   "update-actions",
   "vacuum-commands",
