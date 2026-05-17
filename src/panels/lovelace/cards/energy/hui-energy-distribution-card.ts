@@ -35,6 +35,7 @@ import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
+import { formatNumber } from "../../../../common/number/format_number";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
@@ -199,6 +200,7 @@ class HuiEnergyDistrubutionCard
     let totalBatteryIn: number | null = null;
     let totalBatteryOut: number | null = null;
     let batteryIconPath = mdiBatteryHigh;
+    let averageBatterySoc: number | null = null;
 
     if (hasBattery) {
       totalBatteryIn = summedData.total.to_battery ?? 0;
@@ -216,9 +218,9 @@ class HuiEnergyDistrubutionCard
           )
           .filter((value) => Number.isFinite(value));
         if (socValues.length) {
-          const averageSoc =
+          averageBatterySoc =
             socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
-          batteryIconPath = batteryLevelIconPath(averageSoc);
+          batteryIconPath = batteryLevelIconPath(averageBatterySoc);
         }
       }
     }
@@ -612,7 +614,21 @@ class HuiEnergyDistrubutionCard
                 ${hasBattery
                   ? html` <div class="circle-container battery">
                       <div class="circle">
-                        <ha-svg-icon .path=${batteryIconPath}></ha-svg-icon>
+                        <div class="battery-soc">
+                          <ha-svg-icon .path=${batteryIconPath}></ha-svg-icon>
+                          ${averageBatterySoc !== null
+                            ? html`<span
+                                >${formatNumber(
+                                  averageBatterySoc,
+                                  this.hass.locale,
+                                  {
+                                    maximumFractionDigits: 0,
+                                  }
+                                )}
+                                %</span
+                              >`
+                            : nothing}
+                        </div>
                         <span class="battery-in">
                           <ha-svg-icon
                             class="small"
@@ -943,6 +959,13 @@ class HuiEnergyDistrubutionCard
     .circle-container.battery {
       height: 110px;
       justify-content: flex-end;
+    }
+    .battery-soc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--ha-font-size-s);
+      line-height: 1.2;
     }
     .spacer {
       width: 84px;
