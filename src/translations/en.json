@@ -7913,6 +7913,78 @@
           "picker": {
             "title": "Select Z-Wave network",
             "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
+          },
+          "credentials": {
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "delete_all": "Delete all users",
+              "name": "Name",
+              "type": "Type",
+              "no_users": "No users configured",
+              "unnamed_user": "User {index}",
+              "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
+              "user_types": {
+                "general": {
+                  "label": "General",
+                  "description": "Can operate the lock"
+                },
+                "programming": {
+                  "label": "Programming",
+                  "description": "Can program the device, manage users, and can operate the lock"
+                },
+                "non_access": {
+                  "label": "Non-access",
+                  "description": "Is recognized, but cannot open the lock (only sends events)"
+                },
+                "duress": {
+                  "label": "Duress",
+                  "description": "Can open the lock, but sends an alarm to the hub"
+                },
+                "disposable": {
+                  "label": "Disposable",
+                  "description": "Can open the lock once, disabled after first use"
+                },
+                "expiring": {
+                  "label": "Expiring",
+                  "description": "Can operate the lock. Access gets disabled after a certain time when first used."
+                },
+                "remote_only": {
+                  "label": "Remote only",
+                  "description": "Can only operate the lock remotely"
+                }
+              }
+            },
+            "credential_types": {
+              "pin_code": "PIN code",
+              "password": "Password"
+            },
+            "credential_data": {
+              "type": "Credential type",
+              "pin_code": "PIN code",
+              "password": "Password",
+              "placeholder": "{min}-{max} characters",
+              "placeholder_pin": "{min}-{max} digits"
+            },
+            "errors": {
+              "load_failed": "Failed to load credential information",
+              "save_failed": "Failed to save changes",
+              "empty_response": "The device did not return a response. Please try again.",
+              "no_user_management": "This device does not support user management. Users and credentials cannot be managed here.",
+              "no_compatible_credential_types": "This device does not support any credential types that can be managed here.",
+              "no_compatible_user_types": "This device has no user types that can be managed here. New users cannot be added.",
+              "name_required": "Please enter a name for this user.",
+              "credential_required": "Please enter a credential value.",
+              "credential_length": "Credential must be {min}-{max} characters.",
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "add_user_failed": "Could not add user. {message}."
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone."
           }
         },
         "matter": {
