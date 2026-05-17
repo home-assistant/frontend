@@ -9668,6 +9668,33 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
+              "date": {
+                "label": "Date",
+                "description": "Select and order the date parts. Add a separator to control punctuation.",
+                "sections": {
+                  "weekday": "Weekday",
+                  "day": "Day",
+                  "month": "Month",
+                  "year": "Year",
+                  "separator": "Separator"
+                },
+                "parts": {
+                  "weekday-short": "Short",
+                  "weekday-long": "Long",
+                  "day-numeric": "Numeric",
+                  "day-2-digit": "2-digit",
+                  "month-short": "Short",
+                  "month-long": "Long",
+                  "month-numeric": "Numeric",
+                  "month-2-digit": "2-digit",
+                  "year-2-digit": "2-digit",
+                  "year-numeric": "Full",
+                  "separator-dash": "Dash",
+                  "separator-slash": "Slash",
+                  "separator-dot": "Dot",
+                  "separator-new-line": "New line"
+                }
+              },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
