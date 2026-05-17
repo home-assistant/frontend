@@ -1696,13 +1696,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.4.3":
-  version: 7.4.3
-  resolution: "@formatjs/intl-datetimeformat@npm:7.4.3"
+"@formatjs/intl-datetimeformat@npm:7.4.4":
+  version: 7.4.4
+  resolution: "@formatjs/intl-datetimeformat@npm:7.4.4"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.4"
     "@formatjs/intl-localematcher": "npm:0.8.7"
-  checksum: 10/90eae10fe288faaffc258b9512f015f168a133de1c6d9efed026574847a791050d71c220a99ee87d4fe57d2de4eb6beb596c784c8db85573b34ad98a758e5d8e
+  checksum: 10/c731b19bdcdd5d407eaf51d5ea5ec6adc784e0ca0627c8bab93585577ade004b45c8158d69f11c7b2cfe5327f068c68e3df09148c955944288d5b25735b6fbdd
   languageName: node
   linkType: hard
 
@@ -1715,13 +1715,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-durationformat@npm:0.10.9":
-  version: 0.10.9
-  resolution: "@formatjs/intl-durationformat@npm:0.10.9"
+"@formatjs/intl-durationformat@npm:0.10.10":
+  version: 0.10.10
+  resolution: "@formatjs/intl-durationformat@npm:0.10.10"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.4"
     "@formatjs/intl-localematcher": "npm:0.8.7"
-  checksum: 10/a95de9ef7b7a52ea093dabcc78e6c565a34706c89a2ed215726b1c03f702e79059c7ef5f08f9c5893019c10a78f229ab1904c43ce617c945606d2130c90f62cf
+  checksum: 10/dbab9cb8410452d93287d9d7e26946533b82615aee973620ae828e0f55976421e9eb283781e6f20b28701e5fdaefaa6baf9e0dde02d9dd979c00c466d65eca5c
   languageName: node
   linkType: hard
 
@@ -1760,13 +1760,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:9.3.6":
-  version: 9.3.6
-  resolution: "@formatjs/intl-numberformat@npm:9.3.6"
+"@formatjs/intl-numberformat@npm:9.3.7":
+  version: 9.3.7
+  resolution: "@formatjs/intl-numberformat@npm:9.3.7"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.4"
     "@formatjs/intl-localematcher": "npm:0.8.7"
-  checksum: 10/26f3b1348d5e2b31ab32aeaea9bfd178f23fc8ff6686663776424696bd252bec3a61301906418258122762a2158f36974c7825dabe70f80f780267aa528e7163
+  checksum: 10/077fba3e9bcc15d3eac55407998026541a373350e7264f3f99f8d28743a3dd9e666e943b617ab7fadfeb8239cf79be7fe78e99f721539f89b4cb70912f1ac51c
   languageName: node
   linkType: hard
 
@@ -8719,13 +8719,13 @@ __metadata:
     "@date-fns/tz": "npm:1.4.1"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
-    "@formatjs/intl-datetimeformat": "npm:7.4.3"
+    "@formatjs/intl-datetimeformat": "npm:7.4.4"
     "@formatjs/intl-displaynames": "npm:7.3.6"
-    "@formatjs/intl-durationformat": "npm:0.10.9"
+    "@formatjs/intl-durationformat": "npm:0.10.10"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.7"
     "@formatjs/intl-listformat": "npm:8.3.6"
     "@formatjs/intl-locale": "npm:5.3.6"
-    "@formatjs/intl-numberformat": "npm:9.3.6"
+    "@formatjs/intl-numberformat": "npm:9.3.7"
     "@formatjs/intl-pluralrules": "npm:6.3.6"
     "@formatjs/intl-relativetimeformat": "npm:12.3.6"
     "@fullcalendar/core": "npm:6.1.20"
