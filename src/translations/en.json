@@ -8565,12 +8565,12 @@
             "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
-              "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total exported {num} kWh",
-              "total_usage": "+{num} kWh",
-              "combined_from_grid": "Combined from grid",
-              "consumed_solar": "Consumed solar",
-              "consumed_battery": "Consumed battery"
+              "total_consumed": "Total {num} kWh",
+              "total_returned": "Total {num} kWh",
+              "total_usage": "{num} kWh",
+              "combined_from_grid": "Grid",
+              "consumed_solar": "Solar",
+              "consumed_battery": "Battery"
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
@@ -8578,9 +8578,9 @@
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
-              "energy": "Usage",
+              "energy": "Energy",
               "cost": "Cost",
-              "previous_energy": "Previous usage",
+              "previous_energy": "Previous energy",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"
@@ -8591,7 +8591,7 @@
               "total_produced": "Total produced {num} kWh"
             },
             "energy_gas_graph": {
-              "total_consumed": "Total consumed {num} {unit}"
+              "total_consumed": "Total {num} {unit}"
             },
             "energy_water_graph": {
               "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
@@ -8633,8 +8633,8 @@
               "go_to_energy_dashboard": "Go to the energy dashboard"
             },
             "energy_devices_graph": {
-              "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage",
+              "energy_usage": "Energy",
+              "previous_energy_usage": "Previous energy",
               "total_energy_usage": "Total",
               "change_chart_type": "Change chart type",
               "untracked_consumption": "Untracked consumption",
@@ -10968,14 +10968,14 @@
           "by_device": "Consumption by device"
         },
         "cards": {
-          "energy_usage_graph_title": "Electricity usage",
+          "energy_usage_graph_title": "Electricity",
           "energy_solar_graph_title": "Solar production",
           "energy_gas_graph_title": "Gas consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
-          "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Individual devices total usage",
-          "energy_devices_detail_graph_title": "Individual devices detail usage",
+          "energy_sources_table_title": "Totals",
+          "energy_devices_graph_title": "Individual devices",
+          "energy_devices_detail_graph_title": "Individual devices detail",
           "energy_sankey_title": "Energy flow",
           "water_sankey_title": "Water flow",
           "energy_top_consumers_title": "Top consumers",
