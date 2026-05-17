@@ -37,7 +37,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { UNKNOWN, isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -275,7 +275,7 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderGrouping() {
     if (
       !this.stateObj ||
-      isUnavailableState(this.stateObj.state) ||
+      this.stateObj.state === UNAVAILABLE ||
       !supportsFeature(this.stateObj, MediaPlayerEntityFeature.GROUPING)
     ) {
       return nothing;
@@ -315,12 +315,7 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    const assumedState = this.stateObj.attributes.assumed_state === true;
-
-    if (
-      isUnavailableState(this.stateObj.state) &&
-      !(assumedState && this.stateObj.state === UNKNOWN)
-    ) {
+    if (this.stateObj.state === UNAVAILABLE) {
       return this._renderEmptyCover(this.hass.formatEntityState(this.stateObj));
     }
 
@@ -466,7 +461,7 @@ class MoreInfoMediaPlayer extends LitElement {
           : nothing}
         ${this._renderVolumeControl()}
         <div class="controls-row">
-          ${!isUnavailableState(stateObj.state) &&
+          ${stateObj.state !== UNAVAILABLE &&
           supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
             ? this._renderControlButton(
                 "browse_media",

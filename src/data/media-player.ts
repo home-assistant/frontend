@@ -38,7 +38,7 @@ import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { UNKNOWN, isUnavailableState } from "./entity/entity";
+import { UNAVAILABLE } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -285,7 +285,8 @@ export const computeMediaControls = (
   const state = stateObj.state;
   const assumedState = stateObj.attributes.assumed_state === true;
 
-  if (isUnavailableState(state) && !(assumedState && state === UNKNOWN)) {
+  // Treat "unknown" like "off" so assumed-state players still expose controls.
+  if (state === UNAVAILABLE) {
     return undefined;
   }
 
