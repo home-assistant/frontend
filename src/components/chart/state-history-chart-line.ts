@@ -12,6 +12,7 @@ import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
+import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -117,9 +118,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
-  private _previousYAxisLabelValue = 0;
-
-  private _yAxisMaximumFractionDigits = 0;
+  private _yAxisFractionDigits = 1;
 
   protected render() {
     return html`
@@ -436,6 +435,14 @@ export class StateHistoryChartLine extends LitElement {
     const datasets: LineSeriesOption[] = [];
     const entityIds: string[] = [];
     const datasetToDataIndex: number[] = [];
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number | null | undefined) => {
+      if (typeof v === "number" && Number.isFinite(v)) {
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    };
     if (entityStates.length === 0) {
       return;
     }
@@ -471,6 +478,7 @@ export class StateHistoryChartLine extends LitElement {
             d.data!.push([timestamp, prevValues[i]]);
           }
           d.data!.push([timestamp, datavalues[i]]);
+          trackY(datavalues[i]);
         });
         prevValues = datavalues;
       };
@@ -821,6 +829,7 @@ export class StateHistoryChartLine extends LitElement {
         const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
         if (currentValue !== null) {
           data[0].data!.push([now, currentValue]);
+          trackY(currentValue);
         }
       }
 
@@ -828,6 +837,7 @@ export class StateHistoryChartLine extends LitElement {
       Array.prototype.push.apply(datasets, data);
     });
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
@@ -861,20 +871,8 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    this._yAxisMaximumFractionDigits = Math.max(
-      this._yAxisMaximumFractionDigits,
-      maximumFractionDigits
-    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits: this._yAxisMaximumFractionDigits,
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -884,7 +882,6 @@ export class StateHistoryChartLine extends LitElement {
         chartIndex: this.chartIndex,
       });
     }
-    this._previousYAxisLabelValue = value;
     return label;
   };
 
