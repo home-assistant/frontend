@@ -4360,6 +4360,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsparticles/engine@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@tsparticles/engine@npm:4.0.0"
+  checksum: 10/05fd84ad82f75c9a9d44280ed948d9340cbfb5b18a18f112ee08c0c7d70ba35687197c9ce7508f7c2600410f42075369f2708504485912eb57e5e6e1cf8394ef
+  languageName: node
+  linkType: hard
+
 "@tsparticles/interaction-particles-links@npm:^3.7.1":
   version: 3.9.1
   resolution: "@tsparticles/interaction-particles-links@npm:3.9.1"
@@ -8762,7 +8769,7 @@ __metadata:
     "@rspack/dev-server": "npm:2.0.1"
     "@swc/helpers": "npm:0.5.21"
     "@thomasloven/round-slider": "npm:0.6.0"
-    "@tsparticles/engine": "npm:3.9.1"
+    "@tsparticles/engine": "npm:4.0.0"
     "@tsparticles/preset-links": "npm:3.2.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.26"
