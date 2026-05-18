@@ -28,3 +28,5 @@ Home Assistant is open-source and Apache 2 licensed. Feel free to browse the rep
 We use [BrowserStack](https://www.browserstack.com) to test Home Assistant on a large variety of devices.
 
 [![Home Assistant - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/home-assistant.png)](https://www.openhomefoundation.org/)
+ 
+ Thank you
