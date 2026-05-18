@@ -84,7 +84,7 @@ export class HaVisibilityStatus extends HaRowItem {
         </div>
         <div part="supporting-text" class="supporting">
           ${this.hass?.localize(
-            `ui.panel.lovelace.editor.condition-editor.visibility_status.${this.state}.supporting`
+            `ui.panel.lovelace.editor.condition-editor.visibility_status.${this.state}.supporting${(this.conditions?.length ?? 0) === 0 ? "_empty" : ""}`
           )}
         </div>
       </div>

@@ -9073,7 +9073,8 @@
             "visibility_status": {
               "visible": {
                 "headline": "Current visibility: Visible",
-                "supporting": "All visibility conditions are met"
+                "supporting": "All visibility conditions are met",
+                "supporting_empty": "No visibility conditions are set"
               },
               "hidden": {
                 "headline": "Current visibility: Hidden",
