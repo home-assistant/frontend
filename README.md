@@ -29,4 +29,4 @@ We use [BrowserStack](https://www.browserstack.com) to test Home Assistant on a 
 
 [![Home Assistant - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/home-assistant.png)](https://www.openhomefoundation.org/)
  
- Thank you
+ Thank you , this was an amazing experience.
