@@ -1,4 +1,3 @@
-import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { mdiMenu, mdiSwapHorizontal } from "@mdi/js";
 import type { PropertyValues } from "lit";
@@ -7,6 +6,8 @@ import { customElement, query, state } from "lit/decorators";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { setDirectionStyles } from "../../src/common/util/compute_rtl";
 import "../../src/components/ha-button";
+import "../../src/components/ha-drawer";
+import type { HaDrawer } from "../../src/components/ha-drawer";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import "../../src/components/ha-icon-button";
 import "../../src/components/ha-svg-icon";
@@ -39,8 +40,8 @@ class HaGallery extends LitElement {
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
 
-  @query("mwc-drawer")
-  private _drawer!: HTMLElementTagNameMap["mwc-drawer"];
+  @query("ha-drawer")
+  private _drawer!: HaDrawer;
 
   private _narrow = window.matchMedia("(max-width: 600px)").matches;
 
@@ -75,15 +76,14 @@ class HaGallery extends LitElement {
     }
 
     return html`
-      <mwc-drawer
-        hasHeader
+      <ha-drawer
+        .direction=${this._rtl ? "rtl" : "ltr"}
         .open=${!this._narrow}
         .type=${this._narrow ? "modal" : "dismissible"}
       >
-        <span slot="title">Home Assistant Design</span>
-        <!-- <span slot="subtitle">subtitle</span> -->
+        <div class="drawer-title">Home Assistant Design</div>
         <div class="sidebar">${sidebar}</div>
-        <div slot="appContent">
+        <div slot="appContent" class="app-content">
           <mwc-top-app-bar-fixed>
             <ha-icon-button
               slot="navigationIcon"
@@ -144,7 +144,7 @@ class HaGallery extends LitElement {
             </div>
           </div>
         </div>
-      </mwc-drawer>
+      </ha-drawer>
       <notification-manager
         .hass=${FAKE_HASS}
         id="notifications"
@@ -226,10 +226,25 @@ class HaGallery extends LitElement {
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
+        --ha-sidebar-width: 256px;
       }
 
       .sidebar {
+        box-sizing: border-box;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
         padding: 4px;
+      }
+
+      .drawer-title {
+        align-items: center;
+        box-sizing: border-box;
+        color: var(--primary-text-color);
+        display: flex;
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-medium);
+        min-height: 64px;
+        padding: 0 16px;
       }
 
       .sidebar a {
@@ -255,7 +270,7 @@ class HaGallery extends LitElement {
         opacity: 0.12;
       }
 
-      div[slot="appContent"] {
+      .app-content {
         display: flex;
         flex-direction: column;
         min-height: 100vh;

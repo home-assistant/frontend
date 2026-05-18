@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/input/ha-input";
@@ -20,6 +20,8 @@ class HaInputButtonForm extends LitElement {
 
   @state() private _icon!: string;
 
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   private _item?: InputButton;
 
   set item(item: InputButton) {
@@ -34,11 +36,7 @@ class HaInputButtonForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {

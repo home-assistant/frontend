@@ -3,12 +3,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-card";
-import "../../components/ha-md-list-item";
 import "../../components/ha-switch";
+import "../../components/item/ha-row-item";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
-import { documentationUrl } from "../../util/documentation-url";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {
@@ -23,7 +23,7 @@ class AdvancedModeRow extends LitElement {
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : nothing}
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize("ui.panel.profile.advanced_mode.title")}</span
         >
@@ -45,7 +45,7 @@ class AdvancedModeRow extends LitElement {
           .disabled=${this.coreUserData === undefined}
           @change=${this._advancedToggled}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
     `;
   }
 

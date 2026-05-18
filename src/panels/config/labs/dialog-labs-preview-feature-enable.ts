@@ -145,7 +145,6 @@ export class DialogLabsPreviewFeatureEnable
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.labs.enable_title")}
         @closed=${this._dialogClosed}

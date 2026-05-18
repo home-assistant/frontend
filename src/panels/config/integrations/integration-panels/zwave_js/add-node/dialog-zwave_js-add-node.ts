@@ -141,7 +141,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${preventClose}
         @closed=${this._dialogClosed}

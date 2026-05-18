@@ -325,7 +325,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   private _renderYamlMode() {
     return html` <ha-yaml-editor
-      .hass=${this.hass}
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
       @editor-save=${this._saveScene}
@@ -343,7 +342,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     return html` <div
       id="root"
       class=${classMap({
-        rtl: computeRTL(this.hass),
+        rtl: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        ),
       })}
     >
       ${this._config

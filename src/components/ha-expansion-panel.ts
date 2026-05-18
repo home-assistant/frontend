@@ -59,6 +59,7 @@ export class HaExpansionPanel extends LitElement {
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
+          <slot name="event"></slot>
           ${!this.leftChevron ? chevronIcon : nothing}
           <slot name="icons"></slot>
         </div>

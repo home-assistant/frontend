@@ -1,13 +1,15 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
@@ -54,9 +56,15 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
+  @state() private _descriptionExpanded = false;
+
+  @query("ha-tip") private _editorTip?: HTMLElement;
+
   private _template = "";
 
   private _inited = false;
+
+  private _tipResizeObserver?: ResizeObserver;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -68,6 +76,8 @@ class HaPanelDevTemplate extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeTemplate();
+    this._tipResizeObserver?.disconnect();
+    this._tipResizeObserver = undefined;
   }
 
   protected firstUpdated() {
@@ -77,6 +87,7 @@ class HaPanelDevTemplate extends LitElement {
       this._template = DEMO_TEMPLATE;
     }
     this._subscribeTemplate();
+    this._observeTipHeight();
     this._inited = true;
   }
 
@@ -88,47 +99,58 @@ class HaPanelDevTemplate extends LitElement {
           ? "list"
           : "dict"
         : type;
+
     return html`
       <div class="content">
-        <div class="description">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.templates.description"
-            )}
-          </p>
-          <ul>
-            <li>
-              <a
-                href="https://jinja.palletsprojects.com/en/latest/templates/"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href=${documentationUrl(
-                  this.hass,
-                  "/docs/configuration/templating/"
-                )}
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.templates.template_extensions"
-                )}</a
-              >
-            </li>
-          </ul>
-        </div>
+        <ha-expansion-panel
+          .header=${this.hass.localize(
+            "ui.panel.config.developer-tools.tabs.templates.about"
+          )}
+          outlined
+          .expanded=${this._descriptionExpanded}
+          @expanded-changed=${this._expandedChanged}
+        >
+          <div class="description">
+            <p>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.templates.description"
+              )}
+            </p>
+            <ul>
+              <li>
+                <a
+                  href="https://jinja.palletsprojects.com/en/latest/templates/"
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
+                  )}
+                </a>
+              </li>
+              <li>
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    "/docs/configuration/templating/"
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.developer-tools.tabs.templates.template_extensions"
+                  )}</a
+                >
+              </li>
+            </ul>
+          </div>
+        </ha-expansion-panel>
       </div>
       <div
         class="content ${classMap({
           layout: !this.narrow,
           horizontal: !this.narrow,
         })}"
+        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
       >
         <ha-card
           class="edit-pane"
@@ -139,7 +161,6 @@ class HaPanelDevTemplate extends LitElement {
           <div class="card-content">
             <ha-code-editor
               mode="jinja2"
-              .hass=${this.hass}
               .value=${this._template}
               .error=${this._error}
               autofocus
@@ -274,6 +295,27 @@ ${type === "object"
     `;
   }
 
+  private _observeTipHeight() {
+    if (!this._editorTip || this._tipResizeObserver) {
+      return;
+    }
+    this._tipResizeObserver = new ResizeObserver((entries) => {
+      const height =
+        entries[0]?.borderBoxSize?.[0]?.blockSize ??
+        entries[0]?.contentRect.height;
+      if (height) {
+        this.style.setProperty("--tip-height", `${height}px`);
+      }
+    });
+    this._tipResizeObserver.observe(this._editorTip);
+  }
+
+  private _expandedChanged(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
+  ) {
+    this._descriptionExpanded = ev.detail.expanded;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -288,13 +330,45 @@ ${type === "object"
           padding: var(--ha-space-4);
         }
 
+        .content:has(ha-expansion-panel) {
+          padding-bottom: 0;
+        }
+
         .content.horizontal {
+          --panel-header-height: calc(
+            var(--header-height) + 1em * 2 + var(--ha-line-height-normal) *
+              var(--ha-font-size-m) + 1px + 2px
+          );
+          --description-pane-height: calc(
+            var(--ha-space-4) + 48px +
+              (
+                var(--ha-line-height-normal) * var(--ha-font-size-m) * 3 +
+                  var(--ha-space-1) * 2
+              ) *
+              var(--description-expanded) + var(--ha-card-border-width, 1px) * 2
+          );
+          --card-header-height: calc(
+            var(--ha-space-3) + var(--ha-space-4) +
+              var(--ha-line-height-expanded) *
+              var(--ha-card-header-font-size, var(--ha-font-size-2xl))
+          );
+          --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
+          --tip-height-minimal: calc(
+            var(--mdc-icon-size, 24px) + var(--ha-space-4)
+          );
+          --edit-pane-height: calc(
+            100vh - var(--panel-header-height) - var(
+                --description-pane-height
+              ) - var(--ha-space-4) *
+              2
+          );
           --code-mirror-max-height: calc(
-            100vh - var(--header-height) -
-              (var(--ha-line-height-normal) * var(--ha-font-size-m) * 3) -
-              (max(16px, var(--safe-area-inset-top)) * 2) -
-              (max(16px, var(--safe-area-inset-bottom)) * 2) -
-              (var(--ha-card-border-width, 1px) * 3) - (1em * 2) - 192px
+            var(--edit-pane-height) - var(--card-header-height) +
+              var(--ha-space-2) - var(--card-actions-height) - var(
+                --tip-height,
+                var(--tip-height-minimal)
+              ) - var(--ha-space-4) - var(--ha-card-border-width, 1px) *
+              2
           );
         }
 
@@ -344,6 +418,13 @@ ${type === "object"
         p,
         ul {
           margin-block-end: 0;
+        }
+        .description > p {
+          margin-block-start: 0;
+        }
+        .description > ul {
+          margin-block-start: var(--ha-space-1);
+          margin-block-end: var(--ha-space-1);
         }
 
         .render-pane .card-content {

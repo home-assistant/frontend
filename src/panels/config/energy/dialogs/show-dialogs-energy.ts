@@ -33,15 +33,15 @@ export interface EnergySettingsBatteryDialogParams {
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
   allowedGasUnitClass?: EnergyGasUnitClass;
-  metadata?: StatisticsMetaData;
   gas_sources: GasSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsWaterDialogParams {
   source?: WaterSourceTypeEnergyPreference;
-  metadata?: StatisticsMetaData;
   water_sources: WaterSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: WaterSourceTypeEnergyPreference) => Promise<void>;
 }
 

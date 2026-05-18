@@ -5,10 +5,10 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-md-list-item";
 import "./ha-switch";
-import "./ha-tooltip";
 import type { HaSwitch } from "./ha-switch";
+import "./ha-tooltip";
+import "./item/ha-row-item";
 
 const ADDITIONAL_PREFERENCES = ["usage", "statistics"] as const;
 
@@ -33,7 +33,7 @@ export class HaAnalytics extends LitElement {
     const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
@@ -52,10 +52,10 @@ export class HaAnalytics extends LitElement {
           .disabled=${loading}
           name="base"
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
-          <ha-md-list-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
@@ -81,10 +81,10 @@ export class HaAnalytics extends LitElement {
                     `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
                   )}
                 </ha-tooltip>`}
-          </ha-md-list-item>
+          </ha-row-item>
         `
       )}
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
@@ -103,7 +103,7 @@ export class HaAnalytics extends LitElement {
           .disabled=${loading}
           name="diagnostics"
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
     `;
   }
 
@@ -139,10 +139,8 @@ export class HaAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
       `,
     ];

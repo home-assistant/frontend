@@ -1,6 +1,7 @@
 import {
   addDays,
   addHours,
+  addMinutes,
   addMonths,
   differenceInHours,
   endOfDay,
@@ -11,6 +12,19 @@ import type {
   StatisticValue,
 } from "../../../src/data/recorder";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
+const getNextDate = (
+  currentDate: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): Date => {
+  return period === "day"
+    ? addDays(currentDate, 1)
+    : period === "month"
+      ? addMonths(currentDate, 1)
+      : period === "hour"
+        ? addHours(currentDate, 1)
+        : addMinutes(currentDate, 5);
+};
 
 const generateMeanStatistics = (
   start: Date,
@@ -25,9 +39,10 @@ const generateMeanStatistics = (
   while (end > currentDate && currentDate < now) {
     const delta = Math.random() * maxDiff;
     const mean = delta;
+    const nextDate = getNextDate(currentDate, period);
     statistics.push({
       start: currentDate.getTime(),
-      end: currentDate.getTime(),
+      end: nextDate.getTime(),
       mean,
       min: mean - Math.random() * maxDiff,
       max: mean + Math.random() * maxDiff,
@@ -35,12 +50,7 @@ const generateMeanStatistics = (
       state: mean,
       sum: null,
     });
-    currentDate =
-      period === "day"
-        ? addDays(currentDate, 1)
-        : period === "month"
-          ? addMonths(currentDate, 1)
-          : addHours(currentDate, 1);
+    currentDate = nextDate;
   }
   return statistics;
 };
@@ -58,11 +68,12 @@ const generateSumStatistics = (
   let sum = initValue;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
+    const nextDate = getNextDate(currentDate, period);
     const add = Math.random() * maxDiff;
     sum += add;
     statistics.push({
       start: currentDate.getTime(),
-      end: currentDate.getTime(),
+      end: nextDate.getTime(),
       mean: null,
       min: null,
       max: null,
@@ -71,12 +82,7 @@ const generateSumStatistics = (
       state: initValue + sum,
       sum,
     });
-    currentDate =
-      period === "day"
-        ? addDays(currentDate, 1)
-        : period === "month"
-          ? addMonths(currentDate, 1)
-          : addHours(currentDate, 1);
+    currentDate = nextDate;
   }
   return statistics;
 };
@@ -84,7 +90,7 @@ const generateSumStatistics = (
 const generateCurvedStatistics = (
   start: Date,
   end: Date,
-  _period: "5minute" | "hour" | "day" | "month" = "hour",
+  period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
   maxDiff: number,
   metered: boolean
@@ -98,11 +104,12 @@ const generateCurvedStatistics = (
   let half = false;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
+    const nextDate = getNextDate(currentDate, period);
     const add = i * (Math.random() * maxDiff);
     sum += add;
     statistics.push({
       start: currentDate.getTime(),
-      end: currentDate.getTime(),
+      end: nextDate.getTime(),
       mean: null,
       min: null,
       max: null,
@@ -111,7 +118,7 @@ const generateCurvedStatistics = (
       state: initValue + sum,
       sum: metered ? sum : null,
     });
-    currentDate = addHours(currentDate, 1);
+    currentDate = nextDate;
     if (!half && i > hours / 2) {
       half = true;
     }
@@ -289,7 +296,7 @@ const statisticsFunctions: Record<
       end,
       period,
       productionFinalVal,
-      2
+      0.2
     );
     return [...morning, ...production, ...evening, ...rest];
   },

@@ -21,6 +21,7 @@ export const rowStyles = css`
     gap: var(--ha-space-2);
     padding: var(--ha-space-2) 0;
     min-height: 32px;
+    max-width: 100%;
   }
 
   ha-card {
@@ -50,9 +51,6 @@ export const rowStyles = css`
 
   ha-automation-row-event-chip.event-chip {
     position: absolute;
-    inset-inline-end: 96px;
-    top: var(--ha-space-6);
-    box-shadow: var(--ha-box-shadow-s);
   }
 `;
 
@@ -126,9 +124,9 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw - ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
       var(--ha-automation-editor-max-width) -
-        ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );
     --sidebar-gap: var(--ha-space-4);
   }
@@ -240,7 +238,6 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 8px;
   }
   .description {
     padding-top: 16px;

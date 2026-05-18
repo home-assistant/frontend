@@ -227,7 +227,6 @@ class EventSubscribeCard extends LitElement {
           ></ha-icon-button>
         </div>
         <ha-yaml-editor
-          .hass=${this.hass}
           .value=${event.event}
           auto-update
           read-only

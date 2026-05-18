@@ -1,7 +1,7 @@
+import "@home-assistant/webawesome/dist/components/tag/tag";
 import {
   mdiCheckCircle,
   mdiChip,
-  mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
   mdiExclamationThick,
@@ -17,11 +17,10 @@ import {
   mdiNumeric6,
   mdiNumeric7,
   mdiNumeric8,
-  mdiPlayCircle,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,6 +30,7 @@ import { atLeastVersion } from "../../../../../common/config/version";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/chips/ha-assist-chip";
 import "../../../../../components/chips/ha-chip-set";
@@ -79,9 +79,9 @@ import { bytesToString } from "../../../../../util/bytes-to-string";
 import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-card-content";
 import "../components/supervisor-app-metric";
+import "../components/supervisor-app-update-available-card";
 import { extractChangelog } from "../util/supervisor-app";
 import "./supervisor-app-system-managed";
-import "../components/supervisor-app-update-available-card";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -203,28 +203,10 @@ class SupervisorAppInfo extends LitElement {
               : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
-                ? html`
-                    ${this._computeIsRunning
-                      ? html`
-                          <ha-svg-icon
-                            .title=${this.hass.localize(
-                              "ui.panel.config.apps.dashboard.app_running"
-                            )}
-                            class="running"
-                            .path=${mdiPlayCircle}
-                          ></ha-svg-icon>
-                        `
-                      : html`
-                          <ha-svg-icon
-                            .title=${this.hass.localize(
-                              "ui.panel.config.apps.dashboard.app_stopped"
-                            )}
-                            class="stopped"
-                            .path=${mdiCircleOffOutline}
-                          ></ha-svg-icon>
-                        `}
-                  `
-                : html` ${this.addon.version_latest} `}
+                ? html`<supervisor-apps-state
+                    .state=${this.addon.state}
+                  ></supervisor-apps-state>`
+                : this.addon.version_latest}
             </div>
           </div>
           <div class="description light-color">
@@ -837,7 +819,7 @@ class SupervisorAppInfo extends LitElement {
     const id = ev.currentTarget.id as AddonCapability;
     showAlertDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.apps.dashboard.capability.${id}.title`
+        `ui.panel.config.apps.dashboard.capability.${id}.title` as LocalizeKeys
       ),
       text: this.hass.localize(
         `ui.panel.config.apps.dashboard.capability.${id}.description`

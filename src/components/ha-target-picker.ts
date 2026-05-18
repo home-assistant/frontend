@@ -486,6 +486,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     fireEvent(this, "value-changed", { value });
 
+    // eslint-disable-next-line lit/prefer-query-decorators
     this.shadowRoot
       ?.querySelector(
         `ha-target-picker-item-group[type='${this._newTarget?.type}']`
@@ -1136,7 +1137,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     let rtl = false;
     let showEntityId = false;
     if (type === "area" || type === "floor") {
-      rtl = computeRTL(this.hass);
+      rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
     }

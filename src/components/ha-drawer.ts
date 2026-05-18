@@ -1,36 +1,115 @@
-import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
-import { styles } from "@material/mwc-drawer/mwc-drawer.css";
-import type { PropertyValues } from "lit";
-import { css } from "lit";
-import { customElement, property } from "lit/decorators";
+import "@home-assistant/webawesome/dist/components/drawer/drawer";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 
 declare global {
   interface HASSDomEvents {
+    "hass-drawer-closed": undefined;
     "hass-layout-transition": { active: boolean; reason?: string };
   }
   interface HTMLElementEventMap {
+    "hass-drawer-closed": HASSDomEvent<HASSDomEvents["hass-drawer-closed"]>;
     "hass-layout-transition": HASSDomEvent<
       HASSDomEvents["hass-layout-transition"]
     >;
   }
 }
 
-const blockingElements = (document as any).$blockingElements;
-
 @customElement("ha-drawer")
-export class HaDrawer extends DrawerBase {
-  @property() public direction: "ltr" | "rtl" = "ltr";
+export class HaDrawer extends LitElement {
+  private static readonly _SWIPE_AXIS_TOLERANCE = 32;
 
-  private _mc?: HammerManager;
+  @property({ reflect: true }) public direction: "ltr" | "rtl" = "ltr";
 
-  private _rtlStyle?: HTMLElement;
+  @property({ reflect: true }) public type: "" | "dismissible" | "modal" = "";
+
+  @property({ type: Boolean, reflect: true }) public open = false;
+
+  @query("wa-drawer") private _modalDrawer?: HTMLElement;
+
+  @query(".sidebar-shell") private _sidebarShell?: HTMLElement;
 
   private _sidebarTransitionActive = false;
 
+  private _transitionTarget?: HTMLElement;
+
+  private _gestureRecognizer = new SwipeGestureRecognizer({
+    velocitySwipeThreshold: 0.35,
+  });
+
+  private _touchStartY = 0;
+
+  private _touchDeltaY = 0;
+
+  private get _modal() {
+    return this.type === "modal";
+  }
+
+  protected render(): TemplateResult {
+    return this._modal
+      ? html`
+          <slot name="appContent"></slot>
+          <wa-drawer
+            placement="start"
+            .open=${this.open}
+            light-dismiss
+            without-header
+            @touchstart=${this._handleTouchStart}
+            @wa-after-hide=${this._handleAfterHide}
+          >
+            <slot></slot>
+          </wa-drawer>
+        `
+      : html`
+          <div class="layout">
+            <div class="sidebar-shell">
+              <slot></slot>
+            </div>
+            <div class="app-content">
+              <slot name="appContent"></slot>
+            </div>
+          </div>
+        `;
+  }
+
+  protected updated(_: PropertyValues<this>) {
+    this._syncTransitionListeners();
+
+    if (!this.open) {
+      this._resetSwipeTracking();
+    }
+  }
+
+  protected firstUpdated() {
+    this._syncTransitionListeners();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._removeTransitionListeners();
+    this._unregisterSwipeHandlers();
+  }
+
+  private _handleAfterHide(ev: Event) {
+    ev.stopPropagation();
+    this.open = false;
+    fireEvent(this, "hass-drawer-closed");
+  }
+
+  private _closeModalDrawer() {
+    this.open = false;
+  }
+
   private _handleDrawerTransitionStart = (ev: TransitionEvent) => {
-    if (ev.propertyName !== "width" || this._sidebarTransitionActive) {
+    if (
+      ev.propertyName !==
+        (this.type === "dismissible" ? "transform" : "width") ||
+      this._sidebarTransitionActive
+    ) {
       return;
     }
     this._sidebarTransitionActive = true;
@@ -41,7 +120,11 @@ export class HaDrawer extends DrawerBase {
   };
 
   private _handleDrawerTransitionEnd = (ev: TransitionEvent) => {
-    if (ev.propertyName !== "width" || !this._sidebarTransitionActive) {
+    if (
+      ev.propertyName !==
+        (this.type === "dismissible" ? "transform" : "width") ||
+      !this._sidebarTransitionActive
+    ) {
       return;
     }
     this._sidebarTransitionActive = false;
@@ -51,150 +134,207 @@ export class HaDrawer extends DrawerBase {
     });
   };
 
-  protected createAdapter() {
-    return {
-      ...super.createAdapter(),
-      trapFocus: () => {
-        blockingElements.push(this);
-        this.appContent.inert = true;
-        document.body.style.overflow = "hidden";
-      },
-      releaseFocus: () => {
-        blockingElements.remove(this);
-        this.appContent.inert = false;
-        document.body.style.overflow = "";
-      },
-    };
+  private _handleTouchStart = (ev: TouchEvent) => {
+    if (!this._modal || !this.open) {
+      return;
+    }
+
+    const drawer = this._modalDrawer;
+    const dialog = drawer?.shadowRoot?.querySelector(
+      "dialog"
+    ) as HTMLDialogElement | null;
+
+    if (!dialog) {
+      return;
+    }
+
+    const path = ev.composedPath();
+
+    if (!path.includes(dialog)) {
+      return;
+    }
+
+    ev.stopPropagation();
+    this._startSwipeTracking(ev.touches[0].clientX, ev.touches[0].clientY);
+  };
+
+  private _startSwipeTracking(clientX: number, clientY: number) {
+    document.addEventListener("touchmove", this._handleTouchMove, {
+      passive: true,
+    });
+    document.addEventListener("touchend", this._handleTouchEnd);
+    document.addEventListener("touchcancel", this._handleTouchEnd);
+
+    this._touchStartY = clientY;
+    this._touchDeltaY = 0;
+    this._gestureRecognizer.start(clientX);
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
-    if (changedProps.has("direction")) {
-      this.mdcRoot.dir = this.direction;
-      if (this.direction === "rtl") {
-        this._rtlStyle = document.createElement("style");
-        this._rtlStyle.innerHTML = `
-          .mdc-drawer--animate {
-            transform: translateX(100%);
-          }
-          .mdc-drawer--opening {
-            transform: translateX(0);
-          }
-          .mdc-drawer--closing {
-            transform: translateX(100%);
-          }
-        `;
+  private _handleTouchMove = (ev: TouchEvent) => {
+    const currentX = ev.touches[0].clientX;
+    const currentY = ev.touches[0].clientY;
+    this._touchDeltaY = Math.abs(currentY - this._touchStartY);
+    this._gestureRecognizer.move(currentX);
+  };
 
-        this.shadowRoot!.appendChild(this._rtlStyle);
-      } else if (this._rtlStyle) {
-        this.shadowRoot!.removeChild(this._rtlStyle);
+  private _handleTouchEnd = () => {
+    this._unregisterSwipeHandlers();
+
+    const result = this._gestureRecognizer.end();
+    const isHorizontalGesture =
+      Math.abs(result.delta) >
+      this._touchDeltaY + HaDrawer._SWIPE_AXIS_TOLERANCE;
+
+    if (!isHorizontalGesture) {
+      this._resetSwipeTracking();
+      return;
+    }
+
+    const drawerDialog = this._modalDrawer?.shadowRoot?.querySelector(
+      '[part="dialog"]'
+    ) as HTMLElement | null;
+    const drawerWidth = drawerDialog?.offsetWidth || 0;
+
+    if (result.isSwipe) {
+      const closeByVelocity =
+        this.direction === "rtl"
+          ? result.isDownwardSwipe
+          : !result.isDownwardSwipe;
+
+      if (closeByVelocity) {
+        this._closeModalDrawer();
       }
+      return;
     }
 
-    if (changedProps.has("open") && this.open && this.type === "modal") {
-      this._setupSwipe();
-    } else if (this._mc) {
-      this._mc.destroy();
-      this._mc = undefined;
+    const closeByDistance =
+      drawerWidth > 0 &&
+      (this.direction === "rtl"
+        ? result.delta > 0 && Math.abs(result.delta) > drawerWidth * 0.5
+        : result.delta < 0 && Math.abs(result.delta) > drawerWidth * 0.5);
+
+    if (closeByDistance) {
+      this._closeModalDrawer();
     }
+  };
+
+  private _unregisterSwipeHandlers() {
+    document.removeEventListener("touchmove", this._handleTouchMove);
+    document.removeEventListener("touchend", this._handleTouchEnd);
+    document.removeEventListener("touchcancel", this._handleTouchEnd);
   }
 
-  protected firstUpdated() {
-    super.firstUpdated();
-    this.mdcRoot?.addEventListener(
+  private _resetSwipeTracking() {
+    this._unregisterSwipeHandlers();
+    this._gestureRecognizer.reset();
+    this._touchStartY = 0;
+    this._touchDeltaY = 0;
+  }
+
+  private _syncTransitionListeners() {
+    if (this._transitionTarget === this._sidebarShell) {
+      return;
+    }
+
+    this._removeTransitionListeners();
+
+    if (!this._sidebarShell) {
+      return;
+    }
+
+    this._transitionTarget = this._sidebarShell;
+    this._transitionTarget.addEventListener(
       "transitionstart",
       this._handleDrawerTransitionStart
     );
-    this.mdcRoot?.addEventListener(
+    this._transitionTarget.addEventListener(
       "transitionend",
       this._handleDrawerTransitionEnd
     );
-    this.mdcRoot?.addEventListener(
+    this._transitionTarget.addEventListener(
       "transitioncancel",
       this._handleDrawerTransitionEnd
     );
   }
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this.mdcRoot?.removeEventListener(
+  private _removeTransitionListeners() {
+    if (!this._transitionTarget) {
+      return;
+    }
+
+    this._transitionTarget.removeEventListener(
       "transitionstart",
       this._handleDrawerTransitionStart
     );
-    this.mdcRoot?.removeEventListener(
+    this._transitionTarget.removeEventListener(
       "transitionend",
       this._handleDrawerTransitionEnd
     );
-    this.mdcRoot?.removeEventListener(
+    this._transitionTarget.removeEventListener(
       "transitioncancel",
       this._handleDrawerTransitionEnd
     );
+    this._transitionTarget = undefined;
   }
 
-  private async _setupSwipe() {
-    const hammer = await import("../resources/hammer");
-    this._mc = new hammer.Manager(document, {
-      touchAction: "pan-y",
-    });
-    this._mc.add(
-      new hammer.Swipe({
-        direction:
-          this.direction === "rtl"
-            ? hammer.DIRECTION_RIGHT
-            : hammer.DIRECTION_LEFT,
-      })
-    );
-    this._mc.on("swipeleft swiperight", () => {
-      fireEvent(this, "hass-toggle-menu", { open: false });
-    });
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+    }
 
-  static override styles = [
-    styles,
-    css`
-      .mdc-drawer {
-        position: fixed;
-        top: 0;
-        border-color: var(--divider-color, rgba(0, 0, 0, 0.12));
-        inset-inline-start: 0 !important;
-        inset-inline-end: initial !important;
-        transition-property: transform, width;
-        transition-duration:
-          var(--mdc-drawer-transition-duration, 0.2s),
-          var(--ha-animation-duration-normal);
-        transition-timing-function:
-          var(
-            --mdc-drawer-transition-timing-function,
-            cubic-bezier(0.4, 0, 0.2, 1)
-          ),
-          ease;
-      }
-      .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
-        z-index: 200;
-      }
-      .mdc-drawer-app-content {
-        overflow: unset;
-        flex: none;
-        padding-left: var(--mdc-drawer-width);
-        padding-inline-start: var(--mdc-drawer-width);
-        padding-inline-end: initial;
-        direction: var(--direction);
-        width: 100%;
-        box-sizing: border-box;
-        transition:
-          padding-left var(--ha-animation-duration-normal) ease,
-          padding-inline-start var(--ha-animation-duration-normal) ease;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        /* Use 1ms instead of "none" so the transitionend event still fires.
-           The MDC drawer foundation relies on it to complete the close cycle. */
-        .mdc-drawer,
-        .mdc-drawer-app-content {
-          transition: 1ms;
-        }
-      }
-    `,
-  ];
+    .layout {
+      height: 100%;
+    }
+
+    .sidebar-shell {
+      position: fixed;
+      width: var(--ha-sidebar-width);
+      height: 100%;
+      border-inline-end: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
+      box-sizing: border-box;
+      transition: width var(--ha-animation-duration-normal) ease;
+    }
+
+    .app-content {
+      overflow: unset;
+      min-width: 0;
+      padding-inline-start: var(--ha-sidebar-width);
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      transition:
+        padding-inline-start var(--ha-animation-duration-normal) ease,
+        width var(--ha-animation-duration-normal) ease;
+    }
+
+    :host([type="dismissible"]) .sidebar-shell {
+      transition: transform var(--ha-animation-duration-normal) ease;
+    }
+
+    :host([type="dismissible"]:not([open])) .sidebar-shell {
+      transform: translateX(-100%);
+    }
+
+    :host([type="dismissible"][direction="rtl"]:not([open])) .sidebar-shell {
+      transform: translateX(100%);
+    }
+
+    :host([type="dismissible"]:not([open])) .app-content {
+      padding-inline-start: 0;
+    }
+
+    wa-drawer {
+      --size: var(--ha-sidebar-width, 256px);
+      --show-duration: var(--ha-animation-duration-normal);
+      --hide-duration: var(--ha-animation-duration-normal);
+    }
+
+    wa-drawer::part(body) {
+      margin: 0;
+      padding: 0;
+    }
+  `;
 }
 
 declare global {

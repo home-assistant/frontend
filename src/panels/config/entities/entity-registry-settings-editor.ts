@@ -29,7 +29,6 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-state-icon";
@@ -420,7 +419,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
               .placeholder=${this.entry.original_icon ||
               stateObj?.attributes.icon ||
-              (stateObj && until(entityIcon(this.hass, stateObj))) ||
+              (stateObj &&
+                until(
+                  entityIcon(
+                    this.hass.entities,
+                    this.hass.config,
+                    this.hass.connection,
+                    stateObj
+                  )
+                )) ||
               until(entryIcon(this.hass, this.entry))}
               .disabled=${this.disabled}
             >
@@ -428,7 +435,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 ? html`
                     <ha-state-icon
                       slot="start"
-                      .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
                   `

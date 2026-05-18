@@ -11,7 +11,8 @@ import "../ha-icon-button";
 @customElement("ha-automation-row-event-chip")
 export class HaAutomationRowEventChip extends LitElement {
   @property({ reflect: true })
-  public variant: "info" | "warning" | "success" | "danger" = "info";
+  public variant: "info" | "warning" | "success" | "danger" | "neutral" =
+    "info";
 
   @property({ type: Boolean })
   public interactive = false;
@@ -53,7 +54,7 @@ export class HaAutomationRowEventChip extends LitElement {
       return keyed(
         this._highlight,
         html`
-          <wa-animation fill="both" .iterations=${1} name="tada" play
+          <wa-animation fill="both" .iterations=${1} name="headShake" play
             >${base}</wa-animation
           >
         `
@@ -91,6 +92,12 @@ export class HaAutomationRowEventChip extends LitElement {
       --text-color: var(--ha-color-on-warning-normal);
     }
 
+    :host([variant="neutral"]) {
+      --background-color: var(--ha-color-fill-neutral-normal-resting);
+      --background-color-hover: var(--ha-color-fill-neutral-normal-hover);
+      --text-color: var(--ha-color-on-neutral-normal);
+    }
+
     :host([variant="success"]) {
       --background-color: var(--ha-color-fill-success-normal-resting);
       --background-color-hover: var(--ha-color-fill-success-normal-hover);
@@ -114,6 +121,7 @@ export class HaAutomationRowEventChip extends LitElement {
       align-items: center;
       --mdc-icon-size: 16px;
       line-height: 1;
+      box-shadow: var(--ha-box-shadow-s);
     }
 
     button {

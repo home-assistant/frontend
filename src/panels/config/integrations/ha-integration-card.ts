@@ -165,7 +165,12 @@ export class HaIntegrationCard extends LitElement {
                 ></ha-svg-icon>
                 <ha-tooltip
                   for="icon-custom"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     this.manifest.overwrites_built_in
@@ -180,7 +185,12 @@ export class HaIntegrationCard extends LitElement {
                 <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
                 <ha-tooltip
                   for="icon-cloud"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -198,7 +208,12 @@ export class HaIntegrationCard extends LitElement {
                 ></ha-svg-icon>
                 <ha-tooltip
                   for="icon-yaml"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"

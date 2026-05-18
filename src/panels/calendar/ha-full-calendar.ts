@@ -15,7 +15,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
@@ -103,6 +103,8 @@ export class HAFullCalendar extends LitElement {
 
   @state() private _activeView = this.initialView;
 
+  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => this.calendar?.updateSize(),
@@ -113,7 +115,7 @@ export class HAFullCalendar extends LitElement {
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+    this._fullCalendarStyle?.remove();
   }
 
   connectedCallback(): void {

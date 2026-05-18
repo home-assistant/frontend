@@ -15,6 +15,7 @@ import {
   devicesContext,
   entitiesContext,
   floorsContext,
+  formattersContext,
   fullEntitiesContext,
   internationalizationContext,
   labelsContext,
@@ -78,6 +79,12 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         config: new ContextProvider(this, {
           context: configContext,
           initialValue: updateHassGroups.config(
+            this.hass || (this._pendingHass as HomeAssistant)
+          ),
+        }),
+        formatters: new ContextProvider(this, {
+          context: formattersContext,
+          initialValue: updateHassGroups.formatters(
             this.hass || (this._pendingHass as HomeAssistant)
           ),
         }),

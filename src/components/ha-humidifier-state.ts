@@ -32,7 +32,7 @@ class HaHumidifierState extends LitElement {
 
       ${currentStatus && !isUnavailableState(this.stateObj.state)
         ? html`<div class="current">
-            ${this.hass.localize("ui.card.climate.currently")}:
+            ${this.hass.localize("ui.card.humidifier.currently")}:
             <div class="unit">${currentStatus}</div>
           </div>`
         : ""}`;

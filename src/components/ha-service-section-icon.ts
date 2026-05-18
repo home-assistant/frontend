@@ -29,14 +29,17 @@ export class HaServiceSectionIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = serviceSectionIcon(this.hass, this.service, this.section).then(
-      (icn) => {
-        if (icn) {
-          return html`<ha-icon .icon=${icn}></ha-icon>`;
-        }
-        return this._renderFallback();
+    const icon = serviceSectionIcon(
+      this.hass.connection,
+      this.hass.config,
+      this.service,
+      this.section
+    ).then((icn) => {
+      if (icn) {
+        return html`<ha-icon .icon=${icn}></ha-icon>`;
       }
-    );
+      return this._renderFallback();
+    });
 
     return html`${until(icon)}`;
   }

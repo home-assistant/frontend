@@ -4,9 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import type { PowerConfig } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -145,54 +145,32 @@ export class HaEnergyPowerConfig extends LitElement {
         )}
       </p>
 
-      <ha-formfield
-        .label=${this.hass.localize(
-          `${this.localizeBaseKey}.type_none` as LocalizeKeys
-        )}
+      <ha-radio-group
+        .value=${this.powerType}
+        name="powerType"
+        @change=${this._handlePowerTypeChanged}
       >
-        <ha-radio
-          value="none"
-          name="powerType"
-          .checked=${this.powerType === "none"}
-          @change=${this._handlePowerTypeChanged}
-        ></ha-radio>
-      </ha-formfield>
-      <ha-formfield
-        .label=${this.hass.localize(
-          `${this.localizeBaseKey}.type_standard` as LocalizeKeys
-        )}
-      >
-        <ha-radio
-          value="standard"
-          name="powerType"
-          .checked=${this.powerType === "standard"}
-          @change=${this._handlePowerTypeChanged}
-        ></ha-radio>
-      </ha-formfield>
-      <ha-formfield
-        .label=${this.hass.localize(
-          `${this.localizeBaseKey}.type_inverted` as LocalizeKeys
-        )}
-      >
-        <ha-radio
-          value="inverted"
-          name="powerType"
-          .checked=${this.powerType === "inverted"}
-          @change=${this._handlePowerTypeChanged}
-        ></ha-radio>
-      </ha-formfield>
-      <ha-formfield
-        .label=${this.hass.localize(
-          `${this.localizeBaseKey}.type_two_sensors` as LocalizeKeys
-        )}
-      >
-        <ha-radio
-          value="two_sensors"
-          name="powerType"
-          .checked=${this.powerType === "two_sensors"}
-          @change=${this._handlePowerTypeChanged}
-        ></ha-radio>
-      </ha-formfield>
+        <ha-radio-option value="none">
+          ${this.hass.localize(
+            `${this.localizeBaseKey}.type_none` as LocalizeKeys
+          )}
+        </ha-radio-option>
+        <ha-radio-option value="standard">
+          ${this.hass.localize(
+            `${this.localizeBaseKey}.type_standard` as LocalizeKeys
+          )}
+        </ha-radio-option>
+        <ha-radio-option value="inverted">
+          ${this.hass.localize(
+            `${this.localizeBaseKey}.type_inverted` as LocalizeKeys
+          )}
+        </ha-radio-option>
+        <ha-radio-option value="two_sensors">
+          ${this.hass.localize(
+            `${this.localizeBaseKey}.type_two_sensors` as LocalizeKeys
+          )}
+        </ha-radio-option>
+      </ha-radio-group>
 
       ${this.powerType === "standard"
         ? html`
@@ -263,8 +241,7 @@ export class HaEnergyPowerConfig extends LitElement {
   }
 
   private _handlePowerTypeChanged(ev: Event) {
-    const input = ev.currentTarget as HaRadio;
-    const newPowerType = input.value as PowerType;
+    const newPowerType = (ev.currentTarget as HaRadioGroup).value as PowerType;
     // Clear power config when switching types
     fireEvent(this, "power-config-changed", {
       powerType: newPowerType,
@@ -334,8 +311,8 @@ export class HaEnergyPowerConfig extends LitElement {
     ha-statistic-picker:last-of-type {
       margin-bottom: 0;
     }
-    ha-formfield {
-      display: block;
+    ha-radio-group {
+      margin-bottom: var(--ha-space-4);
     }
     .power-section-label {
       margin-top: var(--ha-space-4);

@@ -70,7 +70,6 @@ export class TTSTryDialog extends LitElement {
     }
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.tts-try.header")}
         @closed=${this._dialogClosed}

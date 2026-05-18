@@ -144,7 +144,6 @@ export class DialogDeviceAutomation extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         @closed=${this._dialogClosed}

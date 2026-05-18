@@ -73,7 +73,6 @@ class DialogImportBlueprint extends LitElement {
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
         @closed=${this._dialogClosed}
@@ -150,7 +149,6 @@ class DialogImportBlueprint extends LitElement {
                   <ha-code-editor
                     mode="yaml"
                     .value=${this._result.raw_data}
-                    .hass=${this.hass}
                     read-only
                     dir="ltr"
                   ></ha-code-editor>

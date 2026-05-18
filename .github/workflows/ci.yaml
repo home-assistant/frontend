@@ -58,6 +58,8 @@ jobs:
         run: yarn run lint:lit --quiet
       - name: Run prettier
         run: yarn run lint:prettier
+      - name: Check dependency licenses
+        run: yarn run lint:licenses
   test:
     name: Run tests
     runs-on: ubuntu-latest

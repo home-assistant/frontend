@@ -300,7 +300,10 @@ export class HaAutomationAddSearch extends LitElement {
     let showEntityId = false;
 
     if (type === "area" || type === "floor") {
-      rtl = computeRTL(this.hass);
+      rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
     }

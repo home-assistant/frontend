@@ -1,11 +1,11 @@
 import type { HomeAssistant } from "../types";
 
-interface ValidConfig {
+export interface ValidConfig {
   valid: true;
   error: null;
 }
 
-interface InvalidConfig {
+export interface InvalidConfig {
   valid: false;
   error: string;
 }

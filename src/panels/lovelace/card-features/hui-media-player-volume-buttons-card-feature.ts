@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +12,10 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import {
+  renderMuteButton,
+  toggleMediaPlayerMute,
+} from "./common/media-player-mute-button";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerVolumeButtonsCardFeatureConfig,
@@ -84,14 +88,17 @@ class HuiMediaPlayerVolumeButtonsCardFeature
       return nothing;
     }
 
+    const stateObj = this._stateObj;
+    const disabled = isUnavailableState(stateObj.state);
+
     const position =
-      this._stateObj.attributes.volume_level != null
-        ? Math.round(this._stateObj.attributes.volume_level * 100)
+      stateObj.attributes.volume_level != null
+        ? Math.round(stateObj.attributes.volume_level * 100)
         : undefined;
 
     return html`
       <ha-control-number-buttons
-        .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
+        .disabled=${disabled}
         .locale=${this.hass.locale}
         min="0"
         max="100"
@@ -100,6 +107,13 @@ class HuiMediaPlayerVolumeButtonsCardFeature
         unit="%"
         @value-changed=${this._valueChanged}
       ></ha-control-number-buttons>
+      ${renderMuteButton(
+        this.hass,
+        stateObj,
+        this._config.show_mute_button,
+        disabled,
+        this._toggleMute
+      )}
     `;
   }
 
@@ -112,8 +126,29 @@ class HuiMediaPlayerVolumeButtonsCardFeature
     });
   }
 
+  private _toggleMute = (ev: Event) => {
+    toggleMediaPlayerMute(ev, this.hass!, this._stateObj!, this);
+  };
+
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: flex;
+          flex-direction: row;
+          gap: var(--feature-button-spacing);
+        }
+        ha-control-number-buttons {
+          flex: 1;
+          min-width: 0;
+        }
+        .mute {
+          width: var(--feature-height);
+          height: var(--feature-height);
+        }
+      `,
+    ];
   }
 }
 

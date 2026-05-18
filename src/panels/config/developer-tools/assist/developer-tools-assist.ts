@@ -203,7 +203,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                   ? html`
                       <ha-code-editor
                         mode="yaml"
-                        .hass=${this.hass}
                         .value=${dump(result).trimRight()}
                         read-only
                         dir="ltr"

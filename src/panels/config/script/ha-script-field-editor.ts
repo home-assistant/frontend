@@ -69,7 +69,6 @@ export default class HaScriptFieldEditor extends LitElement {
                 </ha-alert>`
               : nothing}
             <ha-yaml-editor
-              .hass=${this.hass}
               .defaultValue=${yamlValue}
               @value-changed=${this._onYamlChange}
             ></ha-yaml-editor>`

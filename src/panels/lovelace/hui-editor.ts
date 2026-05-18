@@ -86,7 +86,6 @@ class LovelaceFullConfigEditor extends LitElement {
         <div class="content">
           <ha-yaml-editor
             autofocus
-            .hass=${this.hass}
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
             disable-fullscreen

@@ -335,10 +335,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${helper.entity}
-              ></ha-state-icon>`
+            ? html`<ha-state-icon .stateObj=${helper.entity}></ha-state-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"

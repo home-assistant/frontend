@@ -3,10 +3,13 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
 import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
@@ -40,14 +43,33 @@ interface FlowUpdateEvent {
   stepPromise?: Promise<DataEntryFlowStep>;
 }
 
+interface FlowStepFooterStateChangedEvent {
+  loading?: boolean;
+  hasPendingUpdates?: boolean;
+}
+
+interface FormStepElement extends HTMLElement {
+  submit(): Promise<void>;
+}
+
+interface AbortStepElement extends HTMLElement {
+  close(): void;
+}
+
+interface CreateEntryStepElement extends HTMLElement {
+  finish(): Promise<void>;
+}
+
 declare global {
   // for fire event
   interface HASSDomEvents {
     "flow-update": FlowUpdateEvent;
+    "flow-step-footer-state-changed": FlowStepFooterStateChangedEvent;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "flow-update": HASSDomEvent<FlowUpdateEvent>;
+    "flow-step-footer-state-changed": HASSDomEvent<FlowStepFooterStateChangedEvent>;
   }
 }
 
@@ -72,6 +94,16 @@ class DataEntryFlowDialog extends LitElement {
     | null;
 
   @state() private _handler?: string;
+
+  @state() private _formStepLoading = false;
+
+  @state() private _createEntryHasPendingUpdates = false;
+
+  private _formStepRef = createRef<FormStepElement>();
+
+  private _abortStepRef = createRef<AbortStepElement>();
+
+  private _createEntryStepRef = createRef<CreateEntryStepElement>();
 
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
@@ -301,7 +333,6 @@ class DataEntryFlowDialog extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         @after-show=${this._focusFormStep}
@@ -366,11 +397,14 @@ class DataEntryFlowDialog extends LitElement {
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          ${ref(this._formStepRef)}
                           autofocus
                           narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
+                          @flow-step-footer-state-changed=${this
+                            ._handleFooterStateChanged}
                         ></step-flow-form>
                       `
                     : this._step.type === "external"
@@ -384,6 +418,7 @@ class DataEntryFlowDialog extends LitElement {
                       : this._step.type === "abort"
                         ? html`
                             <step-flow-abort
+                              ${ref(this._abortStepRef)}
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
@@ -411,11 +446,14 @@ class DataEntryFlowDialog extends LitElement {
                               `
                             : html`
                                 <step-flow-create-entry
+                                  ${ref(this._createEntryStepRef)}
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
                                   .navigateToResult=${this._params
                                     .navigateToResult ?? false}
+                                  @flow-step-footer-state-changed=${this
+                                    ._handleFooterStateChanged}
                                   .devices=${this._devices(
                                     this._params.flowConfig.showDevices,
                                     Object.values(this.hass.devices),
@@ -426,8 +464,93 @@ class DataEntryFlowDialog extends LitElement {
                               `}
                 `}
         </div>
+        ${this._renderFooter()}
       </ha-dialog>
     `;
+  }
+
+  private _renderFooter() {
+    if (!this._step || this._loading) {
+      return nothing;
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return html`
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              slot="primaryAction"
+              .loading=${this._formStepLoading}
+              @click=${this._submitFormStep}
+            >
+              ${this._params!.flowConfig.renderShowFormStepSubmitButton(
+                this.hass,
+                this._step
+              )}
+            </ha-button>
+          </ha-dialog-footer>
+        `;
+      case "abort":
+        return this._step.reason === "missing_credentials"
+          ? nothing
+          : html`
+              <ha-dialog-footer slot="footer">
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this._closeAbortStep}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.close"
+                  )}
+                </ha-button>
+              </ha-dialog-footer>
+            `;
+      case "external":
+        return html`
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              slot="primaryAction"
+              href=${this._step.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.external_step.open_site"
+              )}
+            </ha-button>
+          </ha-dialog-footer>
+        `;
+      case "create_entry": {
+        const devices = this._devices(
+          this._params!.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          this._step.result?.entry_id,
+          this._params!.carryOverDevices
+        );
+
+        return html`
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              slot="primaryAction"
+              @click=${this._finishCreateEntryStep}
+            >
+              ${this.hass.localize(
+                `ui.panel.config.integrations.config_flow.${
+                  !devices.length ||
+                  this._createEntryHasPendingUpdates ||
+                  devices.some((device) => device.area_id)
+                    ? "finish"
+                    : "finish_skip"
+                }`
+              )}
+            </ha-button>
+          </ha-dialog-footer>
+        `;
+      }
+      default:
+        return nothing;
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -479,6 +602,8 @@ class DataEntryFlowDialog extends LitElement {
     }
 
     this._step = undefined;
+    this._formStepLoading = false;
+    this._createEntryHasPendingUpdates = false;
     await this.updateComplete;
     this._step = _step;
     if (
@@ -562,20 +687,36 @@ class DataEntryFlowDialog extends LitElement {
     }
 
     await this.updateComplete;
-    (
-      this.renderRoot.querySelector(
-        "step-flow-form[autofocus]"
-      ) as HTMLElement | null
-    )?.focus();
+    this._formStepRef.value?.focus();
+  };
+
+  private _handleFooterStateChanged = (
+    ev: HASSDomEvent<FlowStepFooterStateChangedEvent>
+  ) => {
+    if (ev.detail.loading !== undefined) {
+      this._formStepLoading = ev.detail.loading;
+    }
+    if (ev.detail.hasPendingUpdates !== undefined) {
+      this._createEntryHasPendingUpdates = ev.detail.hasPendingUpdates;
+    }
+  };
+
+  private _submitFormStep = () => {
+    this._formStepRef.value?.submit();
+  };
+
+  private _closeAbortStep = () => {
+    this._abortStepRef.value?.close();
+  };
+
+  private _finishCreateEntryStep = () => {
+    this._createEntryStepRef.value?.finish();
   };
 
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --dialog-content-padding: 0;
-        }
         .dialog-title {
           overflow: hidden;
           text-overflow: ellipsis;

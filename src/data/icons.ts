@@ -323,7 +323,8 @@ export const getComponentIcons = async (
 export const getCategoryIcons = async <
   T extends Exclude<IconCategory, "entity" | "entity_component">,
 >(
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   category: T,
   domain?: string,
   force = false
@@ -334,12 +335,10 @@ export const getCategoryIcons = async <
         Record<string, CategoryType[T]>
       >;
     }
-    resources[category].all = getHassIcons(hass.connection, category).then(
-      (res) => {
-        resources[category].domains = res.resources as any;
-        return res?.resources as Record<string, CategoryType[T]>;
-      }
-    ) as any;
+    resources[category].all = getHassIcons(connection, category).then((res) => {
+      resources[category].domains = res.resources as any;
+      return res?.resources as Record<string, CategoryType[T]>;
+    }) as any;
     return resources[category].all as Promise<Record<string, CategoryType[T]>>;
   }
   if (!force && domain in resources[category].domains) {
@@ -351,10 +350,10 @@ export const getCategoryIcons = async <
       return resources[category].domains[domain] as Promise<CategoryType[T]>;
     }
   }
-  if (!isComponentLoaded(hass.config, domain)) {
+  if (!isComponentLoaded(hassConfig, domain)) {
     return undefined;
   }
-  const result = getHassIcons(hass.connection, category, domain);
+  const result = getHassIcons(connection, category, domain);
   resources[category].domains[domain] = result.then(
     (res) => res?.resources[domain]
   ) as any;
@@ -362,25 +361,28 @@ export const getCategoryIcons = async <
 };
 
 export const getServiceIcons = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   domain?: string,
   force = false
 ): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> =>
-  getCategoryIcons(hass, "services", domain, force);
+  getCategoryIcons(connection, hassConfig, "services", domain, force);
 
 export const getTriggerIcons = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   domain?: string,
   force = false
 ): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> =>
-  getCategoryIcons(hass, "triggers", domain, force);
+  getCategoryIcons(connection, hassConfig, "triggers", domain, force);
 
 export const getConditionIcons = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   domain?: string,
   force = false
 ): Promise<ConditionIcons | Record<string, ConditionIcons> | undefined> =>
-  getCategoryIcons(hass, "conditions", domain, force);
+  getCategoryIcons(connection, hassConfig, "conditions", domain, force);
 
 // Cache for sorted range keys
 const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
@@ -454,11 +456,13 @@ const getIconFromTranslations = (
 };
 
 export const entityIcon = async (
-  hass: HomeAssistant,
+  entities: HomeAssistant["entities"],
+  hassConfig: HomeAssistant["config"],
+  hassConnection: Connection,
   stateObj: HassEntity,
   state?: string
 ) => {
-  const entry = hass.entities?.[stateObj.entity_id] as
+  const entry = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
   if (entry?.icon) {
@@ -466,7 +470,14 @@ export const entityIcon = async (
   }
   const domain = computeStateDomain(stateObj);
 
-  return getEntityIcon(hass, domain, stateObj, state, entry);
+  return getEntityIcon(
+    hassConfig,
+    hassConnection,
+    domain,
+    stateObj,
+    state,
+    entry
+  );
 };
 
 export const entryIcon = async (
@@ -478,11 +489,19 @@ export const entryIcon = async (
   }
   const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
   const domain = computeDomain(entry.entity_id);
-  return getEntityIcon(hass, domain, stateObj, undefined, entry);
+  return getEntityIcon(
+    hass.config,
+    hass.connection,
+    domain,
+    stateObj,
+    undefined,
+    entry
+  );
 };
 
 const getEntityIcon = async (
-  hass: HomeAssistant,
+  hassConfig: HomeAssistant["config"],
+  hassConnection: Connection,
   domain: string,
   stateObj?: HassEntity,
   stateValue?: string,
@@ -496,8 +515,8 @@ const getEntityIcon = async (
   let icon: string | undefined;
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(
-      hass.config,
-      hass.connection,
+      hassConfig,
+      hassConnection,
       platform
     );
     if (platformIcons) {
@@ -513,8 +532,8 @@ const getEntityIcon = async (
 
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(
-      hass.connection,
-      hass.config,
+      hassConnection,
+      hassConfig,
       domain
     );
     if (entityComponentIcons) {
@@ -578,7 +597,8 @@ export const attributeIcon = async (
 };
 
 export const triggerIcon = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   trigger: string
 ): Promise<string | undefined> => {
   let icon: string | undefined;
@@ -586,62 +606,69 @@ export const triggerIcon = async (
   const domain = getTriggerDomain(trigger);
   const triggerName = getTriggerObjectId(trigger);
 
-  const triggerIcons = await getTriggerIcons(hass, domain);
+  const triggerIcons = await getTriggerIcons(connection, hassConfig, domain);
   if (triggerIcons) {
     const trgrIcon = triggerIcons[triggerName] as TriggerIcons[string];
     icon = trgrIcon?.trigger;
   }
   if (!icon) {
-    icon = await domainIcon(hass.connection, hass.config, domain);
+    icon = await domainIcon(connection, hassConfig, domain);
   }
   return icon;
 };
 
 export const conditionIcon = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   condition: string
 ): Promise<string | undefined> => {
   let icon: string | undefined;
 
   const domain = getConditionDomain(condition);
-  const conditionIcons = await getConditionIcons(hass, domain);
+  const conditionIcons = await getConditionIcons(
+    connection,
+    hassConfig,
+    domain
+  );
   if (conditionIcons) {
     const conditionName = getConditionObjectId(condition);
     const condIcon = conditionIcons[conditionName] as ConditionIcons[string];
     icon = condIcon?.condition;
   }
   if (!icon) {
-    icon = await domainIcon(hass.connection, hass.config, domain);
+    icon = await domainIcon(connection, hassConfig, domain);
   }
   return icon;
 };
 
 export const serviceIcon = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   service: string
 ): Promise<string | undefined> => {
   let icon: string | undefined;
   const domain = computeDomain(service);
   const serviceName = computeObjectId(service);
-  const serviceIcons = await getServiceIcons(hass, domain);
+  const serviceIcons = await getServiceIcons(connection, hassConfig, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
     icon = srvceIcon?.service;
   }
   if (!icon) {
-    icon = await domainIcon(hass.connection, hass.config, domain);
+    icon = await domainIcon(connection, hassConfig, domain);
   }
   return icon;
 };
 
 export const serviceSectionIcon = async (
-  hass: HomeAssistant,
+  connection: Connection,
+  hassConfig: HomeAssistant["config"],
   service: string,
   section: string
 ): Promise<string | undefined> => {
   const domain = computeDomain(service);
   const serviceName = computeObjectId(service);
-  const serviceIcons = await getServiceIcons(hass, domain);
+  const serviceIcons = await getServiceIcons(connection, hassConfig, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
     return srvceIcon?.sections?.[section];

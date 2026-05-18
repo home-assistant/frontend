@@ -28,8 +28,6 @@ import "../ha-domain-icon";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon";
 import "../ha-icon-button";
-import "../ha-md-list";
-import "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-tooltip";
 
@@ -76,7 +74,6 @@ export class HaTargetPickerValueChip extends LitElement {
                 ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
                 : stateObject
                   ? html`<ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${stateObject}
                     ></ha-state-icon>`
                   : nothing}

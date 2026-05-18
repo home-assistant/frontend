@@ -56,7 +56,7 @@ export class HomeAssistantMain extends LitElement {
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
-        @MDCDrawer:closed=${this._drawerClosed}
+        @hass-drawer-closed=${this._drawerClosed}
       >
         <ha-sidebar
           .hass=${this.hass}
@@ -152,16 +152,16 @@ export class HomeAssistantMain extends LitElement {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      --mdc-drawer-width: calc(56px + var(--safe-area-inset-left, 0px));
-      --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+      --ha-sidebar-width: calc(56px + var(--safe-area-inset-left, 0px));
+      --mdc-top-app-bar-width: calc(100% - var(--ha-sidebar-width));
       --safe-area-content-inset-left: 0px;
       --safe-area-content-inset-right: var(--safe-area-inset-right);
     }
     :host([expanded]) {
-      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left, 0px));
+      --ha-sidebar-width: calc(256px + var(--safe-area-inset-left, 0px));
     }
     :host([modal]) {
-      --mdc-drawer-width: unset;
+      --ha-sidebar-width: unset;
       --mdc-top-app-bar-width: unset;
       --safe-area-content-inset-left: var(--safe-area-inset-left);
     }

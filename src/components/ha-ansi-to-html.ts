@@ -9,6 +9,7 @@ import {
   customElement,
   property,
   query,
+  queryAll,
   state as litState,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -30,6 +31,8 @@ export class HaAnsiToHtml extends LitElement {
     false;
 
   @query("pre") private _pre?: HTMLPreElement;
+
+  @queryAll("div") private _divs!: NodeListOf<HTMLDivElement>;
 
   @litState() private _filter = "";
 
@@ -320,7 +323,7 @@ export class HaAnsiToHtml extends LitElement {
    */
   filterLines(filter: string): boolean {
     this._filter = filter;
-    const lines = this.shadowRoot?.querySelectorAll("div") || [];
+    const lines = this._divs;
     let numberOfFoundLines = 0;
     if (!filter) {
       lines.forEach((line) => {

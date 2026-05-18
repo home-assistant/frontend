@@ -80,6 +80,9 @@ interface BackupRow extends DataTableRowData, BackupContent {
   agent_ids: string[];
 }
 
+const TYPE_FILTER = "ha-filter-states";
+const LOCATIONS_FILTER = "backup-locations";
+
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -336,13 +339,21 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       isHassio: boolean
     ): BackupRow[] => {
-      const typeFilter = filters["ha-filter-states"] as string[] | undefined;
+      const typeFilter = filters[TYPE_FILTER] as string[] | undefined;
+      const locationFilter = filters[LOCATIONS_FILTER] as string[] | undefined;
       let filteredBackups = backups;
       if (typeFilter?.length) {
         filteredBackups = filteredBackups.filter((backup) => {
           const type = computeBackupType(backup, isHassio);
           return typeFilter.includes(type);
         });
+      }
+      if (locationFilter?.length) {
+        filteredBackups = filteredBackups.filter((backup) =>
+          Object.keys(backup.agents).some((agentId) =>
+            locationFilter.includes(agentId)
+          )
+        );
       }
       return filteredBackups.map((backup) => {
         const type = computeBackupType(backup, isHassio);
@@ -358,7 +369,27 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   );
 
   private _maxAgents = memoizeOne((data: BackupRow[]): number =>
-    Math.max(...data.map((row) => row.agent_ids.length))
+    Math.max(1, ...data.map((row) => row.agent_ids.length))
+  );
+
+  private _locations = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      agents: BackupAgent[],
+      backups: BackupContent[]
+    ) => {
+      const agentIds = new Set(agents.map((agent) => agent.agent_id));
+      backups.forEach((backup) => {
+        Object.keys(backup.agents).forEach((agentId) => agentIds.add(agentId));
+      });
+
+      return Array.from(agentIds)
+        .sort(compareAgents)
+        .map((agentId) => ({
+          value: agentId,
+          label: computeBackupAgentName(localize, agentId, agents),
+        }));
+    }
   );
 
   protected render(): TemplateResult {
@@ -411,6 +442,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
+        @clear-filter=${this._clearFilter}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
@@ -467,11 +499,23 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         <ha-filter-states
           .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
-          .value="${this._filters["ha-filter-states"]}q"
+          .value=${this._filters[TYPE_FILTER]}
           .states=${this._states(this.hass.localize, isHassio)}
-          @data-table-filter-changed=${this._filterChanged}
+          @data-table-filter-changed=${this._typeFilterChanged}
           slot="filter-pane"
-          expanded
+          .narrow=${this.narrow}
+        ></ha-filter-states>
+        <ha-filter-states
+          .hass=${this.hass}
+          .label=${this.hass.localize("ui.panel.config.backup.locations")}
+          .value=${this._filters[LOCATIONS_FILTER]}
+          .states=${this._locations(
+            this.hass.localize,
+            this.agents,
+            this.backups
+          )}
+          @data-table-filter-changed=${this._locationsFilterChanged}
+          slot="filter-pane"
           .narrow=${this.narrow}
         ></ha-filter-states>
         ${!this._needsOnboarding
@@ -522,9 +566,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }))
   );
 
-  private _filterChanged(ev) {
-    const type = ev.target.localName;
-    this._filters = { ...this._filters, [type]: ev.detail.value };
+  private _typeFilterChanged(ev) {
+    this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+  }
+
+  private _locationsFilterChanged(ev) {
+    this._filters = { ...this._filters, [LOCATIONS_FILTER]: ev.detail.value };
+  }
+
+  private _clearFilter() {
+    this._filters = {};
   }
 
   private _setFiltersFromUrl() {
@@ -536,7 +587,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     this._filters = {
-      "ha-filter-states": type === "all" ? [] : [type],
+      [TYPE_FILTER]: type === "all" ? [] : [type],
     };
   }
 

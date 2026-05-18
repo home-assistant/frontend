@@ -2,7 +2,13 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRestart } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -52,6 +58,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
+
   @property({ type: Boolean, reflect: true }) public virtualize = false;
 
   @property({ attribute: false }) public endTime?: Date;
@@ -98,6 +109,11 @@ export class StateHistoryCharts extends LitElement {
   @state() private _chartCount = 0;
 
   @state() private _hasZoomedCharts = false;
+
+  @queryAll("state-history-chart-line, state-history-chart-timeline")
+  private _chartComponents!: NodeListOf<
+    StateHistoryChartLine | StateHistoryChartTimeline
+  >;
 
   private _isSyncing = false;
 
@@ -181,6 +197,7 @@ export class StateHistoryCharts extends LitElement {
           .endTime=${this._computedEndTime}
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
+          .colors=${this.colors}
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
           .logarithmicScale=${this.logarithmicScale}
@@ -321,11 +338,7 @@ export class StateHistoryCharts extends LitElement {
     this._isSyncing = true;
 
     requestAnimationFrame(() => {
-      const chartComponents = this.renderRoot.querySelectorAll(
-        "state-history-chart-line, state-history-chart-timeline"
-      ) as unknown as (StateHistoryChartLine | StateHistoryChartTimeline)[];
-
-      chartComponents.forEach((chartComponent, index) => {
+      this._chartComponents.forEach((chartComponent, index) => {
         if (index === sourceChartIndex) {
           return;
         }
@@ -344,11 +357,7 @@ export class StateHistoryCharts extends LitElement {
     this._isSyncing = true;
 
     requestAnimationFrame(() => {
-      const chartComponents = this.renderRoot.querySelectorAll(
-        "state-history-chart-line, state-history-chart-timeline"
-      );
-
-      chartComponents.forEach((chartComponent: any) => {
+      this._chartComponents.forEach((chartComponent: any) => {
         const chartBase =
           chartComponent.renderRoot?.querySelector("ha-chart-base");
 
@@ -399,12 +408,12 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container {
       width: 100%;
+      overflow: visible;
     }
 
     .entry-container.line {
       flex: 1;
       padding-top: 8px;
-      overflow: hidden;
     }
 
     .entry-container:hover {

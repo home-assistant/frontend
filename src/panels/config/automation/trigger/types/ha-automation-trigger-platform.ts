@@ -221,7 +221,6 @@ export class HaPlatformTrigger extends LitElement {
         : nothing}
       ${shouldRenderDataYaml
         ? html`<ha-yaml-editor
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.components.service-control.action_data"
             )}

@@ -166,7 +166,6 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${entity}
                       slot="graphic"
                     ></ha-state-icon>
@@ -322,7 +321,6 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${group}
                       slot="graphic"
                     ></ha-state-icon>
@@ -347,7 +345,6 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${scene}
                       slot="graphic"
                     ></ha-state-icon>
@@ -400,7 +397,6 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${automation}
                       slot="graphic"
                     ></ha-state-icon>
@@ -452,7 +448,6 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .hass=${this.hass}
                       .stateObj=${script}
                       slot="graphic"
                     ></ha-state-icon>

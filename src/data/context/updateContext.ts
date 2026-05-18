@@ -3,6 +3,7 @@ import type {
   HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantConnection,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
   HomeAssistantRegistries,
   HomeAssistantUI,
@@ -156,6 +157,32 @@ const updateConfig = (
   return value;
 };
 
+const updateFormatters = (
+  hass: HomeAssistant,
+  value?: HomeAssistantFormatters
+): HomeAssistantFormatters => {
+  if (
+    !value ||
+    value.formatEntityState !== hass.formatEntityState ||
+    value.formatEntityStateToParts !== hass.formatEntityStateToParts ||
+    value.formatEntityAttributeValue !== hass.formatEntityAttributeValue ||
+    value.formatEntityAttributeValueToParts !==
+      hass.formatEntityAttributeValueToParts ||
+    value.formatEntityAttributeName !== hass.formatEntityAttributeName ||
+    value.formatEntityName !== hass.formatEntityName
+  ) {
+    return {
+      formatEntityState: hass.formatEntityState,
+      formatEntityStateToParts: hass.formatEntityStateToParts,
+      formatEntityAttributeValue: hass.formatEntityAttributeValue,
+      formatEntityAttributeValueToParts: hass.formatEntityAttributeValueToParts,
+      formatEntityAttributeName: hass.formatEntityAttributeName,
+      formatEntityName: hass.formatEntityName,
+    };
+  }
+  return value;
+};
+
 export const updateHassGroups = {
   registries: updateRegistries,
   internationalization: updateInternationalization,
@@ -163,4 +190,5 @@ export const updateHassGroups = {
   connection: updateConnection,
   ui: updateUi,
   config: updateConfig,
+  formatters: updateFormatters,
 };

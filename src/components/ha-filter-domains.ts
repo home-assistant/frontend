@@ -1,7 +1,8 @@
+import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -30,6 +31,8 @@ export class HaFilterDomains extends LitElement {
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   protected render() {
     return html`
@@ -62,7 +65,7 @@ export class HaFilterDomains extends LitElement {
                 multi
               >
                 ${repeat(
-                  this._domains(this.hass.states, this._filter),
+                  this._domains(this.hass.states, this._filter, this.value),
                   (i) => i,
                   (domain) =>
                     html`<ha-check-list-item
@@ -84,7 +87,7 @@ export class HaFilterDomains extends LitElement {
     `;
   }
 
-  private _domains = memoizeOne((states, filter) => {
+  private _domains = memoizeOne((states, filter, _value) => {
     const domains = new Set<string>();
     Object.keys(states).forEach((entityId) => {
       domains.add(computeDomain(entityId));
@@ -109,8 +112,7 @@ export class HaFilterDomains extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 4 - 32}px`;
+        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -126,19 +128,19 @@ export class HaFilterDomains extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemSelected(
-    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
-  ) {
-    const domains = this._domains(this.hass.states, this._filter);
-    if (ev.detail.diff.added.length) {
-      this.value = [...(this.value || []), domains[ev.detail.diff.added[0]]];
-    } else if (ev.detail.diff.removed.length) {
-      const removedDomain = domains[ev.detail.diff.removed[0]];
-      this.value = this.value?.filter((value) => value !== removedDomain);
-    }
+  private _handleItemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
+    const domains = this._domains(this.hass.states, this._filter, this.value);
+
+    const visibleDomains = new Set(domains);
+    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
+    const selected = [...ev.detail.index]
+      .map((i) => domains[i])
+      .filter((d): d is string => !!d);
+
+    this.value = [...preserved, ...selected];
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: this.value.length ? this.value : undefined,
       items: undefined,
     });
   }

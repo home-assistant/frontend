@@ -287,7 +287,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .hass=${this.hass}
               .stateObj=${script}
               style=${styleMap({
                 color:

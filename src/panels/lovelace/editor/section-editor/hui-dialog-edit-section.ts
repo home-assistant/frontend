@@ -125,7 +125,6 @@ export class HuiDialogEditSection
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
           autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
@@ -159,7 +158,6 @@ export class HuiDialogEditSection
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         @keydown=${this._ignoreKeydown}

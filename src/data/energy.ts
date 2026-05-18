@@ -164,6 +164,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_to: string;
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
+  stat_soc?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
@@ -181,6 +182,8 @@ export interface GasSourceTypeEnergyPreference {
   entity_energy_price: string | null;
   number_energy_price: number | null;
   unit_of_measurement?: string | null;
+
+  name?: string;
 }
 
 export interface WaterSourceTypeEnergyPreference {
@@ -199,6 +202,8 @@ export interface WaterSourceTypeEnergyPreference {
   entity_energy_price: string | null;
   number_energy_price: number | null;
   unit_of_measurement?: string | null;
+
+  name?: string;
 }
 
 export type EnergySource =

@@ -36,6 +36,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type {
   AutomationConfig,
   AutomationEntity,
@@ -120,6 +121,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -541,7 +544,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                       `
                     : nothing}
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     @value-changed=${this._yamlChanged}
@@ -828,7 +830,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.blueprintConfig = config;
       this.config = newConfig;
       if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+        this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
       this.errors = undefined;

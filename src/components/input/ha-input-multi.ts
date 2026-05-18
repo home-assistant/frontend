@@ -2,7 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { internationalizationContext } from "../../data/context";
@@ -66,6 +66,8 @@ class HaInputMulti extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
+
+  @query("ha-input[data-last]") private _lastInput?: HaInput;
 
   protected render() {
     return html`
@@ -163,10 +165,7 @@ class HaInputMulti extends LitElement {
     const items = [...this._items, ""];
     this._fireChanged(items);
     await this.updateComplete;
-    const field = this.shadowRoot?.querySelector(`ha-input[data-last]`) as
-      | HaInput
-      | undefined;
-    field?.focus();
+    this._lastInput?.focus();
   }
 
   private async _editItem(ev: Event) {

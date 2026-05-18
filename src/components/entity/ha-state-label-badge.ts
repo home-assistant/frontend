@@ -130,7 +130,6 @@ export class HaStateLabelBadge extends LitElement {
           ? html`<ha-state-icon
               .icon=${this.icon}
               .stateObj=${entityState}
-              .hass=${this.hass}
             ></ha-state-icon>`
           : ""}
         ${value && !image && !showIcon

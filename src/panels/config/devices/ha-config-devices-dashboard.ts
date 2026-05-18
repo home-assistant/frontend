@@ -143,15 +143,17 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _filter: string = history.state?.filter || "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "devices-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -187,6 +189,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   });
 
   private _ignoreLocationChange = false;
+
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -228,6 +232,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
     if (changedProps.has("_selected")) {
@@ -253,6 +258,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
@@ -295,6 +301,9 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _devicesAndFilterDomains = memoizeOne(
@@ -948,6 +957,9 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _batteryEntity(

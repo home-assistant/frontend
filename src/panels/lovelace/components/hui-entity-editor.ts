@@ -45,7 +45,10 @@ export class HuiEntityEditor extends LitElement {
       stateObj &&
       entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const primary =
       (stateObj &&

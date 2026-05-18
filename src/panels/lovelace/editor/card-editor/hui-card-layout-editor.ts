@@ -123,7 +123,6 @@ export class HuiCardLayoutEditor extends LitElement {
       ${this._yamlMode
         ? html`
             <ha-yaml-editor
-              .hass=${this.hass}
               .defaultValue=${configOptions}
               @value-changed=${this._yamlChanged}
             ></ha-yaml-editor>

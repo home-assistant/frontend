@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import { css, html, nothing, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
@@ -24,6 +24,8 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   @state() private _popoverOpen = false;
 
   @state() private _shouldRenderPopover = false;
+
+  @query("wa-popover") private _popoverElement?: HTMLElement;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
@@ -188,7 +190,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   }
 
   private _handlePopoverPointerDown(ev: PointerEvent) {
-    const popover = this.renderRoot.querySelector("wa-popover");
+    const popover = this._popoverElement;
     const dialog = popover?.shadowRoot?.querySelector(
       "dialog"
     ) as HTMLDialogElement | null;
@@ -215,7 +217,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   }
 
   private _pulsePopover() {
-    const popover = this.renderRoot.querySelector("wa-popover");
+    const popover = this._popoverElement;
     const popup = popover?.shadowRoot?.querySelector("wa-popup") as {
       popup?: HTMLElement;
     } | null;

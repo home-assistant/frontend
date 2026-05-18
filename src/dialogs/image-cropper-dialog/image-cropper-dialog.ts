@@ -96,7 +96,6 @@ export class HaImagecropperDialog
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.dialogs.image_cropper.crop_image"

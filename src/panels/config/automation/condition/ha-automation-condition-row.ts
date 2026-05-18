@@ -17,7 +17,10 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
@@ -32,9 +35,11 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/automation/ha-automation-row-event-chip";
+import "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -48,14 +53,23 @@ import type {
   ConditionSidebarConfig,
   PlatformCondition,
 } from "../../../../data/automation";
-import { isCondition, testCondition } from "../../../../data/automation";
+import {
+  isCondition,
+  subscribeCondition,
+  testCondition,
+} from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
-import { validateConfig } from "../../../../data/config";
+import {
+  validateConfig,
+  type InvalidConfig,
+  type ValidConfig,
+} from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -135,6 +149,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
+  @state() private _liveTestResult: {
+    state: "pass" | "fail" | "invalid" | "unknown";
+    message?: string;
+  } = { state: "unknown" };
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -146,6 +165,8 @@ export default class HaAutomationConditionRow extends LitElement {
   private _automationRowElement?: HaAutomationRow;
 
   private _testingTimeout?: number;
+
+  private _conditionUnsub?: Promise<UnsubscribeFunc>;
 
   get selected() {
     return this._selected;
@@ -165,7 +186,7 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
-  private _renderRow(row = true) {
+  private _renderRow() {
     const descriptionHasTarget =
       "target" in (this.conditionDescriptions[this.condition.condition] || {});
 
@@ -175,6 +196,9 @@ export default class HaAutomationConditionRow extends LitElement {
           (this.condition as DeviceCondition).device_id
         ? { device_id: [(this.condition as DeviceCondition).device_id] }
         : undefined;
+
+    const conditionTargetSpec =
+      this.conditionDescriptions[this.condition.condition]?.target;
 
     return html`
       <ha-condition-icon
@@ -187,14 +211,18 @@ export default class HaAutomationConditionRow extends LitElement {
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              conditionTargetSpec
+            )
           : nothing}
       </h3>
       <ha-automation-row-event-chip
         .show=${this._testing}
         .variant=${this._testingResult ? "success" : "warning"}
-        .slot=${row ? "event" : ""}
-        class=${row ? "" : "event-chip"}
+        slot="event"
+        class="event-chip"
         aria-live="polite"
       >
         ${this.hass.localize(
@@ -469,14 +497,22 @@ export default class HaAutomationConditionRow extends LitElement {
               .dim=${this._testing}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              >${this._renderRow()}</ha-automation-row
-            >`
+              >${this._renderRow()}
+              <ha-automation-row-live-test
+                slot="icons"
+                .state=${this._liveTestResult.state}
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
+                )}
+                .message=${this._liveTestResult.message}
+              ></ha-automation-row-live-test
+            ></ha-automation-row>`
           : html`
               <ha-expansion-panel
                 left-chevron
                 @expanded-changed=${this._expansionPanelChanged}
               >
-                ${this._renderRow(false)}
+                ${this._renderRow()}
               </ha-expansion-panel>
             `}
       </ha-card>
@@ -501,13 +537,23 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"]
+    ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
       ></ha-automation-row-targets>`
   );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._subscribeCondition();
+  }
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
@@ -524,11 +570,83 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  protected override updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    if (
+      changedProps.has("condition") &&
+      changedProps.get("condition") !== undefined
+    ) {
+      this._resetSubscription();
+      this._debounceSubscribeCondition();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._debounceSubscribeCondition.cancel();
     if (this._testingTimeout !== undefined) {
       clearTimeout(this._testingTimeout);
     }
+    this._resetSubscription();
+  }
+
+  private _resetSubscription() {
+    this._liveTestResult = {
+      state: "unknown",
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
+      ),
+    };
+    if (this._conditionUnsub) {
+      this._conditionUnsub.then((unsub) => unsub());
+      this._conditionUnsub = undefined;
+    }
+  }
+
+  private _debounceSubscribeCondition = debounce(
+    () => this._subscribeCondition(),
+    500
+  );
+
+  private async _subscribeCondition() {
+    this._resetSubscription();
+
+    if (!this.condition) {
+      return;
+    }
+
+    const conditionUnsub = subscribeCondition(
+      this.hass.connection,
+      (result) => {
+        if (result.error) {
+          this._handleLiveTestError(result.error);
+        } else {
+          this._liveTestResult = {
+            state: result.result ? "pass" : "fail",
+            message: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
+            ),
+          };
+        }
+      },
+      this.condition
+    );
+    conditionUnsub.catch((err: any) => {
+      this._handleLiveTestError(err);
+      if (this._conditionUnsub === conditionUnsub) {
+        this._conditionUnsub = undefined;
+      }
+    });
+    this._conditionUnsub = conditionUnsub;
+  }
+
+  private _handleLiveTestError(error: any) {
+    const invalid =
+      typeof error !== "string" && error.code === "invalid_format";
+    this._liveTestResult = {
+      state: invalid ? "invalid" : "unknown",
+      message: typeof error === "string" ? error : error.message,
+    };
   }
 
   private _onValueChange(event: CustomEvent) {
@@ -595,8 +713,6 @@ export default class HaAutomationConditionRow extends LitElement {
       clearTimeout(this._testingTimeout);
     }
 
-    this._testingResult = undefined;
-    this._testing = true;
     const condition = this.condition;
     requestAnimationFrame(() => {
       // @ts-ignore is supported in all browsers except firefox
@@ -608,53 +724,59 @@ export default class HaAutomationConditionRow extends LitElement {
       this.scrollIntoView();
     });
 
+    let validateResult: Record<"conditions", InvalidConfig | ValidConfig>;
     try {
-      const validateResult = await validateConfig(this.hass, {
+      validateResult = await validateConfig(this.hass, {
         conditions: condition,
       });
-
-      // Abort if condition changed.
-      if (this.condition !== condition) {
-        this._testing = false;
-        return;
-      }
-
-      if (!validateResult.conditions.valid) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.invalid_condition"
-          ),
-          text: validateResult.conditions.error,
-        });
-        this._testing = false;
-        return;
-      }
-
-      let result: { result: boolean };
-      try {
-        result = await testCondition(this.hass, condition);
-      } catch (err: any) {
-        if (this.condition !== condition) {
-          this._testing = false;
-          return;
-        }
-
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.test_failed"
-          ),
-          text: err.message,
-        });
-        this._testing = false;
-        return;
-      }
-
-      this._testingResult = result.result;
-    } finally {
-      this._testingTimeout = window.setTimeout(() => {
-        this._testing = false;
-      }, 2500);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.validation_failed"
+        ),
+      });
+      // eslint-disable-next-line no-console
+      console.error("Error validating condition", err);
+      return;
     }
+
+    // Abort if condition changed.
+    if (this.condition !== condition) {
+      return;
+    }
+
+    if (!validateResult.conditions.valid) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.invalid_condition"
+        ),
+        text: validateResult.conditions.error,
+      });
+      return;
+    }
+
+    let result: { result: boolean };
+    try {
+      result = await testCondition(this.hass, condition);
+    } catch (err: any) {
+      if (this.condition !== condition) {
+        return;
+      }
+
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.test_failed"
+        ),
+        text: err.message,
+      });
+      return;
+    }
+
+    this._testingResult = result.result;
+    this._testing = true;
+    this._testingTimeout = window.setTimeout(() => {
+      this._testing = false;
+    }, 2500);
   };
 
   private _renameCondition = async (): Promise<void> => {

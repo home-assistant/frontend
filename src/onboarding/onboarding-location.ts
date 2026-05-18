@@ -14,7 +14,6 @@ import "../components/ha-alert";
 import "../components/ha-button";
 import "../components/ha-list";
 import "../components/ha-list-item";
-import "../components/ha-radio";
 import "../components/ha-spinner";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
@@ -64,6 +63,8 @@ class OnboardingLocation extends LitElement {
   private _country?: ConfigUpdateValues["country"];
 
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
+
+  @query("ha-input") private _input?: HTMLElement;
 
   protected render(): TemplateResult {
     const addressAttribution = this.onboardingLocalize(
@@ -202,7 +203,7 @@ class OnboardingLocation extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    setTimeout(() => this.renderRoot.querySelector("ha-input")!.focus(), 100);
+    setTimeout(() => this._input!.focus(), 100);
     this.addEventListener("keyup", (ev) => {
       if (ev.key === "Enter") {
         this._save(ev);

@@ -196,6 +196,7 @@ export class HaControlSwitch extends LitElement {
       --control-switch-background-opacity: 0.2;
       --control-switch-hover-background-opacity: 0.4;
       --control-switch-thickness: 40px;
+      --control-switch-min-touch-size: 40px;
       --control-switch-border-radius: var(--ha-border-radius-lg);
       --control-switch-padding: 4px;
       --mdc-icon-size: 20px;
@@ -219,14 +220,27 @@ export class HaControlSwitch extends LitElement {
       width: 100%;
       border-radius: var(--control-switch-border-radius);
       outline: none;
-      overflow: hidden;
       padding: var(--control-switch-padding);
       display: flex;
       cursor: pointer;
     }
+    .switch::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      min-width: var(--control-switch-min-touch-size);
+      min-height: var(--control-switch-min-touch-size);
+    }
     .switch[disabled] {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    .switch[disabled]::before {
+      pointer-events: none;
     }
     .switch .background {
       position: absolute;
@@ -234,6 +248,7 @@ export class HaControlSwitch extends LitElement {
       left: 0;
       height: 100%;
       width: 100%;
+      border-radius: inherit;
       background-color: var(--control-switch-off-color);
       transition: background-color 180ms ease-in-out;
       opacity: var(--control-switch-background-opacity);

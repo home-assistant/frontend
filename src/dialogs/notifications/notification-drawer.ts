@@ -23,11 +23,15 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _notifications: PersistentNotification[] = [];
 
-  @state() private _open = false;
+  @state() public _open = false;
+
+  @state() private _drawerOpen = false;
 
   @query("ha-drawer") private _drawer?: HaDrawer;
 
   private _unsubNotifications?: UnsubscribeFunc;
+
+  private _openAnimationFrame?: number;
 
   connectedCallback() {
     super.connectedCallback();
@@ -37,6 +41,10 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this.closeDialog);
+    if (this._openAnimationFrame !== undefined) {
+      cancelAnimationFrame(this._openAnimationFrame);
+      this._openAnimationFrame = undefined;
+    }
   }
 
   showDialog({ narrow }) {
@@ -51,22 +59,21 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       }
     );
     this.style.setProperty(
-      "--mdc-drawer-width",
+      "--ha-sidebar-width",
       `min(100vw, calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px)))`
     );
     this._open = true;
   }
 
   closeDialog = () => {
-    if (this._drawer) {
+    if (this._drawerOpen && this._drawer) {
       this._drawer.open = false;
+      this._drawerOpen = false;
+      return;
     }
-    if (this._unsubNotifications) {
-      this._unsubNotifications();
-      this._unsubNotifications = undefined;
-    }
-    this._notifications = [];
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._drawerOpen = false;
+    this._open = false;
+    this._finalizeClose();
   };
 
   public willUpdate(changedProps: PropertyValues<this>): void {
@@ -74,6 +81,17 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (changedProps.has("_open") && this._open && !this._drawerOpen) {
+      this._openAnimationFrame = requestAnimationFrame(() => {
+        this._openAnimationFrame = undefined;
+        this._drawerOpen = true;
+      });
     }
   }
 
@@ -104,8 +122,8 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
     return html`
       <ha-drawer
         type="modal"
-        open
-        @MDCDrawer:closed=${this._dialogClosed}
+        .open=${this._drawerOpen}
+        @hass-drawer-closed=${this._dialogClosed}
         .direction=${computeRTLDirection(this.hass)}
       >
         <ha-header-bar>
@@ -157,12 +175,27 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   private _dialogClosed(ev: Event) {
     ev.stopPropagation();
+    this._drawerOpen = false;
     this._open = false;
+    this._finalizeClose();
   }
 
   private _dismissAll() {
     this.hass.callService("persistent_notification", "dismiss_all");
     this.closeDialog();
+  }
+
+  private _finalizeClose() {
+    if (this._openAnimationFrame !== undefined) {
+      cancelAnimationFrame(this._openAnimationFrame);
+      this._openAnimationFrame = undefined;
+    }
+    if (this._unsubNotifications) {
+      this._unsubNotifications();
+      this._unsubNotifications = undefined;
+    }
+    this._notifications = [];
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected supportedSingleKeyShortcuts(): SupportedShortcuts {

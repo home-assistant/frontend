@@ -2,8 +2,9 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-icon";
-import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
+import "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import type {
   ExternalEntityAddToAction,
   ExternalEntityAddToActions,
@@ -90,24 +91,23 @@ export class HaMoreInfoAddTo extends LitElement {
     }
 
     return html`
-      <div class="actions-list">
-        ${this._externalActions.actions.map(
+      <ha-list-base>
+        ${this._externalActions?.actions.map(
           (action) => html`
-            <ha-md-list-item
-              type="button"
+            <ha-list-item-button
               .disabled=${!action.enabled}
               .action=${action}
               @click=${this._actionSelected}
             >
               <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
-              <span>${action.name}</span>
+              <span slot="headline">${action.name}</span>
               ${action.details
                 ? html`<span slot="supporting-text">${action.details}</span>`
                 : nothing}
-            </ha-md-list-item>
+            </ha-list-item-button>
           `
         )}
-      </div>
+      </ha-list-base>
     `;
   }
 
@@ -123,11 +123,6 @@ export class HaMoreInfoAddTo extends LitElement {
       justify-content: center;
       align-items: center;
       padding: var(--ha-space-8);
-    }
-
-    .actions-list {
-      display: flex;
-      flex-direction: column;
     }
 
     ha-icon {

@@ -141,7 +141,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           <ha-state-icon
             class="weather-icon"
             .stateObj=${stateObj}
-            .hass=${this.hass}
           ></ha-state-icon>
         `}
       </div>

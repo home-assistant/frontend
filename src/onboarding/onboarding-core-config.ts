@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -41,6 +41,8 @@ class OnboardingCoreConfig extends LitElement {
   @state() private _error?: string;
 
   @state() private _skipCore = false;
+
+  @query("ha-country-picker") private _countryPicker?: HTMLElement;
 
   protected render(): TemplateResult {
     if (!this._location) {
@@ -143,10 +145,7 @@ class OnboardingCoreConfig extends LitElement {
 
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
-    setTimeout(
-      () => this.renderRoot.querySelector("ha-country-picker")!.focus(),
-      100
-    );
+    setTimeout(() => this._countryPicker!.focus(), 100);
   }
 
   private async _save(ev) {

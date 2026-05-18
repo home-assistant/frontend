@@ -184,7 +184,10 @@ export class HaAreaControlsPicker extends LitElement {
           const allEntityIds = Object.values(controlEntities).flat();
           const uniqueEntityIds = Array.from(new Set(allEntityIds));
 
-          const isRTL = computeRTL(this.hass);
+          const isRTL = computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          );
 
           uniqueEntityIds.forEach((entityId) => {
             if (isSelected(entityId)) {
@@ -261,7 +264,6 @@ export class HaAreaControlsPicker extends LitElement {
       ${item.type === "entity" && item.stateObj
         ? html`<ha-state-icon
             slot="start"
-            .hass=${this.hass}
             .stateObj=${item.stateObj}
           ></ha-state-icon>`
         : item.domain

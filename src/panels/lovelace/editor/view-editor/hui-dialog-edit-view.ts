@@ -160,7 +160,6 @@ export class HuiDialogEditView extends LitElement {
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
           autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
@@ -210,7 +209,6 @@ export class HuiDialogEditView extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="large"
         prevent-scrim-close

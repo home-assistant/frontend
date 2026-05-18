@@ -73,7 +73,6 @@ class HaPanelDevEvent extends LitElement {
               </div>
               <div class="code-editor">
                 <ha-yaml-editor
-                  .hass=${this.hass}
                   .value=${this._eventData}
                   .error=${!this._isValid}
                   @value-changed=${this._yamlChanged}
