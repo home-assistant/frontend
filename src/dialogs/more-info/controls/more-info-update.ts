@@ -15,7 +15,7 @@ import "../../../components/item/ha-row-item";
 import "../../../components/progress/ha-progress-bar";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
@@ -176,7 +176,8 @@ class MoreInfoUpdate extends LitElement {
     if (
       !this.hass ||
       !this.stateObj ||
-      isUnavailableState(this.stateObj.state)
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
     ) {
       return nothing;
     }

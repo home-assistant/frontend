@@ -4,7 +4,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-slider";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
@@ -88,7 +88,7 @@ class HuiMediaPlayerVolumeSliderCardFeature
     }
 
     const stateObj = this._stateObj;
-    const disabled = isUnavailableState(stateObj.state);
+    const disabled = stateObj.state === UNAVAILABLE;
 
     const position =
       stateObj.attributes.volume_level != null

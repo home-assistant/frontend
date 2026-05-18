@@ -13,7 +13,7 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-spinner";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
-import { isUnavailableState } from "../../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";
@@ -270,12 +270,14 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
 
     this._loadCards();

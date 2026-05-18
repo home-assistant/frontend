@@ -45,7 +45,7 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { TodoItem } from "../../../data/todo";
 import {
   TodoItemStatus,
@@ -383,7 +383,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const unavailable = isUnavailableState(stateObj.state);
+    const unavailable =
+      stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
 
     // Discard memoization when we rollover to a new day, so filters can be recalculated
     const memoTime = this._config.due_date_period

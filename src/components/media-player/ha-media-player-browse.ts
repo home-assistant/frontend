@@ -17,7 +17,7 @@ import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
-import { isUnavailableState } from "../../data/entity/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -290,7 +290,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           } else if (
             err.code === "entity_not_found" &&
             this.entityId &&
-            isUnavailableState(this.hass.states[this.entityId]?.state)
+            this.hass.states[this.entityId]?.state === UNAVAILABLE
           ) {
             this._setError({
               message: this.hass.localize(

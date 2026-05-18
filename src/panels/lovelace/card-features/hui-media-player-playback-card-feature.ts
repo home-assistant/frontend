@@ -26,7 +26,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   ControlButton,
   MediaPlayerEntity,
@@ -233,7 +233,7 @@ class HuiMediaPlayerPlaybackCardFeature
         case "turn_on":
           if (
             (!active || assumedState) &&
-            !isUnavailableState(stateObj.state) &&
+            stateObj.state !== UNAVAILABLE &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
           ) {
             buttons.push({

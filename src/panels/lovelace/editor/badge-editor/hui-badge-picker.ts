@@ -13,7 +13,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
-import { isUnavailableState } from "../../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";
@@ -235,12 +235,14 @@ export class HuiBadgePicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
 
     this._loadBages();

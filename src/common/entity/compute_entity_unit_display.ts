@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { isUnavailableState } from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 
 interface EntityUnitStubConfig {
@@ -21,32 +21,24 @@ export const computeEntityUnitDisplay = (
   stateObj: HassEntity | undefined,
   config: EntityUnitStubConfig
 ): string => {
-  let unit;
   if (
-    stateObj &&
-    !isUnavailableState(stateObj.state) &&
-    (config.attribute || stateObj.attributes.device_class !== "duration")
+    !stateObj ||
+    stateObj.state === UNAVAILABLE ||
+    stateObj.state === UNKNOWN ||
+    (!config.attribute && stateObj.attributes.device_class === "duration")
   ) {
-    // check for an explicitly defined unit in config
-    unit = config.unit;
-
-    if (!unit) {
-      if (!config.attribute) {
-        // use entity's unit_of_measurement
-        const stateParts = hass.formatEntityStateToParts(stateObj);
-        unit = stateParts.find((part) => part.type === "unit")?.value;
-      } else {
-        // use attribute's unit if available
-        const attrParts = hass.formatEntityAttributeValueToParts(
-          stateObj,
-          config.attribute
-        );
-        unit = attrParts.find((part) => part.type === "unit")?.value;
-      }
-    }
-
-    return unit ?? "";
+    return "";
   }
 
-  return "";
+  // check for an explicitly defined unit in config
+  if (config.unit) {
+    return config.unit;
+  }
+
+  // otherwise derive from the entity's state or attribute
+  const parts = config.attribute
+    ? hass.formatEntityAttributeValueToParts(stateObj, config.attribute)
+    : hass.formatEntityStateToParts(stateObj);
+
+  return parts.find((part) => part.type === "unit")?.value ?? "";
 };

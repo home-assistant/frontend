@@ -1,7 +1,7 @@
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   SENSOR_DEVICE_CLASS_UPTIME,
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
@@ -55,7 +55,9 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
           stateObj.attributes.device_class
-        ) && !isUnavailableState(stateObj.state)
+        ) &&
+        stateObj.state !== UNAVAILABLE &&
+        stateObj.state !== UNKNOWN
           ? html`
               <hui-timestamp-display
                 .hass=${this.hass}
