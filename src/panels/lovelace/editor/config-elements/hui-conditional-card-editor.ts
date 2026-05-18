@@ -7,7 +7,6 @@ import { any, array, assert, assign, object, optional } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tab-group";
@@ -21,6 +20,7 @@ import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../conditions/ha-card-conditions-editor";
+import "../conditions/ha-visibility-status";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -147,11 +147,10 @@ export class HuiConditionalCardEditor
             </div>
           `
         : html`
-            <ha-alert alert-type="info">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.condition-editor.explanation"
-              )}
-            </ha-alert>
+            <ha-visibility-status
+              .hass=${this.hass}
+              .conditions=${this._config.conditions ?? []}
+            ></ha-visibility-status>
             <ha-card-conditions-editor
               .hass=${this.hass}
               .conditions=${this._config.conditions}
@@ -246,9 +245,9 @@ export class HuiConditionalCardEditor
           width: 100%;
           justify-content: center;
         }
-        ha-alert {
-          display: block;
-          margin-top: 12px;
+        ha-visibility-status {
+          margin-top: var(--ha-space-3);
+          margin-bottom: var(--ha-space-3);
         }
         .card {
           margin-top: 8px;

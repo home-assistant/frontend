@@ -3,12 +3,12 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
 import { conditionsEntityContext } from "../conditions/context";
 import "../conditions/ha-card-conditions-editor";
+import "../conditions/ha-visibility-status";
 
 @customElement("hui-card-visibility-editor")
 export class HuiCardVisibilityEditor extends LitElement {
@@ -34,11 +34,10 @@ export class HuiCardVisibilityEditor extends LitElement {
   render() {
     const conditions = this.config.visibility ?? [];
     return html`
-      <p class="intro">
-        ${this.hass.localize(
-          `ui.panel.lovelace.editor.edit_card.visibility.explanation`
-        )}
-      </p>
+      <ha-visibility-status
+        .hass=${this.hass}
+        .conditions=${conditions}
+      ></ha-visibility-status>
       <ha-card-conditions-editor
         .hass=${this.hass}
         .conditions=${conditions}
@@ -62,10 +61,8 @@ export class HuiCardVisibilityEditor extends LitElement {
   }
 
   static styles = css`
-    .intro {
-      margin: 0;
-      color: var(--secondary-text-color);
-      margin-bottom: 8px;
+    ha-visibility-status {
+      margin-bottom: var(--ha-space-3);
     }
   `;
 }

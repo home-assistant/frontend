@@ -9,6 +9,7 @@ import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type {
   EnergyData,
@@ -65,6 +66,8 @@ export class HuiEnergySolarGraphCard
   }
 
   @state() private _chartData: ECOption["series"][] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -138,7 +141,8 @@ export class HuiEnergySolarGraphCard
               this.hass.locale,
               this.hass.config,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -168,8 +172,9 @@ export class HuiEnergySolarGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      compareStart?: Date,
-      compareEnd?: Date
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
     ): ECOption =>
       getCommonOptions(
         start,
@@ -179,7 +184,9 @@ export class HuiEnergySolarGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       )
   );
 
@@ -210,6 +217,13 @@ export class HuiEnergySolarGraphCard
 
     const computedStyles = getComputedStyle(this);
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     if (energyData.statsCompare) {
       datasets.push(
         ...this._processDataSet(
@@ -217,6 +231,7 @@ export class HuiEnergySolarGraphCard
           energyData.statsMetadata,
           solarSources,
           computedStyles,
+          trackY,
           true
         )
       );
@@ -237,7 +252,8 @@ export class HuiEnergySolarGraphCard
         energyData.stats,
         energyData.statsMetadata,
         solarSources,
-        computedStyles
+        computedStyles,
+        trackY
       )
     );
 
@@ -251,11 +267,13 @@ export class HuiEnergySolarGraphCard
           solarSources,
           computedStyles.getPropertyValue("--primary-text-color"),
           energyData.start,
-          energyData.end
+          energyData.end,
+          trackY
         )
       );
     }
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, solarSources);
   }
@@ -282,6 +300,7 @@ export class HuiEnergySolarGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     solarSources: SolarSourceTypeEnergyPreference[],
     computedStyles: CSSStyleDeclaration,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -322,6 +341,7 @@ export class HuiEnergySolarGraphCard
             point.start,
           ];
           solarProductionData.push(dataPoint);
+          trackY(point.change);
           prevStart = point.start;
         }
       }
@@ -375,7 +395,8 @@ export class HuiEnergySolarGraphCard
     solarSources: SolarSourceTypeEnergyPreference[],
     borderColor: string,
     start: Date,
-    end?: Date
+    end: Date | undefined,
+    trackY: (v: number) => void
   ) {
     const data: LineSeriesOption[] = [];
 
@@ -429,10 +450,9 @@ export class HuiEnergySolarGraphCard
                 : 0;
           }
           for (const [time, value] of Object.entries(forecastsData)) {
-            solarForecastData.push([
-              Number(time) + forecastOffset,
-              value / 1000,
-            ]);
+            const kWh = value / 1000;
+            solarForecastData.push([Number(time) + forecastOffset, kWh]);
+            trackY(kWh);
           }
 
           if (solarForecastData.length) {

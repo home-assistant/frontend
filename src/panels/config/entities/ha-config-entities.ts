@@ -199,13 +199,15 @@ export class HaConfigEntities extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -252,6 +254,8 @@ export class HaConfigEntities extends LitElement {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -1068,6 +1072,9 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   protected firstUpdated() {
@@ -1096,6 +1103,7 @@ export class HaConfigEntities extends LitElement {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
@@ -1112,6 +1120,9 @@ export class HaConfigEntities extends LitElement {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _fetchExposedEntities = async () => {
@@ -1152,6 +1163,7 @@ export class HaConfigEntities extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
