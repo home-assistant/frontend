@@ -121,21 +121,29 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   }
 
   protected updated(changedProperties: PropertyValues<this>) {
+    if (!this.hass) {
+      return;
+    }
+
+    const addConditionTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      "condition"
+    );
+
+    if (changedProperties.has("conditions") && addConditionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
     if (
       !this._openedAddDialogFromQuery &&
       this.root &&
       !this.disabled &&
-      this.hass &&
       this.conditions.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass.states, "condition")
+      addConditionTargetFromQuery
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addConditionDialog());
-    } else if (
-      this._openedAddDialogFromQuery &&
-      this.hass &&
-      !getAddAutomationElementTargetFromQuery(this.hass.states, "condition")
-    ) {
+    } else if (this._openedAddDialogFromQuery && !addConditionTargetFromQuery) {
       this._openedAddDialogFromQuery = false;
     }
 

@@ -136,21 +136,29 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
+    if (!this.hass) {
+      return;
+    }
+
+    const addActionTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      "action"
+    );
+
+    if (changedProps.has("actions") && addActionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
     if (
       !this._openedAddDialogFromQuery &&
       this.root &&
       !this.disabled &&
-      this.hass &&
       this.actions.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass.states, "action")
+      addActionTargetFromQuery
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addActionDialog());
-    } else if (
-      this._openedAddDialogFromQuery &&
-      this.hass &&
-      !getAddAutomationElementTargetFromQuery(this.hass.states, "action")
-    ) {
+    } else if (this._openedAddDialogFromQuery && !addActionTargetFromQuery) {
       this._openedAddDialogFromQuery = false;
     }
 

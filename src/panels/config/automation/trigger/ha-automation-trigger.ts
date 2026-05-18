@@ -238,21 +238,29 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
+    if (!this.hass) {
+      return;
+    }
+
+    const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      "trigger"
+    );
+
+    if (changedProps.has("triggers") && addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
     if (
       !this._openedAddDialogFromQuery &&
       this.root &&
       !this.disabled &&
-      this.hass &&
       this.triggers.length === 0 &&
-      getAddAutomationElementTargetFromQuery(this.hass.states, "trigger")
+      addTriggerTargetFromQuery
     ) {
       this._openedAddDialogFromQuery = true;
       queueMicrotask(() => this._addTriggerDialog());
-    } else if (
-      this._openedAddDialogFromQuery &&
-      this.hass &&
-      !getAddAutomationElementTargetFromQuery(this.hass.states, "trigger")
-    ) {
+    } else if (this._openedAddDialogFromQuery && !addTriggerTargetFromQuery) {
       this._openedAddDialogFromQuery = false;
     }
 
