@@ -4,6 +4,8 @@ import {
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -242,6 +244,28 @@ export default class HaAutomationTriggerRow extends LitElement {
               triggerTargetSpec
             )
           : nothing}
+        ${type !== "list" &&
+        (this.trigger as Exclude<Trigger, TriggerList>).comment?.trim()
+          ? html`
+              <ha-svg-icon
+                id="comment-icon"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.comment.label"
+                )}
+                class="comment-indicator"
+              ></ha-svg-icon>
+              <ha-tooltip for="comment-icon"
+                >${(
+                  this.trigger as Exclude<Trigger, TriggerList>
+                ).comment!.substring(0, 250)}${(
+                  this.trigger as Exclude<Trigger, TriggerList>
+                ).comment!.length > 250
+                  ? "..."
+                  : nothing}</ha-tooltip
+              >
+            `
+          : nothing}
       </h3>
       <ha-automation-row-event-chip
         .show=${this._triggered}
@@ -282,7 +306,19 @@ export default class HaAutomationTriggerRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-
+        ${type !== "list"
+          ? html`<ha-dropdown-item value="edit_comment">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              ${this._renderOverflowLabel(
+                this.hass.localize(
+                  `ui.panel.config.automation.editor.comment.${(this.trigger as Exclude<Trigger, TriggerList>).comment ? "edit" : "add"}`
+                )
+              )}
+            </ha-dropdown-item>`
+          : nothing}
         <wa-divider></wa-divider>
 
         <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
@@ -659,6 +695,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       rename: () => {
         this._renameTrigger();
       },
+      editComment: this._editCommentTrigger,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -802,6 +839,40 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   };
 
+  private _editCommentTrigger = async (): Promise<void> => {
+    if (isTriggerList(this.trigger)) return;
+    const trigger = this.trigger;
+    const comment = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.comment.${trigger.comment ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.comment.label"
+      ),
+      inputType: "string",
+      defaultValue: trigger.comment,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (comment !== null) {
+      const value = { ...trigger };
+      if (comment === "") {
+        delete value.comment;
+      } else {
+        value.comment = comment;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.triggerEditor?.yamlEditor?.setValue(value);
+      }
+    }
+  };
+
   private _duplicateTrigger = () => {
     fireEvent(this, "duplicate");
   };
@@ -912,6 +983,9 @@ export default class HaAutomationTriggerRow extends LitElement {
     switch (action) {
       case "rename":
         this._renameTrigger();
+        break;
+      case "edit_comment":
+        this._editCommentTrigger();
         break;
       case "duplicate":
         this._duplicateTrigger();

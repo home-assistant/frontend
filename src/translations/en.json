@@ -5043,6 +5043,11 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "comment": {
+              "label": "Comment",
+              "edit": "Edit comment",
+              "add": "Add comment"
+            },
             "leave": {
               "unsaved_new_title": "Save new automation?",
               "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",

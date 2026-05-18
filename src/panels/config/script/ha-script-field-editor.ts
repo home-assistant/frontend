@@ -43,10 +43,6 @@ export default class HaScriptFieldEditor extends LitElement {
           selector: { text: {} },
         },
         {
-          name: "description",
-          selector: { text: {} },
-        },
-        {
           name: "required",
           selector: { boolean: {} },
         },

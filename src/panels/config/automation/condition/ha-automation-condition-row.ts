@@ -4,6 +4,8 @@ import {
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -217,6 +219,24 @@ export default class HaAutomationConditionRow extends LitElement {
               conditionTargetSpec
             )
           : nothing}
+        ${this.condition.comment?.trim()
+          ? html`
+              <ha-svg-icon
+                id="comment-icon"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.comment.label"
+                )}
+                class="comment-indicator"
+              ></ha-svg-icon>
+              <ha-tooltip for="comment-icon"
+                >${this.condition.comment.substring(0, 250)}${this.condition
+                  .comment.length > 250
+                  ? "..."
+                  : nothing}</ha-tooltip
+              >
+            `
+          : nothing}
       </h3>
       <ha-automation-row-event-chip
         .show=${this._testing}
@@ -261,6 +281,14 @@ export default class HaAutomationConditionRow extends LitElement {
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.conditions.rename"
+            )
+          )}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="edit_comment">
+          <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+          ${this._renderOverflowLabel(
+            this.hass.localize(
+              `ui.panel.config.automation.editor.comment.${this.condition.comment ? "edit" : "add"}`
             )
           )}
         </ha-dropdown-item>
@@ -821,6 +849,38 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   };
 
+  private _editCommentCondition = async (): Promise<void> => {
+    const comment = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.comment.${this.condition.comment ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.comment.label"
+      ),
+      inputType: "string",
+      defaultValue: this.condition.comment,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (comment !== null) {
+      const value = { ...this.condition };
+      if (comment === "") {
+        delete value.comment;
+      } else {
+        value.comment = comment;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.conditionEditor?.yamlEditor?.setValue(value);
+      }
+    }
+  };
+
   private _duplicateCondition = () => {
     fireEvent(this, "duplicate");
   };
@@ -962,6 +1022,7 @@ export default class HaAutomationConditionRow extends LitElement {
       rename: () => {
         this._renameCondition();
       },
+      editComment: this._editCommentCondition,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -1032,6 +1093,9 @@ export default class HaAutomationConditionRow extends LitElement {
         break;
       case "rename":
         this._renameCondition();
+        break;
+      case "edit_comment":
+        this._editCommentCondition();
         break;
       case "duplicate":
         this._duplicateCondition();

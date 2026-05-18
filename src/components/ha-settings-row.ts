@@ -30,6 +30,7 @@ export class HaSettingsRow extends LitElement {
         <slot name="prefix"></slot>
         <div
           class="body"
+          part="heading"
           ?two-line=${!this.threeLine && hasDescription}
           ?three-line=${this.threeLine}
         >

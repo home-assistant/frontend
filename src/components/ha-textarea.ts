@@ -1,12 +1,13 @@
 import "@home-assistant/webawesome/dist/components/textarea/textarea";
 import type WaTextarea from "@home-assistant/webawesome/dist/components/textarea/textarea";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { WaInputMixin, waInputStyles } from "./input/wa-input-mixin";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { WaInputMixin, waInputStyles } from "./input/wa-input-mixin";
 
 /**
  * Home Assistant textarea component
@@ -82,6 +83,20 @@ export class HaTextArea extends WaInputMixin(LitElement) {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
+  }
+
+  protected override async firstUpdated(
+    changedProperties: PropertyValues<this>
+  ): Promise<void> {
+    super.firstUpdated(changedProperties);
+    if (this.autofocus) {
+      await this._textarea?.updateComplete;
+      this._textarea?.focus();
+    }
+  }
+
+  public override focus(options?: FocusOptions): void {
+    this._textarea?.focus(options);
   }
 
   protected render() {
