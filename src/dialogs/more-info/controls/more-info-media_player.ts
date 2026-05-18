@@ -200,11 +200,12 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderSourceControl() {
     if (
       !this.stateObj ||
-      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) ||
-      !this.stateObj.attributes.source_list?.length
+      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
     ) {
       return nothing;
     }
+
+    const sourceList = this.stateObj.attributes.source_list || [];
 
     return html`<ha-tooltip for="source-button">
         ${this.hass.localize(`ui.card.media_player.source`)}
@@ -217,7 +218,7 @@ class MoreInfoMediaPlayer extends LitElement {
           .path=${mdiLoginVariant}
         >
         </ha-icon-button>
-        ${this.stateObj.attributes.source_list!.map(
+        ${sourceList.map(
           (source) =>
             html`<ha-dropdown-item
               .value=${source}
