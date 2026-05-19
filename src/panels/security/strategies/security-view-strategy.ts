@@ -61,10 +61,11 @@ export const securityEntityFilters: EntityFilter[] = [
     ],
     entity_category: "none",
   },
-  // We also want the tamper sensors when they are diagnostic
+  // We also want the tamper and moisture sensors when they are diagnostic
+  // (some integrations, e.g. homee, mark water leak alarms as diagnostic)
   {
     domain: "binary_sensor",
-    device_class: ["tamper"],
+    device_class: ["moisture", "tamper"],
     entity_category: "diagnostic",
   },
 ];
