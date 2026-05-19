@@ -1,6 +1,5 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../ha-tooltip";
 
 export type LiveTestState = "pass" | "fail" | "invalid" | "unknown";
 
