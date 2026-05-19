@@ -104,7 +104,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @state() private _selected: string[] = [];
 
   @state()
-  @state()
   private _filters: DataTableFiltersValues = {};
 
   @storage({
