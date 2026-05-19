@@ -9,10 +9,9 @@ import type { HaIconButton } from "./ha-icon-button";
  * @param TValue - The type of the selected item's `value`.
  * @param TData - The type of the selected item's `data` when set on `ha-dropdown-item`.
  */
-export type HaDropdownSelectEvent<
-  TValue = string,
-  TData = undefined,
-> = undefined extends TData
+export type HaDropdownSelectEvent<TValue = string, TData = undefined> = [
+  TData,
+] extends [undefined]
   ? CustomEvent<{
       item: Omit<HaDropdownItem, "value"> & { value: TValue };
     }>

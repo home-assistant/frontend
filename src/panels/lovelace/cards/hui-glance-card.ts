@@ -325,7 +325,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(
-    ev: HASSDomCurrentTargetEvent<HTMLElement & { config: GlanceConfigEntity }> &
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { config: GlanceConfigEntity }
+    > &
       ActionHandlerEvent
   ) {
     const { config } = ev.currentTarget;
