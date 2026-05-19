@@ -187,7 +187,7 @@
     "jsdom": "29.1.1",
     "jszip": "3.10.1",
     "license-checker-rseidelsohn": "4.4.2",
-    "lint-staged": "17.0.4",
+    "lint-staged": "17.0.5",
     "lit-analyzer": "2.0.3",
     "lodash.merge": "4.6.2",
     "lodash.template": "4.18.1",
