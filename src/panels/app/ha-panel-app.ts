@@ -213,7 +213,7 @@ class HaPanelApp extends LitElement {
     let addon: HassioAddonDetails;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
+      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
@@ -253,7 +253,7 @@ class HaPanelApp extends LitElement {
           );
           // Set auto-retry window for after starting the app
           this._autoRetryUntil = Date.now() + START_WAIT_TIME;
-          await startHassioAddon(this.hass, addonSlug);
+          await startHassioAddon(this.hass.callWS, addonSlug);
           this._fetchData(addonSlug);
           return;
         } catch (_err) {

@@ -6,9 +6,9 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-formfield";
 import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -17,8 +17,8 @@ import { setHassioAddonOption } from "../../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 
 @customElement("supervisor-app-network")
 class SupervisorAppNetwork extends LitElement {
@@ -160,7 +160,7 @@ class SupervisorAppNetwork extends LitElement {
     };
 
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
       this._configHasChanged = false;
       const eventdata = {
         success: true,
@@ -205,7 +205,7 @@ class SupervisorAppNetwork extends LitElement {
     };
 
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
       this._configHasChanged = false;
       const eventdata = {
         success: true,

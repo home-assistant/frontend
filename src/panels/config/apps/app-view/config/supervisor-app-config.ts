@@ -449,7 +449,7 @@ class SupervisorAppConfig extends LitElement {
       options: null,
     };
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
       this._configHasChanged = false;
       const eventdata = {
         success: true,
@@ -488,14 +488,14 @@ class SupervisorAppConfig extends LitElement {
 
     try {
       const validation = await validateHassioAddonOption(
-        this.hass,
+        this.hass.callWS,
         this.addon.slug,
         options
       );
       if (!validation.valid) {
         throw Error(validation.message);
       }
-      await setHassioAddonOption(this.hass, this.addon.slug, {
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, {
         options,
       });
 

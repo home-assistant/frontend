@@ -28,7 +28,7 @@ export const suggestSupervisorAppRestart = async (
   });
   if (confirmed) {
     try {
-      await restartHassioAddon(hass, addon.slug);
+      await restartHassioAddon(hass.callWS, addon.slug);
     } catch (err: any) {
       showAlertDialog(element, {
         title: hass.localize(

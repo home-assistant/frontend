@@ -1751,7 +1751,7 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "clean_areas_order_hint": "The order in which areas are cleaned may not be supported by your vacuum.",
           "other_areas": "Other areas"
         },
         "person": {
@@ -2818,6 +2818,7 @@
           },
           "state": {
             "update_available": "Update available",
+            "updating": "Updating...",
             "installed": "Installed",
             "not_installed": "Not installed",
             "not_available": "Not available"
@@ -2873,6 +2874,7 @@
           "dashboard": {
             "cpu_usage": "CPU usage",
             "ram_usage": "RAM usage",
+            "controls": "Controls",
             "app_running": "App is running",
             "app_stopped": "App is stopped",
             "current_version": "Current version: {version}",
@@ -2889,6 +2891,7 @@
             "failed_to_save": "Failed to save: {error}",
             "failed_to_reset": "Failed to reset: {error}",
             "failed_to_restart": "Failed to restart {name}",
+            "uninstalling": "Uninstalling...",
             "protection_mode": {
               "title": "Protection mode disabled!",
               "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
@@ -4115,6 +4118,7 @@
               "energy_from_helper": "Pick a sensor which measures grid import in either of {unit}.",
               "energy_to_grid": "Energy exported to grid",
               "energy_to_helper": "Pick a sensor which measures grid export in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "import_cost": "Cost tracking",
               "import_cost_para": "Select how Home Assistant should keep track of the costs of the imported energy.",
               "no_cost_tracking": "Do not track costs",
@@ -4172,6 +4176,7 @@
             "dialog": {
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -4195,6 +4200,7 @@
               "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
               "power": "Battery power",
@@ -8575,7 +8581,10 @@
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
-              "consumed_battery": "Consumed battery"
+              "consumed_battery": "Consumed battery",
+              "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
+              "named_grid_consumed": "Consumed {name}",
+              "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
@@ -8588,7 +8597,11 @@
               "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
-              "total_costs": "Total costs"
+              "total_costs": "Total costs",
+              "named_battery_charged": "{name} charged",
+              "named_battery_discharged": "{name} discharged",
+              "named_grid_imported": "{name} imported",
+              "named_grid_exported": "{name} exported"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
@@ -8934,9 +8947,6 @@
             "tab_visibility": "Visibility",
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
-            "visibility": {
-              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
             "layout": {
               "full_width": "Full width",
               "full_width_helper": "Take up the full width of the section whatever its size",
@@ -8967,10 +8977,7 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
-            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
-            "visibility": {
-              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
-            }
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
           },
           "suggest_badge": {
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
@@ -9042,9 +9049,6 @@
               "background_opacity": "Opacity",
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
-            },
-            "visibility": {
-              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
             }
           },
           "suggest_card": {
@@ -9086,11 +9090,31 @@
             }
           },
           "condition-editor": {
-            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
             "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "live_test_state": {
+              "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+              "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+              "invalid": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::invalid%]",
+              "unknown": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::unknown%]"
+            },
+            "visibility_status": {
+              "visible": {
+                "headline": "Current visibility: Visible",
+                "supporting": "All visibility conditions are met",
+                "supporting_empty": "No visibility conditions are set"
+              },
+              "hidden": {
+                "headline": "Current visibility: Hidden",
+                "supporting": "Not all visibility conditions are met"
+              },
+              "invalid": {
+                "headline": "Visibility status unknown",
+                "supporting": "One or more conditions have an invalid configuration"
+              }
+            },
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {

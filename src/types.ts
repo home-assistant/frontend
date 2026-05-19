@@ -253,6 +253,8 @@ export interface HomeAssistantInternationalization {
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
 }
 
+export type CallWS = <T>(msg: MessageBase) => Promise<T>;
+
 export interface HomeAssistantApi {
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
@@ -277,7 +279,7 @@ export interface HomeAssistantApi {
   ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
-  callWS<T>(msg: MessageBase): Promise<T>;
+  callWS: CallWS;
 }
 
 export interface HomeAssistantFormatters {

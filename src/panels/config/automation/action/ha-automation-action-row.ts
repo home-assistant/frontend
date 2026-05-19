@@ -4,7 +4,6 @@ import {
   mdiAlertCircleCheck,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
-  mdiArrowRightThin,
   mdiArrowUp,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
@@ -342,10 +341,6 @@ export default class HaAutomationActionRow extends LitElement {
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
-                class="arrow-right"
-                .path=${mdiArrowRightThin}
-              ></ha-svg-icon
-              ><ha-svg-icon
                 id="svg-icon"
                 .path=${mdiAlertCircleCheck}
               ></ha-svg-icon>
@@ -1231,9 +1226,6 @@ export default class HaAutomationActionRow extends LitElement {
     rowStyles,
     overflowStyles,
     css`
-      ha-svg-icon.arrow-right {
-        --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
-      }
       ha-svg-icon#svg-icon {
         --icon-primary-color: var(--ha-color-fill-neutral-loud-active);
       }
