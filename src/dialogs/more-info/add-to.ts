@@ -67,7 +67,9 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
 ];
 
 export const getDefaultAddToActions = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  localize: ...
+  formatEntityName:
   entityId: string
 ): EntityAddToActions =>
   DEFAULT_ACTION_DEFS.map(
