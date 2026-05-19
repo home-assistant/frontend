@@ -69,7 +69,7 @@ export class HuiAreaControlsCardFeatureEditor
         return [];
       }
       const controlEntities = getAreaControlEntities(
-        AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
+        AREA_CONTROL_DOMAINS,
         areaId,
         excludeEntities,
         this.hass!
