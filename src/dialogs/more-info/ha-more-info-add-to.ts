@@ -31,7 +31,12 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadActions() {
-    this._defaultActions = getDefaultAddToActions(this.hass, this.entityId);
+    this._defaultActions = getDefaultAddToActions(
+      this.hass.states,
+      this.hass.localize,
+      this.hass.formatEntityName,
+      this.entityId
+    );
     this._externalActions = [];
 
     if (this.hass.auth.external?.config.hasEntityAddTo) {

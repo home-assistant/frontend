@@ -1,4 +1,5 @@
 import { navigate } from "../../common/navigate";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { createSearchParam } from "../../common/url/search-params";
 import {
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
@@ -68,8 +69,8 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
 
 export const getDefaultAddToActions = (
   states: HomeAssistant["states"],
-  localize: ...
-  formatEntityName:
+  localize: LocalizeFunc,
+  formatEntityName: HomeAssistant["formatEntityName"],
   entityId: string
 ): EntityAddToActions =>
   DEFAULT_ACTION_DEFS.map(
@@ -77,12 +78,12 @@ export const getDefaultAddToActions = (
       type: "default",
       key: def.translation_key,
       enabled: true,
-      name: hass.localize(
+      name: localize(
         `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
         {
           entity:
-            hass.states[entityId] !== undefined
-              ? hass.formatEntityName(hass.states[entityId], undefined)
+            states[entityId] !== undefined
+              ? formatEntityName(states[entityId], undefined)
               : entityId,
         }
       ),
