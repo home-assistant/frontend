@@ -45,7 +45,7 @@
       "depNameTemplate": "python",
       "datasourceTemplate": "custom.ha-core-python",
       "versioningTemplate": "python",
-      "extractVersion": "^(?<version>\\d+\\.\\d+)"
+      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+)"
     }
   ],
   "packageRules": [
