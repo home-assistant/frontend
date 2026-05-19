@@ -50,6 +50,12 @@
   ],
   "packageRules": [
     {
+      "description": "Group all Python version updates from home-assistant/core",
+      "matchDepNames": ["python"],
+      "matchDatasources": ["custom.ha-core-python"],
+      "groupName": "Python version"
+    },
+    {
       "description": "MDC packages are pinned to the same version as MWC",
       "extends": ["monorepo:material-components-web"],
       "enabled": false
